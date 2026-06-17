@@ -23,6 +23,7 @@ from data.print_documents.place_cards.types import (
     PlayerCardType,
     BoardCardType,
     PairingCardType,
+    TeamCardType,
 )
 from data.print_documents.player_sorters import GridPlayerSorter, ListPlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
@@ -40,11 +41,14 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PlayerCheckinListPrintDocument,
             documents.PairingPrintDocument,
             documents.ResultPrintDocument,
+            documents.MatchSheetsPrintDocument,
             documents.PlayerRankingPrintDocument,
+            documents.TeamRankingPrintDocument,
             documents.IndividuelTeamRankingPrintDocument,
             documents.PlayerCrosstablePrintDocument,
             documents.PlayerRoundPerformanceIndicatorPrintDocument,
             documents.BergerGridPrintDocument,
+            documents.TeamBergerGridPrintDocument,
             documents.PrizeListPrintDocument,
             documents.PrizeAssignmentPrintDocument,
             documents.PrizeReceiptsPrintDocument,
@@ -75,6 +79,9 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.OptionalPlayersPrintOption,
             options.PairingStylePrintOption,
             options.RoundPrintOption,
+            options.MatchSheetSelectionPrintOption,
+            options.MatchSheetPageBreakPrintOption,
+            options.TeamBergerGridPlayersPrintOption,
             options.PlayerSplitPrintOption,
             options.GridPlayerSortPrintOption,
             options.ListPlayerSortPrintOption,
@@ -166,6 +173,7 @@ class PrintPlaceCardTypeManager(EntityManager[PlaceCardType]):
             PlayerCardType,
             BoardCardType,
             PairingCardType,
+            TeamCardType,
         ]
 
 

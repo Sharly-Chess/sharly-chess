@@ -1,0 +1,300 @@
+{% extends '../common/card.html' %}
+
+{% set _team_is_paired = team.has_been_paired %}
+{% set card_class = 'team-card' %}
+{% set grid_class = 'non-sortable' if _team_is_paired else '' %}
+
+{% block card_header %}
+    <input
+        type="hidden"
+        class="assignment-input"
+        name="assignment"
+        value="{{ team.id }}:{{ team.tournament_id or '' }}"
+        data-team-avg="{{ team.average_rating or 0 }}"
+        data-lineup-avg="{{ team.lineup_average_rating(1) or 0 }}"
+    />
+    <div class="d-flex align-items-center">
+        {% if team.tournament_id and client.can_check_in_players(team.tournament_id) %}
+            <div class="me-2">
+                <i
+                    class="{% if team.check_in %}bi-check-circle-fill text-success{% else %}bi-x-circle-fill text-danger{% endif %} cursor-pointer fs-5"
+                    {{ macros.tooltip_attributes('info', _('Click to toggle check-in.'), 'top') }}
+                    hx-patch="{{ url_for(
+                        'admin-team-toggle-check-in',
+                        event_uniq_id=admin_event.uniq_id,
+                        team_id=team.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                ></i>
+            </div>
+        {% else %}
+            <div>
+                <i class="bi-arrows-move invisible"></i>
+            </div>
+        {% endif %}
+        <div class="flex-grow-1">
+            <div>
+                <i class="bi-flag-fill pe-1"></i>
+                {{ team.name }}
+            </div>
+            {% if team.group %}
+                <div
+                    class="small text-muted"
+                    {{ macros.tooltip_attributes(
+                        'info', _('Affiliation.'), 'top'
+                    ) }}
+                >
+                    <i class="bi-collection-fill pe-1"></i>{{ team.group.name }}
+                </div>
+            {% endif %}
+        </div>
+        {% if sortable %}
+            <div>
+                <i class="bi-arrows-move{% if _team_is_paired %} text-muted opacity-25{% endif %}"
+                    {% if _team_is_paired %}
+                        {{ macros.tooltip_attributes('info', _('Locked: team is already paired.'), 'top') }}
+                    {% endif %}
+                ></i>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block card_title %}
+    <div class="d-flex gap-3 align-items-center justify-content-center">
+        <div
+            class="text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of players in the roster.'), 'top') }}
+        >
+            <i class="bi-people-fill pe-1"></i>
+            {{ team.players|length }}
+        </div>
+        {% set _avg = team.average_rating %}
+        {% if _avg %}
+            <div
+                class="text-nowrap"
+                {{ macros.tooltip_attributes('info', _('Average rating of the roster.'), 'top') }}
+            >
+                <i class="bi-star-fill pe-1"></i>{{ _avg }}
+                {%- if not team.tournament %} <span class="text-muted small">({{ admin_event.default_tournament_rating.acronym }})</span>{% endif %}
+            </div>
+        {% endif %}
+        {% if team.pairing_number %}
+            <div
+                class="text-nowrap"
+                {{ macros.tooltip_attributes('info', _('Pairing number.'), 'top') }}
+            >
+                <i class="bi-hash"></i>{{ team.pairing_number }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block card_text %}
+{% if show_details %}
+    {% set warning_message = team.rule_set_warning_message %}
+    {% if warning_message %}
+        <div class="text-start">
+            <i
+                class="bi-exclamation-triangle-fill text-warning pe-1"
+                {{ macros.tooltip_attributes('warning', warning_message, 'top') }}
+            ></i>
+            <span class="text-muted">{{ _('Roster issue') }}</span>
+        </div>
+    {% endif %}
+    <div class="card-block">
+        <span
+            class="card-block-button"
+            {% if client.can_update_tournaments %}
+                {{ macros.tooltip_attributes('info', _('Manage the team roster.'), 'top') }}
+            {% else %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to update the team.'), 'top') }}
+            {% endif %}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-team-roster-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    team_id=team.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                {% if not client.can_update_tournaments %}disabled{% endif %}
+            >
+                <i class="bi-people-fill"></i>
+            </button>
+        </span>
+        <div class="card-block-content">
+            {{ _('%(string)s:', string=_('Roster')) }}
+            {% if team.players %}
+                {% set _captain = team.captain %}
+                <ol class="mb-0 ps-3">
+                    {% for player in team.players %}
+                        <li>
+                            {% with tournament_player=player.optional_single_tournament_player %}
+                                {% include '/admin/player_link.html' %}
+                            {% endwith %}
+                            {% if _captain and _captain.id == player.id %}
+                                <i
+                                    class="bi-star-fill text-warning ms-1"
+                                    {{ macros.tooltip_attributes('info', _('Team captain.'), 'top') }}
+                                ></i>
+                            {% endif %}
+                            {%- set bracket_parts = [] -%}
+                            {%- set _rating = player.event_default_rating_and_type -%}
+                            {%- if _rating.value -%}
+                                {%- do bracket_parts.append(_rating|string) -%}
+                            {%- endif -%}
+                            {%- if player.category and player.category.name and player.category.name != '-' -%}
+                                {%- do bracket_parts.append(player.category.name) -%}
+                            {%- endif -%}
+                            {% if bracket_parts or player.gender.value %}
+                                <span class="text-muted">
+                                    ({{ bracket_parts|join(' • ') }}{% if bracket_parts and player.gender.value %} • {% endif %}{% if player.gender.value %}{{ player.gender.short_name }}{% endif %})
+                                </span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <span class="text-secondary">
+                    <i>{{ _('Empty') }}</i>
+                </span>
+            {% endif %}
+            {% if not team.captain and team.stored_team.captain_name %}
+                <div class="text-muted small mt-1">
+                    <i
+                        class="bi-star-fill text-warning pe-1"
+                        {{ macros.tooltip_attributes('info', _('Non-playing team captain.'), 'top') }}
+                    ></i>
+                    {{ _('%(string)s:', string=_('Captain')) }}
+                    {{ team.stored_team.captain_name }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% set _has_tournament_lineup = team.tournament and team.tournament.team_player_count %}
+    {% if _has_tournament_lineup or (not team.tournament and team.players) %}
+        {% if _has_tournament_lineup %}
+            {# Show the lineup for the next round that still needs pairing
+               when the current round is already finished; otherwise the
+               current round itself. Cap at the total round count so the
+               card stays meaningful past the final round. #}
+            {% set current_round = team.tournament.current_round or 1 %}
+            {% if team.tournament.is_round_finished(current_round)
+                and current_round < team.tournament.rounds %}
+                {% set current_round = current_round + 1 %}
+            {% endif %}
+            {% set current_lineup = team.effective_round_slots(current_round) %}
+            {% set lineup_label = _('Lineup for round #%(round)d:', round=current_round) %}
+        {% else %}
+            {# Team not assigned to a tournament: a single base lineup
+               (round 1), the roster standing in for the board count. #}
+            {% set current_round = 1 %}
+            {% set current_lineup = team.effective_round_slots(
+                1, board_count=team.players|length
+            ) %}
+            {% set lineup_label = _('Base lineup:') %}
+        {% endif %}
+        <div class="card-block">
+            <span
+                class="card-block-button"
+                {% if client.can_update_tournaments %}
+                    {{ macros.tooltip_attributes('info', _('Manage per-round lineups.'), 'top') }}
+                {% else %}
+                    {{ macros.tooltip_attributes('warning', _('You are not allowed to update the team.'), 'top') }}
+                {% endif %}
+            >
+                <button
+                    class="btn btn-sm btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for(
+                        'admin-team-lineups-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        team_id=team.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                    {% if not client.can_update_tournaments %}disabled{% endif %}
+                >
+                    <i class="bi-list-ol"></i>
+                </button>
+            </span>
+            <div class="card-block-content">
+                <span class="d-inline-flex align-items-center gap-2">
+                    <span>{{ lineup_label }}</span>
+                </span>
+                {% if current_lineup and current_lineup|select|list %}
+                    <ol class="mb-0 ps-3">
+                        {% for player in current_lineup %}
+                            {% if player %}
+                                <li>
+                                    {% with tournament_player=player.optional_single_tournament_player %}
+                                        {% include '/admin/player_link.html' %}
+                                    {% endwith %}
+                                </li>
+                            {% else %}
+                                <li class="text-muted">—</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ol>
+                    {% set _lineup_avg = team.lineup_average_rating(current_round) %}
+                    {% if _lineup_avg %}
+                        <div class="text-muted small mt-1">
+                            <i class="bi-star-fill"></i>
+                            {{ _('Average rating: %(rating)d', rating=_lineup_avg) }}
+                            {%- if not team.tournament %} ({{ admin_event.default_tournament_rating.acronym }}){% endif %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <span class="text-secondary"><i>{{ _('Empty') }}</i></span>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block card_buttons_left %}{% endblock %}
+
+{% block card_buttons_right %}
+    {% if client.can_update_tournaments %}
+        <span {{ macros.tooltip_attributes('info', _('Edit the properties of the team.'), 'top') }}>
+            <button
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for(
+                    'admin-team-update-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    team_id=team.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-pencil-fill"></i>
+            </button>
+        </span>
+        <span {{ macros.tooltip_attributes('info', _('Delete the team.'), 'top') }}>
+            <button
+                class="btn btn-sm btn-outline-danger"
+                hx-get="{{ url_for(
+                    'admin-team-delete-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    team_id=team.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-trash-fill"></i>
+            </button>
+        </span>
+    {% endif %}
+{% endblock %}

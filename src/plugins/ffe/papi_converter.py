@@ -418,7 +418,21 @@ class PapiConverter:
                 )
             except KeyError:
                 raise_unknown_value('pointSystem', variables.pointSystem)
-        stored_tournament.three_points_for_a_win = three_points_for_a_win
+        if three_points_for_a_win:
+            game_points = {
+                Result.WIN.value: 3.0,
+                Result.DRAW.value: 1.0,
+                Result.LOSS.value: 0.0,
+            }
+        else:
+            game_points = {
+                Result.WIN.value: 1.0,
+                Result.DRAW.value: 0.5,
+                Result.LOSS.value: 0.0,
+            }
+        game_points[Result.ZERO_POINT_BYE.value] = 0.0
+        game_points[Result.PAIRING_ALLOCATED_BYE.value] = game_points[Result.WIN.value]
+        stored_tournament.game_points = game_points
         stored_tournament.location = variables.venue
         ffe_id = None
         if variables.homologation:
@@ -676,9 +690,35 @@ class PapiConverter:
             ).format(rounds=rounds, max=cls.MAX_PAPI_ROUNDS)
         return None
 
+    # WIN / DRAW / LOSS presets the legacy Papi format can round-trip.
+    # Standard FIDE (1 / 0.5 / 0) and "3 points for a win" (3 / 1 / 0)
+    # are the only schemes the format was ever specified for; anything
+    # else is silently lost on import.
+    _SUPPORTED_GAME_POINT_PRESETS: tuple[tuple[float, float, float], ...] = (
+        (1.0, 0.5, 0.0),
+        (3.0, 1.0, 0.0),
+    )
+
     @classmethod
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
+        if tournament.event.is_team_event:
+            return _('Papi export is not available for team events.')
+
+        win = tournament.win_points
+        draw = tournament.draw_points
+        loss = tournament.loss_points
+        if (win, draw, loss) not in cls._SUPPORTED_GAME_POINT_PRESETS:
+            return _(
+                'Papi export only supports the standard (1 / 0.5 / 0) or '
+                '"3 points for a win" (3 / 1 / 0) game-point scales. '
+                'Current values: {win} / {draw} / {loss}.'
+            ).format(
+                win=Utils.points_str(win),
+                draw=Utils.points_str(draw),
+                loss=Utils.points_str(loss),
+            )
+
         if rounds_blocker := cls.check_rounds(tournament.rounds):
             return rounds_blocker
 
@@ -799,7 +839,7 @@ class PapiConverter:
             tiebreak2=papi_tiebreaks[1],
             tiebreak3=papi_tiebreaks[2],
             pointSystem=PapiThreePointsForAWin.get_outer_value(
-                tournament.three_points_for_a_win
+                tournament.win_points == 3.0
             ),
             arbiter='',
             timeControl=tournament.time_control_trf25,
@@ -822,7 +862,7 @@ class PapiConverter:
             papi_player = self._player_to_papi_player(
                 tournament_player,
                 player_id_to_index,
-                tournament.pab_value,
+                tournament.pab_equivalent_result,
                 manual_tiebreak_by_player_id.get(tournament_player.id, None),
                 anonymize_player_data,
             )

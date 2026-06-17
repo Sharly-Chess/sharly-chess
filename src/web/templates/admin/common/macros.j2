@@ -136,19 +136,6 @@
     <!-- end admin_players_sort_link() -->
 {% endmacro %}
 
-{% macro gender_icon(gender) %}
-    {% if gender.value == 0 %}
-        {% set _icon_class='-' %}
-    {% elif gender.value == 1 %}
-        {% set _icon_class='bi-person-standing-dress' %}
-    {% elif gender.value == 2 %}
-        {% set _icon_class='bi-person-standing' %}
-    {% else %}
-        {% set _icon_class='bi-question' %}
-    {% endif %}
-    {%- if _icon_class -%}<i class="{{ _icon_class }}"></i>{%- endif -%}
-{% endmacro %}
-
 {% macro _select_option(value, text_or_option, selected) %}
     {% if text_or_option is string %}
         <option value="{{ value }}" {% if selected %}selected{% endif %}>
@@ -656,8 +643,8 @@ with_indicator: display a loading indicator, optional
                     pw-input-group
                     {% if input_type in ['password', 'search', 'integer-range', 'select-range'] %}input-group{% endif %}
                     {% if default_checkbox %}input-group{% endif %}
-                    {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
-                    {% if input_type == 'checkbox' %}form-check d-inline-block pe-3{% endif %}
+                    {% if input_type == 'switch' %}form-check form-switch d-inline-block{% endif %}
+                    {% if input_type == 'checkbox' %}form-check d-inline-block{% endif %}
                 "
             >
                 {% if input_type == 'select' %}
@@ -943,7 +930,7 @@ with_indicator: display a loading indicator, optional
             {% endif %}
             {% if info and input_type != 'radio' %}
                 <i
-                    class="bi bi-info-circle-fill"
+                    class="bi bi-info-circle-fill ms-2"
                     {{ macros.tooltip_attributes('', info, 'top') }}
                 ></i>
             {% endif %}

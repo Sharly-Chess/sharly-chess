@@ -8,7 +8,7 @@ from typing import Any
 
 
 from common.sharly_chess_config import SharlyChessConfig
-from utils.enum import Result
+from utils.enum import EventType
 
 
 @dataclass
@@ -93,15 +93,112 @@ class StoredPairing:
     result: int
     board_id: int | None
     illegal_moves: int = 0
+    effective_points: float | None = None
 
 
 @dataclass
 class StoredBoard:
     id: int | None
-    white_player_id: int
+    white_player_id: int | None
     black_player_id: int | None
     index: int
     last_result_update: datetime | None = None
+    team_board_id: int | None = None
+
+
+@dataclass
+class StoredTeamRoundLineupEntry:
+    team_id: int
+    round_: int
+    player_id: int
+    index: int
+
+
+@dataclass
+class StoredTeamGroup:
+    """Event-level reusable team grouping (club / league / …). Teams
+    reference one by ``group_id``."""
+
+    id: int | None
+    name: str
+
+
+@dataclass
+class StoredTeam:
+    id: int | None
+    name: str
+    tournament_id: int | None = None
+    pairing_number: int | None = None
+    captain_id: int | None = None
+    captain_name: str | None = None
+    group_id: int | None = None
+    federation: str | None = None
+    check_in: bool = False
+    stored_round_lineups: dict[int, list[StoredTeamRoundLineupEntry]] = field(
+        default_factory=dict[int, list[StoredTeamRoundLineupEntry]]
+    )
+
+
+@dataclass
+class StoredTeamBoard:
+    id: int | None
+    tournament_id: int
+    round_: int
+    team_a_id: int
+    # Table number slot (0-based). None for hidden byes (HPB / FPB /
+    # ZPB) that don't occupy a table; real matches and the PAB bye
+    # carry an index.
+    index: int | None
+    team_b_id: int | None = None
+    last_result_update: datetime | None = None
+    # Bye type when ``team_b_id`` is None: ``PAB`` (pairing-allocated),
+    # ``HPB`` (half-point), ``FPB`` (full-point) or ``ZPB`` (zero-point).
+    # NULL on regular paired team_boards.
+    bye_type: str | None = None
+
+
+@dataclass
+class StoredTeamPairingBlock:
+    id: int | None
+    tournament_id: int
+    team_a_id: int
+    team_b_id: int
+    round_: int | None = None
+    reason: str | None = None
+
+
+@dataclass
+class StoredTeamPointAdjustment:
+    """Manual per-team, per-round bonus / penalty points. ``mp_delta``
+    and ``gp_delta`` may be negative. One row per (tournament, team,
+    round)."""
+
+    id: int | None
+    tournament_id: int
+    team_id: int
+    round_: int
+    mp_delta: float = 0.0
+    gp_delta: float = 0.0
+    reason: str | None = None
+
+
+@dataclass
+class StoredProhibitedPairingGroup:
+    """A set of members (player ids, or team ids in team mode) that must
+    not be paired together. ``round_`` is None for a reusable manual
+    template group, or a round number for an immutable per-round
+    snapshot (manual + dimension-derived, flattened). ``is_hard``
+    distinguishes hard from soft constraints. ``protect_rank`` is the
+    soft-relaxation cutoff frozen for a round snapshot (members ranked
+    ``<= protect_rank`` kept their soft separations); ``None`` for
+    template groups, hard-only rounds, and imported snapshots."""
+
+    id: int | None
+    tournament_id: int
+    round_: int | None = None
+    is_hard: bool = True
+    member_ids: list[int] = field(default_factory=list[int])
+    protect_rank: int | None = None
 
 
 @dataclass
@@ -135,11 +232,16 @@ class StoredPlayer:
     club: str | None = None
     fixed: int | None = None
     check_in: bool = False
+    team_id: int | None = None
+    team_index: int | None = None
 
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
     )
     transient_arbiter_titles: dict[str, Any] = field(default_factory=dict[str, Any])
+    # Team name from a datasheet import (team mode); resolved to a team
+    # membership after the player is persisted. Not stored.
+    transient_team_name: str | None = None
 
 
 @dataclass
@@ -166,11 +268,21 @@ class StoredTournament:
     last_update: datetime = field(default_factory=datetime.now)
     last_player_update: datetime | None = None
     last_pairing_update: datetime | None = None
-    three_points_for_a_win: bool = False
     override_unrated_rapid_blitz: bool = True
-    pab_value: int = Result.WIN.value
+    game_points: dict[int, float] | None = None
     criteria: dict[str, Any] = field(default_factory=dict)
     round_datetimes: dict[int, datetime | None] = field(default_factory=dict)
+    team_player_count: int | None = None
+    match_points: dict[int, float] | None = None
+    color_pattern: str | None = None
+    primary_score: str | None = None
+    secondary_score: str | None = None
+    team_colour_type: str | None = None
+    enforce_roster_order: bool = False
+    team_sort_mode: str = 'MANUAL'
+    rule_set: str | None = None
+    prohibited_pairing_dimension: str | None = None
+    prohibited_pairing_dimension_is_hard: bool = True
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )
@@ -183,6 +295,18 @@ class StoredTournament:
     )
     stored_boards_by_round: dict[int, list[StoredBoard]] = field(
         default_factory=dict[int, list[StoredBoard]]
+    )
+    stored_team_boards_by_round: dict[int, list[StoredTeamBoard]] = field(
+        default_factory=dict[int, list[StoredTeamBoard]]
+    )
+    stored_team_pairing_blocks: list[StoredTeamPairingBlock] = field(
+        default_factory=list[StoredTeamPairingBlock]
+    )
+    stored_team_point_adjustments: list[StoredTeamPointAdjustment] = field(
+        default_factory=list[StoredTeamPointAdjustment]
+    )
+    stored_prohibited_pairing_groups: list['StoredProhibitedPairingGroup'] = field(
+        default_factory=list['StoredProhibitedPairingGroup']
     )
 
     # Plugins can add their own tournament data
@@ -366,6 +490,7 @@ class BaseStoredEvent:
     organiser_email: str | None = None
     organiser_director: str | None = None
     allow_multi_tournament_players: bool = True
+    event_type: EventType = EventType.INDIVIDUAL
 
     # Plugins can add their own event data
     plugin_data: dict[str, dict[str, Any]] = field(
@@ -379,6 +504,10 @@ class StoredEvent(BaseStoredEvent):
     stored_players: list[StoredPlayer] = field(default_factory=list[StoredPlayer])
     stored_tournaments: list[StoredTournament] = field(
         default_factory=list[StoredTournament]
+    )
+    stored_teams: list[StoredTeam] = field(default_factory=list[StoredTeam])
+    stored_team_groups: list[StoredTeamGroup] = field(
+        default_factory=list[StoredTeamGroup]
     )
     stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])

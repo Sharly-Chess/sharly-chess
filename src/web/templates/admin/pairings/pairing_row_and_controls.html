@@ -5,11 +5,22 @@
 <div id="messages" hx-swap-oob="beforeend">
     {% include '/common/messages.html' %}
 </div>
-{% with swap_oob=True %}
-    <template>
-        {% include '/admin/pairings/pairing_row.html' %}
-    </template>
-{% endwith %}
+{% if board.stored_board.team_board_id %}
+    {% with team_board=admin_tournament.team_boards_by_id[board.stored_board.team_board_id], lineup_team_board=admin_tournament.team_boards_by_id[board.stored_board.team_board_id], swap_oob=True %}
+        <template>
+            {% include '/admin/pairings/team_block_row.html' %}
+        </template>
+        <template>
+            {% include '/admin/pairings/team_block_header.html' %}
+        </template>
+    {% endwith %}
+{% else %}
+    {% with swap_oob=True %}
+        <template>
+            {% include '/admin/pairings/pairing_row.html' %}
+        </template>
+    {% endwith %}
+{% endif %}
 {% with swap_oob=True %}
     <template>
         {% include '/admin/pairings/pairing_table_header.html' %}

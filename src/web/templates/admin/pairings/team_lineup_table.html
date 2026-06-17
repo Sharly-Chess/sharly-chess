@@ -1,0 +1,66 @@
+{% import '/common/macros.j2' as macros with context %}
+{# Side-column table for flat team systems (fixed-table pairings):
+   teams are always paired from the table, so there is no status to
+   manage — the column lists every team with a lineup-edit button,
+   and stays visible once the round is paired so lineups can still
+   be changed. Requires: ``teams``, ``title``, ``table_id``. #}
+{% if teams %}
+    <table
+        id="{{ table_id }}"
+        class="table prominent table-striped table-sm w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
+    >
+        <thead
+            id="{{ table_id }}-header"
+            class="position-sticky z-2"
+            style="top: var(--header-height);"
+        >
+            <tr>
+                <th colspan="2">{{ title }} ({{ teams|length }})</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+                <tr
+                    id="team-row-{{ team.id }}"
+                    class="team-row"
+                    data-team-id="{{ team.id }}"
+                >
+                    <td class="align-middle">
+                        <a
+                            class="player-link"
+                            hx-get="{{ url_for(
+                                'admin-team-record-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=team.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        ><strong>{{ team.name }}</strong></a>
+                    </td>
+                    <td class="text-end">
+                        {% if client.can_update_tournaments %}
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                hx-get="{{ url_for(
+                                    'admin-team-lineups-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    team_id=team.id,
+                                ) }}?round={{ admin_round }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
+                            >
+                                <i class="bi-list-ol"></i>
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

@@ -26,6 +26,7 @@ from data.player_categories import (
 )
 from data.rotator import Rotator
 from data.screen import Screen
+from data.team import Team, TeamGroup
 from data.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -34,8 +35,10 @@ from plugins.utils import PluginData, Plugin
 from utils import Utils
 from utils.date_time import format_date, format_date_range
 from utils.enum import (
+    EventType,
     RoleType,
     ScreenType,
+    TournamentRating,
 )
 from database.sqlite.event.event_store import (
     StoredEvent,
@@ -44,6 +47,8 @@ from database.sqlite.event.event_store import (
     StoredRotator,
     StoredPermission,
     StoredRole,
+    StoredTeam,
+    StoredTeamGroup,
     StoredTimer,
 )
 
@@ -113,8 +118,27 @@ class Event:
         return self.stored_event.federation
 
     @property
+    def event_type(self) -> EventType:
+        return self.stored_event.event_type
+
+    @property
+    def is_team_event(self) -> bool:
+        return self.event_type == EventType.TEAM
+
+    @property
     def player_rating_type(self) -> PlayerRatingType:
         return PlayerRatingType(self.stored_event.player_rating_type)
+
+    @property
+    def default_tournament_rating(self) -> TournamentRating:
+        """Time-control cadence used for ratings outside any tournament
+        context (unassigned players / teams): the shared cadence when
+        every tournament of the event uses the same one, Standard
+        otherwise (multiple cadences or no tournament yet)."""
+        cadences = {tournament.rating for tournament in self.tournaments}
+        if len(cadences) == 1:
+            return next(iter(cadences))
+        return TournamentRating.STANDARD
 
     @property
     def allow_multi_tournament_players(self) -> bool:
@@ -187,9 +211,15 @@ class Event:
 
     @property
     def enabled_plugins(self) -> list[Plugin]:
+        """The event's enabled plugins, excluding any that don't support
+        the event's type (e.g. enabled before the type was set, or stored
+        by an older version that didn't enforce type support)."""
         return [
-            plugin_manager.plugins_by_id[plugin_id]
+            plugin
             for plugin_id in self.stored_event.enabled_plugins
+            if (plugin := plugin_manager.plugins_by_id[plugin_id]).supports_event_type(
+                self.event_type
+            )
         ]
 
     @property
@@ -386,6 +416,10 @@ class Event:
     @cached_property
     def player_distribution_error_message(self) -> str | None:
         """Returns an error message if distributing the player among the tournaments is not allowed, None otherwise."""
+        if self.is_team_event:
+            # Players belong to teams — distributing them individually
+            # would tear the rosters apart.
+            return _('Players cannot be distributed in a team event.')
         if not self.tournaments:
             return _('Can not distribute the players (no tournaments found).')
         if not self.player_count:
@@ -445,7 +479,9 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_player(player.id)
         del self.players_by_id[player.id]
-        del player.single_tournament.tournament_players_by_id[player.id]
+        tournament = player.optional_single_tournament
+        if tournament is not None:
+            del tournament.tournament_players_by_id[player.id]
         plugin_manager.hook_for_event(self, 'on_player_deleted')(player=player)
 
     def update_player(self, player: Player, new_stored_player: StoredPlayer):
@@ -560,8 +596,106 @@ class Event:
             )
             database.delete_stored_tournament_player(source_tournament.id, player.id)
             del source_tournament.tournament_players_by_id[player.id]
-        player.single_tournament_id = destination_tournament.id
+        player.optional_single_tournament_id = destination_tournament.id
         self.clear_player_cache()
+
+    # --------------------------------------------------------------------------
+    # Teams
+    # --------------------------------------------------------------------------
+
+    @cached_property
+    def teams_by_id(self) -> dict[int, Team]:
+        return {
+            stored_team.id: Team(self, stored_team)
+            for stored_team in self.stored_event.stored_teams
+            if stored_team.id is not None
+        }
+
+    @property
+    def teams(self) -> Collection[Team]:
+        return self.teams_by_id.values()
+
+    @cached_property
+    def sorted_teams(self) -> list[Team]:
+        return sorted(self.teams, key=attrgetter('name'))
+
+    def clear_team_cache(self):
+        Utils.reset_cached_properties(
+            self, 'teams_by_id', 'sorted_teams', 'team_groups_by_id'
+        )
+
+    @cached_property
+    def team_groups_by_id(self) -> dict[int, TeamGroup]:
+        return {
+            stored_team_group.id: TeamGroup(self, stored_team_group)
+            for stored_team_group in self.stored_event.stored_team_groups
+            if stored_team_group.id is not None
+        }
+
+    @property
+    def team_groups(self) -> Collection[TeamGroup]:
+        return self.team_groups_by_id.values()
+
+    def team_group_team_counts(self) -> dict[int, int]:
+        """How many teams reference each group id."""
+        counts: dict[int, int] = {}
+        for team in self.teams:
+            if team.group_id is not None:
+                counts[team.group_id] = counts.get(team.group_id, 0) + 1
+        return counts
+
+    def add_team_group(self, name: str) -> TeamGroup:
+        with EventDatabase(self.uniq_id, True) as database:
+            group_id = database.add_stored_team_group(name)
+            self.stored_event.stored_team_groups.append(
+                StoredTeamGroup(id=group_id, name=name)
+            )
+        self.clear_team_cache()
+        return self.team_groups_by_id[group_id]
+
+    def update_team_group(self, group_id: int, name: str):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_team_group(group_id, name)
+        for stored_team_group in self.stored_event.stored_team_groups:
+            if stored_team_group.id == group_id:
+                stored_team_group.name = name
+        self.clear_team_cache()
+
+    def delete_team_group(self, group_id: int):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_team_group(group_id)
+        self.stored_event.stored_team_groups = [
+            stored_team_group
+            for stored_team_group in self.stored_event.stored_team_groups
+            if stored_team_group.id != group_id
+        ]
+        # Detach the group from any team that referenced it (the DB FK
+        # already set those to NULL via ON DELETE SET NULL).
+        for stored_team in self.stored_event.stored_teams:
+            if stored_team.group_id == group_id:
+                stored_team.group_id = None
+        self.clear_team_cache()
+
+    def add_team(self, stored_team: StoredTeam) -> Team:
+        with EventDatabase(self.uniq_id, True) as database:
+            stored_team.id = database.add_stored_team(stored_team)
+            self.stored_event.stored_teams.append(stored_team)
+        self.clear_team_cache()
+        for tournament in self.tournaments:
+            tournament.clear_team_cache()
+        return self.teams_by_id[stored_team.id]
+
+    def delete_team(self, team: Team):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_team(team.id)
+        self.stored_event.stored_teams = [
+            stored_team
+            for stored_team in self.stored_event.stored_teams
+            if stored_team.id != team.id
+        ]
+        self.clear_team_cache()
+        for tournament in self.tournaments:
+            tournament.clear_team_cache()
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:

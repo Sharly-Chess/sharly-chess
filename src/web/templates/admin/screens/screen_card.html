@@ -169,9 +169,16 @@
             <span
                 {{ macros.tooltip_attributes(
                     'info',
-                    _('Edit the sets of boards displayed on the screen.')
-                    if screen.type in ['boards', 'input'] else
-                    _('Edit the sets of players displayed on the screen.'),
+                    (
+                        _('Edit the sets of matches displayed on the screen.')
+                        if screen.type in ['boards', 'input'] else
+                        _('Edit the sets of teams displayed on the screen.')
+                    )
+                    if admin_event.is_team_event else (
+                        _('Edit the sets of boards displayed on the screen.')
+                        if screen.type in ['boards', 'input'] else
+                        _('Edit the sets of players displayed on the screen.')
+                    ),
                     'top')
                 }}
             >
@@ -184,8 +191,11 @@
                     data-bs-target="#modal-wrapper"
                 >
                     <i class="bi-collection-fill pe-1"></i>
+                    {% set _first_set = screen.sorted_screen_sets | first %}
                     {% if screen.type in ['boards', 'input'] %}
-                        {{ _('Boards') }}
+                        {{ _('Matches') if _first_set and _first_set.shows_team_matches else _('Boards') }}
+                    {% elif admin_event.is_team_event %}
+                        {{ _('Teams') }}
                     {% else %}
                         {{ _('Players') }}
                     {% endif %}

@@ -70,29 +70,31 @@
                         </button>
                     </span>
                 </li>
-                <li>
-                    <span
-                        {% if not client.can_distribute_players %}
-                            {{ macros.tooltip_attributes('warning', _('You are not allowed to distribute the players.'), 'right') }}
-                        {% elif admin_event.player_distribution_error_message %}
-                            {{ macros.tooltip_attributes('warning', admin_event.player_distribution_error_message, 'right') }}
-                        {% endif %}
-                    >
-                        <button
-                            class="dropdown-item text-nowrap"
-                            {% if not admin_event.player_distribution_error_message and client.can_distribute_players %}
-                                hx-get="{{ url_for('admin-distribute-players-modal', event_uniq_id=admin_event.uniq_id) }}"
-                                hx-target="body"
-                                hx-indicator="#please-wait"
-                            {% else %}
-                                disabled
+                {% if not admin_event.is_team_event %}
+                    <li>
+                        <span
+                            {% if not client.can_distribute_players %}
+                                {{ macros.tooltip_attributes('warning', _('You are not allowed to distribute the players.'), 'right') }}
+                            {% elif admin_event.player_distribution_error_message %}
+                                {{ macros.tooltip_attributes('warning', admin_event.player_distribution_error_message, 'right') }}
                             {% endif %}
                         >
-                            <i class="bi bi-sort-numeric-down-alt pe-1"></i>
-                            {{ _('Distribute the players among the tournaments') }}
-                        </button>
-                    </span>
-                </li>
+                            <button
+                                class="dropdown-item text-nowrap"
+                                {% if not admin_event.player_distribution_error_message and client.can_distribute_players %}
+                                    hx-get="{{ url_for('admin-distribute-players-modal', event_uniq_id=admin_event.uniq_id) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                {% else %}
+                                    disabled
+                                {% endif %}
+                            >
+                                <i class="bi bi-sort-numeric-down-alt pe-1"></i>
+                                {{ _('Distribute the players among the tournaments') }}
+                            </button>
+                        </span>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     {% endif %}

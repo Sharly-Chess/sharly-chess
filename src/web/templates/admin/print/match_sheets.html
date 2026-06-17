@@ -1,0 +1,416 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+<style>
+    body.match-sheets .center-wrapper {
+        display: block;
+        width: 100%;
+        margin-bottom: 0;
+    }
+    body.match-sheets .page-content { width: 100%; }
+    @media screen {
+        body.match-sheets .page-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+    }
+    .match-sheet {
+        margin: 0 0 2rem;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    .match-sheet + .match-sheet:not(.with-page-break) {
+        margin-top: 3rem;
+    }
+    @media screen {
+        .match-sheet + .match-sheet {
+            margin-top: 3rem;
+        }
+    }
+    .match-sheet.with-page-break {
+        page-break-before: always;
+        break-before: page;
+    }
+    .match-sheet-title {
+        font-size: 16pt;
+        font-weight: bold;
+        text-align: center;
+        margin: 12pt 0 4pt;
+    }
+    .match-sheet-meta {
+        text-align: center;
+        font-size: 11pt;
+        margin-bottom: 8pt;
+    }
+    table.match-sheet-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0 0 12pt;
+    }
+    table.match-sheet-table th,
+    table.match-sheet-table td {
+        border: 1.5pt solid #000;
+        padding: 6pt 8pt;
+        vertical-align: middle;
+        background-color: #fff !important;
+    }
+    table.match-sheet-table thead th {
+        text-align: center;
+        font-weight: bold;
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .col-bd { width: 4%; text-align: center; }
+    .col-name { width: 38%; }
+    .col-name.left { text-align: left; }
+    .col-name.right { text-align: right; }
+    table.match-sheet-table thead .col-name { text-align: center; }
+    .col-result {
+        width: 10%;
+        text-align: center;
+        height: 28pt;
+        font-size: 14pt;
+        font-weight: bold;
+    }
+    .player-name { font-weight: bold; font-size: 12pt; }
+    .player-meta { font-size: 9pt; color: #555; }
+    .board-refs {
+        font-size: 8pt;
+        color: #555;
+        white-space: nowrap;
+        margin-top: 4pt;
+    }
+    td.col-bd .board-number {
+        font-size: 14pt;
+        font-weight: bold;
+    }
+    .result-legend {
+        text-align: center;
+        font-size: 9pt;
+        color: #555;
+        margin: -8pt 0 12pt;
+    }
+    .color-chip {
+        display: inline-block;
+        width: 9pt;
+        height: 9pt;
+        margin-right: 4pt;
+        vertical-align: middle;
+        position: relative;
+        top: -1pt;
+        border: 0.75pt solid #000;
+        background-color: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .color-chip.black {
+        background-color: #000 !important;
+    }
+    .signatures {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16pt;
+        gap: 24pt;
+    }
+    .signature {
+        flex: 1;
+    }
+    .signature-label {
+        font-size: 10pt;
+        margin-bottom: 2pt;
+    }
+    .signature-line {
+        border-bottom: 1px solid #000;
+        height: 28pt;
+    }
+    body.match-sheets .page-title,
+    body.match-sheets .page-subtitle {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    {% set pattern = tournament.color_pattern or '' %}
+    {% macro player_meta(player) %}
+        {%- set parts = [] -%}
+        {%- if player.team -%}
+            {%- do parts.append(player.team.name) -%}
+        {%- endif -%}
+        {%- if player.rating_str -%}
+            {%- do parts.append(player.rating_str) -%}
+        {%- endif -%}
+        {%- if player.category and player.category.name and player.category.name != '-' -%}
+            {%- do parts.append(player.category.name) -%}
+        {%- endif -%}
+        {%- if player.fide_id -%}
+            {%- do parts.append(_('FIDE %(fide_id)s', fide_id=player.fide_id)) -%}
+        {%- endif -%}
+        {%- set _national_id = player_national_id(player) -%}
+        {%- if _national_id -%}
+            {%- do parts.append(_national_id) -%}
+        {%- endif -%}
+        {%- if parts -%}
+            <div class="player-meta">{{ parts|join(' · ') }}</div>
+        {%- endif -%}
+    {% endmacro %}
+    {% if flat_mode %}
+        {% if not flat_boards %}
+            <div class="error">
+                {{ _('No paired boards in this round.') }}
+            </div>
+        {% else %}
+            {# Flat team systems (fixed tables): one round sheet listing
+               every board, white on the left. #}
+            <div class="match-sheet">
+                <div class="match-sheet-title">
+                    {{ tournament.name }} &mdash; {{ _('Round #%(round)d', round=at_round) }}
+                </div>
+                <table class="match-sheet-table">
+                    <thead>
+                        <tr>
+                            <th class="col-bd">{{ _('Bd') }}</th>
+                            <th class="col-name">{{ _('White') }}</th>
+                            <th class="col-result"></th>
+                            <th class="col-result"></th>
+                            <th class="col-name">{{ _('Black') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for board in flat_boards %}
+                            {% set wtp = board.optional_white_tournament_player %}
+                            {% set btp = board.black_tournament_player %}
+                            {% set refs = flat_board_refs.get(board.index) %}
+                            {% set raw_result = board.result_str %}
+                            {% if raw_result and '-' in raw_result %}
+                                {% set parts = raw_result.split('-') %}
+                                {% set a_result = parts[0] %}
+                                {% set b_result = parts[1] %}
+                            {% else %}
+                                {% set a_result = '' %}
+                                {% set b_result = '' %}
+                            {% endif %}
+                            <tr>
+                                <td class="col-bd">
+                                    <div class="board-number">{{ board.number }}</div>
+                                    {% if refs and (refs[0] or refs[1]) %}
+                                        <div class="board-refs">{{ refs[0] }}-{{ refs[1] }}</div>
+                                    {% endif %}
+                                </td>
+                                <td class="col-name left">
+                                    {% if wtp %}
+                                        {% set _w_title = wtp.title.short_name %}
+                                        <div class="player-name">
+                                            <span class="color-chip"></span>{% if _w_title %}{{ _w_title }} {% endif %}{{ wtp.full_name }}
+                                        </div>
+                                        {{ player_meta(wtp) }}
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </td>
+                                <td class="col-result">{{ a_result }}</td>
+                                <td class="col-result">{{ b_result }}</td>
+                                <td class="col-name right">
+                                    {% if btp %}
+                                        {% set _b_title = btp.title.short_name %}
+                                        <div class="player-name">
+                                            {% if _b_title %}{{ _b_title }} {% endif %}{{ btp.full_name }}<span class="color-chip black" style="margin-left:4pt;margin-right:0"></span>
+                                        </div>
+                                        {{ player_meta(btp) }}
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="result-legend">
+                    {{ _('Results: 1 = win, X = draw, 0 = loss, F = forfeit') }}
+                </div>
+                <div class="signatures">
+                    <div class="signature">
+                        <div class="signature-label">
+                            {% if arbiter_name %}
+                                {{ _('Arbiter — %(name)s', name=arbiter_name) }}
+                            {% else %}
+                                {{ _('Arbiter') }}
+                            {% endif %}
+                        </div>
+                        <div class="signature-line"></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if not flat_mode and not team_boards %}
+        <div class="error">
+            {{ _('No paired team matches in this round.') }}
+        </div>
+    {% endif %}
+    {% for team_board in team_boards %}
+        <div class="match-sheet {% if page_break and not loop.first %}with-page-break{% endif %}">
+            <div class="match-sheet-title">
+                {{ team_board.team_a.name }} &mdash; {{ team_board.team_b.name }}
+            </div>
+            <div class="match-sheet-meta">
+                {{ _('Round #%(round)d', round=team_board.round) }}
+            </div>
+            <table class="match-sheet-table">
+                <thead>
+                    <tr>
+                        <th class="col-bd">{{ _('Bd') }}</th>
+                        <th class="col-name">{{ team_board.team_a.name }}</th>
+                        <th class="col-result"></th>
+                        <th class="col-result"></th>
+                        <th class="col-name">{{ team_board.team_b.name }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for board in team_board.boards %}
+                        {% set wtp = board.optional_white_tournament_player %}
+                        {% set btp = board.black_tournament_player %}
+                        {# Sides come from the players' actual teams (permute-
+                           safe); the colour pattern is only the double-hole
+                           fallback. #}
+                        {% set _w_team_id, _b_team_id = team_board.board_team_ids(board) %}
+                        {% if _w_team_id is not none or _b_team_id is not none %}
+                            {% set team_a_is_white = _w_team_id == team_board.stored_team_board.team_a_id %}
+                        {% elif board.index < pattern|length %}
+                            {% set team_a_is_white = (pattern[board.index]|upper) == 'W' %}
+                        {% else %}
+                            {% set team_a_is_white = (board.index or 0) % 2 == 0 %}
+                        {% endif %}
+                        {% set team_a_color = 'W' if team_a_is_white else 'B' %}
+                        {% if team_a_is_white %}
+                            {% set team_a_player = wtp %}
+                            {% set team_b_player = btp %}
+                            {% set team_a_pairing = board.optional_white_pairing %}
+                            {% set team_b_pairing = board.optional_black_pairing %}
+                        {% else %}
+                            {% set team_a_player = btp %}
+                            {% set team_b_player = wtp %}
+                            {% set team_a_pairing = board.optional_black_pairing %}
+                            {% set team_b_pairing = board.optional_white_pairing %}
+                        {% endif %}
+                        {% set raw_result = board.result_str %}
+                        {% if raw_result and '-' in raw_result %}
+                            {% set parts = raw_result.split('-') %}
+                            {% if team_a_is_white %}
+                                {% set a_result = parts[0] %}
+                                {% set b_result = parts[1] %}
+                            {% else %}
+                                {% set a_result = parts[1] %}
+                                {% set b_result = parts[0] %}
+                            {% endif %}
+                        {% else %}
+                            {% set a_result = '' %}
+                            {% set b_result = '' %}
+                        {% endif %}
+                        <tr>
+                            <td class="col-bd">
+                                <div class="board-number">{{ board.index + 1 }}</div>
+                                {% set _la = team_letter_by_id.get(team_board.team_a.id) %}
+                                {% set _lb = team_letter_by_id.get(team_board.team_b.id) if team_board.team_b else none %}
+                                {% if _la and _lb %}
+                                    {# Table convention: white's reference first. #}
+                                    {% if team_a_is_white %}
+                                        <div class="board-refs">{{ _la }}{{ board.index + 1 }}-{{ _lb }}{{ board.index + 1 }}</div>
+                                    {% else %}
+                                        <div class="board-refs">{{ _lb }}{{ board.index + 1 }}-{{ _la }}{{ board.index + 1 }}</div>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td class="col-name left">
+                                {% if team_a_player %}
+                                    {% set _a_title = team_a_player.title.short_name %}
+                                    <div class="player-name">
+                                        <span class="color-chip {% if team_a_color == 'B' %}black{% endif %}"></span>{% if _a_title %}{{ _a_title }} {% endif %}{{ team_a_player.full_name }}
+                                    </div>
+                                    {% set _a_meta_parts = [] %}
+                                    {%- if team_a_player.rating_str -%}
+                                        {%- do _a_meta_parts.append(team_a_player.rating_str) -%}
+                                    {%- endif -%}
+                                    {%- if team_a_player.category and team_a_player.category.name and team_a_player.category.name != '-' -%}
+                                        {%- do _a_meta_parts.append(team_a_player.category.name) -%}
+                                    {%- endif -%}
+                                    {%- if team_a_player.fide_id -%}
+                                        {%- do _a_meta_parts.append(_('FIDE %(fide_id)s', fide_id=team_a_player.fide_id)) -%}
+                                    {%- endif -%}
+                                    {%- set _a_national_id = player_national_id(team_a_player) -%}
+                                    {%- if _a_national_id -%}
+                                        {%- do _a_meta_parts.append(_a_national_id) -%}
+                                    {%- endif -%}
+                                    {% if _a_meta_parts %}
+                                        <div class="player-meta">{{ _a_meta_parts|join(' · ') }}</div>
+                                    {% endif %}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </td>
+                            <td class="col-result">{{ a_result }}</td>
+                            <td class="col-result">{{ b_result }}</td>
+                            <td class="col-name right">
+                                {% if team_b_player %}
+                                    {% set _b_title = team_b_player.title.short_name %}
+                                    {% set _b_color = 'B' if team_a_is_white else 'W' %}
+                                    <div class="player-name">
+                                        {% if _b_title %}{{ _b_title }} {% endif %}{{ team_b_player.full_name }}<span class="color-chip {% if _b_color == 'B' %}black{% endif %}" style="margin-left:4pt;margin-right:0"></span>
+                                    </div>
+                                    {% set _b_meta_parts = [] %}
+                                    {%- if team_b_player.rating_str -%}
+                                        {%- do _b_meta_parts.append(team_b_player.rating_str) -%}
+                                    {%- endif -%}
+                                    {%- if team_b_player.category and team_b_player.category.name and team_b_player.category.name != '-' -%}
+                                        {%- do _b_meta_parts.append(team_b_player.category.name) -%}
+                                    {%- endif -%}
+                                    {%- if team_b_player.fide_id -%}
+                                        {%- do _b_meta_parts.append(_('FIDE %(fide_id)s', fide_id=team_b_player.fide_id)) -%}
+                                    {%- endif -%}
+                                    {%- set _b_national_id = player_national_id(team_b_player) -%}
+                                    {%- if _b_national_id -%}
+                                        {%- do _b_meta_parts.append(_b_national_id) -%}
+                                    {%- endif -%}
+                                    {% if _b_meta_parts %}
+                                        <div class="player-meta">{{ _b_meta_parts|join(' · ') }}</div>
+                                    {% endif %}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="result-legend">
+                {{ _('Results: 1 = win, X = draw, 0 = loss, F = forfeit') }}
+            </div>
+            <div class="signatures">
+                <div class="signature">
+                    <div class="signature-label">
+                        {{ _('Captain — %(team)s', team=team_board.team_a.name) }}
+                    </div>
+                    <div class="signature-line"></div>
+                </div>
+                <div class="signature">
+                    <div class="signature-label">
+                        {% if arbiter_name %}
+                            {{ _('Arbiter — %(name)s', name=arbiter_name) }}
+                        {% else %}
+                            {{ _('Arbiter') }}
+                        {% endif %}
+                    </div>
+                    <div class="signature-line"></div>
+                </div>
+                <div class="signature">
+                    <div class="signature-label">
+                        {{ _('Captain — %(team)s', team=team_board.team_b.name) }}
+                    </div>
+                    <div class="signature-line"></div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

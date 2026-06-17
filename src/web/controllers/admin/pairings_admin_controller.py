@@ -25,6 +25,9 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.board import Board
 from data.player import TournamentPlayer
+from data.event import Event
+from data.team import Team
+from data.team_board import TeamBoard
 from data.print_documents.documents import (
     PairingPrintDocument,
     PlayerRankingPrintDocument,
@@ -32,7 +35,7 @@ from data.print_documents.documents import (
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from utils.enum import Result, CheckInStatus
+from utils.enum import CheckInStatus, Result, TeamByeType
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -145,13 +148,21 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_unpaired: list[TournamentPlayer] = []
         self.admin_bye_players: list[TournamentPlayer] = []
         self.admin_absent_players: list[TournamentPlayer] = []
+        self.admin_team_bye: list[Team] = []
+        self.admin_team_unpaired: list[Team] = []
+        self.admin_team_absent: list[Team] = []
         self.reload_unpaired_player_lists()
+        self.reload_unpaired_team_lists()
 
         self.admin_board: Board | None = None
         if board_id is not None:
             self.admin_board = next(
-                (b for b in self.admin_boards if b.board_id == board_id), None
+                (b for b in self.admin_boards if b.identifier == board_id), None
             )
+            if self.admin_board is None and not event.is_team_event:
+                self.admin_board = next(
+                    (b for b in self.admin_boards if b.board_id == board_id), None
+                )
 
         self.admin_player: TournamentPlayer | None = None
         if player_id is not None:
@@ -207,6 +218,13 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_unpaired = []
         if not self.admin_tournament:
             return
+        # Team-vs-team systems pair teams, not individual players; the unpaired
+        # / bye / absent player sidebar isn't meaningful in that mode.
+        if (
+            self.admin_tournament.event.is_team_event
+            and self.admin_tournament.pairing_system.paired_by_team
+        ):
+            return
         unpaired = self.admin_tournament.get_unpaired_tournament_players(
             self.admin_boards
         )
@@ -221,6 +239,54 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                     self.admin_bye_players.append(player)
         else:
             self.admin_unpaired = sorted(unpaired, key=attrgetter('name_sort_key'))
+
+    def reload_unpaired_team_lists(self):
+        """Populate the team-side equivalents of the player byes /
+        unpaired lists.
+
+        Manual byes (HPB / FPB / ZPB) sit in ``admin_team_bye`` and
+        are rendered in the side column only — they're hidden from
+        the main team-blocks table. Teams without any envelope for
+        the round are *to-pair* and land in ``admin_team_unpaired``.
+        PAB envelopes are engine-assigned and stay on the main table
+        as bye blocks; they don't appear in either list."""
+        self.admin_team_bye = []
+        self.admin_team_unpaired = []
+        self.admin_team_absent = []
+        if not self.admin_tournament:
+            return
+        if not (
+            self.admin_tournament.event.is_team_event
+            and self.admin_tournament.pairing_system.paired_by_team
+        ):
+            return
+        teams = [
+            team
+            for team in self.admin_tournament.event.sorted_teams
+            if team.tournament_id == self.admin_tournament.id
+        ]
+        on_board_team_ids: set[int] = set()
+        manual_bye_team_ids: set[int] = set()
+        for team_board in self.admin_tournament.get_round_team_boards(self.admin_round):
+            stb = team_board.stored_team_board
+            if stb.team_b_id is None and stb.bye_type in TeamByeType.manual_bye_types():
+                manual_bye_team_ids.add(stb.team_a_id)
+                continue
+            on_board_team_ids.add(stb.team_a_id)
+            if stb.team_b_id is not None:
+                on_board_team_ids.add(stb.team_b_id)
+        teams_by_id = {team.id: team for team in teams}
+        for team_id in manual_bye_team_ids:
+            team = teams_by_id.get(team_id)
+            if team is not None:
+                self.admin_team_bye.append(team)
+        for team in teams:
+            if team.id in on_board_team_ids or team.id in manual_bye_team_ids:
+                continue
+            if team.check_in:
+                self.admin_team_unpaired.append(team)
+            else:
+                self.admin_team_absent.append(team)
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -275,9 +341,34 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'existing_actions': existing_actions,
             'tournament_options': self.get_tournament_options(self.allowed_tournaments),
             'admin_filtered_boards': self.admin_filtered_boards,
+            'admin_team_boards': (
+                [
+                    tb
+                    for tb in self.admin_tournament.get_round_team_boards(
+                        self.admin_round
+                    )
+                    if not (
+                        tb.stored_team_board.team_b_id is None
+                        and tb.stored_team_board.bye_type
+                        in TeamByeType.manual_bye_types()
+                    )
+                    # 'In play' hides the matches whose boards all have a
+                    # result (the whole match, to keep board context).
+                    and not (
+                        SessionPairingsShowWithoutResults(self.request).get()
+                        and tb.boards
+                        and all(board.result != Result.NO_RESULT for board in tb.boards)
+                    )
+                ]
+                if self.admin_tournament
+                else []
+            ),
             'admin_unpaired': self.admin_unpaired,
             'admin_bye_players': self.admin_bye_players,
             'admin_absent_players': self.admin_absent_players,
+            'admin_team_bye': self.admin_team_bye,
+            'admin_team_unpaired': self.admin_team_unpaired,
+            'admin_team_absent': self.admin_team_absent,
             'pairings_generation_disabled_message': self.admin_tournament
             and self.admin_tournament.pairings_generation_disabled_message(
                 self.admin_round
@@ -286,7 +377,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 self.request
             ).get(),
             'board': self.admin_board,
-            'wtp': self.admin_board.white_tournament_player
+            'wtp': self.admin_board.optional_white_tournament_player
             if self.admin_board
             else None,
             'btp': self.admin_board.black_tournament_player
@@ -375,6 +466,141 @@ class PairingsAdminController(BaseEventAdminController):
                 'board': web_context.admin_board,
             },
         )
+
+    @get(
+        path=[
+            '/event/{event_uniq_id:str}/team-pairing/'
+            '{tournament_id:int}/{round:int}/{team_board_id:int}',
+        ],
+        name='admin-event-team-pairing-modal',
+    )
+    async def htmx_admin_team_pairings_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_board_id: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        team_board = tournament.team_boards_by_id.get(team_board_id)
+        if team_board is None:
+            raise NotFoundException(f'Team board {team_board_id} not found.')
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'team-pairing',
+                'team_board': team_board,
+                'team_a_adjustment': self._team_point_adjustment_context(
+                    tournament, team_board.team_a, round
+                ),
+                'team_b_adjustment': self._team_point_adjustment_context(
+                    tournament, team_board.team_b, round
+                ),
+            },
+        )
+
+    @staticmethod
+    def _team_point_adjustment_context(
+        tournament: 'Tournament', team: 'Team | None', round_: int
+    ) -> dict[str, Any] | None:
+        """Bonus/penalty data for one side of the match dialog: the
+        team's current manual MP/GP/reason plus any rule-set-imposed
+        adjustment and its explanation."""
+        if team is None:
+            return None
+        manual_mp, manual_gp, reason = 0.0, 0.0, ''
+        for adjustment in tournament.stored_tournament.stored_team_point_adjustments:
+            if adjustment.team_id == team.id and adjustment.round_ == round_:
+                manual_mp = adjustment.mp_delta
+                manual_gp = adjustment.gp_delta
+                reason = adjustment.reason or ''
+                break
+        rule_set_adjustment = tournament.rule_set_point_adjustment(team.id, round_)
+        return {
+            'team': team,
+            'mp': manual_mp,
+            'gp': manual_gp,
+            'reason': reason,
+            'rule_set_mp': rule_set_adjustment.mp if rule_set_adjustment else 0.0,
+            'rule_set_gp': rule_set_adjustment.gp if rule_set_adjustment else 0.0,
+            'rule_set_explanation': (
+                rule_set_adjustment.explanation if rule_set_adjustment else ''
+            ),
+        }
+
+    @patch(
+        path='/team-pairing/point-adjustments/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_board_id:int}',
+        name='admin-team-point-adjustments',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+        data=Body(media_type=RequestEncodingType.URL_ENCODED),
+    )
+    async def htmx_admin_team_point_adjustments(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_board_id: int,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        team_board = tournament.team_boards_by_id.get(team_board_id)
+        if team_board is None:
+            raise NotFoundException(f'Team board {team_board_id} not found.')
+        sides = [('a', team_board.team_a), ('b', team_board.team_b)]
+        event = web_context.get_admin_event()
+        with EventDatabase(event.uniq_id, write=True) as database:
+            for prefix, team in sides:
+                if team is None:
+                    continue
+                mp_delta = WebContext.form_data_to_float(data, f'{prefix}_mp') or 0.0
+                gp_delta = WebContext.form_data_to_float(data, f'{prefix}_gp') or 0.0
+                reason = WebContext.form_data_to_str(data, f'{prefix}_reason') or None
+                tournament.set_manual_point_adjustment(
+                    team.id, round, mp_delta, gp_delta, reason, database
+                )
+        Message.success(request, _('Bonus / penalty points updated.'))
+        web_context = PairingsAdminWebContext(
+            request, tournament_id, round, reload_event=True
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @delete(
+        path='/team-pairing/unpair/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_board_id:int}',
+        name='admin-pairings-unpair-team-board',
+        guards=[TournamentActionGuard(AuthAction.UNPAIR_BOARD)],
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_unpair_team_board(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_board_id: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            action=PairingAction.MANUAL_UNPAIRING,
+        )
+        tournament = web_context.get_admin_tournament()
+        team_board = tournament.team_boards_by_id.get(team_board_id)
+        if team_board is None:
+            raise NotFoundException(f'Team board {team_board_id} not found.')
+        tournament.unpair_team_board(team_board)
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            reload_event=True,
+        )
+        return self._admin_event_pairings_render(web_context)
 
     @get(
         path=[
@@ -600,14 +826,39 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         board_id: int = int(data['board_id'])
         key: str = data['key']
+        # In a team match the row shows team_a on the left, team_b on the
+        # right, regardless of colour — so keys 1/2 mean "left wins" /
+        # "right wins". Results are stored white-relative, so flip them
+        # when team_a is the black side on this board.
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round, board_id=board_id
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        left_is_white = True
+        if event.is_team_event:
+            board = tournament.boards_by_id.get(board_id)
+            team_board_id = (
+                board.stored_board.team_board_id if board is not None else None
+            )
+            if board is not None and team_board_id is not None:
+                team_board = tournament.team_boards_by_id.get(team_board_id)
+                if team_board is not None:
+                    team_a_id = team_board.stored_team_board.team_a_id
+                    white_tp = board.optional_white_tournament_player
+                    black_tp = board.black_tournament_player
+                    if white_tp is not None:
+                        left_is_white = white_tp.team_id == team_a_id
+                    elif black_tp is not None:
+                        left_is_white = black_tp.team_id != team_a_id
         result: Optional[Result] = None
         match key:
             case 'Digit0' | 'Numpad0':
                 result = Result.NO_RESULT
             case 'Digit1' | 'Numpad1':
-                result = Result.WIN
+                result = Result.WIN if left_is_white else Result.LOSS
             case 'Digit2' | 'Numpad2':
-                result = Result.LOSS
+                result = Result.LOSS if left_is_white else Result.WIN
             case 'Digit3' | 'Numpad3':
                 result = Result.DRAW
             case _:
@@ -624,6 +875,268 @@ class PairingsAdminController(BaseEventAdminController):
             result=result,
             validate_result=data['validate_result'] == 'true',
         )
+
+    @patch(
+        path=(
+            '/pairing/swap-board-player/{event_uniq_id:str}/{tournament_id:int}'
+            '/{round:int}/{board_id:int}/{side:str}'
+        ),
+        name='admin-pairings-swap-board-player',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+        data=Body(media_type=RequestEncodingType.URL_ENCODED),
+    )
+    async def htmx_admin_swap_board_player(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        board_id: int,
+        side: str,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        if side not in ('W', 'B'):
+            raise ClientException(f'Invalid side [{side}].')
+        this_side: str = 'white' if side == 'W' else 'black'
+        try:
+            new_player_id = int(data.get('new_player_id', '0') or '0')
+        except ValueError:
+            raise ClientException('Invalid new_player_id.')
+
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            board_id=board_id,
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        this_board = web_context.get_admin_board()
+
+        if not event.is_team_event:
+            raise ClientException('Lineup swap only allowed in team events.')
+
+        team_board_id = this_board.stored_board.team_board_id
+        if team_board_id is None:
+            raise ClientException('Board is not part of a team match.')
+        team_board = tournament.team_boards_by_id[team_board_id]
+
+        side_team = self._team_owning_side(
+            tournament, team_board, this_board.index, side
+        )
+        if side_team is None:
+            raise ClientException('Cannot determine team for this side at this slot.')
+
+        old_player_id = (
+            this_board.stored_board.white_player_id
+            if this_side == 'white'
+            else this_board.stored_board.black_player_id
+        )
+
+        # Punch a hole.
+        if new_player_id == 0:
+            if old_player_id is None:
+                return self._admin_event_pairings_render(web_context)
+            self._punch_lineup_hole_for_team(
+                event, tournament, this_board, team_board, side_team, old_player_id
+            )
+            return self._admin_event_pairings_render(web_context)
+
+        # Fill a hole.
+        if old_player_id is None:
+            new_tp = tournament.tournament_players_by_id.get(new_player_id)
+            if new_tp is None or new_tp.team_id != side_team.id:
+                raise ClientException('Picked player is not in this team.')
+            self._fill_lineup_hole(
+                event,
+                tournament,
+                this_board,
+                team_board,
+                side_team,
+                this_side,
+                new_tp,
+            )
+            return self._admin_event_pairings_render(web_context)
+
+        new_player = event.players_by_id.get(new_player_id)
+        if new_player is None or new_player.team_id != side_team.id:
+            raise ClientException('New player is not in this team.')
+
+        if old_player_id == new_player_id:
+            return self._admin_event_pairings_render(web_context)
+
+        # Locate the new player on another board of this team match
+        # (they're already in the lineup; the dropdown's "Bench"
+        # branch is what the hole-fill path handles).
+        other_board: Board | None = None
+        for board in team_board.boards:
+            if board.identifier == this_board.identifier:
+                continue
+            if (
+                board.stored_board.white_player_id == new_player_id
+                or board.stored_board.black_player_id == new_player_id
+            ):
+                other_board = board
+                break
+        if other_board is None:
+            raise ClientException('New player is not currently in this team match.')
+
+        new_player_tp = tournament.tournament_players_by_id[new_player_id]
+        # Vacate both slots, then drop the new player into the chosen
+        # one. The displaced (old) player leaves the round lineup
+        # entirely; the source slot becomes a hole.
+        self._punch_lineup_hole_for_team(
+            event, tournament, this_board, team_board, side_team, old_player_id
+        )
+        self._punch_lineup_hole_for_team(
+            event, tournament, other_board, team_board, side_team, new_player_id
+        )
+        self._fill_lineup_hole(
+            event,
+            tournament,
+            this_board,
+            team_board,
+            side_team,
+            this_side,
+            new_player_tp,
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @staticmethod
+    def _team_owning_side(
+        tournament: Tournament,
+        team_board: TeamBoard,
+        slot: int,
+        side: str,
+    ) -> Team | None:
+        """Which team owns physical side ``side`` ('W' / 'B') at
+        board ``slot`` of ``team_board``. Determined entirely by the
+        tournament's colour pattern at this slot."""
+        if team_board.team_b is None:
+            return None
+        pattern = tournament.color_pattern or ''
+        if 0 <= slot < len(pattern):
+            team_a_color = pattern[slot]
+        else:
+            team_a_color = 'W' if slot % 2 == 0 else 'B'
+        team_a_is_white = team_a_color == 'W'
+        a_or_b_is_white = team_a_is_white if side == 'W' else not team_a_is_white
+        return team_board.team_a if a_or_b_is_white else team_board.team_b
+
+    @staticmethod
+    def _punch_lineup_hole_for_team(
+        event: Event,
+        tournament: Tournament,
+        this_board: Board,
+        team_board: TeamBoard,
+        side_team: Team,
+        side_player_id: int,
+    ) -> None:
+        """Remove ``side_team``'s player from this board's slot.
+        Leaves an index gap in the team's lineup. The physical side
+        the player was on becomes ``NULL`` on the board (no flip).
+        Both sides empty ⇒ delete the board."""
+        round_ = this_board.round
+        slot = this_board.index
+        w_id = this_board.stored_board.white_player_id
+        physical_side: str = 'white' if side_player_id == w_id else 'black'
+        side_tp = tournament.tournament_players_by_id[side_player_id]
+        with EventDatabase(event.uniq_id, write=True) as database:
+            lineup_slots: list[int | None] = [
+                p.id if p is not None else None
+                for p in side_team.effective_round_slots(round_)
+            ]
+            if 0 <= slot < len(lineup_slots):
+                lineup_slots[slot] = None
+            side_team.set_round_lineup(round_, lineup_slots, database)
+            side_pairing = side_tp.pairings_by_round[round_]
+            # Update (don't delete) the pairing: the
+            # ``delete_board_on_pairing_delete`` trigger would
+            # otherwise nuke this slot's board (cascading to the
+            # opponent's pairing too). Clearing ``board_id`` first
+            # lets the player look "unpaired" without losing the slot.
+            side_pairing.stored_pairing.result = Result.NO_RESULT.value
+            side_pairing.stored_pairing.board_id = None
+            side_pairing.stored_pairing.effective_points = None
+            side_pairing.stored_pairing.illegal_moves = 0
+            side_pairing.update(database)
+            if physical_side == 'white':
+                this_board.stored_board.white_player_id = None
+                this_board._white_player_ref = None
+            else:
+                this_board.stored_board.black_player_id = None
+                this_board._black_player_ref = None
+            # Keep the board even when both sides become empty so the
+            # slot remains visible in the team block and can be
+            # re-filled from either team.
+            database.update_stored_board(this_board.stored_board)
+            opp_id = (
+                this_board.stored_board.black_player_id
+                if physical_side == 'white'
+                else this_board.stored_board.white_player_id
+            )
+            if opp_id is not None:
+                opp_tp = tournament.tournament_players_by_id[opp_id]
+                opp_pairing = opp_tp.pairings_by_round[round_]
+                # Opposing player now has no opponent → forfeit win,
+                # mirroring the lineup-hole branch in ``create_boards``.
+                opp_pairing.stored_pairing.result = Result.FORFEIT_WIN.value
+                opp_pairing.stored_pairing.effective_points = None
+                opp_pairing.stored_pairing.illegal_moves = 0
+                opp_pairing.update(database)
+            this_board.set_last_result_update(Result.NO_RESULT, database)
+
+    @staticmethod
+    def _fill_lineup_hole(
+        event: Event,
+        tournament: Tournament,
+        this_board: Board,
+        team_board: TeamBoard,
+        side_team: Team,
+        physical_side: str,
+        new_player_tp: 'TournamentPlayer',
+    ) -> None:
+        """Put ``new_player_tp`` on the ``physical_side`` of
+        ``this_board`` (its current value must be ``NULL`` — a hole)
+        and add the player to ``side_team``'s round lineup at this
+        slot. No swap, no reshape: the chip-colour matches the
+        physical side everywhere."""
+        round_ = this_board.round
+        slot = this_board.index
+        with EventDatabase(event.uniq_id, write=True) as database:
+            lineup_slots: list[int | None] = [
+                p.id if p is not None else None
+                for p in side_team.effective_round_slots(round_)
+            ]
+            if 0 <= slot < len(lineup_slots):
+                lineup_slots[slot] = new_player_tp.id
+            side_team.set_round_lineup(round_, lineup_slots, database)
+            this_board.replace_player(
+                new_player_tp,
+                physical_side,  # type: ignore[arg-type]
+            )
+            database.update_stored_board(this_board.stored_board)
+            new_pairing = new_player_tp.pairings_by_round[round_]
+            new_pairing.stored_pairing.result = Result.NO_RESULT.value
+            new_pairing.stored_pairing.board_id = this_board.identifier
+            new_pairing.stored_pairing.effective_points = None
+            new_pairing.stored_pairing.illegal_moves = 0
+            new_pairing.update(database)
+            opp_id = (
+                this_board.stored_board.black_player_id
+                if physical_side == 'white'
+                else this_board.stored_board.white_player_id
+            )
+            if opp_id is not None:
+                opp_tp = tournament.tournament_players_by_id[opp_id]
+                opp_pairing = opp_tp.pairings_by_round[round_]
+                opp_pairing.stored_pairing.result = Result.NO_RESULT.value
+                opp_pairing.stored_pairing.effective_points = None
+                opp_pairing.stored_pairing.illegal_moves = 0
+                opp_pairing.update(database)
+            this_board.set_last_result_update(Result.NO_RESULT, database)
 
     @patch(
         path=(
@@ -799,6 +1312,242 @@ class PairingsAdminController(BaseEventAdminController):
         )
         Message.success(request, message)
         web_context.reload_unpaired_player_lists()
+        return self._admin_event_pairings_render(web_context)
+
+    @get(
+        path=[
+            '/event/{event_uniq_id:str}/unpaired-team-modal/'
+            '{tournament_id:int}/{round:int}/{team_id:int}',
+        ],
+        name='pairings-unpaired-team-modal',
+    )
+    async def htmx_pairings_unpaired_team_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        admin_tournament = web_context.get_admin_tournament()
+        if not admin_tournament.pairing_system.show_unpaired_team_modal:
+            raise NotFoundException(
+                'Team status is not editable for this pairing system.'
+            )
+        team = admin_tournament.event.teams_by_id.get(team_id)
+        if team is None:
+            raise NotFoundException(f'Team {team_id} not found.')
+        exempt_team_board = next(
+            (
+                tb
+                for tb in admin_tournament.get_round_team_boards(round)
+                if tb.stored_team_board.team_b_id is None
+                and tb.stored_team_board.bye_type not in TeamByeType.manual_bye_types()
+            ),
+            None,
+        )
+        exempt_team = (
+            exempt_team_board.team_a
+            if exempt_team_board is not None
+            and exempt_team_board.stored_team_board.team_a_id != team_id
+            else None
+        )
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'unpaired-team',
+                'admin_team': team,
+                'admin_team_bye_type': team.round_bye_type(round),
+                'exempt_team': exempt_team,
+            },
+        )
+
+    def _set_team_bye(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+        bye_type: str | None,
+        success_message: str,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            action=PairingAction.BYE_UPDATE,
+        )
+        admin_tournament = web_context.get_admin_tournament()
+        if not admin_tournament.pairing_system.show_unpaired_team_modal:
+            raise NotFoundException(
+                'Team byes are not available for this pairing system.'
+            )
+        team = admin_tournament.event.teams_by_id.get(team_id)
+        if team is None:
+            raise NotFoundException(f'Team {team_id} not found.')
+        with EventDatabase(admin_tournament.event.uniq_id, write=True) as db:
+            team.set_round_bye(round, bye_type, db)
+        Message.success(request, success_message.format(team=team.name))
+        web_context.reload_unpaired_team_lists()
+        return self._admin_event_pairings_render(web_context)
+
+    @patch(
+        path=(
+            '/pairings/set-team-zpb/{event_uniq_id:str}/'
+            '{tournament_id:int}/{team_id:int}/{round:int}'
+        ),
+        name='pairings-set-team-zpb',
+        guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
+    )
+    async def htmx_set_team_zpb(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+    ) -> Template:
+        return self._set_team_bye(
+            request,
+            tournament_id,
+            round,
+            team_id,
+            TeamByeType.ZPB,
+            _('Zero-Point Bye attributed to team [{team}].'),
+        )
+
+    @patch(
+        path=(
+            '/pairings/set-team-hpb/{event_uniq_id:str}/'
+            '{tournament_id:int}/{team_id:int}/{round:int}'
+        ),
+        name='pairings-set-team-hpb',
+        guards=[TournamentActionGuard(AuthAction.SET_HPB)],
+    )
+    async def htmx_set_team_hpb(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+    ) -> Template:
+        return self._set_team_bye(
+            request,
+            tournament_id,
+            round,
+            team_id,
+            TeamByeType.HPB,
+            _('Half-Point Bye attributed to team [{team}].'),
+        )
+
+    @patch(
+        path=(
+            '/pairings/set-team-fpb/{event_uniq_id:str}/'
+            '{tournament_id:int}/{team_id:int}/{round:int}'
+        ),
+        name='pairings-set-team-fpb',
+        guards=[TournamentActionGuard(AuthAction.SET_HPB)],
+    )
+    async def htmx_set_team_fpb(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+    ) -> Template:
+        return self._set_team_bye(
+            request,
+            tournament_id,
+            round,
+            team_id,
+            TeamByeType.FPB,
+            _('Full-Point Bye attributed to team [{team}].'),
+        )
+
+    @patch(
+        path=(
+            '/pairings/cancel-team-bye/{event_uniq_id:str}/'
+            '{tournament_id:int}/{team_id:int}/{round:int}'
+        ),
+        name='pairings-cancel-team-bye',
+        guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
+    )
+    async def htmx_cancel_team_bye(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+    ) -> Template:
+        return self._set_team_bye(
+            request,
+            tournament_id,
+            round,
+            team_id,
+            None,
+            _('Team [{team}] has returned for this round.'),
+        )
+
+    @patch(
+        path=(
+            '/pairings/pair-team/{event_uniq_id:str}/'
+            '{tournament_id:int}/{team_id:int}/{round:int}'
+        ),
+        name='admin-pairings-pair-team',
+        guards=[TournamentActionGuard(AuthAction.MANUALLY_PAIR_PLAYERS)],
+    )
+    async def htmx_admin_pair_team(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            action=PairingAction.MANUAL_PAIRING,
+        )
+        pairing_round = web_context.admin_round or 1
+        tournament = web_context.get_admin_tournament()
+        team = tournament.event.teams_by_id.get(team_id)
+        if team is None:
+            raise NotFoundException(f'Team {team_id} not found.')
+        exempt_team_board = next(
+            (
+                tb
+                for tb in tournament.get_round_team_boards(pairing_round)
+                if tb.stored_team_board.team_b_id is None
+                and tb.stored_team_board.bye_type not in TeamByeType.manual_bye_types()
+            ),
+            None,
+        )
+        exempt_team = (
+            exempt_team_board.team_a
+            if exempt_team_board is not None
+            and exempt_team_board.stored_team_board.team_a_id != team.id
+            else None
+        )
+        tb = tournament.create_team_round_pairing(pairing_round, team.id)
+        if exempt_team is not None:
+            message = _(
+                'Team [{team}] has been paired against [{opponent}] at board #{board}.'
+            ).format(
+                team=team.name,
+                opponent=exempt_team.name,
+                board=tb.display_number,
+            )
+        else:
+            message = _('Pairing-Allocated Bye assigned to team [{team}].').format(
+                team=team.name
+            )
+        Message.success(request, message)
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            reload_event=True,
+        )
         return self._admin_event_pairings_render(web_context)
 
     @patch(
@@ -1054,6 +1803,10 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
         tournament.unpair_boards(web_context.admin_boards)
+        # A fully-unpaired round loses its prohibited-pairing snapshot;
+        # re-pairing writes a fresh one.
+        with EventDatabase(tournament.event.uniq_id, True) as database:
+            tournament.delete_prohibited_pairing_snapshot(round, database)
 
         web_context = PairingsAdminWebContext(
             request,
@@ -1105,15 +1858,24 @@ class PairingsAdminController(BaseEventAdminController):
             raise NotFoundException(f'Unknown pairing action [{action}]')
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
+        permission_handler = tournament.pairing_system.permission_handler
+        if protected_action not in permission_handler.existing_actions(
+            web_context.round_status
+        ):
+            # The action is impossible at this round status (e.g. a stale
+            # page after the round changed) — report rather than crash.
+            Message.error(
+                request,
+                _('This action is not possible for this round.'),
+            )
+            return self._admin_event_pairings_render(web_context)
         return self._admin_event_pairings_render(
             web_context,
             {
                 'modal': 'safety-mode',
                 'action': protected_action,
-                'required_mode': (
-                    tournament.pairing_system.permission_handler.required_mode(
-                        web_context.round_status, protected_action
-                    )
+                'required_mode': permission_handler.required_mode(
+                    web_context.round_status, protected_action
                 ),
                 'redirect_method': redirect_method,
                 'redirect_route': redirect_route,
@@ -1175,6 +1937,10 @@ class PairingsAdminController(BaseEventAdminController):
                         board
                         for board in web_context.admin_boards
                         if board.result == Result.NO_RESULT
+                        # A board with a hole on either side is a forfeit,
+                        # not a pending result.
+                        and board.stored_board.white_player_id is not None
+                        and board.stored_board.black_player_id is not None
                     ]
                 ),
             },
@@ -1219,6 +1985,89 @@ class PairingsAdminController(BaseEventAdminController):
                 'modal': 'pairing-absents',
             },
         )
+
+    @get(
+        path='/pairings/team-absents-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-team-absents-modal',
+    )
+    async def htmx_pairings_team_absents_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'pairing-team-absents',
+            },
+        )
+
+    @patch(
+        path='/pairings/team-toggle-check-in/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_id:int}',
+        name='pairings-team-toggle-check-in',
+        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_pairings_team_toggle_check_in(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        team = tournament.event.teams_by_id.get(team_id)
+        if team is None:
+            raise NotFoundException(f'Team {team_id} not found.')
+        tournament.check_in_team(team, not team.check_in)
+        web_context = PairingsAdminWebContext(
+            request, tournament_id, round, reload_event=True
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @post(
+        path='/pairings/set-all-teams-present/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-set-all-teams-present',
+        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_pairings_set_all_teams_present(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        tournament.check_in_all_teams(True)
+        return self._admin_event_pairings_render(web_context)
+
+    @post(
+        path='/pairings/validate-team-absents/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-validate-team-absents',
+        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_pairings_validate_team_absents(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        for team in list(web_context.admin_team_absent):
+            if data.get(f'team_{team.id}') == 'present':
+                tournament.check_in_team(team, True)
+        if round == 1 and tournament.pairing_variation.settings:
+            return self._render_pairings_settings_modal(web_context)
+        return self._generate_round_pairings(web_context)
 
     @classmethod
     def _render_pairings_settings_modal(
@@ -1332,7 +2181,7 @@ class PairingsAdminController(BaseEventAdminController):
                         tournament.set_player_participation(player, withdraw=True)
                     case 'present':
                         tournament.check_in_player(player, check_in=True)
-        if round == 1:
+        if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
         return self._generate_round_pairings(web_context)
 
@@ -1356,6 +2205,265 @@ class PairingsAdminController(BaseEventAdminController):
         tournament.set_current_round(round_=current_round)
         SessionPairingsSelectedRound(request, tournament).set(current_round)
         return self._admin_event_pairings_render(web_context)
+
+    # -------------------------------------------------------------------------
+    # Prohibited pairings
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    def _render_prohibited_pairings_modal(
+        cls,
+        web_context: PairingsAdminWebContext,
+        show_manual_form: bool = False,
+        manual_form_index: int | None = None,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> Template:
+        tournament = web_context.get_admin_tournament()
+        round_ = web_context.admin_round
+        is_team = tournament.is_team_tournament
+        locked = tournament.round_has_pairings(round_)
+
+        if is_team:
+            members = sorted(tournament.teams, key=lambda m: m.name.lower())
+            member_options = {str(m.id): m.name for m in members}
+
+            def member_name(member_id: int) -> str:
+                member = tournament.teams_by_id.get(member_id)
+                return member.name if member else f'#{member_id}'
+        else:
+            members = sorted(
+                tournament.tournament_players, key=lambda m: m.last_name.lower()
+            )
+            member_options = {str(m.id): m.full_name for m in members}
+
+            def member_name(member_id: int) -> str:
+                member = tournament.tournament_players_by_id.get(member_id)
+                return member.full_name if member else f'#{member_id}'
+
+        def display(groups: list[tuple[bool, list[int]]]) -> list[dict]:
+            return [
+                {
+                    'is_hard': is_hard,
+                    'members': [member_name(mid) for mid in member_ids],
+                    'count': len(member_ids),
+                }
+                for is_hard, member_ids in groups
+            ]
+
+        dimension_options = {'': '-'}
+        for dimension in tournament.prohibited_pairing_dimensions():
+            dimension_options[dimension.id] = dimension.label
+
+        manual_groups = [
+            {
+                'index': index,
+                'is_hard': group.is_hard,
+                'members': [member_name(mid) for mid in group.member_ids],
+            }
+            for index, group in enumerate(tournament.manual_prohibited_pairing_groups())
+        ]
+
+        # The snapshot stores the configured hard + soft groups that were
+        # the basis for this round's pairing, so they display directly as
+        # groups. ``protect_rank`` (set when soft groups were relaxed) lets
+        # us also regenerate the effective groups actually enforced.
+        snapshot = tournament.prohibited_pairing_snapshot(round_)
+        snapshot_groups = display(
+            [(group.is_hard, list(group.member_ids)) for group in snapshot]
+        )
+        pp_protect_rank = next(
+            (
+                group.protect_rank
+                for group in snapshot
+                if group.protect_rank is not None
+            ),
+            None,
+        )
+        pp_relaxed_groups = [
+            {
+                'protected': [member_name(mid) for mid in protected],
+                'relaxed': [member_name(mid) for mid in relaxed],
+            }
+            for protected, relaxed in tournament.relaxed_prohibited_pairing_breakdown(
+                round_
+            )
+        ]
+
+        template_context = {
+            'modal': 'prohibited-pairings',
+            'pp_round': round_,
+            'pp_locked': locked,
+            'pp_is_team': is_team,
+            'pp_dimension_options': dimension_options,
+            'pp_dimension': tournament.prohibited_pairing_dimension_id or '',
+            'pp_dimension_is_hard': tournament.prohibited_pairing_dimension_is_hard,
+            'pp_forced_by_rule_set': (
+                tournament.prohibited_pairing_forced_by_rule_set is not None
+            ),
+            'pp_rule_set_name': tournament.rule_set.name if tournament.rule_set else '',
+            'pp_auto_groups': [
+                {
+                    'label': key,
+                    'members': [member_name(mid) for mid in member_ids],
+                    'count': len(member_ids),
+                }
+                for key, member_ids in (
+                    tournament.dimension_prohibited_pairing_buckets()
+                )
+            ],
+            'pp_manual_groups': manual_groups,
+            'pp_member_options': member_options,
+            'pp_snapshot_groups': snapshot_groups,
+            'pp_protect_rank': pp_protect_rank,
+            'pp_relaxed_groups': pp_relaxed_groups,
+            'pp_show_manual_form': show_manual_form,
+            'pp_manual_form_index': manual_form_index,
+            'data': data or {},
+            'errors': errors or {},
+        }
+        return cls._admin_event_pairings_render(web_context, template_context)
+
+    @staticmethod
+    def _manual_groups_as_tuples(
+        tournament: Tournament,
+    ) -> list[tuple[bool, list[int]]]:
+        return [
+            (group.is_hard, list(group.member_ids))
+            for group in tournament.manual_prohibited_pairing_groups()
+        ]
+
+    @get(
+        path='/pairings/prohibited/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-prohibited-pairings-modal',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def htmx_admin_prohibited_pairings_modal(
+        self, request: HTMXRequest, tournament_id: int, round: int
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        return self._render_prohibited_pairings_modal(web_context)
+
+    @patch(
+        path='/pairings/prohibited/config/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-prohibited-pairings-config',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def htmx_admin_prohibited_pairings_config(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        if (
+            not tournament.round_has_pairings(round)
+            and tournament.prohibited_pairing_forced_by_rule_set is None
+        ):
+            dimension = WebContext.form_data_to_str(data, 'dimension') or None
+            is_hard = WebContext.form_data_to_bool(data, 'dimension_is_hard') or False
+            with EventDatabase(tournament.event.uniq_id, True) as database:
+                tournament.set_prohibited_pairing_config(dimension, is_hard, database)
+        return self._render_prohibited_pairings_modal(web_context)
+
+    @get(
+        path='/pairings/prohibited/manual-form/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-prohibited-pairings-manual-form',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def htmx_admin_prohibited_pairings_manual_form(
+        self, request: HTMXRequest, tournament_id: int, round: int, index: int = -1
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        data: dict[str, str] = {}
+        manual_index: int | None = None
+        if index >= 0:
+            groups = tournament.manual_prohibited_pairing_groups()
+            if index < len(groups):
+                manual_index = index
+                group = groups[index]
+                data = {
+                    'member_ids': ','.join(str(mid) for mid in group.member_ids),
+                    'is_hard': 'on' if group.is_hard else '',
+                }
+        return self._render_prohibited_pairings_modal(
+            web_context,
+            show_manual_form=True,
+            manual_form_index=manual_index,
+            data=data,
+        )
+
+    @post(
+        path='/pairings/prohibited/manual-save/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-prohibited-pairings-manual-save',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def htmx_admin_prohibited_pairings_manual_save(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        if tournament.round_has_pairings(round):
+            return self._render_prohibited_pairings_modal(web_context)
+        raw_ids = WebContext.form_data_to_str(data, 'member_ids') or ''
+        member_ids = [int(part) for part in raw_ids.split(',') if part.strip()]
+        is_hard = WebContext.form_data_to_bool(data, 'is_hard') or False
+        raw_index = WebContext.form_data_to_str(data, 'index') or ''
+        errors: dict[str, str] = {}
+        if len(member_ids) < 2:
+            errors['member_ids'] = _('Select at least two members.')
+        if errors:
+            return self._render_prohibited_pairings_modal(
+                web_context,
+                show_manual_form=True,
+                manual_form_index=int(raw_index) if raw_index else None,
+                data=data,
+                errors=errors,
+            )
+        groups = self._manual_groups_as_tuples(tournament)
+        if raw_index:
+            index = int(raw_index)
+            if 0 <= index < len(groups):
+                groups[index] = (is_hard, member_ids)
+        else:
+            groups.append((is_hard, member_ids))
+        with EventDatabase(tournament.event.uniq_id, True) as database:
+            tournament.set_manual_prohibited_pairing_groups(groups, database)
+        return self._render_prohibited_pairings_modal(web_context)
+
+    @delete(
+        path='/pairings/prohibited/manual/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{index:int}',
+        name='admin-prohibited-pairings-manual-delete',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_prohibited_pairings_manual_delete(
+        self, request: HTMXRequest, tournament_id: int, round: int, index: int
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        if not tournament.round_has_pairings(round):
+            groups = self._manual_groups_as_tuples(tournament)
+            if 0 <= index < len(groups):
+                del groups[index]
+                with EventDatabase(tournament.event.uniq_id, True) as database:
+                    tournament.set_manual_prohibited_pairing_groups(groups, database)
+        return self._render_prohibited_pairings_modal(web_context)
 
     @put(
         path='/tournament/add-illegal-move/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
@@ -1500,6 +2608,9 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
 
+        if tournament.event.is_team_event:
+            return self._team_pairings_info_modal(web_context, tournament, round)
+
         engine = tournament.pairing_variation.engine
         assert isinstance(engine, BbpPairings)
 
@@ -1537,6 +2648,81 @@ class PairingsAdminController(BaseEventAdminController):
                 'pairing_history': grouped,
                 'players_by_pairing_number': tournament.tournament_players_by_pairing_number,
                 'warning': warning,
+            },
+        )
+
+    @classmethod
+    def _team_pairings_info_modal(
+        cls,
+        web_context: PairingsAdminWebContext,
+        tournament: Tournament,
+        round: int,
+    ) -> Template:
+        """Team-mode counterpart to the individual info modal: per-team
+        rows with TPN, name, accumulated MP/GP at the start of *round*,
+        and the chronological list of opponents up to *round - 1* (each
+        rendered as the opposing team's TPN, with a tooltip carrying
+        the team name)."""
+        opponents_by_team: dict[int, list[int | None]] = {
+            team.id: [] for team in tournament.teams
+        }
+        # Per-team colour history on board 0 (the team's overall colour
+        # in each match). Same length as ``opponents_by_team[id]``.
+        colors_by_team: dict[int, list[str | None]] = {
+            team.id: [] for team in tournament.teams
+        }
+        pattern = tournament.color_pattern or ''
+        team_a_board0_color = pattern[0].upper() if pattern else 'W'
+        team_b_board0_color = 'B' if team_a_board0_color == 'W' else 'W'
+        for r in range(1, round):
+            paired_team_ids: set[int] = set()
+            for tb in tournament.get_round_team_boards(r):
+                stb = tb.stored_team_board
+                if stb.team_b_id is None:
+                    opponents_by_team.setdefault(stb.team_a_id, []).append(None)
+                    colors_by_team.setdefault(stb.team_a_id, []).append(None)
+                    paired_team_ids.add(stb.team_a_id)
+                    continue
+                opponents_by_team.setdefault(stb.team_a_id, []).append(stb.team_b_id)
+                opponents_by_team.setdefault(stb.team_b_id, []).append(stb.team_a_id)
+                colors_by_team.setdefault(stb.team_a_id, []).append(team_a_board0_color)
+                colors_by_team.setdefault(stb.team_b_id, []).append(team_b_board0_color)
+                paired_team_ids.add(stb.team_a_id)
+                paired_team_ids.add(stb.team_b_id)
+            for tid, hist in opponents_by_team.items():
+                if tid not in paired_team_ids:
+                    hist.append(None)
+                    colors_by_team.setdefault(tid, []).append(None)
+        teams_by_id = tournament.event.teams_by_id
+        rows = []
+        # Standings as they stand entering this round (the modal shows
+        # the accumulated MP/GP "at the start of round").
+        for row in tournament.team_standings(after_round=round - 1):
+            team = row['team']
+            rows.append(
+                {
+                    'team': team,
+                    'tpn': team.pairing_number,
+                    'mp': tournament.team_primary_score_before_round(team.id, round),
+                    'gp': row['gp'],
+                    'rank': row['rank'],
+                    'opponents': opponents_by_team.get(team.id, []),
+                    'colors': colors_by_team.get(team.id, []),
+                }
+            )
+        buckets: dict[float, list[dict[str, Any]]] = defaultdict(list)
+        for row in rows:
+            buckets[row['mp']].append(row)
+        for entries in buckets.values():
+            entries.sort(key=lambda r: (r['tpn'] or 0, r['team'].name.lower()))
+        grouped = sorted(buckets.items(), key=lambda it: it[0], reverse=True)
+        return cls._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'team_pairing_info',
+                'team_info_groups': grouped,
+                'teams_by_id': teams_by_id,
+                'history_columns': max((len(r['opponents']) for r in rows), default=0),
             },
         )
 

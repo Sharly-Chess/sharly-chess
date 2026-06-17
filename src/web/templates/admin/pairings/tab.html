@@ -36,7 +36,17 @@
         hx-swap="innerHTML"
     >
     </div>
-    {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 or admin_absent_players|length > 0 %}
+    {% set is_team_paired_mode = admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
+    {% set is_flat_team_mode = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
+    {% if is_team_paired_mode %}
+        {% set has_unpaired = admin_team_bye|length > 0 or admin_team_unpaired|length > 0 or admin_team_absent|length > 0 %}
+    {% elif is_flat_team_mode %}
+        {# Flat team systems keep the team column visible even once the
+           round is paired so lineups can still be changed. #}
+        {% set has_unpaired = admin_tournament.teams|length > 0 %}
+    {% else %}
+        {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 or admin_absent_players|length > 0 %}
+    {% endif %}
 
     <div class="container-fluid">
         <div class="pt-1 pb-1 row">
@@ -79,6 +89,7 @@
                                 </div>
                             {% endwith %}
 
+                            {% if 'RESULT_UPDATE' in existing_actions %}
                             <div class="d-flex flex-column">
                                 <div style="font-size: 0.8rem;">
                                     {{ _('Keyboard shortcuts:') }}
@@ -88,8 +99,8 @@
                                             '',
                                             '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
                                                 '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('No result') ~ '</div>' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('White wins') ~ '</div>' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('Black wins') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ (_('Left wins') if admin_event.is_team_event else _('White wins')) ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ (_('Right wins') if admin_event.is_team_event else _('Black wins')) ~ '</div>' ~
                                                 '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('Draw') ~ '</div>' ~
                                                 '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Boards') ~ '</div>' ~
                                                 '<div class=\"text-center text-nowrap\"><i class=\"bi bi-shift pe-1\"></i>+ <i class=\"bi bi-arrow-left-square pe-1\"></i><i class=\"bi bi-arrow-right-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Rounds') ~ '</div>' ~
@@ -155,6 +166,7 @@
                                     </button>
                                 </div>
                             </div>
+                            {% endif %}
                         {% endif %}
                     </div>
                 {% endif %}
@@ -163,38 +175,87 @@
             {% if not display_rankings %}
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3">
-                        {% with title=_('Byes *** ZPB, HPB or FPB'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
-                            {% include '/admin/pairings/unpaired_table.html' %}
-                        {% endwith %}
-                        {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}
-                            {% include '/admin/pairings/unpaired_table.html' %}
-                        {% endwith %}
-                        {% with title=(
-                            _('To pair') if admin_tournament.pairing_system.split_unpaired_and_bye_players else _('Players')
-                        ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
-                            {% include '/admin/pairings/unpaired_table.html' %}
-                        {% endwith %}
+                        {% if is_team_paired_mode %}
+                            {% with title=_('Byes *** ZPB, HPB or FPB'), teams=admin_team_bye, table_id='bye-teams-table' %}
+                                {% include '/admin/pairings/team_unpaired_table.html' %}
+                            {% endwith %}
+                            {% with title=_('Absents'), teams=admin_team_absent, table_id='absent-teams-table' %}
+                                {% include '/admin/pairings/team_unpaired_table.html' %}
+                            {% endwith %}
+                            {% with title=_('To pair'), teams=admin_team_unpaired, table_id='unpaired-teams-table' %}
+                                {% include '/admin/pairings/team_unpaired_table.html' %}
+                            {% endwith %}
+                        {% elif is_flat_team_mode %}
+                            {% with title=_('Teams'), teams=admin_tournament.teams|list, table_id='lineup-teams-table' %}
+                                {% include '/admin/pairings/team_lineup_table.html' %}
+                            {% endwith %}
+                        {% else %}
+                            {% with title=_('Byes *** ZPB, HPB or FPB'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
+                                {% include '/admin/pairings/unpaired_table.html' %}
+                            {% endwith %}
+                            {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}
+                                {% include '/admin/pairings/unpaired_table.html' %}
+                            {% endwith %}
+                            {% with title=(
+                                _('To pair') if admin_tournament.pairing_system.split_unpaired_and_bye_players else _('Players')
+                            ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
+                                {% include '/admin/pairings/unpaired_table.html' %}
+                            {% endwith %}
+                        {% endif %}
                     </div>
                 {% endif %}
 
                 <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
-                    <table
-                        id="pairings-table"
-                        class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
-                    >
-                        {% include '/admin/pairings/pairing_table_header.html' %}
-                        <tbody>
-                            {% for board in admin_filtered_boards %}
-                                {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
-                                    {% include '/admin/pairings/pairing_row.html' %}
-                                {% endwith %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {% if admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
+                        {% include '/admin/pairings/team_blocks_table.html' %}
+                    {% else %}
+                        <table
+                            id="pairings-table"
+                            class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
+                            style="table-layout: fixed;"
+                        >
+                            {# Fixed column widths so the result column does not
+                               shift between rounds; the two name columns share
+                               the remainder equally and truncate with an
+                               ellipsis. Must mirror the column order in
+                               pairing_table_header.html / pairing_row.html. #}
+                            {% set hide_player_points = admin_tournament.event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
+                            {% set show_real_points = admin_tournament.print_real_points(admin_round) %}
+                            {% set show_illegal = admin_tournament.record_illegal_moves %}
+                            <colgroup>
+                                <col style="width: 6rem;">
+                                {% if not hide_player_points %}
+                                    <col style="width: 4rem;">
+                                    {% if show_real_points %}<col style="width: 4rem;">{% endif %}
+                                {% endif %}
+                                {% if show_illegal %}<col style="width: 3rem;">{% endif %}
+                                <col>
+                                <col style="width: 5.5rem;">
+                                {% if show_illegal %}<col style="width: 3rem;">{% endif %}
+                                <col>
+                                {% if not hide_player_points %}
+                                    {% if show_real_points %}<col style="width: 4rem;">{% endif %}
+                                    <col style="width: 4rem;">
+                                {% endif %}
+                            </colgroup>
+                            {% include '/admin/pairings/pairing_table_header.html' %}
+                            <tbody>
+                                {% for board in admin_filtered_boards %}
+                                    {% with wtp=board.optional_white_tournament_player, btp=board.black_tournament_player %}
+                                        {% include '/admin/pairings/pairing_row.html' %}
+                                    {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
                 </div>
             {% else %}
                 <div class="col-12">
-                    {% include '/admin/pairings/rankings_table.html' %}
+                    {% if admin_event.is_team_event %}
+                        {% include '/admin/pairings/team_rankings_table.html' %}
+                    {% else %}
+                        {% include '/admin/pairings/rankings_table.html' %}
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -203,6 +264,65 @@
         var pairing_board_id = null;
         var keyQueue = [];
         var requestInFlight = false;
+
+        function getEditingBlocks() {
+            try {
+                return new Set(JSON.parse(sessionStorage.getItem('editingLineupBlocks') || '[]'));
+            } catch (e) {
+                return new Set();
+            }
+        }
+        function saveEditingBlocks(set) {
+            sessionStorage.setItem('editingLineupBlocks', JSON.stringify(Array.from(set)));
+        }
+        function applyLineupEditState(tbody, side, editing) {
+            const cssClass = 'lineup-editing-' + side;
+            tbody.classList.toggle(cssClass, editing);
+            const sideSelector = '.lineup-side-' + side;
+            tbody.querySelectorAll(sideSelector + ' .lineup-view').forEach(function(el) {
+                el.classList.toggle('d-none', editing);
+            });
+            tbody.querySelectorAll(sideSelector + ' .lineup-edit').forEach(function(el) {
+                el.classList.toggle('d-none', !editing);
+            });
+            const btn = document.querySelector(
+                'button.lineup-edit-toggle[data-target-block="' + tbody.id + '"]'
+                + '[data-side="' + side + '"]'
+            );
+            if (btn) {
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    icon.className = editing ? 'bi bi-x-circle' : 'bi bi-pencil';
+                }
+                btn.classList.toggle('active', editing);
+            }
+        }
+        function toggleLineupEdit(btn) {
+            const targetId = btn.dataset.targetBlock;
+            const side = btn.dataset.side || 'a';
+            const tbody = document.getElementById(targetId);
+            if (!tbody) return;
+            const editing = !tbody.classList.contains('lineup-editing-' + side);
+            applyLineupEditState(tbody, side, editing);
+            const key = targetId + '|' + side;
+            const editingSet = getEditingBlocks();
+            if (editing) {
+                editingSet.add(key);
+            } else {
+                editingSet.delete(key);
+            }
+            saveEditingBlocks(editingSet);
+        }
+        function restoreLineupEditState() {
+            getEditingBlocks().forEach(function(key) {
+                const parts = key.split('|');
+                if (parts.length !== 2) return;
+                const tbody = document.getElementById(parts[0]);
+                if (tbody) {
+                    applyLineupEditState(tbody, parts[1], true);
+                }
+            });
+        }
 
         function scrollToTargetAdjusted(element) {
             const headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
@@ -291,7 +411,15 @@
 
             keyQueue.push({ code, pairing_board_id });
             $('#pairing-row-' + pairing_board_id + ' td, #pairing-row-' + pairing_board_id + ' .player-link').addClass('text-secondary');
-            nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id");
+            // Skip rows that can't accept a result via keyboard
+            // (lineup holes, absent-forfeit rows).
+            var $allRows = $('tr.pairing-row').filter(function () {
+                return !this.dataset.noResultEntry;
+            });
+            var curIdx = $allRows.index($allRows.filter('[data-board-id="' + pairing_board_id + '"]').first());
+            nextBoardId = curIdx >= 0 && curIdx < $allRows.length - 1
+                ? $allRows.eq(curIdx + 1).data("board-id")
+                : null;
             if (nextBoardId) {
                 highlightBoard(nextBoardId, false);
             }
@@ -303,6 +431,13 @@
                 // The event listener is active, but the page has changed
                 return;
             }
+            // Ignore key events originating in form controls (the inline
+            // lineup-swap select, the search field, etc.) so they can be
+            // navigated and typed into normally.
+            var targetTag = (e.target.tagName || '').toLowerCase();
+            if (targetTag === 'select' || targetTag === 'input' || targetTag === 'textarea') {
+                return;
+            }
 
             if ((e.key === "ArrowUp" || e.key === "ArrowDown")) {
                 if (e.shiftKey) {
@@ -310,26 +445,31 @@
                     return;
                 }
                 e.preventDefault();
+                // Hole rows (team-mode boards with at least one
+                // missing side) can't accept a result via keyboard
+                // shortcut — exclude them from the navigation list.
+                var $rows = $('tr.pairing-row').filter(function () {
+                    return !this.dataset.noResultEntry;
+                });
                 if (pairing_board_id) {
-                    var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
-                    if (!$row.length) {
+                    var idx = $rows.index($rows.filter('[data-board-id="' + pairing_board_id + '"]').first());
+                    if (idx < 0) {
                         return;
                     }
-                    var $next_row = $row.next();
-                    var $prev_row = $row.prev();
-
-                    // Highlight the next/previous row
-                    if (e.key === "ArrowUp" && $prev_row.length) {
-                        highlightBoard($prev_row.data("board-id"), false);
-                    } else if (e.key === "ArrowDown" && $next_row.length) {
-                        highlightBoard($next_row.data("board-id"), false);
+                    if (e.key === "ArrowUp" && idx > 0) {
+                        highlightBoard($rows.eq(idx - 1).data("board-id"), false);
+                    } else if (e.key === "ArrowDown" && idx < $rows.length - 1) {
+                        highlightBoard($rows.eq(idx + 1).data("board-id"), false);
                     }
-                } else {
-                    highlightBoard($('.pairing-row').first().data("board-id"), false);
+                } else if ($rows.length) {
+                    highlightBoard($rows.first().data("board-id"), false);
                 }
             }
 
             if (!pairing_board_id || hasErrorRow()) return;
+            // Block result-entry shortcuts on hole-row.
+            var $currentRow = $('tr.pairing-row[data-board-id="' + pairing_board_id + '"]').first();
+            if ($currentRow.length && $currentRow[0].dataset.noResultEntry) return;
 
             const code = event.code;
             const validCodes = ['Digit0','Digit1','Digit2','Digit3','Numpad0','Numpad1','Numpad2','Numpad3'];
@@ -350,11 +490,37 @@
             }
         }
 
+        // Survives HTMX body swaps (manual / complementary pairing
+        // re-render) so collapsed team blocks stay collapsed. Defined at
+        // script scope so afterSwapHandler can re-apply it after a swap.
+        window.collapsedTeamBlocks = window.collapsedTeamBlocks || new Set();
+        function syncTeamBlockChevrons() {
+            $("tr.team-block-header").each(function () {
+                const targetId = $(this).data("block-id");
+                const key = String($(this).data("collapse-key"));
+                const el = document.getElementById(targetId);
+                if (!el) return;
+                if (window.collapsedTeamBlocks.has(key)) {
+                    el.classList.add("team-block-body-collapsed");
+                }
+                const isExpanded = !el.classList.contains("team-block-body-collapsed");
+                this.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+                $(this).find(".team-block-chevron")
+                    .toggleClass("team-block-chevron-collapsed", !isExpanded);
+            });
+        }
+
         function afterSwapHandler(e) {
             // If we've swapped a row element, process the next key
             if (e.detail.elt?.dataset?.boardId) {
                 requestInFlight = false;
                 processNextKey();
+            }
+            // Re-apply lineup edit mode for any blocks that were being edited
+            // before the swap (sessionStorage keeps the set).
+            restoreLineupEditState();
+            if (typeof syncTeamBlockChevrons === "function") {
+                syncTeamBlockChevrons();
             }
         }
 
@@ -375,7 +541,12 @@
                 let matchFound = false;
 
                 $rows.each(function() {
-                    const text = normalizeText($(this).text());
+                    // Exclude form controls: the lineup select options
+                    // list the whole roster, which would match every row
+                    // of the team block.
+                    const text = normalizeText(
+                        $(this).clone().find("select, option").remove().end().text()
+                    );
                     const isMatch = text.indexOf(value) > -1;
                     $(this).toggle(isMatch);
                     if (isMatch) matchFound = true;
@@ -400,6 +571,24 @@
                 highlightBoardWithError(e.detail.board_id);
             });
             $(document).on("input.search", "#search-player", searchPlayerHandler);
+            syncTeamBlockChevrons();
+
+            $(document).off("click.team-block-collapse");
+            $(document).on("click.team-block-collapse", "tr.team-block-header", function(e) {
+                if ($(e.target).closest("button").length) return;
+                if ($(e.target).closest("a").length) return;
+                const targetId = $(this).data("block-id");
+                const el = document.getElementById(targetId);
+                if (!el) return;
+                const willCollapse = !el.classList.contains("team-block-body-collapsed");
+                el.classList.toggle("team-block-body-collapsed", willCollapse);
+                const key = String($(this).data("collapse-key"));
+                window.collapsedTeamBlocks[willCollapse ? "add" : "delete"](key);
+                this.setAttribute("aria-expanded", willCollapse ? "false" : "true");
+                $(this).find(".team-block-chevron")
+                    .toggleClass("team-block-chevron-collapsed", willCollapse);
+            });
+            restoreLineupEditState();
         });
     </script>
 {% else %}

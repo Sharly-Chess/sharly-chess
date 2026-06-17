@@ -122,6 +122,11 @@ class ScreenAdminController(BaseEventAdminController):
             case 'create':
                 assert web_context.screen_type is not None
                 type_ = web_context.screen_type
+                if not type_.supports_event_type(event.event_type):
+                    raise ValueError(
+                        f'Screen type [{type_}] is not available for '
+                        f'[{event.event_type}] events.'
+                    )
                 match type_:
                     case (
                         ScreenType.BOARDS
@@ -458,7 +463,9 @@ class ScreenAdminController(BaseEventAdminController):
         )
         event = web_context.get_admin_event()
         admin_screen_types_data: dict[ScreenType, dict[str, Any]] = {
-            screen_type: {} for screen_type in ScreenType
+            screen_type: {}
+            for screen_type in ScreenType
+            if screen_type.supports_event_type(event.event_type)
         }
         template_context: dict[str, Any] = web_context.template_context
 
@@ -470,7 +477,7 @@ class ScreenAdminController(BaseEventAdminController):
                 sorted_screens_by_type = event.sorted_screens_by_screen_type
             else:
                 sorted_screens_by_type = event.sorted_basic_screens_by_screen_type
-            for screen_type_ in ScreenType.screen_types():
+            for screen_type_ in list(admin_screen_types_data):
                 screens = sorted_screens_by_type[screen_type_]
                 admin_screen_types_data[screen_type_]['screens'] = screens
                 admin_screen_types_data[screen_type_]['title'] = (
@@ -497,7 +504,9 @@ class ScreenAdminController(BaseEventAdminController):
             if not sorted_screens:
                 return Redirect(admin_event_url(request, event_uniq_id=event.uniq_id))
 
-            admin_screen_type_data = admin_screen_types_data[screen_type]
+            # setdefault: legacy screens of a type no longer offered for
+            # the event's type still render rather than crash.
+            admin_screen_type_data = admin_screen_types_data.setdefault(screen_type, {})
             admin_screen_type_data['screens'] = sorted_screens
             admin_screen_type_data['title'] = (
                 f'{screen_type.name} ({len(sorted_screens) or "-"})'
@@ -715,7 +724,7 @@ class ScreenAdminController(BaseEventAdminController):
                 template_context |= {
                     'tournament_options': web_context.get_tournament_options(),
                     'screen_type_options': cls._get_screen_type_options(
-                        family_screens_only=False
+                        family_screens_only=False, event=event
                     ),
                     'timer_options': cls._get_timer_options(event),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),

@@ -28,6 +28,8 @@ from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingVariationManager
+from data.pairings.systems import PairingSystem
+from data.pairings.variations import PairingVariation
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.player_categories import PlayerCategory, JuniorCategory
@@ -74,6 +76,11 @@ from plugins.ffe.ffe_entity import (
     FfeLeagueTournamentCriterion,
     FfeLeagueIndividualTeamType,
 )
+from plugins.ffe.ffe_rule_sets import (
+    ChampionnatFemininN1N2RuleSet,
+    CoupeDeLaPariteRuleSet,
+    CoupeJeanClaudeLoubatiereRuleSet,
+)
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
     BasePapiTieBreak,
@@ -108,6 +115,10 @@ from plugins.ffe.utils import (
     FFEArbiterTitle,
     FFE_LEAGUES,
 )
+from plugins.ffe.ffe_molter import (
+    FFEMolterPairingSystem,
+    StandardFFEMolterVariation,
+)
 from plugins.ffe.utils import (
     FfeEventPluginData,
     FfePlayerPluginData,
@@ -127,6 +138,7 @@ from plugins.utils import (
     AccountPluginData,
 )
 from utils.enum import (
+    EventType,
     PlayerRatingType,
     Result,
     TournamentRating,
@@ -137,6 +149,7 @@ from web.controllers.base_controller import BaseController, WebContext
 if TYPE_CHECKING:
     from data.event import Event
     from database.sqlite.event.event_store import StoredEvent
+    from data.rule_sets import RuleSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
 
@@ -283,6 +296,21 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_player_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, FfePlayerPluginData
+
+    @hookimpl
+    def get_prohibited_pairing_dimensions(self):
+        from data.prohibited_pairings import ProhibitedPairingDimension
+
+        return [
+            ProhibitedPairingDimension(
+                id='ffe-league',
+                label=_('League'),
+                is_team=False,
+                group_key=lambda player: (
+                    FFEUtils.get_player_plugin_data(player).league or None
+                ),
+            )
+        ]
 
     @hookimpl
     def get_player_form_template_context(
@@ -609,6 +637,9 @@ class FfePlugin(Plugin):
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ):
+        # The FFE upload pipeline is Papi-based — individual events only.
+        if stored_event.event_type == EventType.TEAM:
+            return
         # This hook being called in most database writes, it needs to be optimized
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
@@ -623,7 +654,11 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
-    ) -> tuple[str, dict[str, Any]]:
+    ) -> tuple[str, dict[str, Any]] | None:
+        # The FFE-site connection (Papi upload) is individual-only — no
+        # FFE fields on team-tournament forms.
+        if event.is_team_event:
+            return None
         return '/ffe_tournament_form_fields.html', {}
 
     @hookimpl
@@ -648,6 +683,8 @@ class FfePlugin(Plugin):
     def get_tournament_card_connexion_template(
         self, tournament: 'Tournament'
     ) -> str | None:
+        if tournament.event.is_team_event:
+            return None
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
         return '/ffe_tournament_card_connexion.html'
@@ -709,6 +746,9 @@ class FfePlugin(Plugin):
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
+        # FFE upload is Papi-based — hide the transfer entry for team events.
+        if event.is_team_event:
+            return []
         return [
             NavDataTransferItem(
                 key='ffe_upload',
@@ -830,12 +870,22 @@ class FfePlugin(Plugin):
             PluginUtils.insert_on_equals(
                 tie_break_types, tie_break_type, tie_break_type.base_tie_break_type()
             )
+        tie_break_types.append(ffe_tie_breaks.BerlinTieBreak)
+        tie_break_types.append(ffe_tie_breaks.GamePointsDifferentialTieBreak)
+        tie_break_types.append(ffe_tie_breaks.GamePointsForTieBreak)
+        tie_break_types.append(ffe_tie_breaks.LowestOwnAverageRatingTieBreak)
 
     @hookimpl
     def insert_tie_break_option_types(
         self, tie_break_option_types: list[type[TieBreakOption]]
     ):
         tie_break_option_types.append(PapiBuchholzTypeOption)
+
+    @hookimpl
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+        rule_sets.append(CoupeJeanClaudeLoubatiereRuleSet)
+        rule_sets.append(CoupeDeLaPariteRuleSet)
+        rule_sets.append(ChampionnatFemininN1N2RuleSet)
 
     @hookimpl
     def insert_swiss_system_tie_break_sets(
@@ -904,6 +954,16 @@ class FfePlugin(Plugin):
         self, variation_types: list[type[SwissVariation]]
     ):
         variation_types.append(NicoisSwissVariation)
+
+    @hookimpl
+    def insert_team_pairing_systems(self, pairing_systems: list[type['PairingSystem']]):
+        pairing_systems.append(FFEMolterPairingSystem)
+
+    @hookimpl
+    def insert_team_pairing_variations(
+        self, variations: list[type['PairingVariation']]
+    ):
+        variations.append(StandardFFEMolterVariation)
 
     # ---------------------------------------------------------------------------------
     # Prizes

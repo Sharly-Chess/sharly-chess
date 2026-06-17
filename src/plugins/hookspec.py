@@ -28,7 +28,9 @@ if TYPE_CHECKING:
     from data.columns.players_tab import PlayersTabColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.input_output.trf.trf_data import TrfNationalPlayer
-    from data.pairings.variations import SwissVariation
+    from data.pairings.systems import PairingSystem
+    from data.prohibited_pairings import ProhibitedPairingDimension
+    from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import (
         Player,
         TournamentPlayer,
@@ -46,6 +48,7 @@ if TYPE_CHECKING:
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
+    from data.rule_sets import RuleSet
     from data.tie_breaks import TieBreak, TieBreakOption
     from data.tie_breaks.system_sets import SystemTieBreakSet
     from data.tournament import Tournament
@@ -326,6 +329,15 @@ class AppHookSpecs:
         """Warning message for the pairing settings of a tournament."""
 
     @hookspec
+    def get_prohibited_pairing_dimensions(
+        self,
+    ) -> "list['ProhibitedPairingDimension']":
+        """Extra prohibited-pairing grouping dimensions a plugin
+        contributes (e.g. a federation "ligue", a school). Each buckets
+        a tournament's members so that members sharing a key must not be
+        paired. Core already ships club / federation / team-group."""
+
+    @hookspec
     def signal_tournament_set(
         self, event: 'Event', stored_tournament: 'StoredTournament'
     ) -> str | None:
@@ -448,6 +460,16 @@ class AppHookSpecs:
         """AAdd tie-breaks whose base acronym does not necessarily match to a manual acronym mapping."""
 
     # ---------------------------------------------------------------------------------
+    # Rule sets
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+        """Provide extra official rule sets (federation cups etc.) that
+        an arbiter can pick when creating a tournament. The picker in
+        the tournament modal filters by ``RuleSet.event_type``."""
+
+    # ---------------------------------------------------------------------------------
     # Pairings
     # ---------------------------------------------------------------------------------
 
@@ -456,6 +478,17 @@ class AppHookSpecs:
         self, variation_types: list[type['SwissVariation']]
     ):
         """Provide extra swiss pairing variations."""
+
+    @hookspec
+    def insert_team_pairing_systems(self, pairing_systems: list[type['PairingSystem']]):
+        """Provide extra team-event pairing systems"""
+
+    @hookspec
+    def insert_team_pairing_variations(
+        self, variations: list[type['PairingVariation']]
+    ):
+        """Provide extra team-event pairing variations to expose alongside
+        the core Team Swiss / Team Round-Robin variations."""
 
     # ---------------------------------------------------------------------------------
     # Prizes

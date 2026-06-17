@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from data.event import Event
     from data.screen import Screen
     from data.family import Family
+    from data.team_board import TeamBoard
     from data.tournament import Tournament
 
 
@@ -114,6 +115,12 @@ class ScreenSet:
         self.items_lists: list[list[Any]] | None = (
             None  # change this to Board | TournamentPlayer | None ?
         )
+        # Team-mode extractions cache separately: the player/board cache
+        # above may already be filled by an individual-path caller (e.g.
+        # the screen title) within the same request.
+        self._team_first_item: Any | None = None
+        self._team_last_item: Any | None = None
+        self._team_items_lists: list[list[Any]] | None = None
 
     @property
     def screen(self) -> 'Screen':
@@ -155,6 +162,17 @@ class ScreenSet:
         return self.event.tournaments_by_id[self.tournament_id]
 
     @property
+    def shows_team_matches(self) -> bool:
+        """Whether the boards/input rendering shows team-match blocks:
+        only team-vs-team pairing systems have match envelopes — flat
+        fixed-table systems (e.g. Molter) keep the individual board
+        list even in a team event."""
+        return (
+            self.tournament.is_team_tournament
+            and self.tournament.pairing_system.paired_by_team
+        )
+
+    @property
     def columns(self) -> int:
         return self.screen.columns
 
@@ -177,6 +195,8 @@ class ScreenSet:
     @property
     def name_for_boards(self) -> str:
         if self.tournament.current_round:
+            if self.shows_team_matches:
+                return self._name_for_team_matches()
             self._extract_boards()
             if self.stored_screen_set:
                 name = self.stored_screen_set.name
@@ -207,6 +227,40 @@ class ScreenSet:
             return name
         else:
             return self.name_for_players
+
+    def _name_for_team_matches(self) -> str:
+        """Set title in team mode: ``%f``/``%l`` are the first and last
+        match table numbers shown by the set."""
+        self._extract_team_matches()
+        if self.stored_screen_set:
+            name = self.stored_screen_set.name
+        else:
+            if self.family is None:
+                raise RuntimeError('Family reference unexpectedly None')
+            name = self.family.name
+        if name is None:
+            if self.first or self.last:
+                name = _('Matches %f-%l')
+            else:
+                name = '%t'
+        name = name.replace('%t', str(self.tournament.name))
+        first_match = self._team_first_item
+        last_match = self._team_last_item
+        if r'%f' in name:
+            name = name.replace(
+                r'%f',
+                str(first_match.display_number)
+                if first_match is not None and first_match.display_number is not None
+                else '-',
+            )
+        if r'%l' in name:
+            name = name.replace(
+                r'%l',
+                str(last_match.display_number)
+                if last_match is not None and last_match.display_number is not None
+                else '-',
+            )
+        return name
 
     @property
     def name_for_players(self) -> str:
@@ -248,6 +302,8 @@ class ScreenSet:
 
     @property
     def name_for_ranking(self) -> str:
+        if self.tournament.is_team_tournament:
+            return self._name_for_team_standings()
         self._extract_players_by_rank()
         if self.stored_screen_set:
             name = self.stored_screen_set.name
@@ -271,6 +327,64 @@ class ScreenSet:
         if self.last_tournament_player_by_rank is not None:
             name = name.replace('%l', str(self.last_tournament_player_by_rank.rank))
         return name
+
+    def _name_for_team_standings(self) -> str:
+        """Set title for a team ranking: ``%f``/``%l`` are the first and
+        last team ranks shown by the set."""
+        self._extract_team_standings()
+        if self.stored_screen_set:
+            name = self.stored_screen_set.name
+        else:
+            assert self.family is not None
+            name = self.family.name
+        if name is None:
+            if self.first or self.last:
+                name = _('Ranking %f to %l')
+            else:
+                name = _('%t ranking')
+        name = name.replace('%t', str(self.tournament.name))
+        if self._team_first_item is not None:
+            name = name.replace(r'%f', str(self._team_first_item['rank']))
+        if self._team_last_item is not None:
+            name = name.replace(r'%l', str(self._team_last_item['rank']))
+        return name
+
+    def _extract_team_data(self, items: list[Any]):
+        """Slice ``items`` by ``first``/``last`` and split across the
+        screen columns, caching into the team-mode fields (kept apart
+        from the player/board cache — see ``__init__``)."""
+        if not items:
+            self._team_items_lists = [
+                [],
+            ] * self.columns
+            return
+        if self.first:
+            first = max(1, min(self.first, len(items))) - 1
+        else:
+            first = 0
+        if self.last:
+            last = max(first, min(self.last, len(items)) - 1)
+        else:
+            last = len(items) - 1
+        selected_items = items[first : last + 1]
+        if not selected_items:
+            self._team_items_lists = [
+                [],
+            ] * self.columns
+            return
+        self._team_first_item = selected_items[0]
+        self._team_last_item = selected_items[-1]
+        items_number = len(selected_items)
+        q, r = divmod(items_number, self.columns)
+        first_index = 0
+        self._team_items_lists = []
+        for _num in range(1, self.columns + 1):
+            last_index = first_index + q
+            more: int = min(r, 1)
+            last_index += more
+            r -= more
+            self._team_items_lists.append(selected_items[first_index:last_index])
+            first_index = last_index
 
     def _extract_data(self, items: list[Any], extract_boards: bool):
         if not items:
@@ -332,6 +446,41 @@ class ScreenSet:
                 and all(isinstance(item, Board) for item in chain(*self.items_lists))
             )
         return self.items_lists
+
+    def _extract_team_matches(self):
+        """Team-tournament counterpart of :meth:`_extract_boards`: the
+        screen items are the round's numbered team matches (hidden byes
+        carry no table) — ``first``/``last`` and the column split count
+        matches, not the board rows they contain."""
+        if self._team_items_lists is None:
+            matches = sorted(
+                (
+                    team_board
+                    for team_board in self.tournament.get_round_team_boards(
+                        self.tournament.current_round
+                    )
+                    if team_board.display_number is not None
+                ),
+                key=lambda team_board: team_board.display_number,
+            )
+            self._extract_team_data(items=matches)
+
+    @property
+    def team_matches_lists(self) -> 'list[list[TeamBoard]]':
+        self._extract_team_matches()
+        if TYPE_CHECKING:
+            assert isinstance(self._team_items_lists, list)
+        return self._team_items_lists
+
+    @property
+    def first_team_match(self) -> 'TeamBoard | None':
+        self._extract_team_matches()
+        return self._team_first_item
+
+    @property
+    def last_team_match(self) -> 'TeamBoard | None':
+        self._extract_team_matches()
+        return self._team_last_item
 
     @property
     def first_board(self) -> Board | None:
@@ -413,6 +562,114 @@ class ScreenSet:
             )
         return self.last_item
 
+    def _extract_teams_by_name(self):
+        """Team-tournament counterpart of :meth:`_extract_players_by_name`
+        for the check-in screen: the items are the tournament's teams in
+        name order."""
+        if self._team_items_lists is None:
+            self._extract_team_data(
+                items=sorted(
+                    (
+                        team
+                        for team in self.event.teams_by_id.values()
+                        if team.tournament_id == self.tournament_id
+                    ),
+                    key=lambda team: team.name.lower(),
+                )
+            )
+
+    @property
+    def teams_by_name_tuple_lists(self) -> 'Iterable[tuple[list[Any], list[Any]]]':
+        """Per screen column, the column's teams split into two halves
+        (mirroring :attr:`tournament_players_by_name_tuple_lists`)."""
+        self._extract_teams_by_name()
+        if TYPE_CHECKING:
+            assert isinstance(self._team_items_lists, list)
+        for teams_by_name in self._team_items_lists:
+            yield (
+                teams_by_name[: (bound := math.ceil(len(teams_by_name) / 2))],
+                teams_by_name[bound:],
+            )
+
+    @property
+    def first_team_by_name(self) -> Any | None:
+        self._extract_teams_by_name()
+        return self._team_first_item
+
+    @property
+    def last_team_by_name(self) -> Any | None:
+        self._extract_teams_by_name()
+        return self._team_last_item
+
+    @property
+    def first_team_standing(self) -> dict[str, Any] | None:
+        self._extract_team_standings()
+        return self._team_first_item
+
+    @property
+    def last_team_standing(self) -> dict[str, Any] | None:
+        self._extract_team_standings()
+        return self._team_last_item
+
+    @property
+    def name_for_teams(self) -> str:
+        """Set title for the team check-in list: ``%f``/``%l`` are the
+        first and last team names shown by the set."""
+        self._extract_teams_by_name()
+        if self.stored_screen_set:
+            name = self.stored_screen_set.name
+        else:
+            assert self.family is not None
+            name = self.family.name
+        if name is None:
+            if self.first or self.last:
+                name = _('%f to %l')
+            else:
+                name = '%t'
+        name = name.replace('%t', str(self.tournament.name))
+        if self._team_first_item is not None:
+            name = name.replace('%f', self._team_first_item.name[:12])
+        if self._team_last_item is not None:
+            name = name.replace('%l', self._team_last_item.name[:12])
+        return name
+
+    def _extract_team_standings(self):
+        """Team-tournament counterpart of :meth:`_extract_players_by_rank`:
+        the items are the team-standings rows (already ranked). The
+        min/max-points window filters on the primary score (MP or GP,
+        whichever ranks the tournament)."""
+        if self._team_items_lists is None:
+            from utils.enum import ScoreType
+
+            primary_is_mp = (
+                self.tournament.pairing_system.paired_by_team
+                and self.tournament.primary_score == ScoreType.MATCH_POINTS
+            )
+            score_key = 'mp' if primary_is_mp else 'gp'
+            self._extract_team_data(
+                items=[
+                    row
+                    for row in self.tournament.team_standings(
+                        after_round=self.ranking_round
+                    )
+                    if (
+                        self.ranking_min_points is None
+                        or row[score_key] >= self.ranking_min_points
+                    )
+                    and (
+                        self.ranking_max_points is None
+                        or row[score_key] <= self.ranking_max_points
+                    )
+                ]
+            )
+
+    @property
+    def team_standings_lists(self) -> list[list[dict[str, Any]]]:
+        self._extract_team_standings()
+        if TYPE_CHECKING:
+            assert isinstance(self._team_items_lists, list)
+        return self._team_items_lists
+
     def _extract_players_by_rank(self):
         if self.items_lists is None:
             self._extract_data(
@@ -478,6 +735,20 @@ class ScreenSet:
                 board_numbers=', '.join(map(str, self.fixed_board_numbers))
             )
         if self.type in [ScreenType.BOARDS, ScreenType.INPUT]:
+            if self.shows_team_matches:
+                match (self.first, self.last):
+                    case (0, 0):
+                        return _('all the matches')
+                    case (first, 0) if first:
+                        return _('matches from #{first} to end').format(first=first)
+                    case (0, last) if last:
+                        return _('matches from start to #{last}').format(last=last)
+                    case (first, last):
+                        return _('matches from #{first} to #{last}').format(
+                            first=first, last=last
+                        )
+                    case _:
+                        raise ValueError(f'first={self.first}, last={self.last}')
             match (self.first, self.last):
                 case (0, 0):
                     return _('all the boards')
@@ -497,6 +768,20 @@ class ScreenSet:
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
         elif self.type in [ScreenType.PLAYERS, ScreenType.CHECK_IN]:
+            if self.tournament.is_team_tournament:
+                match (self.first, self.last):
+                    case (0, 0):
+                        return _('all the teams')
+                    case (first, 0) if first:
+                        return _('teams from #{first} to end').format(first=first)
+                    case (0, last) if last:
+                        return _('teams from start to #{last}').format(last=last)
+                    case (first, last) if first and last:
+                        return _('teams from #{first} to #{last}').format(
+                            first=first, last=last
+                        )
+                    case _:
+                        raise ValueError(f'first={self.first}, last={self.last}')
             match (self.first, self.last):
                 case (0, 0):
                     return _('all the players')

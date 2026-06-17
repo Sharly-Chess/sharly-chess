@@ -48,7 +48,8 @@ class Result(IntEnum):
                 return '½-½'
             case Result.HALF_POINT_BYE:
                 return '½-F'
-            case Result.NO_RESULT | Result.ZERO_POINT_BYE:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.REST_GAME:
+                # A rest game is no game — nothing to display.
                 return ''
             case Result.FORFEIT_LOSS:
                 return 'F-1'
@@ -60,8 +61,6 @@ class Result(IntEnum):
                 return '1-F'
             case Result.DOUBLE_FORFEIT:
                 return 'F-F'
-            case Result.REST_GAME:
-                return '0-F'
             case Result.UNRATED_WIN:
                 return '1-0 (U)'
             case Result.UNRATED_LOSS:
@@ -799,6 +798,89 @@ class FideArbiterTitle(StrEnum):
         return self.value
 
 
+class EventType(StrEnum):
+    """The type of competition an event hosts."""
+
+    INDIVIDUAL = 'INDIVIDUAL'
+    TEAM = 'TEAM'
+
+    def __str__(self) -> str:
+        match self:
+            case EventType.INDIVIDUAL:
+                return _('Individual')
+            case EventType.TEAM:
+                return _('Team')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+class ScoreType(StrEnum):
+    """Which score basis a team tournament uses (FIDE 1.2.1)."""
+
+    MATCH_POINTS = 'MATCH_POINTS'
+    GAME_POINTS = 'GAME_POINTS'
+
+    def __str__(self) -> str:
+        match self:
+            case ScoreType.MATCH_POINTS:
+                return _('Match points')
+            case ScoreType.GAME_POINTS:
+                return _('Game points')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+class TeamColourType(StrEnum):
+    """Team colour-preference rule used when pairing (FIDE C.04.6 §1.7).
+    Type A: simple preferences — a team either has a colour preference
+    or doesn't. Type B: adds a *mild* preference level on top of the
+    *strong* one, so the pairing engine can break ties between teams
+    that would otherwise look identical under Type A. ``NONE``: colour
+    preferences are not used at all (the team competition rules can
+    require this). The TRF26 192 encoded type embeds this as
+    ``FIDE_TEAM_TYPEA_…`` / ``FIDE_TEAM_TYPEB_…`` / ``FIDE_TEAM_…``."""
+
+    A = 'A'
+    B = 'B'
+    NONE = 'NONE'
+
+    def __str__(self) -> str:
+        match self:
+            case TeamColourType.A:
+                return _('Type A (simple preferences)')
+            case TeamColourType.B:
+                return _('Type B (strong + mild preferences)')
+            case TeamColourType.NONE:
+                return _('None (no colour preferences)')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+class TeamSortMode(StrEnum):
+    """How the teams of a not-yet-paired team tournament are ordered
+    (which sets their pairing numbers). ``MANUAL`` keeps the arbiter's
+    drag-and-drop order; the others re-sort automatically as teams are
+    added or rosters change."""
+
+    MANUAL = 'MANUAL'
+    TEAM_AVERAGE_RATING = 'TEAM_AVERAGE_RATING'
+    LINEUP_AVERAGE_RATING = 'LINEUP_AVERAGE_RATING'
+    RANDOM = 'RANDOM'
+
+    def __str__(self) -> str:
+        match self:
+            case TeamSortMode.MANUAL:
+                return _('Manually')
+            case TeamSortMode.TEAM_AVERAGE_RATING:
+                return _('Average rating of entire team')
+            case TeamSortMode.LINEUP_AVERAGE_RATING:
+                return _('Average rating of round #1 lineup')
+            case TeamSortMode.RANDOM:
+                return _('Randomly')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
     DEPUTY_ARBITER = 'deputy_arbiter'
@@ -1023,6 +1105,22 @@ class BoardColor(StrEnum):
         return self.name
 
 
+class TeamByeType(StrEnum):
+    """Bye marker stored on a ``team_board`` envelope with no opponent.
+    ``PAB`` is the engine-allocated bye (scored per the tournament's PAB
+    configuration in Swiss, a pointless rest game in round-robin
+    systems); the others are arbiter-set manual byes."""
+
+    PAB = 'PAB'
+    HPB = 'HPB'
+    FPB = 'FPB'
+    ZPB = 'ZPB'
+
+    @classmethod
+    def manual_bye_types(cls) -> tuple['TeamByeType', ...]:
+        return (cls.HPB, cls.FPB, cls.ZPB)
+
+
 class ScreenType(StrEnum):
     CHECK_IN = 'check-in'
     INPUT = 'input'
@@ -1035,6 +1133,14 @@ class ScreenType(StrEnum):
     @classmethod
     def screen_types(cls) -> tuple[Self, ...]:
         return tuple(cls(st) for st in cls)
+
+    def supports_event_type(self, event_type: 'EventType') -> bool:
+        """Whether screens of this type can be created in an event of
+        *event_type*. Pairings-by-player has no team counterpart (team
+        events pair matches, not individual players)."""
+        if self == ScreenType.PLAYERS:
+            return event_type == EventType.INDIVIDUAL
+        return True
 
     @property
     def name(self) -> str:

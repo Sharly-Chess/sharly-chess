@@ -1,6 +1,9 @@
 {% set tournament = screen_set.tournament %}
 {% set is_input = screen.type in ('check-in', 'input') %}
 {% set check_in_enabled = is_input and tournament.check_in_open and client.can_check_in_players(tournament.id) %}
+{% if tournament.is_team_tournament %}
+    {% include '/user/screen/sets/team_check_in_set.html' %}
+{% else %}
 <div class="check-in-set">
     <h2 class="set-title text-center">
         {{
@@ -38,3 +41,4 @@
         {% endfor %}
     </div>
 </div>
+{% endif %}

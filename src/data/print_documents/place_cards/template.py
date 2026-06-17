@@ -20,6 +20,7 @@ from data.print_documents.place_cards.data import (
     PlaceCardEvent,
     PlaceCardTournament,
     PlaceCardPairing,
+    PlaceCardTeam,
 )
 from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.items import (
@@ -282,6 +283,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
         players: list[PlaceCardPlayer],
         boards: list[PlaceCardBoard],
         pairings: list[PlaceCardPairing],
+        teams: list[PlaceCardTeam],
         card_width: str,
         card_height: str,
         preview: bool,
@@ -310,6 +312,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             'players': players,
             'boards': boards,
             'pairings': pairings,
+            'teams': teams,
             'items': items,
             'preview': preview,
         }
@@ -335,6 +338,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             pairings=self.type.pairings(
                 tournament, round_, board_numbers=board_numbers
             ),
+            teams=self.type.teams(tournament),
             card_width=f'{self.width}{self.unit}',
             card_height=f'{(2 if mirror or any(item.back and item.display for item in self.items) else 1) * self.height}{self.unit}',
             preview=False,
@@ -355,6 +359,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 players=self.type.preview_players(),
                 boards=self.type.preview_boards(),
                 pairings=self.type.preview_pairings(),
+                teams=self.type.preview_teams(),
                 card_width=f'{self.width / 2 + 1}{self.unit}',
                 card_height=f'{(2 if any(item.back and item.display for item in self.items) else 1) * self.height / 2 + (1.0 / (1.0 if self.unit == "mm" else 25.4))}{self.unit}',
                 preview=True,

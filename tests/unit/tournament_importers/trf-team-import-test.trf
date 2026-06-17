@@ -1,0 +1,72 @@
+012 Swiss
+032 FRA
+042 2026/05/29
+052 2026/05/29
+062 26
+072 25
+082 5
+132
+142 3
+152 W
+162  P 5.0
+172 FIDON
+182 Sharly Chess
+192 FIDE_TEAM_TYPEA_MP_GP
+212 PTS,WIN,BH,AOB
+352 WBBW
+362 TW 3.0   TD 1.0   TL 0.0
+
+### SSSS sTTT NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN RRRR FFF IIIIIIIIIII BBBB/BB/BB PPPP RRRR  1111 1 1  2222 2 2  3333 3 3
+001    1 m    SIMON, Vincent                    1997 FRA                         0.0    9  0000 - U     2 w
+001    2 w    BERTRAND, Christine               1980 FRA                         0.0   21               1 b
+001    3 w    PETIT, Camille                    1958 FRA                         0.0   22
+001    4 m    RICHARD, Michel                   1949 FRA                         0.0   23
+001    5 m    GARNIER, Marc                     1752 FRA                         0.0    3    16 b 0  0000 - U
+001    6 m    DURAND, Maxime                    1749 FRA                         1.0   15    23 b 1    25 b
+001    7 m    BEC, Alain                        1738 FRA    36058980 1956/07/22  0.5   17    18 w =    22 w
+001    8 m    FOURNIER, Thomas                  1719 FRA                         0.0   10  0000 - U    19 b
+001    9 m    MULLER, Julien                    1684 FRA                         0.5    1    11 b =  0000 - U
+001   10 m    AUBRY, Pascal                     1673 FRA    20671806 1968/09/02  1.0   14    21 w 1    23 b
+001   11 m    DURAND, Patrick                   1645 FRA                         0.5   18     9 w =    24 w
+001   12 m    PLAT, Sammy                       1556 FRA    20670320 1998/05/12  0.0   24
+001   13 w    PETIT, Sylvie                     1552 FRA                         0.0   25
+001   14 m    BERNARD, Alexandre                1481 FRA                         1.0   11    17 b 1
+001   15 m    MINETTO, Ludovic                  1473 FRA   653054768 1968/05/09  1.0   12    26 b 1
+001   16 m    MARTINEZ, Antoine                 1457 FRA                         1.0   13     5 w 1
+001   17 m    ROUX, Bernard                     1420 FRA                         0.0    4    14 w 0  0000 - U
+001   18 m    BERNARD, Vincent                  1403 FRA                         0.5    2     7 b =  0000 - U
+001   19 m    PETER, Bastien                         FRA   651097079 2012/12/16  0.0   20    22 b 0     8 w
+001   20 m    LAMBERT, Marc                     1296 FRA                         0.0   26
+001   21 m    DUBOIS, Pierre                    1295 FRA                         0.0    6    10 b 0  0000 - U
+001   22 m    DUBOIS, Christian                 1272 FRA                         1.0   16    19 w 1     7 b
+001   23 m    GARCIA, Pierre                    1272 FRA                         0.0   19     6 w 0    10 w
+001   24 m    FOURNIER, Daniel                  1259 FRA                         0.0    8  0000 - U    11 b
+001   25 w    MOREL, Patricia                   1219 FRA                         0.0    7  0000 - U     6 w
+001   26 m    HENRY, Philippe                   1206 FRA                         0.0    5    15 w 0  0000 - U
+
+### SSS NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN FFFFF EEEEEE MMMMMM GGGGGG RRR  PPP1 PPP2 PPP3 PPP4
+310   1 ERP A                            ERP A      0    3.0    3.5         7   10   15   14
+310   2 Crest                            CREST      0    4.0    2.5        19   16    6   11
+310   3 ERP B                            ERP B      0    2.0    5.5        21   18   26   17
+310   4 Lyon olympic Echecs              LYON       0    3.0   11.5        23   22    5    9
+310   5 Tour de chartreuse A             TOUR       0    3.0    5.0         8    1   25   24
+
+### MMMM GGGG RR1 RR2 RR3
+320  2.0  5.0   5   3
+
+### RRR TT1 TT2 PPP1 PPP2 PPP3 PPP4
+300   1   1   3   10   15    7   14
+300   1   3   1   21   26   18   17
+300   1   4   2   22    5   23    9
+300   1   2   4   19   16    6   11
+300   2   4   1   23   22    5    9
+300   2   1   4   10    7 0000 0000
+300   2   2   5   19    2    6   11
+300   2   5   2    8    1   25   24
+
+### SSSS sCCC NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN RRRR OOO IIIIIIIIIII BBBB/BB/BB
+FRA    7    A                                        ARA      Y02046
+FRA   10    A                                        BRE      C69548
+FRA   12    A                                        BRE      C50100
+FRA   15    A                                        ARA      W56839
+FRA   19    A                                        IDF      U50340

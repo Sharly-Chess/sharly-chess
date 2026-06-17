@@ -1,0 +1,27 @@
+<div class="modal-dialog input-screen-result-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">{{ _('Check-in') }}</div>
+        </div>
+        <div class="modal-body">
+            <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center">
+                <button
+                    class="result-button white text-black bg-white ms-auto me-auto btn fs-4 fw-bold p-3"
+                    style="width: fit-content;"
+                    hx-patch="{{ url_for('user-team-toggle-check-in', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, team_id=team.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >{% if not team.check_in %}{{ _('CHECK-IN') }}{% else %}{{ _('CHECK-OUT') }}{% endif %}<br/><br/>{{ team.name }}</button>
+            </div>
+        </div>
+        <div class="modal-footer row d-flex align-items-center justify-content-center">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="result-button btn-secondary col-3 ms-auto me-auto btn fs-4 p-3"
+            >
+                {{ _('Cancel') }}
+            </button>
+        </div>
+    </div>
+</div>

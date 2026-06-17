@@ -1,0 +1,331 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div style="--bs-modal-width: min(92vw, 560px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header d-flex flex-column">
+            <div class="modal-title fs-4 fw-bold w-100">
+                {{ _('Prohibited pairings') }}
+            </div>
+            <div class="text-muted small w-100">
+                {{ _('Round #%(round)d', round=pp_round) }}
+            </div>
+        </div>
+        <div class="modal-body">
+            {% if pp_locked %}
+                {# Round already paired → frozen snapshot, read-only. #}
+                <div class="text-muted small mb-3">
+                    <i class="bi-lock-fill pe-1"></i>
+                    {{ _('This round is paired; the prohibited pairings used are frozen.') }}
+                </div>
+                {% if pp_snapshot_groups %}
+                    <ul class="list-group">
+                        {% for group in pp_snapshot_groups %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <span class="badge {{ 'text-bg-danger' if group.is_hard else 'text-bg-secondary' }} me-2 flex-shrink-0">
+                                    {{ _('Hard') if group.is_hard else _('Soft') }}
+                                </span>
+                                <span class="text-muted small me-2 flex-shrink-0">({{ group.count }})</span>
+                                <span>{{ group.members | join(', ') }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if pp_protect_rank is not none %}
+                        <div class="mt-2">
+                            <a
+                                class="small"
+                                data-bs-toggle="collapse"
+                                href="#pp-applied-groups"
+                                role="button"
+                            >
+                                <i class="bi-chevron-down pe-1"></i>
+                                {{ _('Relaxed: top %(n)d protected', n=pp_protect_rank) }}
+                            </a>
+                            <div class="collapse mt-1" id="pp-applied-groups">
+                                {% if pp_relaxed_groups %}
+                                    <ul class="list-group">
+                                        {% for group in pp_relaxed_groups %}
+                                            <li class="list-group-item py-1 small">
+                                                <div>
+                                                    <span class="text-muted">{{ _('Protected core (%(count)d):', count=group.protected | length) }}</span>
+                                                    {{ group.protected | join(', ') }}
+                                                </div>
+                                                {% if group.relaxed %}
+                                                    <div>
+                                                        <span class="text-muted">{{ _('…each also kept apart from (%(count)d):', count=group.relaxed | length) }}</span>
+                                                        {{ group.relaxed | join(', ') }}
+                                                    </div>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <div class="fst-italic small">
+                                        {{ _('All soft separations relaxed.') }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="fst-italic">-</div>
+                {% endif %}
+            {% else %}
+                {# ---- Dimension (auto grouping) ---- #}
+                <form
+                    id="pp-config-form"
+                    hx-patch="{{ url_for(
+                        'admin-prohibited-pairings-config',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=pp_round,
+                    ) }}"
+                    hx-trigger="change"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    {% set _pp_lock_tooltip = _(
+                        'Set by the rule set [%(name)s].', name=pp_rule_set_name
+                    ) if pp_forced_by_rule_set else '' %}
+                    <div class="row gy-2 gx-3 align-items-center">
+                        <div class="col-12 d-flex align-items-center gap-3">
+                            <div class="flex-grow-1">
+                                {{ admin_macros.select_input(
+                                    name='dimension',
+                                    label=_('%(string)s:', string=_('Avoid pairing by')),
+                                    tooltip_text=_(
+                                        'Automatically build groups of %(members)s '
+                                        'sharing the chosen attribute; members of '
+                                        'the same group are kept from being paired '
+                                        'together.',
+                                        members=_('teams') if pp_is_team else _('players'),
+                                    ),
+                                    select_options=pp_dimension_options,
+                                    disabled=pp_forced_by_rule_set,
+                                    input_tooltip=_pp_lock_tooltip,
+                                    data={'dimension': pp_dimension},
+                                ) }}
+                            </div>
+                            <div class="flex-shrink-0">
+                                {{ admin_macros.switch_input(
+                                    name='dimension_is_hard',
+                                    placeholder=_('Hard constraint'),
+                                    tooltip_text=_(
+                                        'A hard constraint is always enforced. '
+                                        'A soft constraint is relaxed only as much '
+                                        'as needed when pairing is otherwise '
+                                        'impossible, starting with the weakest '
+                                        'players.'
+                                    ),
+                                    disabled=pp_forced_by_rule_set,
+                                    input_tooltip=_pp_lock_tooltip,
+                                    data={'dimension_is_hard': 'on' if pp_dimension_is_hard else ''},
+                                ) }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <script>
+                    // select2 fires a jQuery 'change' that htmx's native
+                    // listener misses — relay it to the config form.
+                    $('#dimension').on('change', function () {
+                        htmx.trigger(
+                            document.getElementById('pp-config-form'), 'change'
+                        );
+                    });
+                </script>
+
+                {% if pp_dimension %}
+                    <div class="mt-2">
+                        <a
+                            class="small"
+                            data-bs-toggle="collapse"
+                            href="#pp-auto-groups"
+                            role="button"
+                        >
+                            <i class="bi-chevron-down pe-1"></i>
+                            {% trans count=pp_auto_groups | length -%}
+                                {{ count }} automatic group
+                            {%- pluralize -%}
+                                {{ count }} automatic groups
+                            {%- endtrans %}
+                        </a>
+                        <div class="collapse mt-1" id="pp-auto-groups">
+                            {% if pp_auto_groups %}
+                                <ul class="list-group">
+                                    {% for group in pp_auto_groups %}
+                                        <li class="list-group-item py-1 small">
+                                            <span class="fw-bold">{{ group.label }}</span>
+                                            <span class="text-muted">({{ group.count }})</span>
+                                            <div class="text-muted">{{ group.members | join(', ') }}</div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="fst-italic small">
+                                    {{ _('No group of two or more members.') }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <hr class="my-3" />
+
+                {# ---- Manual groups ---- #}
+                <div class="d-flex align-items-center mb-2">
+                    <h6 class="text-uppercase small fw-bold text-muted mb-0 flex-grow-1">
+                        {{ _('Manual groups') }}
+                    </h6>
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary"
+                        {% if pp_show_manual_form %}disabled{% endif %}
+                        hx-get="{{ url_for(
+                            'admin-prohibited-pairings-manual-form',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=pp_round,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <i class="bi-plus-circle pe-1"></i>{{ _('Add group') }}
+                    </button>
+                </div>
+
+                {% if pp_manual_groups %}
+                    <ul class="list-group mb-2">
+                        {% for group in pp_manual_groups %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <span class="badge {{ 'text-bg-danger' if group.is_hard else 'text-bg-secondary' }} me-2 flex-shrink-0">
+                                    {{ _('Hard') if group.is_hard else _('Soft') }}
+                                </span>
+                                <span class="flex-grow-1">
+                                    {{ group.members | join(', ') }}
+                                </span>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-secondary ms-2"
+                                    {% if pp_show_manual_form %}disabled{% endif %}
+                                    hx-get="{{ url_for(
+                                        'admin-prohibited-pairings-manual-form',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=pp_round,
+                                    ) }}?index={{ group.index }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                >
+                                    <i class="bi-pencil-fill"></i>
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-danger ms-1"
+                                    {% if pp_show_manual_form %}disabled{% endif %}
+                                    hx-delete="{{ url_for(
+                                        'admin-prohibited-pairings-manual-delete',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=pp_round,
+                                        index=group.index,
+                                    ) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                >
+                                    <i class="bi-trash-fill"></i>
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if pp_show_manual_form %}
+                    {% set _selected = data.get('member_ids', '').split(',') if data.get('member_ids') else [] %}
+                    <div class="form-fields-container">
+                        <form
+                            id="pp-manual-form"
+                            hx-post="{{ url_for(
+                                'admin-prohibited-pairings-manual-save',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=pp_round,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
+                            {% if pp_manual_form_index is not none %}
+                                <input type="hidden" name="index" value="{{ pp_manual_form_index }}">
+                            {% endif %}
+                            <input type="hidden" id="pp-member-ids" name="member_ids"
+                                value="{{ data.get('member_ids', '') }}">
+                            <label class="form-label small mb-0">
+                                {{ _('Teams') if pp_is_team else _('Players') }}
+                            </label>
+                            {{ admin_macros.select_content(
+                                id='pp-member-select',
+                                name='',
+                                options=pp_member_options,
+                                selected=_selected,
+                                multiple=true,
+                                placeholder=_('Select members'),
+                            ) }}
+                            {% if errors.get('member_ids') %}
+                                <div class="text-danger small">{{ errors['member_ids'] }}</div>
+                            {% endif %}
+                            <div class="mt-2">
+                                {{ admin_macros.switch_input(
+                                    name='is_hard',
+                                    label='',
+                                    placeholder=_('Hard constraint'),
+                                    data={'is_hard': data.get('is_hard', 'on')},
+                                ) }}
+                            </div>
+                            <div class="d-flex gap-2 mt-3">
+                                <div class="flex-grow-1"></div>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary btn-sm text-nowrap"
+                                    hx-get="{{ url_for(
+                                        'admin-prohibited-pairings-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=pp_round,
+                                    ) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                >
+                                    <i class="bi-x-circle pe-1"></i>{{ _('Cancel') }}
+                                </button>
+                                <button type="submit" form="pp-manual-form"
+                                    class="btn btn-outline-primary btn-sm text-nowrap">
+                                    <i class="bi-floppy-fill pe-1"></i>{{ _('Save group') }}
+                                </button>
+                            </div>
+                        </form>
+                        <script>
+                            (function () {
+                                var sync = function () {
+                                    var vals = $('#pp-member-select').val() || [];
+                                    $('#pp-member-ids').val(vals.join(','));
+                                };
+                                $('#pp-member-select').on('change', sync);
+                                sync();
+                            })();
+                        </script>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

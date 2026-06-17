@@ -42,6 +42,12 @@ msgstr "Indemnités d'arbitrage"
 msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
 
+msgid "At most 3 men allowed on the roster ({n} listed)."
+msgstr "Au plus 3 hommes autorisés dans la liste des joueur·euses ({n} trouvés)."
+
+msgid "At most 3 women allowed on the roster ({n} listed)."
+msgstr "Au plus 3 femmes autorisées dans la liste des joueur·euses ({n} trouvées)."
+
 msgid "Auto-upload disabled"
 msgstr "Mise en ligne automatique désactivée"
 
@@ -53,6 +59,9 @@ msgstr "B - Loisir"
 
 msgid "Back"
 msgstr "Retour"
+
+msgid "Berlin"
+msgstr "Berlin"
 
 msgid "Black pairings are supposed to have an opponent"
 msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
@@ -110,6 +119,9 @@ msgstr "Exemple : %(num)d"
 msgid "E.g.: %(string)s"
 msgstr "Exemple : %(string)s"
 
+msgid "Each board's score is multiplied by a coefficient — the top board by N, the next by N-1, and so on down to the bottom board by 1 — then summed across all rounds. Rewards results on the higher boards (FFE rules §11.1)."
+msgstr "Le score de chaque échiquier est multiplié par un coefficient : le plateau supérieur par N, le suivant par N-1, et ainsi de suite jusqu'au plateau inférieur par 1. Les scores sont ensuite additionnés pour toutes les rondes. Récompense les meilleurs scores sur les premiers échiquiers (règlement FFE §11.1)."
+
 msgid "Edit the properties of the tournament."
 msgstr "Modifier les propriétés du tournoi."
 
@@ -128,6 +140,9 @@ msgstr "Licence FFE expirée"
 msgid "FFE"
 msgstr "FFE"
 
+msgid "FFE 4-board team cup. 5-player roster cap, max Elo 1800 per player, mixed-system schedule (Swiss / Molter / round-robin)."
+msgstr "Coupe FFE par équipes à 4 échiquiers. Effectif limité à 5 joueur·euses, Elo maximum de 1800 pour chaque joueur·euse, appariements (Suisse / Molter / toutes rondes)."
+
 msgid "FFE Form:"
 msgstr "Formulaire FFE :"
 
@@ -136,6 +151,12 @@ msgstr "Licence FFE"
 
 msgid "FFE Licence no. *** LICENCE NUMBER"
 msgstr "N° licence FFE"
+
+msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team matches, mixed Suisse / Molter / round-robin schedule. Roster must consist of women players only."
+msgstr "Nationale 1 / Nationale 2 Féminine FFE. effectif de 5 joueuses, matchs par équipe de 4 échiquiers, appariement Suisse / Molter / toutes rondes."
+
+msgid "FFE Women championship (N1F / N2F)"
+msgstr "Championnat de France Féminin (N1F / N2F)"
 
 msgid "FFE arbiter title"
 msgstr "Titre d'arbitre FFE"
@@ -173,6 +194,9 @@ msgstr "Licence FFE B (loisir)"
 
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
+
+msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
+msgstr "Coupe de la parité FFE. Effectif de 6 joueur·euses (3F + 3H), 2 femmes et 2 hommes alignés à chaque ronde, Elo total de l'équipe plafonné à 8000."
 
 msgid "FFE password not defined."
 msgstr "Mot de passe FFE non défini."
@@ -226,6 +250,12 @@ msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche d
 msgid "Fédération Française des Échecs"
 msgstr "Fédération Française des Échecs"
 
+msgid "Game points \"for\""
+msgstr "Points de partie « pour »"
+
+msgid "Game points differential"
+msgstr "Différentiel de points de parties"
+
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
 msgstr "Cependant, l'ordre des résultats de la dernière ronde restera le même que ceux de Sharly Chess."
 
@@ -255,6 +285,9 @@ msgstr "Format invalide (attendu : {format})."
 
 msgid "JSON file (papi-converter format)"
 msgstr "Fichier JSON (format papi-converter)"
+
+msgid "Jean-Claude Loubatière Cup"
+msgstr "Coupe Jean-Claude Loubatière"
 
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
@@ -295,6 +328,9 @@ msgstr "Types de licence"
 msgid "Licence:"
 msgstr "Licence :"
 
+msgid "Lowest own average rating"
+msgstr "Plus faible moyenne Elo"
+
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
 
@@ -310,14 +346,26 @@ msgstr "Buchholz médian"
 msgid "Minimum FFE licence required (only applies to players of the FRA federation)."
 msgstr "Licence FFE minimale requise (ne s'applique que aux joueur·euses de la fédération FRA)."
 
+msgid "Mixed Cup"
+msgstr "Coupe de la Parité"
+
 msgid "Modified"
 msgstr "Modifié"
+
+msgid "Molter (FFE)"
+msgstr "Molter (FFE)"
 
 msgid "N - Expired *** FFE licence"
 msgstr "N - Expirée"
 
 msgid "Name"
 msgstr "Nom"
+
+msgid "Need at least 2 men on the roster ({n} listed)."
+msgstr "Au moins 2 hommes sont requis dans l'effectif ({n} trouvés)."
+
+msgid "Need at least 2 women on the roster ({n} listed)."
+msgstr "Au moins 2 femmes sont requises dans l'effectif ({n} trouvées)."
 
 msgid "Never uploaded"
 msgstr "Jamais mis en ligne"
@@ -333,6 +381,9 @@ msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 
 msgid "No internet connection"
 msgstr "Aucune connexion à internet"
+
+msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
+msgstr "Aucun composition de {n} joueur·euses légale: plus faible somme {sum} > plafond {cap}."
 
 msgid "No tournament configured for FFE upload."
 msgstr "Aucun tournoi configuré pour la mise en ligne FFE."
@@ -358,11 +409,20 @@ msgstr "PAPI"
 msgid "Page of the tournament on the FFE website."
 msgstr "Page du tournoi sur le site FFE."
 
+msgid "Papi export is not available for team events."
+msgstr "L'export Papi n'est pas possible pour les évènements par équipe."
+
+msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
+msgstr "L'export Papi ne supporte que les systèmes de points de partie standard (1 / 0.5 / 0) ou « victoire à 3 points » (3 / 1 / 0). Valeurs actuelles : {win} / {draw} / {loss}."
+
 msgid "Papi file"
 msgstr "Fichier Papi"
 
 msgid "Pending"
 msgstr "En attente"
+
+msgid "Player rating above {cap}: {names}."
+msgstr "Joueur·euses classé·e au dessus de {cap} : {names}."
 
 msgid "Players:"
 msgstr "Joueur·euses :"
@@ -375,6 +435,9 @@ msgstr "Classement par ligue après la ronde n°{round}"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
+
+msgid "Roster must consist of women players only: {names}."
+msgstr "Seules les femmes sont autorisées dans l'effectif : {names}."
 
 msgid "Rules successfully uploaded."
 msgstr "Le règlement a été mis en ligne avec succès."
@@ -411,8 +474,17 @@ msgstr "Certains numéros de table peuvent varier entre Sharly Chess et le site 
 msgid "Standard"
 msgstr "Standard"
 
+msgid "Standard FFE Molter"
+msgstr "Molter FFE standard"
+
 msgid "Statuses"
 msgstr "Statuts"
+
+msgid "Sum over every round of (points for − points against), where each match score is floored at 0 before the subtraction. Byes count the awarded score against nothing."
+msgstr "La somme pour change ronde des points pour moins les points contre, où le score de chaque match est ramené à 0 avant soustraction. Le score accordé aux byes est celui des matchs sans adversaire."
+
+msgid "Sum over every round of the team's points for — each match score floored at 0. FFE Loubatière Cup rules §4.4.a."
+msgstr "La somme pour chaque ronde des points de l'équipe, où le score de chaque match est ramené à 0. Règlement Coupe Jean-Claude Loubatière FFE §4.4.a."
 
 msgid "T1 Cover page"
 msgstr "T1 Page de garde"
@@ -458,6 +530,9 @@ msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 let
 
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
 msgstr "Les points des joueur·euses et la numérotation des échiquiers peuvent être différents sur le site web de la FFE car Sharly Chess utilise les numéros d'appariement pour les groupes d'appariement (la FFE utilise des seuils Elo)."
+
+msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
+msgstr "La moyenne des classements des joueur·euses de l'équipe, pondérée par le nombre de matchs disputés. L'équipe avec la plus faible moyenne gagne au départage."
 
 msgid "Tournament"
 msgstr "Tournoi"
@@ -510,7 +585,7 @@ msgstr "Valeur inconnue (attendu : {expected})."
 msgid "Unknown value [{value}]"
 msgstr "Valeur [{value}] inconnue."
 
-msgid "Unrated *** SINGULAR"
+msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
 msgstr "Non-classé·e"
 
 msgid "Up to date"
@@ -578,4 +653,14 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
+
+msgid "{n} forfeited board above a board on which a game was played, counted as -1."
+msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
+msgstr[0] "{n} échiquier après un échiquier perdu par forfait, compté -1."
+msgstr[1] "{n} échiquiers après un échiquier perdu par forfait, comptés -1 chacun."
+
+msgid "{n} game lost by forfeit, counted as -1."
+msgid_plural "{n} games lost by forfeit, counted as -1 each."
+msgstr[0] "{n} partie perdue par forfait, comptée -1."
+msgstr[1] "{n} parties perdues par forfait, comptées -1."
 

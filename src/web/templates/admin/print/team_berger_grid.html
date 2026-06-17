@@ -1,0 +1,92 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'round-robin.css' %}
+    <style>
+        .rr-table th,
+        .rr-table td {
+            padding: 4pt 6pt;
+        }
+        .rr-table .team-separator td {
+            border-top: 1.5pt solid #000;
+        }
+        .rr-table th.team-col-separator,
+        .rr-table td.team-col-separator {
+            border-left: 1.5pt solid #000;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {% if by_player %}
+        <table class="rr-table">
+            <thead class="rr-header">
+                <tr class="rr-header">
+                    <th class="rr-number">{{ _('No. *** NB COLUMN HEADER') }}</th>
+                    <th class="player">{{ _('Name *** NAME COLUMN HEADER') }}</th>
+                    <th class="player">{{ _('Team') }}</th>
+                    {% for header_row in player_rows %}
+                        <th class="{% if header_row.first_of_team and not loop.first %}team-col-separator{% endif %}">{{ header_row.grid_id }}</th>
+                    {% endfor %}
+                    <th class="result">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in player_rows %}
+                    {% set tp = row.tournament_player %}
+                    <tr class="row gy-2 gx-3 {% if loop.index is even %}even{% else %}odd{% endif %} {% if row.first_of_team and not loop.first %}team-separator{% endif %}">
+                        <td class="number">{{ row.grid_id }}</td>
+                        <td class="player">{{ tp.full_name }}</td>
+                        <td class="player">{% if row.first_of_team %}{{ row.team.name }}{% endif %}</td>
+                        {% for opponent_row in player_rows %}
+                            {% set _col_sep = 'team-col-separator' if opponent_row.first_of_team and not loop.first else '' %}
+                            {% if opponent_row.grid_id == row.grid_id %}
+                                <td class="result self-game {{ _col_sep }}"></td>
+                            {% else %}
+                                <td class="result {{ _col_sep }}">
+                                    {{ player_cells[tp.id][opponent_row.tournament_player.id] | join(' | ') }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        <td class="result">{{ row.points_str }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <table class="rr-table">
+            <thead class="rr-header">
+                <tr class="rr-header">
+                    <th class="rr-number">{{ _('No. *** NB COLUMN HEADER') }}</th>
+                    <th class="player">{{ _('Team') }}</th>
+                    {% for berger_number in range(1, teams|length + 1) %}
+                        <th>{{ berger_number }}</th>
+                    {% endfor %}
+                    <th class="result">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                    <tr class="row gy-2 gx-3 {% if loop.index is even %}even{% else %}odd{% endif %}">
+                        <td class="number">{{ grid_id_by_team_id[team.id] }}</td>
+                        <td class="player">{{ team.name }}</td>
+                        {% for opponent in teams %}
+                            {% if opponent.id == team.id %}
+                                <td class="result self-game"></td>
+                            {% else %}
+                                <td class="result">
+                                    {{ cells[team.id][opponent.id]
+                                        | selectattr('score')
+                                        | map(attribute='score')
+                                        | join(' | ') }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                        {% set standing = standings_by_team_id.get(team.id) %}
+                        <td class="result">{% if standing %}{{ '%g'|format(standing.mp if tournament.primary_score.name == 'MATCH_POINTS' else standing.gp) }}{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

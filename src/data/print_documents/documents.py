@@ -20,7 +20,11 @@ from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.event import Event
 from data.norms import ForecastRequirement
 from data.pairings.engines import RoundRobinPairingEngine
-from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
+from data.pairings.systems import (
+    RoundRobinPairingSystem,
+    SwissPairingSystem,
+    TeamRoundRobinPairingSystem,
+)
 from data.player import TournamentPlayer, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
@@ -33,6 +37,9 @@ from data.print_documents.options import (
     QRCodeNetworkPrintOption,
     QRCodePrintOption,
     RoundPrintOption,
+    MatchSheetSelectionPrintOption,
+    MatchSheetPageBreakPrintOption,
+    TeamBergerGridPlayersPrintOption,
     GridPlayerSortPrintOption,
     ListPlayerSortPrintOption,
     ShowWarningsPrintOption,
@@ -62,7 +69,7 @@ from data.print_documents.individual_teams import IndividualTeamType, Individual
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.enum import Result, TitleNorm, PlayerGender
+from utils.enum import Result, TitleNorm, PlayerGender, ScoreType
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
 
@@ -92,11 +99,26 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             AuthAction.GENERATE_DOCUMENTS
         )
 
+    hide_for_team_events: bool = False
+    hide_for_individual_events: bool = False
+
     @classmethod
     def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
         if not allowed_tournaments and (
             TournamentPrintOption in cls.available_options()
             or TournamentsPrintOption in cls.available_options()
+        ):
+            return False
+        if (
+            cls.hide_for_team_events
+            and allowed_tournaments
+            and any(t.event.is_team_event for t in allowed_tournaments)
+        ):
+            return False
+        if (
+            cls.hide_for_individual_events
+            and allowed_tournaments
+            and any(not t.event.is_team_event for t in allowed_tournaments)
         ):
             return False
         return True
@@ -277,6 +299,8 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
 
 class PlayerCheckinListPrintDocument(PlayerPrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'player-checkin-list'
@@ -353,6 +377,8 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
 
 
 class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'individual-ranking'
@@ -373,6 +399,8 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
 
 
 class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'crosstable'
@@ -567,6 +595,8 @@ class BoardPrintDocument(PrintDocument, ABC):
 
 
 class PairingPrintDocument(PrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'pairings'
@@ -661,6 +691,8 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
 
 
 class ResultPrintDocument(BoardPrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'results'
@@ -679,7 +711,276 @@ class ResultPrintDocument(BoardPrintDocument):
         return True
 
 
+class MatchSheetsPrintDocument(PrintDocument):
+    """One signature-ready table per team match in the round. Used by
+    arbiters to capture each match's individual results + captains'
+    signatures. Selection option lets the arbiter print only a subset
+    of matches; the page-break option prints one match per page."""
+
+    hide_for_individual_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'match-sheets'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Match sheets')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            RoundPrintOption,
+            MatchSheetSelectionPrintOption,
+            MatchSheetPageBreakPrintOption,
+        ]
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/match_sheets.html'
+
+    @property
+    def at_round(self) -> int:
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
+
+    @property
+    def title(self) -> str:
+        return _('Match sheets for round #{round}').format(round=self.at_round)
+
+    @property
+    def page_break(self) -> bool:
+        return bool(self._get_option(MatchSheetPageBreakPrintOption).value)
+
+    @property
+    def flat_mode(self) -> bool:
+        """Fixed-table team systems pair flat boards with no match
+        envelopes — the sheet becomes a single round sheet listing the
+        boards, and the selection option selects boards."""
+        return not self.tournament.pairing_system.paired_by_team
+
+    @property
+    def team_boards(self):
+        if self.flat_mode:
+            return []
+        self.tournament.set_for_round(self.at_round)
+        all_boards = [
+            tb
+            for tb in self.tournament.get_round_team_boards(self.at_round)
+            if tb.stored_team_board.team_b_id is not None
+        ]
+        selected_ids = set(self._get_option(MatchSheetSelectionPrintOption).value or [])
+        if not selected_ids:
+            return all_boards
+        return [tb for tb in all_boards if tb.id in selected_ids]
+
+    @property
+    def flat_boards(self):
+        if not self.flat_mode:
+            return []
+        self.tournament.set_for_round(self.at_round)
+        boards = sorted(
+            self.tournament.get_round_boards(self.at_round),
+            key=lambda b: b.index,
+        )
+        selected_ids = set(self._get_option(MatchSheetSelectionPrintOption).value or [])
+        if not selected_ids:
+            return boards
+        return [b for b in boards if b.identifier in selected_ids]
+
+    @property
+    def flat_board_refs(self) -> dict[int, tuple[str, str]]:
+        """``board.index`` → table player references (white first, e.g.
+        ``('A1', 'B3')``) for fixed-table systems; empty otherwise.
+        Straight from the pairing table: the reference identifies the
+        SEAT prescribed by the table, even when the players actually
+        on the board diverge from it (substitutions, manual edits)."""
+        from data.pairings.fixed_table import FixedTablePairingEngine
+
+        engine = self.tournament.pairing_variation.engine
+        if not isinstance(engine, FixedTablePairingEngine):
+            return {}
+        return dict(enumerate(engine.board_references(self.tournament, self.at_round)))
+
+    @property
+    def team_letter_by_id(self) -> dict[int, str]:
+        """Team id → table letter for round-robin team systems, whose
+        FFE sheets reference players as ``A1``/``B2`` (team letter +
+        board). Empty for other systems."""
+        if not isinstance(self.tournament.pairing_system, TeamRoundRobinPairingSystem):
+            return {}
+        teams = sorted(
+            self.tournament.teams,
+            key=lambda t: (
+                t.pairing_number if t.pairing_number is not None else float('inf'),
+                t.name.lower(),
+            ),
+        )
+        return {team.id: chr(ord('A') + i) for i, team in enumerate(teams)}
+
+    @property
+    def match_sheet_options(self) -> list[tuple[int, str]]:
+        """``(id, label)`` rows feeding the selection checkboxes: one per
+        paired team match, or one per board for flat systems."""
+        self.tournament.set_for_round(self.at_round)
+        rows: list[tuple[int, str]] = []
+        if self.flat_mode:
+            for board in sorted(
+                self.tournament.get_round_boards(self.at_round),
+                key=lambda b: b.index,
+            ):
+                wtp = board.optional_white_tournament_player
+                btp = board.black_tournament_player
+                label = _('%(a)s vs %(b)s').format(
+                    a=wtp.full_name if wtp else '',
+                    b=btp.full_name if btp else '',
+                )
+                rows.append((board.identifier, f'{board.number}. {label}'))
+            return rows
+        for tb in self.tournament.get_round_team_boards(self.at_round):
+            stb = tb.stored_team_board
+            if stb.team_b_id is None:
+                continue
+            label = _('%(a)s vs %(b)s').format(
+                a=tb.team_a.name,
+                b=tb.team_b.name if tb.team_b else '',
+            )
+            rows.append((tb.id, label))
+        return rows
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        at_round = self._get_option(RoundPrintOption)
+        if at_round.value is None:
+            return
+        if at_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                at_round,
+            )
+        if at_round.value > self.tournament.current_round:
+            raise OptionError(
+                _(
+                    'There are no pairings for this round (last round '
+                    'with pairings: #{round}).'
+                ).format(round=self.tournament.current_round),
+                at_round,
+            )
+
+    def player_national_id(self, tournament_player) -> str:
+        """The player's national id, when a plugin provides one (via the
+        same hook that fills the TRF national records)."""
+        from data.input_output.trf.trf_data import TrfNationalPlayer
+
+        national_player = TrfNationalPlayer(player_id=0)
+        plugin_manager.hook_for_event(
+            self.tournament.event, 'augment_trf_national_player'
+        )(player=tournament_player, trf_national_player=national_player)
+        return national_player.national_id
+
+    @property
+    def arbiter_name(self) -> str | None:
+        arbiter = self.tournament.chief_arbiter
+        return arbiter.full_name if arbiter else None
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'team_boards': self.team_boards,
+            'flat_mode': self.flat_mode,
+            'flat_boards': self.flat_boards,
+            'flat_board_refs': self.flat_board_refs,
+            'team_letter_by_id': self.team_letter_by_id,
+            'page_break': self.page_break,
+            'at_round': self.at_round,
+            'arbiter_name': self.arbiter_name,
+            'player_national_id': self.player_national_id,
+        }
+
+
+class TeamRankingPrintDocument(PrintDocument):
+    """Team-tournament equivalent of :class:`PlayerRankingPrintDocument`.
+    Renders the team standings table (rank, team, played, W/D/L, MP/GP,
+    team tie-breaks) for the team event."""
+
+    hide_for_individual_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'team-ranking'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Team ranking')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, RoundPrintOption]
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/team_ranking.html'
+
+    @property
+    def ranking_round(self) -> int:
+        return (
+            self._get_option(RoundPrintOption).value
+            or self.tournament.max_ranking_round
+        )
+
+    @property
+    def title(self) -> str:
+        if self.ranking_round == 0:
+            return _('Team ranking before the first round')
+        return _('Team ranking after round #{round}').format(round=self.ranking_round)
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        ranking_round = self._get_option(RoundPrintOption)
+        if ranking_round.value is None:
+            return
+        if ranking_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                ranking_round,
+            )
+        if ranking_round.value > self.tournament.max_ranking_round:
+            raise OptionError(
+                _('This round is not finished (last finished: #{round}).').format(
+                    round=self.tournament.max_ranking_round
+                ),
+                ranking_round,
+            )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        primary_is_mp = (
+            self.tournament.pairing_system.paired_by_team
+            and self.tournament.primary_score == ScoreType.MATCH_POINTS
+        )
+        team_tie_breaks = [
+            tb for tb in self.tournament.tie_breaks if tb.supports_team_mode
+        ]
+        return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'standings': self.tournament.team_standings(after_round=self.ranking_round),
+            'primary_is_mp': primary_is_mp,
+            'team_tie_breaks': team_tie_breaks,
+        }
+
+
 class BergerGridPrintDocument(PrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'berger-grid'
@@ -807,7 +1108,185 @@ class BergerGridPrintDocument(PrintDocument):
         }
 
 
+class TeamBergerGridPrintDocument(PrintDocument):
+    """Berger crosstable for team round-robins. Unlike the individual
+    grid, team round-robins are paired round by round (lineups change
+    between rounds), so the encounter schedule is computed from the
+    Berger tables: played encounters show the match score, future ones
+    the round in which they will take place."""
+
+    hide_for_individual_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'team-berger-grid'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Berger grid')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, TeamBergerGridPlayersPrintOption]
+
+    @property
+    def title(self) -> str:
+        return self.name
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/team_berger_grid.html'
+
+    @property
+    def by_player(self) -> bool:
+        return bool(self._get_option(TeamBergerGridPlayersPrintOption).value)
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            isinstance(tournament.pairing_system, TeamRoundRobinPairingSystem)
+            for tournament in allowed_tournaments
+        )
+
+    def validate_options(self):
+        super().validate_options()
+        option = self._get_option(TournamentPrintOption)
+        if not isinstance(self.tournament.pairing_system, TeamRoundRobinPairingSystem):
+            raise OptionError(
+                _('This document is only available for Round-Robin tournaments.'),
+                option,
+            )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        from data.pairings.engines import _TeamRoundRobinEngine
+
+        tournament = self.tournament
+        engine = tournament.pairing_variation.engine
+        assert isinstance(engine, _TeamRoundRobinEngine)
+        teams = sorted(
+            tournament.teams,
+            key=lambda t: (
+                t.pairing_number if t.pairing_number is not None else float('inf'),
+                t.name.lower(),
+            ),
+        )
+        grid_id_by_team_id = {team.id: i + 1 for i, team in enumerate(teams)}
+
+        # One cell list per (team, opponent): each encounter is the
+        # scheduled round plus the match score once played.
+        cells: dict[int, dict[int, list[dict[str, Any]]]] = {
+            team.id: {opp.id: [] for opp in teams if opp.id != team.id}
+            for team in teams
+        }
+        boards_by_round_pair: dict[tuple[int, frozenset], Any] = {}
+        for round_ in range(1, tournament.rounds + 1):
+            for tb in tournament.get_round_team_boards(round_):
+                stb = tb.stored_team_board
+                if stb.team_b_id is None:
+                    continue
+                boards_by_round_pair[
+                    (round_, frozenset({stb.team_a_id, stb.team_b_id}))
+                ] = tb
+        for round_, pairs in engine.full_schedule(tournament).items():
+            for a_id, b_id in pairs:
+                if b_id is None:
+                    continue
+                tb = boards_by_round_pair.get((round_, frozenset({a_id, b_id})))
+                score_pair = tb.match_score_pair if tb is not None else None
+                for mine, theirs in ((a_id, b_id), (b_id, a_id)):
+                    if mine not in cells or theirs not in cells[mine]:
+                        continue
+                    score = None
+                    if score_pair is not None and tb is not None:
+                        a_score, b_score = score_pair
+                        score = (
+                            f'{a_score} – {b_score}'
+                            if tb.stored_team_board.team_a_id == mine
+                            else f'{b_score} – {a_score}'
+                        )
+                    cells[mine][theirs].append({'round': round_, 'score': score})
+
+        standings_by_team_id = {
+            entry['team'].id: entry for entry in tournament.team_standings()
+        }
+
+        # Player-level detail: one grid row per player, grouped by
+        # team, individual game results in the cells.
+        player_rows: list[dict[str, Any]] = []
+        player_cells: dict[int, dict[int, list[str]]] = {}
+        if self.by_player:
+            ordered_players = [
+                tournament.tournament_players_by_id[player.id]
+                for team in teams
+                for player in team.players
+                if player.id in tournament.tournament_players_by_id
+            ]
+            grid_id_by_player_id = {
+                tp.id: i + 1 for i, tp in enumerate(ordered_players)
+            }
+            for team in teams:
+                first = True
+                for player in team.players:
+                    tp = tournament.tournament_players_by_id.get(player.id)
+                    if tp is None:
+                        continue
+                    player_rows.append(
+                        {
+                            'tournament_player': tp,
+                            'grid_id': grid_id_by_player_id[tp.id],
+                            'team': team,
+                            'first_of_team': first,
+                        }
+                    )
+                    first = False
+            player_cells = {
+                tp.id: {opp.id: [] for opp in ordered_players if opp.id != tp.id}
+                for tp in ordered_players
+            }
+            points_by_player_id: dict[int, float] = {
+                tp.id: 0.0 for tp in ordered_players
+            }
+            for tp in ordered_players:
+                for pairing in tp.pairings.values():
+                    opponent_id = pairing.opponent_id
+                    if not opponent_id or opponent_id not in player_cells[tp.id]:
+                        continue
+                    if pairing.result == Result.NO_RESULT:
+                        continue
+                    player_cells[tp.id][opponent_id].append(
+                        pairing.result.to_berger_table
+                    )
+                    points_by_player_id[tp.id] += pairing.result.points(
+                        tournament.point_values
+                    )
+            for row in player_rows:
+                row['points_str'] = Utils.points_str(
+                    points_by_player_id[row['tournament_player'].id]
+                )
+            return {
+                'tournament': self.tournament,
+                'by_player': True,
+                'player_rows': player_rows,
+                'player_cells': player_cells,
+                'grid_id_by_player_id': grid_id_by_player_id,
+            }
+
+        return {
+            'tournament': self.tournament,
+            'by_player': False,
+            'teams': teams,
+            'grid_id_by_team_id': grid_id_by_team_id,
+            'cells': cells,
+            'standings_by_team_id': standings_by_team_id,
+        }
+
+
 class PrizeListPrintDocument(PrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'prize-list'
@@ -843,6 +1322,8 @@ class PrizeListPrintDocument(PrintDocument):
 
 
 class PrizeAssignmentPrintDocument(PrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'prize-assignment'
@@ -886,6 +1367,8 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
 
 class PrizeReceiptsPrintDocument(PrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'prize-receipts'
@@ -1026,7 +1509,7 @@ class StatisticsPrintDocument(PrintDocument):
         }
 
         if estimated_count:
-            rows[_('Unrated *** PLURAL')] = estimated_count
+            rows[_('Unrated *** PLURAL FOR UNRATED PLAYERS')] = estimated_count
 
         non_estimated_players = [
             player
@@ -1746,6 +2229,8 @@ class PlaceCardPrintDocument(PrintDocument):
 
 
 class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'individual-team-ranking'

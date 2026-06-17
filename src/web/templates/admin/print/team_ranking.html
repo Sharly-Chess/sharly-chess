@@ -1,0 +1,65 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'players.css' %}
+    .player-table { margin: 1.5rem auto 0; }
+{% endblock %}
+
+{% block content %}
+    <table class="player-table">
+        <thead>
+            <tr class="player-header">
+                <th class="header text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+                <th class="header text-start">{{ _('Team') }}</th>
+                <th class="header text-center">{{ _('Played') }}</th>
+                {% if primary_is_mp %}
+                    <th class="header text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</th>
+                    <th class="header text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</th>
+                    <th class="header text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</th>
+                    <th class="header text-center">{{ _('MP *** TEAM RANKING HEADER MATCH POINTS') }}</th>
+                {% else %}
+                    <th class="header text-center">{{ _('GP *** TEAM RANKING HEADER GAME POINTS') }}</th>
+                {% endif %}
+                {% for tie_break in team_tie_breaks %}
+                    <th class="header text-center">{{ tie_break.acronym }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in standings %}
+                <tr class="player-row {{ 'even' if loop.index is even else 'odd' }}">
+                    <td class="text-end">{{ row.rank }}</td>
+                    <td class="name text-start">{{ row.team.name }}</td>
+                    <td class="text-center">{{ row.played }}</td>
+                    {% if primary_is_mp %}
+                        <td class="text-center">{{ row.wins }}</td>
+                        <td class="text-center">{{ row.draws }}</td>
+                        <td class="text-center">{{ row.losses }}</td>
+                        <td class="points text-center">{{ '%g'|format(row.mp) }}</td>
+                    {% else %}
+                        <td class="points text-center">{{ '%g'|format(row.gp) }}</td>
+                    {% endif %}
+                    {% for tie_break in team_tie_breaks %}
+                        {% set value = row.tie_break_values[loop.index0] %}
+                        <td class="text-center">
+                            {% if tie_break.display_rank_delta %}
+                                {{ ('+%d'|format(value|int)) if value else '—' }}
+                            {% elif value == value|round(0) %}
+                                {{ value|int }}
+                            {% else %}
+                                {{ '%.2f'|format(value) }}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            {% if not standings %}
+                <tr>
+                    <td colspan="99" class="text-center">
+                        {{ _('No teams in this tournament.') }}
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

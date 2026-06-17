@@ -768,7 +768,7 @@ body[data-bs-theme=light] .btn-primary {
     color: black;
 }
 
-[data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary {
+[data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary, [data-bs-theme=dark] table.prominent .header td .btn-outline-primary {
     --bs-btn-color: var(--bs-body-bg);
     --bs-btn-border-color: var(--bs-body-bg);
     --bs-btn-hover-color: var(--bs-primary);
@@ -806,6 +806,41 @@ button.collapse-button .bi-chevron-down {
 button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     transform: rotate(-90deg);
 }
+
+.team-block-chevron {
+    display: inline-block;
+}
+.team-block-chevron.team-block-chevron-collapsed {
+    transform: rotate(-90deg);
+}
+.team-block-body-collapsed {
+    display: none !important;
+}
+
+.lineup-chosen,
+.lineup-ghost {
+    opacity: 0.3;
+}
+/* The floating clone follows the cursor — keep it at full opacity. */
+.lineup-drag {
+    opacity: 1 !important;
+}
+.lineup-slot.lineup-slot-hot {
+    border-color: var(--bs-primary) !important;
+    background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.15);
+}
+
+.color-chip {
+    display: inline-block;
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 1px solid #999;
+    border-radius: 2px;
+    vertical-align: middle;
+    margin-right: 0.4rem;
+}
+.color-chip-w { background: #ffffff; }
+.color-chip-b { background: #000000; }
 
 @keyframes spin {
     to {

@@ -1,0 +1,162 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{# Team group select + inline add/edit/delete, mirroring the schools
+   picker: groups created here are stored on the event and reused when
+   adding the next team. Swapped wholesale via re_target on the group
+   CRUD endpoints. #}
+<div id="team-group-container" class="gx-3">
+    <div class="d-flex gap-2 gy-2 gx-3">
+        <div class="flex-grow-1">
+            {{ admin_macros.select_input(
+                name='group_id',
+                label=_('%(string)s:', string=_('Affiliation')),
+                tooltip_text=_(
+                    'The organisation to which the team belongs (for example a club, league, or school). '
+                    'Affiliations may be used by pairing rules to avoid pairing related teams.'
+                ),
+                select_options=team_group_options,
+                tooltip_select=true,
+                search_placeholder=_('Search by name'),
+                data=data, errors=errors
+            ) }}
+        </div>
+        <div {{ macros.tooltip_attributes('info', _('Edit the selected affiliation.')) }}>
+            <button
+                id="team-group-edit-button"
+                type="button"
+                class="team-group-button btn btn-outline-primary text-nowrap"
+                hx-get="{{ url_for('admin-team-group-update-form', event_uniq_id=admin_event.uniq_id) }}"
+                hx-vals="js:{group_id: $('#group-id').val()}"
+                {% if show_team_group_form %}disabled{% endif %}
+            >
+                <i class="bi-pencil-fill"></i>
+            </button>
+        </div>
+        <div {{ macros.tooltip_attributes('info', _('Add a new affiliation to the options.'), 'top') }}>
+            <button
+                id="team-group-add-button"
+                type="button"
+                class="team-group-button btn btn-outline-primary text-nowrap"
+                hx-get="{{ url_for('admin-team-group-add-form', event_uniq_id=admin_event.uniq_id) }}"
+                hx-vals="js:{group_id: $('#group-id').val()}"
+                {% if show_team_group_form %}disabled{% endif %}
+            >
+                <i class="bi-plus-circle pe-1"></i>
+                {{ _('Add') }}
+            </button>
+        </div>
+    </div>
+
+    {% if show_team_group_form %}
+        <div id="team-group-form-container" class="form-fields-container">
+            <h4>
+                {% if team_group_action == 'create' %}
+                    {{ _('New affiliation') }}
+                {% else %}
+                    {{ _('Update affiliation [%(name)s]', name=team_group.name) }}
+                {% endif %}
+            </h4>
+            <form
+                id="team-group-form"
+                hx-vals="js:{group_id: $('#group-id').val()}"
+                hx-indicator="#please-wait"
+                {% if team_group_action == 'create' %}
+                    hx-post="{{ url_for('admin-team-group-add', event_uniq_id=admin_event.uniq_id) }}"
+                {% else %}
+                    hx-patch="{{ url_for(
+                        'admin-team-group-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        group_id=team_group.id,
+                    ) }}"
+                {% endif %}
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                            name='team_group_name',
+                            label=_('%(string)s:', string=_('Name')),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-4">
+                    {% if show_team_group_delete_button %}
+                        <button
+                            type="button"
+                            class="btn btn-outline-danger btn-sm text-nowrap"
+                            hx-delete="{{ url_for(
+                                'admin-team-group-delete',
+                                event_uniq_id=admin_event.uniq_id,
+                                group_id=team_group.id,
+                            ) }}"
+                        >
+                            <i class="bi-trash-fill pe-1"></i>
+                            {{ _('Delete') }}
+                        </button>
+                    {% endif %}
+                    <div class="flex-grow-1"></div>
+                    <button
+                        id="team-group-cancel-button"
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm text-nowrap"
+                    >
+                        <i class="bi-x-circle pe-1"></i>
+                        {{ _('Cancel') }}
+                    </button>
+                    <button
+                        type="submit"
+                        form="team-group-form"
+                        class="btn btn-outline-primary btn-sm text-nowrap"
+                    >
+                        {% if team_group_action == 'create' %}
+                            <i class="bi-plus-circle pe-1"></i>
+                            {{ _('Add') }}
+                        {% else %}
+                            <i class="bi-floppy-fill pe-1"></i>
+                            {{ _('Save') }}
+                        {% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+
+    <script>
+        $('#group-id').change(function () {
+            $('#team-group-edit-button').prop(
+                'disabled',
+                $(this).val() === '' || $('#team-group-form-container').is(':visible')
+            );
+        });
+        $('#group-id').trigger('change');
+        $('.team-group-button').click(function () {
+            const submitContainer = document.getElementById('submit-button-container');
+            if (submitContainer) {
+                new bootstrap.Tooltip(submitContainer, {
+                    title: `{{ _('Please validate the affiliation to continue.') }}`,
+                    placement: 'top',
+                });
+                $(submitContainer).find('button').prop('disabled', true);
+            }
+        });
+        $('#team-group-cancel-button').click(function () {
+            $('#team-group-form-container').hide();
+            $('#team-group-edit-button').prop(
+                'disabled', $('#group-id').val() === ''
+            );
+            $('#team-group-add-button').prop('disabled', false);
+            const submitContainer = document.getElementById('submit-button-container');
+            if (submitContainer) {
+                const tip = bootstrap.Tooltip.getInstance(submitContainer);
+                if (tip) {
+                    tip.dispose();
+                }
+                $(submitContainer).find('button').prop('disabled', false);
+            }
+        });
+        {% if not show_team_group_form %}
+            $('#team-group-cancel-button').click();
+        {% endif %}
+    </script>
+</div>

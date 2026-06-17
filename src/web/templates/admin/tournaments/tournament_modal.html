@@ -130,6 +130,23 @@
                 </div>
                 {% include '/admin/tournaments/time_control_editor.html' %}
 
+                {% if rule_sets %}
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.select_input(
+                                name='rule_set',
+                                label=_('%(string)s:', string=_('Rule set')),
+                                tooltip_text=_(
+                                    'Optional: pre-configure the tournament '
+                                    'for an official rule set (federation cup, etc.).'
+                                ),
+                                select_options=rule_set_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                {% endif %}
+
                 <h4>
                     {{ _('Pairings') }}
                 </h4>
@@ -177,7 +194,6 @@
                             {% for pairing_system in pairing_systems %}
                                 elements = $('#{{ pairing_system.variation_container_id }}');
                                 if ($(this).val() === '{{ pairing_system.id }}') {
-                                    $('#pab-value-container').{% if pairing_system.hide_pab_value_field %}hide(){% else %}show(){% endif %};
                                     elements.show();
                                 } else {
                                     elements.hide();
@@ -201,7 +217,11 @@
                             name='max_byes',
                             label=_('Max byes:'),
                             placeholder=sharly_chess_config.default_max_byes,
-                            tooltip_text=_('The maximum number of byes a player can pretend to.'),
+                            tooltip_text=(
+                                _('The maximum number of byes a team can pretend to.')
+                                if is_team_event else
+                                _('The maximum number of byes a player can pretend to.')
+                            ),
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -215,14 +235,6 @@
                         ) }}
                     </div>
 
-                    <div id="pab-value-container" class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='pab_value',
-                            label=_('Value of the pairing allocated bye:'),
-                            select_options=pab_value_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='record_illegal_moves',
@@ -237,14 +249,420 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.switch_input(
-                            name='three_points_for_a_win',
-                            placeholder=_('Three points for a win'),
-                            tooltip_text=_('Use the 3/1/0 points system instead of the standard 1/0.5/0 system.'),
-                            data=data, errors=errors
-                        ) }}
+                </div>
+
+                {% if is_team_event %}
+                    <h4 class="mt-3">{{ _('Team competition') }}</h4>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='team_player_count',
+                                label=_('Players per team match:'),
+                                min=1,
+                                tooltip_text=_('Number of boards in each team match.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <label class="form-label mb-0">
+                                    {{ _('Colour pattern:') }}
+                                    <i
+                                        class="bi bi-info-circle-fill ms-1"
+                                        {{ macros.tooltip_attributes(
+                                            '',
+                                            _(
+                                                'Click each board to toggle the colour of the first team. '
+                                                'White = first team plays white on that board, '
+                                                'black = first team plays black.'
+                                            ),
+                                            'top',
+                                        ) }}
+                                    ></i>
+                                </label>
+                                <div id="color-pattern-swatches" class="d-flex gap-1"></div>
+                            </div>
+                            <input
+                                type="hidden"
+                                name="color_pattern"
+                                id="color-pattern-value"
+                                value="{{ data['color_pattern'] or '' }}"
+                            >
+                            {% if errors.get('color_pattern') %}
+                                <div class="invalid-feedback d-block">
+                                    {{ errors['color_pattern'] }}
+                                </div>
+                            {% endif %}
+                            <script>
+                                (function () {
+                                    const WHITE = '{{ BoardColor.WHITE.value }}';
+                                    const BLACK = '{{ BoardColor.BLACK.value }}';
+                                    const $countInput = $('#team-player-count');
+                                    const $hidden = $('#color-pattern-value');
+                                    const $container = $('#color-pattern-swatches');
+
+                                    function currentPattern() {
+                                        const allowed = new RegExp(
+                                            `[^${WHITE}${BLACK}]`, 'g'
+                                        );
+                                        return ($hidden.val() || '')
+                                            .toUpperCase()
+                                            .replace(allowed, '');
+                                    }
+
+                                    function defaultChar(boardIndex) {
+                                        return boardIndex % 2 === 0 ? WHITE : BLACK;
+                                    }
+
+                                    function render() {
+                                        const count = parseInt($countInput.val(), 10) || 0;
+                                        const stored = currentPattern();
+                                        $container.empty();
+                                        if (count <= 0) {
+                                            $hidden.val('');
+                                            return;
+                                        }
+                                        let next = '';
+                                        for (let i = 0; i < count; i++) {
+                                            const locked = i === 0;
+                                            const ch = locked
+                                                ? WHITE
+                                                : ((stored[i] === WHITE || stored[i] === BLACK)
+                                                    ? stored[i] : defaultChar(i));
+                                            next += ch;
+                                            const isWhite = ch === WHITE;
+                                            const $btn = $('<button>', {
+                                                type: 'button',
+                                                'data-board': i,
+                                                'data-state': ch,
+                                                'data-locked': locked ? '1' : '0',
+                                                class: 'cp-swatch border rounded d-flex align-items-center justify-content-center',
+                                                css: {
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    background: isWhite ? '#ffffff' : '#212529',
+                                                    color: isWhite ? '#212529' : '#ffffff',
+                                                    cursor: locked ? 'not-allowed' : 'pointer',
+                                                    opacity: locked ? 0.6 : 1,
+                                                    fontSize: '0.8rem',
+                                                },
+                                                text: String(i + 1),
+                                                title: locked
+                                                    ? '{{ _("First board is always White for team 1.") }}'
+                                                    : '',
+                                            });
+                                            $container.append($btn);
+                                        }
+                                        $hidden.val(next);
+                                    }
+
+                                    $container.on('click', '.cp-swatch', function () {
+                                        const $btn = $(this);
+                                        if ($btn.attr('data-locked') === '1') {
+                                            return;
+                                        }
+                                        const state = $btn.attr('data-state') === WHITE ? BLACK : WHITE;
+                                        $btn.attr('data-state', state);
+                                        const isWhite = state === WHITE;
+                                        $btn.css({
+                                            background: isWhite ? '#ffffff' : '#212529',
+                                            color: isWhite ? '#212529' : '#ffffff',
+                                        });
+                                        let pattern = '';
+                                        $container.children('.cp-swatch').each(function () {
+                                            pattern += $(this).attr('data-state');
+                                        });
+                                        $hidden.val(pattern);
+                                    });
+
+                                    $countInput.on('change input', render);
+                                    render();
+                                })();
+                            </script>
+                        </div>
                     </div>
+                    <div id="team-scores-container" class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.select_input(
+                                name='primary_score',
+                                label=_('Primary score:'),
+                                tooltip_text=_(
+                                    'Which score is the ranking based on. '
+                                ),
+                                select_options=score_type_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.switch_input(
+                                name='enforce_roster_order',
+                                placeholder=_('Warn on line-up out of roster order'),
+                                tooltip_text=_(
+                                    'When enabled, a warning is shown if a '
+                                    'per-round line-up places players in a '
+                                    'different order than the team roster. '
+                                    'The line-up can still be reordered freely.'
+                                ),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div id="team-secondary-score-cell" class="col-12 col-md-6">
+                            {{ admin_macros.select_input(
+                                name='secondary_score',
+                                label=_('Colour allocation:'),
+                                tooltip_text=_(
+                                    'Score used for colour allocation when pairing.'
+                                ),
+                                select_options=score_type_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div id="team-colour-type-cell" class="col-12 col-md-6">
+                            {{ admin_macros.select_input(
+                                name='team_colour_type',
+                                label=_('Colour rule:'),
+                                tooltip_text=_(
+                                    'Defines how team colour preferences are calculated. '
+                                    'Type A uses simple White/Black preferences, '
+                                    'while Type B distinguishes between strong and mild '
+                                    'preferences based on colour history and colour difference.'
+                                ),
+                                select_options=team_colour_type_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <script>
+                        (function () {
+                            const TEAM_SWISS_ID = '{{ TeamSwissPairingSystem.static_id() }}';
+                            const TEAM_RR_ID = '{{ TeamRoundRobinPairingSystem.static_id() }}';
+                            const $container = $('#team-scores-container');
+                            const $secondary = $('#team-secondary-score-cell');
+                            const $colourType = $('#team-colour-type-cell');
+                            function sync() {
+                                const id = $('#pairing-system').val() || '';
+                                // Pairing system ids are <SYSTEM>_<VARIATION>
+                                // (e.g. TEAM_SWISS_STANDARD); match by prefix.
+                                const isSwiss =
+                                    id === TEAM_SWISS_ID ||
+                                    id.startsWith(TEAM_SWISS_ID + '_');
+                                const isRR =
+                                    id === TEAM_RR_ID ||
+                                    id.startsWith(TEAM_RR_ID + '_');
+                                $container.toggle(isSwiss || isRR);
+                                // Secondary score + colour-rule only matter in
+                                // Swiss (colour basis + flip rule); in RR the
+                                // colour pattern is fixed by the Berger tables.
+                                $secondary.toggle(isSwiss);
+                                $colourType.toggle(isSwiss);
+                            }
+                            $('#pairing-system').on('change', sync);
+                            sync();
+                        })();
+                    </script>
+                {% endif %}
+
+                <button
+                    type="button"
+                    class="collapse-button {% if not force_points_open %}collapsed{% endif %} mt-3"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#points-collapse"
+                    aria-expanded="false"
+                >
+                    <h4 class="form-check-label d-inline-flex align-items-center gap-2">
+                        <i class="bi-chevron-down text-body"></i>
+                        {{ _('Point attribution') }}
+                    </h4>
+                </button>
+                <div id="points-collapse" class="{% if not force_points_open %}collapse{% endif %}">
+                    {% if is_team_event %}
+                        <h6 class="mt-3 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
+                            {{ _('Game points') }}
+                        </h6>
+                    {% endif %}
+                    <div class="row gy-2 gx-3">
+                        <div class="col-6 col-md-4">
+                            {{ admin_macros.number_input(
+                                name='gp_win',
+                                label=_('Win:'),
+                                placeholder='1',
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-6 col-md-4">
+                            {{ admin_macros.number_input(
+                                name='gp_draw',
+                                label=_('Draw:'),
+                                placeholder='0.5',
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-6 col-md-4">
+                            {{ admin_macros.number_input(
+                                name='gp_loss',
+                                label=_('Loss:'),
+                                placeholder='0',
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <div class="row gy-2 gx-3 mt-1">
+                        <div class="col-6 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='gp_zpb',
+                                label=_('Absence:'),
+                                placeholder='0',
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-6 col-md-6" id="gp-pab-field">
+                            {{ admin_macros.number_input(
+                                name='gp_pab',
+                                label=_('PAB (Team):') if is_team_event else _('PAB:'),
+                                placeholder='0.5' if is_team_event else '1',
+                                tooltip_text=(
+                                    _(
+                                        'Game points awarded to the team for a '
+                                        'Pairing Allocated Bye. Defaults to a '
+                                        'drawn match (boards × Draw value).'
+                                    )
+                                    if is_team_event else
+                                    _(
+                                        'Pairing allocated bye. '
+                                        'Defaults to the Win value.'
+                                    )
+                                ),
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <script>
+                        (function () {
+                            const IS_TEAM_EVENT = {{ 'true' if is_team_event else 'false' }};
+                            function effectiveValue($input, fallback) {
+                                const v = ($input.val() || '').trim();
+                                if (v !== '') return v;
+                                const p = $input.attr('placeholder');
+                                return p && p !== '' ? p : fallback;
+                            }
+                            const $gpWin = $('#gp-win');
+                            const $gpDraw = $('#gp-draw');
+                            const $gpLoss = $('#gp-loss');
+                            const $gpZpb = $('#gp-zpb');
+                            const $gpPab = $('#gp-pab');
+                            const $teamPlayerCount = $('#team-player-count');
+                            const $mpWin = $('#mp-win');
+                            const $mpDraw = $('#mp-draw');
+                            const $mpPab = $('#mp-pab');
+                            function formatNumber(n) {
+                                return Number.isFinite(n)
+                                    ? (Number.isInteger(n) ? n.toString() : n.toString())
+                                    : '';
+                            }
+                            function isSwissSystem() {
+                                const system = $('[name=pairing_system]').val() || '';
+                                return system === 'SWISS' || system === 'TEAM_SWISS';
+                            }
+                            function syncDerived() {
+                                $gpZpb.attr('placeholder', effectiveValue($gpLoss, '0'));
+                                // PABs only exist in Swiss pairings (other
+                                // systems give rest games) — hide the PAB
+                                // fields elsewhere. Team Swiss PAB defaults
+                                // to a drawn match (FIDE C.04.6 §1.4) —
+                                // team_player_count * gp_draw — and
+                                // individual Swiss PAB to gp_win.
+                                const swiss = isSwissSystem();
+                                $('#gp-pab-field').toggle(swiss);
+                                $('#mp-pab-field').toggle(swiss);
+                                let gpPabPlaceholder = '';
+                                let mpPabPlaceholder = '';
+                                if (swiss) {
+                                    if (IS_TEAM_EVENT) {
+                                        const drawVal = parseFloat(
+                                            effectiveValue($gpDraw, '0.5')
+                                        );
+                                        const teamCount = parseInt(
+                                            effectiveValue($teamPlayerCount, '0'),
+                                            10
+                                        );
+                                        gpPabPlaceholder =
+                                            Number.isFinite(drawVal) && teamCount > 0
+                                                ? formatNumber(drawVal * teamCount)
+                                                : effectiveValue($gpDraw, '0.5');
+                                        mpPabPlaceholder = effectiveValue($mpDraw, '1');
+                                    } else {
+                                        gpPabPlaceholder = effectiveValue($gpWin, '1');
+                                    }
+                                }
+                                $gpPab.attr('placeholder', gpPabPlaceholder);
+                                if ($mpPab.length) {
+                                    $mpPab.attr('placeholder', mpPabPlaceholder);
+                                }
+                            }
+                            $gpWin.on('input change', syncDerived);
+                            $gpDraw.on('input change', syncDerived);
+                            $gpLoss.on('input change', syncDerived);
+                            $teamPlayerCount.on('input change', syncDerived);
+                            $mpWin.on('input change', syncDerived);
+                            $mpDraw.on('input change', syncDerived);
+                            $('[name=pairing_system]').on('change', syncDerived);
+                            syncDerived();
+                        })();
+                    </script>
+                    {% if is_team_event %}
+                        <h6 class="mt-4 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
+                            {{ _('Match points') }}
+                        </h6>
+                        <div class="row gy-2 gx-3">
+                            <div class="col-6 col-md-4">
+                                {{ admin_macros.number_input(
+                                    name='mp_win',
+                                    label=_('Win:'),
+                                    placeholder='2',
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-6 col-md-4">
+                                {{ admin_macros.number_input(
+                                    name='mp_draw',
+                                    label=_('Draw:'),
+                                    placeholder='1',
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-6 col-md-4">
+                                {{ admin_macros.number_input(
+                                    name='mp_loss',
+                                    label=_('Loss:'),
+                                    placeholder='0',
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                        <div class="row gy-2 gx-3 mt-1">
+                            <div class="col-6 col-md-6" id="mp-pab-field">
+                                {{ admin_macros.number_input(
+                                    name='mp_pab',
+                                    label=_('PAB:'),
+                                    placeholder='1',
+                                    tooltip_text=_(
+                                        'Pairing allocated bye. Defaults to '
+                                        'the Draw value.'
+                                    ),
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
 
                 {% for form_fields_template in plugin_form_fields_templates %}
@@ -270,6 +688,129 @@
                     </div>
                 </div>
                 {% include '/admin/tournaments/tournament_schedule_section.html' %}
+                {% if rule_sets %}
+                    <script>
+                        (function() {
+                            const RULE_SET_MANAGED = {{ rule_set_managed_fields|tojson }};
+                            // Per-pairing-system defaults: nested by
+                            // rule-set id, then by pairing system id
+                            // ('' = no system context).
+                            const RULE_SET_DEFAULTS = {{ rule_set_defaults|tojson }};
+                            const RULE_SET_LOCK_TITLES = {{ rule_set_lock_titles|tojson }};
+                            const $ruleSet = $('#rule-set');
+                            const $pairingSystem = $('#pairing-system');
+
+                            function currentDefaults(ruleId) {
+                                const bySystem = RULE_SET_DEFAULTS[ruleId] || {};
+                                const systemId = $pairingSystem.val() || '';
+                                return bySystem[systemId] || bySystem[''] || {};
+                            }
+
+                            function inputId(name) {
+                                return name.replace(/_/g, '-');
+                            }
+
+                            function disposeTooltip(el) {
+                                if (typeof bootstrap === 'undefined') return;
+                                const existing = bootstrap.Tooltip.getInstance(el);
+                                if (existing) existing.dispose();
+                            }
+
+                            function unlockAll() {
+                                $('[data-rule-set-locked]').each(function() {
+                                    const $input = $(this);
+                                    $input.prop('disabled', false)
+                                          .removeAttr('data-rule-set-locked');
+                                    if ($input.is('select')) {
+                                        $input.trigger('change.select2');
+                                    }
+                                });
+                                $('[data-rule-set-tooltip]').each(function() {
+                                    disposeTooltip(this);
+                                    $(this).removeAttr('data-bs-toggle')
+                                           .removeAttr('data-bs-placement')
+                                           .removeAttr('data-bs-html')
+                                           .removeAttr('data-bs-custom-class')
+                                           .removeAttr('data-bs-title')
+                                           .removeAttr('data-rule-set-tooltip');
+                                });
+                            }
+
+                            function lockForRuleSet(id) {
+                                const fields = RULE_SET_MANAGED[id] || [];
+                                const defaults = currentDefaults(id);
+                                const title = RULE_SET_LOCK_TITLES[id] || '';
+                                fields.forEach(function(name) {
+                                    const fid = inputId(name);
+                                    const $input = $('#' + fid);
+                                    if ($input.length === 0) return;
+                                    if (Object.prototype.hasOwnProperty.call(defaults, name)) {
+                                        if ($input.is(':checkbox')) {
+                                            $input.prop('checked', defaults[name] === 'on');
+                                        } else {
+                                            $input.val(defaults[name]);
+                                        }
+                                        if ($input.is('select')) {
+                                            $input.trigger('change.select2');
+                                        }
+                                        $input.trigger('change');
+                                    }
+                                    $input.prop('disabled', true)
+                                          .attr('data-rule-set-locked', '1');
+                                    // Disabled inputs swallow hover events so
+                                    // the tooltip has to live on the input
+                                    // wrapper (matches the macro's existing
+                                    // info-icon pattern).
+                                    const $tip = $('#' + fid + '-input-container');
+                                    if ($tip.length === 0) return;
+                                    $tip.attr({
+                                        'data-bs-toggle': 'tooltip',
+                                        'data-bs-placement': 'top',
+                                        'data-bs-html': 'true',
+                                        'data-bs-custom-class': 'sharly-chess-tooltip-info',
+                                        'data-bs-title':
+                                            "<i class='bi-info-circle-fill'></i> " + title,
+                                        'data-rule-set-tooltip': '1',
+                                    });
+                                    const el = $tip.get(0);
+                                    disposeTooltip(el);
+                                    new bootstrap.Tooltip(el);
+                                });
+                            }
+
+                            function refresh() {
+                                unlockAll();
+                                const id = $ruleSet.val();
+                                if (id) lockForRuleSet(id);
+                            }
+
+                            $ruleSet.on('change', refresh);
+                            // Pairing-system changes flip the locked
+                            // values (different scoring / round counts
+                            // per system), so re-apply on that too.
+                            $pairingSystem.on('change', refresh);
+                            // Disabled inputs are skipped by HTMX during
+                            // form serialisation — re-inject their values
+                            // into the request parameters at submit time.
+                            $('#modal-form').on('htmx:configRequest', function(evt) {
+                                $('[data-rule-set-locked]').each(function() {
+                                    const $el = $(this);
+                                    if ($el.is(':checkbox')) {
+                                        // Match the macro's on/absent encoding.
+                                        if ($el.prop('checked')) {
+                                            evt.detail.parameters[this.name] = 'on';
+                                        } else {
+                                            delete evt.detail.parameters[this.name];
+                                        }
+                                    } else {
+                                        evt.detail.parameters[this.name] = $el.val();
+                                    }
+                                });
+                            });
+                            triggerModalInitEvent('#rule-set');
+                        })();
+                    </script>
+                {% endif %}
             </form>
 
         </div>

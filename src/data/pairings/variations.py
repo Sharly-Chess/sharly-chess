@@ -9,6 +9,9 @@ from data.pairings.engines import (
     BbpPairings,
     BergerPairingEngine,
     DoubleBergerPairingEngine,
+    TeamSwissEngine,
+    TeamBergerEngine,
+    TeamDoubleBergerEngine,
 )
 from data.pairings.settings import (
     PairingSetting,
@@ -239,3 +242,123 @@ class DoubleBergerRoundRobinVariation(RoundRobinVariation):
     @property
     def trf_encoded_type(self) -> str:
         return 'FIDE_DOUBLEROUNDROBIN'
+
+
+# ---------------------------------------------------------------------------------
+# Team pairing variations. Engines are stubs for now.
+# ---------------------------------------------------------------------------------
+
+
+class TeamSwissVariation(PairingVariation, ABC):
+    @staticmethod
+    def system() -> 'PairingSystem':
+        return systems.TeamSwissPairingSystem()
+
+    @property
+    def engine(self) -> PairingEngine:
+        return TeamSwissEngine()
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return [ColorSeedSetting()]
+
+    @property
+    def trf_encoded_type(self) -> str:
+        # Placeholder TRF26 team-Swiss code. The real value depends on
+        # the tournament's primary / secondary score choice and is
+        # filled in by ``Tournament._team_trf_encoded_type`` when the
+        # TRF is emitted; variations don't see the tournament.
+        return 'FIDE_TEAM_TYPEA_MP_GP'
+
+
+class TeamTwoGameMatchVariation(PairingVariation, ABC):
+    @staticmethod
+    def system() -> 'PairingSystem':
+        return systems.TeamTwoGameMatchPairingSystem()
+
+    @property
+    def engine(self) -> PairingEngine:
+        from data.pairings.engines import TeamTwoGameMatchEngine
+
+        return TeamTwoGameMatchEngine()
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return []
+
+
+class StandardTeamTwoGameMatchVariation(TeamTwoGameMatchVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'STANDARD'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Standard two-game team match')
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'OTHER_TEAM_TWO_GAME_MATCH'
+
+
+class TeamRoundRobinVariation(PairingVariation, ABC):
+    @staticmethod
+    def system() -> 'PairingSystem':
+        return systems.TeamRoundRobinPairingSystem()
+
+
+class StandardTeamSwissVariation(TeamSwissVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'STANDARD'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Standard team Swiss')
+
+
+class BergerTeamRoundRobinVariation(TeamRoundRobinVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'BERGER'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Berger')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        # Team berger numbers come from each team's pairing_number /
+        # canonical order (handled by ``_teams_for_tournament``).
+        # No per-player ``BergerNumbersSetting`` here.
+        return []
+
+    @property
+    def engine(self) -> PairingEngine:
+        return TeamBergerEngine()
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'OTHER_TEAM_ROUNDROBIN'
+
+
+class DoubleBergerTeamRoundRobinVariation(TeamRoundRobinVariation):
+    @staticmethod
+    def variation_id() -> str:
+        return 'DOUBLE_BERGER'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Double-round Berger')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return []
+
+    @property
+    def engine(self) -> PairingEngine:
+        return TeamDoubleBergerEngine()
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'OTHER_TEAM_DOUBLEROUNDROBIN'

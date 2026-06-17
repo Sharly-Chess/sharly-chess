@@ -133,6 +133,16 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB")} from:body',
                 },
             }
+        if event.is_team_event and self.client.can_view_tournaments_tab:
+            nav_tabs |= {
+                'admin-event-teams-tab': {
+                    'title': _('Teams ({num})').format(
+                        num=len(event.teams_by_id) or '-'
+                    ),
+                    'template': 'teams/tab.html',
+                    'icon_class': 'bi-flag-fill',
+                },
+            }
         if self.client.can_view_pairings_tab:
             nav_tabs |= {
                 'admin-event-pairings-tab': {
@@ -142,7 +152,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB")} from:body',
                 },
             }
-        if self.client.can_view_prizes_tab:
+        if self.client.can_view_prizes_tab and not event.is_team_event:
             nav_tabs |= {
                 'admin-event-prizes-tab': {
                     'title': _('Prizes *** WITH_SHORTCUT_INDICATION'),

@@ -1,462 +1,311 @@
 {% import '/common/macros.j2' as macros with context %}
 
-{% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
-    <div class="modal-dialog modal-dialog-scrollable pairing-modal">
-        <div class="modal-content bg-secondary-subtle">
+{# Admin result-entry modal (opened from the pairings tab): normal
+   Bootstrap buttons in a two-column (White / Black) layout. The
+   public-screen result entry (user/modals/results_modal.html) is a
+   separate template and keeps its large coloured tiles. #}
+
+{# Wrap action routing (direct hx call vs safety-mode confirmation) and
+   the disabled state once, reused by every button below. #}
+{% macro action_button(action, method, route, disabled, label, btn_class, tooltip='', icon='') %}
+    {% if disabled and tooltip %}
+        <span class="d-grid" {{ macros.tooltip_attributes('info', tooltip, 'top') }}>
+    {% endif %}
+    <button
+        type="button"
+        class="btn {{ btn_class }} text-nowrap"
+        {% if disabled %}
+            disabled
+        {% else %}
+            {% if action in allowed_actions %}
+                hx-{{ method }}="{{ route }}"
+            {% else %}
+                hx-get="{{ url_for(
+                    'admin-pairings-safety-mode-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round,
+                    action=action,
+                    redirect_method=method | upper,
+                    redirect_route=route,
+                ) }}"
+            {% endif %}
+            hx-trigger="click"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        {% endif %}
+    >
+        {% if icon %}<i class="{{ icon }} pe-1"></i>{% endif %}{{ label }}
+    </button>
+    {% if disabled and tooltip %}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro result_button(result_id, disabled, label, btn_class) %}
+    {{ action_button(
+        'RESULT_UPDATE',
+        'put',
+        url_for(
+            'admin-pairings-set-result',
+            event_uniq_id=admin_event.uniq_id,
+            tournament_id=admin_tournament.id,
+            round=admin_round,
+            board_id=board.identifier,
+            result=result_id,
+        ),
+        disabled,
+        label,
+        btn_class ~ ' w-100',
+    ) }}
+{% endmacro %}
+
+{% with wtp=board.optional_white_tournament_player, btp=board.black_tournament_player %}
+    {# In a team match the pairings table shows team A on the left
+       whatever the colours — mirror that here: sides, result buttons and
+       colour chips all follow the board's colour pattern. #}
+    {% set team_board = board.team_board %}
+    {% set white_on_left = True %}
+    {% if team_board %}
+        {% set _wt_id, _bt_id = team_board.board_team_ids(board) %}
+        {% if _wt_id is not none or _bt_id is not none %}
+            {# Sides come from the players' actual teams, so a colour
+               permute keeps each player on their own team's side. #}
+            {% set white_on_left = _wt_id == team_board.stored_team_board.team_a_id %}
+        {% else %}
+            {% set pattern = admin_tournament.color_pattern or '' %}
+            {% if board.index < pattern|length %}
+                {% set white_on_left = (pattern[board.index]|upper) == 'W' %}
+            {% else %}
+                {% set white_on_left = (board.index or 0) % 2 == 0 %}
+            {% endif %}
+        {% endif %}
+        {% set white_team = admin_event.teams_by_id.get(_wt_id) %}
+        {% set black_team = admin_event.teams_by_id.get(_bt_id) %}
+    {% else %}
+        {% set white_team = none %}
+        {% set black_team = none %}
+    {% endif %}
+    {% if white_on_left %}
+        {% set left_tp, right_tp = wtp, btp %}
+        {% set left_team, right_team = white_team, black_team %}
+        {% set left_is_white = True %}
+    {% else %}
+        {% set left_tp, right_tp = btp, wtp %}
+        {% set left_team, right_team = black_team, white_team %}
+        {% set left_is_white = False %}
+    {% endif %}
+    {% set can_enter = client.can_enter_results(admin_tournament.id) %}
+    {% set can_update = client.can_update_results(admin_tournament.id) %}
+    {% set can_special = client.can_set_special_results(admin_tournament.id) %}
+    {% set base_locked = (
+        board.exempt
+        or not can_enter
+        or (board.result and not can_update)
+    ) %}
+    {% set special_locked = base_locked or not can_special %}
+    {# A team-board hole recorded as a forfeit can't be cleared here —
+       the lineup dropdown owns that toggle. #}
+    {% set is_team_forfeit_lock = (
+        board.stored_board.team_board_id is not none
+        and board.result.value in [4, 5, 6]
+        and (
+            board.stored_board.white_player_id is none
+            or board.stored_board.black_player_id is none
+        )
+    ) %}
+    <div
+        class="modal-dialog modal-dialog-scrollable"
+        style="--bs-modal-width: min(95vw, 600px);"
+    >
+        <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title fs-4 fw-bold">{{ _('Board %(board_number)s', board_number=board.number) }}</div>
+                <h2 class="modal-title">
+                    {{ _('Board %(board_number)s', board_number=board.number) }}
+                </h2>
             </div>
             <div class="modal-body">
-                {% set action = 'RESULT_UPDATE' %}
-                <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center">
-                    {% set action_route = url_for(
-                        'admin-pairings-set-result',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id,
-                        result=3,
-                    ) %}
-                    <button
-                        class="result-button white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            board.exempt
-                            or
-                            not client.can_enter_results(admin_tournament.id)
-                            or
-                            (board.result and not client.can_update_results(admin_tournament.id))
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-put="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='PUT',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-target="body"
-                            hx-indicator="#please-wait"
+                {# White / neutral / Black columns. Buttons show just the
+                   score; the headers and column position convey the rest. #}
+                <div class="row g-2 mb-1">
+                    <div class="col-4 text-center">
+                        <div class="text-uppercase small fw-bold text-muted">
+                            <span class="board-color-chip {{ 'white' if left_is_white else 'black' }}"></span>{{ _('White') if left_is_white else _('Black') }}
+                        </div>
+                        <div class="text-nowrap fw-bold">
+                            {{ left_tp.full_name if left_tp else '—' }}
+                        </div>
+                        <div class="text-muted small">
+                            {{ left_tp.rating_str if left_tp else '' }}
+                        </div>
+                        {% if left_team %}
+                            <div class="text-muted small">{{ left_team.name }}</div>
                         {% endif %}
-                    >
-                        <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wtp.last_name }}<br/>{{ wtp.first_name }}<br/>{{ wtp.rating_str }}</div>
-                    </button>
-                    {% set action_route = url_for(
-                        'admin-pairings-set-result',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id,
-                        result=2,
-                    ) %}
-                    <button
-                        class="result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            board.exempt
-                            or
-                            not client.can_enter_results(admin_tournament.id)
-                            or
-                            (board.result and not client.can_update_results(admin_tournament.id))
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-put="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='PUT',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-target="body"
-                            hx-indicator="#please-wait"
+                    </div>
+                    <div class="col-4"></div>
+                    <div class="col-4 text-center">
+                        <div class="text-uppercase small fw-bold text-muted">
+                            <span class="board-color-chip {{ 'black' if left_is_white else 'white' }}"></span>{{ _('Black') if left_is_white else _('White') }}
+                        </div>
+                        <div class="text-nowrap fw-bold">
+                            {{ right_tp.full_name if right_tp else '—' }}
+                        </div>
+                        <div class="text-muted small">
+                            {{ right_tp.rating_str if right_tp else '' }}
+                        </div>
+                        {% if right_team %}
+                            <div class="text-muted small">{{ right_team.name }}</div>
                         {% endif %}
-                    >
-                        <div>{{ _('DRAW') }}<br/>½ - ½</div>
-                    </button>
-                    {% set action_route = url_for(
-                        'admin-pairings-set-result',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id,
-                        result=1,
-                    ) %}
-                    <button
-                        class="result-button black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            board.exempt
-                            or
-                            not client.can_enter_results(admin_tournament.id)
-                            or
-                            (board.result and not client.can_update_results(admin_tournament.id))
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-put="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='PUT',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ btp.last_name }}<br/>{{ btp.first_name }}<br/>{{ btp.rating_str }}</div>
-                    </button>
-                </div>
-
-                <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
-                    {% set action_route = url_for(
-                        'admin-pairings-set-result',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id,
-                        result=6,
-                    ) %}
-                    <button
-                        class="admin-result-button white col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            board.exempt
-                            or
-                            not client.can_set_special_results(admin_tournament.id)
-                            or
-                            not client.can_enter_results(admin_tournament.id)
-                            or
-                            (board.result and not client.can_update_results(admin_tournament.id))
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-put="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='PUT',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <div>{{ _('WHITE WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>1 - F</div>
-                    </button>
-                    {% set action_route = url_for(
-                        'admin-pairings-set-result',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id,
-                        result=5,
-                    ) %}
-                    <button
-                        class="admin-result-button draw col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            board.exempt
-                            or
-                            not client.can_set_special_results(admin_tournament.id)
-                            or
-                            not client.can_enter_results(admin_tournament.id)
-                            or
-                            (board.result and not client.can_update_results(admin_tournament.id))
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-put="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='PUT',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <div>{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</div>
-                    </button>
-                    {% set action_route = url_for(
-                        'admin-pairings-set-result',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id,
-                        result=4,
-                    ) %}
-                    <button
-                        class="admin-result-button black col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            board.exempt
-                            or
-                            not client.can_set_special_results(admin_tournament.id)
-                            or
-                            not client.can_enter_results(admin_tournament.id)
-                            or
-                            (board.result and not client.can_update_results(admin_tournament.id))
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-put="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='PUT',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <div>{{ _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>F - 1</div>
-                    </button>
-                </div>
-
-                <hr class="my-3" />
-
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
-                        <button
-                            type="button"
-                            class="collapse-button collapsed"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#rare-results"
-                        >
-                            <span
-                                class="form-check-label d-inline-flex align-items-center gap-2"
-                            >
-                                <i class="bi bi-chevron-down"></i>
-                                {{ _('Access unrated and penalty results.') }}
-                            </span>
-                        </button>
                     </div>
                 </div>
 
-                <div class="collapse" id="rare-results">
-                    {# --- Data-driven rows for extra result buttons (UNRATED, PENALTIES, etc.) --- #}
-                    {% set extra_rows = [
-                        [
-                            (13, 'white', _('UNRATED WHITE VICTORY'), _('1 - 0 (U)')),
-                            (12, 'draw', _('UNRATED DRAW'), _('½ - ½ (U)')),
-                            (11, 'black' , _('UNRATED BLACK VICTORY'), _('0 - 1 (U)')),
-                        ],
-                        [
-                            (16, 'white', _('PENALTY'), '½ - 0'),
-                            (15, 'draw', _('PENALTY'), '0 - 0'),
-                            (17, 'black', _('PENALTY'), '0 - ½'),
-                        ],
-                        [
-                            (19, 'white', _('UNRATED PENALTY'), _('½ - 0 (U)')),
-                            (18, 'draw', _('UNRATED PENALTY'), _('0 - 0 (U)')),
-                            (20, 'black', _('UNRATED PENALTY'), _('0 - ½ (U)')),
-                        ],
-                    ] %}
+                {# Result ids stay white-oriented — only the button
+                   placement follows the left/right sides. #}
+                <div class="row g-2">
+                    <div class="col-4">
+                        {{ result_button(3 if left_is_white else 1, base_locked, '1 – 0', 'btn-outline-primary') }}
+                    </div>
+                    <div class="col-4">
+                        {{ result_button(2, base_locked, '½ – ½', 'btn-outline-primary') }}
+                    </div>
+                    <div class="col-4">
+                        {{ result_button(1 if left_is_white else 3, base_locked, '0 – 1', 'btn-outline-primary') }}
+                    </div>
+                </div>
 
-                    {% for row in extra_rows %}
-                        <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
-                            {% for (result_id, class, line1, line2) in row %}
-                                {% set action = 'RESULT_UPDATE' %}
-                                {% set action_route = url_for(
-                                    'admin-pairings-set-result',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    board_id=board.id,
-                                    result=result_id,
-                                ) %}
-                                <button
-                                    class="{{ class }} admin-result-button col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                                    {% if board.exempt %}
-                                        disabled
-                                    {% endif %}
-                                    {% if action in allowed_actions %}
-                                        hx-put="{{ action_route }}"
-                                    {% else %}
-                                        hx-get="{{ url_for(
-                                            'admin-pairings-safety-mode-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=admin_tournament.id,
-                                            round=admin_round,
-                                            action=action,
-                                            redirect_method='PUT',
-                                            redirect_route=action_route,
-                                        ) }}"
-                                    {% endif %}
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                >
-                                    <div>{{ line1 }}<br/>{{ line2 }}</div>
-                                </button>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
+                <div class="row g-2 mt-2">
+                    <div class="col-4">
+                        {{ result_button(6 if left_is_white else 4, special_locked, '1 – F', 'btn-outline-primary') }}
+                    </div>
+                    <div class="col-4">
+                        {{ result_button(5, special_locked, 'F – F', 'btn-outline-primary') }}
+                    </div>
+                    <div class="col-4">
+                        {{ result_button(4 if left_is_white else 6, special_locked, 'F – 1', 'btn-outline-primary') }}
+                    </div>
                 </div>
 
                 <hr class="my-3" />
 
-                <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
-                    {% set action = 'MANUAL_UNPAIRING' %}
-                    {% set action_route = url_for(
-                        'admin-pairings-unpair-board',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id
-                    ) %}
-                    <button
-                        class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            action not in existing_actions
-                            or
-                            (not board.no_result and not board.exempt)
-                            or
-                            not client.can_unpair_boards(admin_tournament.id)
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-delete="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
+                <div class="row g-2">
+                    <div class="col-6">
+                        {{ action_button(
+                            'RESULT_UPDATE',
+                            'put',
+                            url_for(
+                                'admin-pairings-set-result',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=admin_round,
+                                board_id=board.identifier,
+                                result=0,
+                            ),
+                            (
+                                board.no_result
+                                or board.exempt
+                                or is_team_forfeit_lock
+                                or not can_update
+                            ),
+                            _('Clear result'),
+                            'btn-outline-danger w-100',
+                            _(
+                                'This board is recorded as an absence (forfeit) '
+                                'from the lineup. Use the lineup dropdown to put a '
+                                'player back on this slot.'
+                            ) if is_team_forfeit_lock else '',
+                            'bi bi-trash',
+                        ) }}
+                    </div>
+                    {% if not admin_tournament.event.is_team_event %}
+                        <div class="col-6">
+                            {{ action_button(
+                                'MANUAL_UNPAIRING',
+                                'delete',
+                                url_for(
+                                    'admin-pairings-unpair-board',
                                     event_uniq_id=admin_event.uniq_id,
                                     tournament_id=admin_tournament.id,
                                     round=admin_round,
-                                    action=action,
-                                    redirect_method='DELETE',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-trigger="click"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <div class="d-flex align-items-center justify-content-center gap-2">
-                            {{ _('UNPAIR') }}
+                                    board_id=board.identifier,
+                                ),
+                                (
+                                    'MANUAL_UNPAIRING' not in existing_actions
+                                    or (not board.no_result and not board.exempt)
+                                    or not client.can_unpair_boards(admin_tournament.id)
+                                ),
+                                _('Unpair'),
+                                'btn-outline-primary w-100',
+                            ) }}
                         </div>
-                    </button>
-                    {% set action = 'RESULT_UPDATE' %}
-                    {% set action_route = url_for(
-                        'admin-pairings-set-result',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id,
-                        result=0,
-                    ) %}
+                    {% endif %}
+                    <div class="col-6">
+                        {{ action_button(
+                            'COLOR_PERMUTE',
+                            'patch',
+                            url_for(
+                                'admin-pairings-permute',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=admin_round,
+                                board_id=board.identifier,
+                            ),
+                            (board.exempt or not client.can_permute_boards(admin_tournament.id)),
+                            _('Permute White/Black'),
+                            'btn-outline-primary w-100',
+                        ) }}
+                    </div>
+                </div>
+
+                <div class="mt-3">
                     <button
-                        class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            board.no_result
-                            or
-                            board.exempt
-                            or
-                            not client.can_update_results(admin_tournament.id)
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-put="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='PUT',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-trigger="click"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                        {% if board.no_result or board.exempt %}
-                            disabled
-                        {% endif %}
+                        type="button"
+                        class="collapse-button collapsed btn btn-link p-0 text-decoration-none"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#rare-results-admin"
                     >
-                        <div class="d-flex align-items-center justify-content-center gap-2">
-                            <i class="bi bi-trash"></i>
-                            {{ _('CLEAR THE RESULT') }}
-                        </div>
+                        <i class="bi bi-chevron-down pe-1"></i>
+                        {{ _('Access unrated and penalty results.') }}
                     </button>
-                    {% set action = 'COLOR_PERMUTE' %}
-                    {% set action_route = url_for(
-                        'admin-pairings-permute',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.id
-                    ) %}
-                    <button
-                        class="admin-result-button col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            board.exempt
-                            or
-                            not client.can_permute_boards(admin_tournament.id)
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-patch="{{ action_route }}"
-                            {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='PATCH',
-                                    redirect_route=action_route,
-                                ) }}"
-                            {% endif %}
-                            hx-trigger="click"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <div class="d-flex align-items-center justify-content-center gap-2">
-                            {{ _('PERMUTE WHITE/BLACK') }}
-                        </div>
-                    </button>
+                    <div class="collapse" id="rare-results-admin">
+                        {# Each group is a category header followed by its
+                           three results (white win / draw / black win) in
+                           a 3-column row. #}
+                        {# Labels are left-oriented; the white-oriented
+                           result ids swap when the left player is black. #}
+                        {% set extra_groups = [
+                            (_('Unrated *** FOR GAMES'), [
+                                (13 if left_is_white else 11, '1 – 0 (U)'),
+                                (12, '½ – ½ (U)'),
+                                (11 if left_is_white else 13, '0 – 1 (U)'),
+                            ]),
+                            (_('Penalty'), [
+                                (16 if left_is_white else 17, '½ – 0'),
+                                (15, '0 – 0'),
+                                (17 if left_is_white else 16, '0 – ½'),
+                            ]),
+                            (_('Unrated penalty'), [
+                                (19 if left_is_white else 20, '½ – 0 (U)'),
+                                (18, '0 – 0 (U)'),
+                                (20 if left_is_white else 19, '0 – ½ (U)'),
+                            ]),
+                        ] %}
+                        {% for group_label, results in extra_groups %}
+                            <div class="text-uppercase small fw-bold text-muted mt-2 mb-1">
+                                {{ group_label }}
+                            </div>
+                            <div class="row g-2">
+                                {% for result_id, label in results %}
+                                    <div class="col-4">
+                                        {{ result_button(
+                                            result_id, board.exempt,
+                                            label,
+                                            'btn-outline-primary',
+                                        ) }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -465,7 +314,7 @@
                     class="btn btn-secondary text-nowrap"
                     data-bs-dismiss="modal"
                 >
-                    <i class="bi-x-circle-fill"></i>
+                    <i class="bi-x-circle-fill pe-1"></i>
                     {{ _('Close') }}
                 </button>
             </div>

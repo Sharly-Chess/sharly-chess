@@ -14,6 +14,29 @@
     hx-on::before-send="$('body .tooltip').remove(); $('body .tooltip-inner').remove(); $('body .tooltip-arrow').remove();"
 {% endmacro %}
 
+{% macro point_adjustment_tooltip(tournament, team_id, round_) %}
+{%- set manual = tournament.stored_point_adjustment(team_id, round_) -%}
+{%- set rs = tournament.rule_set_point_adjustment(team_id, round_) -%}
+{%- set lines = [] -%}
+{%- if manual and (manual.mp_delta or manual.gp_delta) -%}
+    {%- set parts = [] -%}
+    {%- if manual.mp_delta -%}{%- set parts = parts + ['%+g'|format(manual.mp_delta) ~ ' ' ~ _('MP *** MATCH POINTS')] -%}{%- endif -%}
+    {%- if manual.gp_delta -%}{%- set parts = parts + ['%+g'|format(manual.gp_delta) ~ ' ' ~ _('GP *** GAME POINTS')] -%}{%- endif -%}
+    {%- set line = '<strong>' ~ parts|join(', ') ~ '</strong>' -%}
+    {%- if manual.reason -%}{%- set line = line ~ ': ' ~ manual.reason -%}{%- endif -%}
+    {%- set lines = lines + [line] -%}
+{%- endif -%}
+{%- if rs and (rs.mp or rs.gp) -%}
+    {%- set parts = [] -%}
+    {%- if rs.mp -%}{%- set parts = parts + ['%+g'|format(rs.mp) ~ ' ' ~ _('MP *** MATCH POINTS')] -%}{%- endif -%}
+    {%- if rs.gp -%}{%- set parts = parts + ['%+g'|format(rs.gp) ~ ' ' ~ _('GP *** GAME POINTS')] -%}{%- endif -%}
+    {%- set line = '<strong>' ~ parts|join(', ') ~ '</strong>' -%}
+    {%- if rs.explanation -%}{%- set line = line ~ ': ' ~ rs.explanation -%}{%- endif -%}
+    {%- set lines = lines + [line] -%}
+{%- endif -%}
+{{- lines|join('<br>') -}}
+{% endmacro %}
+
 {% macro click_to_copy_attributes(value, tooltip_placement='top', copied_value='', warning=false, wide=false) %}
     {{ tooltip_attributes(
         '',

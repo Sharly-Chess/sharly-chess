@@ -1,5 +1,13 @@
 {% import '/common/macros.j2' as macros with context %}
 
+{# Round 1 normally goes through the pairing-settings modal, but team
+   variations (and any other variation with an empty settings list)
+   have nothing to ask for — fall straight through to the generate
+   step in that case. #}
+{% set show_settings_modal = (
+    admin_round == 1 and admin_tournament.pairing_variation.settings
+) %}
+
 <div class="modal-dialog" style="--bs-modal-width: min(90vw, 500px);">
     <div class="modal-content bg-secondary-subtle">
         <div class="modal-header">
@@ -43,21 +51,35 @@
             </button>
             <button
                 type="submit"
-                class="text-nowrap white btn {% if admin_absent_players or admin_round == 1 %}btn-outline-primary{% else %}btn-primary{% endif %}"
-                {% if admin_absent_players %}
+                class="text-nowrap white btn {% if admin_team_absent or admin_absent_players or show_settings_modal %}btn-outline-primary{% else %}btn-primary{% endif %}"
+                {% if admin_team_absent %}
+                    hx-get="{{ url_for(
+                        'pairings-team-absents-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round
+                    ) }}"
+                {% elif admin_absent_players %}
                     hx-get="{{ url_for(
                         'pairings-absents-modal',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_round
                     ) }}"
-                {% elif admin_round == 1 %}
+                {% elif show_settings_modal %}
                     hx-get="{{ url_for(
                         'pairings-settings-modal',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_round
                     ) }}"
+                {% elif not admin_tournament.pairing_system.round_per_round_pairing_generation %}
+                    hx-post="{{ url_for(
+                        'generate-tournament-pairings',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                    ) }}"
+                    hx-target="body"
                 {% else %}
                     hx-post="{{ url_for(
                         'generate-round-pairings',
@@ -69,7 +91,7 @@
                 {% endif %}
                 hx-indicator="#please-wait"
             >
-                {% if admin_absent_players or admin_round == 1 %}
+                {% if admin_team_absent or admin_absent_players or show_settings_modal %}
                     <i class="bi-caret-right"></i>
                     {{ _('Continue') }}
                 {% else %}

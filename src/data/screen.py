@@ -144,7 +144,13 @@ class Screen:
             case ScreenType.BOARDS | ScreenType.INPUT:
                 return self.sorted_screen_sets[0].name_for_boards
             case ScreenType.PLAYERS | ScreenType.CHECK_IN:
-                return self.sorted_screen_sets[0].name_for_players
+                first_set = self.sorted_screen_sets[0]
+                if (
+                    self.type == ScreenType.CHECK_IN
+                    and first_set.tournament.is_team_tournament
+                ):
+                    return first_set.name_for_teams
+                return first_set.name_for_players
             case ScreenType.RANKING:
                 return self.sorted_screen_sets[0].name_for_ranking
             case ScreenType.RESULTS:
@@ -189,8 +195,16 @@ class Screen:
 
     @staticmethod
     def default_boards_screen_menu_text(
-        single_tournament: bool, first_last: bool
+        single_tournament: bool, first_last: bool, team_matches: bool = False
     ) -> str:
+        if team_matches:
+            if single_tournament:
+                if first_last:
+                    return _('Matches %f-%l')
+                return _('By match')
+            if first_last:
+                return _('%t [Matches %f-%l]')
+            return _('%t (by match)')
         if single_tournament:
             if first_last:
                 return _('Boards %f-%l')
@@ -275,9 +289,21 @@ class Screen:
             ):
                 single_tournament = len(self.event.tournaments_by_id) == 1
                 screen_set: ScreenSet = self.sorted_screen_sets[0]
+                is_team = screen_set.tournament.is_team_tournament
+                team_matches = screen_set.shows_team_matches
+                if team_matches and self.type in (
+                    ScreenType.INPUT,
+                    ScreenType.BOARDS,
+                ):
+                    first_item = screen_set.first_team_match
+                elif is_team and self.type == ScreenType.CHECK_IN:
+                    first_item = screen_set.first_team_by_name
+                elif is_team and self.type == ScreenType.RANKING:
+                    first_item = screen_set.first_team_standing
+                else:
+                    first_item = screen_set.first_item
                 first_last = (
-                    bool(screen_set.first or screen_set.last)
-                    and screen_set.first_item is not None
+                    bool(screen_set.first or screen_set.last) and first_item is not None
                 )
                 text: str
                 if (
@@ -290,7 +316,8 @@ class Screen:
                 ):
                     text = self.menu_text or self.default_boards_screen_menu_text(
                         single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item is not None,
+                        first_last=first_last,
+                        team_matches=team_matches,
                     )
                 elif self.type in [
                     ScreenType.PLAYERS,
@@ -299,35 +326,83 @@ class Screen:
                 ]:
                     text = self.menu_text or self.default_players_screen_menu_text(
                         single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item is not None,
+                        first_last=first_last,
                     )
                 elif self.type == ScreenType.CHECK_IN:
                     text = self.menu_text or self.default_check_in_screen_menu_text(
                         single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item is not None,
+                        first_last=first_last,
                     )
                 elif self.type == ScreenType.RANKING:
                     text = self.menu_text or self.default_ranking_screen_menu_text(
                         single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item is not None,
+                        first_last=first_last,
                         crosstable=self.ranking_crosstable,
                     )
                 else:
                     text = self.menu_text or ''
                 text = text.replace('%t', screen_set.tournament.name)
                 if self.type == ScreenType.RANKING:
+                    if is_team:
+                        if '%f' in text:
+                            first_standing = screen_set.first_team_standing
+                            text = text.replace(
+                                '%f',
+                                str(first_standing['rank']) if first_standing else '-',
+                            )
+                        if '%l' in text:
+                            last_standing = screen_set.last_team_standing
+                            text = text.replace(
+                                '%l',
+                                str(last_standing['rank']) if last_standing else '-',
+                            )
+                    else:
+                        if '%f' in text:
+                            text = text.replace(
+                                '%f',
+                                str(screen_set.first_tournament_player_by_rank.rank)
+                                if screen_set.first_tournament_player_by_rank
+                                else '-',
+                            )
+                        if '%l' in text:
+                            text = text.replace(
+                                '%l',
+                                str(screen_set.last_tournament_player_by_rank.rank)
+                                if screen_set.last_tournament_player_by_rank
+                                else '-',
+                            )
+                elif is_team and (
+                    self.type == ScreenType.CHECK_IN
+                    or (
+                        not team_matches
+                        and self.type in (ScreenType.INPUT, ScreenType.BOARDS)
+                        and not screen_set.tournament.current_round
+                    )
+                ):
+                    first_team = screen_set.first_team_by_name
+                    last_team = screen_set.last_team_by_name
+                    text = text.replace(
+                        '%f', first_team.name[:8] if first_team else '-'
+                    )
+                    text = text.replace('%l', last_team.name[:8] if last_team else '-')
+                elif team_matches and self.type in (
+                    ScreenType.INPUT,
+                    ScreenType.BOARDS,
+                ):
+                    first_match = screen_set.first_team_match
+                    last_match = screen_set.last_team_match
                     if '%f' in text:
                         text = text.replace(
                             '%f',
-                            str(screen_set.first_tournament_player_by_rank.rank)
-                            if screen_set.first_tournament_player_by_rank
+                            str(first_match.display_number)
+                            if first_match and first_match.display_number is not None
                             else '-',
                         )
                     if '%l' in text:
                         text = text.replace(
                             '%l',
-                            str(screen_set.last_tournament_player_by_rank.rank)
-                            if screen_set.last_tournament_player_by_rank
+                            str(last_match.display_number)
+                            if last_match and last_match.display_number is not None
                             else '-',
                         )
                 elif (
