@@ -7,6 +7,7 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common.i18n import _
+from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
 from data.print_documents import PrintDocumentManager
 from data.tournament import Tournament
@@ -22,6 +23,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
 )
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
+from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 from web.messages import Message
 
@@ -287,7 +289,23 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        # TODO: Check if FTP connection is working
+        # TODO: do manual SSH auth test only, automated one can trigger server security lockdown
+        ftp_auth_valid: bool | None = None
+
+        ftp_host: str | None = WebContext.form_data_to_str(data, 'ftp_host', '')
+        ftp_username: str | None = WebContext.form_data_to_str(data, 'ftp_username', '')
+        ftp_password: str | None = WebContext.form_data_to_str(data, 'ftp_password', '')
+
+        if NetworkMonitor.connected():
+            ftp_auth_valid = False
+            if ftp_host and ftp_username:
+                ftp_auth_valid = CustomUploadUploader.test_ftp(
+                    ftp_host, ftp_username, ftp_password or ''
+                )
+
+        errors = {}
+        if ftp_auth_valid is False:
+            errors['ftp_host'] = _('Failed to connect to server.')
 
         return HTMXTemplate(
             template_name='custom_upload_tournament_auth_fields.html',
@@ -299,7 +317,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     'ftp_password': data['ftp_password'],
                 },
                 'ftp_password_visible': data['ftp_password_visible'] == 'true',
-                'custom_upload_auth_valid': False,
-                'errors': [],
+                'custom_upload_auth_valid': ftp_auth_valid is True,
+                'errors': errors,
             },
         )

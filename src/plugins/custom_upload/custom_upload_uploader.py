@@ -9,6 +9,12 @@ from threading import Thread
 
 import paramiko.client
 from paramiko.sftp_client import SFTPClient
+from paramiko.ssh_exception import (
+    BadHostKeyException,
+    AuthenticationException,
+    SSHException,
+    NoValidConnectionsError,
+)
 
 from common.i18n import _, set_locale
 from common.i18n.utils import parse_jinja_template
@@ -163,6 +169,16 @@ class CustomUploadUploader:
                 },
                 ['ws'],
             )
+
+    @classmethod
+    def test_ftp(cls, ftp_host: str, ftp_username: str, ftp_password: str) -> bool:
+        """Tries to connect to the FTP server.
+        Returns True on success, False if the connection doesn't succeed"""
+
+        logger.info('Testing SSH connection for [%s]...', ftp_host)
+        if auth := cls._ftp_auth(ftp_host, ftp_username, ftp_password):
+            logger.info('SSH connection succeeded.')
+        return auth
 
     @classmethod
     def upload_tournament(
@@ -370,3 +386,19 @@ class CustomUploadUploader:
         except FileNotFoundError:
             return False
         return True
+
+    @staticmethod
+    def _ftp_auth(host: str, username: str, password: str) -> bool:
+        with paramiko.SSHClient() as client:
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            try:
+                client.connect(host, username=username, password=password, timeout=5)
+                return True
+            except (
+                BadHostKeyException,
+                AuthenticationException,
+                NoValidConnectionsError,
+                SSHException,
+                TimeoutError,
+            ):
+                return False

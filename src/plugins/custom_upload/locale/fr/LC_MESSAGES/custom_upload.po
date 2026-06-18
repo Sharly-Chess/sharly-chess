@@ -31,6 +31,9 @@ msgstr "Exemple : mon_identifiant"
 msgid "E.g.: /tournaments/my_tournament/"
 msgstr "Exemple : /tournois/mon_tournoi"
 
+msgid "Failed to connect to server."
+msgstr "Échec de la connexion au serveur distant."
+
 msgid "Failure"
 msgstr "Échec"
 
@@ -48,6 +51,7 @@ msgstr "Mot de passe FTP :"
 
 msgid "Host:"
 msgstr "Hôte :"
+
 
 msgid "Last upload"
 msgstr "Dernière mise en ligne"

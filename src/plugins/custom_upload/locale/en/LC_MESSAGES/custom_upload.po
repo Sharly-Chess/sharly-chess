@@ -31,6 +31,9 @@ msgstr ""
 msgid "E.g.: /tournaments/my_tournament/"
 msgstr ""
 
+msgid "Failed to connect to server."
+msgstr ""
+
 msgid "Failure"
 msgstr ""
 
