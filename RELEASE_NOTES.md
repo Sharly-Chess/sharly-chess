@@ -41,3 +41,4 @@
 
 - Clarified the rules upload (4.2.0)
 - Fixed import of Papi tie-breaks in TRF26 (4.2.1)
+- Fixed export of fixed tables in Papi on not started tournaments (4.2.2)
