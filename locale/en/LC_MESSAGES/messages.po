@@ -749,6 +749,9 @@ msgstr ""
 msgid "Affiliation"
 msgstr ""
 
+msgid "Affiliation (club, league...)"
+msgstr ""
+
 msgid "Affiliation."
 msgstr ""
 
@@ -8660,6 +8663,6 @@ msgstr ""
 msgid "← Back to IT1 certificate"
 msgstr ""
 
-#~ msgid "The organisation to which the team belongs (for example a club, league, school, or federation). Affiliations may be used by pairing rules to avoid pairing related teams."
+#~ msgid " (club, league...)"
 #~ msgstr ""
 

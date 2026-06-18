@@ -749,6 +749,9 @@ msgstr "Influe sur le classement qui sera choisi pour chaque joueur·euse."
 msgid "Affiliation"
 msgstr "Affiliation"
 
+msgid "Affiliation (club, league...)"
+msgstr "Affiliation (club, ligue...)"
+
 msgid "Affiliation."
 msgstr "Affiliation."
 
@@ -8664,4 +8667,7 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "The organisation to which the team belongs (for example a club, league, school, or federation). Affiliations may be used by pairing rules to avoid pairing related teams."
 #~ msgstr "L'organisation à laquelle appartient l'équipe (par exemple un club, une ligue, une école ou une fédération). Les affiliations peuvent être utilisées par les règles d'appariement pour éviter d'apparier des équipes apparentées."
+
+#~ msgid " (club, league...)"
+#~ msgstr ""
 
