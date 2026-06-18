@@ -1,0 +1,307 @@
+{% extends '_ffe_document_base.html' %}
+
+{% macro num(value) %}{% if value is not none %}{{ '%g'|format(value) }}{% endif %}{% endmacro %}
+
+{% block body %}
+    <style>
+        body {
+            width: 190mm;
+        }
+        .loubatiere-fiche {
+            --border: 1px solid #000;
+
+            /* ----- adjustable column widths ----- */
+            --col-tag: 3.3rem;     /* leftmost column: Lettre / Ronde / N° */
+            --c2: 10%;
+            --c3: 25%;
+
+            /* identity table */
+            --id-c4: 65%;
+
+            /* rounds table */
+            --rnd-gains: 13%;
+            --rnd-diff: 13%;
+            --rnd-points: 20%;
+            --rnd-total: 19%;
+
+            /* roster table */
+            --ros-codeffe: 13%;
+            --ros-elo: 13%;
+            --ros-result: 13%;     /* each of R1 / R2 / R3 */
+
+            /* totals table */
+            --tot-c2: 14%;
+            --tot-c3: 12%;
+            --tot-c4: 9%;
+            --tot-cell: 13%;       /* each of the five trailing cells */
+
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            /* Fill the A4 content area (page box minus the body's 5mm
+               print padding top+bottom) so the footer sits at the bottom. */
+            min-height: calc(100vh - 10mm);
+            page-break-after: always;
+            break-after: page;
+        }
+        .loubatiere-fiche:last-of-type {
+            page-break-after: auto;
+            break-after: auto;
+        }
+        /* On screen only, separate the per-team pages with a gap (and a
+           sheet-like outline). Print is unaffected — each form is its own
+           A4 page there. */
+        @media screen {
+            .loubatiere-fiche {
+                margin: 0 auto 2.5rem;
+                padding: 5mm;
+                box-shadow: 0 0 0.4rem rgba(0, 0, 0, 0.25);
+            }
+        }
+        .loubatiere-header {
+            display: flex;
+            position: relative;
+            align-items: center;
+            background-color: #1998D0;
+            padding: 1.3rem 0 0.3rem;
+            margin-bottom: 0.6rem;
+        }
+        .loubatiere-header img {
+            position: absolute;
+            top: 0.5rem;
+            left: 20mm;
+            height: 20mm;
+        }
+        .loubatiere-header .federation {
+            flex: 1 1 auto;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 0.03em;
+        }
+        .loubatiere-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 16pt;
+            margin: 2.7rem 0 1.6rem;
+            border-top: 0.3rem solid #1998D0;
+            padding-top: 1.3rem;
+        }
+        table.fiche {
+            width: 172mm;
+            border-collapse: collapse;
+            border-bottom: 0.08rem solid black;
+            table-layout: fixed;
+            margin: 0 auto 0 auto;
+        }
+        table.results {
+            border-left: 0.15rem solid black;
+            border-right: 0.15rem solid black;
+            border-bottom: 0.15rem solid black;
+        }
+        table.results tr td:last-child {
+            border-right: 0.15rem solid black;
+        }
+        table.fiche th,
+        table.fiche td {
+            border: var(--border);
+            padding: 0.4rem;
+            font-size: 10pt;
+            vertical-align: middle;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: left;
+        }
+        table.fiche th { text-align: center;}
+        table.fiche th.left { text-align: left;}
+        table.fiche th.bold, table.fiche td.bold { font-weight: bold; }
+        table.fiche .label { }
+        table.fiche .label-with-input { display: flex; align-items: center; gap: 0.5rem; }
+        table.fiche td.empty { height: 1.25rem; }
+        table.fiche td.text-center { text-align: center; }
+        table.fiche input {
+            border: none;
+            width: 100%;
+            font: inherit;
+            color: inherit;
+            background: transparent;
+            padding: 0;
+        }
+        table.fiche td.text-center input,
+        table.fiche .classement input { text-align: center; }
+        .loubatiere-note {
+            width: 172mm;
+            margin: 3rem auto;
+            font-size: 10pt;
+            line-height: 1.3;
+        }
+        .loubatiere-footer {
+            margin-top: auto;
+            border-top: 3px solid #1b75bb;
+            padding-top: 0.3rem;
+            color: #1b75bb;
+            font-size: 0.72rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .classement {
+            color: #1b75bb;
+            font-weight: bold;
+            text-align: center !important;
+        }
+    </style>
+
+    {% for team in teams %}
+        <form class="loubatiere-fiche">
+            <div class="loubatiere-header">
+                {% if loubatiere_logo_url %}
+                    <img src="{{ loubatiere_logo_url }}" alt="Coupe Jean-Claude Loubatière"/>
+                {% endif %}
+                <span class="federation">FÉDÉRATION FRANÇAISE DES ÉCHECS</span>
+            </div>
+            <div class="loubatiere-title">FICHE D'APPARIEMENT</div>
+
+            {# --- Team identity --- #}
+            <table class="fiche">
+                <colgroup>
+                    <col style="width: var(--col-tag);"/>
+                    <col style="width: var(--c2);"/>
+                    <col style="width: var(--c3);"/>
+                    <col style="width: var(--id-c4);"/>
+                </colgroup>
+                <tr>
+                    <td class="label text-center">Lettre</td>
+                    <td class="label" colspan="3"><div class="label-with-input"><span><b>CLUB :</b></span><input value="{{ team.name }}"/></div></td>
+                </tr>
+                <tr>
+                    <td rowspan="4" class="text-center"><input value="{{ team.letter }}" style="text-align: center; font-size: 1.4rem; font-weight: bold;"/></td>
+                    <td class="label" colspan="3"><div class="label-with-input"><span><b>Nom du responsable :</b></span><input value="{{ team.captain }}"/></div></td>
+                </tr>
+                <tr><td colspan="3"><div class="label-with-input"><span>Adresse : </span><input/></div></td></tr>
+                <tr>
+                    <td colspan="2"><div class="label-with-input"><span>Code postal : </span><input/></div></td>
+                    <td colspan="2"><div class="label-with-input"><span>Ville : </span><input/></div></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><div class="label-with-input"><span>Téléphone : </span><input/></div></td>
+                    <td colspan="2"><div class="label-with-input"><span>Mail : </span><input/></div></td>
+                </tr>
+            </table>
+
+            {# --- Per-round match summary --- #}
+            <table class="fiche">
+                <colgroup>
+                    <col style="width: var(--col-tag);"/>
+                    <col style="width: var(--c2);"/>
+                    <col style="width: var(--c3);"/>
+                    <col style="width: var(--rnd-gains);"/>
+                    <col style="width: var(--rnd-diff);"/>
+                    <col style="width: var(--rnd-points);"/>
+                    <col style="width: var(--rnd-total);"/>
+                </colgroup>
+                <tr>
+                    <th>Ronde</th>
+                    <th>Couleur</th>
+                    <th>Equipe adverse</th>
+                    <th>Gains</th>
+                    <th style="padding: 0; line-height: 0.9;">Différentiel<br />p-c</th>
+                    <th>Points de match</th>
+                    <th style="padding: 0; line-height: 0.9;">Total<br />points de match</th>
+                </tr>
+                {% for r in team.rounds %}
+                    <tr>
+                        <td class="text-center label">R{{ r.round }}</td>
+                        <td class="text-center"><input value="{{ r.colour if r.colour }}"/></td>
+                        <td><input value="{{ r.opponent if r.opponent is defined }}"/></td>
+                        <td class="text-center"><input value="{{ num(r.gains) if r.gains is defined }}"/></td>
+                        <td class="text-center"><input value="{{ num(r.differential) if r.differential is defined }}"/></td>
+                        <td class="text-center"><input value="{{ num(r.match_points) if r.match_points is defined }}"/></td>
+                        <td class="text-center"><input value="{{ num(r.total_match_points) if r.total_match_points is defined }}"/></td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+            {# --- Roster + per-round results --- #}
+            <table class="fiche">
+                <colgroup>
+                    <col style="width: var(--col-tag);"/>
+                    <col style="width: var(--c2);"/>
+                    <col style="width: var(--c3);"/>
+                    <col style="width: var(--ros-codeffe);"/>
+                    <col style="width: var(--ros-elo);"/>
+                    <col style="width: var(--ros-result);"/>
+                    <col style="width: var(--ros-result);"/>
+                    <col style="width: var(--ros-result);"/>
+                </colgroup>
+                <tr>
+                    <th rowspan="2" class="bold">N°</th>
+                    <th rowspan="2" colspan="2" class="left">Nom - Prénom</th>
+                    <th rowspan="2">Code FFE</th>
+                    <th rowspan="2">ELO</th>
+                    <th colspan="3" style="padding: 0.1rem;" class="bold">Résultats</th>
+                </tr>
+                <tr>{% for r in rounds %}<th style="padding: 0.1rem;  font-weight: bold;">R{{ r }}</th>{% endfor %}</tr>
+                {% set row_count = [team.players|length, 5]|max %}
+                {% for i in range(row_count) %}
+                    {% set p = team.players[i] if i < team.players|length else none %}
+                    <tr>
+                        <td class="text-center label">{{ i + 1 }}</td>
+                        <td colspan="2"><input value="{{ p.name if p }}"/></td>
+                        <td class="text-center"><input value="{{ p.code_ffe if p }}"/></td>
+                        <td class="text-center"><input value="{{ p.elo if p and p.elo is not none }}"/></td>
+                        {% for r in rounds %}<td class="text-center"><input value="{{ p.results.get(r, '') if p }}"/></td>{% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+
+            <table class="fiche results">
+                <colgroup>
+                    <col style="width: var(--col-tag);"/>
+                    <col style="width: var(--tot-c2);"/>
+                    <col style="width: var(--tot-c3);"/>
+                    <col style="width: var(--tot-c4);"/>
+                    <col style="width: var(--tot-cell);"/>
+                    <col style="width: var(--tot-cell);"/>
+                    <col style="width: var(--tot-cell);"/>
+                    <col style="width: var(--tot-cell);"/>
+                    <col style="width: var(--tot-cell);"/>
+                </colgroup>
+                <tr>
+                    <td colspan="2" class="label text-center bold">Moyenne Elo</td>
+                    <td colspan="2" class="text-center"><input value="{{ team.average_elo if team.average_elo is not none }}"/></td>
+                    <td colspan="2" class="label text-center">Différentiel p-c</td>
+                    {% for r in team.rounds %}<td class="text-center"><input value="{{ num(r.differential) if r.differential is not none }}"/></td>{% endfor %}
+                </tr>
+                <tr>
+                    <td colspan="2" class="label text-center bold">Total pts de match</td>
+                    <td class="text-center"><input value="{{ num(team.total_match_points) if team.total_match_points is not none }}"/></td>
+                    <td colspan="2" class="label text-center bold">Total differentiel</td>
+                    <td class="text-center"><input value="{{ num(team.total_differential) if team.total_differential is not none }}"/></td>
+                    <td colspan="2" class="label text-center bold">Total gains</td>
+                    <td class="text-center"><input value="{{ num(team.total_gains) if team.total_gains is not none }}"/></td>
+                </tr>
+                <tr>
+                    <td colspan="3"></td>
+                    <td colspan="3" class="classement">Classement final</td>
+                    <td colspan="4" class="classement"><input value="{{ team.classement }}"/></td>
+                </tr>
+            </table>
+
+            <div class="loubatiere-note">
+                Le capitaine d'équipe indique les coordonnées complètes de ses joueuses. La
+                moyenne Elo est calculée sur la base des quatre joueurs / joueuses de l'équipe
+                qui disputeront la première ronde. Pour chaque match de la phase, le capitaine
+                choisit 4 joueurs / joueuses de cette liste sans changer l'ordre et donne sa
+                composition à l'arbitre. Pour le classement final et les départages, se reporter
+                au règlement de la compétition.
+            </div>
+
+            <div class="loubatiere-footer">
+                <span>www.echecs.asso.fr</span>
+                <span>6 rue de l'Église | 92600 Asnières-sur-Seine</span>
+            </div>
+        </form>
+    {% endfor %}
+{% endblock body %}

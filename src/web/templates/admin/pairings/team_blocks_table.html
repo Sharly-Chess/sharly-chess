@@ -1,21 +1,25 @@
 <table
     id="pairings-table"
     class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
-    style="table-layout: fixed;"
+    {% if admin_team_boards %}style="table-layout: fixed;"{% endif %}
 >
     {# Fixed column widths so the result column stays put between rounds; the
        two team-player columns share the remainder equally and truncate with an
        ellipsis. Mirrors the team_block_row.html column order (no points
-       columns: the header hides them for team pairings). #}
-    {% set show_illegal = admin_tournament.record_illegal_moves %}
-    <colgroup>
-        <col style="width: 6rem;">
-        {% if show_illegal %}<col style="width: 3rem;">{% endif %}
-        <col>
-        <col style="width: 5.5rem;">
-        {% if show_illegal %}<col style="width: 3rem;">{% endif %}
-        <col>
-    </colgroup>
+       columns: the header hides them for team pairings). Only applied when
+       there are matches — with no rows the width-less name columns would
+       collapse and the header cells would overlap. #}
+    {% if admin_team_boards %}
+        {% set show_illegal = admin_tournament.record_illegal_moves %}
+        <colgroup>
+            <col style="width: 6rem;">
+            {% if show_illegal %}<col style="width: 3rem;">{% endif %}
+            <col>
+            <col style="width: 5.5rem;">
+            {% if show_illegal %}<col style="width: 3rem;">{% endif %}
+            <col>
+        </colgroup>
+    {% endif %}
     {% include '/admin/pairings/pairing_table_header.html' %}
     {% for team_board in admin_team_boards %}
         {% include '/admin/pairings/team_block.html' %}

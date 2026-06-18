@@ -99,6 +99,9 @@ from plugins.ffe.ffe_upload_controller import (
 )
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
 from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
+from plugins.ffe.print_documents.ffe_loubatiere_document import (
+    FfeLoubatierePairingSheetDocument,
+)
 from plugins.ffe.print_documents.ffe_options import (
     FFEDocumentTypePrintOption,
     FFET3NoLicencePlayersPrintOption,
@@ -768,7 +771,15 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+        from data.print_documents.documents import MatchSheetsPrintDocument
+
         print_documents.append(FFEPrintDocument)
+        # Place the Loubatière fiche right after the match sheets document.
+        try:
+            index = print_documents.index(MatchSheetsPrintDocument)
+            print_documents.insert(index + 1, FfeLoubatierePairingSheetDocument)
+        except ValueError:
+            print_documents.append(FfeLoubatierePairingSheetDocument)
 
     @hookimpl
     def insert_print_option(self, print_options: list[type['PrintOption']]):
