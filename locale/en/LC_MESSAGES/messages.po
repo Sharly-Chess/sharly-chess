@@ -3334,6 +3334,9 @@ msgstr ""
 msgid "Lesotho"
 msgstr ""
 
+msgid "Level specific colors"
+msgstr ""
+
 msgid "Liberia"
 msgstr ""
 
@@ -3388,9 +3391,6 @@ msgid "Log out"
 msgstr ""
 
 msgid "Log settings"
-msgstr ""
-
-msgid "Log-level specific colors"
 msgstr ""
 
 #, python-format
@@ -3605,6 +3605,9 @@ msgid "Min:"
 msgstr ""
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
+msgstr ""
+
+msgid "Minimum level:"
 msgstr ""
 
 msgid "Minimum number of points (included):"
@@ -5592,7 +5595,7 @@ msgstr ""
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
 
-msgid "Show logging level"
+msgid "Show level"
 msgstr ""
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "

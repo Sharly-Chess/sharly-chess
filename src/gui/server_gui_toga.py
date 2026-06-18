@@ -460,6 +460,7 @@ class SharlyChessServerToga(toga.App):
             {'level': console_log_level, 'text': console_log_level_str}
             for console_log_level, console_log_level_str in config.console_log_levels.items()
         ]
+        level_label = toga.Label(_('Minimum level:'), margin_top=2)
         self.log_level_select = toga.Selection(
             items=log_level_options,
             accessor='text',
@@ -470,12 +471,12 @@ class SharlyChessServerToga(toga.App):
             data={'level': config.console_log_level}
         )
         self.log_color_switch = toga.Switch(
-            text=_('Log-level specific colors'),
+            text=_('Level specific colors'),
             value=config.console_color,
             on_change=self._on_log_color_switch_change,
         )
         self.show_log_level_switch = toga.Switch(
-            text=_('Show logging level'),
+            text=_('Show level'),
             value=config.console_show_level,
             on_change=self._on_show_log_level_switch_change,
         )
@@ -484,15 +485,20 @@ class SharlyChessServerToga(toga.App):
             value=config.console_show_date,
             on_change=self._on_show_date_switch_change,
         )
+        switch_container = toga.Box(
+            margin_top=2,
+            children=[
+                self.log_color_switch,
+                self.show_log_level_switch,
+                self.show_log_time_switch,
+            ],
+            gap=10,
+            margin_left=20,
+        )
         self.log_settings = toga.Box(
-            style=Pack(direction=ROW, margin_bottom=10, gap=10, visibility='hidden')
+            style=Pack(direction=ROW, margin_bottom=10, visibility='hidden')
         )
-        self.log_settings.add(
-            self.log_level_select,
-            self.log_color_switch,
-            self.show_log_level_switch,
-            self.show_log_time_switch,
-        )
+        self.log_settings.add(level_label, self.log_level_select, switch_container)
         self.log_settings_container = toga.Box()
         self.logs_view.add(self.log_settings_container)
         self.logs_view.add(self.html_view)

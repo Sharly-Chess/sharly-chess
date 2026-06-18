@@ -3334,6 +3334,9 @@ msgstr "Les départages obsolètes ne peuvent plus être créés ou édités."
 msgid "Lesotho"
 msgstr "Lesotho"
 
+msgid "Level specific colors"
+msgstr "Couleurs spécifiques au niveau"
+
 msgid "Liberia"
 msgstr "Libéria"
 
@@ -3389,9 +3392,6 @@ msgstr "Déconnexion"
 
 msgid "Log settings"
 msgstr "Paramètres des logs"
-
-msgid "Log-level specific colors"
-msgstr "Couleurs spécifiques au niveau de log"
 
 #, python-format
 msgid "Logged in as [%(account_name)s]"
@@ -3606,6 +3606,9 @@ msgstr "Min :"
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
+
+msgid "Minimum level:"
+msgstr "Niveau minimum :"
 
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
@@ -5594,8 +5597,8 @@ msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
 
-msgid "Show logging level"
-msgstr "Afficher le niveau de log"
+msgid "Show level"
+msgstr "Afficher le niveau"
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
