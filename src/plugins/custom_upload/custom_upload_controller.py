@@ -289,7 +289,6 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        # TODO: do manual SSH auth test only, automated one can trigger server security lockdown
         ftp_auth_valid: bool | None = None
 
         ftp_host: str | None = WebContext.form_data_to_str(data, 'ftp_host', '')
