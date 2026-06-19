@@ -1,3 +1,4 @@
+import socket
 import urllib
 from dataclasses import dataclass
 from datetime import datetime
@@ -399,6 +400,7 @@ class CustomUploadUploader:
                 AuthenticationException,
                 NoValidConnectionsError,
                 SSHException,
+                socket.error,
                 TimeoutError,
             ):
                 return False
