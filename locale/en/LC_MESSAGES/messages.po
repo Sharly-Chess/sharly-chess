@@ -2103,6 +2103,9 @@ msgstr ""
 msgid "Document:"
 msgstr ""
 
+msgid "Documentation"
+msgstr ""
+
 msgid "Documents"
 msgstr ""
 
@@ -3418,6 +3421,9 @@ msgstr ""
 msgid "Madagascar"
 msgstr ""
 
+msgid "Mail"
+msgstr ""
+
 msgid "Main category"
 msgstr ""
 
@@ -3748,6 +3754,9 @@ msgid "National team championship (1.4.3b)"
 msgstr ""
 
 msgid "Nauru"
+msgstr ""
+
+msgid "Need help?"
 msgstr ""
 
 msgid "Needs"
@@ -4227,9 +4236,6 @@ msgid "Only the year of birth is required for most tournaments. it is therefore 
 msgstr ""
 
 msgid "Open IT1 certificate for this norm"
-msgstr ""
-
-msgid "Open documentation"
 msgstr ""
 
 msgid "Open/close check-in"

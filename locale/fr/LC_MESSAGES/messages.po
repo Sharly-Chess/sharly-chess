@@ -2103,6 +2103,9 @@ msgstr "Le document [{document}] a été généré dans un autre onglet."
 msgid "Document:"
 msgstr "Document :"
 
+msgid "Documentation"
+msgstr "Documentation"
+
 msgid "Documents"
 msgstr "Documents"
 
@@ -3418,6 +3421,9 @@ msgstr "Macao, Chine"
 msgid "Madagascar"
 msgstr "Madagascar"
 
+msgid "Mail"
+msgstr "E-mail"
+
 msgid "Main category"
 msgstr "Catégorie générale"
 
@@ -3749,6 +3755,9 @@ msgstr "Championnat national par équipes (1.4.3b)"
 
 msgid "Nauru"
 msgstr "Nauru"
+
+msgid "Need help?"
+msgstr "Besoin d'aide ?"
 
 msgid "Needs"
 msgstr "Requis"
@@ -4230,9 +4239,6 @@ msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois
 
 msgid "Open IT1 certificate for this norm"
 msgstr "Ouvrir le certificat IT1 pour cette norme"
-
-msgid "Open documentation"
-msgstr "Ouvrir la documentation"
 
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"

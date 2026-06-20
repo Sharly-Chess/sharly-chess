@@ -418,7 +418,10 @@ class SharlyChessServerToga(toga.App):
         self.server_start_progress_bar = toga.ProgressBar()
         self.server_start_progress_bar.max = None
         self.server_state_container.add(self.server_start_progress_bar)
-        doc_btn = toga.Button(_('Open documentation'), on_press=self._open_website)
+        help_label = toga.Label(_('Need help?'))
+        doc_btn = toga.Button(_('Documentation'), on_press=self._open_documentation)
+        discord_btn = toga.Button('Discord', on_press=self._open_discord)
+        mail_btn = toga.Button(_('Mail'), on_press=self._open_mail)
         self.home_view.add(
             toga.Label(
                 _('Warning: closing this window will stop Sharly Chess.'),
@@ -426,13 +429,17 @@ class SharlyChessServerToga(toga.App):
             ),
             self.server_state_container,
             toga.Divider(style=Pack(margin=(5, 0))),
-            toga.Box(children=[doc_btn]),
             toga.Box(
-                style=Pack(align_items='center'),
+                children=[help_label, doc_btn, discord_btn, mail_btn],
+                gap=5,
+                align_items='center',
+            ),
+            toga.Box(
                 children=[
                     toga.Label(f'Sharly Chess {SHARLY_CHESS_VERSION} -'),
                     toga.Button(_('Support us')),
                 ],
+                align_items='center',
             ),
         )
 
@@ -823,8 +830,14 @@ class SharlyChessServerToga(toga.App):
         except Exception as e:
             self.add_log_message(f'Failed to open browser: {e}', 'error')
 
-    def _open_website(self, widget: Any = None, **kwargs) -> None:
+    def _open_documentation(self, widget: Any = None, **kwargs) -> None:
         webbrowser.open(_('*** Doc Link'))
+
+    def _open_discord(self, widget):
+        webbrowser.open('https://discord.gg/ezvxaCwUmw')
+
+    def _open_mail(self, widget):
+        webbrowser.open('mailto:support@sharly-chess.com')
 
     def _clear_log(self, widget: Any = None, **kwargs) -> None:
         try:
