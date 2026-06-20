@@ -832,13 +832,16 @@ class SharlyChessServerToga(toga.App):
         except Exception as e:
             self.add_log_message(f'Failed to open browser: {e}', 'error')
 
-    def _open_documentation(self, widget: Any = None, **kwargs) -> None:
+    @staticmethod
+    def _open_documentation(widget: Any = None, **kwargs) -> None:
         webbrowser.open(_('*** Doc Link'))
 
-    def _open_discord(self, widget):
+    @staticmethod
+    def _open_discord(widget):
         webbrowser.open('https://discord.gg/ezvxaCwUmw')
 
-    def _open_mail(self, widget):
+    @staticmethod
+    def _open_mail(widget):
         webbrowser.open('mailto:support@sharly-chess.com')
 
     def _clear_log(self, widget: Any = None, **kwargs) -> None:
@@ -858,10 +861,22 @@ class SharlyChessServerToga(toga.App):
 
         self._eval_or_buffer_js(js)
 
-    def _open_logs_dir(self, widget):
-        subprocess.Popen(f'explorer "{LOG_DIR}"')
+    @staticmethod
+    def _open_dir_in_explorer(dir_path: Path):
+        match sys.platform:
+            case 'win32':
+                subprocess.Popen(f'explorer "{dir_path}"')
+            case 'darwin':
+                subprocess.Popen(['open', str(dir_path)])
+            case 'linux':
+                subprocess.Popen(['xdg-open', str(dir_path)])
 
-    def _update_config(self, field: str, value):
+    @classmethod
+    def _open_logs_dir(cls, widget):
+        cls._open_dir_in_explorer(LOG_DIR)
+
+    @staticmethod
+    def _update_config(field: str, value):
         stored_config = SharlyChessConfig().stored_config
         setattr(stored_config, field, value)
         with ConfigDatabase(write=True) as config_database:
