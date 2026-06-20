@@ -580,6 +580,9 @@ msgstr "Niveau d'accès"
 msgid "Access level already defined for the account."
 msgstr "Niveau d'accès déjà défini pour ce compte."
 
+msgid "Access log files"
+msgstr "Accéder aux fichiers de logs"
+
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
 
@@ -7606,3 +7609,4 @@ msgstr "½ - ½ (NC)"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

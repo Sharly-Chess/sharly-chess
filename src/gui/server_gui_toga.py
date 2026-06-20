@@ -14,6 +14,7 @@ import logging
 import os
 import queue
 import re
+import subprocess
 import sys
 import threading
 import webbrowser
@@ -29,7 +30,7 @@ from toga.style.pack import COLUMN, ROW
 import qrcode
 
 import web
-from common import SHARLY_CHESS_VERSION, BASE_DIR
+from common import SHARLY_CHESS_VERSION, BASE_DIR, LOG_DIR
 from common.i18n import _
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
@@ -460,7 +461,8 @@ class SharlyChessServerToga(toga.App):
             on_press=self._toggle_log_settings,
         )
         clear_logs_btn = toga.Button(text=_('Clear logs'), on_press=self._clear_log)
-        log_buttons.add(self.log_settings_btn, clear_logs_btn)
+        log_files_btn = toga.Button(_('Access log files'), on_press=self._open_logs_dir)
+        log_buttons.add(self.log_settings_btn, clear_logs_btn, log_files_btn)
         self.logs_view.add(log_buttons)
         config = SharlyChessConfig()
         log_level_options = [
@@ -855,6 +857,9 @@ class SharlyChessServerToga(toga.App):
             }})();"""
 
         self._eval_or_buffer_js(js)
+
+    def _open_logs_dir(self, widget):
+        subprocess.Popen(f'explorer "{LOG_DIR}"')
 
     def _update_config(self, field: str, value):
         stored_config = SharlyChessConfig().stored_config
