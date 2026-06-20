@@ -26,6 +26,7 @@ from data.print_documents.documents import (
 )
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks.system_sets import SystemTieBreakSet
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
@@ -523,6 +524,7 @@ class FRASchoolsPlugin(Plugin):
         event: Event,
         stored_player: StoredPlayer,
         sync_data: SCEPlayerSyncData,
+        database: EventDatabase | None,
     ):
         plugin_data = FRASchoolsPlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
@@ -539,7 +541,9 @@ class FRASchoolsPlugin(Plugin):
                 else:
                     school = FRASchool.from_label(sce_school.label)
                     school.code = sce_school.code
-                    school_id = FRASchoolsUtils.add_event_school(event, school)
+                    school_id = FRASchoolsUtils.add_event_school(
+                        event, school, database=database
+                    )
         plugin_data.fra_school_id = school_id
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 

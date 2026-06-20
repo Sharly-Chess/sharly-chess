@@ -131,7 +131,8 @@
             'board_bye': _('Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent.'),
             'unplayed_no_pairing': _('Unplayed (no result recorded).'),
             'no_opponent': _('No opponent paired this round.'),
-            'ignored_via_1_4_1ef': _('1.4.1e/f: ignored by the subset search to satisfy this norm.'),
+            'ignored_via_1_4_1e': _('1.4.1e: game after the title result was reached, ignored by the subset search.'),
+            'ignored_via_1_4_1f': _('1.4.1f: game against a defeated opponent, ignored by the subset search.'),
         } %}
 
         {# Non-print nav: link back to the IT1 view. #}
@@ -232,18 +233,19 @@
                             <td class="center">
                                 {% if not norm.not_enough_federations %}
                                     <span class="verdict-pass">{{ _('PASS') }}</span>
-                                {% elif norm.is_143d_met %}
-                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
                                 {% elif norm.is_143_exempt_via_abc %}
                                     <span class="verdict-pass">{{ _('EXEMPT') }} (1.4.3{{ norm.rule_143_exemption }})</span>
+                                {% elif norm.is_143d_met %}
+                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
                                 {% else %}
                                     <span class="verdict-fail">{{ _('FAIL') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
 
-                        {# 1.4.4 — federation caps. Note: 1.4.3a/b/c do NOT
-                           exempt 1.4.4 — only 1.4.3d does. #}
+                        {# 1.4.4 — federation caps. All 1.4.3a-d exemptions
+                           waive 1.4.4 along with 1.4.3 (the "foreigner
+                           requirement", see 1.4.3e). #}
                         <tr>
                             <td>{{ _('1.4.4 — Own federation cap') }}</td>
                             <td>
@@ -252,12 +254,14 @@
                             </td>
                             <td>{{ norm.from_own_federations_count }}</td>
                             <td class="center">
-                                {% if norm.too_many_own_federation and not norm.is_143d_met %}
-                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
-                                {% elif norm.too_many_own_federation and norm.is_143d_met %}
+                                {% if not norm.too_many_own_federation %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% elif norm.is_143_exempt_via_abc %}
+                                    <span class="verdict-pass">{{ _('EXEMPT') }} (1.4.3{{ norm.rule_143_exemption }})</span>
+                                {% elif norm.is_143d_met %}
                                     <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
                                 {% else %}
-                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -276,12 +280,14 @@
                                 {% endif %}
                             </td>
                             <td class="center">
-                                {% if norm.too_many_one_federation and not norm.is_143d_met %}
-                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
-                                {% elif norm.too_many_one_federation and norm.is_143d_met %}
+                                {% if not norm.too_many_one_federation %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% elif norm.is_143_exempt_via_abc %}
+                                    <span class="verdict-pass">{{ _('EXEMPT') }} (1.4.3{{ norm.rule_143_exemption }})</span>
+                                {% elif norm.is_143d_met %}
                                     <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
                                 {% else %}
-                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -535,7 +541,7 @@
             </section>
 
             {#— 4. Federation histogram —#}
-            {% if norm.federations_counter %}
+            {% if norm.federations_counter or norm.fid_count %}
             <section class="calc-section">
                 {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Federation distribution (counted opponents)') }}</h2>
                 <table class="calc-table">
@@ -558,6 +564,16 @@
                                 </td>
                             </tr>
                         {% endfor %}
+                        {% if norm.fid_count %}
+                            {# FID games are counted, but 1.4.2a says FID is
+                               not a federation — it stays outside the
+                               1.4.3 / 1.4.4 federation mix. #}
+                            <tr>
+                                <td>FID</td>
+                                <td class="right">{{ norm.fid_count }}</td>
+                                <td>{{ _('Not counted as a federation (1.4.2a)') }}</td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </section>

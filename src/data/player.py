@@ -722,12 +722,16 @@ class TournamentPlayer(Player):
         )
 
     def achieves_any_title_norm(
-        self, min_games_override: int | None = None
+        self,
+        min_games_override: int | None = None,
+        rule_143_exemption: str = 'none',
     ) -> dict[TitleNorm, NormCheckResult]:
         from data.norms import TitleNormSubsetSearcher
 
         return TitleNormSubsetSearcher(
-            self, min_games_override=min_games_override
+            self,
+            min_games_override=min_games_override,
+            rule_143_exemption=rule_143_exemption,
         ).evaluate()
 
     @cached_property

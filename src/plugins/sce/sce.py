@@ -71,6 +71,7 @@ class SCEPluginHooks:
         event: Event,
         stored_player: 'StoredPlayer',
         sync_data: SCEPlayerSyncData,
+        database: EventDatabase | None,
     ):
         """Augment a stored player from SCE player shared data."""
 

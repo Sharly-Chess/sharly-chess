@@ -13,6 +13,9 @@ from litestar_htmx import HTMXRequest
 
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
+from data.display_controller import DisplayController
+from data.rotator import Rotator
+from data.screen import Screen
 from data.tournament import Tournament
 from utils.enum import Result
 from web.utils import RequestUtils
@@ -158,46 +161,56 @@ class SetByeGuard(BaseGuard):
         self._authorize_action(action, client)
 
 
-class ViewScreenEntityGuard(BaseGuard, ABC):
-    """Base guard for validating viewing a private / public screen entity."""
-
+class ViewScreenEntityGuard[T](BaseGuard, ABC):
     @staticmethod
     @abstractmethod
-    def is_public(request: HTMXRequest) -> bool:
-        """Get the visibility status of the entity."""
+    def get_entity(request: HTMXRequest) -> T | None:
+        """Get the optional entity from the request."""
+
+    @staticmethod
+    def is_entity_public(entity: T) -> bool:
+        return getattr(entity, 'public')
 
     def authorize_client(self, client: Client, request: HTMXRequest):
-        if not self.is_public(request):
-            self._authorize_action(AuthAction.VIEW_PRIVATE_SCREENS, client)
-        else:
-            self._authorize_action(AuthAction.VIEW_PUBLIC_SCREENS, client)
+        entity = self.get_entity(request)
+        if not entity:
+            return
+        action = (
+            AuthAction.VIEW_PUBLIC_SCREENS
+            if self.is_entity_public(entity)
+            else AuthAction.VIEW_PRIVATE_SCREENS
+        )
+        self._authorize_action(action, client)
 
 
-class ViewScreenGuard(ViewScreenEntityGuard):
+class ViewScreenGuard(ViewScreenEntityGuard[Screen]):
     """Guard validating if a client can view a screen.
-    requires: event_uniq_id, screen_uniq_id."""
+    requires: event_uniq_id
+    optional: screen_uniq_id."""
 
     @staticmethod
-    def is_public(request: HTMXRequest) -> bool:
-        return RequestUtils.get_screen(request).public
+    def get_entity(request: HTMXRequest) -> Screen | None:
+        return RequestUtils.get_optional_screen(request)
 
 
-class ViewRotatorGuard(ViewScreenEntityGuard):
+class ViewRotatorGuard(ViewScreenEntityGuard[Rotator]):
     """Guard validating if a client can view a rotator.
-    requires: event_uniq_id, rotator_id."""
+    requires: event_uniq_id
+    optional: rotator_id."""
 
     @staticmethod
-    def is_public(request: HTMXRequest) -> bool:
-        return RequestUtils.get_rotator(request).public
+    def get_entity(request: HTMXRequest) -> Rotator | None:
+        return RequestUtils.get_optional_rotator(request)
 
 
-class ViewDisplayControllerGuard(ViewScreenEntityGuard):
+class ViewDisplayControllerGuard(ViewScreenEntityGuard[DisplayController]):
     """Guard validating if a client can view a display controller.
-    requires: event_uniq_id, display_controller_id."""
+    requires: event_uniq_id
+    optional: display_controller_id."""
 
     @staticmethod
-    def is_public(request: HTMXRequest) -> bool:
-        return RequestUtils.get_display_controller(request).public
+    def get_entity(request: HTMXRequest) -> DisplayController | None:
+        return RequestUtils.get_optional_display_controller(request)
 
 
 class ManageScreenEntityGuard(BaseGuard):

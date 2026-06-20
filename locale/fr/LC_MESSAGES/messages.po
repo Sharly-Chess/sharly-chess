@@ -91,6 +91,12 @@ msgstr[0] "%(num)d joueur·euse à apparier"
 msgstr[1] "%(num)d joueur·euses à apparier"
 
 #, python-format
+msgid "%(num)d player will be paired"
+msgid_plural "%(num)d players will be paired"
+msgstr[0] "%(num)d joueur·euse sera apparié·e"
+msgstr[1] "%(num)d joueur·euses seront apparié·es"
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] "%(num)d prix"
@@ -310,12 +316,15 @@ msgstr "1.4.1 — Parties jouées"
 msgid "1.4.1c (default — forfeit excluded)"
 msgstr "1.4.1c (par défaut — forfait exclu)"
 
-msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
-msgstr "1.4.1e/f : ignorée par la recherche de sous-ensembles pour satisfaire cette norme."
-
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
 msgstr "1.4.1e/f : ronde(s) %(rounds)s ignorée(s)"
+
+msgid "1.4.1e: game after the title result was reached, ignored by the subset search."
+msgstr "1.4.1e : partie jouée après l'obtention du résultat de norme, ignorée par la recherche de sous-ensembles."
+
+msgid "1.4.1f: game against a defeated opponent, ignored by the subset search."
+msgstr "1.4.1f : partie contre un·e adversaire battu·e, ignorée par la recherche de sous-ensembles."
 
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
 msgstr "1.4.2a : adversaire sans fédération FIDE (NON) — non compté·e."
@@ -2069,6 +2078,10 @@ msgstr "Ne pas apparier à la ronde %(pairing_round)d"
 msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
 msgstr "Ne pas apparier à la ronde %(pairing_round)d (forfait)"
 
+#, python-format
+msgid "Do not pair for round #%(round)d"
+msgstr "Ne pas apparier à la ronde n°%(round)d"
+
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
 
@@ -3476,6 +3489,9 @@ msgstr "Marquer tou·tes les joueur·euses « %(status)s » "
 msgid "Mark as \"%(status)s\" "
 msgstr "Marquer « %(status)s » "
 
+msgid "Mark as \"Present\" (recommended)"
+msgstr "Marquer « Présent·e » (recommandé)"
+
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
 
@@ -4046,6 +4062,9 @@ msgstr "Norvège"
 
 msgid "Not assigned"
 msgstr "Non-attribué"
+
+msgid "Not counted as a federation (1.4.2a)"
+msgstr "Non comptée comme une fédération (1.4.2a)"
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entier (requis : 2)."
@@ -5455,6 +5474,10 @@ msgstr "Sélectionner un compte"
 
 msgid "Select an action for absent players:"
 msgstr "Sélectionner une action pour les joueur·euses absent·es :"
+
+#, python-format
+msgid "Select an action for the %(count)d absent players:"
+msgstr "Sélectionner une action pour les %(count)d joueur·euses absent·es :"
 
 msgid "Select player"
 msgstr "Sélectionner un·e joueur·euse"
@@ -6961,6 +6984,9 @@ msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 
+msgid "Warning: over half of the players are absent!"
+msgstr "Attention : plus de la moitié des joueur·euses sont absent·es !"
+
 msgid "Warning: potential data loss"
 msgstr "Attention : perte de données potentielle"
 
@@ -7002,8 +7028,8 @@ msgstr "Une semaine"
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
-msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
-msgstr "Ce dont le·la joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat sur l'échiquier » signifie qu'une victoire, nulle ou défaite jouée conviennent — mais la ronde doit néanmoins être jouée (une absence devient une défaite par forfait et invalide la norme). « norme acquise — ronde optionnelle » signifie que la norme est déjà acquise grâce aux rondes précédentes (1.4.1e) ; la partie de la ronde {round} ne l'affecte pas."
+msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."
+msgstr "Ce dont le joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat sur l'échiquier » signifie qu'une victoire, une nulle ou une défaite jouée conviennent toutes — mais la ronde doit être jouée (un forfait devient une défaite par forfait et disqualifie la norme). « norme déjà acquise » signifie qu'elle est acquise quel que soit le résultat de la ronde {round} — soit le résultat est déjà saisi, soit elle tient sans cette ronde (1.4.1e)."
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
@@ -7338,8 +7364,8 @@ msgstr "mon-ecran"
 msgid "no"
 msgstr "non"
 
-msgid "norm secured — round optional"
-msgstr "norme acquise — ronde optionnelle"
+msgid "norm already achieved"
+msgstr "norme déjà acquise"
 
 #, python-format
 msgid "of %(n)s opponents"
@@ -7571,4 +7597,3 @@ msgstr "½ - ½ (NC)"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-

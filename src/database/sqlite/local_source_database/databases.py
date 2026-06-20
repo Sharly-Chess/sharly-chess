@@ -128,27 +128,48 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     is_updating: bool = False
     update_status: bool | None = None
     max_update_time: datetime | None = None
+    _stored_source_database: StoredLocalSourceDatabase | None = None
 
     def __init__(self, write: bool = False):
         super().__init__(self.file_path(), write)
         self.stop_event = threading.Event()
         self.outdated_warning: bool = False
-        self.stored_source_database: StoredLocalSourceDatabase
-
-        with ConfigDatabase() as database:
-            stored_source_database = database.load_stored_local_source_database(self.id)
-        if stored_source_database:
-            self.stored_source_database = stored_source_database
-        else:
-            self.file.unlink(missing_ok=True)
-            with ConfigDatabase(write=True) as database:
-                self.stored_source_database = self.default_stored_database
-                database.insert_stored_local_source_database(
-                    self.stored_source_database
-                )
         if self.max_update_time and datetime.now() > self.max_update_time:
             logger.error(self.log_prefix + 'Update failed (timeout).')
             self.stop_update(False)
+
+    @property
+    def stored_source_database(self) -> StoredLocalSourceDatabase:
+        cls = self.__class__
+        if cls._stored_source_database is None:
+            self._load_stored_source_database()
+        assert cls._stored_source_database is not None
+        return cls._stored_source_database
+
+    def _load_stored_source_database(self):
+        cls = self.__class__
+        with ConfigDatabase() as database:
+            cls._stored_source_database = database.load_stored_local_source_database(
+                self.id
+            )
+        if not cls._stored_source_database:
+            self.file.unlink(missing_ok=True)
+            self.update_stored_source_database(
+                self.default_stored_database, exists=False
+            )
+
+    @classmethod
+    def update_stored_source_database(
+        cls,
+        stored_source_database: StoredLocalSourceDatabase,
+        exists: bool = True,
+    ):
+        with ConfigDatabase(write=True) as database:
+            if exists:
+                database.update_stored_local_source_database(stored_source_database)
+            else:
+                database.insert_stored_local_source_database(stored_source_database)
+        cls._stored_source_database = stored_source_database
 
     @staticmethod
     def _dir() -> Path:
@@ -318,9 +339,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     @override
     def delete(self):
         super().delete()
-        self.stored_source_database = self.default_stored_database
-        with ConfigDatabase(write=True) as database:
-            database.update_stored_local_source_database(self.default_stored_database)
+        self.update_stored_source_database(self.default_stored_database)
         self.publish_database_status_updated()
 
     def check(self) -> bool:
@@ -452,8 +471,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 return self.stop_update(False)
 
         self.stored_source_database.updated_at = time()
-        with ConfigDatabase(write=True) as database:
-            database.update_stored_local_source_database(self.stored_source_database)
+        self.update_stored_source_database(self.stored_source_database)
         logger.info(self.log_prefix + 'Database successfully updated.')
         return self.stop_update(True)
 

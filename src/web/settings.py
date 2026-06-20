@@ -28,7 +28,7 @@ from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 from litestar.middleware.base import DefineMiddleware
 
-from common import BASE_DIR, TMP_DIR
+from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.i18n import gettext, ngettext
 from data.input_output import OnlineDataSourceManager
 
@@ -59,11 +59,7 @@ from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
 from web.controllers.qrcode_controller import QRCodeController
 from web.controllers.user.screen_user_controller import ScreenUserController
-from web.controllers.user.tournament_user_controller import (
-    CheckInUserController,
-    IllegalMoveUserController,
-    ResultUserController,
-)
+from web.controllers.user.input_user_controller import InputUserController
 from web.sqlite_store import SQLiteStore
 from web.session_backend import SkipUnchangedSessionBackend
 
@@ -85,9 +81,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     IndexController,
     BackgroundController,
     ScreenUserController,
-    ResultUserController,
-    CheckInUserController,
-    IllegalMoveUserController,
+    InputUserController,
     IndexAdminController,
     EventAdminController,
     EventDocumentsController,
@@ -191,6 +185,7 @@ class SharlyChessEnvironment(Environment):
             loader=template_loader,
             autoescape=True,
             trim_blocks=True,
+            auto_reload=DEVEL_ENV,
         )
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore

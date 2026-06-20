@@ -18,6 +18,7 @@ from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.event import Event
+from data.norms import ForecastRequirement
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer, TournamentRating
@@ -1223,7 +1224,9 @@ class NormReportPrintDocument(PrintDocument):
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
-            for norm_title, norm in tournament_player.achieves_any_title_norm().items()
+            for norm_title, norm in tournament_player.achieves_any_title_norm(
+                rule_143_exemption=exemption_code
+            ).items()
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
@@ -1303,7 +1306,9 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
-            for norm_title, norm in tournament_player.achieves_any_title_norm().items()
+            for norm_title, norm in tournament_player.achieves_any_title_norm(
+                rule_143_exemption=exemption_code
+            ).items()
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
@@ -1484,7 +1489,9 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         event_federation = Federation(self.get_event().federation)
         achievers: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
-            all_norms = tournament_player.achieves_any_title_norm()
+            all_norms = tournament_player.achieves_any_title_norm(
+                rule_143_exemption=exemption_code
+            )
             # Apply 1.4.3a/b/c exemption before is_met filtering — the
             # exemption can flip a is_met=False norm to is_met=True for
             # players from the event's federation (or all players for c).
@@ -1553,7 +1560,9 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 tournament_player,
                 rule_143_exemption=exemption_code,
             )
-            if not forecaster.can_forecast_round(forecast_round):
+            forecastable = forecaster.can_forecast_round(forecast_round)
+            decided = forecaster.round_result_decided(forecast_round)
+            if not forecastable and not decided:
                 continue
             # 1.4.1 eligibility — player must be one played-game short of
             # the minimum so this round can plausibly bring them to it.
@@ -1569,15 +1578,30 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 < min_needed - 1
             ):
                 continue
-            chaseable = forecaster.chaseable_norms(forecast_round)
-            if not chaseable:
+            requirements: dict[TitleNorm, ForecastRequirement | None]
+            if forecastable:
+                requirements = {
+                    tn: r
+                    for tn, r in forecaster.chaseable_norms(forecast_round).items()
+                }
+                achieved = False
+            else:
+                # Her game is in even though the round is still open for
+                # others — show the norms she actually clinched rather
+                # than dropping her from the forecast.
+                requirements = {
+                    tn: None for tn in forecaster.decided_norms(forecast_round)
+                }
+                achieved = True
+            if not requirements:
                 continue
             pairing = tournament_player.pairings_by_round[forecast_round]
             candidates.append(
                 {
                     'player': tournament_player,
                     'opponent': pairing.opponent,
-                    'requirements': chaseable,  # dict[TitleNorm, Result]
+                    'requirements': requirements,  # dict[TitleNorm, ForecastRequirement | None]
+                    'achieved': achieved,
                 }
             )
 

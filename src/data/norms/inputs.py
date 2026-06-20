@@ -33,7 +33,11 @@ REASON_FORFEIT_WIN_EXCLUDED = 'forfeit_win_excluded'
 REASON_BOARD_BYE = 'board_bye'  # PAB / half-point bye / rest game
 REASON_UNPLAYED_NO_PAIRING = 'unplayed_no_pairing'
 REASON_NO_OPPONENT = 'no_opponent'
-REASON_DROPPED_BY_141EF = 'ignored_via_1_4_1ef'
+# A round the subset search ignored. 1.4.1e = a game after the title
+# result was reached (part of the trailing tail); 1.4.1f = a game against
+# a defeated opponent. The searcher classifies each dropped round into one.
+REASON_DROPPED_BY_141E = 'ignored_via_1_4_1e'
+REASON_DROPPED_BY_141F = 'ignored_via_1_4_1f'
 
 
 @dataclass(frozen=True)
@@ -42,7 +46,8 @@ class RoundAuditEntry:
 
     Built by `collect_inputs` for every pairing in the applicant's
     schedule (paired or not). The subset search later produces a copy
-    with the dropped rounds flipped to `DROPPED` / `REASON_DROPPED_BY_141EF`.
+    with the dropped rounds flipped to `DROPPED` and the per-round
+    1.4.1e / 1.4.1f reason the search used.
     """
 
     round_: int
@@ -73,6 +78,11 @@ class NormInputs:
 
     played_games: int = 0
     federations_counter: Counter[Federation] = field(default_factory=Counter)
+    # Counted opponents whose federation is FID. The game counts (it is in
+    # `played_games` / `opponents`), but 1.4.2a says FID "is not a
+    # federation", so it is kept out of `federations_counter`. Tracked
+    # separately only so the audit view can show it with a clarifying note.
+    fid_count: int = 0
     titles_counter: Counter[PlayerTitle] = field(default_factory=Counter)
     opponents: list['TournamentPlayer'] = field(default_factory=list)
     results_list: list[Result] = field(default_factory=list)
@@ -105,14 +115,19 @@ class NormInputs:
 
         feds: Counter[Federation] = Counter()
         titles: Counter[PlayerTitle] = Counter()
+        fid_count = 0
         for opponent in kept_opponents:
-            feds[opponent.federation] += 1
+            if opponent.federation == Federation('FID'):
+                fid_count += 1
+            else:
+                feds[opponent.federation] += 1
             if opponent.title in TitleNorm.TITLE_HOLDERS:
                 titles[opponent.title] += 1
 
         return NormInputs(
             played_games=len(kept_idx),
             federations_counter=feds,
+            fid_count=fid_count,
             titles_counter=titles,
             opponents=kept_opponents,
             results_list=kept_results,
@@ -125,25 +140,27 @@ class NormInputs:
         )
 
     def audit_with_dropped(
-        self, dropped_rounds: frozenset[int]
+        self, reason_by_round: dict[int, str]
     ) -> list[RoundAuditEntry]:
         """Return a new audit list with the given rounds marked DROPPED.
 
-        Used by `TitleNormSubsetSearcher` when a winning subset is found:
+        `reason_by_round` maps each dropped round to its reason key — the
+        searcher classifies every drop as 1.4.1e (post-title tail) or
+        1.4.1f (defeated opponent). Used when a winning subset is found:
         the search's "ignored" rounds are flipped from INCLUDED (or
-        whatever they were) to DROPPED with the 1.4.1e/f reason. Entries
-        themselves stay frozen — we just produce a fresh list.
+        whatever they were) to DROPPED. Entries themselves stay frozen —
+        we just produce a fresh list.
         """
-        if not dropped_rounds:
+        if not reason_by_round:
             return self.round_audit
         return [
             replace(
                 e,
                 decision=RoundDecision.DROPPED,
-                reason_key=REASON_DROPPED_BY_141EF,
+                reason_key=reason_by_round[e.round_],
                 effective_result=None,
             )
-            if e.round_ in dropped_rounds
+            if e.round_ in reason_by_round
             else e
             for e in self.round_audit
         ]

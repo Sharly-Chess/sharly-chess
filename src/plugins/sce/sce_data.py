@@ -9,6 +9,7 @@ from data.criteria.tournament_criteria import TournamentCriterion
 from data.event import Event
 from data.player import TournamentPlayer, Player, MIN_YOB
 from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.utils import PlayerFFELicence
@@ -510,6 +511,7 @@ class SCEPlayerSyncData:
         tournament: Tournament,
         current_rating: int | None = None,
         current_rating_type: PlayerRatingType | None = None,
+        database: EventDatabase | None = None,
     ) -> None:
         event = tournament.event
         stored_player.first_name = self.first_name
@@ -539,7 +541,12 @@ class SCEPlayerSyncData:
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         plugin_manager.hook_for_event(
             event, 'augment_stored_player_from_sce_player_sync_data'
-        )(event=event, stored_player=stored_player, sync_data=self)
+        )(
+            event=event,
+            stored_player=stored_player,
+            sync_data=self,
+            database=database,
+        )
 
     @staticmethod
     def diff_fields_by_property_name(event: Event) -> dict[str, str]:

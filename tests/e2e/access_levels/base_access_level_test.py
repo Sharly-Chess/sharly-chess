@@ -424,7 +424,7 @@ class BaseAccessLevelTest:
                 )
 
             api_request_context.put(
-                f'/view/add-illegal-move/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}/{self.paired_tournament.id}/{alyx.id}'
+                f'/view/add-illegal-move/1/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}/{self.paired_tournament.id}/{alyx.id}'
             )
             expect(illegal_move_icon).to_be_visible()
             expect(illegal_move_icon).not_to_have_attribute(

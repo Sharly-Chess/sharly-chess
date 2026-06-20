@@ -91,6 +91,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d player will be paired"
+msgid_plural "%(num)d players will be paired"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] ""
@@ -310,11 +316,14 @@ msgstr ""
 msgid "1.4.1c (default — forfeit excluded)"
 msgstr ""
 
-msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
-msgstr ""
-
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
+msgstr ""
+
+msgid "1.4.1e: game after the title result was reached, ignored by the subset search."
+msgstr ""
+
+msgid "1.4.1f: game against a defeated opponent, ignored by the subset search."
 msgstr ""
 
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
@@ -2069,6 +2078,10 @@ msgstr ""
 msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
 msgstr ""
 
+#, python-format
+msgid "Do not pair for round #%(round)d"
+msgstr ""
+
 msgid "Do not recover"
 msgstr ""
 
@@ -3476,6 +3489,9 @@ msgstr ""
 msgid "Mark as \"%(status)s\" "
 msgstr ""
 
+msgid "Mark as \"Present\" (recommended)"
+msgstr ""
+
 msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
@@ -4045,6 +4061,9 @@ msgid "Norway"
 msgstr ""
 
 msgid "Not assigned"
+msgstr ""
+
+msgid "Not counted as a federation (1.4.2a)"
 msgstr ""
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
@@ -5452,6 +5471,10 @@ msgid "Select an account"
 msgstr ""
 
 msgid "Select an action for absent players:"
+msgstr ""
+
+#, python-format
+msgid "Select an action for the %(count)d absent players:"
 msgstr ""
 
 msgid "Select player"
@@ -6959,6 +6982,9 @@ msgstr ""
 msgid "Warning: experimental features are enabled!"
 msgstr ""
 
+msgid "Warning: over half of the players are absent!"
+msgstr ""
+
 msgid "Warning: potential data loss"
 msgstr ""
 
@@ -7000,7 +7026,7 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
-msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
+msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."
 msgstr ""
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
@@ -7336,7 +7362,7 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-msgid "norm secured — round optional"
+msgid "norm already achieved"
 msgstr ""
 
 #, python-format

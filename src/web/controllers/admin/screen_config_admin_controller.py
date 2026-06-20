@@ -41,7 +41,7 @@ class ScreenConfigAdminController(BaseEventAdminController):
         stored_event = admin_event.stored_event
         return WebContext.values_dict_to_form_data(
             {
-                'background_color': stored_event.background_color,
+                'background_color': admin_event.background_color,
                 'message_text': stored_event.message_text,
                 'message_color': admin_event.message_color,
                 'message_background_color': admin_event.message_background_color,

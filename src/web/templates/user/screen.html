@@ -25,10 +25,21 @@
         {% if display_controller %}
             <div
                 class="refresher display-controller-refresher"
-                {% if not is_rotator %}
+                {% if is_rotator %}
+                    hx-get="{{ url_for(
+                        'user-display-controller',
+                        event_uniq_id=user_event.uniq_id,
+                        display_controller_id=display_controller.id,
+                        rotator_screen_index=rotator_screen_index + 1,
+                    ) }}"
+                {% else %}
+                    hx-get="{{ url_for(
+                        'user-display-controller',
+                        event_uniq_id=user_event.uniq_id,
+                        display_controller_id=display_controller.id,
+                    ) }}"
                     hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
                 {% endif %}
-                hx-get="{{ url_for('user-display-controller', event_uniq_id=user_event.uniq_id, display_controller_id=display_controller.id, rotator_screen_index=rotator_screen_index + 1) }}"
                 hx-trigger="{{ becomes_visible }} every {{ display_controller.delay }}s[{{ refresh_conditions }}]"
                 hx-target="body"
                 hx-indicator="#please-wait"

@@ -76,6 +76,30 @@ class TitleNormForecaster:
             return False
         return pairing.result == Result.NO_RESULT
 
+    def round_result_decided(self, round_: int) -> bool:
+        """True iff the player has a real game in `round_` whose result is
+        already entered — the forecast for her is settled even though the
+        round may still be open for other players."""
+        pairing = self.player.pairings_by_round.get(round_)
+        if pairing is None or pairing.opponent is None:
+            return False
+        return pairing.result != Result.NO_RESULT
+
+    def decided_norms(self, round_: int) -> dict[TitleNorm, NormCheckResult]:
+        """Norms (above the applicant's current title) actually achieved
+        with the result already entered in `round_` — used to keep a
+        player who has finished the in-progress round visible in the
+        forecast instead of dropping out. Empty when none are achieved."""
+        results = self.player.achieves_any_title_norm(
+            min_games_override=self.min_games_override,
+            rule_143_exemption=self.rule_143_exemption,
+        )
+        return {
+            tn: res
+            for tn, res in results.items()
+            if res.is_met and tn.player_title.sort_index > self.player.title.sort_index
+        }
+
     def forecast_round(
         self, round_: int
     ) -> dict[Result, dict[TitleNorm, NormCheckResult]]:
@@ -88,11 +112,14 @@ class TitleNormForecaster:
         out: dict[Result, dict[TitleNorm, NormCheckResult]] = {}
         for outcome in _FORECAST_OUTCOMES:
             searcher = TitleNormSubsetSearcher(
-                self.player, min_games_override=self.min_games_override
+                self.player,
+                min_games_override=self.min_games_override,
+                rule_143_exemption=self.rule_143_exemption,
             )
             results = searcher.evaluate(result_overrides={round_: outcome})
-            # Apply 1.4.3a/b/c exemption so `is_met` reflects the spec
-            # exemption when the arbiter has flagged the event type.
+            # The searcher already stamps the exemption on every result so
+            # the subset search recognises an exemption-rescued mix; this
+            # re-affirms it for the final dict (idempotent).
             apply_143abc_exemption(
                 results, self.rule_143_exemption, self.player.federation, event_fed
             )
@@ -155,7 +182,9 @@ class TitleNormForecaster:
         the prefix R1..R(round_-1).
         """
         searcher = TitleNormSubsetSearcher(
-            self.player, min_games_override=self.min_games_override
+            self.player,
+            min_games_override=self.min_games_override,
+            rule_143_exemption=self.rule_143_exemption,
         )
         results = searcher.evaluate(result_overrides={round_: Result.NO_RESULT})
         return {tn for tn, res in results.items() if res.is_met}

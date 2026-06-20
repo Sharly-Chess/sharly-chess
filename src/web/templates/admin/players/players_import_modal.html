@@ -109,7 +109,7 @@
                                 tooltip.disable();
                             }
                         });
-                        setTimeout(() => $('#tournament-id').trigger('change'), 200);
+                        triggerModalInitEvent('#tournament-id');
                     </script>
                 </div>
                 <div
@@ -146,7 +146,7 @@
                                 $('#data-source-' + $(this).val() + '-columns').show();
                             }
                         });
-                        $('#use-data-source').trigger('change');
+                        triggerModalInitEvent('#use-data-source');
                     </script>
                 {% endif %}
             </form>
