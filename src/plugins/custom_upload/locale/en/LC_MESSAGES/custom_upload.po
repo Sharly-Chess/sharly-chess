@@ -7,6 +7,9 @@ msgstr ""
 msgid "Connection Custom Upload"
 msgstr ""
 
+msgid "Connection test"
+msgstr ""
+
 msgid "Custom location"
 msgstr ""
 

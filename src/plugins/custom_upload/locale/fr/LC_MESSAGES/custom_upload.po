@@ -7,6 +7,9 @@ msgstr "Changer de documents"
 msgid "Connection Custom Upload"
 msgstr "Connexion au site personnel"
 
+msgid "Connection test"
+msgstr "Tester la connexion"
+
 msgid "Custom location"
 msgstr "Site personnel"
 
