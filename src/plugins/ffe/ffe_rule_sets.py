@@ -143,6 +143,7 @@ _FFE_CUP_3T_4P_TABLE = FixedPairingTable(
             P('A', 4, 'C', 4),
         ),
     ),
+    is_compromise=True,
 )
 
 

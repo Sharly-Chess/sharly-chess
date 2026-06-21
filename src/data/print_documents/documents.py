@@ -1287,9 +1287,8 @@ class TeamBergerGridPrintDocument(PrintDocument):
 
 class MolterTablePrintDocument(PrintDocument):
     """The fixed Molter pairing schedule for a team tournament: one row per
-    board, one column per round (the regular rounds plus the autonomous
-    round). Cells show ``<team letter><board> – <team letter><board>``; a
-    legend maps each letter to its team."""
+    board, one column per round. Cells show ``<team letter><board> – <team
+    letter><board>``; a legend maps each letter to its team."""
 
     hide_for_individual_events = True
 
@@ -1359,24 +1358,15 @@ class MolterTablePrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         tournament = self.tournament
         teams = self._ordered_teams()
-        team_by_letter = {
-            chr(ord('A') + i): team for i, team in enumerate(teams)
-        }
+        team_by_letter = {chr(ord('A') + i): team for i, team in enumerate(teams)}
         table = self._table()
         assert table is not None  # guarded by validate_options
 
         all_rounds = list(table.rounds)
-        round_names = [
-            f'{_("R")}{i + 1}' for i in range(table.regular_round_count)
-        ]
-        if table.autonomous_round is not None:
-            all_rounds.append(table.autonomous_round)
-            round_names.append(_('Auton.'))
+        round_names = [f'{_("R")}{i + 1}' for i in range(table.regular_round_count)]
 
         def cell(p) -> str:
-            return (
-                f'{p.white_team}{p.white_index} – {p.black_team}{p.black_index}'
-            )
+            return f'{p.white_team}{p.white_index} – {p.black_team}{p.black_index}'
 
         board_count = len(all_rounds[0]) if all_rounds else 0
         board_rows = [

@@ -1620,7 +1620,6 @@ def generate_molter_table(
 ) -> FixedPairingTable:
     """Generate a Molter table. ``rounds`` defaults by convention
     (see :func:`default_molter_rounds`); it may range up to ``team_count − 1``.
-    An autonomous round is always produced, playable as the final (odd) round.
 
     Deterministic: ``(team_count, players_per_team, rounds)`` defines a single
     table using fixed search/tie-break order. Raises
@@ -1657,20 +1656,10 @@ def generate_molter_table(
         )
         emitted_rounds = tuple(_emit_even(rnd, team_count) for rnd in regular)
 
-    # The autonomous round replays the last odd-numbered regular round,
-    # re-coloured as a free round — a full-round Eulerian orientation, which
-    # balances each team's colours (every team plays an even P games).
-    last_odd = rounds if rounds % 2 == 1 else rounds - 1
-    autonomous = _eulerian_colour(regular_matches[last_odd - 1])
-    autonomous_round = (
-        _emit(autonomous) if team_count % 2 == 1 else _emit_even(autonomous, team_count)
-    )
-
     table = FixedPairingTable(
         team_count=team_count,
         players_per_team=players_per_team,
         rounds=emitted_rounds,
-        autonomous_round=autonomous_round,
     )
     if _VERIFY_GENERATED_TABLES:
         report = verify_molter_table(table)

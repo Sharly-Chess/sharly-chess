@@ -56,8 +56,7 @@ _Round  = list[_Board]
 So a player is just "which team, which board". A **match** says *who plays whom*
 but not the colours; a **board** adds the colours (the first element has White).
 The public result is a `FixedPairingTable` whose `rounds` are tuples of
-`TablePairing` (white team/board + black team/board), plus one
-`autonomous_round`.
+`TablePairing` (white team/board + black team/board).
 
 ---
 
@@ -74,14 +73,19 @@ that follow — skim past them for now.)
 - **S1** P is even; there are `N × P / 2` boards per round.
 - **S2** every player plays exactly one game per round, the same number overall.
 - **S3** team-mates are never paired.
-- **S4** you never meet two opponents from the same team (this forces `R < N`).
+- **S4** in strict tables, you never meet two opponents from the same team (this
+  forces `R < N`). Rule sets may supply a marked compromise override for an
+  otherwise impossible shape; the verifier then checks the stated compromise
+  properties instead of strict S4.
 - **S5** each team plays as many Whites as Blacks.
 - **S6a/S6b/S6c** the floater rules: none at all for even N; for odd N a
   floater only joins two consecutive boards with the odd (stronger) board
   descending, at most one per odd board per round, and the floater role rotates so
   nobody floats the same way twice across the regular rounds.
 - **C1 / C2 / C3** colour balance per player; never the same colour three rounds
-  running; a repeat only across an even→odd boundary.
+  running; a repeat only across an even→odd boundary in strict tables. Marked
+  compromise overrides still keep per-player colour balance and forbid triples,
+  but may relax the boundary-repeat convention when that is part of the override.
 
 **Ideals (only fully achievable on complete tables):**
 
@@ -96,8 +100,10 @@ that follow — skim past them for now.)
 
 ### When each ideal holds
 
-- The hard invariants (S1–S6c, C1–C3) hold for **every** valid shape — by
-  construction, and confirmed by the verifier before a table is emitted.
+- The hard invariants (S1–S6c, C1–C3) hold for **every** strict shape — by
+  construction, and confirmed by the verifier before a table is emitted. A rule
+  set override can mark a table as a compromise; those are not emitted by the
+  default generator.
 - **I1** is reached on every round exactly when `N − 1` divides `P` (the table is
   whole layers); a final partial layer otherwise makes it best-effort.
 - **I2** reaches its best spread (descending-floater counts differ by ≤ 1) on
@@ -124,7 +130,7 @@ So the generator works in two passes:
    all the cleverness is.
 2. **Colour it** — decide White/Black, with no searching.
 
-Then it appends the autonomous round and runs the verifier.
+Then it runs the verifier.
 
 ---
 
@@ -405,13 +411,13 @@ For long/high-density partial schedules where exact repair would be slow, the
 generator uses the fast legal affine subset. Those cases are valid and
 deterministic but may have I2 spread 2 rather than the lower-bound spread 1.
 
-## 8. The autonomous round
+## 8. Requested Rounds
 
-`generate_molter_table` always produces one extra **autonomous round**. It replays
-the *matches* of the last odd-numbered regular round but re-colours them fresh
-(Eulerian over the whole round). It exists to be played as a standalone final
-round — it makes an even round count odd, or stands alone as a one-round event.
-Because each team plays an even `P` games in it, its colours balance on their own.
+`generate_molter_table` emits exactly the requested regular rounds. For normal
+tournament generation the Molter pairing system passes the event's actual round
+count to `generate_molter_table`, so a requested count such as 1, 3, 5, ... is a
+real table whenever `R < N`. A one-round event is therefore just round 1 of a
+valid one-round Molter table, already colour-balanced by construction.
 
 ---
 
@@ -419,16 +425,15 @@ Because each team plays an even `P` games in it, its colours balance on their ow
 
 `generate_molter_table(team_count, players_per_team, rounds=None)`:
 
-1. **Validate**: `P` even, `N ≥ 3`, `1 ≤ R ≤ N − 1`. `rounds` defaults via
+1. **Validate**: `P` even, `N ≥ 3`, and `1 ≤ R ≤ N − 1`. `rounds` defaults via
    `default_molter_rounds` (odd counts 5 and 7 run "complete" = `N − 1` rounds;
    everything else defaults to 2). Bad input raises `MolterGenerationError`.
 2. **Build matches** then **colour**, by parity:
    - odd N → `_complete_i1_matches` → `_colour_complete_i1_matches`
    - even N → `_complete_i1_even_matches` → `_colour_complete_i1_even_matches`
-3. **Autonomous round**: `_eulerian_colour` of the last odd round's matches.
-4. **Render** each round with `_emit` (sorts boards: all board-1 games first, a
+3. **Render** each round with `_emit` (sorts boards: all board-1 games first, a
    block's floater grouped with its lower board).
-5. **Verify (opt-in).** When `_VERIFY_GENERATED_TABLES` is set, run
+4. **Verify (opt-in).** When `_VERIFY_GENERATED_TABLES` is set, run
    `verify_molter_table` and raise `MolterGenerationError` on any hard-rule
    violation. It's **off by default** — the construction is trusted in production;
    turn it on when changing the algorithm or run the verifier from tests.
@@ -449,21 +454,21 @@ Results are `@lru_cache`d, so repeated requests for the same shape are free.
 
 ### From a table to round pairings (runtime)
 
-A generated `FixedPairingTable` is turned into a round's actual pairings by the
-fixed-table engine, via `FixedPairingTable.round_pairings(round_index, total_rounds)`
-(in `fixed_table.py`):
+When the event is known, `MolterPairingSystem.get_table` asks for
+`generate_molter_table(N, P, rounds=tournament.rounds)`, so odd round counts are
+generated directly whenever the generator supports them.
 
-- **Normally** it returns `rounds[(round_index − 1) % regular_round_count]` — it
-  walks the regular rounds, cycling back to the start if the tournament runs more
-  rounds than the table's regular count.
-- It swaps in the **autonomous round** as the *final* round only when
-  `round_index == total_rounds` **and** either `total_rounds == 1` (a one-round
-  event) or `total_rounds` is **odd and greater than** `regular_round_count`.
+If a rule set ships an official override, that override is consulted first. This
+is how the FFE cup `3 teams × 4 players × 3 rounds` table is allowed: it is
+impossible under strict S4, so it is marked `is_compromise=True` and verified with
+the compromise checks instead of being emitted by the default generator.
 
-So the autonomous round is never chosen by the arbiter — the engine substitutes it
-when the round arithmetic needs an odd terminal round. A table built with exactly
-its intended number of regular rounds (e.g. a complete cup table) carries no
-autonomous round and never hits this path.
+A generated `FixedPairingTable` is then turned into a round's actual pairings by
+the fixed-table engine, via
+`FixedPairingTable.round_pairings(round_index, total_rounds)` (in
+`fixed_table.py`). It returns `rounds[(round_index − 1) % regular_round_count]`;
+the Molter pairing system asks for a table with the event's own round count, so
+standard Molter tournaments do not need a separate terminal round.
 
 ---
 
@@ -480,12 +485,11 @@ for round_number, rnd in enumerate(table.rounds, start=1):
     for board in rnd:
         print(f"  {board.white_team}{board.white_index} (W)"
               f" – {board.black_team}{board.black_index} (B)")
-# table.autonomous_round holds the extra, standalone final round.
 ```
 
 ### A complete odd table — 3 teams, 4 players
 
-`generate_molter_table(3, 4)` gives 2 rounds (plus an autonomous round). Each round
+`generate_molter_table(3, 4)` gives 2 rounds. Each round
 has `N × P / 2 = 6` games, written `white – black`:
 
 ```
@@ -506,6 +510,31 @@ What to notice:
   other (`A3–C3`, `C4–B3`, `B4–A4`).
 - **Colours alternate.** A1 has White in round 1 (`A1–B2`) and Black in round 2
   (`C1–A1`) (C1/C3).
+
+### The FFE three-team, three-round override
+
+`generate_molter_table(3, 4, rounds=3)` is rejected by the default generator
+because it asks for as many rounds as there are teams. Strict S4 is then
+impossible: each player has only two opposing teams, so over three games one
+opponent team must repeat.
+
+The FFE cup rule set supplies an explicit `3×4×3` override marked
+`is_compromise=True`. That table makes the forced repeat as harmless as possible:
+
+```
+Round 1:  A1–B1   A2–C1   B2–C2   C3–B3   C4–A3   B4–A4
+Round 2:  B1–C1   B2–A1   C2–A2   A3–C3   A4–B3   C4–B4
+Round 3:  C1–A1   C2–B1   A2–B2   B3–A3   B4–C3   A4–C4
+```
+
+What is still true:
+
+- every round has two `AB`, two `AC`, and two `BC` games;
+- every player repeats one opponent team exactly once (`2/1` split);
+- no player meets the same individual opponent twice;
+- floaters stay between adjacent boards only;
+- each player gets either two Whites and one Black, or one White and two Blacks,
+  with no three identical colours in a row.
 
 ### No floaters with an even team count — 4 teams, 4 players
 

@@ -28,9 +28,10 @@ import molter_standalone as ms
 
 TEAM_COUNTS = range(3, 16)
 PLAYER_COUNTS = (4, 6, 8, 10, 12, 14)
-# Criteria analysis: one tab per even round count up to the largest full table
-# (N − 1 = 50 for N = 51), over teams 3–15 plus the large odd sizes.
-ROUND_TABS = tuple(range(2, 51, 2))
+# Criteria analysis: one tab per round count (odd counts included, now that odd
+# rounds are generated directly) up to the largest full table (N − 1 = 50 for
+# N = 51), over teams 3–15 plus the large odd sizes.
+ROUND_TABS = tuple(range(1, 51))
 ANALYSIS_TEAMS = tuple(range(3, 16)) + tuple(range(17, 52, 2))
 
 
@@ -90,8 +91,14 @@ def _measures(table, team_count: int) -> tuple[int, int, int, int, int]:
     return i1, i2, i3, i4, i5
 
 
+_TRUNCATED_ROUNDS = 3
+
+
 def _write_board_sheets(wb, title, sub, hdr, bd, cf) -> None:
-    """One sheet per team count with the complete tables (full rounds)."""
+    """One sheet per team count. For each shape it shows the full table and,
+    when the full table is longer, the table generated directly for 3 rounds —
+    which for odd team counts is re-optimised and need not be a prefix of the
+    full table."""
     for n in TEAM_COUNTS:
         sh = wb.add_worksheet(f'{n} teams')
         sh.set_column(0, 0, 6)
@@ -104,30 +111,37 @@ def _write_board_sheets(wb, title, sub, hdr, bd, cf) -> None:
             except ms.MolterGenerationError:
                 continue
             boards = n * p // 2
-            sh.write(r0, 0, f'{n} teams x {p} players', title)
-            r0 += 1
-            sh.write(
-                r0,
-                0,
-                f'{boards} boards — {table.regular_round_count} '
-                f'rounds + autonomous round — first named = white',
-                sub,
-            )
-            r0 += 1
-            names = [f'Round {i}' for i in range(1, table.regular_round_count + 1)]
-            names.append('Autonomous round')
-            assert table.autonomous_round is not None
-            all_rounds = list(table.rounds) + [table.autonomous_round]
-            sh.write(r0, 0, 'Bd.', hdr)
-            for c, name in enumerate(names, start=1):
-                sh.write(r0, c, name, hdr)
-            r0 += 1
-            for b in range(boards):
-                sh.write(r0, 0, b + 1, bd)
-                for c, rnd in enumerate(all_rounds, start=1):
-                    sh.write(r0, c, str(rnd[b]), cf)
+            all_rounds = list(table.rounds)
+
+            def block(r0: int, heading: str, rounds: list) -> int:
+                sh.write(r0, 0, f'{n} teams x {p} players — {heading}', title)
                 r0 += 1
-            r0 += 2
+                sh.write(
+                    r0,
+                    0,
+                    f'{boards} boards — {len(rounds)} rounds — first named = white',
+                    sub,
+                )
+                r0 += 1
+                sh.write(r0, 0, 'Bd.', hdr)
+                for c in range(1, len(rounds) + 1):
+                    sh.write(r0, c, f'Round {c}', hdr)
+                r0 += 1
+                for b in range(boards):
+                    sh.write(r0, 0, b + 1, bd)
+                    for c, rnd in enumerate(rounds, start=1):
+                        sh.write(r0, c, str(rnd[b]), cf)
+                    r0 += 1
+                return r0 + 2
+
+            r0 = block(r0, 'full table', all_rounds)
+            if full > _TRUNCATED_ROUNDS:
+                short = ms.generate_molter_table(n, p, _TRUNCATED_ROUNDS)
+                r0 = block(
+                    r0,
+                    f'{_TRUNCATED_ROUNDS} rounds (generated)',
+                    list(short.rounds),
+                )
 
 
 def _write_analysis_tabs(wb, title, sub, hdr, cf, good, warn) -> None:
@@ -158,9 +172,13 @@ def _write_analysis_tabs(wb, title, sub, hdr, cf, good, warn) -> None:
         for c, name in enumerate(cols):
             ws.write(3, c, name, hdr)
         row = 4
+        first_block = True
         for n in ANALYSIS_TEAMS:
             if n - 1 < target:
                 continue
+            if not first_block:
+                row += 1  # blank separator row between team-count blocks
+            first_block = False
             for p in PLAYER_COUNTS:
                 try:
                     table = ms.generate_molter_table(n, p, target)
@@ -211,9 +229,7 @@ if __name__ == '__main__':
     args = [a for a in sys.argv[1:] if a != '--summary']
     summary = '--summary' in sys.argv[1:]
     out = (
-        args[0]
-        if args
-        else str(Path(__file__).resolve().parent / 'molter-tables.xlsx')
+        args[0] if args else str(Path(__file__).resolve().parent / 'molter-tables.xlsx')
     )
     build(out, summary=summary)
     print(f'Written: {out}')

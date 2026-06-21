@@ -80,7 +80,8 @@ class MolterPairingSystem(FixedTablePairingSystem):
         # Otherwise generate the table deterministically. ``None`` for shapes
         # the generator can't satisfy (odd players-per-team, etc.).
         try:
-            return generate_molter_table(team_count, players_per_team)
+            rounds = tournament.rounds if tournament is not None else None
+            return generate_molter_table(team_count, players_per_team, rounds=rounds)
         except MolterGenerationError:
             return None
 

@@ -62,55 +62,31 @@ class TablePairing:
 class FixedPairingTable:
     """A complete table for one (team_count, players_per_team) configuration.
 
-    ``rounds`` is the ordered list of regular rounds. ``autonomous_round`` is
-    an optional standalone single-round table; some systems require using it
-    as the terminal round whenever the tournament has an odd number of
-    rounds. Each round is a list of ``TablePairing`` indexed by board
-    (board ``i`` = ``rounds[r][i]``).
+    ``rounds`` is the ordered list of regular rounds. ``is_compromise`` marks a
+    table for an otherwise impossible shape that deliberately relaxes one
+    fixed-table ideal, with the verifier applying the corresponding
+    best-compromise checks. Each round is a list of ``TablePairing`` indexed by
+    board (board ``i`` = ``rounds[r][i]``).
     """
 
     team_count: int
     players_per_team: int
     rounds: tuple[tuple[TablePairing, ...], ...]
-    autonomous_round: tuple[TablePairing, ...] | None = None
+    is_compromise: bool = False
 
     @property
     def regular_round_count(self) -> int:
         return len(self.rounds)
-
-    @property
-    def has_autonomous_round(self) -> bool:
-        return self.autonomous_round is not None
 
     def round_pairings(
         self, round_index: int, total_rounds: int
     ) -> tuple[TablePairing, ...]:
         """Return the pairings for round ``round_index`` (1-based).
 
-        Maps the tournament's intended round number onto the table's
-        round list, using the autonomous round as the terminal round when
-        ``total_rounds`` is odd.
+        Maps the tournament's intended round number onto the table's round list.
         """
         if round_index < 1 or round_index > total_rounds:
             raise ValueError(f'Round {round_index} out of range 1..{total_rounds}.')
-        # The autonomous round serves two FFE-defined roles: a stand-
-        # alone 1-round event, or the terminal round of a tournament
-        # that needs MORE rounds than the table's regular cycle can
-        # provide (odd overflow). For tournaments that fit inside the
-        # regular cycle we walk regular rounds — tables built with
-        # exactly enough regulars (e.g. the cup 3T×4P table) then
-        # don't need an autonomous round at all.
-        use_autonomous = (
-            self.autonomous_round is not None
-            and round_index == total_rounds
-            and (
-                total_rounds == 1
-                or (total_rounds > self.regular_round_count and total_rounds % 2 == 1)
-            )
-        )
-        if use_autonomous:
-            assert self.autonomous_round is not None
-            return self.autonomous_round
         return self.rounds[(round_index - 1) % self.regular_round_count]
 
 
@@ -259,16 +235,13 @@ class FixedTablePairingEngine(PairingEngine):
         n = tournament.team_player_count or 0
         if n <= 0:
             return _('Tournament has no team-player count configured.')
-        # Cap rounds by what the chosen table can actually produce —
-        # regular cycle + optional autonomous round. (The old check
-        # was hardcoded to ``rounds < team_count``, which broke for
-        # cup-specific tables that ship more regular rounds than the
+        # Cap rounds by what the chosen table can actually produce. (The
+        # old check was hardcoded to ``rounds < team_count``, which broke
+        # for cup-specific tables that ship more regular rounds than the
         # standard FFE registry.)
         chosen_table = self.system.get_table(len(teams), n, tournament)
         if chosen_table is not None:
-            max_rounds = chosen_table.regular_round_count + (
-                1 if chosen_table.has_autonomous_round else 0
-            )
+            max_rounds = chosen_table.regular_round_count
             if tournament.rounds > max_rounds:
                 return _(
                     'This pairing table covers up to {max_rounds} rounds '

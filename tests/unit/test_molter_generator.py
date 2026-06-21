@@ -18,16 +18,10 @@ from data.pairings.fixed_table import FixedPairingTable, TablePairing
 
 
 def _serialise(table: FixedPairingTable):
-    assert table.autonomous_round is not None
-    rounds = [
+    return [
         [(p.white_team, p.white_index, p.black_team, p.black_index) for p in r]
         for r in table.rounds
     ]
-    aut = [
-        (p.white_team, p.white_index, p.black_team, p.black_index)
-        for p in table.autonomous_round
-    ]
-    return rounds, aut
 
 
 # Frozen output of generate_molter_table(3, 4). Pins the algorithm: any
@@ -35,25 +29,7 @@ def _serialise(table: FixedPairingTable):
 # or the iteration order would change this and break the test — which is the
 # point, since the table must be byte-reproducible (incl. by
 # re-implementations in other languages, see data.pairings.molter_generator).
-_GOLDEN_3x4 = (
-    [
-        [
-            ('A', 1, 'B', 1),
-            ('B', 2, 'C', 1),
-            ('C', 2, 'A', 2),
-            ('C', 3, 'B', 3),
-            ('A', 3, 'C', 4),
-            ('B', 4, 'A', 4),
-        ],
-        [
-            ('C', 1, 'A', 1),
-            ('B', 1, 'C', 2),
-            ('A', 2, 'B', 2),
-            ('B', 3, 'A', 3),
-            ('A', 4, 'C', 3),
-            ('C', 4, 'B', 4),
-        ],
-    ],
+_GOLDEN_3x4 = [
     [
         ('A', 1, 'B', 1),
         ('B', 2, 'C', 1),
@@ -62,13 +38,60 @@ _GOLDEN_3x4 = (
         ('A', 3, 'C', 4),
         ('B', 4, 'A', 4),
     ],
-)
+    [
+        ('C', 1, 'A', 1),
+        ('B', 1, 'C', 2),
+        ('A', 2, 'B', 2),
+        ('B', 3, 'A', 3),
+        ('A', 4, 'C', 3),
+        ('C', 4, 'B', 4),
+    ],
+]
 
 
 def test_generator_reference_is_stable() -> None:
     from data.pairings.molter_generator import generate_molter_table
 
     assert _serialise(generate_molter_table(3, 4)) == _GOLDEN_3x4
+
+
+def test_standard_generator_rejects_three_team_three_round_compromise() -> None:
+    from data.pairings.molter_generator import MolterGenerationError
+    from data.pairings.molter_generator import generate_molter_table
+
+    with pytest.raises(MolterGenerationError):
+        generate_molter_table(3, 4, rounds=3)
+
+
+def test_ffe_three_team_three_round_override_is_best_compromise() -> None:
+    from data.pairings.molter_verifier import verify_molter_table
+    from plugins.ffe.ffe_rule_sets import _FFE_CUP_3T_4P_TABLE
+
+    table = _FFE_CUP_3T_4P_TABLE
+    report = verify_molter_table(table)
+    assert table.is_compromise
+    assert report.ok, report.errors
+    assert len(table.rounds) == 3
+
+    opponents: dict[tuple[str, int], list[tuple[str, int]]] = {}
+    opponent_teams: dict[tuple[str, int], Counter[str]] = {}
+    team_edges_by_round = []
+    for round_ in table.rounds:
+        team_edges_by_round.append(_team_edges(round_))
+        for pairing in round_:
+            white = (pairing.white_team, pairing.white_index)
+            black = (pairing.black_team, pairing.black_index)
+            opponents.setdefault(white, []).append(black)
+            opponents.setdefault(black, []).append(white)
+            opponent_teams.setdefault(white, Counter())[pairing.black_team] += 1
+            opponent_teams.setdefault(black, Counter())[pairing.white_team] += 1
+
+    assert all(len(seen) == len(set(seen)) for seen in opponents.values())
+    assert all(sorted(counts.values()) == [1, 2] for counts in opponent_teams.values())
+    assert all(
+        edges == {('A', 'B'): 2, ('A', 'C'): 2, ('B', 'C'): 2}
+        for edges in team_edges_by_round
+    )
 
 
 @pytest.mark.parametrize(
@@ -275,35 +298,11 @@ def test_odd_complete_no_repeated_floater_role(team_count: int) -> None:
     assert not up or max(up.values()) <= 1, dict(up)
 
 
-def _board_pairs(round_: tuple[TablePairing, ...]) -> set[frozenset[tuple[str, int]]]:
-    """The colour-independent board set of a round: each board as the
-    unordered pair of its two (team, index) seats."""
-    return {
-        frozenset(((p.white_team, p.white_index), (p.black_team, p.black_index)))
-        for p in round_
-    }
-
-
-@pytest.mark.parametrize(
-    'team_count, players_per_team',
-    [(5, 4), (7, 6), (9, 8), (11, 10), (13, 12), (3, 4), (4, 6), (6, 10), (8, 6)],
-)
-def test_autonomous_round_replays_last_odd_regular_round(
-    team_count: int, players_per_team: int
-) -> None:
-    """The autonomous round replays the last odd-numbered regular round (its
-    board pairings; the colours are re-derived as a free round)."""
+def test_one_round_request_uses_regular_round() -> None:
     from data.pairings.molter_generator import generate_molter_table
 
-    table = generate_molter_table(team_count, players_per_team)
-    regular_round_count = len(table.rounds)
-    last_odd = (
-        regular_round_count if regular_round_count % 2 == 1 else regular_round_count - 1
-    )
-    assert table.autonomous_round is not None
-    assert _board_pairs(table.autonomous_round) == _board_pairs(
-        table.rounds[last_odd - 1]
-    )
+    table = generate_molter_table(5, 4, rounds=1)
+    assert table.round_pairings(1, 1) == table.rounds[0]
 
 
 @pytest.mark.parametrize('team_count', [5, 7, 9, 11, 13, 15])
@@ -415,9 +414,7 @@ def test_even_team_count_has_no_floaters(
     from data.pairings.molter_generator import generate_molter_table
 
     table = generate_molter_table(team_count, players_per_team)
-    assert table.autonomous_round is not None
-    rounds = list(table.rounds) + [table.autonomous_round]
-    for ri, round_ in enumerate(rounds, start=1):
+    for ri, round_ in enumerate(table.rounds, start=1):
         for p in round_:
             assert p.white_index == p.black_index, (
                 f'{team_count}×{players_per_team} round {ri}: floater {p} on an '
@@ -478,9 +475,7 @@ def test_odd_floaters_are_consecutive_odd_descending(
     from data.pairings.molter_generator import generate_molter_table
 
     table = generate_molter_table(team_count, players_per_team)
-    assert table.autonomous_round is not None
-    rounds = list(table.rounds) + [table.autonomous_round]
-    for ri, round_ in enumerate(rounds, start=1):
+    for ri, round_ in enumerate(table.rounds, start=1):
         descending_at: Counter[int] = Counter()
         for p in round_:
             if p.white_index == p.black_index:

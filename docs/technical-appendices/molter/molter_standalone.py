@@ -5,7 +5,7 @@ This script is intentionally self-contained: it uses only the Python standard
 library, builds a Molter pairing table for a requested shape, verifies it against
 the Molter principles, and prints it.
 
-Verified hard invariants:
+Verified hard invariants for strict generated tables:
   S1  P (players per team) is even; boards per round = N × P / 2.
   S2  each player plays once per round, and the same number of total games.
   S3  team-mates are never paired.
@@ -21,6 +21,10 @@ Verified hard invariants:
   C1/C2/C3 colour rules over the regular rounds: each player is colour-balanced,
       no player has the same colour three times running, and a colour repeat is
       allowed only across an even-to-odd round boundary.
+
+Rule-set override tables may be marked as compromises; those are checked against
+explicit best-compromise repeat/colour rules instead of strict S4 and the strict
+colour-boundary convention. The standalone generator itself remains strict.
 
 Ideals, such as uniform team encounters and floater balance, are reached only by
 complete tables. Reduced tables report unmet ideals as notes, never as errors.
@@ -71,7 +75,7 @@ class MolterTable:
     team_count: int
     players_per_team: int
     rounds: tuple[tuple[Pairing, ...], ...]
-    autonomous_round: tuple[Pairing, ...] | None = None
+    is_compromise: bool = False
 
     @property
     def regular_round_count(self) -> int:
@@ -1670,7 +1674,6 @@ def generate_molter_table(
 ) -> MolterTable:
     """Generate a Molter table. ``rounds`` defaults by convention
     (see :func:`default_molter_rounds`); it may range up to ``team_count − 1``.
-    An autonomous round is always produced, playable as the final (odd) round.
 
     Deterministic: ``(team_count, players_per_team, rounds)`` defines a single
     table using fixed search/tie-break order. Raises
@@ -1707,20 +1710,10 @@ def generate_molter_table(
         )
         emitted_rounds = tuple(_emit_even(rnd, team_count) for rnd in regular)
 
-    # The autonomous round replays the last odd-numbered regular round,
-    # re-coloured as a free round — a full-round Eulerian orientation, which
-    # balances each team's colours (every team plays an even P games).
-    last_odd = rounds if rounds % 2 == 1 else rounds - 1
-    autonomous = _eulerian_colour(regular_matches[last_odd - 1])
-    autonomous_round = (
-        _emit(autonomous) if team_count % 2 == 1 else _emit_even(autonomous, team_count)
-    )
-
     table = MolterTable(
         team_count=team_count,
         players_per_team=players_per_team,
         rounds=emitted_rounds,
-        autonomous_round=autonomous_round,
     )
     if _VERIFY_GENERATED_TABLES:
         report = verify_molter_table(table)
@@ -1743,6 +1736,7 @@ def _check_rounds(
     players_per_team: int,
     label: str,
     report: Report,
+    is_compromise: bool = False,
 ) -> None:
     err = report.errors.append
     note = report.notes.append
@@ -1760,6 +1754,11 @@ def _check_rounds(
     prev_prev_colour = [-1] * seat_count
     opp_mask = [0] * seat_count
     repeated_opp: set[int] = set()
+    opp_team_counts = (
+        [[0] * team_count for _seat in range(seat_count)] if is_compromise else []
+    )
+    seen_opp_seats: set[tuple[int, int]] = set()
+    repeated_opp_seats: set[tuple[int, int]] = set()
     seen_stamp = [0] * seat_count
     team_white = [0] * team_count
     team_black = [0] * team_count
@@ -1773,6 +1772,7 @@ def _check_rounds(
     rp_up = [[0] * team_count for _ in range(round_pairs)]
     i5_violated = False
     spread_note: tuple[int, str, dict[str, int]] | None = None
+    relaxed_colour_boundary = False
     n_rounds = len(rounds)
 
     def seat_name(seat: int) -> str:
@@ -1846,12 +1846,15 @@ def _check_rounds(
                     if prev == 1:
                         name = None
                         if r_zero % 2 == 1:
-                            name = seat_name(white_seat)
-                            err(
-                                f'{label}: {name} repeats colour from round '
-                                f'{r_zero} to {r_zero + 1} — only an even→odd '
-                                f'boundary may repeat.'
-                            )
+                            if is_compromise:
+                                relaxed_colour_boundary = True
+                            else:
+                                name = seat_name(white_seat)
+                                err(
+                                    f'{label}: {name} repeats colour from round '
+                                    f'{r_zero} to {r_zero + 1} — only an even→odd '
+                                    f'boundary may repeat.'
+                                )
                         if prev_prev_colour[white_seat] == prev:
                             if name is None:
                                 name = seat_name(white_seat)
@@ -1867,18 +1870,23 @@ def _check_rounds(
                     if opp_mask[white_seat] & mask:
                         repeated_opp.add(white_seat)
                     opp_mask[white_seat] |= mask
+                    if is_compromise:
+                        opp_team_counts[white_seat][black_team] += 1
             if black_seat >= 0:
                 if n_rounds >= 2:
                     prev = prev_colour[black_seat]
                     if prev == 0:
                         name = None
                         if r_zero % 2 == 1:
-                            name = seat_name(black_seat)
-                            err(
-                                f'{label}: {name} repeats colour from round '
-                                f'{r_zero} to {r_zero + 1} — only an even→odd '
-                                f'boundary may repeat.'
-                            )
+                            if is_compromise:
+                                relaxed_colour_boundary = True
+                            else:
+                                name = seat_name(black_seat)
+                                err(
+                                    f'{label}: {name} repeats colour from round '
+                                    f'{r_zero} to {r_zero + 1} — only an even→odd '
+                                    f'boundary may repeat.'
+                                )
                         if prev_prev_colour[black_seat] == prev:
                             if name is None:
                                 name = seat_name(black_seat)
@@ -1894,6 +1902,17 @@ def _check_rounds(
                     if opp_mask[black_seat] & mask:
                         repeated_opp.add(black_seat)
                     opp_mask[black_seat] |= mask
+                    if is_compromise:
+                        opp_team_counts[black_seat][white_team] += 1
+            if is_compromise and white_seat >= 0 and black_seat >= 0:
+                exact_pair = (
+                    (white_seat, black_seat)
+                    if white_seat < black_seat
+                    else (black_seat, white_seat)
+                )
+                if exact_pair in seen_opp_seats:
+                    repeated_opp_seats.add(exact_pair)
+                seen_opp_seats.add(exact_pair)
 
             if p.white_index < p.black_index:
                 if white_team is not None:
@@ -1973,15 +1992,37 @@ def _check_rounds(
 
     if games and max(games) != min(games):
         err(f'{label}: players do not all play the same number of games.')
-    for seat in sorted(repeated_opp):
-        err(
-            f'{label}: {seat_name(seat)} meets the same team twice — rounds '
-            f'must be < team count.'
+    if repeated_opp and is_compromise:
+        for seat, counts in enumerate(opp_team_counts):
+            values = [
+                count
+                for team, count in enumerate(counts)
+                if team != seat // players_per_team
+            ]
+            if values and max(values) - min(values) > 1:
+                err(
+                    f'{label}: {seat_name(seat)} repeats opponent teams unevenly '
+                    f'({values}) in a compromise table.'
+                )
+        if repeated_opp_seats:
+            first, second = min(repeated_opp_seats)
+            err(
+                f'{label}: {seat_name(first)} and {seat_name(second)} meet more '
+                f'than once in a compromise table.'
+            )
+        note(
+            f'{label}: opponent-team repeats are unavoidable for this round '
+            f'count; the table is checked as a best compromise.'
         )
+    else:
+        for seat in sorted(repeated_opp):
+            err(
+                f'{label}: {seat_name(seat)} meets the same team twice — rounds '
+                f'must be < team count.'
+            )
 
     # Per-player colour rules (read off the official tables). Checked over a
-    # multi-round set only — a single round (the autonomous one) has nothing
-    # to alternate.
+    # multi-round set only — a single round has nothing to alternate.
     if n_rounds >= 2:
         for seat, whites in enumerate(white_count):
             if abs(whites - (n_rounds - whites)) > n_rounds % 2:
@@ -2009,6 +2050,11 @@ def _check_rounds(
                 f'{label}: team {letter} colour imbalance '
                 f'(white {team_white[team]} / black {team_black[team]}).'
             )
+    if relaxed_colour_boundary:
+        note(
+            f'{label}: colour repeats occur outside the usual even→odd boundary; '
+            f'the compromise table still forbids three identical colours in a row.'
+        )
 
     for team, counts in enumerate(pair_count):
         non_zero_counts = [count for count in counts if count]
@@ -2057,31 +2103,26 @@ def _check_rounds(
 
 
 def verify_molter_table(table: MolterTable) -> Report:
-    """Verify ``table`` against the Molter principles. The regular rounds
-    are checked as one tournament; the autonomous round, when present, as
-    a stand-alone single-round tournament."""
+    """Verify ``table`` against the Molter principles."""
     report = Report()
     if table.players_per_team % 2 != 0:
         report.errors.append(
             f'players-per-team must be even (got {table.players_per_team}).'
         )
-    if table.regular_round_count >= table.team_count:
+    if table.regular_round_count >= table.team_count and not table.is_compromise:
         report.errors.append(
             f'{table.regular_round_count} regular rounds with only '
             f'{table.team_count} teams — a player would meet a team twice '
             f'(principle 2 requires rounds < teams).'
         )
     _check_rounds(
-        table.rounds, table.team_count, table.players_per_team, 'regular', report
+        table.rounds,
+        table.team_count,
+        table.players_per_team,
+        'regular',
+        report,
+        table.is_compromise,
     )
-    if table.autonomous_round is not None:
-        _check_rounds(
-            (table.autonomous_round,),
-            table.team_count,
-            table.players_per_team,
-            'autonomous',
-            report,
-        )
     return report
 
 
@@ -2094,15 +2135,12 @@ def format_table(table: MolterTable) -> str:
     boards = table.team_count * table.players_per_team // 2
     names = [f'Round {i}' for i in range(1, table.regular_round_count + 1)]
     all_rounds = list(table.rounds)
-    if table.autonomous_round is not None:
-        names.append('Autonomous round')
-        all_rounds.append(table.autonomous_round)
     width = 14
     header = 'Board | ' + ' | '.join(n.ljust(width) for n in names)
     lines = [
         f'{table.team_count} teams x {table.players_per_team} players '
         f'- {boards} boards - {table.regular_round_count} regular round(s) '
-        f'+ autonomous round (first named = White)',
+        f'(first named = White)',
         header,
         '-' * len(header),
     ]
@@ -2119,9 +2157,6 @@ def write_csv(tables: list[MolterTable], path: str) -> None:
             boards = table.team_count * table.players_per_team // 2
             names = [f'Round {i}' for i in range(1, table.regular_round_count + 1)]
             all_rounds = list(table.rounds)
-            if table.autonomous_round is not None:
-                names.append('Autonomous round')
-                all_rounds.append(table.autonomous_round)
             w.writerow([f'{table.team_count} teams x {table.players_per_team} players'])
             w.writerow(['Board'] + names)
             for b in range(boards):

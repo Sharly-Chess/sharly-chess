@@ -9,11 +9,11 @@ follows this document **reproduces the same table byte-for-byte** for every
 Two levels of conformance are defined, and an implementer may target either:
 
 - **Validity conformance** (the real contract). A table is a *valid* Molter
-  table if it satisfies every hard invariant in §11 and respects the ideal
+  table if it satisfies every hard invariant in §10 and respects the ideal
   priority (I1 before I2). Any construction — this one, a SAT/ILP solver, a
-  hand table — that produces a table passing §11 is acceptable. Validity is the
+  hand table — that produces a table passing §10 is acceptable. Validity is the
   definition; this construction is one way to reach it.
-- **Reproduction conformance** (this document). Follow §§1–10 exactly — the same
+- **Reproduction conformance** (this document). Follow §§1–9 exactly — the same
   arithmetic, orderings, constants, pseudo-random stream and tie-breaks — to
   emit the *identical* table this reference produces.
 
@@ -98,12 +98,7 @@ generate(N, P, R):
         rounds  ← colour_even(matches, N, P)              # §5.3
         emitted ← [ emit_even(rnd, N) for rnd in rounds ] # §9
 
-    last_odd ← R if R is odd else R − 1
-    autonomous_matches ← matches[last_odd − 1]
-    auton ← eulerian_colour(autonomous_matches)           # §8
-    autonomous ← (emit(auton) if N odd else emit_even(auton, N))
-
-    return Table(N, P, rounds = emitted, autonomous_round = autonomous)
+    return Table(N, P, rounds = emitted)
 
 default_rounds(N):
     if N in {5, 7}: return N − 1
@@ -807,33 +802,15 @@ emit_even(round, N):                 # even tables (no floaters)
 ```
 
 `emit` groups all board-1 games first, then board-2, …, with each block's floater
-grouped with its lower board. The result is the `rounds` of the table; the
-**autonomous round** (§3) is emitted the same way.
+grouped with its lower board. The result is the `rounds` of the table.
 
 ---
 
-## 10. The autonomous round
-
-`generate` always appends one extra **autonomous round**: take the *matches* of
-the last odd-numbered regular round (`last_odd = R` if `R` odd else `R−1`) and
-colour them fresh with `eulerian_colour` (a whole-round free orientation). It is
-played as a standalone final round (making an even round count odd, or a
-one-round event); its colours self-balance because each team plays an even `P`
-games in it.
-
-A consuming engine substitutes the autonomous round for round `R` only when
-`R = 1`, or when the tournament runs an **odd** number of rounds **greater than**
-the table's regular round count; otherwise it walks the regular rounds
-(`rounds[(i−1) mod R]`).
-
----
-
-## 11. Conformance: the validity contract
+## 10. Conformance: the validity contract
 
 A table is a **valid Molter table** iff it satisfies every hard invariant below
-(checked on the regular rounds, and the autonomous round as a standalone
-1-round event). The ideals are *priorities*, not requirements: when two valid
-tables differ, prefer the one with better I1, then better I2.
+(checked on the regular rounds). The ideals are *priorities*, not requirements:
+when two valid tables differ, prefer the one with better I1, then better I2.
 
 **Hard invariants.**
 
@@ -868,5 +845,5 @@ tables differ, prefer the one with better I1, then better I2.
 
 An independent implementation conforms at the **validity** level if its output
 passes S1–S6c and C1–C3 and honours I1-before-I2; it conforms at the
-**reproduction** level if, following §§1–10 exactly, it emits the identical
+**reproduction** level if, following §§1–9 exactly, it emits the identical
 table.
