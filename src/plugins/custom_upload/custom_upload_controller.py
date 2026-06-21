@@ -264,19 +264,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
 
-        CustomUploadUploader.upload_tournament(tournament.event.uniq_id, tournament_id)
-        # TODO: fetch up-to-date status instead the one before the actual upload
-        if CustomUploadUtils.get_tournament_plugin_data(tournament).upload_failure_id:
-            Message.error(
-                request,
-                _(
-                    'Tournament upload failed, consult the Custom Upload modal for more details.'
-                ),
-            )
-        else:
-            Message.success(request, _('Tournament successfully uploaded.'))
+        CustomUploadUploader.schedule_upload(tournament)
 
-        return self._render_messages(request)
+        return self._render_upload_results(web_context)
 
     @post(
         path='/custom-upload/test-auth',

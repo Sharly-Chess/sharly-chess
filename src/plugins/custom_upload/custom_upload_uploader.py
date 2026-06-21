@@ -7,7 +7,7 @@ from enum import IntEnum
 from functools import partial
 from io import BytesIO
 from pathlib import Path
-from threading import Thread
+from threading import Thread, Timer
 
 import paramiko.client
 from paramiko.sftp_client import SFTPClient
@@ -65,6 +65,7 @@ class CustomUploadResult:
 
 class CustomUploadUploader:
     upload_status_messages: dict[str, CustomUploadResult] = {}
+    timeout_threads: dict[str, Timer] = {}
     group_upload_wait_queue: set[str] = set()
     ongoing_result_ids: set[str] = set()
 
@@ -81,6 +82,20 @@ class CustomUploadUploader:
         """Return True if a background upload is currently running for this tournament."""
         key = cls.tournament_result_id(tournament)
         return key in cls.ongoing_result_ids
+
+    @classmethod
+    def is_upload_scheduled(cls, tournament: Tournament) -> bool:
+        """Return True if a background upload is scheduled for this tournament."""
+        key = cls.tournament_result_id(tournament)
+        thread = cls.timeout_threads.get(key)
+        return bool(thread and thread.is_alive())
+
+    @classmethod
+    def remove_scheduled_upload(cls, tournament: Tournament):
+        key = cls.tournament_result_id(tournament)
+        thread = cls.timeout_threads.get(key)
+        if thread and thread.is_alive():
+            thread.cancel()
 
     @classmethod
     def get_updated_tournament_upload_result(
@@ -326,6 +341,23 @@ class CustomUploadUploader:
             file_name = f'{"_".join(event.name.split())}_{document_id}_{decoded_document_options}.html'
             temporary_files_with_name.append((temporary_document_file, file_name))
         return temporary_files_with_name
+
+    @classmethod
+    def schedule_upload(cls, tournament):
+        """Schedule the upload of a tournament."""
+        if CustomUploadUtils.custom_upload_configuration_verification_message(
+            tournament
+        ):
+            return
+
+        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
+        timer = Timer(
+            0.1,
+            cls.upload_tournament,
+            args=(tournament.event.uniq_id, tournament.id),
+        )
+        cls.timeout_threads[result_id] = timer
+        timer.start()
 
     @classmethod
     def upload_event_tournaments(cls, tournaments: list[Tournament]):

@@ -18,6 +18,7 @@ from plugins.custom_upload.custom_upload_status import (
     ModifiedCustomUploadStatus,
     OngoingCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
+    PendingCustomUploadStatus,
 )
 from plugins.utils import PluginData
 from utils.date_time import format_datetime
@@ -95,6 +96,8 @@ class CustomUploadUtils:
             return [ModifiedCustomUploadStatus()]
         elif CustomUploadUploader.is_upload_ongoing(tournament):
             return [OngoingCustomUploadStatus()]
+        elif CustomUploadUploader.is_upload_scheduled(tournament):
+            return [PendingCustomUploadStatus()]
         else:
             return [UpToDateCustomUploadStatus()]
 
