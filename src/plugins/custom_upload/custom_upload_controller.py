@@ -246,9 +246,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     )
     async def htmx_admin_custom_upload(self, request: HTMXRequest) -> Template:
         web_context = BaseEventAdminWebContext(request)
-
-        # TODO: upload event to custom location
-
+        CustomUploadUploader.upload_event_tournaments(
+            self._allowed_tournaments(web_context)
+        )
         return self._render_upload_results(web_context)
 
     @post(

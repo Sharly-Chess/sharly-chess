@@ -1,4 +1,5 @@
 import socket
+import time
 import urllib
 from dataclasses import dataclass
 from datetime import datetime
@@ -63,8 +64,8 @@ class CustomUploadResult:
 
 
 class CustomUploadUploader:
-    uploading_event: bool = False
     upload_status_messages: dict[str, CustomUploadResult] = {}
+    group_upload_wait_queue: set[str] = set()
     ongoing_result_ids: set[str] = set()
 
     @classmethod
@@ -189,6 +190,15 @@ class CustomUploadUploader:
     ) -> CustomUploadResult | None:
         """Upload a tournament to custom website."""
 
+        result_id: str = cls.result_id(event_uniq_id, tournament_id)
+        cls.ongoing_result_ids.add(result_id)
+        cls.group_upload_wait_queue.discard(result_id)
+
+        # NOTE (Molrn) Ensures a minimum time for the thread
+        # This prevents flashing and situations where both requests
+        # triggered by the `upload-event` web socket are treated as one
+        time.sleep(0.5)
+
         # We refetch the latest event and tournament
         loader = EventLoader()
         if event_uniq_id not in loader.event_uniq_ids:
@@ -206,8 +216,6 @@ class CustomUploadUploader:
             # Skip this tournament if we now have a SETTINGS_ERROR
             return current_result
 
-        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        cls.ongoing_result_ids.add(result_id)
         if not NetworkMonitor.connected():
             # The network is offline, we can't upload
             cls.upload_status_messages[result_id] = CustomUploadResult(
@@ -321,64 +329,42 @@ class CustomUploadUploader:
 
     @classmethod
     def upload_event_tournaments(cls, tournaments: list[Tournament]):
-        if cls.uploading_event:
+        """Upload all eligible SCE tournaments for an event in a background thread."""
+        eligible_tournaments = [
+            tournament
+            for tournament in tournaments
+            if not CustomUploadUtils.custom_upload_configuration_verification_message(
+                tournament
+            )
+            and cls.tournament_result_id(tournament) not in cls.ongoing_result_ids
+        ]
+        if not eligible_tournaments:
             return
-        cls.uploading_event = True
 
-        tournaments = cls.update_eligible_tournaments(tournaments)
-        updated_tournaments: list[tuple[str, int]] = []
-        for tournament in tournaments:
-            if cls.ffe_upload_needed(tournament):
-                updated_tournaments.append((tournament.event.uniq_id, tournament.id))
+        event_uniq_id = eligible_tournaments[0].event.uniq_id
+        updated_tournaments: list[Tournament] = []
+        for tournament in eligible_tournaments:
+            if cls.custom_upload_needed(tournament):
+                updated_tournaments.append(tournament)
             else:
                 cls.upload_status_messages[
-                    cls.result_id(tournament.event.uniq_id, tournament.id)
+                    cls.result_id(event_uniq_id, tournament.id)
                 ] = CustomUploadResult(
                     CustomUploadStatus.INFO,
                     _('Tournament not modified since last upload'),
                 )
-
         if not updated_tournaments:
-            cls.uploading_event = False
             return
 
-        for event_uuid, tournament_id in updated_tournaments:
-            if not NetworkMonitor.connected():
-                # The network is offline, we can't upload
-                cls.upload_status_messages[cls.result_id(event_uuid, tournament_id)] = (
-                    CustomUploadResult(
-                        CustomUploadStatus.INFO,
-                        _('No internet connection'),
-                    )
-                )
-            else:
-                cls.upload_status_messages[cls.result_id(event_uuid, tournament_id)] = (
-                    CustomUploadResult(
-                        CustomUploadStatus.IN_PROGRESS, _('Uploading tournament…')
-                    )
-                )
+        for tournament in updated_tournaments:
+            cls.group_upload_wait_queue.add(cls.tournament_result_id(tournament))
 
-        def _upload_tournaments(cls_: CustomUploadUploader) -> None:
-            try:
-                # Set the locale (called in a new thread)
-                set_locale(SharlyChessConfig().locale)
-                for event_uuid_, tournament_id_ in updated_tournaments:
-                    scheduled_upload = cls_.timeout_threads.get(
-                        cls_.result_id(event_uuid_, tournament_id_)
-                    )
-                    if scheduled_upload and scheduled_upload.is_alive():
-                        # Cancel the scheduled upload
-                        scheduled_upload.cancel()
-                        cls_.timeout_threads.pop(
-                            cls_.result_id(event_uuid_, tournament_id_), None
-                        )
-                    cls_.upload_tournament(event_uuid_, tournament_id_)
+        def _run():
+            set_locale(SharlyChessConfig().locale)
+            for tournament in updated_tournaments:
+                cls.upload_tournament(event_uniq_id, tournament.id)
 
-            finally:
-                cls.uploading_event = False
-
-        uploader = Thread(target=_upload_tournaments, args=(cls,))
-        uploader.start()
+        Thread(target=_run, daemon=True).start()
 
     @staticmethod
     def _does_remote_path_exist(sftp_client: SFTPClient, remote_path: str):
