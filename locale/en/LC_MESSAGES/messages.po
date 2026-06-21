@@ -4080,6 +4080,9 @@ msgstr "Mo"
 msgid "Moldova"
 msgstr ""
 
+msgid "Molter"
+msgstr ""
+
 msgid "Monaco"
 msgstr ""
 
@@ -6443,6 +6446,9 @@ msgstr ""
 msgid "Standard (no flag)"
 msgstr ""
 
+msgid "Standard Molter"
+msgstr ""
+
 msgid "Standard points"
 msgstr ""
 
@@ -8662,7 +8668,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid " (club, league...)"
-#~ msgstr ""
 

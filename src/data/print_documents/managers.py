@@ -42,6 +42,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PairingPrintDocument,
             documents.ResultPrintDocument,
             documents.MatchSheetsPrintDocument,
+            documents.MolterTablePrintDocument,
             documents.PlayerRankingPrintDocument,
             documents.TeamRankingPrintDocument,
             documents.IndividuelTeamRankingPrintDocument,

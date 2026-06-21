@@ -75,6 +75,9 @@ msgstr "Buchholz tronqué"
 msgid "By default, tournaments are not visible on the FFE site."
 msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
 
+msgid "Bye"
+msgstr "Forfeit"
+
 msgid "Cheating complaint"
 msgstr "Dépot de plainte pour suspicion de triche"
 
@@ -328,6 +331,9 @@ msgstr "Types de licence"
 msgid "Licence:"
 msgstr "Licence :"
 
+msgid "Loubatière pairing sheet"
+msgstr "Fiche d'appariement Loubatière"
+
 msgid "Lowest own average rating"
 msgstr "Plus faible moyenne Elo"
 
@@ -351,9 +357,6 @@ msgstr "Coupe de la Parité"
 
 msgid "Modified"
 msgstr "Modifié"
-
-msgid "Molter (FFE)"
-msgstr "Molter (FFE)"
 
 msgid "N - Expired *** FFE licence"
 msgstr "N - Expirée"
@@ -473,9 +476,6 @@ msgstr "Certains numéros de table peuvent varier entre Sharly Chess et le site 
 
 msgid "Standard"
 msgstr "Standard"
-
-msgid "Standard FFE Molter"
-msgstr "Molter FFE standard"
 
 msgid "Statuses"
 msgstr "Statuts"

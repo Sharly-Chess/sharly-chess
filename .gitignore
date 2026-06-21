@@ -104,3 +104,9 @@ init-credentials-local.py
 /scripts/access_levels/*.md
 
 /TAG_MESSAGE*.txt
+
+# Excel lock/temp files
+~$*
+
+# Generated Molter workbooks (rebuild with build_xlsx*.py)
+/docs/technical-appendices/molter/*.xlsx

@@ -1,6 +1,7 @@
 from typing import cast, override
 
 from data.pairings import systems, PairingVariation
+from data.pairings.molter import MolterPairingSystem, MolterVariationManager
 from data.pairings.systems import PairingSystem
 from data.pairings.variations import (
     SwissVariation,
@@ -28,6 +29,7 @@ class PairingSystemManager(EventBoundEntityManager[PairingSystem]):
                 systems.TeamSwissPairingSystem,
                 systems.TeamRoundRobinPairingSystem,
                 systems.TeamTwoGameMatchPairingSystem,
+                MolterPairingSystem,
             ]
             plugin_manager.hook_for_event(self.event, 'insert_team_pairing_systems')(
                 pairing_systems=base
@@ -97,6 +99,10 @@ class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
                 + cast(
                     list[type[PairingVariation]],
                     TeamTwoGameMatchVariationManager(self.event).entity_types(),
+                )
+                + cast(
+                    list[type[PairingVariation]],
+                    MolterVariationManager(self.event).entity_types(),
                 )
             )
             plugin_manager.hook_for_event(self.event, 'insert_team_pairing_variations')(

@@ -126,6 +126,14 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def uses_team_letters(self) -> bool:
+        """Whether teams are conventionally identified by a letter
+        (``A``, ``B``, …) rather than a numeric pairing number. True for
+        the fixed-schedule team systems (round-robin Berger grids, Molter
+        tables), which present teams alphabetically. Default False."""
+        return False
+
+    @property
     def variation_field_id(self) -> str:
         """ID of the form field selecting the variation of the system."""
         return f'{self.id}_pairing_variation'
@@ -429,6 +437,12 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
     @staticmethod
     def static_name() -> str:
         return _('Team Round-Robin')
+
+    @property
+    @override
+    def uses_team_letters(self) -> bool:
+        # Teams appear as letters (A, B, …) in the Berger grid.
+        return True
 
     @override
     def variation_manager(

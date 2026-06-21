@@ -1191,7 +1191,9 @@ class TeamAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, list[str]],
+            # A single team yields one ``assignment`` field, which the form
+            # encoder sends as a scalar; accept both scalar and list.
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
@@ -1206,7 +1208,8 @@ class TeamAdminController(BaseEventAdminController):
         ignored."""
         web_context = TeamAdminWebContext(request)
         event = web_context.get_admin_event()
-        raw_assignments = data.get('assignment', []) or []
+        flat_data = WebContext.flatten_list_data(data)
+        raw_assignments = WebContext.form_data_to_list_str(flat_data, 'assignment')
         by_tournament: dict[int | None, list[int]] = {}
         for raw in raw_assignments:
             team_id_str, _, tid_str = raw.partition(':')
@@ -1267,14 +1270,16 @@ class TeamAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, list[int]],
+            # A single player yields one ``player_ids`` field, sent as a scalar.
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         event = web_context.get_admin_event()
         team = web_context.get_admin_team()
-        ordered_ids = data.get('player_ids', []) or []
+        flat_data = WebContext.flatten_list_data(data)
+        ordered_ids = WebContext.form_data_to_list_int(flat_data, 'player_ids')
         with EventDatabase(event.uniq_id, True) as database:
             team.reorder_players(list(ordered_ids), database)
             # Roster order can change the round-1 lineup average.

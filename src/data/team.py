@@ -91,6 +91,24 @@ class Team:
         return self.stored_team.pairing_number
 
     @property
+    def pairing_label(self) -> str | None:
+        """Human label for the pairing number: a letter (``A``, ``B``, …) for
+        systems that address teams alphabetically (round-robin Berger grids,
+        Molter tables), otherwise ``#N``. ``None`` when the team has no
+        pairing number."""
+        number = self.pairing_number
+        if number is None:
+            return None
+        tournament = self.tournament
+        if (
+            tournament is not None
+            and 1 <= number <= 26
+            and tournament.pairing_system.uses_team_letters
+        ):
+            return chr(ord('A') + number - 1)
+        return f'#{number}'
+
+    @property
     def group_id(self) -> int | None:
         return self.stored_team.group_id
 

@@ -133,6 +133,11 @@ class FixedTablePairingSystem(PairingSystem['FixedTableVariation'], ABC):
         return False
 
     @property
+    def uses_team_letters(self) -> bool:
+        # The table addresses teams by letter (A, B, …) — see team_by_letter.
+        return True
+
+    @property
     def allow_bye_definition(self) -> bool:
         return False
 

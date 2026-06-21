@@ -4080,6 +4080,9 @@ msgstr "Lu"
 msgid "Moldova"
 msgstr "République de Moldova"
 
+msgid "Molter"
+msgstr "Molter"
+
 msgid "Monaco"
 msgstr "Monaco"
 
@@ -6445,6 +6448,9 @@ msgstr "Standard"
 msgid "Standard (no flag)"
 msgstr "Standard (pas de drapeau)"
 
+msgid "Standard Molter"
+msgstr "Molter standard"
+
 msgid "Standard points"
 msgstr "Points standards"
 
@@ -8664,10 +8670,4 @@ msgstr "…chacun aussi séparé de (%(count)d) :"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "The organisation to which the team belongs (for example a club, league, school, or federation). Affiliations may be used by pairing rules to avoid pairing related teams."
-#~ msgstr "L'organisation à laquelle appartient l'équipe (par exemple un club, une ligue, une école ou une fédération). Les affiliations peuvent être utilisées par les règles d'appariement pour éviter d'apparier des équipes apparentées."
-
-#~ msgid " (club, league...)"
-#~ msgstr ""
 

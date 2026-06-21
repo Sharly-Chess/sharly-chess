@@ -20,6 +20,7 @@ from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.event import Event
 from data.norms import ForecastRequirement
 from data.pairings.engines import RoundRobinPairingEngine
+from data.pairings.molter import MolterPairingSystem
 from data.pairings.systems import (
     RoundRobinPairingSystem,
     SwissPairingSystem,
@@ -1281,6 +1282,116 @@ class TeamBergerGridPrintDocument(PrintDocument):
             'grid_id_by_team_id': grid_id_by_team_id,
             'cells': cells,
             'standings_by_team_id': standings_by_team_id,
+        }
+
+
+class MolterTablePrintDocument(PrintDocument):
+    """The fixed Molter pairing schedule for a team tournament: one row per
+    board, one column per round (the regular rounds plus the autonomous
+    round). Cells show ``<team letter><board> – <team letter><board>``; a
+    legend maps each letter to its team."""
+
+    hide_for_individual_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'molter-table'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Molter table')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption]
+
+    @property
+    def title(self) -> str:
+        return self.name
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/molter_table.html'
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            isinstance(tournament.pairing_system, MolterPairingSystem)
+            for tournament in allowed_tournaments
+        )
+
+    def validate_options(self):
+        super().validate_options()
+        option = self._get_option(TournamentPrintOption)
+        tournament = self.tournament
+        if not isinstance(tournament.pairing_system, MolterPairingSystem):
+            raise OptionError(
+                _('This document is only available for Molter tournaments.'),
+                option,
+            )
+        if self._table() is None:
+            raise OptionError(
+                _('No Molter table is available for this tournament size.'),
+                option,
+            )
+
+    def _ordered_teams(self) -> list:
+        # Canonical order = pairing order; letter A = first team, B = second…
+        return sorted(
+            self.tournament.teams,
+            key=lambda t: (
+                t.pairing_number if t.pairing_number is not None else float('inf'),
+                t.name.lower(),
+            ),
+        )
+
+    def _table(self):
+        tournament = self.tournament
+        teams = self._ordered_teams()
+        players_per_team = tournament.team_player_count or 0
+        return tournament.pairing_system.get_table(
+            len(teams), players_per_team, tournament
+        )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        tournament = self.tournament
+        teams = self._ordered_teams()
+        team_by_letter = {
+            chr(ord('A') + i): team for i, team in enumerate(teams)
+        }
+        table = self._table()
+        assert table is not None  # guarded by validate_options
+
+        all_rounds = list(table.rounds)
+        round_names = [
+            f'{_("R")}{i + 1}' for i in range(table.regular_round_count)
+        ]
+        if table.autonomous_round is not None:
+            all_rounds.append(table.autonomous_round)
+            round_names.append(_('Auton.'))
+
+        def cell(p) -> str:
+            return (
+                f'{p.white_team}{p.white_index} – {p.black_team}{p.black_index}'
+            )
+
+        board_count = len(all_rounds[0]) if all_rounds else 0
+        board_rows = [
+            [cell(round_[board]) for round_ in all_rounds]
+            for board in range(board_count)
+        ]
+        legend = [
+            {'letter': letter, 'team': team_by_letter[letter]}
+            for letter in sorted(team_by_letter)
+        ]
+        return {
+            'tournament': tournament,
+            'round_names': round_names,
+            'board_rows': board_rows,
+            'legend': legend,
         }
 
 

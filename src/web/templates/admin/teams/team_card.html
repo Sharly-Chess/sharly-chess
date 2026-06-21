@@ -35,11 +35,12 @@
         {% endif %}
         <div class="flex-grow-1">
             <div>
-                {% if team.pairing_number %}
+                {% if team.pairing_label %}
                     <span
-                        class="fw-bold text-primary pe-1"
+                        class="fw-bold text-primary"
                         {{ macros.tooltip_attributes('info', _('Pairing number — set by the team order.'), 'top') }}
-                    >#{{ team.pairing_number }}</span>
+                    >{{ team.pairing_label }}</span>
+                    <span class="text-muted px-1">–</span>
                 {% else %}
                     <i class="bi-flag-fill pe-1"></i>
                 {% endif %}
