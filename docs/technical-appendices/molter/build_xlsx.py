@@ -199,6 +199,60 @@ def _write_analysis_tabs(wb, title, sub, hdr, cf, good, warn) -> None:
         ws.freeze_panes(4, 0)
 
 
+# Round counts shown in the opponent-spread overview (the truncation-relevant
+# early range; a shape is blank past its complete table).
+OVERVIEW_ROUNDS = tuple(range(2, 15))
+
+
+def _write_i1_overview(wb, title, sub, hdr, cf, good, warn) -> None:
+    """Single overview sheet: opponent spread (I1) by round count, one row per
+    shape. Shows at a glance how quickly a table balances opponents — i.e. how
+    early it can be safely truncated. 0 = every opponent met equally."""
+
+    def fmt(value):
+        if value == '':
+            return cf
+        return good if value == 0 else (cf if value == 1 else warn)
+
+    ws = wb.add_worksheet('I1 by round')
+    ws.set_column(0, 1, 9)
+    ws.set_column(2, 1 + len(OVERVIEW_ROUNDS), 6)
+    ws.write(0, 0, 'Opponent spread (I1) by round count', title)
+    ws.write(
+        1,
+        0,
+        'I1 = max−min of how many times a team meets each opponent so far '
+        '(0 ideal). A low value early means the table can be truncated and '
+        'still gives a fair opponent spread. Blank = beyond the complete table.',
+        sub,
+    )
+    cols = ['Teams', 'Players'] + [f'R{r}' for r in OVERVIEW_ROUNDS]
+    for c, name in enumerate(cols):
+        ws.write(3, c, name, hdr)
+    row = 4
+    first_block = True
+    for n in ANALYSIS_TEAMS:
+        if not first_block:
+            row += 1
+        first_block = False
+        for p in PLAYER_COUNTS:
+            ws.write(row, 0, n, cf)
+            ws.write(row, 1, p, cf)
+            for c, r in enumerate(OVERVIEW_ROUNDS, start=2):
+                if r > n - 1:
+                    ws.write(row, c, '', cf)
+                    continue
+                try:
+                    table = ms.generate_molter_table(n, p, r)
+                except ms.MolterGenerationError:
+                    ws.write(row, c, '', cf)
+                    continue
+                i1 = _measures(table, n)[0]
+                ws.write(row, c, i1, fmt(i1))
+            row += 1
+    ws.freeze_panes(4, 2)
+
+
 def build(path: str, summary: bool = False) -> None:
     wb = xlsxwriter.Workbook(path)
     title = wb.add_format({'bold': True, 'font_size': 13})
@@ -219,6 +273,7 @@ def build(path: str, summary: bool = False) -> None:
     warn = wb.add_format({'border': 1, 'align': 'center', 'bg_color': '#FDF3E0'})
 
     if summary:
+        _write_i1_overview(wb, title, sub, hdr, cf, good, warn)
         _write_analysis_tabs(wb, title, sub, hdr, cf, good, warn)
     else:
         _write_board_sheets(wb, title, sub, hdr, bd, cf)

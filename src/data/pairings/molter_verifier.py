@@ -16,12 +16,12 @@ rounds running, and a colour only repeats across an even→odd round boundary.
 Rule-set overrides may mark an otherwise impossible table as a compromise;
 those are checked against explicit best-compromise repeat/colour rules.
 
-**Ideals** — reached only on the *complete* tables; the reduced
-1/2/3-round tables cannot, so they are reported as notes rather
-than errors: uniform team-vs-team distribution (principle 3), balanced
-up/down floaters (principle 5), an equal count of descending floaters
-per team (a priority ideal), even per-round opponent spread (principle
-1), and per-player colour balance.
+**Ideals** — reached only on the *complete* tables or when arithmetic permits
+them, so unmet ideals are reported as notes rather than errors: uniform
+team-vs-team distribution (principle 3), balanced up/down floaters (principle
+5), an equal count of descending floaters per team (a priority ideal after
+opponent spread), even per-round opponent spread (principle 1), maximum distinct
+opponent-team coverage in every prefix, and per-player colour balance.
 
 ``verify_molter_table`` returns a :class:`MolterReport`; ``errors`` lists
 hard-invariant breaches (non-empty ⇒ invalid), ``notes`` lists unmet
@@ -89,8 +89,10 @@ def _check_rounds(
     rp_up = [[0] * team_count for _ in range(round_pairs)]
     i5_violated = False
     spread_note: tuple[int, str, dict[str, int]] | None = None
+    prefix_spread_note: tuple[int, str, int, int] | None = None
     relaxed_colour_boundary = False
     n_rounds = len(rounds)
+    team_prefix_mask = [0] * team_count
 
     def seat_name(seat: int) -> str:
         return f'{letters[seat // players_per_team]}{seat % players_per_team + 1}'
@@ -134,6 +136,8 @@ def _check_rounds(
                 opp_this[black_team][white_team] += 1
                 pair_count[white_team][black_team] += 1
                 pair_count[black_team][white_team] += 1
+                team_prefix_mask[white_team] |= 1 << black_team
+                team_prefix_mask[black_team] |= 1 << white_team
 
             white_seat = (
                 white_team * players_per_team + p.white_index - 1
@@ -306,6 +310,18 @@ def _check_rounds(
                     letters[team],
                     {letters[opp]: count for opp, count in enumerate(counts) if count},
                 )
+        if prefix_spread_note is None:
+            expected_distinct = min(team_count - 1, players_per_team * r_index)
+            for team, mask in enumerate(team_prefix_mask):
+                distinct = mask.bit_count()
+                if distinct < expected_distinct:
+                    prefix_spread_note = (
+                        r_index,
+                        letters[team],
+                        distinct,
+                        expected_distinct,
+                    )
+                    break
 
     if games and max(games) != min(games):
         err(f'{label}: players do not all play the same number of games.')
@@ -398,7 +414,7 @@ def _check_rounds(
         note(
             f'{label}: descending floaters unequal across teams '
             f'(range {min(down_counts)}–{max(down_counts)}) — descending '
-            f'floaters should be as equal as possible (spread at most 1) (I2).'
+            f'floaters should be as equal as possible after opponent spread (I2).'
         )
     # I5 — a single-layer table (P ≤ N − 1) should float each team at most once
     # up and once down per round-pair. (For more than one layer this is
@@ -416,6 +432,13 @@ def _check_rounds(
             f'{label} round {r_index}: team {team_name} opponent spread {spread} '
             f'is uneven — a team should be spread evenly across opponents each '
             f'round; only the smaller tables equalise this (I4).'
+        )
+    if prefix_spread_note is not None:
+        r_index, team_name, distinct, expected = prefix_spread_note
+        note(
+            f'{label} after round {r_index}: team {team_name} has met '
+            f'{distinct} distinct opposing teams; the prefix-spread ideal is '
+            f'{expected}.'
         )
 
 

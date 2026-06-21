@@ -13,34 +13,31 @@ one-odd 2-factors (with a legal descending floater), even ``N`` by a
 1-factorisation (no floaters). When ``N − 1`` divides ``P`` the ``k`` full layers
 give I1 on every regular round (each pair of teams appears exactly ``k`` times).
 Otherwise a final partial layer covers the remaining boards: every player still
-meets a distinct opposing team each round (S4) with a legal floater per block, the
-per-round team spread merely being best-effort rather than perfectly uniform. The
-factor assigned to each block rotates by round-pair, so any round prefix up to
-``N − 1`` is valid.
+meets a distinct opposing team each round (S4), with legal floaters for odd
+``N``. Odd partial blocks and even partial board slots both use prefix-balanced
+factor plans, so a prefix of ``r`` rounds gives each team
+``min(N − 1, P × r)`` distinct opposing teams. That protects the main I1 intent
+for truncated schedules; I2/I5 become verifier notes when they conflict with
+that spread.
 
-**Odd floaters use one-odd factors.** For supported odd sizes,
-full layers use the affine dropped-edge construction. Partial layers first select
-a legal affine offset subset; if that already reaches the arithmetic I2 lower
-bound it is used directly, otherwise a bounded deterministic repair search tries
-the same one-odd factors before falling back to the fast legal affine subset.
-``N = 3`` and ``N = 5`` use fixed small one-odd factors; ``N = 5`` has I2
-spread 2 because S6c and perfect I2 conflict. Unsupported odd sizes fail
-explicitly instead of falling back to a slower search.
+**Odd floaters use one-odd factors.** For supported odd sizes, full layers use
+the affine dropped-edge construction. Partial layers use the same one-odd
+factors with deterministic spread offsets and stable dropped edges per
+block/factor cell. ``N = 3`` and ``N = 5`` use fixed small one-odd factors;
+``N = 5`` has I2 spread 2 because S6c and perfect I2 conflict. Unsupported odd
+sizes fail explicitly instead of falling back to a slower search.
 
 **Colours need no search.** A colour repeat is only allowed on an even→odd
-round boundary, so odd→even boundaries *must* alternate — there a player's
-colour is the forced flip of the previous round. Free (odd-numbered) rounds
-are coloured so the next flip lands one White and one Black on every board:
-odd ``N`` orients each layer Eulerian; even ``N`` orients slot ``b``'s
-matching by a proper 2-colouring of ``M_b ∪ M_{b+1}``. Round-pairs balance
-each player (hence each team); for an odd round count the lone final free
-round is coloured Eulerian so it is per-team balanced on its own. No-tripling
-and the even→odd-only repeat rule then hold by construction.
+round boundary, so odd→even boundaries *must* alternate. Round-pairs are coloured
+together by a bipartition of the two-round player graph, balancing each player
+(hence each team); for an odd round count the lone final round is coloured
+Eulerian so it is per-team balanced on its own. No-tripling and the
+even→odd-only repeat rule then hold by construction.
 
 **Deterministic and language-portable.** There is no external solver. The
 complete odd-layer path uses fixed recolouring and switching passes; partial odd
-layers use deterministic affine selection plus a small bounded repair search.
-So ``(team_count, players_per_team, rounds)`` defines a single canonical table a
+layers are arithmetic once the one-odd factors exist. So
+``(team_count, players_per_team, rounds)`` defines a single canonical table a
 faithful re-implementation in any language can reproduce exactly.
 """
 
@@ -72,15 +69,6 @@ def _letter(team_index: int) -> str:
     if team_index < len(_TEAM_LETTERS):
         return _TEAM_LETTERS[team_index]
     return chr(ord('A') + team_index)
-
-
-def _colours(rnd: _Round) -> dict[_Player, bool]:
-    """Map each player in a coloured round to True if it had White."""
-    out: dict[_Player, bool] = {}
-    for white, black in rnd:
-        out[white] = True
-        out[black] = False
-    return out
 
 
 # ---------- colouring a matched round (deterministic, no search) ----------
@@ -118,11 +106,50 @@ def _eulerian_colour(boards: list[_Match]) -> _Round:
     ]
 
 
-def _flip_colour(boards: list[_Match], prev: dict[_Player, bool]) -> _Round:
-    """An "alternating" round: each player takes the opposite of its previous
-    colour. The matching paired opposite previous colours, so the player that
-    was Black becomes White."""
-    return [(a, b) if prev[a] is False else (b, a) for a, b in boards]
+def _pair_flip_colour(
+    first_round: list[_Match], second_round: list[_Match]
+) -> tuple[_Round, _Round]:
+    """Colour a two-round block so every player flips colour.
+
+    The union of the two uncoloured rounds is a graph on players. If it is
+    bipartite, orient round 1 by one side of the bipartition and round 2 by the
+    other; each player then gets one White and one Black. This supports partial
+    odd layers whose second round is not a mirror of the first.
+    """
+    adjacent: dict[_Player, list[_Player]] = {}
+    for rnd in (first_round, second_round):
+        for first, second in rnd:
+            adjacent.setdefault(first, []).append(second)
+            adjacent.setdefault(second, []).append(first)
+
+    colour: dict[_Player, int] = {}
+    for start in sorted(adjacent):
+        if start in colour:
+            continue
+        colour[start] = 0
+        stack = [start]
+        while stack:
+            player = stack.pop()
+            for other in adjacent[player]:
+                other_colour = 1 - colour[player]
+                if other in colour:
+                    if colour[other] != other_colour:
+                        raise MolterGenerationError(
+                            'Could not colour odd Molter round-pair.'
+                        )
+                else:
+                    colour[other] = other_colour
+                    stack.append(other)
+
+    first_coloured = [
+        (first, second) if colour[first] == 1 else (second, first)
+        for first, second in first_round
+    ]
+    second_coloured = [
+        (first, second) if colour[first] == 0 else (second, first)
+        for first, second in second_round
+    ]
+    return first_coloured, second_coloured
 
 
 # ---------- complete odd tables (P = k × (N - 1), per-round I1) ----------
@@ -769,112 +796,6 @@ def _one_odd_partial_score(
     )
 
 
-def _one_odd_affine_partial_contribution(
-    team_count: int, rounds: int, offset: int
-) -> tuple[int, ...]:
-    counts = [0] * team_count
-    full_round_pairs = rounds // 2
-    for round_pair in range(full_round_pairs):
-        first, second = _affine_floater_edge(team_count, round_pair, offset)
-        counts[first] += 1
-        counts[second] += 1
-    if rounds % 2 == 1:
-        _first, second = _affine_floater_edge(team_count, full_round_pairs, offset)
-        counts[second] += 1
-    return tuple(counts)
-
-
-def _one_odd_select_affine_partial_offsets(
-    team_count: int,
-    rounds: int,
-    block_count: int,
-    initial_counts: tuple[int, ...],
-) -> tuple[tuple[int, ...], tuple[int, ...]]:
-    half = (team_count - 1) // 2
-    contributions = [
-        _one_odd_affine_partial_contribution(team_count, rounds, offset)
-        for offset in range(half)
-    ]
-    counts = list(initial_counts)
-    chosen: list[int] = []
-    remaining = set(range(half))
-
-    for _block in range(block_count):
-        best: tuple[tuple[int, int, int, tuple[int, ...]], int, list[int]] | None = None
-        for offset in sorted(remaining):
-            candidate = [
-                counts[team] + contributions[offset][team] for team in range(team_count)
-            ]
-            score = _one_odd_partial_score(candidate)
-            if best is None or score < best[0]:
-                best = score, offset, candidate
-        assert best is not None
-        _score, offset, counts = best
-        chosen.append(offset)
-        remaining.remove(offset)
-
-    improved = True
-    while improved:
-        improved = False
-        base_score = _one_odd_partial_score(counts)
-        best_swap = None
-        for index, old_offset in enumerate(chosen):
-            for new_offset in sorted(remaining):
-                candidate = [
-                    counts[team]
-                    - contributions[old_offset][team]
-                    + contributions[new_offset][team]
-                    for team in range(team_count)
-                ]
-                score = _one_odd_partial_score(candidate)
-                if score < base_score and (best_swap is None or score < best_swap[0]):
-                    best_swap = score, index, old_offset, new_offset, candidate
-        if best_swap is not None:
-            _score, index, old_offset, new_offset, counts = best_swap
-            chosen[index] = new_offset
-            remaining.remove(new_offset)
-            remaining.add(old_offset)
-            improved = True
-
-    return tuple(sorted(chosen)), tuple(counts)
-
-
-def _one_odd_affine_partial_plan(
-    team_count: int,
-    rounds: int,
-    block_count: int,
-    initial_counts: tuple[int, ...],
-    require_optimal: bool = True,
-) -> tuple[_OneOddPlan, tuple[int, ...]] | None:
-    """Fast affine-offset partial plan when it already reaches optimal I2."""
-    half = (team_count - 1) // 2
-    num_round_pairs = (rounds + 1) // 2
-    offsets, counts = _one_odd_select_affine_partial_offsets(
-        team_count, rounds, block_count, initial_counts
-    )
-    total = sum(initial_counts) + block_count * rounds
-    lower_bound = 0 if total % team_count == 0 else 1
-    if require_optimal and _one_odd_partial_score(counts)[0] != lower_bound:
-        return None
-
-    row_used = [0] * num_round_pairs
-    block_used = [0] * block_count
-    plan: list[tuple[_OneOddPlanCell, ...]] = []
-    for round_pair in range(num_round_pairs):
-        row = []
-        for block, offset in enumerate(offsets):
-            dropped = _affine_floater_edge(team_count, round_pair, offset)
-            mask = (1 << dropped[0]) | (1 << dropped[1])
-            if row_used[round_pair] & mask or block_used[block] & mask:
-                return None
-            row_used[round_pair] |= mask
-            block_used[block] |= mask
-            row.append(((round_pair + offset) % half, dropped))
-        plan.append(tuple(row))
-    incidence = tuple(counts[team] - initial_counts[team] for team in range(team_count))
-    return tuple(plan), incidence
-
-
 def _one_odd_partial_plan(
     team_count: int,
     rounds: int,
@@ -1110,6 +1031,62 @@ def _complete_i1_one_odd_plan_blocks(
     return out
 
 
+def _one_odd_spread_partial_blocks(
+    team_count: int,
+    rounds: int,
+    block_offset: int,
+    block_count: int,
+    factors: tuple[tuple[tuple[int, int], ...], ...],
+) -> list[list[_Match]]:
+    """Partial odd layer optimized for early opponent spread.
+
+    Each two-board block cycles through every one-odd factor, but the blocks are
+    offset across the factor list. In `N=9, P=4`, for example, the two blocks use
+    factors `{0, 2}` in round 1 and `{1, 3}` in round 2, so every team has met
+    all eight opposing teams after two rounds. When a block later reuses a
+    factor, it keeps the same dropped edge and flips the materialization phase;
+    that gives the two board-slot players the other incident team edge.
+    """
+    half = (team_count - 1) // 2
+    offsets = _one_odd_partial_offsets(team_count, block_count)
+    seen: dict[tuple[int, int], int] = {}
+    dropped_by_cell: dict[tuple[int, int], tuple[int, int]] = {}
+    out: list[list[_Match]] = []
+
+    def fallback_dropped(factor: tuple[tuple[int, int], ...]) -> tuple[int, int]:
+        incident = sorted(edge for edge in factor if 0 in edge)
+        edge = incident[0]
+        return edge if edge[0] == 0 else (edge[1], edge[0])
+
+    for r_index in range(rounds):
+        rnd: list[_Match] = []
+        for block, offset in enumerate(offsets):
+            factor_index = (r_index + offset) % half
+            key = (block, factor_index)
+            if key not in dropped_by_cell:
+                first_round = (factor_index - offset) % half
+                dropped = _affine_floater_edge(team_count, first_round, offset)
+                if dropped not in factors[factor_index]:
+                    dropped = fallback_dropped(factors[factor_index])
+                dropped_by_cell[key] = dropped
+            phase = seen.get(key, 0)
+            seen[key] = phase + 1
+            odd_slot = 2 * (block_offset + block)
+            even_slot = odd_slot + 1
+            rnd.extend(
+                _one_odd_cell_matches(
+                    team_count,
+                    factors[factor_index],
+                    dropped_by_cell[key],
+                    odd_slot,
+                    even_slot,
+                    phase % 2 == 1,
+                )
+            )
+        out.append(rnd)
+    return out
+
+
 def _shift_layer_teams(
     matches: list[list[_Match]], team_count: int, shift: int
 ) -> list[list[_Match]]:
@@ -1277,11 +1254,10 @@ def _complete_i1_matches(
     (S4) and a legal floater per block, with best-effort team spread.
 
     Supported odd sizes first try the prescribed one-odd 2-factor construction.
-    Full layers use its affine dropped edges directly. Partial layers use a
-    legal affine offset subset when that already reaches the arithmetic I2 lower
-    bound; otherwise a bounded one-odd repair search tries to reach that lower
-    bound before falling back to the same fast legal affine subset. Unsupported
-    odd sizes fail explicitly instead of running a slower alternate search."""
+    Full layers use its affine dropped edges directly. Partial layers rotate
+    spread offsets by round to maximize distinct opponent teams in every prefix.
+    Unsupported odd sizes fail explicitly instead of running a slower alternate
+    search."""
     half = (team_count - 1) // 2
     blocks = players_per_team // 2
     num_round_pairs = (rounds + 1) // 2
@@ -1328,77 +1304,11 @@ def _complete_i1_matches(
                     one_odd_factors,
                 )
         else:
-            if use_affine_full_layers:
-                result = _one_odd_affine_partial_plan(
-                    team_count,
-                    rounds,
-                    count,
-                    tuple(planning_floater_count),
-                )
-            else:
-                result = None
-            if result is None and use_affine_full_layers:
-                affine_offsets, _counts = _one_odd_select_affine_partial_offsets(
-                    team_count,
-                    rounds,
-                    count,
-                    tuple(planning_floater_count),
-                )
-                floor_offsets = _one_odd_partial_offsets(team_count, count)
-                offset_candidates = [floor_offsets]
-                if affine_offsets != floor_offsets:
-                    offset_candidates.append(affine_offsets)
-                target_spread = (
-                    0
-                    if (sum(planning_floater_count) + count * rounds) % team_count == 0
-                    else 1
-                )
-                if rounds <= 12 or count * num_round_pairs <= 36:
-                    for salt in range(4):
-                        for offsets in offset_candidates:
-                            result = _one_odd_partial_plan(
-                                team_count,
-                                rounds,
-                                count,
-                                tuple(planning_floater_count),
-                                one_odd_factors,
-                                offsets,
-                                salt,
-                                1,
-                                target_spread,
-                            )
-                            if result is not None:
-                                break
-                        if result is not None:
-                            break
-                if result is None:
-                    result = _one_odd_affine_partial_plan(
-                        team_count,
-                        rounds,
-                        count,
-                        tuple(planning_floater_count),
-                        require_optimal=False,
-                    )
-            elif result is None:
-                result = _one_odd_partial_plan(
-                    team_count,
-                    rounds,
-                    count,
-                    tuple(planning_floater_count),
-                    one_odd_factors,
-                    max_spread=2,
-                )
-            if result is None:
-                raise MolterGenerationError(
-                    f'No valid one-odd partial plan for {team_count} teams, '
-                    f'{count} blocks, over {num_round_pairs} round-pairs.'
-                )
-            plan, _ = result
-            layer_matches = _complete_i1_one_odd_plan_blocks(
+            layer_matches = _one_odd_spread_partial_blocks(
                 team_count,
                 rounds,
                 block_offset,
-                plan,
+                count,
                 one_odd_factors,
             )
         incidence = _layer_descending_incidence(layer_matches, team_count)
@@ -1420,21 +1330,28 @@ def _complete_i1_matches(
 def _colour_complete_i1_matches(
     matches: list[list[_Match]], team_count: int
 ) -> list[_Round]:
-    """Colour odd-team complete-I1 rounds with the Molter parity scheme:
-    even-numbered (free) rounds are coloured Eulerian per layer-sized chunk
-    (each team has even degree there, so each gets one White / one Black —
-    per-team balance even on a lone final round); odd-numbered rounds are the
-    forced flip. A final partial layer is the smaller last chunk."""
+    """Colour odd-team rounds with the Molter parity scheme.
+
+    Round-pairs are coloured together so every player flips colour from the odd
+    round to the even round. A lone final odd round is coloured Eulerian per
+    layer-sized chunk, giving exact team colour balance on that round.
+    """
     layer_size = team_count * (team_count - 1) // 2
     rounds: list[_Round] = []
-    for r_index, match in enumerate(matches):
-        if r_index % 2 == 0:
+    r_index = 0
+    while r_index < len(matches):
+        if r_index + 1 < len(matches):
+            first, second = _pair_flip_colour(matches[r_index], matches[r_index + 1])
+            rounds.append(first)
+            rounds.append(second)
+            r_index += 2
+        else:
             rnd: _Round = []
+            match = matches[r_index]
             for start in range(0, len(match), layer_size):
                 rnd.extend(_eulerian_colour(match[start : start + layer_size]))
             rounds.append(rnd)
-        else:
-            rounds.append(_flip_colour(match, _colours(rounds[-1])))
+            r_index += 1
     return rounds
 
 
@@ -1457,92 +1374,128 @@ def _one_factorization(team_count: int) -> tuple[tuple[tuple[int, int], ...], ..
     return tuple(factors)
 
 
+@lru_cache(maxsize=None)
+def _even_partial_factor_plan(
+    factor_count: int, slot_count: int, rounds: int
+) -> tuple[tuple[int, ...], ...]:
+    """Prefix-balanced factor rows for the leftover even-team boards.
+
+    The row sets are the first ``slot_count`` entries of a cyclic factor stream,
+    so every round prefix uses each factor either floor or ceil times. Those
+    factor occurrences are then edge-coloured into physical slots: each row gets
+    every slot once, and each factor appears at most once in a slot, so a player
+    never repeats an opposing team.
+    """
+    if slot_count == 0:
+        return tuple(() for _round in range(rounds))
+
+    adjacency: list[set[int]] = [
+        {
+            (round_index * slot_count + offset) % factor_count
+            for offset in range(slot_count)
+        }
+        for round_index in range(rounds)
+    ]
+    degrees = [0] * factor_count
+    for row_factors in adjacency:
+        for factor in row_factors:
+            degrees[factor] += 1
+
+    deficits = [slot_count - degree for degree in degrees]
+    for _dummy in range(factor_count - rounds):
+        dummy_row: set[int] = set()
+        while len(dummy_row) < slot_count:
+            candidates = [
+                factor
+                for factor in range(factor_count)
+                if deficits[factor] > 0 and factor not in dummy_row
+            ]
+            if not candidates:
+                raise MolterGenerationError('Could not regularize even factor plan.')
+            factor = max(candidates, key=lambda item: (deficits[item], -item))
+            dummy_row.add(factor)
+            deficits[factor] -= 1
+        adjacency.append(dummy_row)
+    if any(deficits):
+        raise MolterGenerationError('Incomplete even factor-plan regularization.')
+
+    rows = [[-1] * slot_count for _round in range(rounds)]
+    for slot in range(slot_count):
+        factor_to_row: dict[int, int] = {}
+
+        def visit(row: int, seen: set[int]) -> bool:
+            for factor in sorted(adjacency[row]):
+                if factor in seen:
+                    continue
+                seen.add(factor)
+                previous = factor_to_row.get(factor)
+                if previous is None or visit(previous, seen):
+                    factor_to_row[factor] = row
+                    return True
+            return False
+
+        for row in range(factor_count):
+            if not visit(row, set()):
+                raise MolterGenerationError('Could not edge-colour even factor plan.')
+
+        row_to_factor = [-1] * factor_count
+        for factor, matched_row in factor_to_row.items():
+            row_to_factor[matched_row] = factor
+        for matched_row, factor in enumerate(row_to_factor):
+            if factor < 0:
+                raise MolterGenerationError('Incomplete even factor-plan matching.')
+            adjacency[matched_row].remove(factor)
+            if matched_row < rounds:
+                rows[matched_row][slot] = factor
+
+    return tuple(tuple(row) for row in rows)
+
+
 def _complete_i1_even_matches(
     team_count: int, players_per_team: int, rounds: int
 ) -> list[list[_Match]]:
-    """Construct even-team rounds for any even ``P``. Slot ``b`` in round ``r``
-    plays the perfect matching ``M_(b + r)`` of the 1-factorisation — so a
-    fixed slot meets a distinct team each round (S4), no floaters (S6a), and
-    when ``N − 1`` divides ``P`` every team-pair appears equally each round
-    (I1); otherwise the per-round spread is best-effort."""
+    """Construct even-team rounds for any even ``P``.
+
+    Full layers use every 1-factor once per round, giving exact per-round I1.
+    A final partial layer uses a prefix-balanced factor plan, so truncated even
+    tables spread opponents as quickly as arithmetic permits while each fixed
+    slot still meets a distinct team every round (S4).
+    """
     factors = _one_factorization(team_count)
-    ring = team_count - 1
+    factor_count = team_count - 1
+    full_layers, partial_slots = divmod(players_per_team, factor_count)
+    partial_plan = _even_partial_factor_plan(factor_count, partial_slots, rounds)
     out: list[list[_Match]] = []
     for r_index in range(rounds):
         rnd: list[_Match] = []
-        for b in range(players_per_team):
-            for i, j in factors[(b + r_index) % ring]:
-                rnd.append(((i, b), (j, b)))
+        for layer in range(full_layers):
+            slot_offset = layer * factor_count
+            for slot in range(factor_count):
+                for i, j in factors[(slot + r_index) % factor_count]:
+                    rnd.append(((i, slot_offset + slot), (j, slot_offset + slot)))
+        slot_offset = full_layers * factor_count
+        for slot, factor_index in enumerate(partial_plan[r_index]):
+            for i, j in factors[factor_index]:
+                rnd.append(((i, slot_offset + slot), (j, slot_offset + slot)))
         out.append(rnd)
     return out
-
-
-@lru_cache(maxsize=None)
-def _two_colour(
-    team_count: int,
-    matching_a: tuple[tuple[int, int], ...],
-    matching_b: tuple[tuple[int, int], ...],
-) -> tuple[int, ...]:
-    """Proper 2-colouring of the union of two disjoint perfect matchings (a
-    2-regular graph whose every cycle is even). Class 0 is assigned to the
-    lowest team of each component, so the result is deterministic."""
-    adj: list[list[int]] = [[] for _ in range(team_count)]
-    for i, j in matching_a + matching_b:
-        adj[i].append(j)
-        adj[j].append(i)
-    colour = [-1] * team_count
-    for start in range(team_count):
-        if colour[start] != -1:
-            continue
-        colour[start] = 0
-        stack = [start]
-        while stack:
-            u = stack.pop()
-            for v in adj[u]:
-                if colour[v] == -1:
-                    colour[v] = 1 - colour[u]
-                    stack.append(v)
-    return tuple(colour)
 
 
 def _colour_complete_i1_even_matches(
     matches: list[list[_Match]], team_count: int, players_per_team: int
 ) -> list[_Round]:
-    """Colour even-team complete-I1 rounds.
-
-    A free round orients slot ``b``'s matching ``M_a`` by a proper 2-colouring
-    of ``M_a ∪ M_(a+1)``; because that colouring also properly splits
-    ``M_(a+1)``, the next round's forced flip lands one White and one Black on
-    every board. The flip pairs each player off across the round-pair, so every
-    player — hence every team — is colour-balanced over an even number of
-    rounds; no-tripling and the even→odd-only repeat rule hold likewise.
-
-    For an odd round count the last (free) round has no flip partner; it is
-    coloured Eulerian instead (each team plays an even ``P`` games there, so it
-    is per-team balanced on its own) — giving team balance for any round
-    count."""
-    factors = _one_factorization(team_count)
-    ring = team_count - 1
-    last = len(matches) - 1
+    """Colour even-team rounds with the same round-pair flip used by odd teams."""
     rounds: list[_Round] = []
-    for r_index, match in enumerate(matches):
-        if r_index % 2 == 1:
-            rounds.append(_flip_colour(match, _colours(rounds[-1])))
-            continue
-        if r_index == last:
-            # Lone final (odd-round-count) free round: balance per team.
-            rounds.append(_eulerian_colour(match))
-            continue
-        rnd: _Round = []
-        for b in range(players_per_team):
-            a = (b + r_index) % ring
-            colour = _two_colour(team_count, factors[a], factors[(a + 1) % ring])
-            for i, j in factors[a]:
-                if colour[i] == 0:
-                    rnd.append(((i, b), (j, b)))
-                else:
-                    rnd.append(((j, b), (i, b)))
-        rounds.append(rnd)
+    r_index = 0
+    while r_index < len(matches):
+        if r_index + 1 < len(matches):
+            first, second = _pair_flip_colour(matches[r_index], matches[r_index + 1])
+            rounds.append(first)
+            rounds.append(second)
+            r_index += 2
+        else:
+            rounds.append(_eulerian_colour(matches[r_index]))
+            r_index += 1
     return rounds
 
 

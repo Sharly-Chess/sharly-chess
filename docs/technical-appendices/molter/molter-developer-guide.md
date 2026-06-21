@@ -90,9 +90,10 @@ that follow — skim past them for now.)
 **Ideals (only fully achievable on complete tables):**
 
 - **I1** *(priority)* each team meets the others equally **every round** — exact
-  when `N − 1` divides `P`.
-- **I2** *(priority)* descending-floater counts as even across teams as arithmetic
-  allows.
+  when `N − 1` divides `P`; otherwise every prefix should cover as many distinct
+  opposing teams as possible.
+- **I2** *(priority after I1)* descending-floater counts as even across teams as
+  arithmetic allows.
 - **I3** each team has as many ascending as descending floaters.
 - **I4** each round spreads a team's players evenly across opponents.
 - **I5** at most one descending and one ascending floater per team per round-pair —
@@ -105,9 +106,13 @@ that follow — skim past them for now.)
   set override can mark a table as a compromise; those are not emitted by the
   default generator.
 - **I1** is reached on every round exactly when `N − 1` divides `P` (the table is
-  whole layers); a final partial layer otherwise makes it best-effort.
-- **I2** reaches its best spread (descending-floater counts differ by ≤ 1) on
-  odd-`N` tables.
+  whole layers). A final partial layer otherwise maximizes prefix coverage:
+  after `r` rounds each team has met `min(N − 1, P × r)` distinct opposing teams
+  when that is arithmetically possible.
+- **I2** reaches spread ≤ 1 on the single full odd layer for every checked
+  `N >= 7`; `N=5` needs spread 2. Stacked and partial odd layers rotate team
+  labels to keep I2 as even as possible, but I1/prefix spread and hard floater
+  rules come first.
 - **I5** holds only for a single layer (`P = N − 1`, odd `N`); once `P > N − 1` it
   is arithmetically impossible.
 - **I3/I4** are not separate optimization targets in the current construction.
@@ -152,10 +157,11 @@ N is even or odd:
 round-robin trick: fix one team as a pivot and rotate the rest around it. Each
 "rotation" is a **perfect matching** — a way to pair up *all* the teams at once
 with nobody left over (possible because N is even). There are `N − 1` matchings,
-and together they cover every team pair once. Board-slot `b` in round `r` simply
-plays matching number `b + r` (mod N−1). Rotating the slot each round means a
-fixed board meets a new team every round. No floaters here — both players on a
-board share the same board number.
+and together they cover every team pair once. A full layer uses every matching
+once per round. A partial leftover layer uses `_even_partial_factor_plan`: it
+takes factors from a cyclic stream so every prefix is balanced, then edge-colours
+those factor occurrences into board slots so a fixed player never repeats a team.
+No floaters here — both players on a board share the same board number.
 
 **Odd N — one dropped edge per two-board block.** With an odd number of teams you
 *can't* pair everyone up on one board — there's always one team left over. That
@@ -174,12 +180,13 @@ team graph behind that layout:
   component and all other components are even. `_complete_i1_one_odd_blocks` can
   then drop that edge and materialize the two-board block. This path makes I1
   exact and gives optimal single-layer I2 spread for every checked `N >= 7`.
-- **Partial layers, checked sizes `N = 7..99`: one-odd factors with selected
-  dropped edges.** The same repaired 2-factors are reused for partial layers. The
-  generator first chooses a legal affine subset of logical blocks. If that subset
-  already reaches the arithmetic lower bound for descending-floater spread, it is
-  materialized directly. Otherwise a bounded deterministic repair search changes
-  dropped edges inside the one-odd factors to try to reach that lower bound.
+- **Partial layers, checked sizes `N = 7..99`: one-odd factors with spread
+  offsets.** The same repaired 2-factors are reused for partial layers. The
+  blocks take evenly spaced offsets through the factor list, and every round
+  advances each block by one factor. For `N=9, P=4`, the two blocks use factors
+  `{0, 2}` in round 1 and `{1, 3}` in round 2, so every team has met all eight
+  opposing teams after two rounds. This deliberately protects the I1 prefix
+  objective before I2/I5 on incomplete layers.
 - **Small exceptions `N=3` and `N=5`: fixed one-odd factors.** `N=3` is below
   the general factor-search range. `N=5` cannot use the affine perfect-I2 target,
   but two fixed 5-cycles still fit the one-odd materializer. The planner is
@@ -194,12 +201,14 @@ everyone-meets-everyone — meaning **each pair of teams meets exactly `k` times
 round**. That per-round balance is the priority ideal **I1**.
 
 When `N − 1` doesn't divide `P` evenly, the leftover boards form a **partial
-layer**. It still obeys every hard rule (distinct opponent each round, a legal
-floater per block); the only thing it gives up is *perfectly even* spread — that
-becomes "best effort". Full layers use a cached construction, so repeated
-requests for the same size are free. Partial layers normally reuse the cached
-one-odd factors. Unsupported odd sizes fail explicitly instead of running a slow
-alternate search.
+layer**. It still obeys every hard rule (distinct opponent each round, and a
+legal floater per odd block). It gives up exact per-round I1, but it does not
+simply repeat the same opponent teams: odd partial blocks and even partial board
+slots both use prefix-balanced factor plans, so the first `r` rounds cover
+`min(N − 1, P × r)` distinct opposing teams per team. Full layers use a cached
+construction, so repeated requests for the same size are free. Partial layers are
+arithmetic once their factors exist. Unsupported odd sizes fail explicitly
+instead of running a slow alternate search.
 
 After each odd layer is built, the generator can rotate all team labels in that
 layer. This preserves the pairings, future colour assignment, S6a/S6b/S6c, and
@@ -208,13 +217,12 @@ incidences. A final deterministic rotation pass chooses layer shifts that
 minimize I2. This prevents repeated small layers from charging the same teams
 over and over — notably `N=3` and `N=7, P=14`.
 
-These rotations also make the small repeated-layer cases match the same I2
-standard as the larger construction: `N=3` reaches the arithmetic lower bound,
-and `N=7` no longer needs a special exception. The only known small exception is
-`N=5`, where S6c and perfect I2 conflict and spread 2 can be forced. For odd
-`N >= 7`, current searches and constructions indicate that I2 spread `0` or `1`
-is the right target; if a future implementation produces spread above 1 there, it
-should be treated as a generator-quality issue unless proven unavoidable.
+These rotations keep repeated layers from charging the same teams when that can
+be done without changing the pairings. The only known small full-layer exception
+is `N=5`, where S6c and perfect I2 conflict and spread 2 can be forced. For a
+single full odd layer with `N >= 7`, current searches and constructions indicate
+that I2 spread `0` or `1` is the right target. On partial layers, a larger I2 note
+can be the price of the stronger prefix-opponent spread.
 
 ### 5.3 Why rounds are capped at N − 1
 
@@ -231,23 +239,15 @@ The colour rule (invariants C1–C3): each player ends balanced, never plays the
 same colour three rounds running, and may only **repeat** a colour across an
 **even→odd** round boundary. Everywhere else colours must alternate.
 
-That rule makes most colours *forced*:
+That rule makes colours local to a round-pair. `_pair_flip_colour` takes the
+union of two uncoloured rounds as a graph on players; it is bipartite. One side
+gets White in the first round, the other side gets White in the second, so every
+player flips colour. This is what lets a partial layer use two different factor
+sets in the two rounds without breaking colour balance.
 
-- **Odd-numbered rounds are "free"** (rounds 1, 3, 5…). We colour them so that the
-  *next* round's mandatory flip lands one White and one Black on every board. The
-  trick is an **Eulerian orientation** (`_eulerian_colour` for odd N; via
-  `_two_colour` for even N): walk along the loops of team-meetings and hand out
-  colours so every team comes out with one White and one Black. "Eulerian" just
-  means we follow the edges of each loop in order — no choices, fully
-  deterministic (always start at the lowest-numbered team, take the
-  lowest-numbered edge).
-- **Even-numbered rounds are forced** (`_flip_colour`): every player takes the
-  opposite of its previous colour.
-
-A round-pair (one free + one flipped) leaves each player balanced. If `R` is odd,
-the final free round has no partner to flip with, so it is coloured Eulerian on
-its own — which is self-balancing because every team plays an even number `P` of
-games.
+A round-pair leaves each player balanced. If `R` is odd, the final round has no
+partner to flip with, so it is coloured Eulerian on its own — which is
+self-balancing because every team plays an even number `P` of games.
 
 ---
 
@@ -361,20 +361,21 @@ The construction is designed so each local fact maps directly to one Molter rule
   with the two endpoint players used in the floater instead of a same-board game.
 - **No team-mates, and no repeated opponent team (S3/S4).** Factors contain only
   edges between different teams. Across a full set of factors, every team-pair
-  edge of `K_N` appears exactly once. A round-pair gives a player the two incident
-  edges from one factor; the next round-pair rotates to another factor. Since the
-  factors partition `K_N`, a player cannot meet the same opposing team twice
-  before the `N−1` round cap.
+  edge of `K_N` appears exactly once. Full layers use one factor over a round-pair
+  and then rotate; partial layers advance by one factor every round and use the
+  alternate materialization when a factor reappears. Since the factors partition
+  `K_N`, a player cannot meet the same opposing team twice before the `N−1`
+  round cap.
 - **Legal floaters (S6b).** A dropped edge always belongs to one adjacent
   two-board block. `_one_odd_cell_matches` always places one endpoint on the odd
   board and the other on the even board, with the odd-board endpoint descending.
   The planner also requires the dropped edges in a round-pair to be
   vertex-disjoint, so a round cannot ask the same team to float twice.
-- **No repeated floater role (S6c).** For a fixed two-board block, the dropped
-  edges used across round-pairs are vertex-disjoint. Therefore a team can appear
-  as a floater endpoint for that player index at most once; the second round in a
-  pair reverses direction, so each endpoint gets one descending and one ascending
-  role, not repeated roles.
+- **No repeated floater role (S6c).** In full layers, the dropped edges for a
+  fixed two-board block are vertex-disjoint across round-pairs. In partial
+  layers, a block keeps one dropped edge per `(block, factor)` cell; when that
+  cell reappears, the materialization phase flips. Either way, the same player
+  cannot repeat descending or ascending floater status.
 - **Per-round I1 on full layers.** A full odd layer has `m=(N−1)/2` blocks, and
   round `r` uses factor `(r+b) mod m` on block `b`. That permutation uses each
   factor exactly once in the round; because the factors partition `K_N`, every
@@ -386,30 +387,36 @@ The construction is designed so each local fact maps directly to one Molter rule
   conflicts; it only changes which real teams receive that layer's descending
   floater counts.
 
-### Partial layers: affine subsets plus bounded repair
+### Partial layers: spread offsets
 
-For a partial layer, only `block_count < m` two-board blocks are used. The
-generator first scores the affine logical block offsets by their actual
-descending-floater contribution over `R` rounds, greedily selects offsets, and
-applies deterministic local swaps. `_one_odd_affine_partial_plan` materializes
-that plan immediately if the final descending counts hit the arithmetic lower
-bound: spread 0 when `block_count × R` is divisible by `N`, otherwise spread 1.
+For an odd partial layer, only `block_count < m` two-board blocks are used. The
+helper `_one_odd_spread_partial_blocks` chooses evenly spaced offsets:
 
-When the affine subset is legal but one count away from the lower bound,
-`_one_odd_partial_plan` tries a bounded exact repair. It keeps the same one-odd
-factors, but each used cell may drop any edge in that factor's odd component.
-The hard constraints are:
+```text
+offset(block) = floor(block × m / block_count)
+factor(round, block) = (round + offset(block)) mod m
+```
 
-- **Each round-pair:** selected dropped edges across the used blocks are
-  vertex-disjoint, so odd-team floaters are legal (S6b).
-- **Each block:** selected dropped edges across round-pairs are vertex-disjoint,
-  so no board repeats a floater team (S6c).
-- **Descending counts:** the search first tries only the arithmetic lower-bound
-  spread. It uses deterministic hash tie-break passes and a per-pass node cap.
+The dropped edge for a `(block, factor)` cell is stable. The first time the cell
+appears it uses the normal materialization; the second time it uses the reversed
+phase. This has three useful consequences:
 
-For long/high-density partial schedules where exact repair would be slow, the
-generator uses the fast legal affine subset. Those cases are valid and
-deterministic but may have I2 spread 2 rather than the lower-bound spread 1.
+- every round is legal and every player still meets a new team;
+- early prefixes spread opponents quickly, e.g. `N=9, P=4` reaches all eight
+  opposing teams after two rounds instead of repeating the first four;
+- generation is deterministic and near-instant once the one-odd factors are
+  cached.
+
+The tradeoff is explicit: on incomplete layers I2/I5 can be worse than the
+arithmetic lower bound. The verifier reports that as a note, not an error,
+because the hard rules and the higher-priority opponent-spread objective still
+hold.
+
+Even partial layers use the same prefix idea without floaters. `_even_partial_factor_plan`
+takes the leftover `slot_count` factors per round from a cyclic stream, then
+edge-colours the resulting bipartite graph into board slots. Each prefix uses
+each 1-factor either floor or ceil times, and each slot sees a factor at most
+once, so I1 coverage is fast while S4 still holds.
 
 ## 8. Requested Rounds
 
@@ -446,11 +453,12 @@ Results are `@lru_cache`d, so repeated requests for the same shape are free.
 | Default round count | `default_molter_rounds` |
 | Even-N team schedule | `_one_factorization`, `_complete_i1_even_matches` |
 | Odd-N full-layer team schedule | `_one_odd_factorization`, `_complete_i1_one_odd_blocks`, `_complete_i1_matches` |
-| Odd-N partial schedule | `_one_odd_affine_partial_plan`, `_one_odd_partial_plan`, `_complete_i1_one_odd_plan_blocks` |
+| Odd-N partial schedule | `_one_odd_spread_partial_blocks` |
+| Even-N partial schedule | `_even_partial_factor_plan` |
 | Full-layer floater edges / I2 | `_affine_floater_edge`, `_layer_descending_incidence`, `_optimise_layer_shifts` |
-| Partial floater edges | `_one_odd_affine_partial_plan`, `_one_odd_partial_plan` |
-| Colour a free round | `_eulerian_colour`, `_two_colour` |
-| Colour a forced round | `_flip_colour` |
+| Partial floater edges | `_one_odd_spread_partial_blocks` |
+| Colour a lone final round | `_eulerian_colour` |
+| Colour a round-pair | `_pair_flip_colour` |
 
 ### From a table to round pairings (runtime)
 
@@ -493,23 +501,23 @@ for round_number, rnd in enumerate(table.rounds, start=1):
 has `N × P / 2 = 6` games, written `white – black`:
 
 ```
-Round 1:  B1–C1   A1–B2   C2–A2   A3–C3   C4–B3   B4–A4
-Round 2:  C1–A1   A2–B1   B2–C2   B3–A3   C3–B4   A4–C4
+Round 1:  B1–A1   C1–B2   A2–C2   B3–C3   C4–A3   A4–B4
+Round 2:  A1–C1   C2–B1   B2–A2   A3–B3   C3–A4   B4–C4
 ```
 
 What to notice:
 
 - **Six games per round** (S1: `N × P / 2`), and **no game pairs team-mates** — the
   two letters always differ (S3).
-- **`A1–B2` and `C4–B3` are floaters.** Their two board numbers differ (a board-1
-  player meets a board-2 player). With an odd team count you can't pair every board
+- **`C1–B2` and `C4–A3` are floaters.** Their two board numbers differ (a board-2
+  player meets a board-1 player). With an odd team count you can't pair every board
   straight across, so the stronger (lower) board drops to its neighbour — that's
   the floater, and it's why nobody sits out (S6b).
 - **The two layers are visible.** `P / (N−1) = 4 / 2 = 2` layers: boards 1–2 form
-  one everyone-meets-everyone block (`B1–C1`, `A1–B2`, `C2–A2`), boards 3–4 the
-  other (`A3–C3`, `C4–B3`, `B4–A4`).
-- **Colours alternate.** A1 has White in round 1 (`A1–B2`) and Black in round 2
-  (`C1–A1`) (C1/C3).
+  one everyone-meets-everyone block (`B1–A1`, `C1–B2`, `A2–C2`), boards 3–4 the
+  other (`B3–C3`, `C4–A3`, `A4–B4`).
+- **Colours alternate.** A1 has Black in round 1 (`B1–A1`) and White in round 2
+  (`A1–C1`) (C1/C3).
 
 ### The FFE three-team, three-round override
 
@@ -553,8 +561,8 @@ is the whole reason even and odd team counts take different construction paths.
 - **Deterministic and portable.** In this implementation, `(N, P, R)` defines
   exactly one table; there is no external solver and no user-visible seed. The
   full-odd path uses a small fixed pseudo-random stream only for tie-breaks in
-  recolouring/repair; it is implemented in the generator and can be ported
-  directly.
+  factor recolouring/repair; it is implemented in the generator and can be
+  ported directly. Partial odd layers use arithmetic spread offsets.
 - **Validation should be the acceptance criterion.** This Python generator is the
   portable reference implementation, but its exact byte output should not be
   treated as the definition of Molter validity. The proposal is that a table
@@ -564,16 +572,15 @@ is the whole reason even and odd team counts take different construction paths.
   different valid tables, and may do so faster because it can propagate
   constraints in native code or use a stronger search engine. The intended
   acceptance test is the validated table, not the internal construction path.
-- **Fast.** Even tables and many partial tables are still almost pure arithmetic.
+- **Fast.** Even tables and partial tables are almost pure arithmetic after the
+  factors have been built.
   The full-odd path avoids the former large floater-grid CSP: on the 2026-06-20
   local factorization probe, every odd `N=53..99` succeeded; `N=69` built its
   reusable factors in about 2.4s. Partial odd tables use the same one-odd
-  factors; bounded repair and layer rotation reach lower-bound I2 on many
-  shorter/smaller partial cases, and high-round cases stay fast with legal
-  spread-2 affine subsets when exact repair would be too expensive. The repair pass keeps
-  per-factor scores incrementally, so only the two factors touched by a candidate
-  swap are rescored; this avoids the former cold-start spikes in larger odd
-  factorization experiments.
+  factors with spread offsets, avoiding the former slow partial-I2 search. The
+  factor repair pass keeps per-factor scores incrementally, so only the two
+  factors touched by a candidate swap are rescored; this avoids the former
+  cold-start spikes in larger odd factorization experiments.
 
 ---
 

@@ -2,11 +2,10 @@
 (``data.pairings.molter_generator`` / ``data.pairings.molter_verifier``).
 
 The generator is deterministic: ``(team_count, players_per_team, rounds)``
-defines a single canonical table (the only search is a small, bounded,
-deterministic backtracking for the floater edges). These tests pin the output
-and check every hard Molter invariant (no team-mates, no repeated opponent team,
-colour balance, floaters S6a/S6b/S6c) and the ideals (per-round I1,
-descending-floater balance I2, the per-round-pair I5).
+defines a single canonical table. These tests pin the output and check every
+hard Molter invariant (no team-mates, no repeated opponent team, colour balance,
+floaters S6a/S6b/S6c) plus the ideals the construction claims for complete
+layers and partial-layer prefixes.
 """
 
 from collections import Counter
@@ -31,20 +30,20 @@ def _serialise(table: FixedPairingTable):
 # re-implementations in other languages, see data.pairings.molter_generator).
 _GOLDEN_3x4 = [
     [
-        ('A', 1, 'B', 1),
-        ('B', 2, 'C', 1),
-        ('C', 2, 'A', 2),
-        ('C', 3, 'B', 3),
-        ('A', 3, 'C', 4),
-        ('B', 4, 'A', 4),
+        ('B', 1, 'A', 1),
+        ('C', 1, 'B', 2),
+        ('A', 2, 'C', 2),
+        ('B', 3, 'C', 3),
+        ('C', 4, 'A', 3),
+        ('A', 4, 'B', 4),
     ],
     [
-        ('C', 1, 'A', 1),
-        ('B', 1, 'C', 2),
-        ('A', 2, 'B', 2),
-        ('B', 3, 'A', 3),
-        ('A', 4, 'C', 3),
-        ('C', 4, 'B', 4),
+        ('A', 1, 'C', 1),
+        ('C', 2, 'B', 1),
+        ('B', 2, 'A', 2),
+        ('A', 3, 'B', 3),
+        ('C', 3, 'A', 4),
+        ('B', 4, 'C', 4),
     ],
 ]
 
@@ -117,44 +116,40 @@ def test_large_even_team_count_is_valid() -> None:
 
 
 @pytest.mark.parametrize(
-    'team_count, players_per_team, rounds, max_spread',
+    'team_count, players_per_team, rounds, prefix',
     [
-        (9, 6, 3, 0),
-        (17, 14, 12, 1),
-        (21, 8, 16, 1),
-        (17, 14, 14, 2),
-        (51, 6, 50, 1),
-        (51, 48, 50, 1),
-        (69, 68, 2, 1),
+        (9, 4, 8, 2),
+        (9, 6, 3, 2),
+        (13, 4, 2, 2),
+        (17, 14, 12, 2),
+        (21, 8, 16, 3),
+        (31, 10, 3, 3),
+        (51, 6, 50, 5),
     ],
 )
-def test_odd_partial_team_count_is_valid_and_balanced(
-    team_count: int, players_per_team: int, rounds: int, max_spread: int
+def test_odd_partial_team_count_is_valid_and_spreads_prefix_opponents(
+    team_count: int, players_per_team: int, rounds: int, prefix: int
 ) -> None:
-    """Partial odd layers use one-odd plans instead of a full floater grid."""
+    """Partial odd layers maximize early distinct team opponents.
+
+    With ``P < N - 1`` a single round cannot contain every opposing team, but a
+    ``prefix``-round slice can still spread each team over
+    ``min(N - 1, P × prefix)`` distinct opponent teams. This protects the main
+    I1 intent for truncated schedules; I2/I5 remain verifier notes on partial
+    layers when they conflict with that spread.
+    """
     from data.pairings.molter_generator import generate_molter_table
     from data.pairings.molter_verifier import verify_molter_table
 
     table = generate_molter_table(team_count, players_per_team, rounds)
     report = verify_molter_table(table)
     assert report.ok, report.errors
-
-    down: Counter[str] = Counter()
-    for round_ in table.rounds:
-        for pairing in round_:
-            if pairing.white_index < pairing.black_index:
-                down[pairing.white_team] += 1
-            elif pairing.black_index < pairing.white_index:
-                down[pairing.black_team] += 1
-
-    counts = [down[chr(ord('A') + team)] for team in range(team_count)]
-    assert max(counts) - min(counts) <= max_spread
+    _assert_prefix_opponent_spread(table, prefix)
 
 
 @pytest.mark.parametrize('team_count', [3, 7])
-def test_small_odd_layer_rotations_reach_i2_lower_bound(team_count: int) -> None:
-    """Repeated odd layers rotate team labels so I2 does not accumulate on the
-    same teams. N=5 remains exceptional and is covered separately."""
+def test_small_odd_prefixes_are_valid_and_spread_opponents(team_count: int) -> None:
+    """Small fixed-factor odd tables keep the same prefix-spread guarantee."""
     from data.pairings.molter_generator import generate_molter_table
     from data.pairings.molter_verifier import verify_molter_table
 
@@ -163,24 +158,8 @@ def test_small_odd_layer_rotations_reach_i2_lower_bound(team_count: int) -> None
             table = generate_molter_table(team_count, players_per_team, rounds)
             report = verify_molter_table(table)
             assert report.ok, report.errors
-
-            down: Counter[str] = Counter()
-            for round_ in table.rounds:
-                for pairing in round_:
-                    if pairing.white_index < pairing.black_index:
-                        down[pairing.white_team] += 1
-                    elif pairing.black_index < pairing.white_index:
-                        down[pairing.black_team] += 1
-
-            counts = [down[chr(ord('A') + team)] for team in range(team_count)]
-            total = (players_per_team // 2) * rounds
-            lower_bound = 0 if total % team_count == 0 else 1
-            assert max(counts) - min(counts) == lower_bound, (
-                team_count,
-                players_per_team,
-                rounds,
-                counts,
-            )
+            for prefix in range(1, rounds + 1):
+                _assert_prefix_opponent_spread(table, prefix)
 
 
 @pytest.mark.parametrize('team_count', [17, 21, 49, 51, 69])
@@ -211,6 +190,19 @@ def _team_edges(round_: tuple[TablePairing, ...]) -> Counter[tuple[str, str]]:
         teams = sorted((pairing.white_team, pairing.black_team))
         out[(teams[0], teams[1])] += 1
     return out
+
+
+def _assert_prefix_opponent_spread(table: FixedPairingTable, prefix: int) -> None:
+    opponents: dict[str, set[str]] = {}
+    for round_ in table.rounds[:prefix]:
+        for pairing in round_:
+            opponents.setdefault(pairing.white_team, set()).add(pairing.black_team)
+            opponents.setdefault(pairing.black_team, set()).add(pairing.white_team)
+
+    counts = {team: len(seen) for team, seen in opponents.items()}
+    expected = min(table.team_count - 1, table.players_per_team * prefix)
+    assert len(counts) == table.team_count
+    assert set(counts.values()) == {expected}, (prefix, counts)
 
 
 @pytest.mark.parametrize('team_count', [5, 7, 9, 11, 13, 15])
@@ -362,6 +354,27 @@ def test_even_complete_generator_has_per_round_i1(
         edges = _team_edges(round_)
         assert set(edges) == expected
         assert all(count == expected_count for count in edges.values())
+
+
+@pytest.mark.parametrize(
+    'team_count, players_per_team, rounds, prefix',
+    [
+        (8, 4, 7, 2),
+        (10, 6, 4, 2),
+        (16, 6, 5, 3),
+        (50, 24, 10, 3),
+    ],
+)
+def test_even_partial_team_count_spreads_prefix_opponents(
+    team_count: int, players_per_team: int, rounds: int, prefix: int
+) -> None:
+    from data.pairings.molter_generator import generate_molter_table
+    from data.pairings.molter_verifier import verify_molter_table
+
+    table = generate_molter_table(team_count, players_per_team, rounds)
+    report = verify_molter_table(table)
+    assert report.ok, report.errors
+    _assert_prefix_opponent_spread(table, prefix)
 
 
 @pytest.mark.parametrize(
