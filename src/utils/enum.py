@@ -870,13 +870,13 @@ class TeamSortMode(StrEnum):
     def __str__(self) -> str:
         match self:
             case TeamSortMode.MANUAL:
-                return _('Manually')
+                return _('Manual')
             case TeamSortMode.TEAM_AVERAGE_RATING:
                 return _('Average rating of entire team')
             case TeamSortMode.LINEUP_AVERAGE_RATING:
                 return _('Average rating of round #1 lineup')
             case TeamSortMode.RANDOM:
-                return _('Randomly')
+                return _('Random')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 

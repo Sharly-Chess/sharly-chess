@@ -3867,9 +3867,6 @@ msgstr ""
 msgid "Manual groups"
 msgstr ""
 
-msgid "Manually"
-msgstr ""
-
 msgid "Manually pair players"
 msgstr ""
 
@@ -4083,6 +4080,9 @@ msgstr ""
 msgid "Molter"
 msgstr ""
 
+msgid "Molter table"
+msgstr ""
+
 msgid "Monaco"
 msgstr ""
 
@@ -4278,6 +4278,9 @@ msgid "Nigeria"
 msgstr ""
 
 msgid "No"
+msgstr ""
+
+msgid "No Molter table is available for this tournament size."
 msgstr ""
 
 msgid "No Prize Bracket"
@@ -4934,10 +4937,13 @@ msgstr ""
 msgid "Pairing number"
 msgstr ""
 
-msgid "Pairing number."
+msgid "Pairing number — set by the team order."
 msgstr ""
 
 msgid "Pairing numbers selection"
+msgstr ""
+
+msgid "Pairing order:"
 msgstr ""
 
 msgid "Pairing settings"
@@ -5567,9 +5573,6 @@ msgid "Random"
 msgstr ""
 
 msgid "Random player"
-msgstr ""
-
-msgid "Randomly"
 msgstr ""
 
 msgid "Randomly select the pairing numbers."
@@ -6682,6 +6685,10 @@ msgstr ""
 msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
 msgstr ""
 
+#, python-format
+msgid "Teams: %(num)d"
+msgstr ""
+
 msgid "Template:"
 msgstr ""
 
@@ -7017,6 +7024,9 @@ msgstr ""
 msgid "The table number of the last match to select."
 msgstr ""
 
+msgid "The team order sets each team's pairing number, shown on each card."
+msgstr ""
+
 msgid "The team score that is not used as the primary score (match points if the primary is game points and vice versa)."
 msgstr ""
 
@@ -7135,6 +7145,9 @@ msgid "This display controller is public (visible by the spectators)."
 msgstr ""
 
 msgid "This document is not available for unpaired tournaments."
+msgstr ""
+
+msgid "This document is only available for Molter tournaments."
 msgstr ""
 
 msgid "This document is only available for Round-Robin tournaments."
@@ -8668,4 +8681,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Pairing number."
+#~ msgstr ""
 

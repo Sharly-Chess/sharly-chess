@@ -3867,9 +3867,6 @@ msgstr "Manuel"
 msgid "Manual groups"
 msgstr "Groupes manuels"
 
-msgid "Manually"
-msgstr "Manuellement"
-
 msgid "Manually pair players"
 msgstr "Appairer des joueur·euses manuellement"
 
@@ -4083,6 +4080,9 @@ msgstr "République de Moldova"
 msgid "Molter"
 msgstr "Molter"
 
+msgid "Molter table"
+msgstr "Table Molter"
+
 msgid "Monaco"
 msgstr "Monaco"
 
@@ -4279,6 +4279,9 @@ msgstr "Nigéria"
 
 msgid "No"
 msgstr "Non"
+
+msgid "No Molter table is available for this tournament size."
+msgstr "Aucune table molter n'est disponible pour une tournoi de cette taille."
 
 msgid "No Prize Bracket"
 msgstr "Aucun Groupe de Prix Non-Cumulables"
@@ -4936,11 +4939,14 @@ msgstr "Appariement non-trouvé."
 msgid "Pairing number"
 msgstr "Numéro d'appariement"
 
-msgid "Pairing number."
-msgstr "Numéro d'appariement."
+msgid "Pairing number — set by the team order."
+msgstr "Numéro d'appariement — défini par l'ordre des équipes."
 
 msgid "Pairing numbers selection"
 msgstr "Sélection des numéros d'appariements"
+
+msgid "Pairing order:"
+msgstr "Ordre d'appariement :"
 
 msgid "Pairing settings"
 msgstr "Paramètres d'appariements"
@@ -5570,9 +5576,6 @@ msgstr "Aléatoire"
 
 msgid "Random player"
 msgstr "Joueur·euse aléatoire"
-
-msgid "Randomly"
-msgstr "Aléatoirement"
 
 msgid "Randomly select the pairing numbers."
 msgstr "Tirer les numéros d'appariement aléatoirement."
@@ -6684,6 +6687,10 @@ msgstr "Les équipes avec moins de joueur·euses sont considérées « incompl�
 msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
 msgstr "Les équipes avec moins de femmes/hommes sont considérées « incomplètes »."
 
+#, python-format
+msgid "Teams: %(num)d"
+msgstr "Équipes : %(num)d"
+
 msgid "Template:"
 msgstr "Modèle :"
 
@@ -7019,6 +7026,9 @@ msgstr "Le numéro de table du premier match à sélectionner."
 msgid "The table number of the last match to select."
 msgstr "Le numéro de table du dernier match à sélectionner."
 
+msgid "The team order sets each team's pairing number, shown on each card."
+msgstr "L'ordre des équipes définit le numéro d'appariement de chaque équipe, indiqué sur chaque carte."
+
 msgid "The team score that is not used as the primary score (match points if the primary is game points and vice versa)."
 msgstr "Le score d'équipe qui n'est pas utilisé comme score primaire (les points de match si le score primaire est les points de partie et vice-versa)."
 
@@ -7138,6 +7148,9 @@ msgstr "Ce pilote d'afficheurs est public (visible des spectateur·ices)."
 
 msgid "This document is not available for unpaired tournaments."
 msgstr "Ce document n'est pas disponible pour les tournois non-appariés."
+
+msgid "This document is only available for Molter tournaments."
+msgstr "Ce document n'est disponible que pour les tournois au système Molter."
 
 msgid "This document is only available for Round-Robin tournaments."
 msgstr "Ce document est seulement disponible pour les tournois Toutes-Rondes."
@@ -8670,4 +8683,7 @@ msgstr "…chacun aussi séparé de (%(count)d) :"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "Pairing number."
+#~ msgstr "Numéro d'appariement."
 
