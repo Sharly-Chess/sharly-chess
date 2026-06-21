@@ -86,7 +86,6 @@ class CustomUploadUtils:
             )
             return [status]
 
-        # TODO: handle ongoing upload case async
         # TODO: handle multiple concurrent statuses
         is_modified = CustomUploadUploader.custom_upload_needed(tournament)
         # Current data status

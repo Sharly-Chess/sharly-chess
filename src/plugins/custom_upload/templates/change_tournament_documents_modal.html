@@ -8,7 +8,6 @@
             </h2>
         </div>
         <div class="modal-body">
-            <!-- TODO: check how to add "Please wait" message -->
             <form
                 id="modal-form"
                 hx-patch="{{ url_for('change-documents-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
