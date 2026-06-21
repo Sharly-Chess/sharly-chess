@@ -91,6 +91,12 @@ class CustomUploadUploader:
         return bool(thread and thread.is_alive())
 
     @classmethod
+    def is_upload_queued(cls, tournament: Tournament) -> bool:
+        """Return True if a background upload is queued for this tournament."""
+        key = cls.tournament_result_id(tournament)
+        return key in cls.group_upload_wait_queue
+
+    @classmethod
     def remove_scheduled_upload(cls, tournament: Tournament):
         key = cls.tournament_result_id(tournament)
         thread = cls.timeout_threads.get(key)

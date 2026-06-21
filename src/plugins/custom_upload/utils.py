@@ -96,7 +96,9 @@ class CustomUploadUtils:
             return [ModifiedCustomUploadStatus()]
         elif CustomUploadUploader.is_upload_ongoing(tournament):
             return [OngoingCustomUploadStatus()]
-        elif CustomUploadUploader.is_upload_scheduled(tournament):
+        elif CustomUploadUploader.is_upload_queued(
+            tournament
+        ) or CustomUploadUploader.is_upload_scheduled(tournament):
             return [PendingCustomUploadStatus()]
         else:
             return [UpToDateCustomUploadStatus()]
