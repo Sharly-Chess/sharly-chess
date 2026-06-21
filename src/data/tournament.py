@@ -430,17 +430,28 @@ class Tournament:
 
     def resort_teams(self, database: 'EventDatabase') -> None:
         """Re-assign team pairing numbers per the effective sort mode.
-        No-op for MANUAL and once any round is paired. RANDOM keeps the
-        existing relative order and only drops newly-added teams (no
-        pairing number yet) into random positions; the rating modes
-        fully re-sort."""
-        mode = self.team_sort_mode
-        if mode == TeamSortMode.MANUAL or self._has_stored_pairings:
+        No-op once any round is paired. MANUAL keeps the existing order and
+        only fills in sequential numbers — appending teams that have none yet
+        (e.g. just created) at the end — so every assigned team always has a
+        pairing number. RANDOM keeps the existing relative order and drops
+        newly-added teams into random positions; the rating modes fully
+        re-sort."""
+        if self._has_stored_pairings:
             return
         teams = list(self.teams)
         if not teams:
             return
-        if mode == TeamSortMode.TEAM_AVERAGE_RATING:
+        mode = self.team_sort_mode
+        if mode == TeamSortMode.MANUAL:
+            # Preserve the current order; unnumbered (new) teams sort last.
+            ordered = sorted(
+                teams,
+                key=lambda t: (
+                    t.pairing_number if t.pairing_number is not None else float('inf'),
+                    t.name.lower(),
+                ),
+            )
+        elif mode == TeamSortMode.TEAM_AVERAGE_RATING:
             ordered = sorted(
                 teams,
                 key=lambda t: (-(t.average_rating or 0), t.name.lower()),

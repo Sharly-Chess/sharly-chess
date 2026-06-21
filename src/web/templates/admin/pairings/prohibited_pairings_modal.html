@@ -329,3 +329,9 @@
         </div>
     </div>
 </div>
+
+{# Keep the page's "Prohibited" button (and its group-count badge) in sync as
+   groups are configured, so it is correct once the modal is closed. #}
+{% with pp_button_oob=true %}
+    {% include 'prohibited_button.html' %}
+{% endwith %}

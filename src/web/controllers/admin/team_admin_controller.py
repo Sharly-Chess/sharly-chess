@@ -1497,6 +1497,12 @@ class TeamAdminController(BaseEventAdminController):
             )
         team = web_context.get_admin_team()
         tournament_changed = team.stored_team.tournament_id != stored_team.tournament_id
+        # The team leaves this tournament when it changes — renumber what's left.
+        old_tournament = team.tournament if tournament_changed else None
+        # A team moving tournaments takes a fresh pairing number on the new side
+        # (its old one belongs to the old tournament and could collide).
+        if tournament_changed:
+            team.stored_team.pairing_number = None
         team.stored_team.name = stored_team.name
         team.stored_team.tournament_id = stored_team.tournament_id
         team.stored_team.group_id = stored_team.group_id
@@ -1513,6 +1519,8 @@ class TeamAdminController(BaseEventAdminController):
             if tournament_changed:
                 team.give_byes_for_paired_rounds(database)
             self._resort_team_tournament(team, database)
+            if old_tournament is not None:
+                old_tournament.resort_teams(database)
         Message.success(
             request,
             _('Team [{team}] has been updated.').format(team=team.name),
@@ -1530,7 +1538,12 @@ class TeamAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         team = web_context.get_admin_team()
         team_name = team.name
+        tournament = team.tournament
         event.delete_team(team)
+        # Close the gap left in the pairing numbers of the old tournament.
+        if tournament is not None:
+            with EventDatabase(event.uniq_id, True) as database:
+                tournament.resort_teams(database)
         Message.success(
             request,
             _('Team [{team}] has been deleted.').format(team=team_name),

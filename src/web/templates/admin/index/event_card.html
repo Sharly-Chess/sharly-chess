@@ -48,6 +48,16 @@
                 {{ _('No tournaments') }}
             {% endif %}
         </div>
+        {% if event.is_team_event %}
+            <div class="{% if not event.team_count %}text-secondary{% endif %}">
+                <i class="bi-flag-fill pe-1" ></i>
+                {% if event.team_count %}
+                    {{ _('Teams: %(num)d', num=event.team_count) }}
+                {% else %}
+                    {{ _('No teams') }}
+                {% endif %}
+            </div>
+        {% endif %}
         <div class="{% if not event.player_count %}text-secondary{% endif %}">
             <i class="bi-people-fill pe-1" ></i>
             {% if event.player_count %}

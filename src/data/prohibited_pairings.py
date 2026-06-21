@@ -46,7 +46,7 @@ def core_prohibited_pairing_dimensions() -> list[ProhibitedPairingDimension]:
             label=_('Affiliation'),
             is_team=True,
             group_key=lambda team: (
-                str(team.group_id) if team.group_id is not None else None
+                team.group.name if team.group is not None else None
             ),
         ),
         ProhibitedPairingDimension(

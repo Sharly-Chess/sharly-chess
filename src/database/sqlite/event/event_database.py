@@ -372,6 +372,7 @@ class EventDatabase(MigrationDatabase):
             metadata.start_date = self.load_date_from_database_field(row['start_date'])
             metadata.stop_date = self.load_date_from_database_field(row['stop_date'])
         metadata.player_count = self._get_table_count('player')
+        metadata.team_count = self._get_table_count('team')
         metadata.timer_count = self._get_table_count('timer')
         metadata.screen_count = self._get_table_count('screen')
         metadata.family_count = self._get_table_count('family')

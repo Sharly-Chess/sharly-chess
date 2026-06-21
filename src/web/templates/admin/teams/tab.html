@@ -70,10 +70,19 @@
                         {{ tournament.name }}
                         <span class="text-muted small ms-1">({{ tournament_teams|length }})</span>
                         {% if client.can_update_tournaments %}
+                            <span
+                                class="text-muted small fw-normal ms-auto me-2"
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _('The team order sets each team\'s pairing '
+                                      'number, shown on each card.'),
+                                    'top'
+                                ) }}
+                            >{{ _('Pairing order:') }}</span>
                             {# A disabled button swallows hover events, so the
                                lock tooltip has to live on the wrapping span. #}
                             <span
-                                class="dropdown ms-auto"
+                                class="dropdown"
                                 {% if sort_locked %}
                                     {{ macros.tooltip_attributes(
                                         'info',

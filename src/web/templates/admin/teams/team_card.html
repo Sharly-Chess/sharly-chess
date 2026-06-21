@@ -13,7 +13,7 @@
         data-team-avg="{{ team.average_rating or 0 }}"
         data-lineup-avg="{{ team.lineup_average_rating(1) or 0 }}"
     />
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-start">
         {% if team.tournament_id and client.can_check_in_players(team.tournament_id) %}
             <div class="me-2">
                 <i
@@ -35,7 +35,14 @@
         {% endif %}
         <div class="flex-grow-1">
             <div>
-                <i class="bi-flag-fill pe-1"></i>
+                {% if team.pairing_number %}
+                    <span
+                        class="fw-bold text-primary pe-1"
+                        {{ macros.tooltip_attributes('info', _('Pairing number — set by the team order.'), 'top') }}
+                    >#{{ team.pairing_number }}</span>
+                {% else %}
+                    <i class="bi-flag-fill pe-1"></i>
+                {% endif %}
                 {{ team.name }}
             </div>
             {% if team.group %}
@@ -78,14 +85,6 @@
             >
                 <i class="bi-star-fill pe-1"></i>{{ _avg }}
                 {%- if not team.tournament %} <span class="text-muted small">({{ admin_event.default_tournament_rating.acronym }})</span>{% endif %}
-            </div>
-        {% endif %}
-        {% if team.pairing_number %}
-            <div
-                class="text-nowrap"
-                {{ macros.tooltip_attributes('info', _('Pairing number.'), 'top') }}
-            >
-                <i class="bi-hash"></i>{{ team.pairing_number }}
             </div>
         {% endif %}
     </div>

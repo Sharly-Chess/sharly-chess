@@ -550,6 +550,10 @@ class Event:
     def player_count(self) -> int:
         return len(self.players_by_id)
 
+    @property
+    def team_count(self) -> int:
+        return len(self.stored_event.stored_teams)
+
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
         return {
