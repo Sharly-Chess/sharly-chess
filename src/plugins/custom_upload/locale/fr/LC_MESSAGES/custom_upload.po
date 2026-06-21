@@ -116,15 +116,14 @@ msgstr "À jour"
 msgid "Upload"
 msgstr "Mettre en ligne"
 
+msgid "Upload all tournaments"
+msgstr "Mettre en ligne tous les tournois"
+
 msgid "Upload tournament documents to custom location"
 msgstr "Mise en ligne de documents sur un site personnel"
 
-msgid "Upload tournaments now"
-msgstr "Mettre en ligne les tournois maintenant"
-
 msgid "consult the logs"
 msgstr "consulter les logs"
-
 
 msgid "target server path not found"
 msgstr "le chemin sur le serveur n'a pas pu être trouvé"

@@ -115,10 +115,10 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
-msgid "Upload tournament documents to custom location."
+msgid "Upload all tournaments"
 msgstr ""
 
-msgid "Upload tournaments now"
+msgid "Upload tournament documents to custom location."
 msgstr ""
 
 msgid "consult the logs"
