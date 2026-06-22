@@ -4331,6 +4331,9 @@ msgstr ""
 msgid "No games against FIDE rated opponents."
 msgstr ""
 
+msgid "No games in play — all results are in."
+msgstr ""
+
 msgid "No games played on the board for this player."
 msgstr ""
 
@@ -4347,6 +4350,9 @@ msgid "No internet connection"
 msgstr ""
 
 msgid "No marks"
+msgstr ""
+
+msgid "No matches in play — all results are in."
 msgstr ""
 
 msgid "No monetary prizes assigned to players for this tournament."
@@ -4377,6 +4383,9 @@ msgid "No paired team matches in this round."
 msgstr ""
 
 msgid "No pairing found for this player in the current round."
+msgstr ""
+
+msgid "No pairings for this round yet."
 msgstr ""
 
 msgid "No pairings."

@@ -4331,6 +4331,9 @@ msgstr "Aucun plancher nécessaire"
 msgid "No games against FIDE rated opponents."
 msgstr "Aucune partie contre des adversaires classés FIDE."
 
+msgid "No games in play — all results are in."
+msgstr "Aucune partie en cours — tous les résultats sont saisis."
+
 msgid "No games played on the board for this player."
 msgstr "Aucune partie jouée sur l'échiquier pour ce·tte joueur·euse."
 
@@ -4348,6 +4351,9 @@ msgstr "Aucune connexion à internet"
 
 msgid "No marks"
 msgstr "Aucune marque"
+
+msgid "No matches in play — all results are in."
+msgstr "Aucune rencontre en cours — tous les résultats sont saisis."
 
 msgid "No monetary prizes assigned to players for this tournament."
 msgstr "Aucun prix monétaire assigné à une·e joueur·euse pour ce tournoi."
@@ -4378,6 +4384,9 @@ msgstr "Aucun match apparié pour cette ronde."
 
 msgid "No pairing found for this player in the current round."
 msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
+
+msgid "No pairings for this round yet."
+msgstr "Aucun appariement pour cette ronde."
 
 msgid "No pairings."
 msgstr "Aucun appariement."

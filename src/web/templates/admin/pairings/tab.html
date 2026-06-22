@@ -211,8 +211,9 @@
                     {% else %}
                         <table
                             id="pairings-table"
-                            class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
-                            style="table-layout: fixed;"
+                            class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %} {% if show_without_results %}table-danger-warning{% endif %}"
+                            {% if show_without_results %}data-inplay-filter="1"{% endif %}
+                            {% if admin_filtered_boards %}style="table-layout: fixed;"{% endif %}
                         >
                             {# Fixed column widths so the result column does not
                                shift between rounds; the two name columns share
@@ -245,6 +246,15 @@
                                         {% include '/admin/pairings/pairing_row.html' %}
                                     {% endwith %}
                                 {% endfor %}
+                                {% if not admin_filtered_boards %}
+                                    <tr><td colspan="99" class="text-center text-muted p-3">
+                                        {% if show_without_results and admin_tournament.round_has_pairings(admin_round) %}
+                                            {{ _('No games in play — all results are in.') }}
+                                        {% else %}
+                                            {{ _('No pairings for this round yet.') }}
+                                        {% endif %}
+                                    </td></tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     {% endif %}
@@ -534,7 +544,12 @@
 
                 if (value === "") {
                     $rows.show();
-                    $table.removeClass("table-danger-warning");
+                    // Keep the warning header if the 'In play' filter is
+                    // active (it owns the same orange marker server-side).
+                    $table.toggleClass(
+                        "table-danger-warning",
+                        $table.attr("data-inplay-filter") === "1"
+                    );
                     return;
                 }
 
