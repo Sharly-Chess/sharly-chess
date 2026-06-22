@@ -715,9 +715,24 @@ class Tournament:
                         standings[b_player.team_id]['played'] += 1
             self._apply_point_adjustments_to_standings(standings, after_round)
             rows = list(standings.values())
+            # Pad to the team tie-break count so consumers that render a
+            # column per team tie-break (ranking document / screen table)
+            # never index past the end — they aren't computed in this flat
+            # fixed-table mode, so they show as zero.
+            flat_team_tie_break_count = sum(
+                1 for tb in self.tie_breaks if tb.supports_team_mode
+            )
             for row in rows:
-                row['tie_break_values'] = []
-            rows.sort(key=lambda e: (-e['gp'], e['team'].name.lower()))
+                row['tie_break_values'] = [0.0] * flat_team_tie_break_count
+            rows.sort(
+                key=lambda e: (
+                    -e['gp'],
+                    e['team'].pairing_number
+                    if e['team'].pairing_number is not None
+                    else float('inf'),
+                    e['team'].name.lower(),
+                )
+            )
             for rank, entry in enumerate(rows, 1):
                 entry['rank'] = rank
             return rows
@@ -885,7 +900,12 @@ class Tournament:
             key=lambda e: (
                 base_key(e)
                 + tuple(-v for v in e['tie_break_values'])
-                + (e['team'].name.lower(),)
+                + (
+                    e['team'].pairing_number
+                    if e['team'].pairing_number is not None
+                    else float('inf'),
+                    e['team'].name.lower(),
+                )
             )
         )
         for rank, entry in enumerate(rows, 1):

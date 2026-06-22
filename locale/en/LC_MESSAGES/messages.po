@@ -5112,6 +5112,9 @@ msgstr ""
 msgid "Played"
 msgstr ""
 
+msgid "Played *** TEAM RANKING GAMES PLAYED"
+msgstr "Played"
+
 msgid "Played games"
 msgstr ""
 
