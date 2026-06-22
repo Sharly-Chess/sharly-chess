@@ -523,7 +523,9 @@ class ChessResultsSession(Session):
                 stb = team_board.stored_team_board
                 gp_a, gp_b = team_board.game_points
                 if stb.team_b_id is None:
-                    # PAB: full game points to the bye team, no boards.
+                    # PAB: full game points to the bye team, no boards
+                    # (team_board.game_points is 0 with no boards, so use
+                    # the team-level PAB game points).
                     ET.SubElement(
                         tpair,
                         'teampairing',
@@ -532,7 +534,7 @@ class ChessResultsSession(Session):
                             'pairing': str(pairing_no),
                             'no1': str(team_no[stb.team_a_id]),
                             'no2': '-1',
-                            'res1': f'{gp_a:g}',
+                            'res1': f'{tournament.team_pab_game_points:g}',
                             'res2': '0',
                         },
                     )

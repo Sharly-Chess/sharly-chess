@@ -1438,14 +1438,14 @@ class Tournament:
                         round_=team_board.round,
                         opponent_id=None,
                         own_mp=pab_mp,
-                        own_gp=self.pab_points,
+                        own_gp=self.team_pab_game_points,
                         match_type=TeamMatchType.PAB,
                         board_scores=a_boards,
                         board_ratings=a_ratings,
                     )
                 )
                 totals_mp[a_id] += pab_mp
-                totals_gp[a_id] += self.pab_points
+                totals_gp[a_id] += self.team_pab_game_points
                 continue
             if a_gp > b_gp:
                 a_mp, b_mp = win_mp, loss_mp
@@ -2276,21 +2276,24 @@ class Tournament:
     @cached_property
     def team_pab_game_points(self) -> float:
         """Game points awarded to a team for a PAIRING_ALLOCATED_BYE
-        match (team-level, *not* a sum of per-board values). Sourced
-        from the ``gp_pab`` field in the tournament settings modal
-        (stored in ``game_points[PAIRING_ALLOCATED_BYE]``).
+        match (team-level). An explicit ``gp_pab`` field in the tournament
+        settings modal (stored in ``game_points[PAIRING_ALLOCATED_BYE]``)
+        overrides it.
 
-        Default depends on the pairing system: Team Swiss treats PAB
-        as a drawn match (FIDE C.04.6 §1.4), so the DRAW game-point
-        value. Other team systems (round-robin / Berger, Molter…)
-        treat PAB as a won match, so the WIN game-point value."""
+        Default depends on the pairing system, scaled by the board count
+        (a PAB stands in for a whole match, not a single board): Team Swiss
+        treats PAB as a drawn match (FIDE C.04.6 §1.4), so
+        ``boards × DRAW`` game points. Other team systems (round-robin /
+        Berger, Molter…) treat PAB as a won match, so ``boards × WIN``."""
         from data.pairings.systems import TeamSwissPairingSystem
 
         raw = self.stored_tournament.game_points or {}
+        boards = float(self.team_player_count or 0)
         if self.pairing_system == TeamSwissPairingSystem():
-            default = float(raw.get(Result.DRAW.value, Result.DRAW.point_value))
+            per_board = float(raw.get(Result.DRAW.value, Result.DRAW.point_value))
         else:
-            default = float(raw.get(Result.WIN.value, Result.WIN.point_value))
+            per_board = float(raw.get(Result.WIN.value, Result.WIN.point_value))
+        default = boards * per_board
         return float(raw.get(Result.PAIRING_ALLOCATED_BYE.value, default))
 
     @cached_property
@@ -3173,7 +3176,7 @@ class Tournament:
         match_points = self.match_points
         draw_mp = match_points.get(Result.DRAW, 1.0)
         pab_mp = match_points.get(Result.PAIRING_ALLOCATED_BYE, draw_mp)
-        pab_gp = self.pab_points
+        pab_gp = self.team_pab_game_points
         team_id_by_round: dict[int, int] = {}
         for team_board in self.team_boards_by_id.values():
             if team_board.round > after_round:
@@ -3184,7 +3187,8 @@ class Tournament:
             tpn = tpn_by_team_id.get(stb.team_a_id)
             if tpn is not None:
                 team_id_by_round[team_board.round] = tpn
-        non_default = pab_mp != draw_mp or pab_gp != match_points.get(Result.DRAW, 0.5)
+        default_gp = float(self.team_player_count or 0) * Result.DRAW.point_value
+        non_default = pab_mp != draw_mp or pab_gp != default_gp
         if not team_id_by_round and not non_default:
             return None
         return TrfTeamPABs(
