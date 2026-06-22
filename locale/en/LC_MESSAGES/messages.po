@@ -41,6 +41,10 @@ msgid "%(minutes)d minutes before"
 msgstr ""
 
 #, python-format
+msgid "%(n)d team(s) could not be determined and were left unchanged."
+msgstr ""
+
+#, python-format
 msgid "%(num).1f %(unit)s group"
 msgid_plural "%(num).1f %(unit)s group"
 msgstr[0] ""
@@ -1566,6 +1570,9 @@ msgid "Club *** CLUB COLUMN HEADER"
 msgstr "Club"
 
 msgid "Club not specified"
+msgstr ""
+
+msgid "Club of the players"
 msgstr ""
 
 msgid "Club threshold"
@@ -6222,6 +6229,9 @@ msgstr ""
 msgid "Server is already running!"
 msgstr ""
 
+msgid "Set"
+msgstr ""
+
 msgid "Set Full-Points Byes"
 msgstr ""
 
@@ -6237,11 +6247,17 @@ msgstr ""
 msgid "Set [{name}] has been updated."
 msgstr ""
 
+msgid "Set affiliations"
+msgstr ""
+
 msgid "Set by rule set \"{name}\"."
 msgstr ""
 
 #, python-format
 msgid "Set by the rule set [%(name)s]."
+msgstr ""
+
+msgid "Set each team's affiliation from its players. A team is filled only when all its players share the chosen value; teams where it cannot be determined are left unchanged."
 msgstr ""
 
 msgid "Set illegal moves"
@@ -6251,6 +6267,10 @@ msgid "Set name"
 msgstr ""
 
 msgid "Set special results"
+msgstr ""
+
+#, python-format
+msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
 msgstr ""
 
 msgid "Set the current round"
@@ -8706,9 +8726,9 @@ msgstr ""
 msgid "← Back to IT1 certificate"
 msgstr ""
 
-#~ msgid "Pairing number."
+#~ msgid "Fill"
 #~ msgstr ""
 
-#~ msgid "Show/hide the rosters and round lineups on the team cards."
+#~ msgid "Filled %(filled)d team(s) from “%(source)s”."
 #~ msgstr ""
 

@@ -41,6 +41,10 @@ msgid "%(minutes)d minutes before"
 msgstr "%(minutes)d minutes avant"
 
 #, python-format
+msgid "%(n)d team(s) could not be determined and were left unchanged."
+msgstr "%(n)d équipe(s) n'ont pas pu être déterminées et sont restées inchangées."
+
+#, python-format
 msgid "%(num).1f %(unit)s group"
 msgid_plural "%(num).1f %(unit)s group"
 msgstr[0] "Groupe à %(num).1f %(unit)s"
@@ -1567,6 +1571,9 @@ msgstr "Club"
 
 msgid "Club not specified"
 msgstr "Club non spécifié"
+
+msgid "Club of the players"
+msgstr "Club des joueur·euses"
 
 msgid "Club threshold"
 msgstr "Seuil pour les clubs"
@@ -6224,6 +6231,9 @@ msgstr "Configuration du serveur"
 msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
 
+msgid "Set"
+msgstr "Définir"
+
 msgid "Set Full-Points Byes"
 msgstr "Allouer des byes point entier"
 
@@ -6239,12 +6249,18 @@ msgstr "L'ensemble [{name}] a été enregistré."
 msgid "Set [{name}] has been updated."
 msgstr "L'ensemble [{name}] a été mis à jour."
 
+msgid "Set affiliations"
+msgstr "Définir les affiliations"
+
 msgid "Set by rule set \"{name}\"."
 msgstr "Défini par le jeu de règles « {name} »."
 
 #, python-format
 msgid "Set by the rule set [%(name)s]."
 msgstr "Défini par le règlement [%(name)s]."
+
+msgid "Set each team's affiliation from its players. A team is filled only when all its players share the chosen value; teams where it cannot be determined are left unchanged."
+msgstr "Renseigne l'affiliation de chaque équipe à partir de ses joueur·euses. Une équipe n'est renseignée que si tou·tes ses joueur·euses partagent la même valeur ; les équipes pour lesquelles elle ne peut être déterminée sont laissées inchangées."
 
 msgid "Set illegal moves"
 msgstr "Noter les coups illégaux"
@@ -6254,6 +6270,10 @@ msgstr "Nom de l'ensemble"
 
 msgid "Set special results"
 msgstr "Noter des résultats spéciaux"
+
+#, python-format
+msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
+msgstr "Affiliation définie pour %(filled)d équipe(s) à partir de « %(source)s »."
 
 msgid "Set the current round"
 msgstr "Changer la ronde courante"
@@ -8708,9 +8728,9 @@ msgstr "…chacun aussi séparé de (%(count)d) :"
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
 
-#~ msgid "Pairing number."
-#~ msgstr "Numéro d'appariement."
+#~ msgid "Fill"
+#~ msgstr ""
 
-#~ msgid "Show/hide the rosters and round lineups on the team cards."
-#~ msgstr "Montrer/cacher les effectifs et les composition par ronde sur les cartes des équipes."
+#~ msgid "Filled %(filled)d team(s) from “%(source)s”."
+#~ msgstr "%(filled)d équipe(s) définie(s) à partir de « %(source)s »."
 

@@ -515,6 +515,87 @@ class TeamAdminController(BaseEventAdminController):
             tournament.check_in_team(team, not team.check_in)
         return self._render_team_record_modal(web_context)
 
+    @get(
+        path='/team-affiliations-modal/{event_uniq_id:str}',
+        name='admin-team-affiliations-modal',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_team_affiliations_modal(
+        self, request: HTMXRequest
+    ) -> Template:
+        return self._render_team_affiliations_modal(TeamAdminWebContext(request))
+
+    @post(
+        path='/team-affiliations-apply/{event_uniq_id:str}',
+        name='admin-team-affiliations-apply',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_team_affiliations_apply(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = TeamAdminWebContext(request)
+        event = web_context.get_admin_event()
+        source_id = data.get('source') or ''
+        source = next(
+            (s for s in event.team_affiliation_sources() if s.id == source_id),
+            None,
+        )
+        if source is None:
+            return self._render_team_affiliations_modal(web_context)
+        # Resolve every team first (snapshot the list — creating groups below
+        # clears the team cache), then ensure the groups exist, then assign in
+        # a single write.
+        resolved: list[tuple[Team, str]] = []
+        unresolved = 0
+        for team in list(event.teams):
+            name = source.resolve(team)
+            if name:
+                resolved.append((team, name))
+            else:
+                unresolved += 1
+        group_id_by_name: dict[str, int] = {}
+        for _team, name in resolved:
+            if name not in group_id_by_name:
+                group_id_by_name[name] = event.find_or_create_team_group(name).id
+        with EventDatabase(event.uniq_id, write=True) as database:
+            for team, name in resolved:
+                team.set_group(group_id_by_name[name], database)
+        messages = [
+            _('Set the affiliation of %(filled)d team(s) from “%(source)s”.')
+            % {'filled': len(resolved), 'source': source.label}
+        ]
+        if unresolved:
+            messages.append(
+                _('%(n)d team(s) could not be determined and were left unchanged.')
+                % {'n': unresolved}
+            )
+        Message.success(request, messages)
+        # Re-render the whole teams tab: the cards pick up the new
+        # affiliations, the modal closes, and the toast reports the result.
+        return self._admin_event_teams_render(TeamAdminWebContext(request))
+
+    @classmethod
+    def _render_team_affiliations_modal(
+        cls,
+        web_context: TeamAdminWebContext,
+    ) -> Template:
+        event = web_context.get_admin_event()
+        return cls._admin_event_teams_render(
+            web_context,
+            {
+                'modal': 'team-affiliations',
+                'aff_sources': [
+                    {'id': source.id, 'label': source.label}
+                    for source in event.team_affiliation_sources()
+                ],
+            },
+        )
+
     @patch(
         path='/team-set-bye/{event_uniq_id:str}/{team_id:int}/{round:int}',
         name='admin-team-set-bye',

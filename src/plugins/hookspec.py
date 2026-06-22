@@ -33,6 +33,7 @@ if TYPE_CHECKING:
         ProhibitedPairingDimension,
         RoundProhibitedPairingGroup,
     )
+    from data.team_affiliation import TeamAffiliationSource
     from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import (
         Player,
@@ -339,6 +340,13 @@ class AppHookSpecs:
         contributes (e.g. a federation "ligue", a school). Each buckets
         a tournament's members so that members sharing a key must not be
         paired. Core already ships club / federation / team-group."""
+
+    @hookspec
+    def get_team_affiliation_sources(self) -> "list['TeamAffiliationSource']":
+        """Extra ways to derive a team's affiliation from its players (e.g. a
+        federation league, a school), offered by the teams tab's
+        "fill affiliations" action. Each resolves a team to an affiliation
+        name or ``None``. Core already ships the players' common club."""
 
     @hookspec
     def get_round_prohibited_pairing_groups(

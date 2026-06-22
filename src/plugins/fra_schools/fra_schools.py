@@ -196,6 +196,25 @@ class FRASchoolsPlugin(Plugin):
         ]
 
     @hookimpl
+    def get_team_affiliation_sources(self):
+        from data.team_affiliation import (
+            TeamAffiliationSource,
+            team_shared_player_value,
+        )
+
+        def school_name(player):
+            school = FRASchoolsUtils.get_player_school(player)
+            return school.name if school else None
+
+        return [
+            TeamAffiliationSource(
+                id='fra-school',
+                label=_('School'),
+                resolve=lambda team: team_shared_player_value(team, school_name),
+            )
+        ]
+
+    @hookimpl
     def get_player_form_template_context(
         self, web_context: 'PlayerAdminWebContext'
     ) -> dict[str, Any]:

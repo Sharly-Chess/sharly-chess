@@ -37,6 +37,19 @@
     </button>
     {% if client.can_update_tournaments %}
         <button
+            class="btn btn-outline-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-team-affiliations-modal', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-collection-fill pe-1"></i>
+            {{ _('Set affiliations') }}
+        </button>
+    {% endif %}
+    {% if client.can_update_tournaments %}
+        <button
             class="btn btn-primary text-nowrap ms-1"
             hx-get="{{ url_for('admin-team-create-modal', event_uniq_id=admin_event.uniq_id) }}"
             hx-target="body"

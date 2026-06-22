@@ -314,6 +314,26 @@ class FfePlugin(Plugin):
         ]
 
     @hookimpl
+    def get_team_affiliation_sources(self):
+        from data.team_affiliation import (
+            TeamAffiliationSource,
+            team_shared_player_value,
+        )
+
+        return [
+            TeamAffiliationSource(
+                id='ffe-league',
+                label=_('League'),
+                resolve=lambda team: team_shared_player_value(
+                    team,
+                    lambda player: (
+                        FFEUtils.get_player_plugin_data(player).league or None
+                    ),
+                ),
+            )
+        ]
+
+    @hookimpl
     def get_round_prohibited_pairing_groups(
         self, tournament: 'Tournament', round_: int
     ) -> 'list[RoundProhibitedPairingGroup]':

@@ -7,7 +7,7 @@ from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from types import NotImplementedType
-from typing import Collection
+from typing import Collection, TYPE_CHECKING
 
 from common.i18n import _
 from common.i18n.utils import by, normalized_key
@@ -51,6 +51,9 @@ from database.sqlite.event.event_store import (
     StoredTeamGroup,
     StoredTimer,
 )
+
+if TYPE_CHECKING:
+    from data.team_affiliation import TeamAffiliationSource
 
 logger: Logger = get_logger()
 
@@ -656,6 +659,28 @@ class Event:
             )
         self.clear_team_cache()
         return self.team_groups_by_id[group_id]
+
+    def find_or_create_team_group(self, name: str) -> TeamGroup:
+        """Reuse the team group with this name (case-insensitive) or create
+        one. Used when filling affiliations in bulk."""
+        for group in self.team_groups:
+            if group.name.lower() == name.lower():
+                return group
+        return self.add_team_group(name)
+
+    def team_affiliation_sources(self) -> 'list[TeamAffiliationSource]':
+        """The ways a team's affiliation can be derived from its players —
+        core (the players' common club) plus any contributed by plugins."""
+        from data.team_affiliation import core_team_affiliation_sources
+        from plugins.manager import plugin_manager
+
+        sources = list(core_team_affiliation_sources())
+        for plugin_result in plugin_manager.hook_for_event(
+            self, 'get_team_affiliation_sources'
+        )():
+            if plugin_result:
+                sources.extend(plugin_result)
+        return sources
 
     def update_team_group(self, group_id: int, name: str):
         with EventDatabase(self.uniq_id, True) as database:
