@@ -473,8 +473,8 @@ class ChessResultsSession(Session):
             row = standings_by_team_id.get(team.id)
             tb_values: list[str] = []
             if row:
-                for value in row.get('tie_break_values', [])[:MAX_TIE_BREAKS]:
-                    tb_values.append(f'{value:g}')
+                for tbv in row.get('tie_break_values', [])[:MAX_TIE_BREAKS]:
+                    tb_values.append(f'{tbv.value:g}')
             while len(tb_values) < MAX_TIE_BREAKS:
                 tb_values.append('')
             same_as_previous = (

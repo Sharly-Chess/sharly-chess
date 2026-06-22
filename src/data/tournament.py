@@ -64,7 +64,7 @@ from utils.enum import (
     TitleNorm,
 )
 
-from utils.types import BigTournamentExemption
+from utils.types import BigTournamentExemption, TieBreakValue
 from data.norms import (
     compute_big_tournament_exemption,
     compute_high_level_tournament,
@@ -672,6 +672,21 @@ class Tournament:
         points across all boards in the tournament. Match-point and
         win/draw/loss tallies aren't meaningful in that mode."""
         match_points = self.match_points
+
+        def wrap_tie_break_values(
+            tbs: list, values: list[float]
+        ) -> list[TieBreakValue]:
+            """Wrap raw tie-break floats as ``TieBreakValue`` so consumers
+            share one display path (absolute-value flag, rank-delta arrows)
+            instead of each re-implementing it."""
+            wrapped: list[TieBreakValue] = []
+            for tb, value in zip(tbs, values):
+                tbv = TieBreakValue(tb, value)
+                if tb.display_rank_delta:
+                    tbv.rank_progress = int(round(value))
+                wrapped.append(tbv)
+            return wrapped
+
         standings: dict[int, dict[str, Any]] = {}
         for team in self.event.sorted_teams:
             if team.tournament_id != self.id:
@@ -719,11 +734,13 @@ class Tournament:
             # column per team tie-break (ranking document / screen table)
             # never index past the end — they aren't computed in this flat
             # fixed-table mode, so they show as zero.
-            flat_team_tie_break_count = sum(
-                1 for tb in self.tie_breaks if tb.supports_team_mode
-            )
+            flat_team_tie_breaks = [
+                tb for tb in self.tie_breaks if tb.supports_team_mode
+            ]
             for row in rows:
-                row['tie_break_values'] = [0.0] * flat_team_tie_break_count
+                row['tie_break_values'] = wrap_tie_break_values(
+                    flat_team_tie_breaks, [0.0] * len(flat_team_tie_breaks)
+                )
             rows.sort(
                 key=lambda e: (
                     -e['gp'],
@@ -910,6 +927,10 @@ class Tournament:
         )
         for rank, entry in enumerate(rows, 1):
             entry['rank'] = rank
+        for row in rows:
+            row['tie_break_values'] = wrap_tie_break_values(
+                team_tie_breaks, row['tie_break_values']
+            )
         return rows
 
     @cached_property

@@ -210,8 +210,8 @@ class TeamStandingsIntegrationTestCase(TestCase):
         self.assertEqual(len(standings), 2)
         self.assertEqual(standings[0]['team'].id, self.team_a_id)
         self.assertEqual(standings[1]['team'].id, self.team_b_id)
-        self.assertEqual(standings[0]['tie_break_values'], [2.0])
-        self.assertEqual(standings[1]['tie_break_values'], [1.0])
+        self.assertEqual([v.value for v in standings[0]['tie_break_values']], [2.0])
+        self.assertEqual([v.value for v in standings[1]['tie_break_values']], [1.0])
         self.assertEqual(standings[0]['rank'], 1)
         self.assertEqual(standings[1]['rank'], 2)
 

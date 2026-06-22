@@ -56,15 +56,7 @@
                 {% endif %}
                 {% for tie_break in team_tie_breaks %}
                     {% set value = row.tie_break_values[loop.index0] %}
-                    <td class="text-center">
-                        {% if tie_break.display_rank_delta %}
-                            {{ ('+%d'|format(value|int)) if value else '—' }}
-                        {% elif value == value|round(0) %}
-                            {{ value|int }}
-                        {% else %}
-                            {{ '%.2f'|format(value) }}
-                        {% endif %}
-                    </td>
+                    <td class="text-center">{{ value.display_string_value }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}
