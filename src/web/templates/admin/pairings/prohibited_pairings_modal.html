@@ -22,9 +22,10 @@
                     <ul class="list-group">
                         {% for group in pp_snapshot_groups %}
                             <li class="list-group-item d-flex align-items-center">
-                                <span class="badge {{ 'text-bg-danger' if group.is_hard else 'text-bg-secondary' }} me-2 flex-shrink-0">
-                                    {{ _('Hard') if group.is_hard else _('Soft') }}
-                                </span>
+                                <i
+                                    class="bi-shield-fill-exclamation {{ 'text-warning' if group.is_hard else 'text-secondary' }} me-2 flex-shrink-0"
+                                    {{ macros.tooltip_attributes('info', _('Hard constraint') if group.is_hard else _('Soft constraint'), 'top') }}
+                                ></i>
                                 <span class="text-muted small me-2 flex-shrink-0">({{ group.count }})</span>
                                 <span>{{ group.members | join(', ') }}</span>
                             </li>
@@ -221,9 +222,10 @@
                     <ul class="list-group mb-2">
                         {% for group in pp_manual_groups %}
                             <li class="list-group-item d-flex align-items-center">
-                                <span class="badge {{ 'text-bg-danger' if group.is_hard else 'text-bg-secondary' }} me-2 flex-shrink-0">
-                                    {{ _('Hard') if group.is_hard else _('Soft') }}
-                                </span>
+                                <i
+                                    class="bi-shield-fill-exclamation {{ 'text-warning' if group.is_hard else 'text-secondary' }} me-2 flex-shrink-0"
+                                    {{ macros.tooltip_attributes('info', _('Hard constraint') if group.is_hard else _('Soft constraint'), 'top') }}
+                                ></i>
                                 <span class="flex-grow-1">
                                     {{ group.members | join(', ') }}
                                 </span>
