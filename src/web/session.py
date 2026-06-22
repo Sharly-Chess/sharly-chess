@@ -262,10 +262,20 @@ class SessionEventsShowDetails(BoolSessionVariable):
         return 'events_show_details'
 
 
-class SessionTeamsShowDetails(BoolSessionVariable):
+class SessionTeamsShowRoster(BoolSessionVariable):
     @property
     def key(self) -> str:
-        return 'teams_show_details'
+        return 'teams_show_roster'
+
+    @property
+    def default_value(self) -> bool:
+        return True
+
+
+class SessionTeamsShowLineup(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_show_lineup'
 
     @property
     def default_value(self) -> bool:

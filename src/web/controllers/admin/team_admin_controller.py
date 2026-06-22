@@ -28,7 +28,11 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard, SetByeGuard
 from web.messages import Message
-from web.session import SessionTeamsAddOtherActive, SessionTeamsShowDetails
+from web.session import (
+    SessionTeamsAddOtherActive,
+    SessionTeamsShowLineup,
+    SessionTeamsShowRoster,
+)
 from web.utils import RequestUtils, SelectOption
 
 
@@ -63,7 +67,8 @@ class TeamAdminWebContext(BaseEventAdminWebContext):
             'teams_by_tournament_id': teams_by_tournament_id,
             'unassigned_teams': teams_by_tournament_id.get(None, []),
             'admin_team': self.admin_team,
-            'show_details': SessionTeamsShowDetails(self.request).get(),
+            'show_roster': SessionTeamsShowRoster(self.request).get(),
+            'show_lineup': SessionTeamsShowLineup(self.request).get(),
             'team_sort_modes': list(TeamSortMode),
         }
 
@@ -196,10 +201,13 @@ class TeamAdminController(BaseEventAdminController):
     async def htmx_admin_event_teams_tab(
         self,
         request: HTMXRequest,
-        show_details: bool | None,
+        show_roster: bool | None,
+        show_lineup: bool | None,
     ) -> Template:
-        if show_details is not None:
-            SessionTeamsShowDetails(request).set(show_details)
+        if show_roster is not None:
+            SessionTeamsShowRoster(request).set(show_roster)
+        if show_lineup is not None:
+            SessionTeamsShowLineup(request).set(show_lineup)
         return self._admin_event_teams_render(TeamAdminWebContext(request))
 
     # -------------------------------------------------------------------------

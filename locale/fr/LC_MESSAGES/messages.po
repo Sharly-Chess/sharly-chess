@@ -5853,6 +5853,18 @@ msgstr "Roumanie"
 msgid "Roster"
 msgstr "Effectif"
 
+msgid "Rosters"
+msgstr "Effectifs"
+
+msgid "Lineups"
+msgstr "Compositions"
+
+msgid "Show/hide the team rosters on the cards."
+msgstr "Affiche/masque les effectifs des équipes sur les cartes."
+
+msgid "Show/hide the round lineups on the cards."
+msgstr "Affiche/masque les compositions par ronde sur les cartes."
+
 msgid "Roster is full ({max} players max for this rule set)."
 msgstr "La liste est complète ({max} joueur·euses au maximum pour ce jeu de règles)."
 

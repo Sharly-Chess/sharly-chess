@@ -92,9 +92,8 @@
 {% endblock %}
 
 {% block card_text %}
-{% if show_details %}
     {% set warning_message = team.rule_set_warning_message %}
-    {% if warning_message %}
+    {% if show_roster and warning_message %}
         <div class="text-start">
             <i
                 class="bi-exclamation-triangle-fill text-warning pe-1"
@@ -103,6 +102,7 @@
             <span class="text-muted">{{ _('Roster issue') }}</span>
         </div>
     {% endif %}
+    {% if show_roster %}
     <div class="card-block">
         <span
             class="card-block-button"
@@ -177,6 +177,7 @@
             {% endif %}
         </div>
     </div>
+    {% endif %}
     {% set _has_tournament_lineup = team.tournament and team.tournament.team_player_count %}
     {% if _has_tournament_lineup or (not team.tournament and team.players) %}
         {% if _has_tournament_lineup %}
@@ -200,6 +201,7 @@
             ) %}
             {% set lineup_label = _('Base lineup:') %}
         {% endif %}
+        {% if show_lineup %}
         <div class="card-block">
             <span
                 class="card-block-button"
@@ -256,11 +258,64 @@
                 {% endif %}
             </div>
         </div>
+        {% endif %}
     {% endif %}
-{% endif %}
 {% endblock %}
 
-{% block card_buttons_left %}{% endblock %}
+{% block card_buttons_left %}
+    {% if not show_roster %}
+        <span
+            {% if client.can_update_tournaments %}
+                {{ macros.tooltip_attributes('info', _('Manage the team roster.'), 'top') }}
+            {% else %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to update the team.'), 'top') }}
+            {% endif %}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for(
+                    'admin-team-roster-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    team_id=team.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                {% if not client.can_update_tournaments %}disabled{% endif %}
+            >
+                <i class="bi-people-fill"></i>
+            </button>
+        </span>
+    {% endif %}
+    {% set _lineup_applicable = (team.tournament and team.tournament.team_player_count)
+        or (not team.tournament and team.players) %}
+    {% if not show_lineup and _lineup_applicable %}
+        <span
+            {% if client.can_update_tournaments %}
+                {{ macros.tooltip_attributes('info', _('Manage per-round lineups.'), 'top') }}
+            {% else %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to update the team.'), 'top') }}
+            {% endif %}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for(
+                    'admin-team-lineups-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    team_id=team.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                {% if not client.can_update_tournaments %}disabled{% endif %}
+            >
+                <i class="bi-list-ol"></i>
+            </button>
+        </span>
+    {% endif %}
+{% endblock %}
 
 {% block card_buttons_right %}
     {% if client.can_update_tournaments %}
