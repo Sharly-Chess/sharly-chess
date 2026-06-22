@@ -2865,7 +2865,9 @@ class Tournament:
         for tb in team_boards:
             stb = tb.stored_team_board
             a_tpn = tpn_by_team_id.get(stb.team_a_id)
-            b_tpn = tpn_by_team_id.get(stb.team_b_id)
+            b_tpn = (
+                tpn_by_team_id.get(stb.team_b_id) if stb.team_b_id is not None else None
+            )
             if a_tpn is None or b_tpn is None:
                 continue
             a_lineup: list[int | None] = [None] * team_player_count
@@ -3315,7 +3317,7 @@ class Tournament:
         pairings."""
         from data.input_output.trf.trf_data import TrfRoundBye
 
-        type_map = {
+        type_map: dict[str, str] = {
             TeamByeType.FPB: 'F',
             TeamByeType.HPB: 'H',
             TeamByeType.ZPB: 'Z',

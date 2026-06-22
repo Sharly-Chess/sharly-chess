@@ -429,8 +429,10 @@ class ChessResultsSession(Session):
             for board_index, player in enumerate(team.players, start=1):
                 no += 1
                 no_by_player_id[player.id] = no
-                tp = tournament_players_by_id.get(player.id)
-                ratings = tp.ratings.get(tournament.rating) if tp else None
+                member_tp = tournament_players_by_id.get(player.id)
+                ratings = (
+                    member_tp.ratings.get(tournament.rating) if member_tp else None
+                )
                 ET.SubElement(
                     pdata,
                     'player',
@@ -441,7 +443,7 @@ class ChessResultsSession(Session):
                         'firstname': player.first_name or '',
                         'atitle': '',
                         'title': player.title.short_name,
-                        'rtg': str(tp.rating if tp else ''),
+                        'rtg': str(member_tp.rating if member_tp else ''),
                         'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                         'rtgnat': str(getattr(ratings, 'national', '') or ''),
                         'dob': str(player.year_of_birth or ''),
@@ -454,7 +456,7 @@ class ChessResultsSession(Session):
                         'clubname': player.club.name or '',
                         'typ': player.category.name,
                         'rank': str(rank_by_id.get(player.id, '')),
-                        'pts': str((tp.points if tp else 0) or 0),
+                        'pts': str((member_tp.points if member_tp else 0) or 0),
                         'equal': 'N',
                         'kfaktor': '',
                         'state': '',
@@ -514,7 +516,7 @@ class ChessResultsSession(Session):
                     for team_board in tournament.get_round_team_boards(round_)
                     if team_board.display_number is not None
                 ),
-                key=lambda team_board: team_board.display_number,
+                key=lambda team_board: team_board.display_number or 0,
             )
             for team_board in visible_matches:
                 pairing_no = team_board.display_number

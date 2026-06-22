@@ -1195,8 +1195,8 @@ class TeamBergerGridPrintDocument(PrintDocument):
             for a_id, b_id in pairs:
                 if b_id is None:
                     continue
-                tb = boards_by_round_pair.get((round_, frozenset({a_id, b_id})))
-                score_pair = tb.match_score_pair if tb is not None else None
+                match_tb = boards_by_round_pair.get((round_, frozenset({a_id, b_id})))
+                score_pair = match_tb.match_score_pair if match_tb is not None else None
                 for mine, theirs in ((a_id, b_id), (b_id, a_id)):
                     if mine not in cells or theirs not in cells[mine]:
                         continue
@@ -1350,9 +1350,9 @@ class MolterTablePrintDocument(PrintDocument):
         tournament = self.tournament
         teams = self._ordered_teams()
         players_per_team = tournament.team_player_count or 0
-        return tournament.pairing_system.get_table(
-            len(teams), players_per_team, tournament
-        )
+        system = tournament.pairing_system
+        assert isinstance(system, MolterPairingSystem)
+        return system.get_table(len(teams), players_per_team, tournament)
 
     @property
     def template_context(self) -> dict[str, Any]:

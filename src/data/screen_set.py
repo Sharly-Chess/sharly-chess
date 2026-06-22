@@ -461,7 +461,7 @@ class ScreenSet:
                     )
                     if team_board.display_number is not None
                 ),
-                key=lambda team_board: team_board.display_number,
+                key=lambda team_board: team_board.display_number or 0,
             )
             self._extract_team_data(items=matches)
 

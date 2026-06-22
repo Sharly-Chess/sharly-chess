@@ -561,12 +561,13 @@ class TeamAdminController(BaseEventAdminController):
         bye = team.round_bye_type(round_)
         if bye is None:
             return Result.NO_RESULT
-        return {
+        bye_results: dict[str, Result] = {
             TeamByeType.ZPB: Result.ZERO_POINT_BYE,
             TeamByeType.HPB: Result.HALF_POINT_BYE,
             TeamByeType.FPB: Result.FULL_POINT_BYE,
             TeamByeType.PAB: Result.PAIRING_ALLOCATED_BYE,
-        }.get(bye, Result.NO_RESULT)
+        }
+        return bye_results.get(bye, Result.NO_RESULT)
 
     @staticmethod
     def _get_team_bye_options(
@@ -886,6 +887,7 @@ class TeamAdminController(BaseEventAdminController):
             tournament is not None and round_ <= tournament.last_paired_round
         )
         if is_paired_round:
+            assert tournament is not None
             self._reconcile_paired_round_lineup(
                 event, tournament, team, round_, slot_values
             )
@@ -1087,7 +1089,11 @@ class TeamAdminController(BaseEventAdminController):
                 if seat is None:
                     continue
                 board, side = seat
-                old_tp = tournament.tournament_players_by_id.get(old_pid)
+                old_tp = (
+                    tournament.tournament_players_by_id.get(old_pid)
+                    if old_pid is not None
+                    else None
+                )
                 if old_tp is not None:
                     old_pairing = old_tp.pairings_by_round[round_]
                     old_pairing.stored_pairing.result = Result.NO_RESULT.value

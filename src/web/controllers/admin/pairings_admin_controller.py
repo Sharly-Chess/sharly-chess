@@ -2224,6 +2224,7 @@ class PairingsAdminController(BaseEventAdminController):
         is_team = tournament.is_team_tournament
         locked = tournament.round_has_pairings(round_)
 
+        members: list[Any]
         if is_team:
             members = sorted(tournament.teams, key=lambda m: m.name.lower())
             member_options = {str(m.id): m.name for m in members}

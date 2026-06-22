@@ -3,7 +3,7 @@ import weakref
 from collections.abc import Iterator, Collection
 from datetime import datetime, timedelta
 from functools import cached_property
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 from _weakref import ReferenceType
 
 from common.background import inline_image_url
@@ -291,6 +291,7 @@ class Screen:
                 screen_set: ScreenSet = self.sorted_screen_sets[0]
                 is_team = screen_set.tournament.is_team_tournament
                 team_matches = screen_set.shows_team_matches
+                first_item: Any
                 if team_matches and self.type in (
                     ScreenType.INPUT,
                     ScreenType.BOARDS,

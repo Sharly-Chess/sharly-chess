@@ -1,7 +1,7 @@
 import re
 from collections import defaultdict
 from datetime import datetime, date
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from common.exception import ImporterError
 from common.i18n import _
@@ -256,6 +256,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 for numbers in number_groups:
                     member_ids: list[int] = []
                     for number in numbers:
+                        member: Any
                         if is_team:
                             member = tournament.teams_by_pairing_number.get(number)
                         else:
