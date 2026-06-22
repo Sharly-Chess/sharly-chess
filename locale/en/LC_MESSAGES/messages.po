@@ -6384,6 +6384,9 @@ msgstr ""
 msgid "Soft"
 msgstr ""
 
+msgid "Soft constraint"
+msgstr ""
+
 msgid "Solomon Islands"
 msgstr ""
 
@@ -8725,10 +8728,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Fill"
-#~ msgstr ""
-
-#~ msgid "Filled %(filled)d team(s) from “%(source)s”."
-#~ msgstr ""
 

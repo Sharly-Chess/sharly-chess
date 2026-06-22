@@ -6386,6 +6386,9 @@ msgstr "Slovénie"
 msgid "Soft"
 msgstr "Souple"
 
+msgid "Soft constraint"
+msgstr "Contrainte souple"
+
 msgid "Solomon Islands"
 msgstr "Îles Salomon"
 
@@ -8727,10 +8730,4 @@ msgstr "…chacun aussi séparé de (%(count)d) :"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Fill"
-#~ msgstr ""
-
-#~ msgid "Filled %(filled)d team(s) from “%(source)s”."
-#~ msgstr "%(filled)d équipe(s) définie(s) à partir de « %(source)s »."
 
