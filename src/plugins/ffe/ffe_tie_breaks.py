@@ -706,7 +706,7 @@ class BerlinTieBreak(TeamTieBreak):
 
     @property
     def base_acronym(self) -> str:
-        return 'BER'
+        return _('BER *** BERLIN TEAM TIE-BREAK')
 
     @property
     def base_help_text(self) -> str:
@@ -773,7 +773,7 @@ class GamePointsDifferentialTieBreak(TeamTieBreak):
 
     @property
     def base_acronym(self) -> str:
-        return 'GP-DIFF'
+        return _('GP-DIFF *** GAME POINTS DIFF TEAM TIE-BREAK')
 
     @property
     def base_help_text(self) -> str:
@@ -833,7 +833,7 @@ class GamePointsForTieBreak(TeamTieBreak):
 
     @property
     def base_acronym(self) -> str:
-        return 'GP-FOR'
+        return _('GP-FOR *** GAME POINTS FOR TEAM TIE-BREAK')
 
     @property
     def base_help_text(self) -> str:
@@ -889,7 +889,7 @@ class LowestOwnAverageRatingTieBreak(TeamTieBreak):
 
     @property
     def base_acronym(self) -> str:
-        return 'OWN-ELO'
+        return _('OWN-ELO *** OWN ELO TEAM TIE-BREAK')
 
     @property
     def base_help_text(self) -> str:

@@ -57,6 +57,9 @@ msgstr "Mise en ligne automatique activée"
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Loisir"
 
+msgid "BER *** BERLIN TEAM TIE-BREAK"
+msgstr "Be"
+
 msgid "Back"
 msgstr "Retour"
 
@@ -256,6 +259,12 @@ msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche d
 msgid "Fédération Française des Échecs"
 msgstr "Fédération Française des Échecs"
 
+msgid "GP-DIFF *** GAME POINTS DIFF TEAM TIE-BREAK"
+msgstr "d"
+
+msgid "GP-FOR *** GAME POINTS FOR TEAM TIE-BREAK"
+msgstr "p"
+
 msgid "Game points \"for\""
 msgstr "Points de partie « pour »"
 
@@ -405,6 +414,9 @@ msgstr "Aucune"
 
 msgid "Not configured"
 msgstr "Non configuré"
+
+msgid "OWN-ELO *** OWN ELO TEAM TIE-BREAK"
+msgstr "Elo"
 
 msgid "Ongoing"
 msgstr "En cours"

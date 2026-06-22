@@ -57,6 +57,9 @@ msgstr ""
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Leisure"
 
+msgid "BER *** BERLIN TEAM TIE-BREAK"
+msgstr "BER"
+
 msgid "Back"
 msgstr ""
 
@@ -256,6 +259,12 @@ msgstr ""
 msgid "Fédération Française des Échecs"
 msgstr ""
 
+msgid "GP-DIFF *** GAME POINTS DIFF TEAM TIE-BREAK"
+msgstr "GP-DIFF"
+
+msgid "GP-FOR *** GAME POINTS FOR TEAM TIE-BREAK"
+msgstr "GP-FOR"
+
 msgid "Game points \"for\""
 msgstr ""
 
@@ -405,6 +414,9 @@ msgstr "None"
 
 msgid "Not configured"
 msgstr ""
+
+msgid "OWN-ELO *** OWN ELO TEAM TIE-BREAK"
+msgstr "OWN-ELO"
 
 msgid "Ongoing"
 msgstr ""
