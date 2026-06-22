@@ -161,6 +161,9 @@ msgstr ""
 msgid "FFE Women championship (N1F / N2F)"
 msgstr ""
 
+msgid "FFE Women championship (N1F / N2F) (no round-3 protection)"
+msgstr ""
+
 msgid "FFE arbiter title"
 msgstr "Titre d'arbitre FFE"
 
@@ -292,6 +295,9 @@ msgstr ""
 msgid "Jean-Claude Loubatière Cup"
 msgstr ""
 
+msgid "Jean-Claude Loubatière Cup (no round-3 protection)"
+msgstr ""
+
 msgid "Last upload"
 msgstr ""
 
@@ -353,6 +359,9 @@ msgid "Minimum FFE licence required (only applies to players of the FRA federati
 msgstr ""
 
 msgid "Mixed Cup"
+msgstr ""
+
+msgid "Mixed Cup (no round-3 protection)"
 msgstr ""
 
 msgid "Modified"
@@ -617,6 +626,9 @@ msgid "Variation"
 msgstr ""
 
 msgid "Warning"
+msgstr ""
+
+msgid "Won both of the first two matches"
 msgstr ""
 
 msgid "Writer:"

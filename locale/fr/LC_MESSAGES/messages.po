@@ -3078,6 +3078,9 @@ msgstr "Ve"
 msgid "France"
 msgstr "France"
 
+msgid "From the rule set"
+msgstr "Issu du jeu de règles"
+
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
@@ -3729,6 +3732,9 @@ msgstr "Ligne non reconnue : {line}"
 #, python-format
 msgid "Lineup for round #%(round)d:"
 msgstr "Composition pour la ronde n°%(round)d :"
+
+msgid "Lineups"
+msgstr "Compositions"
 
 #, python-format
 msgid "Lineups — %(team)s"
@@ -5853,18 +5859,6 @@ msgstr "Roumanie"
 msgid "Roster"
 msgstr "Effectif"
 
-msgid "Rosters"
-msgstr "Effectifs"
-
-msgid "Lineups"
-msgstr "Compositions"
-
-msgid "Show/hide the team rosters on the cards."
-msgstr "Affiche/masque les effectifs des équipes sur les cartes."
-
-msgid "Show/hide the round lineups on the cards."
-msgstr "Affiche/masque les compositions par ronde sur les cartes."
-
 msgid "Roster is full ({max} players max for this rule set)."
 msgstr "La liste est complète ({max} joueur·euses au maximum pour ce jeu de règles)."
 
@@ -5877,6 +5871,9 @@ msgstr "Problème d'effectif"
 #, python-format
 msgid "Roster — %(team)s"
 msgstr "Effectif — %(team)s"
+
+msgid "Rosters"
+msgstr "Effectifs"
 
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
@@ -6327,11 +6324,14 @@ msgstr "Afficher les joueur·euses non modifié·es"
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
 
-msgid "Show/hide the rosters and round lineups on the team cards."
-msgstr "Montrer/cacher les effectifs et les composition par ronde sur les cartes des équipes."
+msgid "Show/hide the round lineups on the cards."
+msgstr "Affiche/masque les compositions par ronde sur les cartes."
 
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
+
+msgid "Show/hide the team rosters on the cards."
+msgstr "Affiche/masque les effectifs des équipes sur les cartes."
 
 msgid "Sierra Leone"
 msgstr "Sierra Leone"
@@ -8710,4 +8710,7 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Pairing number."
 #~ msgstr "Numéro d'appariement."
+
+#~ msgid "Show/hide the rosters and round lineups on the team cards."
+#~ msgstr "Montrer/cacher les effectifs et les composition par ronde sur les cartes des équipes."
 

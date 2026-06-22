@@ -170,6 +170,29 @@
                     </div>
                 {% endif %}
 
+                {# ---- Rule-set / results-based groups (read-only) ---- #}
+                {% if pp_rule_groups %}
+                    <div class="mt-3">
+                        <h6 class="text-uppercase small fw-bold text-muted mb-2">
+                            {{ _('From the rule set') }}
+                        </h6>
+                        <ul class="list-group">
+                            {% for group in pp_rule_groups %}
+                                <li class="list-group-item d-flex align-items-center">
+                                    <span class="badge {{ 'text-bg-danger' if group.is_hard else 'text-bg-secondary' }} me-2 flex-shrink-0">
+                                        {{ _('Hard') if group.is_hard else _('Soft') }}
+                                    </span>
+                                    <div>
+                                        <span class="fw-bold">{{ group.label }}</span>
+                                        <span class="text-muted small">({{ group.count }})</span>
+                                        <div class="text-muted small">{{ group.members | join(', ') }}</div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
                 <hr class="my-3" />
 
                 {# ---- Manual groups ---- #}

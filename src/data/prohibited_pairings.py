@@ -27,6 +27,18 @@ class ProhibitedPairingDimension:
     group_key: Callable[[Any], str | None]
 
 
+@dataclass(frozen=True)
+class RoundProhibitedPairingGroup:
+    """A prohibited-pairing group a plugin contributes for a specific round
+    (typically results-based). ``name`` is the human label shown in the
+    prohibited-pairings modal; ``member_ids`` are team ids in a team
+    tournament, player ids otherwise."""
+
+    name: str
+    is_hard: bool
+    member_ids: list[int]
+
+
 def core_prohibited_pairing_dimensions() -> list[ProhibitedPairingDimension]:
     return [
         ProhibitedPairingDimension(

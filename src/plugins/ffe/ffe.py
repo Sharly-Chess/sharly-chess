@@ -75,8 +75,11 @@ from plugins.ffe.ffe_entity import (
     FfeLeagueIndividualTeamType,
 )
 from plugins.ffe.ffe_rule_sets import (
+    ChampionnatFemininN1N2NoR3RuleSet,
     ChampionnatFemininN1N2RuleSet,
+    CoupeDeLaPariteNoR3RuleSet,
     CoupeDeLaPariteRuleSet,
+    CoupeJeanClaudeLoubatiereNoR3RuleSet,
     CoupeJeanClaudeLoubatiereRuleSet,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -146,6 +149,7 @@ from web.controllers.base_controller import BaseController, WebContext
 if TYPE_CHECKING:
     from data.event import Event
     from database.sqlite.event.event_store import StoredEvent
+    from data.prohibited_pairings import RoundProhibitedPairingGroup
     from data.rule_sets import RuleSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
@@ -306,6 +310,36 @@ class FfePlugin(Plugin):
                 group_key=lambda player: (
                     FFEUtils.get_player_plugin_data(player).league or None
                 ),
+            )
+        ]
+
+    @hookimpl
+    def get_round_prohibited_pairing_groups(
+        self, tournament: 'Tournament', round_: int
+    ) -> 'list[RoundProhibitedPairingGroup]':
+        # FFE cups: two teams that have won both of their first two matches
+        # are not paired together in round 3 (hard). The no-protection cup
+        # variants opt out. The exception (a single qualifying place for the
+        # N1F) is handled by picking the no-protection variant, not here.
+        from data.prohibited_pairings import RoundProhibitedPairingGroup
+
+        if round_ != 3:
+            return []
+        rule_set = tournament.rule_set
+        if rule_set is None or not getattr(rule_set, 'round3_winner_protection', False):
+            return []
+        winners = [
+            row['team'].id
+            for row in tournament.team_standings(after_round=2)
+            if row['played'] == 2 and row['wins'] == 2
+        ]
+        if len(winners) < 2:
+            return []
+        return [
+            RoundProhibitedPairingGroup(
+                name=_('Won both of the first two matches'),
+                is_hard=True,
+                member_ids=winners,
             )
         ]
 
@@ -889,8 +923,11 @@ class FfePlugin(Plugin):
     @hookimpl
     def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
         rule_sets.append(CoupeJeanClaudeLoubatiereRuleSet)
+        rule_sets.append(CoupeJeanClaudeLoubatiereNoR3RuleSet)
         rule_sets.append(CoupeDeLaPariteRuleSet)
+        rule_sets.append(CoupeDeLaPariteNoR3RuleSet)
         rule_sets.append(ChampionnatFemininN1N2RuleSet)
+        rule_sets.append(ChampionnatFemininN1N2NoR3RuleSet)
 
     @hookimpl
     def insert_swiss_system_tie_break_sets(

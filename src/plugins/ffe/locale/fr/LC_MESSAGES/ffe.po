@@ -161,6 +161,9 @@ msgstr "Nationale 1 / Nationale 2 Féminine FFE. effectif de 5 joueuses, matchs 
 msgid "FFE Women championship (N1F / N2F)"
 msgstr "Championnat de France Féminin (N1F / N2F)"
 
+msgid "FFE Women championship (N1F / N2F) (no round-3 protection)"
+msgstr "Championnat de France Féminin (N1F / N2F) (sans protection 3e ronde)"
+
 msgid "FFE arbiter title"
 msgstr "Titre d'arbitre FFE"
 
@@ -292,6 +295,9 @@ msgstr "Fichier JSON (format papi-converter)"
 msgid "Jean-Claude Loubatière Cup"
 msgstr "Coupe Jean-Claude Loubatière"
 
+msgid "Jean-Claude Loubatière Cup (no round-3 protection)"
+msgstr "Coupe Jean-Claude Loubatière (sans protection 3e ronde)"
+
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
 
@@ -354,6 +360,9 @@ msgstr "Licence FFE minimale requise (ne s'applique que aux joueur·euses de la 
 
 msgid "Mixed Cup"
 msgstr "Coupe de la Parité"
+
+msgid "Mixed Cup (no round-3 protection)"
+msgstr "Coupe de la Parité (sans protection 3e ronde)"
 
 msgid "Modified"
 msgstr "Modifié"
@@ -618,6 +627,9 @@ msgstr "Variante"
 
 msgid "Warning"
 msgstr "Avertissement"
+
+msgid "Won both of the first two matches"
+msgstr "A gagné ses deux premiers matchs"
 
 msgid "Writer:"
 msgstr "Rédacteur·ice :"

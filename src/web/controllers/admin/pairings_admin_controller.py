@@ -2314,6 +2314,20 @@ class PairingsAdminController(BaseEventAdminController):
                 )
             ],
             'pp_manual_groups': manual_groups,
+            # Rule-set / results-based groups for this round (read-only).
+            # Once the round is paired they are part of the frozen snapshot,
+            # so only surface them while still configurable.
+            'pp_rule_groups': []
+            if locked
+            else [
+                {
+                    'label': group.name,
+                    'is_hard': group.is_hard,
+                    'members': [member_name(mid) for mid in group.member_ids],
+                    'count': len(group.member_ids),
+                }
+                for group in tournament.round_rule_prohibited_pairing_groups(round_)
+            ],
             'pp_member_options': member_options,
             'pp_snapshot_groups': snapshot_groups,
             'pp_protect_rank': pp_protect_rank,

@@ -178,6 +178,14 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         return ('team-group', False)
 
     @property
+    def round3_winner_protection(self) -> bool:
+        """Two teams that have won both of their first two matches are not
+        paired together in round 3 (FFE cup regulations). On by default; the
+        explicit no-protection variant turns it off, for the case where there
+        is a single qualifying place for the N1F."""
+        return True
+
+    @property
     @override
     def managed_fields(self) -> set[str]:
         return {
@@ -622,3 +630,52 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
             'FFE mixed team cup. 6-player roster (3M + 3W), per-match '
             'lineup must field 2 men and 2 women, team Elo capped at 8000.'
         )
+
+
+# Each cup ships a second variant that drops the round-3 winner-protection
+# rule — used when a single qualifying place for the N1F means the two
+# leaders *should* meet in round 3.
+class _NoRound3ProtectionMixin:
+    @property
+    def round3_winner_protection(self) -> bool:
+        return False
+
+
+class CoupeJeanClaudeLoubatiereNoR3RuleSet(
+    _NoRound3ProtectionMixin, CoupeJeanClaudeLoubatiereRuleSet
+):
+    @staticmethod
+    @override
+    def static_id() -> str:
+        return 'ffe-coupe-jean-claude-loubatiere-no-r3'
+
+    @staticmethod
+    @override
+    def static_name() -> str:
+        return _('Jean-Claude Loubatière Cup (no round-3 protection)')
+
+
+class ChampionnatFemininN1N2NoR3RuleSet(
+    _NoRound3ProtectionMixin, ChampionnatFemininN1N2RuleSet
+):
+    @staticmethod
+    @override
+    def static_id() -> str:
+        return 'ffe-championnat-feminin-n1-n2-no-r3'
+
+    @staticmethod
+    @override
+    def static_name() -> str:
+        return _('FFE Women championship (N1F / N2F) (no round-3 protection)')
+
+
+class CoupeDeLaPariteNoR3RuleSet(_NoRound3ProtectionMixin, CoupeDeLaPariteRuleSet):
+    @staticmethod
+    @override
+    def static_id() -> str:
+        return 'ffe-coupe-de-la-parite-no-r3'
+
+    @staticmethod
+    @override
+    def static_name() -> str:
+        return _('Mixed Cup (no round-3 protection)')

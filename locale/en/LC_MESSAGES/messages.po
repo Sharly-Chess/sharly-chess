@@ -3078,6 +3078,9 @@ msgstr "Fr"
 msgid "France"
 msgstr ""
 
+msgid "From the rule set"
+msgstr ""
+
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr ""
 
@@ -3728,6 +3731,9 @@ msgstr ""
 
 #, python-format
 msgid "Lineup for round #%(round)d:"
+msgstr ""
+
+msgid "Lineups"
 msgstr ""
 
 #, python-format
@@ -5864,6 +5870,9 @@ msgstr ""
 msgid "Roster — %(team)s"
 msgstr ""
 
+msgid "Rosters"
+msgstr ""
+
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
@@ -6313,10 +6322,13 @@ msgstr ""
 msgid "Show warnings"
 msgstr ""
 
-msgid "Show/hide the rosters and round lineups on the team cards."
+msgid "Show/hide the round lineups on the cards."
 msgstr ""
 
 msgid "Show/hide the screens created from screen families."
+msgstr ""
+
+msgid "Show/hide the team rosters on the cards."
 msgstr ""
 
 msgid "Sierra Leone"
@@ -8695,5 +8707,8 @@ msgid "← Back to IT1 certificate"
 msgstr ""
 
 #~ msgid "Pairing number."
+#~ msgstr ""
+
+#~ msgid "Show/hide the rosters and round lineups on the team cards."
 #~ msgstr ""
 

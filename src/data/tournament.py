@@ -86,7 +86,10 @@ if TYPE_CHECKING:
     )
     from data.rule_sets import RuleSet
     from data.rule_sets.rule_sets import PointAdjustment
-    from data.prohibited_pairings import ProhibitedPairingDimension
+    from data.prohibited_pairings import (
+        ProhibitedPairingDimension,
+        RoundProhibitedPairingGroup,
+    )
     from data.pairings import PairingVariation, PairingSystem
     from data.team import Team
     from data.tie_breaks.team_records import TeamRecord
@@ -1074,16 +1077,44 @@ class Tournament:
             for _key, member_ids in self.dimension_prohibited_pairing_buckets()
         ]
 
-    def computed_prohibited_pairing_groups(self) -> list[tuple[bool, list[int]]]:
+    def computed_prohibited_pairing_groups(
+        self, round_: int | None = None
+    ) -> list[tuple[bool, list[int]]]:
         """The live groups for the current config — dimension-derived
         plus the manual template groups. Each is ``(is_hard,
-        member_ids)``. This is what a full pairing snapshots."""
+        member_ids)``. This is what a full pairing snapshots.
+
+        When ``round_`` is given, plugin-contributed dynamic groups for
+        that round (the ``get_round_prohibited_pairing_groups`` hook —
+        e.g. results-based protections) are merged in too."""
         groups: list[tuple[bool, list[int]]] = list(
             self.dimension_prohibited_pairing_groups()
         )
         for group in self.manual_prohibited_pairing_groups():
             if len(group.member_ids) >= 2:
                 groups.append((group.is_hard, list(group.member_ids)))
+        if round_ is not None:
+            for rule_group in self.round_rule_prohibited_pairing_groups(round_):
+                groups.append((rule_group.is_hard, list(rule_group.member_ids)))
+        return groups
+
+    def round_rule_prohibited_pairing_groups(
+        self, round_: int
+    ) -> 'list[RoundProhibitedPairingGroup]':
+        """Named prohibited-pairing groups contributed by plugins for
+        ``round_`` (the ``get_round_prohibited_pairing_groups`` hook). Kept
+        named (unlike :meth:`computed_prohibited_pairing_groups`) so the
+        prohibited-pairings modal can label them before the round is paired.
+        Groups of fewer than two members are dropped."""
+        from plugins.manager import plugin_manager
+
+        groups: 'list[RoundProhibitedPairingGroup]' = []
+        for plugin_result in plugin_manager.hook_for_event(
+            self.event, 'get_round_prohibited_pairing_groups'
+        )(tournament=self, round_=round_):
+            for group in plugin_result or []:
+                if len(group.member_ids) >= 2:
+                    groups.append(group)
         return groups
 
     def prohibited_pairing_snapshot(
@@ -1102,7 +1133,7 @@ class Tournament:
         snapshot = self.prohibited_pairing_snapshot(round_)
         if snapshot:
             return sum(1 for group in snapshot if len(group.member_ids) >= 2)
-        return len(self.computed_prohibited_pairing_groups())
+        return len(self.computed_prohibited_pairing_groups(round_))
 
     def _member_pairing_number(self, member_id: int) -> int | None:
         """The TRF pairing number used in 260 records — a team TPN in
@@ -1141,7 +1172,7 @@ class Tournament:
         pairwise expansion: a soft group is relaxed by splitting its
         members at a rank cutoff. Skips the standings entirely when there
         are no soft groups."""
-        groups = self.computed_prohibited_pairing_groups()
+        groups = self.computed_prohibited_pairing_groups(after_round + 1)
         hard_groups: list[list[int]] = [
             list(member_ids) for is_hard, member_ids in groups if is_hard
         ]
@@ -1278,7 +1309,7 @@ class Tournament:
         database.replace_round_prohibited_pairing_snapshot(
             self.id,
             round_,
-            self.computed_prohibited_pairing_groups(),
+            self.computed_prohibited_pairing_groups(round_),
             protect_rank,
         )
         self.stored_tournament.stored_prohibited_pairing_groups = (

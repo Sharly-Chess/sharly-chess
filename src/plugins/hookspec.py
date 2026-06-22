@@ -29,7 +29,10 @@ if TYPE_CHECKING:
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.input_output.trf.trf_data import TrfNationalPlayer
     from data.pairings.systems import PairingSystem
-    from data.prohibited_pairings import ProhibitedPairingDimension
+    from data.prohibited_pairings import (
+        ProhibitedPairingDimension,
+        RoundProhibitedPairingGroup,
+    )
     from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import (
         Player,
@@ -336,6 +339,19 @@ class AppHookSpecs:
         contributes (e.g. a federation "ligue", a school). Each buckets
         a tournament's members so that members sharing a key must not be
         paired. Core already ships club / federation / team-group."""
+
+    @hookspec
+    def get_round_prohibited_pairing_groups(
+        self, tournament: 'Tournament', round_: int
+    ) -> "list['RoundProhibitedPairingGroup']":
+        """Prohibited-pairing groups a plugin contributes *dynamically* for a
+        specific ``round_`` — typically computed from results so far (a static
+        affiliation dimension can't express them). Each is a
+        :class:`RoundProhibitedPairingGroup` (``name`` / ``is_hard`` /
+        ``member_ids`` — team ids in a team tournament, player ids otherwise);
+        groups of fewer than two members are ignored. The named groups appear
+        in the prohibited-pairings modal and are merged into the round's
+        snapshot alongside the dimension- and manual-derived groups."""
 
     @hookspec
     def signal_tournament_set(
