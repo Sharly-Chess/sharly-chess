@@ -538,20 +538,24 @@
                     return;
                 }
 
-                let matchFound = false;
-
-                $rows.each(function() {
+                // Toggle player rows by text, but never hide a team-block
+                // header by its own text — otherwise the header disappears as
+                // soon as the query stops matching the team name. Keep a
+                // header only when its block still has a matching player.
+                $rows.not(".team-block-header").each(function() {
                     // Exclude form controls: the lineup select options
                     // list the whole roster, which would match every row
                     // of the team block.
                     const text = normalizeText(
                         $(this).clone().find("select, option").remove().end().text()
                     );
-                    const isMatch = text.indexOf(value) > -1;
-                    $(this).toggle(isMatch);
-                    if (isMatch) matchFound = true;
+                    $(this).toggle(text.indexOf(value) > -1);
                 });
 
+                $table.find("tr.team-block-header").each(function() {
+                    const $body = $("#" + $(this).data("block-id"));
+                    $(this).toggle($body.find("tr:visible").length > 0);
+                });
 
                 $table.addClass("table-danger-warning");
             });
