@@ -3937,15 +3937,15 @@ class Tournament:
                     self, pab_stb
                 )
             else:
-                # Engine PAB is displayed, so it takes the next table
-                # number after the real matches (hidden byes hold NULL).
-                next_index = (
-                    max(
-                        (stb.index for stb in round_list if stb.index is not None),
-                        default=-1,
-                    )
-                    + 1
-                )
+                # Reuse the first free table number — like individual manual
+                # pairing, a hole left by an unpaired match is filled rather
+                # than always appending at the end (hidden byes hold NULL).
+                used_indexes = {
+                    stb.index for stb in round_list if stb.index is not None
+                }
+                next_index = 0
+                while next_index in used_indexes:
+                    next_index += 1
                 new_stb = StoredTeamBoard(
                     id=None,
                     tournament_id=self.id,
