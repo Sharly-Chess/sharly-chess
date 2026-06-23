@@ -186,6 +186,13 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return False
 
     @property
+    def display_decimals(self) -> int | None:
+        """When set, the value is shown with this many decimal places (e.g.
+        an average rating) rather than the points formatter, which would turn
+        a fractional value into ½/¼/¾ glyphs."""
+        return None
+
+    @property
     def allow_multiple(self) -> bool:
         """Defines if the tie-break can be added multiple time with the same options."""
         return False

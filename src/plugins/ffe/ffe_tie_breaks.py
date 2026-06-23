@@ -907,6 +907,11 @@ class LowestOwnAverageRatingTieBreak(TeamTieBreak):
         return True
 
     @property
+    def display_decimals(self) -> int | None:
+        # An average rating — show 2 decimals, not the ½/¼/¾ points glyphs.
+        return 2
+
+    @property
     def category(self) -> TieBreakCategory:
         return TeamScoreCategory()
 
