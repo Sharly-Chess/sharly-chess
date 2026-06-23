@@ -157,6 +157,23 @@ class TeamBoard:
         return a, b
 
     @property
+    def effective_game_points(self) -> tuple[float, float]:
+        """(team_a, team_b) board game points with this round's point
+        adjustments folded in — rule-set forfeit penalties and manual
+        bonuses. This is the single source of truth for the match result:
+        every standings and score-display path decides win/draw/loss from
+        these, so a penalty changes who won the match (not only the
+        cumulative totals, which add the same deltas separately)."""
+        a_gp, b_gp = self.game_points
+        stb = self.stored_team_board
+        if stb.team_b_id is None:
+            return a_gp, b_gp
+        tournament = self.tournament
+        _, a_adj = tournament.effective_point_adjustment(stb.team_a_id, self.round)
+        _, b_adj = tournament.effective_point_adjustment(stb.team_b_id, self.round)
+        return a_gp + a_adj, b_gp + b_adj
+
+    @property
     def match_score_pair(self) -> tuple[str, str] | None:
         """``(team_a_score, team_b_score)`` strings following the
         tournament's primary score, or ``None`` for an unplayed match
@@ -166,7 +183,7 @@ class TeamBoard:
             return None
         if self.boards and all(board.no_result for board in self.boards):
             return None
-        a_gp, b_gp = self.game_points
+        a_gp, b_gp = self.effective_game_points
         tournament = self.tournament
         if tournament.primary_score == ScoreType.MATCH_POINTS:
             mp = tournament.match_points
@@ -193,7 +210,7 @@ class TeamBoard:
             and all(board.no_result for board in self.boards)
         ):
             return '–'
-        a_gp, b_gp = self.game_points
+        a_gp, b_gp = self.effective_game_points
         tournament = self.tournament
         if (
             self.stored_team_board.team_b_id is None

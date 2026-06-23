@@ -806,14 +806,18 @@ class Tournament:
             if ent_b:
                 ent_b['played'] += 1
                 ent_b['gp'] += b_gp
-            if a_gp > b_gp:
+            # Match result follows the effective game points (board + this
+            # round's penalties/bonuses); the deltas are added to the totals
+            # separately by _apply_point_adjustments_to_standings below.
+            a_gp_effective, b_gp_effective = team_board.effective_game_points
+            if a_gp_effective > b_gp_effective:
                 if ent_a:
                     ent_a['mp'] += win_mp
                     ent_a['wins'] += 1
                 if ent_b:
                     ent_b['mp'] += loss_mp
                     ent_b['losses'] += 1
-            elif a_gp < b_gp:
+            elif a_gp_effective < b_gp_effective:
                 if ent_a:
                     ent_a['mp'] += loss_mp
                     ent_a['losses'] += 1
@@ -1496,9 +1500,13 @@ class Tournament:
                 totals_mp[a_id] += pab_mp
                 totals_gp[a_id] += self.team_pab_game_points
                 continue
-            if a_gp > b_gp:
+            # Match result follows the effective game points (board + this
+            # round's penalties/bonuses); the deltas are added to own_gp /
+            # totals by the loop below — here they only tip the comparison.
+            a_gp_effective, b_gp_effective = team_board.effective_game_points
+            if a_gp_effective > b_gp_effective:
                 a_mp, b_mp = win_mp, loss_mp
-            elif a_gp < b_gp:
+            elif a_gp_effective < b_gp_effective:
                 a_mp, b_mp = loss_mp, win_mp
             else:
                 a_mp = b_mp = draw_mp
