@@ -19,14 +19,14 @@
         <tr class="player-header">
             <th class="rank text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
             <th class="name text-start">{{ _('Team') }}</th>
-            <th class="text-center">{{ _('Played') }}</th>
+            <th class="text-center">{{ _('Played *** TEAM RANKING HEADER PLAYED') }}</th>
             {% if primary_is_mp %}
                 <th class="text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</th>
                 <th class="text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</th>
                 <th class="text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</th>
-                <th class="text-center fw-bold">{{ _('MP *** MATCH POINTS') }}</th>
+                <th class="text-center fw-bold">{{ _('MP *** TEAM RANKING HEADER MATCH POINTS') }}</th>
             {% else %}
-                <th class="text-center fw-bold">{{ _('GP *** GAME POINTS') }}</th>
+                <th class="text-center fw-bold">{{ _('GP *** TEAM RANKING HEADER GAME POINTS') }}</th>
             {% endif %}
             {% for tie_break in team_tie_breaks %}
                 <th
