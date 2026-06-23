@@ -330,6 +330,7 @@ class CustomUploadUploader:
         cls, event: Event, tournament_plugin_data: CustomUploadTournamentPluginData
     ) -> list[tuple[BytesIO, str]]:
         temporary_files_with_name: list[tuple[BytesIO, str]] = []
+        print(tournament_plugin_data.document_urls)
         for document_url in tournament_plugin_data.document_urls:
             document_url_resource_part = document_url.split('/')[-1]
             document_id, document_options = document_url_resource_part.split('?')

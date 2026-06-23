@@ -160,6 +160,37 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             after='settle',
         )
 
+    @post(
+        path='/custom-upload/remove-document/{event_uniq_id:str}/{tournament_id:int}/{document_index:int}',
+        name='remove-document',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_custom_upload_remove_document(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+        tournament_id: int,
+        document_index: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        custom_upload_data = CustomUploadTournamentPluginData.from_form_data(
+            data, None, 'edit_documents'
+        )
+        custom_upload_data.document_urls.pop(document_index)
+        return HTMXTemplate(
+            template_name='change_tournament_documents_modal.html',
+            context=web_context.template_context
+            | {
+                'data': custom_upload_data.to_form_data('edit_documents'),
+                'errors': {},
+            },
+            re_target='#modal-wrapper',
+            re_swap='innerHTML',
+            after='settle',
+        )
+
     def _update_document(
         self,
         web_context: TournamentAdminWebContext,
