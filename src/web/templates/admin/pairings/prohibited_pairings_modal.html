@@ -40,31 +40,35 @@
                                 role="button"
                             >
                                 <i class="bi-chevron-down pe-1"></i>
-                                {{ _('Relaxed: top %(n)d protected', n=pp_protect_rank) }}
+                                {{ _(
+                                    '%(n)d %(members)s released',
+                                    n=pp_released | length,
+                                    members=_('teams') if pp_is_team else _('players'),
+                                ) }}
                             </a>
                             <div class="collapse mt-1" id="pp-applied-groups">
-                                {% if pp_relaxed_groups %}
-                                    <ul class="list-group">
-                                        {% for group in pp_relaxed_groups %}
-                                            <li class="list-group-item py-1 small">
-                                                <div>
-                                                    <span class="text-muted">{{ _('Protected core (%(count)d):', count=group.protected | length) }}</span>
-                                                    {{ group.protected | join(', ') }}
-                                                </div>
-                                                {% if group.relaxed %}
-                                                    <div>
-                                                        <span class="text-muted">{{ _('…each also kept apart from (%(count)d):', count=group.relaxed | length) }}</span>
-                                                        {{ group.relaxed | join(', ') }}
-                                                    </div>
-                                                {% endif %}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% else %}
-                                    <div class="fst-italic small">
-                                        {{ _('All soft separations relaxed.') }}
-                                    </div>
-                                {% endif %}
+                                <div class="text-muted small mb-1">
+                                    {% if pp_is_team %}
+                                        {{ _(
+                                            'These lower-ranked teams were released so the '
+                                            'round could be paired — each may now be paired '
+                                            'against an opponent it would normally be kept '
+                                            'apart from. All others kept their separations.'
+                                        ) }}
+                                    {% else %}
+                                        {{ _(
+                                            'These lower-ranked players were released so the '
+                                            'round could be paired — each may now be paired '
+                                            'against an opponent they would normally be kept '
+                                            'apart from. All others kept their separations.'
+                                        ) }}
+                                    {% endif %}
+                                </div>
+                                <ul class="list-group">
+                                    {% for name in pp_released %}
+                                        <li class="list-group-item py-1 small">{{ name }}</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
                         </div>
                     {% endif %}

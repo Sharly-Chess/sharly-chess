@@ -1270,16 +1270,33 @@ class Tournament:
             )
         return lines
 
-    def relaxed_prohibited_pairing_breakdown(
-        self, round_: int
-    ) -> list[tuple[list[int], list[int]]]:
-        """Per soft snapshot group, the relaxation outcome for display:
-        ``(protected, relaxed)`` member-id lists. ``protected`` is the core
-        kept apart from everyone in the group (rank ``<= protect_rank``);
-        each ``relaxed`` member is kept apart from the core but may now meet
-        another relaxed member. A fully-kept group has ``relaxed`` empty; a
-        fully-dropped group (no core) is omitted. Empty when the round had
-        no soft relaxation."""
+    def prohibited_pairing_was_relaxed(self, round_: int) -> bool:
+        """True iff this round actually released a soft separation — some
+        soft member ranked below the chosen ``protect_rank``. When everyone
+        could be protected, ``resolve_soft_protect_rank`` stores the bottom
+        rank (full protection), which is *not* a relaxation; the display
+        must not announce one."""
+        groups = self.prohibited_pairing_snapshot(round_)
+        protect_rank = next(
+            (g.protect_rank for g in groups if g.protect_rank is not None), None
+        )
+        if protect_rank is None:
+            return False
+        ranks = self._prohibited_member_weakness_ranks(after_round=round_ - 1)
+        bottom = max(ranks.values(), default=0) + 1
+        return any(
+            ranks.get(member, bottom) > protect_rank
+            for group in groups
+            if not group.is_hard
+            for member in group.member_ids
+        )
+
+    def released_prohibited_pairing_members(self, round_: int) -> list[int]:
+        """The soft members released this round (standing rank below the
+        chosen ``protect_rank``) — flat and de-duplicated across all soft
+        groups. These are the only ones that may now be paired against an
+        affiliated opponent; everyone else kept all their soft separations.
+        Ordered by standing rank (weakest last)."""
         groups = self.prohibited_pairing_snapshot(round_)
         protect_rank = next(
             (g.protect_rank for g in groups if g.protect_rank is not None), None
@@ -1288,13 +1305,14 @@ class Tournament:
             return []
         ranks = self._prohibited_member_weakness_ranks(after_round=round_ - 1)
         bottom = max(ranks.values(), default=0) + 1
-        breakdown: list[tuple[list[int], list[int]]] = []
-        for group in (g.member_ids for g in groups if not g.is_hard):
-            protected = [m for m in group if ranks.get(m, bottom) <= protect_rank]
-            relaxed = [m for m in group if ranks.get(m, bottom) > protect_rank]
-            if protected:
-                breakdown.append((protected, relaxed))
-        return breakdown
+        released = {
+            member
+            for group in groups
+            if not group.is_hard
+            for member in group.member_ids
+            if ranks.get(member, bottom) > protect_rank
+        }
+        return sorted(released, key=lambda member: ranks.get(member, bottom))
 
     def write_prohibited_pairing_snapshot(
         self, round_: int, protect_rank: int | None, database: 'EventDatabase'

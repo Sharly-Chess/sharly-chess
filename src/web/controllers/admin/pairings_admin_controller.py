@@ -2273,22 +2273,25 @@ class PairingsAdminController(BaseEventAdminController):
         snapshot_groups = display(
             [(group.is_hard, list(group.member_ids)) for group in snapshot]
         )
-        pp_protect_rank = next(
-            (
-                group.protect_rank
-                for group in snapshot
-                if group.protect_rank is not None
-            ),
-            None,
-        )
-        pp_relaxed_groups = [
-            {
-                'protected': [member_name(mid) for mid in protected],
-                'relaxed': [member_name(mid) for mid in relaxed],
-            }
-            for protected, relaxed in tournament.relaxed_prohibited_pairing_breakdown(
-                round_
+        # Only surface the relaxation detail when a soft separation was
+        # actually released. A round that could protect everyone still
+        # stores protect_rank at the bottom rank (full protection) — that
+        # is not a relaxation and must not be announced as one.
+        pp_protect_rank = (
+            next(
+                (
+                    group.protect_rank
+                    for group in snapshot
+                    if group.protect_rank is not None
+                ),
+                None,
             )
+            if tournament.prohibited_pairing_was_relaxed(round_)
+            else None
+        )
+        pp_released = [
+            member_name(mid)
+            for mid in tournament.released_prohibited_pairing_members(round_)
         ]
 
         template_context = {
@@ -2331,7 +2334,7 @@ class PairingsAdminController(BaseEventAdminController):
             'pp_member_options': member_options,
             'pp_snapshot_groups': snapshot_groups,
             'pp_protect_rank': pp_protect_rank,
-            'pp_relaxed_groups': pp_relaxed_groups,
+            'pp_released': pp_released,
             'pp_show_manual_form': show_manual_form,
             'pp_manual_form_index': manual_form_index,
             'data': data or {},
