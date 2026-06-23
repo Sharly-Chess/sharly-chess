@@ -79,28 +79,32 @@ class CustomUploadUtils:
         ):
             return [NotConfiguredCustomUploadStatus()]
 
+        statuses: list[CustomUploadStatus] = []
+
         # Last upload failure
         if custom_upload_plugin_data.upload_failure_id:
             status = CustomUploadFailureStatusManager().get_object(
                 custom_upload_plugin_data.upload_failure_id
             )
-            return [status]
+            statuses.append(status)
 
-        # TODO: handle multiple concurrent statuses
         is_modified = CustomUploadUploader.custom_upload_needed(tournament)
         # Current data status
         if not custom_upload_plugin_data.last_upload_at:
-            return [NeverUploadedCustomUploadStatus()]
+            statuses.append(NeverUploadedCustomUploadStatus())
         elif is_modified:
-            return [ModifiedCustomUploadStatus()]
-        elif CustomUploadUploader.is_upload_ongoing(tournament):
-            return [OngoingCustomUploadStatus()]
+            statuses.append(ModifiedCustomUploadStatus())
+        else:
+            statuses.append(UpToDateCustomUploadStatus())
+
+        # Next upload status
+        if CustomUploadUploader.is_upload_ongoing(tournament):
+            statuses.append(OngoingCustomUploadStatus())
         elif CustomUploadUploader.is_upload_queued(
             tournament
         ) or CustomUploadUploader.is_upload_scheduled(tournament):
-            return [PendingCustomUploadStatus()]
-        else:
-            return [UpToDateCustomUploadStatus()]
+            statuses.append(PendingCustomUploadStatus())
+        return statuses
 
 
 class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus]):

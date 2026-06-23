@@ -25,17 +25,19 @@
                 {{ tournament.name }}
             </td>
             <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
-                {% set tournament_status = custom_upload_utils.resolve_tournament_upload_statuses(tournament)[0] %}
-                {% set tooltip_message = tournament_status.tooltip_message(tournament) %}
-                <span
-                        class="badge rounded-pill {{ tournament_status.css_classes }}"
-                        style="height: 20px"
-                        {% if tooltip_message %}
-                            {{ macros.tooltip_attributes('', tooltip_message) }}
-                        {% endif %}
-                >
-                    {{ tournament_status.name }}
-                </span>
+                {% set tournament_statuses = custom_upload_utils.resolve_tournament_upload_statuses(tournament) %}
+                {% for status in tournament_statuses %}
+                    {% set tooltip_message = status.tooltip_message(tournament) %}
+                    <span
+                            class="badge rounded-pill {{ status.css_classes }}"
+                            style="height: 20px"
+                            {% if tooltip_message %}
+                                {{ macros.tooltip_attributes('', tooltip_message) }}
+                            {% endif %}
+                    >
+                        {{ status.name }}
+                    </span>
+                {% endfor %}
             </td>
             <td>
                 <!-- TODO: handle properly rendering of list of documents -->
