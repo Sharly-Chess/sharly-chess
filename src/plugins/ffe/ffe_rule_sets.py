@@ -59,6 +59,7 @@ _FFE_GAME_POINTS_SUISSE_STYLE: dict[int, float] = {
     Result.DRAW.value: 0.0,
     Result.LOSS.value: 0.0,
     Result.ZERO_POINT_BYE.value: 0.0,
+    Result.PAIRING_ALLOCATED_BYE.value: 2.0,
 }
 
 # Molter: standard 1 / 0.5 / 0 game-points. Absence scores 0.
@@ -67,6 +68,7 @@ _FFE_GAME_POINTS_MOLTER: dict[int, float] = {
     Result.DRAW.value: 0.5,
     Result.LOSS.value: 0.0,
     Result.ZERO_POINT_BYE.value: 0.0,
+    Result.PAIRING_ALLOCATED_BYE.value: 0.0,
 }
 
 # Tie-break order for the Swiss / round-robin phases of the two FFE
@@ -202,6 +204,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'gp_draw',
             'gp_loss',
             'gp_zpb',
+            'gp_pab',
         }
 
     @override
@@ -429,6 +432,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'gp_draw': _fmt(gp[Result.DRAW.value]),
             'gp_loss': _fmt(gp[Result.LOSS.value]),
             'gp_zpb': _fmt(gp[Result.ZERO_POINT_BYE.value]),
+            'gp_pab': _fmt(gp[Result.PAIRING_ALLOCATED_BYE.value]),
         }
         if pairing_system_id is not None:
             rounds = self.rounds_for_pairing(pairing_system_id)
