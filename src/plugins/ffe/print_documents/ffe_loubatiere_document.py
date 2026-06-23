@@ -131,7 +131,19 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
             colour = self._team_round_colour(team, round_, team_boards_by_round)
             match = record.match_at(round_) if record else None
             if match is None:
-                rounds_context.append({'round': round_, 'colour': colour})
+                # An unplayed round still needs the full shape so the
+                # template's `is not none` guards don't trip on a missing key.
+                rounds_context.append(
+                    {
+                        'round': round_,
+                        'colour': colour,
+                        'opponent': '',
+                        'gains': None,
+                        'differential': None,
+                        'match_points': None,
+                        'total_match_points': None,
+                    }
+                )
                 continue
             has_results = True
             opponent = (
