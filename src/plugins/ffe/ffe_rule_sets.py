@@ -215,7 +215,12 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         stored_tournament.enforce_roster_order = True
         stored_tournament.match_points = dict(_FFE_MATCH_POINTS)
         stored_tournament.primary_score = self._primary_score_for(pairing_system_id)
-        stored_tournament.game_points = dict(self._game_points_for(pairing_system_id))
+        # Overlay only the game-point fields the rule set manages
+        # (win/draw/loss/zpb), preserving any the user set that it does not —
+        # notably gp_pab — instead of replacing the whole mapping.
+        game_points = dict(stored_tournament.game_points or {})
+        game_points.update(self._game_points_for(pairing_system_id))
+        stored_tournament.game_points = game_points
         if pairing_system_id is not None:
             rounds = self.rounds_for_pairing(pairing_system_id)
             if rounds is not None:
