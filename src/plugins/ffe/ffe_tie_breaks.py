@@ -706,7 +706,15 @@ class BerlinTieBreak(TeamTieBreak):
 
     @property
     def base_acronym(self) -> str:
-        return 'BER'
+        return 'Be'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_BERLIN'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
 
     @property
     def base_help_text(self) -> str:
@@ -773,7 +781,15 @@ class GamePointsDifferentialTieBreak(TeamTieBreak):
 
     @property
     def base_acronym(self) -> str:
-        return 'GP-DIFF'
+        return 'd'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_GP_DIFF'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
 
     @property
     def base_help_text(self) -> str:
@@ -833,7 +849,15 @@ class GamePointsForTieBreak(TeamTieBreak):
 
     @property
     def base_acronym(self) -> str:
-        return 'GP-FOR'
+        return 'p'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_GP_FOR'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
 
     @property
     def base_help_text(self) -> str:
@@ -889,7 +913,15 @@ class LowestOwnAverageRatingTieBreak(TeamTieBreak):
 
     @property
     def base_acronym(self) -> str:
-        return 'OWN-ELO'
+        return 'Elo'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_OWN_ELO'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
 
     @property
     def base_help_text(self) -> str:

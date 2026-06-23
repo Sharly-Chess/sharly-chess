@@ -1004,6 +1004,10 @@ class FfePlugin(Plugin):
                 ffe_tie_breaks.PapiPerformanceTieBreak(),
                 ffe_tie_breaks.PapiSumOfBuchholzTieBreak(),
                 ffe_tie_breaks.PapiKashdanTieBreak(),
+                ffe_tie_breaks.BerlinTieBreak(),
+                ffe_tie_breaks.GamePointsDifferentialTieBreak(),
+                ffe_tie_breaks.GamePointsForTieBreak(),
+                ffe_tie_breaks.LowestOwnAverageRatingTieBreak(),
             ]
         }
 
