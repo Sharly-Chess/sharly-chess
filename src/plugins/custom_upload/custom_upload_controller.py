@@ -1,3 +1,4 @@
+import re
 from typing import Any, Annotated
 
 from litestar import get, post, patch
@@ -25,7 +26,6 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
-from web.messages import Message
 
 
 class CustomUploadAdminEventController(BaseEventAdminController):
@@ -37,9 +37,13 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             AuthAction.PUBLISH_RESULTS
         )
 
-    @classmethod
+    @staticmethod
+    def _extract_document_id(document_url: str) -> str:
+        return re.findall('/([\w-]*)\?', document_url)[0]
+
+    @staticmethod
     def _upload_results_context(
-        cls, web_context: BaseEventAdminWebContext
+        web_context: BaseEventAdminWebContext,
     ) -> dict[str, Any]:
         tournaments = web_context.get_admin_event().tournaments
         document_types_by_tournament = {}
@@ -48,17 +52,19 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 tournament
             ).document_urls
             document_types = []
-            if document_urls is not None and len(document_urls) > 0:
-                # TODO: refactor logic to be cleaner
-                for document_url in document_urls:
-                    document_id = document_url.split('/')[-1].split('?')[0]
-                    document_type = PrintDocumentManager(
-                        web_context.get_admin_event()
-                    ).get_type(document_id)
-                    document_types.append(document_type)
+            for document_url in document_urls:
+                document_id = CustomUploadAdminEventController._extract_document_id(
+                    document_url
+                )
+                document_type = PrintDocumentManager(
+                    web_context.get_admin_event()
+                ).get_type(document_id)
+                document_types.append(document_type)
             document_types_by_tournament[tournament.id] = document_types
         return web_context.template_context | {
-            'allowed_tournaments': cls._allowed_tournaments(web_context),
+            'allowed_tournaments': CustomUploadAdminEventController._allowed_tournaments(
+                web_context
+            ),
             'documents_by_tournament': document_types_by_tournament,
         }
 
@@ -80,24 +86,13 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             after='settle',
         )
 
-    @classmethod
-    def _render_upload_results(cls, web_context: BaseEventAdminWebContext) -> Template:
-        return HTMXTemplate(
-            template_name='/custom_upload_results.html',
-            context=cls._upload_results_context(web_context),
-        )
-
     @staticmethod
-    def _render_messages(
-        request: HTMXRequest,
-    ) -> Template:
+    def _render_upload_results(web_context: BaseEventAdminWebContext) -> Template:
         return HTMXTemplate(
-            template_name='common/messages.html',
-            re_swap='afterbegin',
-            re_target='#messages',
-            context={
-                'messages': Message.messages(request),
-            },
+            template_name='custom_upload_results.html',
+            context=CustomUploadAdminEventController._upload_results_context(
+                web_context
+            ),
         )
 
     @get(
@@ -185,7 +180,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                         "There should be no more than one unescaped '?' character"
                     )
                     continue
-                document_id = value.split('/')[-1].split('?')[0]
+                document_id = CustomUploadAdminEventController._extract_document_id(
+                    value
+                )
                 try:
                     document_manager.get_type(document_id)
                 except KeyError:
