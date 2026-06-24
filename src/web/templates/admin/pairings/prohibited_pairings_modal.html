@@ -41,9 +41,11 @@
                             >
                                 <i class="bi-chevron-down pe-1"></i>
                                 {{ _(
-                                    '%(n)d %(members)s released',
-                                    n=pp_released | length,
-                                    members=_('teams') if pp_is_team else _('players'),
+                                    '%(n)d teams freed from their soft constraints',
+                                    n=pp_released | length
+                                ) if pp_is_team else _(
+                                    '%(n)d players freed from their soft constraints',
+                                    n=pp_released | length
                                 ) }}
                             </a>
                             <div class="collapse mt-1" id="pp-applied-groups">

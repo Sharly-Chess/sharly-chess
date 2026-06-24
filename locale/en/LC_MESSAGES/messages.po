@@ -41,7 +41,15 @@ msgid "%(minutes)d minutes before"
 msgstr ""
 
 #, python-format
+msgid "%(n)d players freed from their soft constraints"
+msgstr ""
+
+#, python-format
 msgid "%(n)d team(s) could not be determined and were left unchanged."
+msgstr ""
+
+#, python-format
+msgid "%(n)d teams freed from their soft constraints"
 msgstr ""
 
 #, python-format
@@ -735,7 +743,7 @@ msgstr ""
 msgid "Add tournaments"
 msgstr ""
 
-msgid "Added automatically, on top of any manual points above."
+msgid "Added automatically, on top of any manual points below."
 msgstr ""
 
 msgid "Administration"
@@ -803,9 +811,6 @@ msgstr ""
 
 msgid "All present *** ALL TEAMS PRESENT"
 msgstr "All present"
-
-msgid "All soft separations relaxed."
-msgstr ""
 
 msgid "All teams are assigned to a tournament."
 msgstr ""
@@ -1231,6 +1236,9 @@ msgid "Boards screens show pairings by board number."
 msgstr ""
 
 msgid "Bolivia"
+msgstr ""
+
+msgid "Bonus / penalty"
 msgstr ""
 
 msgid "Bonus / penalty points"
@@ -2555,6 +2563,9 @@ msgid "Edit Player"
 msgstr ""
 
 msgid "Edit account"
+msgstr ""
+
+msgid "Edit bonus / penalty"
 msgstr ""
 
 msgid "Edit criterion"
@@ -5532,10 +5543,6 @@ msgstr ""
 msgid "Properties"
 msgstr ""
 
-#, python-format
-msgid "Protected core (%(count)d):"
-msgstr ""
-
 msgid "Protected pairings editing"
 msgstr ""
 
@@ -5709,10 +5716,6 @@ msgid "Refresh this page."
 msgstr ""
 
 msgid "Regular event"
-msgstr ""
-
-#, python-format
-msgid "Relaxed: top %(n)d protected"
 msgstr ""
 
 msgid "Release {version} has been installed in [{folder}]."
@@ -7149,6 +7152,12 @@ msgstr ""
 msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
 msgstr ""
 
+msgid "These lower-ranked players were released so the round could be paired — each may now be paired against an opponent they would normally be kept apart from. All others kept their separations."
+msgstr ""
+
+msgid "These lower-ranked teams were released so the round could be paired — each may now be paired against an opponent it would normally be kept apart from. All others kept their separations."
+msgstr ""
+
 msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
@@ -7261,6 +7270,9 @@ msgid "This player already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "This player has already been paired; their team cannot be changed."
+msgstr ""
+
+msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first)."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -8722,10 +8734,21 @@ msgstr ""
 msgid "— Unassigned —"
 msgstr ""
 
-#, python-format
-msgid "…each also kept apart from (%(count)d):"
-msgstr ""
-
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Added automatically, on top of any manual points above."
+#~ msgstr ""
+
+#~ msgid "All soft separations relaxed."
+#~ msgstr ""
+
+#~ msgid "Protected core (%(count)d):"
+#~ msgstr ""
+
+#~ msgid "Relaxed: top %(n)d protected"
+#~ msgstr ""
+
+#~ msgid "…each also kept apart from (%(count)d):"
+#~ msgstr ""
 

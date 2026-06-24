@@ -788,9 +788,7 @@ class TeamAdminController(BaseEventAdminController):
                 Message.warning(
                     request,
                     _(
-                        'This player is paired in at least one round and '
-                        'cannot be removed from the roster. Remove them from '
-                        'the line-up first.'
+                        'This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first).'
                     ),
                 )
             else:

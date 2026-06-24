@@ -41,8 +41,16 @@ msgid "%(minutes)d minutes before"
 msgstr "%(minutes)d minutes avant"
 
 #, python-format
+msgid "%(n)d players freed from their soft constraints"
+msgstr "%(n)d joueur·euses libéré·es de leurs contraintes souples"
+
+#, python-format
 msgid "%(n)d team(s) could not be determined and were left unchanged."
 msgstr "%(n)d équipe(s) n'ont pas pu être déterminées et sont restées inchangées."
+
+#, python-format
+msgid "%(n)d teams freed from their soft constraints"
+msgstr "%(n)d équipes libérées de leurs contraintes souples"
 
 #, python-format
 msgid "%(num).1f %(unit)s group"
@@ -735,7 +743,7 @@ msgstr "Ajouter un départage"
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
 
-msgid "Added automatically, on top of any manual points above."
+msgid "Added automatically, on top of any manual points below."
 msgstr "Ajoutés automatiquement, en plus des points manuels ci-dessous."
 
 msgid "Administration"
@@ -803,9 +811,6 @@ msgstr "Tou·tes les joueur·euses ont été marqué·es « Présent·e »."
 
 msgid "All present *** ALL TEAMS PRESENT"
 msgstr "Toutes présentes"
-
-msgid "All soft separations relaxed."
-msgstr "Toutes les séparations souples ont été relâchées."
 
 msgid "All teams are assigned to a tournament."
 msgstr "Toutes les équipes sont assignées à un tournoi."
@@ -1232,6 +1237,9 @@ msgstr "Les écrans d'affichage des échiquiers présentent les appariements par
 
 msgid "Bolivia"
 msgstr "Bolivie"
+
+msgid "Bonus / penalty"
+msgstr "Bonus / pénalité"
 
 msgid "Bonus / penalty points"
 msgstr "Points de bonus/pénalité"
@@ -2556,6 +2564,9 @@ msgstr "Modifier joueur·euse"
 
 msgid "Edit account"
 msgstr "Modifier le compte"
+
+msgid "Edit bonus / penalty"
+msgstr "Modifier bonus / pénalité"
 
 msgid "Edit criterion"
 msgstr "Modifier le critère"
@@ -5534,10 +5545,6 @@ msgstr "Protections d'appariement"
 msgid "Properties"
 msgstr "Propriétés"
 
-#, python-format
-msgid "Protected core (%(count)d):"
-msgstr "Noyau protégé (%(count)d) :"
-
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
 
@@ -5712,10 +5719,6 @@ msgstr "Actualiser la page."
 
 msgid "Regular event"
 msgstr "Évènement régulier"
-
-#, python-format
-msgid "Relaxed: top %(n)d protected"
-msgstr "Relâché : les %(n)d premiers protégés"
 
 msgid "Release {version} has been installed in [{folder}]."
 msgstr "La nouvelle version {version} a été installée dans [{folder}]."
@@ -7151,6 +7154,12 @@ msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
 msgstr "Il doit y avoir au moins un écran ou une famille d'écrans définie pour que l'écran rotatif soit accessible."
 
+msgid "These lower-ranked players were released so the round could be paired — each may now be paired against an opponent they would normally be kept apart from. All others kept their separations."
+msgstr "Les protections de ces joueur·euses (en fin de classement) ont du être levées pour permettre l'appariement."
+
+msgid "These lower-ranked teams were released so the round could be paired — each may now be paired against an opponent it would normally be kept apart from. All others kept their separations."
+msgstr "Les protections de ces équipes (en fin de classement) ont du être levées pour permettre l'appariement."
+
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
 
@@ -7264,6 +7273,9 @@ msgstr "Ce·tte joueur·euse existe déjà dans le tournoi [{tournament}]."
 
 msgid "This player has already been paired; their team cannot be changed."
 msgstr "Ce·tte joueur·euse a déjà été apparié·e, son équipe ne peut être modifiée."
+
+msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first)."
+msgstr "Ce·tte joueur·euse est apparié·es pour au moins une ronde et ne peut être supprimé·e de l'effectif (doit d'abord être supprimé·e de la composition de la ronde)."
 
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
@@ -8724,10 +8736,21 @@ msgstr "—"
 msgid "— Unassigned —"
 msgstr "— Non assigné·e —"
 
-#, python-format
-msgid "…each also kept apart from (%(count)d):"
-msgstr "…chacun aussi séparé de (%(count)d) :"
-
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "Added automatically, on top of any manual points above."
+#~ msgstr "Ajoutés automatiquement, en plus des points manuels ci-dessous."
+
+#~ msgid "All soft separations relaxed."
+#~ msgstr "Toutes les séparations souples ont été relâchées."
+
+#~ msgid "Protected core (%(count)d):"
+#~ msgstr "Noyau protégé (%(count)d) :"
+
+#~ msgid "Relaxed: top %(n)d protected"
+#~ msgstr "Relâché : les %(n)d premiers protégés"
+
+#~ msgid "…each also kept apart from (%(count)d):"
+#~ msgstr "…chacun aussi séparé de (%(count)d) :"
 
