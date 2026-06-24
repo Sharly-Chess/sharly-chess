@@ -303,7 +303,6 @@ class SharlyChessServerToga(toga.App):
         self.server_thread: Optional[threading.Thread] = None
         self.serve_task: asyncio.Task | None = None
         self.server_running = False
-        self.sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
 
         # Thread-safe communication
         self.message_queue: queue.Queue[tuple[str, str, Optional[str]]] = queue.Queue()
@@ -552,21 +551,21 @@ class SharlyChessServerToga(toga.App):
         self.compact_size = self.main_window.size
 
     def update_from_sharly_chess_config(self):
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+        config = SharlyChessConfig()
         assert self.launch_browser_switch is not None
-        self.launch_browser_switch.value = sharly_chess_config.launch_browser
+        self.launch_browser_switch.value = config.launch_browser
         assert self.log_level_select is not None and isinstance(
             self.log_level_select.items, ListSource
         )
         self.log_level_select.value = self.log_level_select.items.find(
-            data={'level': sharly_chess_config.console_log_level}
+            data={'level': config.console_log_level}
         )
         assert self.log_color_switch is not None
-        self.log_color_switch.value = sharly_chess_config.console_color
+        self.log_color_switch.value = config.console_color
         assert self.show_log_level_switch is not None
-        self.show_log_level_switch.value = sharly_chess_config.console_show_level
+        self.show_log_level_switch.value = config.console_show_level
         assert self.show_log_time_switch is not None
-        self.show_log_time_switch.value = sharly_chess_config.console_show_date
+        self.show_log_time_switch.value = config.console_show_date
 
     def _show_view(self, name: str, is_compact_window: bool = True):
         if self.active_view_name == name:
@@ -830,7 +829,7 @@ class SharlyChessServerToga(toga.App):
 
     def _open_browser(self, widget: Any = None, **kwargs) -> None:
         try:
-            url = self.sharly_chess_config.local_url
+            url = SharlyChessConfig().local_url
             webbrowser.open(url)
             self.add_log_message(f'Opening browser: {url}', 'success')
         except Exception as e:
