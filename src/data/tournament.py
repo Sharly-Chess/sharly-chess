@@ -1486,6 +1486,23 @@ class Tournament:
                     # Round-robin rest game: not a match — no record,
                     # no points, invisible to the tie-breaks.
                     continue
+                # A PAB team still participates (it's present, just unpaired),
+                # so OWN-ELO should reflect its strength. The bye envelope has
+                # no boards, so take the round's line-up players' ratings.
+                bye_team = self.event.teams_by_id.get(a_id)
+                pab_ratings: tuple[int | None, ...]
+                if bye_team is None:
+                    pab_ratings = a_ratings
+                else:
+                    rating_list: list[int | None] = []
+                    for player in bye_team.effective_round_slots(team_board.round):
+                        tp = (
+                            self.tournament_players_by_id.get(player.id)
+                            if player is not None
+                            else None
+                        )
+                        rating_list.append(tp.rating if tp and tp.rating else None)
+                    pab_ratings = tuple(rating_list)
                 matches_per_team[a_id].append(
                     TeamMatchRecord(
                         round_=team_board.round,
@@ -1494,7 +1511,7 @@ class Tournament:
                         own_gp=self.team_pab_game_points,
                         match_type=TeamMatchType.PAB,
                         board_scores=a_boards,
-                        board_ratings=a_ratings,
+                        board_ratings=pab_ratings,
                     )
                 )
                 totals_mp[a_id] += pab_mp
