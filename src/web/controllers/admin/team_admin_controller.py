@@ -481,6 +481,13 @@ class TeamAdminController(BaseEventAdminController):
             'roster_at_cap': (
                 roster_max_size is not None and len(team.players) >= roster_max_size
             ),
+            # Paired players can't be removed (it would orphan their board);
+            # the template disables their remove button.
+            'paired_player_ids': {
+                player.id
+                for player in team.players
+                if cls._player_is_paired(team, player)
+            },
         }
 
     @get(
@@ -775,11 +782,39 @@ class TeamAdminController(BaseEventAdminController):
         team = web_context.get_admin_team()
         player = event.players_by_id.get(player_id)
         if player is not None:
-            with EventDatabase(event.uniq_id, True) as database:
-                team.remove_player(player, database)
-                self._resort_team_tournament(team, database)
+            if self._player_is_paired(team, player):
+                # A paired player can't leave the roster — it would orphan
+                # their board(s). The line-up must be edited first.
+                Message.warning(
+                    request,
+                    _(
+                        'This player is paired in at least one round and '
+                        'cannot be removed from the roster. Remove them from '
+                        'the line-up first.'
+                    ),
+                )
+            else:
+                with EventDatabase(event.uniq_id, True) as database:
+                    team.remove_player(player, database)
+                    self._resort_team_tournament(team, database)
         return self._admin_event_teams_render(
             web_context, self._team_roster_modal_context(web_context)
+        )
+
+    @staticmethod
+    def _player_is_paired(team: Team, player: Player) -> bool:
+        """True if *player* has a pairing in any round of *team*'s
+        tournament — an opponent or a bye/exempt. Such a player can't be
+        removed from the roster without orphaning their board."""
+        tournament = team.tournament
+        if tournament is None:
+            return False
+        tournament_player = tournament.tournament_players_by_id.get(player.id)
+        if tournament_player is None:
+            return False
+        return any(
+            pairing.opponent_id is not None or pairing.exempt
+            for pairing in tournament_player.pairings_by_round.values()
         )
 
     @patch(

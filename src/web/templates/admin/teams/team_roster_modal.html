@@ -120,21 +120,49 @@
                                         {{ macros.tooltip_attributes('info', _('Team captain.'), 'top') }}
                                     ></i>
                                 {% endif %}
-                                <button
-                                    type="button"
-                                    class="btn btn-sm btn-outline-danger text-nowrap"
-                                    hx-delete="{{ url_for(
-                                        'admin-team-remove-player',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        team_id=admin_team.id,
-                                        player_id=player.id,
-                                    ) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    title="{{ _('Remove from team') }}"
-                                >
-                                    <i class="bi-x-lg"></i>
-                                </button>
+                                {% if player.id in paired_player_ids %}
+                                    {# Tooltip lives on a wrapper span — a
+                                       disabled button has pointer-events:none
+                                       so it can't trigger its own tooltip. #}
+                                    <span
+                                        class="d-inline-block"
+                                        tabindex="0"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            _(
+                                                'This player is paired in a round '
+                                                'and cannot be removed. Remove them '
+                                                'from the line-up first.'
+                                            ),
+                                            'top',
+                                        ) }}
+                                    >
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-danger text-nowrap"
+                                            style="pointer-events: none;"
+                                            disabled
+                                        >
+                                            <i class="bi-x-lg"></i>
+                                        </button>
+                                    </span>
+                                {% else %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger text-nowrap"
+                                        hx-delete="{{ url_for(
+                                            'admin-team-remove-player',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            team_id=admin_team.id,
+                                            player_id=player.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        title="{{ _('Remove from team') }}"
+                                    >
+                                        <i class="bi-x-lg"></i>
+                                    </button>
+                                {% endif %}
                             </div>
                         </div>
                     {% endfor %}

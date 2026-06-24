@@ -28,19 +28,25 @@ class Board:
         self.round = round_
         self.stored_board = stored_board
         self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
-        self._white_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
-            weakref.ref(
-                tournament.tournament_players_by_id[stored_board.white_player_id]
-            )
+        # A board may reference a player who is no longer a tournament
+        # player (e.g. one removed from a team roster). Treat the dangling
+        # slot as a hole rather than raising — a KeyError here would make
+        # the whole event unopenable.
+        white = (
+            tournament.tournament_players_by_id.get(stored_board.white_player_id)
             if stored_board.white_player_id
             else None
         )
-        self._black_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
-            weakref.ref(
-                tournament.tournament_players_by_id[stored_board.black_player_id]
-            )
+        black = (
+            tournament.tournament_players_by_id.get(stored_board.black_player_id)
             if stored_board.black_player_id
             else None
+        )
+        self._white_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
+            weakref.ref(white) if white is not None else None
+        )
+        self._black_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
+            weakref.ref(black) if black is not None else None
         )
 
     @property
