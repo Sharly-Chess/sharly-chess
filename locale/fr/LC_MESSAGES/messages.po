@@ -5876,7 +5876,7 @@ msgid "Roster is full ({max} players max for this rule set). Remove a player to 
 msgstr "L'effectif est complet ({max} joueur·euses max pour ce règlement). Retirez un·e joueur·euse pour en ajouter un·e autre."
 
 msgid "Roster issue"
-msgstr "Problème d'effectif"
+msgstr "Problème dans l'effectif"
 
 #, python-format
 msgid "Roster — %(team)s"
