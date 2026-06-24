@@ -462,176 +462,30 @@
                     </script>
                 {% endif %}
 
-                <button
-                    type="button"
-                    class="collapse-button {% if not force_points_open %}collapsed{% endif %} mt-3"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#points-collapse"
-                    aria-expanded="false"
-                >
-                    <h4 class="form-check-label d-inline-flex align-items-center gap-2">
-                        <i class="bi-chevron-down text-body"></i>
-                        {{ _('Point attribution') }}
-                    </h4>
-                </button>
-                <div id="points-collapse" class="{% if not force_points_open %}collapse{% endif %}">
-                    {% if is_team_event %}
-                        <h6 class="mt-3 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
-                            {{ _('Game points') }}
-                        </h6>
-                    {% endif %}
-                    <div class="row gy-2 gx-3">
-                        <div class="col-6 col-md-4">
-                            {{ admin_macros.number_input(
-                                name='gp_win',
-                                label=_('Win:'),
-                                placeholder='1',
-                                step='any',
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-6 col-md-4">
-                            {{ admin_macros.number_input(
-                                name='gp_draw',
-                                label=_('Draw:'),
-                                placeholder='0.5',
-                                step='any',
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-6 col-md-4">
-                            {{ admin_macros.number_input(
-                                name='gp_loss',
-                                label=_('Loss:'),
-                                placeholder='0',
-                                step='any',
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
-                    <div class="row gy-2 gx-3 mt-1">
-                        <div class="col-6 col-md-6">
-                            {{ admin_macros.number_input(
-                                name='gp_zpb',
-                                label=_('Absence:'),
-                                placeholder='0',
-                                step='any',
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-6 col-md-6" id="gp-pab-field">
-                            {{ admin_macros.number_input(
-                                name='gp_pab',
-                                label=_('PAB (Team):') if is_team_event else _('PAB:'),
-                                placeholder='0.5' if is_team_event else '1',
-                                tooltip_text=(
-                                    _(
-                                        'Game points awarded to the team for a '
-                                        'Pairing Allocated Bye. Defaults to a '
-                                        'drawn match (boards × Draw value).'
-                                    )
-                                    if is_team_event else
-                                    _(
-                                        'Pairing allocated bye. '
-                                        'Defaults to the Win value.'
-                                    )
-                                ),
-                                step='any',
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                    </div>
-                    <script>
-                        (function () {
-                            const IS_TEAM_EVENT = {{ 'true' if is_team_event else 'false' }};
-                            function effectiveValue($input, fallback) {
-                                const v = ($input.val() || '').trim();
-                                if (v !== '') return v;
-                                const p = $input.attr('placeholder');
-                                return p && p !== '' ? p : fallback;
-                            }
-                            const $gpWin = $('#gp-win');
-                            const $gpDraw = $('#gp-draw');
-                            const $gpLoss = $('#gp-loss');
-                            const $gpZpb = $('#gp-zpb');
-                            const $gpPab = $('#gp-pab');
-                            const $teamPlayerCount = $('#team-player-count');
-                            const $mpWin = $('#mp-win');
-                            const $mpDraw = $('#mp-draw');
-                            const $mpPab = $('#mp-pab');
-                            function formatNumber(n) {
-                                return Number.isFinite(n)
-                                    ? (Number.isInteger(n) ? n.toString() : n.toString())
-                                    : '';
-                            }
-                            function isSwissSystem() {
-                                const system = $('[name=pairing_system]').val() || '';
-                                return system === 'SWISS' || system === 'TEAM_SWISS';
-                            }
-                            function syncDerived() {
-                                $gpZpb.attr('placeholder', effectiveValue($gpLoss, '0'));
-                                // PABs only exist in Swiss pairings (other
-                                // systems give rest games) — hide the PAB
-                                // fields elsewhere. Team Swiss PAB defaults
-                                // to a drawn match (FIDE C.04.6 §1.4) —
-                                // team_player_count * gp_draw — and
-                                // individual Swiss PAB to gp_win.
-                                const swiss = isSwissSystem();
-                                $('#gp-pab-field').toggle(swiss);
-                                $('#mp-pab-field').toggle(swiss);
-                                let gpPabPlaceholder = '';
-                                let mpPabPlaceholder = '';
-                                if (swiss) {
-                                    if (IS_TEAM_EVENT) {
-                                        const drawVal = parseFloat(
-                                            effectiveValue($gpDraw, '0.5')
-                                        );
-                                        const teamCount = parseInt(
-                                            effectiveValue($teamPlayerCount, '0'),
-                                            10
-                                        );
-                                        gpPabPlaceholder =
-                                            Number.isFinite(drawVal) && teamCount > 0
-                                                ? formatNumber(drawVal * teamCount)
-                                                : effectiveValue($gpDraw, '0.5');
-                                        mpPabPlaceholder = effectiveValue($mpDraw, '1');
-                                    } else {
-                                        gpPabPlaceholder = effectiveValue($gpWin, '1');
-                                    }
-                                }
-                                $gpPab.attr('placeholder', gpPabPlaceholder);
-                                if ($mpPab.length) {
-                                    $mpPab.attr('placeholder', mpPabPlaceholder);
-                                }
-                            }
-                            $gpWin.on('input change', syncDerived);
-                            $gpDraw.on('input change', syncDerived);
-                            $gpLoss.on('input change', syncDerived);
-                            $teamPlayerCount.on('input change', syncDerived);
-                            $mpWin.on('input change', syncDerived);
-                            $mpDraw.on('input change', syncDerived);
-                            $('[name=pairing_system]').on('change', syncDerived);
-                            syncDerived();
-                        })();
-                    </script>
-                    {% if is_team_event %}
-                        <h6 class="mt-4 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
-                            {{ _('Match points') }}
-                        </h6>
+                <div>
+                    <button
+                        type="button"
+                        class="collapse-button {% if not force_points_open %}collapsed{% endif %} mt-3"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#points-collapse"
+                        aria-expanded="false"
+                    >
+                        <h4 class="form-check-label d-inline-flex align-items-center gap-2">
+                            <i class="bi-chevron-down text-body"></i>
+                            {{ _('Point attribution') }}
+                        </h4>
+                    </button>
+                    <div id="points-collapse" class="{% if not force_points_open %}collapse{% endif %}">
+                        {% if is_team_event %}
+                            <h6 class="mt-3 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
+                                {{ _('Game points') }}
+                            </h6>
+                        {% endif %}
                         <div class="row gy-2 gx-3">
                             <div class="col-6 col-md-4">
                                 {{ admin_macros.number_input(
-                                    name='mp_win',
+                                    name='gp_win',
                                     label=_('Win:'),
-                                    placeholder='2',
-                                    step='any',
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <div class="col-6 col-md-4">
-                                {{ admin_macros.number_input(
-                                    name='mp_draw',
-                                    label=_('Draw:'),
                                     placeholder='1',
                                     step='any',
                                     data=data, errors=errors
@@ -639,7 +493,16 @@
                             </div>
                             <div class="col-6 col-md-4">
                                 {{ admin_macros.number_input(
-                                    name='mp_loss',
+                                    name='gp_draw',
+                                    label=_('Draw:'),
+                                    placeholder='0.5',
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-6 col-md-4">
+                                {{ admin_macros.number_input(
+                                    name='gp_loss',
                                     label=_('Loss:'),
                                     placeholder='0',
                                     step='any',
@@ -648,43 +511,185 @@
                             </div>
                         </div>
                         <div class="row gy-2 gx-3 mt-1">
-                            <div class="col-6 col-md-6" id="mp-pab-field">
+                            <div class="col-6 col-md-6">
                                 {{ admin_macros.number_input(
-                                    name='mp_pab',
-                                    label=_('PAB:'),
-                                    placeholder='1',
-                                    tooltip_text=_(
-                                        'Pairing allocated bye. Defaults to '
-                                        'the Draw value.'
+                                    name='gp_zpb',
+                                    label=_('Absence:'),
+                                    placeholder='0',
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-6 col-md-6" id="gp-pab-field">
+                                {{ admin_macros.number_input(
+                                    name='gp_pab',
+                                    label=_('PAB (Team):') if is_team_event else _('PAB:'),
+                                    placeholder='0.5' if is_team_event else '1',
+                                    tooltip_text=(
+                                        _(
+                                            'Game points awarded to the team for a '
+                                            'Pairing Allocated Bye. Defaults to a '
+                                            'drawn match (boards × Draw value).'
+                                        )
+                                        if is_team_event else
+                                        _(
+                                            'Pairing allocated bye. '
+                                            'Defaults to the Win value.'
+                                        )
                                     ),
                                     step='any',
                                     data=data, errors=errors
                                 ) }}
                             </div>
                         </div>
-                    {% endif %}
+                        <script>
+                            (function () {
+                                const IS_TEAM_EVENT = {{ 'true' if is_team_event else 'false' }};
+                                function effectiveValue($input, fallback) {
+                                    const v = ($input.val() || '').trim();
+                                    if (v !== '') return v;
+                                    const p = $input.attr('placeholder');
+                                    return p && p !== '' ? p : fallback;
+                                }
+                                const $gpWin = $('#gp-win');
+                                const $gpDraw = $('#gp-draw');
+                                const $gpLoss = $('#gp-loss');
+                                const $gpZpb = $('#gp-zpb');
+                                const $gpPab = $('#gp-pab');
+                                const $teamPlayerCount = $('#team-player-count');
+                                const $mpWin = $('#mp-win');
+                                const $mpDraw = $('#mp-draw');
+                                const $mpPab = $('#mp-pab');
+                                function formatNumber(n) {
+                                    return Number.isFinite(n)
+                                        ? (Number.isInteger(n) ? n.toString() : n.toString())
+                                        : '';
+                                }
+                                function isSwissSystem() {
+                                    const system = $('[name=pairing_system]').val() || '';
+                                    return system === 'SWISS' || system === 'TEAM_SWISS';
+                                }
+                                function syncDerived() {
+                                    $gpZpb.attr('placeholder', effectiveValue($gpLoss, '0'));
+                                    // PABs only exist in Swiss pairings (other
+                                    // systems give rest games) — hide the PAB
+                                    // fields elsewhere. Team Swiss PAB defaults
+                                    // to a drawn match (FIDE C.04.6 §1.4) —
+                                    // team_player_count * gp_draw — and
+                                    // individual Swiss PAB to gp_win.
+                                    const swiss = isSwissSystem();
+                                    $('#gp-pab-field').toggle(swiss);
+                                    $('#mp-pab-field').toggle(swiss);
+                                    let gpPabPlaceholder = '';
+                                    let mpPabPlaceholder = '';
+                                    if (swiss) {
+                                        if (IS_TEAM_EVENT) {
+                                            const drawVal = parseFloat(
+                                                effectiveValue($gpDraw, '0.5')
+                                            );
+                                            const teamCount = parseInt(
+                                                effectiveValue($teamPlayerCount, '0'),
+                                                10
+                                            );
+                                            gpPabPlaceholder =
+                                                Number.isFinite(drawVal) && teamCount > 0
+                                                    ? formatNumber(drawVal * teamCount)
+                                                    : effectiveValue($gpDraw, '0.5');
+                                            mpPabPlaceholder = effectiveValue($mpDraw, '1');
+                                        } else {
+                                            gpPabPlaceholder = effectiveValue($gpWin, '1');
+                                        }
+                                    }
+                                    $gpPab.attr('placeholder', gpPabPlaceholder);
+                                    if ($mpPab.length) {
+                                        $mpPab.attr('placeholder', mpPabPlaceholder);
+                                    }
+                                }
+                                $gpWin.on('input change', syncDerived);
+                                $gpDraw.on('input change', syncDerived);
+                                $gpLoss.on('input change', syncDerived);
+                                $teamPlayerCount.on('input change', syncDerived);
+                                $mpWin.on('input change', syncDerived);
+                                $mpDraw.on('input change', syncDerived);
+                                $('[name=pairing_system]').on('change', syncDerived);
+                                syncDerived();
+                            })();
+                        </script>
+                        {% if is_team_event %}
+                            <h6 class="mt-4 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
+                                {{ _('Match points') }}
+                            </h6>
+                            <div class="row gy-2 gx-3">
+                                <div class="col-6 col-md-4">
+                                    {{ admin_macros.number_input(
+                                        name='mp_win',
+                                        label=_('Win:'),
+                                        placeholder='2',
+                                        step='any',
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    {{ admin_macros.number_input(
+                                        name='mp_draw',
+                                        label=_('Draw:'),
+                                        placeholder='1',
+                                        step='any',
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    {{ admin_macros.number_input(
+                                        name='mp_loss',
+                                        label=_('Loss:'),
+                                        placeholder='0',
+                                        step='any',
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                            </div>
+                            <div class="row gy-2 gx-3 mt-1">
+                                <div class="col-6 col-md-6" id="mp-pab-field">
+                                    {{ admin_macros.number_input(
+                                        name='mp_pab',
+                                        label=_('PAB:'),
+                                        placeholder='1',
+                                        tooltip_text=_(
+                                            'Pairing allocated bye. Defaults to '
+                                            'the Draw value.'
+                                        ),
+                                        step='any',
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
 
                 {% for form_fields_template in plugin_form_fields_templates %}
                     {% include form_fields_template %}
                 {% endfor %}
-                <button
-                    type="button"
-                    class="collapse-button {% if not force_criteria_open %}collapsed{% endif %} mt-3"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#criteria-collapse"
-                    aria-expanded="false"
-                >
-                    <h4 class="form-check-label d-inline-flex align-items-center gap-2">
-                        <i class="bi-chevron-down text-body"></i>
-                        {{ _('Criteria') }}
-                    </h4>
-                </button>
-                <div id="criteria-collapse" class="{% if not force_criteria_open %}collapse{% endif %}">
-                    <div class="row">
-                        {% for criterion in tournament_criteria %}
-                            {% include criterion.template_name %}
-                        {% endfor %}
+
+                <div>
+                    <button
+                        type="button"
+                        class="collapse-button {% if not force_criteria_open %}collapsed{% endif %} mt-3"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#criteria-collapse"
+                        aria-expanded="false"
+                    >
+                        <h4 class="form-check-label d-inline-flex align-items-center gap-2">
+                            <i class="bi-chevron-down text-body"></i>
+                            {{ _('Criteria') }}
+                        </h4>
+                    </button>
+                    <div id="criteria-collapse" class="{% if not force_criteria_open %}collapse{% endif %}">
+                        <div class="row">
+                            {% for criterion in tournament_criteria %}
+                                {% include criterion.template_name %}
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
                 {% include '/admin/tournaments/tournament_schedule_section.html' %}
