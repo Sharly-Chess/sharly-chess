@@ -22,7 +22,7 @@
     <td class="text-truncate">
         {% if molter_code is defined and molter_code %}<small class="text-muted me-1">{{ molter_code[0] }}</small>{% endif %}
         {% if not wtp %}
-            <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>
+            <em class="text-muted">—</em>
         {% elif lineup_team_board is defined and wtp.team_id %}
             <span class="lineup-view">
                 {% with tournament_player=wtp, display_rating=true %}
@@ -106,7 +106,7 @@
             {% if admin_event.is_team_event %}
                 {# A missing side in a flat team system is a lineup
                    hole (forfeit), not a pairing-allocated bye. #}
-                <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>
+                <em class="text-muted">—</em>
             {% else %}
                 {% set first_pab_round = wtp.first_pab_round if wtp else none %}
                 {% if first_pab_round and first_pab_round < admin_round %}
