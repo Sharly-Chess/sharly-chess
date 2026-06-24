@@ -891,7 +891,10 @@ class PapiConverter:
                 use_manual = True
                 break
             papi_tiebreaks.append(papi_tiebreak)
-        if use_manual:
+        if not tournament.started:
+            # Do not set a manual tie-break if the tournament is not started
+            pass
+        elif use_manual:
             # Replace the final Papi tie-break by a manual tie-break representing the SC ranking
             # This way, at least the last round is correct
             if manual_index is not None:
