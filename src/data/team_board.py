@@ -173,6 +173,30 @@ class TeamBoard:
         _, b_adj = tournament.effective_point_adjustment(stb.team_b_id, self.round)
         return a_gp + a_adj, b_gp + b_adj
 
+    def team_all_forfeit(self, team_id: int) -> bool:
+        """True when every board this team is on was forfeited — its player
+        absent (a hole) or holding a forfeit-loss result — so the team's
+        score is shown as 'F' rather than 0. False while any board is still
+        unplayed or was contested over the board."""
+        saw_board = False
+        for board in self.boards:
+            white_team, black_team = self.board_team_ids(board)
+            if team_id not in (white_team, black_team):
+                continue
+            saw_board = True
+            if team_id == white_team:
+                player = board.optional_white_tournament_player
+                pairing = board.optional_white_pairing
+            else:
+                player = board.black_tournament_player
+                pairing = board.optional_black_pairing
+            if player is None:
+                continue  # a hole counts as a forfeited board
+            result = pairing.result if pairing else Result.NO_RESULT
+            if result not in (Result.FORFEIT_LOSS, Result.DOUBLE_FORFEIT):
+                return False
+        return saw_board
+
     @property
     def match_score_pair(self) -> tuple[str, str] | None:
         """``(team_a_score, team_b_score)`` strings following the
@@ -197,7 +221,17 @@ class TeamBoard:
             else:
                 mp_a = mp_b = draw_mp
             return f'{mp_a:g}', f'{mp_b:g}'
-        return f'{a_gp:g}', f'{b_gp:g}'
+        a_str = (
+            'F'
+            if self.team_all_forfeit(self.stored_team_board.team_a_id)
+            else f'{a_gp:g}'
+        )
+        b_str = (
+            'F'
+            if self.team_all_forfeit(self.stored_team_board.team_b_id)
+            else f'{b_gp:g}'
+        )
+        return a_str, b_str
 
     @property
     def match_score_display(self) -> str:
@@ -236,7 +270,17 @@ class TeamBoard:
             return f'{mp_a:g} – {mp_b:g}'
         if self.stored_team_board.team_b_id is None:
             return f'{tournament.team_pab_game_points:g} – 0'
-        return f'{a_gp:g} – {b_gp:g}'
+        a_str = (
+            'F'
+            if self.team_all_forfeit(self.stored_team_board.team_a_id)
+            else f'{a_gp:g}'
+        )
+        b_str = (
+            'F'
+            if self.team_all_forfeit(self.stored_team_board.team_b_id)
+            else f'{b_gp:g}'
+        )
+        return f'{a_str} – {b_str}'
 
     @property
     def last_result_update(self) -> datetime | None:

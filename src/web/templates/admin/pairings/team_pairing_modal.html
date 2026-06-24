@@ -15,7 +15,7 @@
             <h2 class="modal-title fs-5 fw-bold text-center w-100">
                 {{ team_board.team_a.name }}
                 {% if team_board.team_b %}
-                    <span class="mx-2">{{ '%g'|format(_a_gp) }} – {{ '%g'|format(_b_gp) }}</span>
+                    <span class="mx-2">{{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}</span>
                     {{ team_board.team_b.name }}
                 {% else %}
                     <span class="mx-2">— {{ _('EXEMPT') }}</span>
