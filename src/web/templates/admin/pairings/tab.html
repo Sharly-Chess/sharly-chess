@@ -241,8 +241,23 @@
                             </colgroup>
                             {% include '/admin/pairings/pairing_table_header.html' %}
                             <tbody>
+                                {# Molter table codes (e.g. A1 / B3) per board,
+                                   shown as a small prefix in flat team systems. #}
+                                {% set molter_refs = (
+                                    admin_tournament.pairing_variation.engine.board_references(
+                                        admin_tournament, admin_round
+                                    ) if is_flat_team_mode else none
+                                ) %}
                                 {% for board in admin_filtered_boards %}
-                                    {% with wtp=board.optional_white_tournament_player, btp=board.black_tournament_player %}
+                                    {% with
+                                        wtp=board.optional_white_tournament_player,
+                                        btp=board.black_tournament_player,
+                                        molter_code=(
+                                            molter_refs[board.index]
+                                            if molter_refs and board.index < molter_refs|length
+                                            else none
+                                        )
+                                    %}
                                         {% include '/admin/pairings/pairing_row.html' %}
                                     {% endwith %}
                                 {% endfor %}

@@ -20,6 +20,7 @@
         {% endif %}
     {% endif %}
     <td class="text-truncate">
+        {% if molter_code is defined and molter_code %}<small class="text-muted me-1">{{ molter_code[0] }}</small>{% endif %}
         {% if not wtp %}
             <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>
         {% elif lineup_team_board is defined and wtp.team_id %}
@@ -74,6 +75,7 @@
             {% with player=btp, illegal_moves=board.black_pairing.illegal_moves if btp else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
         {% endif %}
         <td class="text-truncate">
+            {% if molter_code is defined and molter_code %}<small class="text-muted me-1">{{ molter_code[1] }}</small>{% endif %}
             {% if lineup_team_board is defined and btp.team_id %}
                 <span class="lineup-view">
                     {% with tournament_player=btp, display_rating=true %}
@@ -100,6 +102,7 @@
             <td></td>
         {% endif %}
         <td>
+            {% if molter_code is defined and molter_code %}<small class="text-muted me-1">{{ molter_code[1] }}</small>{% endif %}
             {% if admin_event.is_team_event %}
                 {# A missing side in a flat team system is a lineup
                    hole (forfeit), not a pairing-allocated bye. #}
