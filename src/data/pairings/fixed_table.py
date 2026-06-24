@@ -120,7 +120,9 @@ class FixedTablePairingSystem(PairingSystem['FixedTableVariation'], ABC):
 
     @property
     def show_unfinished_round_modal(self) -> bool:
-        return False
+        # Warn before leaving a round whose results aren't all in, as the
+        # Swiss / round-robin systems do.
+        return True
 
     @property
     def show_unpaired_player_modal(self) -> bool:
