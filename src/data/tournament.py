@@ -373,10 +373,11 @@ class Tournament:
             return None
 
     @property
-    def rule_set_roster_max_size(self) -> int | None:
-        """Roster cap imposed by the active rule set, or ``None``."""
-        rule_set = self.rule_set
-        return rule_set.roster_max_size if rule_set else None
+    def roster_max_size(self) -> int | None:
+        """Maximum team-roster size, or ``None`` for no cap. Set on the
+        tournament directly; a rule set writes (and locks) it via
+        ``apply_defaults`` when attached."""
+        return self.stored_tournament.roster_max_size
 
     @property
     def warn_lineup_order(self) -> bool:

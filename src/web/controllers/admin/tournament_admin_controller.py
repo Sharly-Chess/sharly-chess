@@ -284,6 +284,7 @@ class TournamentAdminController(BaseEventAdminController):
             }
             override_unrated_rapid_blitz: bool = True
             team_player_count: int | None = None
+            roster_max_size: int | None = None
             color_pattern: str | None = None
             game_points: dict[int, float] | None = None
             match_points: dict[int, float] | None = None
@@ -326,6 +327,7 @@ class TournamentAdminController(BaseEventAdminController):
                     stored_tournament.override_unrated_rapid_blitz
                 )
                 team_player_count = stored_tournament.team_player_count
+                roster_max_size = stored_tournament.roster_max_size
                 color_pattern = stored_tournament.color_pattern
                 game_points = stored_tournament.game_points
                 match_points = stored_tournament.match_points
@@ -388,6 +390,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'pairing_system': pairing_system.id,
                     'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
                     'team_player_count': team_player_count,
+                    'roster_max_size': roster_max_size,
                     'color_pattern': color_pattern,
                     'gp_win': (
                         game_points.get(Result.WIN.value) if game_points else None
@@ -685,6 +688,7 @@ class TournamentAdminController(BaseEventAdminController):
             errors['gp_draw'] = _('Game points must satisfy loss ≤ draw ≤ win.')
 
         team_player_count: int | None = None
+        roster_max_size: int | None = None
         color_pattern: str | None = None
         match_points: dict[int, float] | None = None
         primary_score: str | None = None
@@ -700,6 +704,22 @@ class TournamentAdminController(BaseEventAdminController):
             )
             if team_player_count is None or team_player_count < 1:
                 errors[field] = _('A positive integer is expected.')
+
+            # Roster cap is optional (blank = no limit) but, when set, must be
+            # at least the team-match size.
+            roster_max_size = WebContext.form_data_to_int(
+                data, field := 'roster_max_size'
+            )
+            if roster_max_size is not None and roster_max_size < 1:
+                errors[field] = _('A positive integer is expected.')
+            elif (
+                roster_max_size is not None
+                and team_player_count is not None
+                and roster_max_size < team_player_count
+            ):
+                errors[field] = _(
+                    'The roster cap cannot be smaller than the team-match size.'
+                )
 
             for field_name, default_value in (
                 ('primary_score', ScoreType.MATCH_POINTS.value),
@@ -871,6 +891,7 @@ class TournamentAdminController(BaseEventAdminController):
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             game_points=game_points or None,
             team_player_count=team_player_count,
+            roster_max_size=roster_max_size,
             match_points=match_points,
             color_pattern=color_pattern,
             primary_score=primary_score,

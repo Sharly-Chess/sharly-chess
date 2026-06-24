@@ -24,6 +24,7 @@ from common.i18n import _, ngettext
 from data.pairings.fixed_table import FixedPairingTable, TablePairing as P
 from data.rule_sets import RuleSet
 from data.rule_sets.rule_sets import PointAdjustment
+from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.enum import (
     EventType,
     PlayerGender,
@@ -187,6 +188,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         return {
             'rounds',
             'team_player_count',
+            'roster_max_size',
             'primary_score',
             'team_colour_type',
             'enforce_roster_order',
@@ -208,6 +210,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         pairing_system_id: str | None = None,
     ) -> None:
         stored_tournament.team_player_count = 4
+        stored_tournament.roster_max_size = self.roster_max_size
         stored_tournament.team_colour_type = TeamColourType.A.value
         stored_tournament.enforce_roster_order = True
         stored_tournament.match_points = dict(_FFE_MATCH_POINTS)
@@ -274,6 +277,19 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     @override
     def roster_warnings(self, team: 'Team') -> list[str]:
         msgs: list[str] = []
+        # The cups require an A (competition) FFE licence for every player.
+        without_a_licence = [
+            player
+            for player in team.players
+            if FFEUtils.get_player_plugin_data(player).ffe_licence != PlayerFFELicence.A
+        ]
+        if without_a_licence:
+            names = ', '.join(player.full_name for player in without_a_licence)
+            msgs.append(
+                _('Player without an A (competition) FFE licence: {names}.').format(
+                    names=names
+                )
+            )
         if (cap := self.PLAYER_RATING_CAP) is not None:
             over = [
                 p
@@ -493,6 +509,9 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         gp = self._game_points_for(pairing_system_id)
         defaults: dict[str, str] = {
             'team_player_count': '4',
+            'roster_max_size': str(self.roster_max_size)
+            if self.roster_max_size
+            else '',
             'primary_score': self._primary_score_for(pairing_system_id),
             'team_colour_type': TeamColourType.A.value,
             'enforce_roster_order': 'on',
@@ -615,15 +634,19 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
 
     @override
     def roster_warnings(self, team: 'Team') -> list[str]:
-        # No per-player Elo cap on the Féminine divisions, so skip
-        # the parent's rating check and only flag non-women rosters.
+        # The parent's licence check applies; the rating-cap check is a
+        # no-op here (no Elo cap on the Féminine divisions). Add the
+        # women-only roster check on top.
+        msgs = super().roster_warnings(team)
         non_women = [p for p in team.players if p.gender != PlayerGender.WOMAN]
-        if not non_women:
-            return []
-        names = ', '.join(p.full_name for p in non_women)
-        return [
-            _('Roster must consist of women players only: {names}.').format(names=names)
-        ]
+        if non_women:
+            names = ', '.join(p.full_name for p in non_women)
+            msgs.append(
+                _('Roster must consist of women players only: {names}.').format(
+                    names=names
+                )
+            )
+        return msgs
 
 
 class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):

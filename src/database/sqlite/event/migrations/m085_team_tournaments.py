@@ -246,6 +246,7 @@ class Migration(BaseMigration):
         self.database.execute(
             'ALTER TABLE `tournament` ADD `team_player_count` INTEGER'
         )
+        self.database.execute('ALTER TABLE `tournament` ADD `roster_max_size` INTEGER')
         self.database.execute('ALTER TABLE `tournament` ADD `match_points` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `color_pattern` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `primary_score` TEXT')
@@ -299,6 +300,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `primary_score`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `color_pattern`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `match_points`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `roster_max_size`')
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `team_player_count`'
         )

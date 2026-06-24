@@ -273,6 +273,7 @@ class StoredTournament:
     criteria: dict[str, Any] = field(default_factory=dict)
     round_datetimes: dict[int, datetime | None] = field(default_factory=dict)
     team_player_count: int | None = None
+    roster_max_size: int | None = None
     match_points: dict[int, float] | None = None
     color_pattern: str | None = None
     primary_score: str | None = None

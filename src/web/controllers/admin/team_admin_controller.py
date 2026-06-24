@@ -472,7 +472,7 @@ class TeamAdminController(BaseEventAdminController):
                 search=search_terms,
             )
         tournament = team.tournament
-        roster_max_size = tournament.rule_set_roster_max_size if tournament else None
+        roster_max_size = tournament.roster_max_size if tournament else None
         return {
             'modal': 'team_roster',
             'available_players': available_players,
@@ -729,7 +729,7 @@ class TeamAdminController(BaseEventAdminController):
                 web_context, self._team_roster_modal_context(web_context)
             )
         tournament = team.tournament
-        max_size = tournament.rule_set_roster_max_size if tournament else None
+        max_size = tournament.roster_max_size if tournament else None
         if max_size is not None:
             remaining = max_size - len(team.players)
             if remaining <= 0:

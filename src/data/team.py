@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from collections.abc import Sequence
 
+from common.i18n import _
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import TeamByeType
 from database.sqlite.event.event_store import (
@@ -228,16 +229,23 @@ class Team:
         return round(sum(ratings) / len(ratings))
 
     @property
-    def rule_set_warning_message(self) -> str | None:
-        """Combined warnings from the active rule set for this team's
-        roster — encapsulated in :meth:`RuleSet.roster_warnings`.
-        Returns ``None`` when there are no warnings. Rendered as a
-        triangle + tooltip on the team card."""
+    def roster_warning_message(self) -> str | None:
+        """Combined roster warnings for the team card: a generic over-cap
+        warning when the roster exceeds the tournament's maximum size, plus
+        any rule-set-specific warnings (rating ceilings, composition…).
+        Returns ``None`` when the roster is clean. Rendered as a triangle +
+        tooltip on the team card."""
+        warnings: list[str] = []
+        max_size = self.roster_max_size
+        if max_size is not None and len(self.players) > max_size:
+            warnings.append(
+                _('The roster has %(count)d players, more than the maximum of %(max)d.')
+                % {'count': len(self.players), 'max': max_size}
+            )
         tournament = self.tournament
         rule_set = tournament.rule_set if tournament else None
-        if rule_set is None:
-            return None
-        warnings = rule_set.roster_warnings(self)
+        if rule_set is not None:
+            warnings.extend(rule_set.roster_warnings(self))
         return ' '.join(warnings) or None
 
     @property
@@ -569,10 +577,11 @@ class Team:
 
     @property
     def roster_max_size(self) -> int | None:
-        """Roster cap imposed by the team's tournament rule set, or
-        ``None`` (uncapped). Centralised so every add path obeys it."""
+        """Roster cap configured on the team's tournament (set directly or
+        by its rule set), or ``None`` (uncapped). Centralised so every add
+        path obeys it."""
         tournament = self.tournament
-        return tournament.rule_set_roster_max_size if tournament else None
+        return tournament.roster_max_size if tournament else None
 
     def add_player(self, player: 'Player', database: EventDatabase):
         """Add a player to the team's roster.
