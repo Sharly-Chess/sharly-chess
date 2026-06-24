@@ -16,9 +16,9 @@
                     <th class="header text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</th>
                     <th class="header text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</th>
                     <th class="header text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</th>
-                    <th class="header text-center">{{ _('MP *** TEAM RANKING HEADER MATCH POINTS') }}</th>
+                    <th class="header text-center">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
                 {% else %}
-                    <th class="header text-center">{{ _('GP *** TEAM RANKING HEADER GAME POINTS') }}</th>
+                    <th class="header text-center">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
                 {% endif %}
                 {% for tie_break in team_tie_breaks %}
                     <th class="header text-center">{{ tie_break.acronym }}</th>
