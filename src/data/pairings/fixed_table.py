@@ -32,6 +32,7 @@ from common.i18n import _
 from data.pairings.engines import PairingEngine
 from data.pairings.systems import PairingSystem
 from data.pairings.variations import PairingVariation
+from utils.enum import Result
 from database.sqlite.event.event_store import StoredBoard
 
 if TYPE_CHECKING:
@@ -216,6 +217,13 @@ class FixedTablePairingEngine(PairingEngine):
     def system(self) -> FixedTablePairingSystem:
         """The concrete system providing the lookup tables."""
 
+    @property
+    @override
+    def pab_result(self) -> Result:
+        # A flat board with one empty seat is an incomplete-roster hole,
+        # not a bye: the present player wins by forfeit, as in Swiss.
+        return Result.FORFEIT_WIN
+
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
         teams = self._teams_for_tournament(tournament)
         supported = self.system.supported_team_counts()
@@ -266,11 +274,9 @@ class FixedTablePairingEngine(PairingEngine):
                     'cover {sizes}; rosters larger than the maximum can '
                     'be tiled in blocks).'
                 ).format(n=n, sizes=', '.join(str(c) for c in sorted(candidates)))
-        for team in teams:
-            if len(team.players) < n:
-                return _('Team [{name}] has fewer than {n} players.').format(
-                    name=team.name, n=n
-                )
+        # Incomplete rosters are allowed (as in Swiss): a team with fewer
+        # than ``n`` players simply leaves a hole on the missing boards,
+        # scored as a forfeit win for the present opponent.
         return None
 
     def pairings_generation_disabled_message(
@@ -317,16 +323,21 @@ class FixedTablePairingEngine(PairingEngine):
                 )
             white_player = self._team_player(white_team, p.white_index, round_)
             black_player = self._team_player(black_team, p.black_index, round_)
-            if white_player is None or black_player is None:
-                raise SharlyChessException(
-                    f'Table references missing player on team '
-                    f'{p.white_team}/{p.black_team}.'
-                )
+            if white_player is None and black_player is None:
+                # Both teams are short this seat. A flat board has no round
+                # column — its round is recovered from a pairing or a
+                # team_board (see ``load_tournament_stored_boards_by_round``),
+                # and a player-less flat board has neither, so it can't be
+                # persisted. Skip it rather than create an orphan that
+                # vanishes on reload.
+                continue
+            # One side missing (incomplete roster / line-up hole) ⇒ a hole;
+            # the present player is given a forfeit win in ``create_boards``.
             stored_boards.append(
                 StoredBoard(
                     id=None,
-                    white_player_id=white_player.id,
-                    black_player_id=black_player.id,
+                    white_player_id=white_player.id if white_player else None,
+                    black_player_id=black_player.id if black_player else None,
                     index=index,
                 )
             )
@@ -468,14 +479,14 @@ class FixedTablePairingEngine(PairingEngine):
 
     @staticmethod
     def _team_player(team: 'Team', index_1based: int, round_: int):
-        # Lineup for the round is the team's effective lineup. For flat
-        # fixed-table systems lineup mutation is uncommon — fall back to
-        # the team's roster ordered by team_index.
-        lineup = team.effective_round_lineup(round_)
-        if index_1based - 1 < len(lineup):
-            return lineup[index_1based - 1]
-        if index_1based - 1 < len(team.players):
-            return team.players[index_1based - 1]
+        # Hole-aware seat lookup: ``effective_round_slots`` is length
+        # team_player_count with ``None`` at each hole. No roster fallback —
+        # falling back to ``team.players`` would re-seat a benched player and
+        # double-book them on a higher board.
+        slots = team.effective_round_slots(round_)
+        idx = index_1based - 1
+        if 0 <= idx < len(slots):
+            return slots[idx]
         return None
 
     def _build_combined_pairings(
