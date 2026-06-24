@@ -7275,7 +7275,7 @@ msgid "This player has already been paired; their team cannot be changed."
 msgstr "Ce·tte joueur·euse a déjà été apparié·e, son équipe ne peut être modifiée."
 
 msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first)."
-msgstr "Ce·tte joueur·euse est apparié·es pour au moins une ronde et ne peut être supprimé·e de l'effectif (doit d'abord être supprimé·e de la composition de la ronde)."
+msgstr "Ce·tte joueur·euse est apparié·e pour au moins une ronde et ne peut être supprimé·e de l'effectif (doit d'abord être supprimé·e de la composition de la ronde)."
 
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
