@@ -46,14 +46,27 @@
                         team_board.team_a.id, team_board.round
                     ) %}
                     {% if _a_mp or _a_gp %}
-                        <span
+                        <a
                             class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_a_mp < 0 or _a_gp < 0) else 'text-bg-success' }}"
+                            style="cursor: pointer;"
+                            onclick="event.stopPropagation()"
+                            hx-get="{{ url_for(
+                                'admin-team-point-adjustment-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=team_board.round,
+                                team_id=team_board.team_a.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
                             {{ macros.tooltip_attributes(
                                 'info',
                                 macros.point_adjustment_tooltip(admin_tournament, team_board.team_a.id, team_board.round),
                                 'top'
                             ) }}
-                        >{% if _a_mp %}{{ '%+g'|format(_a_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _a_mp and _a_gp %} {% endif %}{% if _a_gp %}{{ '%+g'|format(_a_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</span>
+                        >{% if _a_mp %}{{ '%+g'|format(_a_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _a_mp and _a_gp %} {% endif %}{% if _a_gp %}{{ '%+g'|format(_a_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</a>
                     {% endif %}
                 </strong>
                 {% if team_board.team_b and client.can_update_tournaments %}
@@ -143,14 +156,27 @@
                             team_board.team_b.id, team_board.round
                         ) %}
                         {% if _b_mp or _b_gp %}
-                            <span
+                            <a
                                 class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_b_mp < 0 or _b_gp < 0) else 'text-bg-success' }}"
+                                style="cursor: pointer;"
+                                onclick="event.stopPropagation()"
+                                hx-get="{{ url_for(
+                                    'admin-team-point-adjustment-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=team_board.round,
+                                    team_id=team_board.team_b.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
                                 {{ macros.tooltip_attributes(
                                     'info',
                                     macros.point_adjustment_tooltip(admin_tournament, team_board.team_b.id, team_board.round),
                                     'top'
                                 ) }}
-                            >{% if _b_mp %}{{ '%+g'|format(_b_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _b_mp and _b_gp %} {% endif %}{% if _b_gp %}{{ '%+g'|format(_b_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</span>
+                            >{% if _b_mp %}{{ '%+g'|format(_b_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _b_mp and _b_gp %} {% endif %}{% if _b_gp %}{{ '%+g'|format(_b_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</a>
                         {% endif %}
                         {% set _b_score = admin_tournament.team_primary_score_before_round(
                             team_board.team_b.id, team_board.round

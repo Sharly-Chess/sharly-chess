@@ -88,12 +88,6 @@ _FFE_MOLTER_TIE_BREAKS: list[tuple[str, dict]] = [
     ('ffe-OWN-AVG-ELO', {}),
 ]
 
-# Pairing systems that use the wins-only "Suisse-style" game-point
-# scheme — the only ones the forfeit penalty applies to.
-_FFE_SUISSE_SYSTEMS = frozenset(
-    {'TEAM_SWISS', 'TEAM_ROUND_ROBIN', 'TEAM_TWO_GAME_MATCH'}
-)
-
 # Results that mean a game was actually contested over the board, as
 # opposed to a forfeit, a bye, or an unplayed pairing.
 _FFE_PLAYED_RESULTS = frozenset(
@@ -354,25 +348,68 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             rows.append((board.index, forfeited, played))
         return rows
 
+    def _round_breakdown(
+        self, team: 'Team', round_: int
+    ) -> list[tuple[int, bool, bool]]:
+        """``(index, forfeited, played)`` per board for the team this round,
+        for either pairing model: a team-vs-team match (Suisse / round-robin)
+        or a flat fixed-table round (Molter), which has no team_board."""
+        team_board = self._team_round_match(team, round_)
+        if team_board is not None:
+            return self._team_board_breakdown(team_board, team.id)
+        return self._flat_round_breakdown(team, round_)
+
+    @staticmethod
+    def _flat_round_breakdown(
+        team: 'Team', round_: int
+    ) -> list[tuple[int, bool, bool]]:
+        """Flat fixed-table (Molter) counterpart of
+        :meth:`_team_board_breakdown`: one row per team seat, holes
+        included. Empty when the team isn't playing this round."""
+        tournament = team.tournament
+        if tournament is None:
+            return []
+        slots = team.effective_round_slots(round_)
+        players_by_id = tournament.tournament_players_by_id
+        engaged = any(
+            player is not None
+            and (tp := players_by_id.get(player.id)) is not None
+            and round_ in tp.pairings_by_round
+            for player in slots
+        )
+        if not engaged:
+            return []
+        rows: list[tuple[int, bool, bool]] = []
+        for index, player in enumerate(slots):
+            if player is None:
+                # No player fielded on this board ⇒ forfeited, not played.
+                rows.append((index, True, False))
+                continue
+            tp = players_by_id.get(player.id)
+            pairing = tp.pairings_by_round.get(round_) if tp else None
+            result = pairing.result if pairing else Result.NO_RESULT
+            board = pairing.board if pairing else None
+            forfeited = result in _FFE_FORFEIT_LOSS_RESULTS
+            played = (
+                board is not None
+                and board.optional_white_tournament_player is not None
+                and board.black_tournament_player is not None
+                and board.result in _FFE_PLAYED_RESULTS
+            )
+            rows.append((index, forfeited, played))
+        return rows
+
     def _forfeit_loss_penalty(
         self, team: 'Team', round_: int
     ) -> 'PointAdjustment | None':
-        """A game lost by forfeit counts −1 game point. Only applies
-        under the wins-only Suisse / round-robin / two-game-match
-        scoring — Molter keeps the standard 1 / 0.5 / 0."""
-        tournament = team.tournament
-        if tournament is None:
-            return None
-        if tournament.pairing_system.static_id() not in _FFE_SUISSE_SYSTEMS:
-            return None
-        team_board = self._team_round_match(team, round_)
-        if team_board is None:
+        """A game lost by forfeit counts −1 game point ("Une partie perdue
+        par forfait sportif est comptée -1"). Applies to every pairing
+        system, Molter included."""
+        if team.tournament is None:
             return None
         count = sum(
             1
-            for _index, forfeited, _played in self._team_board_breakdown(
-                team_board, team.id
-            )
+            for _index, forfeited, _played in self._round_breakdown(team, round_)
             if forfeited
         )
         if not count:
@@ -389,13 +426,11 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     def _following_board_played_penalty(
         self, team: 'Team', round_: int
     ) -> 'PointAdjustment | None':
-        """−1 for each board the team forfeited while a game was
-        actually played on a following (lower) board — i.e. the team
-        left a hole above a board it did field."""
-        team_board = self._team_round_match(team, round_)
-        if team_board is None:
-            return None
-        rows = self._team_board_breakdown(team_board, team.id)
+        """−1 for each board the team forfeited while a game was actually
+        played on a following (lower) board — i.e. a hole above a board it
+        did field (FFE 4.1.c, "pour les deux systèmes"). Works for Molter
+        too via the flat breakdown."""
+        rows = self._round_breakdown(team, round_)
         played_indexes = [index for index, _f, played in rows if played]
         if not played_indexes:
             return None

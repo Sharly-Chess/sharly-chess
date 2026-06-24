@@ -24,6 +24,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from data.loader import EventLoader
+from plugins.ffe.ffe_rule_sets import CoupeJeanClaudeLoubatiereRuleSet
 from tests.test_config import TestUtils
 from utils.enum import EventType
 
@@ -170,6 +171,30 @@ class FixedTablePairingTestCase(TestCase):
                 1,
                 f'player {pid} of the short team should be seated once',
             )
+
+    def test_molter_forfeit_loss_penalty_applies(self) -> None:
+        """The Loubatière rule 'une partie perdue par forfait sportif est
+        comptée -1' now applies to Molter too: a team that leaves a board
+        unfielded gets -1 game point; a full team gets none."""
+        self._seed()
+        tournament = self._load()
+        team0 = self._event.teams_by_id[self.team_ids[0]]
+        p = self.player_ids[0]
+        with EventDatabase(EVENT_ID, write=True) as db:
+            team0.set_round_lineup(1, [p[0], p[1], p[2], None], db)
+        tournament = self._load()
+        self.assertEqual(tournament.generate_round_pairings(1), '')
+
+        self._load()
+        rule_set = CoupeJeanClaudeLoubatiereRuleSet()
+        holed_team = self._event.teams_by_id[self.team_ids[0]]
+        adjustment = rule_set._forfeit_loss_penalty(holed_team, 1)
+        self.assertIsNotNone(adjustment)
+        assert adjustment is not None
+        self.assertEqual(adjustment.gp, -1.0)
+        # A fully-fielded team incurs no forfeit penalty.
+        full_team = self._event.teams_by_id[self.team_ids[1]]
+        self.assertIsNone(rule_set._forfeit_loss_penalty(full_team, 1))
 
     def test_all_short_rosters_pair_without_error(self) -> None:
         """Every team short the same seat still pairs cleanly: no error, no

@@ -59,6 +59,7 @@
                         <th class="text-nowrap text-center">{{ _('Score') }}</th>
                         <th class="text-nowrap text-start">{{ _('Result') }}</th>
                         <th class="text-nowrap text-start">{{ _('Opponent') }}</th>
+                        <th class="text-nowrap text-center">{{ _('Bonus / penalty') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -147,6 +148,40 @@
                                     {% endif %}
                                 </td>
                             {% endif %}
+                            <td class="text-nowrap text-center align-middle">
+                                {% set _mp, _gp = tournament.effective_point_adjustment(
+                                    admin_team.id, round
+                                ) %}
+                                {% if _mp or _gp %}
+                                    <span
+                                        class="badge rounded-pill {{ 'text-bg-danger' if (_mp < 0 or _gp < 0) else 'text-bg-success' }}"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            macros.point_adjustment_tooltip(tournament, admin_team.id, round),
+                                            'top'
+                                        ) }}
+                                    >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</span>
+                                {% endif %}
+                                {% if client.can_update_results(tournament.id) %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary ms-1"
+                                        hx-get="{{ url_for(
+                                            'admin-team-point-adjustment-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            round=round,
+                                            team_id=admin_team.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-target="#modal-wrapper"
+                                        {{ macros.tooltip_attributes('info', _('Edit bonus / penalty'), 'top') }}
+                                    >
+                                        <i class="bi-pencil"></i>
+                                    </button>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

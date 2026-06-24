@@ -2,7 +2,8 @@
 
 {# Admin team-match modal (opened from the match button on the pairings
    tab): sober styling with a normal Bootstrap button, matching
-   pairing_modal.html. #}
+   pairing_modal.html. Bonus/penalty points are edited from their own
+   modal (the penalty badge / the team-record modal), not here. #}
 
 {% set _a_gp, _b_gp = team_board.game_points %}
 <div
@@ -25,86 +26,6 @@
             </div>
         </div>
         <div class="modal-body">
-            {% if client.can_update_results(admin_tournament.id) %}
-                <form
-                    id="modal-form"
-                    hx-patch="{{ url_for(
-                        'admin-team-point-adjustments',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=team_board.round,
-                        team_board_id=team_board.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    hx-trigger="submit, enterKeypressFromModal"
-                >
-                    <h6 class="text-uppercase small fw-bold text-muted">
-                        {{ _('Bonus / penalty points') }}
-                    </h6>
-                    {% for prefix, adj in [
-                        ('a', team_a_adjustment), ('b', team_b_adjustment)
-                    ] %}
-                        {% if adj %}
-                            <div class="mb-2">
-                                <div class="fw-bold">{{ adj.team.name }}</div>
-                                <div class="row g-2">
-                                    <div class="col-3">
-                                        <label class="form-label small mb-0">{{ _('MP *** MATCH POINTS') }}</label>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="number" step="0.5"
-                                            name="{{ prefix }}_mp"
-                                            value="{{ '%g'|format(adj.mp) if adj.mp else '' }}"
-                                        >
-                                    </div>
-                                    <div class="col-3">
-                                        <label class="form-label small mb-0">{{ _('GP *** GAME POINTS') }}</label>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="number" step="0.5"
-                                            name="{{ prefix }}_gp"
-                                            value="{{ '%g'|format(adj.gp) if adj.gp else '' }}"
-                                        >
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label small mb-0">{{ _('Reason') }}</label>
-                                        <input
-                                            class="form-control form-control-sm"
-                                            type="text"
-                                            name="{{ prefix }}_reason"
-                                            value="{{ adj.reason }}"
-                                        >
-                                    </div>
-                                </div>
-                                {% if adj.rule_set_mp or adj.rule_set_gp %}
-                                    <div class="alert alert-warning d-flex gap-2 py-2 px-2 mt-2 mb-0 small">
-                                        <i class="bi-exclamation-triangle-fill"></i>
-                                        <div>
-                                            <div class="fw-bold">
-                                                {{ _('%(string)s:', string=_('Rule set applied')) }}
-                                                {% if adj.rule_set_mp %}{{ '%+g'|format(adj.rule_set_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if adj.rule_set_mp and adj.rule_set_gp %}, {% endif %}{% if adj.rule_set_gp %}{{ '%+g'|format(adj.rule_set_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}
-                                            </div>
-                                            {% if adj.rule_set_explanation %}
-                                                <div>{{ adj.rule_set_explanation }}</div>
-                                            {% endif %}
-                                            <div class="text-muted">
-                                                {{ _('Added automatically, on top of any manual points above.') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-outline-primary btn-sm">
-                            <i class="bi-floppy-fill pe-1"></i>{{ _('Save points') }}
-                        </button>
-                    </div>
-                </form>
-                <hr class="my-3" />
-            {% endif %}
             {% set action = 'MANUAL_UNPAIRING' %}
             {% set action_route = url_for(
                 'admin-pairings-unpair-team-board',
@@ -139,7 +60,7 @@
             {% endif %}
                 <button
                     type="button"
-                    class="btn btn-outline-secondary"
+                    class="btn btn-outline-primary"
                     {% if unpair_disabled %}
                         disabled
                     {% else %}

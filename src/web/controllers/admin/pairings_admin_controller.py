@@ -491,12 +491,6 @@ class PairingsAdminController(BaseEventAdminController):
             {
                 'modal': 'team-pairing',
                 'team_board': team_board,
-                'team_a_adjustment': self._team_point_adjustment_context(
-                    tournament, team_board.team_a, round
-                ),
-                'team_b_adjustment': self._team_point_adjustment_context(
-                    tournament, team_board.team_b, round
-                ),
             },
         )
 
@@ -529,40 +523,60 @@ class PairingsAdminController(BaseEventAdminController):
             ),
         }
 
+    @get(
+        path='/team-point-adjustment/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_id:int}',
+        name='admin-team-point-adjustment-modal',
+    )
+    async def htmx_admin_team_point_adjustment_modal(
+        self, request: HTMXRequest, tournament_id: int, round: int, team_id: int
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        team = tournament.event.teams_by_id.get(team_id)
+        if team is None or team.tournament_id != tournament.id:
+            raise NotFoundException(f'Team {team_id} not found.')
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'team-point-adjustment',
+                'pa_round': round,
+                'pa_adjustment': self._team_point_adjustment_context(
+                    tournament, team, round
+                ),
+            },
+        )
+
     @patch(
-        path='/team-pairing/point-adjustments/'
-        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_board_id:int}',
-        name='admin-team-point-adjustments',
+        path='/team-point-adjustment/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_id:int}',
+        name='admin-team-point-adjustment-set',
         guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
         data=Body(media_type=RequestEncodingType.URL_ENCODED),
     )
-    async def htmx_admin_team_point_adjustments(
+    async def htmx_admin_team_point_adjustment_set(
         self,
         request: HTMXRequest,
         tournament_id: int,
         round: int,
-        team_board_id: int,
+        team_id: int,
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
-        team_board = tournament.team_boards_by_id.get(team_board_id)
-        if team_board is None:
-            raise NotFoundException(f'Team board {team_board_id} not found.')
-        sides = [('a', team_board.team_a), ('b', team_board.team_b)]
+        team = tournament.event.teams_by_id.get(team_id)
+        if team is None or team.tournament_id != tournament.id:
+            raise NotFoundException(f'Team {team_id} not found.')
         event = web_context.get_admin_event()
+        mp_delta = WebContext.form_data_to_float(data, 'mp') or 0.0
+        gp_delta = WebContext.form_data_to_float(data, 'gp') or 0.0
+        reason = WebContext.form_data_to_str(data, 'reason') or None
         with EventDatabase(event.uniq_id, write=True) as database:
-            for prefix, team in sides:
-                if team is None:
-                    continue
-                mp_delta = WebContext.form_data_to_float(data, f'{prefix}_mp') or 0.0
-                gp_delta = WebContext.form_data_to_float(data, f'{prefix}_gp') or 0.0
-                reason = WebContext.form_data_to_str(data, f'{prefix}_reason') or None
-                tournament.set_manual_point_adjustment(
-                    team.id, round, mp_delta, gp_delta, reason, database
-                )
+            tournament.set_manual_point_adjustment(
+                team.id, round, mp_delta, gp_delta, reason, database
+            )
         Message.success(request, _('Bonus / penalty points updated.'))
         web_context = PairingsAdminWebContext(
             request, tournament_id, round, reload_event=True
