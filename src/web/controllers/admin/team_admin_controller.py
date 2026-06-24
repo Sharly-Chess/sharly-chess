@@ -1165,9 +1165,6 @@ class TeamAdminController(BaseEventAdminController):
         an emptied slot leaves a forfeit hole."""
         from data.pairings.fixed_table import FixedTablePairingEngine
 
-        old_slots = [
-            p.id if p is not None else None for p in team.effective_round_slots(round_)
-        ]
         round_boards = tournament.get_round_boards(round_)
         boards_by_index = {board.index: board for board in round_boards}
         board_side_by_player: dict[int, tuple['Board', str]] = {}
@@ -1188,6 +1185,32 @@ class TeamAdminController(BaseEventAdminController):
             if isinstance(engine, FixedTablePairingEngine)
             else {}
         )
+
+        # Baseline from the actual boards, not the stored lineup: the two can
+        # diverge (a stored hole while the player is still physically seated),
+        # which would otherwise double-book a player when their slot changes —
+        # added to the new seat without being removed from the old one. Map
+        # each of the team's table seats back to its slot, then read whoever
+        # is really on that board (either colour — robust to permutation).
+        n = tournament.team_player_count or 0
+        slot_by_board_index = {
+            seat[0]: slot
+            for (seat_team_id, slot), seat in table_seats.items()
+            if seat_team_id == team.id
+        }
+        old_slots: list[int | None] = [None] * n
+        for board in round_boards:
+            slot = slot_by_board_index.get(board.index)
+            if slot is None or not 0 <= slot < n:
+                continue
+            for pid in (
+                board.stored_board.white_player_id,
+                board.stored_board.black_player_id,
+            ):
+                player = event.players_by_id.get(pid) if pid else None
+                if player is not None and player.team_id == team.id:
+                    old_slots[slot] = pid
+                    break
 
         def _hole_seat(slot: int) -> tuple['Board', str] | None:
             """The board seat the table assigns to this team slot,
