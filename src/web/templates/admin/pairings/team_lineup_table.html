@@ -7,6 +7,7 @@
 {% if teams %}
     <table
         id="{{ table_id }}"
+        {% if swap_oob %}hx-swap-oob="true"{% endif %}
         class="table prominent table-striped table-sm w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
     >
         <thead
