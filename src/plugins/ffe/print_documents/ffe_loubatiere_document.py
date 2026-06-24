@@ -12,7 +12,10 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents import PrintOption
 from data.print_documents.documents import PrintDocument
-from data.print_documents.options import TournamentPrintOption
+from data.print_documents.options import (
+    OptionalTeamsPrintOption,
+    TournamentPrintOption,
+)
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_DIR
 from plugins.ffe.ffe_rule_sets import (
@@ -77,7 +80,7 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption]
+        return [TournamentPrintOption, OptionalTeamsPrintOption]
 
     @classmethod
     def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
@@ -223,7 +226,7 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         tournament = self.tournament
         rounds = list(range(1, tournament.rounds + 1))
-        teams = sorted(
+        all_teams = sorted(
             tournament.teams,
             key=lambda team: (
                 team.pairing_number
@@ -232,15 +235,24 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
                 team.name.lower(),
             ),
         )
+        # Letters and team count reflect the whole tournament (the table
+        # position), even when only some teams are printed.
         letter_by_id = {
-            team.id: chr(ord('A') + index) for index, team in enumerate(teams)
+            team.id: chr(ord('A') + index) for index, team in enumerate(all_teams)
         }
+        team_count = len(all_teams)
+        # The arbiter may pick which teams to print; empty selection = all.
+        selected_team_ids = set(self._get_option(OptionalTeamsPrintOption).value or [])
+        teams = [
+            team
+            for team in all_teams
+            if not selected_team_ids or team.id in selected_team_ids
+        ]
         records_by_id = {record.team_id: record for record in tournament.team_records()}
         team_boards_by_round = tournament.team_boards_by_round
         rank_by_team_id = {
             row['team'].id: row['rank'] for row in tournament.team_standings()
         }
-        team_count = len(teams)
         return {
             'sharly_chess_config': SharlyChessConfig(),
             'document': self,

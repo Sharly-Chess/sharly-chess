@@ -427,6 +427,48 @@ function setPrintTournamentPlayerSelectOptions(
     }
 }
 
+function setPrintTournamentTeamSelectOptions(
+    teamsPerTournamentId,
+    optionId,
+    documentIds=[],
+) {
+    const tournamentSelect = $('.modal #tournament');
+    const teamSelect = $('.modal #' + optionId);
+    function updateTeams() {
+        const tId = parseInt(tournamentSelect.val(), 10);
+        const teams = teamsPerTournamentId[tId] || [];
+
+        teamSelect.empty();
+        teams.forEach(team => {
+            teamSelect.append(
+                $('<option>', {
+                    value: team.id,
+                    text: team.name,
+                })
+            );
+            teamSelect.prop('disabled', false);
+        });
+        teamSelect.trigger('change');
+        setTimeout(() => {
+            $('.select2-search__field').css('width', '100%');
+        }, 0);
+    }
+    tournamentSelect.on('change', updateTeams);
+    const documentSelect = $('.modal #document');
+    if (documentIds.includes(documentSelect.val())) {
+        updateTeams();
+    } else {
+        documentSelect.on('change', function () {
+            if (
+                documentIds.includes($(this).val()) &&
+                teamSelect.children().length === 0
+            ) {
+                updateTeams();
+            }
+        });
+    }
+}
+
 var refreshMessagesIgnored = 0;
 function getIsNextRefreshMessageIgnored() {
     if (refreshMessagesIgnored > 0) {

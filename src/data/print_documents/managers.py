@@ -78,6 +78,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.MandatoryPlayerPrintOption,
             options.OptionalPlayerPrintOption,
             options.OptionalPlayersPrintOption,
+            options.OptionalTeamsPrintOption,
             options.PairingStylePrintOption,
             options.RoundPrintOption,
             options.MatchSheetSelectionPrintOption,
