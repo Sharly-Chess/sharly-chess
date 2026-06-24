@@ -129,7 +129,11 @@
         tournament_id=admin_tournament.id,
         round=admin_round,
     ) %}
-    {% if action in existing_actions and admin_tournament.is_round_partially_paired(admin_round) %}
+    {% if
+        admin_tournament.pairing_system.supports_complementary_pairings
+        and action in existing_actions
+        and admin_tournament.is_round_partially_paired(admin_round)
+    %}
         <div
             {% if not client.can_use_pairing_engine(admin_tournament.id) %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to generate complementary pairings.'), 'top') }}

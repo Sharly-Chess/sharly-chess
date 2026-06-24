@@ -53,6 +53,12 @@ class MolterPairingSystem(FixedTablePairingSystem):
     def pairing_buttons_template(self) -> str:
         return '/admin/pairings/swiss_pairing_buttons.html'
 
+    @property
+    @override
+    def supports_complementary_pairings(self) -> bool:
+        # Molter pairs everyone straight from the fixed table.
+        return False
+
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return SwissPairingSystem().permission_handler

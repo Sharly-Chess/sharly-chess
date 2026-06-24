@@ -118,6 +118,15 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def supports_complementary_pairings(self) -> bool:
+        """Whether the system can leave entrants unpaired to be paired
+        afterwards ('complementary pairings'). True for Swiss-style
+        engines; fixed-table systems (round-robin, Molter) pair everyone
+        straight from the table, so it makes no sense — they override to
+        False."""
+        return True
+
+    @property
     def supports_match_points(self) -> bool:
         """Whether the system exposes a match-point score alongside
         game points. Tie-breaks (or tie-break options) that need MP
@@ -279,6 +288,12 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
     @property
     def pairing_buttons_template(self) -> str:
         return '/admin/pairings/round_robin_pairing_buttons.html'
+
+    @property
+    @override
+    def supports_complementary_pairings(self) -> bool:
+        # Round-robin pairs everyone from the Berger table.
+        return False
 
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
@@ -486,6 +501,12 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
         # rounds — a bulk pair would lock every round to the round-1
         # lineup.
         return '/admin/pairings/swiss_pairing_buttons.html'
+
+    @property
+    @override
+    def supports_complementary_pairings(self) -> bool:
+        # Round-robin pairs every team from the Berger table.
+        return False
 
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
