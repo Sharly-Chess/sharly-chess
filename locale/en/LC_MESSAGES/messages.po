@@ -832,6 +832,9 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
+msgid "Application startup..."
+msgstr ""
+
 msgid "Apply"
 msgstr ""
 
@@ -2929,9 +2932,6 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
-msgid "Home page"
-msgstr ""
-
 msgid "Home page:"
 msgstr ""
 
@@ -4239,6 +4239,9 @@ msgid "Only the year of birth is required for most tournaments. it is therefore 
 msgstr ""
 
 msgid "Open IT1 certificate for this norm"
+msgstr ""
+
+msgid "Open application (browser)"
 msgstr ""
 
 msgid "Open/close check-in"
@@ -5814,9 +5817,6 @@ msgid "Sudan"
 msgstr ""
 
 msgid "Sum of Buchholz"
-msgstr ""
-
-msgid "Support us"
 msgstr ""
 
 msgid "Suriname"
@@ -7579,9 +7579,6 @@ msgid "{start} → {end}"
 msgstr ""
 
 msgid "{status_code} - Unknown error"
-msgstr ""
-
-msgid "{string}:"
 msgstr ""
 
 msgid "{string}: {value}"

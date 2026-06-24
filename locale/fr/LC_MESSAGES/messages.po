@@ -832,6 +832,9 @@ msgstr "Fédération du·de la candidat·e"
 msgid "Application"
 msgstr "Application"
 
+msgid "Application startup..."
+msgstr "Démarrage de l'application..."
+
 msgid "Apply"
 msgstr "Appliquer"
 
@@ -2929,9 +2932,6 @@ msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier es
 msgid "Home"
 msgstr "Accueil"
 
-msgid "Home page"
-msgstr "Page d'accueil"
-
 msgid "Home page:"
 msgstr "Site web :"
 
@@ -4242,6 +4242,9 @@ msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois
 
 msgid "Open IT1 certificate for this norm"
 msgstr "Ouvrir le certificat IT1 pour cette norme"
+
+msgid "Open application (browser)"
+msgstr "Ouvrir l'application (navigateur)"
 
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"
@@ -5817,9 +5820,6 @@ msgstr "Soudan"
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
-
-msgid "Support us"
-msgstr "Nous soutenir"
 
 msgid "Suriname"
 msgstr "Suriname"
@@ -7582,9 +7582,6 @@ msgstr "{start} → {end}"
 
 msgid "{status_code} - Unknown error"
 msgstr "{status_code} - Erreur inconnue"
-
-msgid "{string}:"
-msgstr "{string} :"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"

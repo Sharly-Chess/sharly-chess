@@ -340,7 +340,8 @@ class SharlyChessServerToga(toga.App):
         # Home view
         self.home_view: Optional[toga.Box] = None
         self.server_state_container: Optional[toga.Box] = None
-        self.server_start_progress_bar: Optional[toga.ProgressBar] = None
+        self.home_main_label: Optional[toga.Label] = None
+        self.home_progress_bar: Optional[toga.ProgressBar] = None
 
         # Networks view
         self.networks_view: Optional[toga.Box] = None
@@ -413,21 +414,21 @@ class SharlyChessServerToga(toga.App):
         self.home_view = toga.Box(
             style=Pack(direction=COLUMN, margin=10, gap=5, align_items='center'),
         )
+        self.home_main_label = toga.Label(
+            _('Application startup...'), text_align='center'
+        )
         self.server_state_container = toga.Box(
             style=Pack(direction=COLUMN, align_items='center')
         )
-        self.server_start_progress_bar = toga.ProgressBar()
-        self.server_start_progress_bar.max = None
-        self.server_state_container.add(self.server_start_progress_bar)
+        self.home_progress_bar = toga.ProgressBar()
+        self.home_progress_bar.max = None
+        self.server_state_container.add(self.home_progress_bar)
         help_label = toga.Label(_('Need help?'))
         doc_btn = toga.Button(_('Documentation'), on_press=self._open_documentation)
         discord_btn = toga.Button('Discord', on_press=self._open_discord)
         mail_btn = toga.Button(_('Mail'), on_press=self._open_mail)
         self.home_view.add(
-            toga.Label(
-                _('Warning: closing this window will stop Sharly Chess.'),
-                text_align='center',
-            ),
+            self.home_main_label,
             self.server_state_container,
             toga.Divider(style=Pack(margin=(5, 0))),
             toga.Box(
@@ -437,8 +438,7 @@ class SharlyChessServerToga(toga.App):
             ),
             toga.Box(
                 children=[
-                    toga.Label(f'Sharly Chess {SHARLY_CHESS_VERSION} -'),
-                    toga.Button(_('Support us')),
+                    toga.Label(f'Sharly Chess {SHARLY_CHESS_VERSION}'),
                 ],
                 align_items='center',
             ),
@@ -620,9 +620,9 @@ class SharlyChessServerToga(toga.App):
         self.gui_handler = GUILogHandler(self)
         self.gui_handler.setLevel(logging.DEBUG)
 
-        assert self.server_start_progress_bar is not None
-        self.server_start_progress_bar.value = 1
-        self.server_start_progress_bar.start()
+        assert self.home_progress_bar is not None
+        self.home_progress_bar.value = 1
+        self.home_progress_bar.start()
 
         # Start message processing and kick the server immediately
         asyncio.create_task(self._process_message_queue())
@@ -635,17 +635,21 @@ class SharlyChessServerToga(toga.App):
         return button
 
     def on_server_ready(self):
-        assert self.server_start_progress_bar is not None
+        assert self.home_main_label is not None
+        assert self.home_progress_bar is not None
         assert self.server_state_container is not None
-        self.server_start_progress_bar.stop()
+        self.home_progress_bar.stop()
+        self.home_main_label.text = _(
+            'Warning: closing this window will stop Sharly Chess.'
+        )
         self.server_state_container.clear()
         self.server_state_container.add(
             toga.Box(
                 style=Pack(direction=ROW, align_items='center'),
                 children=[
-                    toga.Label(_('{string}:').format(string=_('Home page'))),
                     toga.Button(
-                        SharlyChessConfig().local_url, on_press=self._open_browser
+                        _('Open application (browser)'),
+                        on_press=self._open_browser,
                     ),
                 ],
             )
