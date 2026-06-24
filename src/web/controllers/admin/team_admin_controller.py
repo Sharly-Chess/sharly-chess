@@ -883,7 +883,13 @@ class TeamAdminController(BaseEventAdminController):
             team_player_count = len(team.players)
         rounds_data: list[dict[str, Any]] = []
         for round_ in editable_rounds:
-            slots = team.effective_round_slots(round_, board_count=team_player_count)
+            # Once a round is paired, the boards are the source of truth —
+            # show what's actually on them, not the default-roster fallback
+            # (which would disagree with the pairings tab when no explicit
+            # lineup was stored).
+            slots = team.round_board_slots(round_) or team.effective_round_slots(
+                round_, board_count=team_player_count
+            )
             slot_player_ids: set[int] = {p.id for p in slots if p is not None}
             bench = [p for p in team.players if p.id not in slot_player_ids]
             rounds_data.append(
@@ -1045,8 +1051,14 @@ class TeamAdminController(BaseEventAdminController):
                     team.set_round_lineup(round_, new_slot_values, database)
             return
 
+        # Baseline must reflect the actual boards, not the default-roster
+        # fallback — otherwise a team with holes but no stored lineup is
+        # reconciled against phantom players and the real changes are missed.
         old_slots = [
-            p.id if p is not None else None for p in team.effective_round_slots(round_)
+            p.id if p is not None else None
+            for p in (
+                team.round_board_slots(round_) or team.effective_round_slots(round_)
+            )
         ]
         boards_by_index = {board.index: board for board in team_board.boards}
 
@@ -1088,6 +1100,17 @@ class TeamAdminController(BaseEventAdminController):
             PairingsAdminController._fill_lineup_hole(
                 event, tournament, board, team_board, team, physical_side, new_tp
             )
+
+        # Persist the lineup so it matches the boards we just reconciled.
+        # Without this the round has no stored lineup, so the next read
+        # falls back to the default roster — which disagrees with the
+        # boards as soon as there's a hole, and the next edit reconciles
+        # against that phantom roster and corrupts the seating.
+        with EventDatabase(event.uniq_id, write=True) as database:
+            if all(v is None for v in new_slot_values):
+                team.delete_round_lineup(round_, database)
+            else:
+                team.set_round_lineup(round_, new_slot_values, database)
 
     @staticmethod
     def _reconcile_flat_round_lineup(

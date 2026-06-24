@@ -310,6 +310,49 @@ class Team:
             slots[i] = player
         return slots
 
+    def round_board_slots(self, round_: int) -> list['Player | None'] | None:
+        """Per-board occupants for *round_* read from the actual paired
+        boards — the source of truth once a round is paired. Length is
+        ``team_player_count``, ``None`` at each board the team left as a
+        hole. Returns ``None`` when this team has no team-vs-team board for
+        the round (unpaired, or a bye), so callers fall back to
+        :meth:`effective_round_slots`. Unlike that method, this never
+        invents a default roster, so it stays consistent with what the
+        pairings tab shows even when no explicit lineup was stored."""
+        tournament = self.tournament
+        if tournament is None or tournament.team_player_count is None:
+            return None
+        team_board = next(
+            (
+                tb
+                for tb in tournament.get_round_team_boards(round_)
+                if tb.stored_team_board.team_b_id is not None
+                and self.id
+                in (
+                    tb.stored_team_board.team_a_id,
+                    tb.stored_team_board.team_b_id,
+                )
+            ),
+            None,
+        )
+        if team_board is None:
+            return None
+        n = tournament.team_player_count
+        slots: list['Player | None'] = [None] * n
+        players_by_id = self.event.players_by_id
+        for board in team_board.boards:
+            if not 0 <= board.index < n:
+                continue
+            for player_id in (
+                board.stored_board.white_player_id,
+                board.stored_board.black_player_id,
+            ):
+                player = players_by_id.get(player_id) if player_id else None
+                if player is not None and player.team_id == self.id:
+                    slots[board.index] = player
+                    break
+        return slots
+
     def lineup_out_of_roster_order(self, round_: int) -> bool:
         """True iff *round_*'s board players (holes skipped) are not in
         ascending roster order. Used to warn when a line-up reshuffles
