@@ -169,6 +169,41 @@ class OptionalPlayersPrintOption(PlayersPrintOption):
         return False
 
 
+class TeamsPrintOption(PrintOption, ABC):
+    @property
+    @abstractmethod
+    def mandatory(self) -> bool:
+        """Returns True if at least one team must be selected."""
+
+    @property
+    def template_file_name(self) -> str:
+        return 'teams'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    @override
+    def validate(self):
+        self._validate_list_type(int)
+        if self.mandatory and not self.value:
+            raise OptionError(_('Please select at least one team.'), self)
+
+
+class OptionalTeamsPrintOption(TeamsPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'optional-teams'
+
+    @property
+    def mandatory(self) -> bool:
+        return False
+
+
 class RoundPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:

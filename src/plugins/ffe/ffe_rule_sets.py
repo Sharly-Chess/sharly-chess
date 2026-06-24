@@ -24,6 +24,7 @@ from common.i18n import _, ngettext
 from data.pairings.fixed_table import FixedPairingTable, TablePairing as P
 from data.rule_sets import RuleSet
 from data.rule_sets.rule_sets import PointAdjustment
+from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.enum import (
     EventType,
     PlayerGender,
@@ -187,6 +188,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         return {
             'rounds',
             'team_player_count',
+            'roster_max_size',
             'primary_score',
             'team_colour_type',
             'enforce_roster_order',
@@ -208,6 +210,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         pairing_system_id: str | None = None,
     ) -> None:
         stored_tournament.team_player_count = 4
+        stored_tournament.roster_max_size = self.roster_max_size
         stored_tournament.team_colour_type = TeamColourType.A.value
         stored_tournament.enforce_roster_order = True
         stored_tournament.match_points = dict(_FFE_MATCH_POINTS)
@@ -274,6 +277,19 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     @override
     def roster_warnings(self, team: 'Team') -> list[str]:
         msgs: list[str] = []
+        # The cups require an A (competition) FFE licence for every player.
+        without_a_licence = [
+            player
+            for player in team.players
+            if FFEUtils.get_player_plugin_data(player).ffe_licence != PlayerFFELicence.A
+        ]
+        if without_a_licence:
+            names = ', '.join(player.full_name for player in without_a_licence)
+            msgs.append(
+                _('Player without an A (competition) FFE licence: {names}.').format(
+                    names=names
+                )
+            )
         if (cap := self.PLAYER_RATING_CAP) is not None:
             over = [
                 p
@@ -451,11 +467,51 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             ).format(n=count),
         )
 
+    def _match_forfeit_mp_penalty(
+        self, team: 'Team', round_: int
+    ) -> 'PointAdjustment | None':
+        """A match lost by forfeit scores 0 match points instead of the
+        normal 1 ("un match perdu par forfait 0 point"). Applied as a -1
+        match-point adjustment when the team forfeited its whole match, and
+        only where match points rank the teams (Suisse / round-robin)."""
+        tournament = team.tournament
+        if tournament is None:
+            return None
+        if tournament.primary_score != ScoreType.MATCH_POINTS:
+            return None
+        rows = self._round_breakdown(team, round_)
+        if rows and all(forfeited for _index, forfeited, _played in rows):
+            return PointAdjustment(
+                mp=-1.0,
+                explanation=_('Match lost by forfeit, counted as 0 match points.'),
+            )
+        return None
+
+    @staticmethod
+    def _combine(
+        *adjustments: 'PointAdjustment | None',
+    ) -> 'PointAdjustment | None':
+        """Sum several point adjustments into one, joining their
+        explanations. Returns ``None`` when none apply."""
+        parts = [adjustment for adjustment in adjustments if adjustment is not None]
+        if not parts:
+            return None
+        return PointAdjustment(
+            mp=sum(part.mp for part in parts),
+            gp=sum(part.gp for part in parts),
+            explanation=' '.join(
+                part.explanation for part in parts if part.explanation
+            ),
+        )
+
     @override
     def form_defaults(self, pairing_system_id: str | None = None) -> dict[str, str]:
         gp = self._game_points_for(pairing_system_id)
         defaults: dict[str, str] = {
             'team_player_count': '4',
+            'roster_max_size': str(self.roster_max_size)
+            if self.roster_max_size
+            else '',
             'primary_score': self._primary_score_for(pairing_system_id),
             'team_colour_type': TeamColourType.A.value,
             'enforce_roster_order': 'on',
@@ -488,8 +544,12 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
     def team_point_adjustment(
         self, team: 'Team', round_: int
     ) -> 'PointAdjustment | None':
-        # A game lost by forfeit counts -1 game point.
-        return self._forfeit_loss_penalty(team, round_)
+        # A game lost by forfeit counts -1 game point; a match lost by
+        # forfeit scores 0 match points.
+        return self._combine(
+            self._forfeit_loss_penalty(team, round_),
+            self._match_forfeit_mp_penalty(team, round_),
+        )
 
     @property
     @override
@@ -546,8 +606,12 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     def team_point_adjustment(
         self, team: 'Team', round_: int
     ) -> 'PointAdjustment | None':
-        # -1 when a game was played on a board below a forfeited one.
-        return self._following_board_played_penalty(team, round_)
+        # -1 when a game was played on a board below a forfeited one; a
+        # match lost by forfeit scores 0 match points.
+        return self._combine(
+            self._following_board_played_penalty(team, round_),
+            self._match_forfeit_mp_penalty(team, round_),
+        )
 
     @staticmethod
     @override
@@ -570,15 +634,19 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
 
     @override
     def roster_warnings(self, team: 'Team') -> list[str]:
-        # No per-player Elo cap on the Féminine divisions, so skip
-        # the parent's rating check and only flag non-women rosters.
+        # The parent's licence check applies; the rating-cap check is a
+        # no-op here (no Elo cap on the Féminine divisions). Add the
+        # women-only roster check on top.
+        msgs = super().roster_warnings(team)
         non_women = [p for p in team.players if p.gender != PlayerGender.WOMAN]
-        if not non_women:
-            return []
-        names = ', '.join(p.full_name for p in non_women)
-        return [
-            _('Roster must consist of women players only: {names}.').format(names=names)
-        ]
+        if non_women:
+            names = ', '.join(p.full_name for p in non_women)
+            msgs.append(
+                _('Roster must consist of women players only: {names}.').format(
+                    names=names
+                )
+            )
+        return msgs
 
 
 class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
@@ -599,8 +667,12 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
     def team_point_adjustment(
         self, team: 'Team', round_: int
     ) -> 'PointAdjustment | None':
-        # -1 when a game was played on a board below a forfeited one.
-        return self._following_board_played_penalty(team, round_)
+        # -1 when a game was played on a board below a forfeited one; a
+        # match lost by forfeit scores 0 match points.
+        return self._combine(
+            self._following_board_played_penalty(team, round_),
+            self._match_forfeit_mp_penalty(team, round_),
+        )
 
     @staticmethod
     def _gender_balance_warnings(team: 'Team') -> list[str]:

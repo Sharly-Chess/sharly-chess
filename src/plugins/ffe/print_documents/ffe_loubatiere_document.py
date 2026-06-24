@@ -12,7 +12,10 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents import PrintOption
 from data.print_documents.documents import PrintDocument
-from data.print_documents.options import TournamentPrintOption
+from data.print_documents.options import (
+    OptionalTeamsPrintOption,
+    TournamentPrintOption,
+)
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_DIR
 from plugins.ffe.ffe_rule_sets import (
@@ -77,7 +80,7 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption]
+        return [TournamentPrintOption, OptionalTeamsPrintOption]
 
     @classmethod
     def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
@@ -126,6 +129,7 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
         rounds_context: list[dict[str, Any]] = []
         cumulative_match_points = 0.0
         total_differential = 0.0
+        total_gains = 0.0
         has_results = False
         for round_ in rounds:
             colour = self._team_round_colour(team, round_, team_boards_by_round)
@@ -157,10 +161,15 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
                 opponent_match = (
                     opponent_record.match_at(round_) if opponent_record else None
                 )
-            against = opponent_match.own_gp if opponent_match else None
-            differential = match.own_gp - against if against is not None else None
+            # Points pour / contre are each floored at 0 per match (a forfeit
+            # can drive a raw match total negative), matching the FFE GP-FOR /
+            # GP-DIFFERENTIAL tie-breaks — so the sheet agrees with them.
+            gains = max(0.0, match.own_gp)
+            against = max(0.0, opponent_match.own_gp) if opponent_match else None
+            differential = gains - against if against is not None else None
             if differential is not None:
                 total_differential += differential
+            total_gains += gains
             cumulative_match_points += match.own_mp
             rounds_context.append(
                 {
@@ -169,7 +178,7 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
                     'opponent': opponent.name
                     if opponent
                     else (_('Bye') if match.is_bye else ''),
-                    'gains': match.own_gp,
+                    'gains': gains,
                     'differential': differential,
                     'match_points': match.own_mp,
                     'total_match_points': cumulative_match_points,
@@ -208,7 +217,7 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
             'players': players_context,
             'rounds': rounds_context,
             'total_match_points': record.total_mp if (record and has_results) else None,
-            'total_gains': record.total_gp if (record and has_results) else None,
+            'total_gains': total_gains if has_results else None,
             'total_differential': total_differential if has_results else None,
             'classement': f'{_ordinal_fr(rank)} / {team_count}' if rank else '',
         }
@@ -217,7 +226,7 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         tournament = self.tournament
         rounds = list(range(1, tournament.rounds + 1))
-        teams = sorted(
+        all_teams = sorted(
             tournament.teams,
             key=lambda team: (
                 team.pairing_number
@@ -226,15 +235,24 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
                 team.name.lower(),
             ),
         )
+        # Letters and team count reflect the whole tournament (the table
+        # position), even when only some teams are printed.
         letter_by_id = {
-            team.id: chr(ord('A') + index) for index, team in enumerate(teams)
+            team.id: chr(ord('A') + index) for index, team in enumerate(all_teams)
         }
+        team_count = len(all_teams)
+        # The arbiter may pick which teams to print; empty selection = all.
+        selected_team_ids = set(self._get_option(OptionalTeamsPrintOption).value or [])
+        teams = [
+            team
+            for team in all_teams
+            if not selected_team_ids or team.id in selected_team_ids
+        ]
         records_by_id = {record.team_id: record for record in tournament.team_records()}
         team_boards_by_round = tournament.team_boards_by_round
         rank_by_team_id = {
             row['team'].id: row['rank'] for row in tournament.team_standings()
         }
-        team_count = len(teams)
         return {
             'sharly_chess_config': SharlyChessConfig(),
             'document': self,
