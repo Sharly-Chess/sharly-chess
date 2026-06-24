@@ -263,7 +263,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div id="team-colour-pattern-cell" class="col-12 col-md-6">
                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                 <label class="form-label mb-0">
                                     {{ _('Colour pattern:') }}
@@ -439,6 +439,7 @@
                             const $container = $('#team-scores-container');
                             const $secondary = $('#team-secondary-score-cell');
                             const $colourType = $('#team-colour-type-cell');
+                            const $colourPattern = $('#team-colour-pattern-cell');
                             function sync() {
                                 const id = $('#pairing-system').val() || '';
                                 // Pairing system ids are <SYSTEM>_<VARIATION>
@@ -455,6 +456,11 @@
                                 // colour pattern is fixed by the Berger tables.
                                 $secondary.toggle(isSwiss);
                                 $colourType.toggle(isSwiss);
+                                // The colour pattern (which team is White per
+                                // board) only applies to team-vs-team matches;
+                                // a fixed-table system like Molter sets colours
+                                // from the table, so hide it there.
+                                $colourPattern.toggle(isSwiss || isRR);
                             }
                             $('#pairing-system').on('change', sync);
                             sync();
