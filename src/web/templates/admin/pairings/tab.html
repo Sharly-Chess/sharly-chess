@@ -186,7 +186,7 @@
                                 {% include '/admin/pairings/team_unpaired_table.html' %}
                             {% endwith %}
                         {% elif is_flat_team_mode %}
-                            {% with title=_('Teams'), teams=admin_tournament.teams|list, table_id='lineup-teams-table' %}
+                            {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
                                 {% include '/admin/pairings/team_lineup_table.html' %}
                             {% endwith %}
                         {% else %}
