@@ -30,6 +30,7 @@
 - Restored check-in on input screens (4.2.0)
 - Fixed default global background color (4.2.1)
 - Fixed display controller redirection on results or check-in input (4.2.1)
+- Fixed players' display on players screens before pairing (4.2.3)
 
 ## _Sharly-Chess.com_
 
