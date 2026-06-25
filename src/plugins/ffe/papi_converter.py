@@ -223,7 +223,7 @@ class PapiConverter:
                 raise SharlyChessException(
                     'Player database conversion error: SQLite database was not created.'
                 )
-            return True
+        return True
 
     def read_papi_file(self, source_file: Path) -> PapiData:
         """Read the papi file *source_file* into stored objects.

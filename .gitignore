@@ -1,16 +1,20 @@
+# IDE
 /.idea/
-/papi/
-/events/
-/logs/
-/fees/
-/custom/
-/docs/images/src/
+__pycache__/
+*.egg-info/
+
+# App data
 /papi-web.ini
 papi-web.ini.*
-tmp/
+/papi/
 db/
-__pycache__/
+/events/
+/logs/
+/custom/
+tmp/
+/dev-data/
 
+# Scripts
 /build/
 /dist/
 /export/
@@ -20,8 +24,8 @@ __pycache__/
 /scripts/i18n/models
 /bin/
 /tools/*
-
-*.egg-info/
+/docs/images/src/
+/fees/
 
 # Vim scratch files
 *.swp

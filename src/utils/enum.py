@@ -12,6 +12,15 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+class Extension(StrEnum):
+    EVENT_DB = 'sce'
+    LEGACY_EVENT_DB = 'db'
+    ARCHIVE = 'sca'
+    BACKUP = 'backup'
+    SOURCE_DB = 'db'
+    TEMPLATE = 'template'
+
+
 class Result(IntEnum):
     """An enum representing the results in the database. Should be subclassed if the point value is not the default."""
 
