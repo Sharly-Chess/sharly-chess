@@ -468,11 +468,19 @@ class SharlyChessServerToga(toga.App):
             {'level': console_log_level, 'text': console_log_level_str}
             for console_log_level, console_log_level_str in config.console_log_levels.items()
         ]
-        level_label = toga.Label(_('Minimum level:'), margin_top=2)
         self.log_level_select = toga.Selection(
             items=log_level_options,
             accessor='text',
             on_change=self._on_level_change,
+        )
+        log_level = toga.Box(
+            children=[
+                toga.Label(_('Minimum level:')),
+                self.log_level_select,
+            ],
+            margin_right=5,
+            gap=2,
+            align_items='center',
         )
         assert isinstance(self.log_level_select.items, ListSource)
         self.log_level_select.value = self.log_level_select.items.find(
@@ -493,32 +501,29 @@ class SharlyChessServerToga(toga.App):
             value=config.console_show_date,
             on_change=self._on_show_date_switch_change,
         )
-        switch_container = toga.Box(
-            margin_top=2,
-            children=[
-                self.log_color_switch,
-                self.show_log_level_switch,
-                self.show_log_time_switch,
-            ],
-            gap=10,
-            margin_left=20,
-        )
         self.log_settings = toga.Box(
-            style=Pack(direction=ROW, margin_bottom=10, visibility='hidden')
+            direction=ROW,
+            margin_bottom=10,
+            visibility='hidden',
+            align_items='center',
+            gap=10,
         )
-        self.log_settings.add(level_label, self.log_level_select, switch_container)
+        self.log_settings.add(
+            log_level,
+            self.log_color_switch,
+            self.show_log_level_switch,
+            self.show_log_time_switch,
+        )
         self.log_settings_container = toga.Box()
         self.logs_view.add(self.log_settings_container)
         self.logs_view.add(self.html_view)
 
         # Settings view
         self.settings_view = toga.Box(
-            style=Pack(
-                direction=COLUMN,
-                margin=10,
-                gap=7,
-                align_items='center',
-            )
+            direction=COLUMN,
+            margin=10,
+            gap=7,
+            align_items='center',
         )
         self.launch_browser_switch = toga.Switch(
             text=_('Launch a browser on startup'),
