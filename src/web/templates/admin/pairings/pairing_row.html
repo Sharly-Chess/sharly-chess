@@ -7,6 +7,16 @@
         hx-swap-oob="true"
     {% endif %}
 >
+    {# Molter codes (A1 / B3) follow the player's team, not the physical
+       side — so a colour permute keeps each code with its player. #}
+    {% set _white_molter_code = none %}
+    {% set _black_molter_code = none %}
+    {% if molter_code is defined and molter_code %}
+        {% set _wl = wtp.team.pairing_label if (wtp and wtp.team) else none %}
+        {% set _bl = btp.team.pairing_label if (btp and btp.team) else none %}
+        {% set _white_molter_code = molter_code[1] if (_wl and molter_code[1] and molter_code[1][0] == _wl) else molter_code[0] %}
+        {% set _black_molter_code = molter_code[0] if (_bl and molter_code[0] and molter_code[0][0] == _bl) else molter_code[1] %}
+    {% endif %}
     <td class="text-center text-nowrap">{{ board.number }}{% if board.number != board.id %} ({{ board.id }}){% endif %}</td>
     <td class="text-center">{% if wtp %}{{ wtp.vpoints_str }}{% endif %}</td>
     {% if admin_tournament.print_real_points(admin_round) %}
@@ -20,7 +30,7 @@
         {% endif %}
     {% endif %}
     <td class="text-truncate">
-        {% if molter_code is defined and molter_code %}<small class="text-muted me-1">{{ molter_code[0] }}</small>{% endif %}
+        {% if _white_molter_code %}<small class="text-muted me-1">{{ _white_molter_code }}</small>{% endif %}
         {% if not wtp %}
             <em class="text-muted">—</em>
         {% elif lineup_team_board is defined and wtp.team_id %}
@@ -75,7 +85,7 @@
             {% with player=btp, illegal_moves=board.black_pairing.illegal_moves if btp else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
         {% endif %}
         <td class="text-truncate">
-            {% if molter_code is defined and molter_code %}<small class="text-muted me-1">{{ molter_code[1] }}</small>{% endif %}
+            {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
             {% if lineup_team_board is defined and btp.team_id %}
                 <span class="lineup-view">
                     {% with tournament_player=btp, display_rating=true %}
@@ -102,7 +112,7 @@
             <td></td>
         {% endif %}
         <td>
-            {% if molter_code is defined and molter_code %}<small class="text-muted me-1">{{ molter_code[1] }}</small>{% endif %}
+            {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
             {% if admin_event.is_team_event %}
                 {# A missing side in a flat team system is a lineup
                    hole (forfeit), not a pairing-allocated bye. #}

@@ -33,7 +33,7 @@
            without a manual page reload. #}
         {% with
             swap_oob=True,
-            teams=admin_tournament.teams|list,
+            teams=admin_tournament.teams_in_pairing_order,
             title=_('Teams'),
             table_id='lineup-teams-table'
         %}

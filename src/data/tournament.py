@@ -957,6 +957,21 @@ class Tournament:
     def sorted_teams(self) -> list['Team']:
         return sorted(self.teams, key=attrgetter('name'))
 
+    @property
+    def teams_in_pairing_order(self) -> list['Team']:
+        """Teams ordered by pairing number then id — the same order the
+        fixed-table letters (A, B, …) follow, so a letter-labelled list
+        reads in sequence."""
+        return sorted(
+            self.teams,
+            key=lambda team: (
+                team.pairing_number
+                if team.pairing_number is not None
+                else float('inf'),
+                team.id,
+            ),
+        )
+
     @cached_property
     def teams_by_pairing_number(self) -> dict[int, 'Team']:
         return {

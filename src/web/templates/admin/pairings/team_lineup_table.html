@@ -27,6 +27,9 @@
                     data-team-id="{{ team.id }}"
                 >
                     <td class="align-middle">
+                        {% if team.pairing_label %}
+                            <strong class="text-muted me-1">{{ team.pairing_label }}</strong>
+                        {% endif %}
                         <a
                             class="player-link"
                             hx-get="{{ url_for(
