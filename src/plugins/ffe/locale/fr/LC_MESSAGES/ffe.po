@@ -346,6 +346,9 @@ msgstr "Plus faible moyenne Elo"
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
 
+msgid "Match lost by forfeit, counted as 0 match points."
+msgstr "Match perdu par forfait"
+
 msgid "Max. teams per league:"
 msgstr "Max. d'équipes par ligue :"
 
@@ -435,6 +438,9 @@ msgstr "En attente"
 
 msgid "Player rating above {cap}: {names}."
 msgstr "Joueur·euses classé·e au dessus de {cap} : {names}."
+
+msgid "Player without an A (competition) FFE licence: {names}."
+msgstr "Joueur·euses sans licence A (compétition) : {names}."
 
 msgid "Players:"
 msgstr "Joueur·euses :"

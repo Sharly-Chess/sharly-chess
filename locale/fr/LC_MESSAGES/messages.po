@@ -1519,6 +1519,9 @@ msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
 msgid "Choose one, many or no tournaments."
 msgstr "Choisir aucun, un ou plusieurs tournois."
 
+msgid "Choose one, several or no teams (all if none)."
+msgstr "Choisir aucune, une ou plusieurs équipes (toutes si aucune choisie)."
+
 msgid "Choose screens to add"
 msgstr "Choisir des écrans à ajouter"
 
@@ -3661,6 +3664,9 @@ msgstr "Langue :"
 msgid "Laos"
 msgstr "Laos"
 
+msgid "Largest number of players a team may have on its roster. Leave blank for no limit."
+msgstr "Plus grand nombre de joueur·euses qu'une équipe peut avoir dans son effectif, laisser vide pour aucune limite."
+
 msgid "Last board:"
 msgstr "Dernier échiquier :"
 
@@ -4017,6 +4023,9 @@ msgstr "Nombre maximum de résultats affichés :"
 
 msgid "Maximum rating"
 msgstr "Elo maximum"
+
+msgid "Maximum roster size:"
+msgstr "Taille maximum de l'effectif :"
 
 msgid "May"
 msgstr "Mai"
@@ -5389,6 +5398,9 @@ msgstr "Veuillez choisir un type de critère."
 msgid "Please select at least one player."
 msgstr "Veuillez sélectionner au moins un·e joueur·euse."
 
+msgid "Please select at least one team."
+msgstr "Veuillez sélectionner au moins une équipe."
+
 msgid "Please select the account."
 msgstr "Veuillez sélectionner le compte."
 
@@ -6737,6 +6749,9 @@ msgstr "Les équipes avec moins de joueur·euses sont considérées « incompl�
 msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
 msgstr "Les équipes avec moins de femmes/hommes sont considérées « incomplètes »."
 
+msgid "Teams:"
+msgstr "Équipes :"
+
 #, python-format
 msgid "Teams: %(num)d"
 msgstr "Équipes : %(num)d"
@@ -7043,6 +7058,13 @@ msgstr "Les classements par ordre décroissant."
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
 
+msgid "The roster cap cannot be smaller than the team-match size."
+msgstr "Le plafond de l'effectif ne peut être plus petit que la taille de l'équipe en match."
+
+#, python-format
+msgid "The roster has %(count)d players, more than the maximum of %(max)d."
+msgstr "L'effectif a %(count)d joueur·euses, plus que le maximum de %(max)d."
+
 msgid "The rotating delay between two screens."
 msgstr "Le délai de rotation entre deux écrans."
 
@@ -7155,10 +7177,10 @@ msgid "There needs to be at least one screen or family defined for the rotator t
 msgstr "Il doit y avoir au moins un écran ou une famille d'écrans définie pour que l'écran rotatif soit accessible."
 
 msgid "These lower-ranked players were released so the round could be paired."
-msgstr "Les protections de ces joueur·euses (en fin de classement) ont du être levées pour permettre l'appariement."
+msgstr "Les contraintes sur ces joueur·euses de fin de classement ont été supprimées pour apparier la ronde."
 
 msgid "These lower-ranked teams were released so the round could be paired."
-msgstr "Les protections de ces équipes (en fin de classement) ont du être levées pour permettre l'appariement."
+msgstr "Les contraintes sur ces équipes de fin de classement ont été supprimées pour apparier la ronde."
 
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."

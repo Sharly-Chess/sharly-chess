@@ -1519,6 +1519,9 @@ msgstr ""
 msgid "Choose one, many or no tournaments."
 msgstr ""
 
+msgid "Choose one, several or no teams (all if none)."
+msgstr ""
+
 msgid "Choose screens to add"
 msgstr ""
 
@@ -3661,6 +3664,9 @@ msgstr ""
 msgid "Laos"
 msgstr ""
 
+msgid "Largest number of players a team may have on its roster. Leave blank for no limit."
+msgstr ""
+
 msgid "Last board:"
 msgstr ""
 
@@ -4016,6 +4022,9 @@ msgid "Maximum number of results displayed:"
 msgstr ""
 
 msgid "Maximum rating"
+msgstr ""
+
+msgid "Maximum roster size:"
 msgstr ""
 
 msgid "May"
@@ -5387,6 +5396,9 @@ msgstr ""
 msgid "Please select at least one player."
 msgstr ""
 
+msgid "Please select at least one team."
+msgstr ""
+
 msgid "Please select the account."
 msgstr ""
 
@@ -6735,6 +6747,9 @@ msgstr ""
 msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
 msgstr ""
 
+msgid "Teams:"
+msgstr ""
+
 #, python-format
 msgid "Teams: %(num)d"
 msgstr ""
@@ -7039,6 +7054,13 @@ msgid "The ratings in descending order."
 msgstr ""
 
 msgid "The related objects will also be deleted:"
+msgstr ""
+
+msgid "The roster cap cannot be smaller than the team-match size."
+msgstr ""
+
+#, python-format
+msgid "The roster has %(count)d players, more than the maximum of %(max)d."
 msgstr ""
 
 msgid "The rotating delay between two screens."

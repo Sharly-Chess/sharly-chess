@@ -51,19 +51,9 @@
                             <div class="collapse mt-1" id="pp-applied-groups">
                                 <div class="text-muted small mb-1">
                                     {% if pp_is_team %}
-                                        {{ _(
-                                            'These lower-ranked teams were released so the '
-                                            'round could be paired — each may now be paired '
-                                            'against an opponent it would normally be kept '
-                                            'apart from. All others kept their separations.'
-                                        ) }}
+                                        {{ _('These lower-ranked teams were released so the round could be paired.') }}
                                     {% else %}
-                                        {{ _(
-                                            'These lower-ranked players were released so the '
-                                            'round could be paired — each may now be paired '
-                                            'against an opponent they would normally be kept '
-                                            'apart from. All others kept their separations.'
-                                        ) }}
+                                        {{ _('These lower-ranked players were released so the round could be paired.') }}
                                     {% endif %}
                                 </div>
                                 <ul class="list-group">
