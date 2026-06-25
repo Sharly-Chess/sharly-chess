@@ -5,14 +5,12 @@ from unittest import TestCase
 import pytest
 from packaging.version import Version, InvalidVersion
 
-from common import EVENTS_FOLDER
 from common.logger import get_logger
 from common.engine import Engine
-from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
-
+from utils.enum import Extension
 
 logger: Logger = get_logger()
 
@@ -23,8 +21,7 @@ class RecoverTestCase(TestCase):
 
     def test_recover(self):
         # Note(pascalaubry): engines recover previous releases data
-        # with method _recover_previous_version() by looking
-        # for previous instances in folder ..
+        # by looking for previous instances in folder ..
         logger.info('Loading test engine...')
         test_engine = Engine()
         for version_dir in Path(__file__).parent.glob('*'):
@@ -34,20 +31,12 @@ class RecoverTestCase(TestCase):
                 except InvalidVersion:
                     logger.debug('Invalid version [%s]...', version_dir.name)
                     continue
-                events_folder: Path = version_dir / EVENTS_FOLDER
-                files: list[Path] = [
-                    file
-                    for file in events_folder.glob(
-                        f'*.{SharlyChessConfig.event_database_ext}'
-                    )
-                ] + [
-                    file
-                    for file in events_folder.glob(
-                        f'*.{SharlyChessConfig.event_database_old_ext}'
-                    )
-                ]
+                events_folder: Path = version_dir / 'events'
+                files: list[Path] = list(
+                    events_folder.glob(f'*.{Extension.EVENT_DB}')
+                ) + list(events_folder.glob(f'*.{Extension.LEGACY_EVENT_DB}'))
                 logger.info('Recovering version [%s]...', version)
-                test_engine._recover_previous_version(
+                test_engine.recover_version_pre_v5(
                     version,
                     version_dir,
                     files,

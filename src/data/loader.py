@@ -15,10 +15,11 @@ from packaging.version import Version
 from common import (
     SHARLY_CHESS_VERSION,
     EVENTS_DIR,
+    ARCHIVES_DIR,
+    BACKUP_BASE_DIR,
 )
 from common.exception import SharlyChessException
 from common.i18n.utils import normalized_key
-from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 from data.event import Event
 from data.event_metadata import EventMetadata
@@ -26,6 +27,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.date_time import get_date_timestamp, format_datetime
+from utils.enum import Extension
 
 logger: Logger = get_logger()
 
@@ -121,7 +123,7 @@ class EventLoader:
     @classmethod
     def all_event_ids(cls) -> list[str]:
         ids: list[str] = []
-        for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_database_ext}'):
+        for file in EVENTS_DIR.glob(f'*.{Extension.EVENT_DB}'):
             uniq_id = cls.format_uniq_id(file.stem)
             if uniq_id != file.stem:
                 index: int = 1
@@ -239,9 +241,7 @@ class ArchiveLoader:
         return sorted(
             [
                 Archive(file, file.stem, datetime.fromtimestamp(file.lstat().st_ctime))
-                for file in SharlyChessConfig.event_archive_base_path.glob(
-                    f'*.{SharlyChessConfig.event_archive_ext}'
-                )
+                for file in ARCHIVES_DIR.glob(f'*.{Extension.ARCHIVE}')
             ],
             key=lambda archive: archive.date,
         )
@@ -260,10 +260,7 @@ class ArchiveLoader:
 
     @staticmethod
     def get_archive_path(archive_name: str) -> Path:
-        return (
-            SharlyChessConfig.event_archive_base_path
-            / f'{archive_name}.{SharlyChessConfig.event_archive_ext}'
-        )
+        return ARCHIVES_DIR / f'{archive_name}.{Extension.ARCHIVE}'
 
 
 @dataclass
@@ -275,11 +272,7 @@ class EventBackup:
 
     @property
     def file(self) -> Path:
-        return (
-            SharlyChessConfig.event_backup_base_path
-            / self.version.public
-            / f'{self.name}.{SharlyChessConfig.event_backup_ext}'
-        )
+        return BACKUP_BASE_DIR / self.version.public / f'{self.name}.{Extension.BACKUP}'
 
     @property
     def exists(self) -> bool:
@@ -296,12 +289,12 @@ class EventBackupLoader:
     """This class helps loading backups (copied events)."""
 
     def __init__(self):
-        SharlyChessConfig.event_backup_base_path.mkdir(exist_ok=True, parents=True)
+        BACKUP_BASE_DIR.mkdir(exist_ok=True, parents=True)
 
     @staticmethod
     def event_backups(event_id: str) -> list[EventBackup]:
         backups: list[EventBackup] = []
-        for version_dir in SharlyChessConfig.event_backup_base_path.iterdir():
+        for version_dir in BACKUP_BASE_DIR.iterdir():
             if not version_dir.is_dir():
                 continue
             backup = EventBackup(event_id, Version(version_dir.name))
@@ -311,20 +304,20 @@ class EventBackupLoader:
 
     @staticmethod
     def version_backups(version: Version) -> list[EventBackup]:
-        version_dir: Path = SharlyChessConfig.event_backup_base_path / version.public
+        version_dir = BACKUP_BASE_DIR / version.public
         return [
             EventBackup(file.stem, version)
-            for file in version_dir.glob(f'*.{SharlyChessConfig.event_backup_ext}')
+            for file in version_dir.glob(f'*.{Extension.BACKUP}')
         ]
 
     def versions(self, event_id: str | None = None) -> list[Version]:
-        if not SharlyChessConfig.event_backup_base_path.exists():
+        if not BACKUP_BASE_DIR.exists():
             return []
         if event_id:
             return [backup.version for backup in self.event_backups(event_id)]
         return [
             Version(version_dir.name)
-            for version_dir in SharlyChessConfig.event_backup_base_path.iterdir()
+            for version_dir in BACKUP_BASE_DIR.iterdir()
             if version_dir.is_dir()
         ]
 
