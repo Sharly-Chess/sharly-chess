@@ -7152,10 +7152,10 @@ msgstr ""
 msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
 msgstr ""
 
-msgid "These lower-ranked players were released so the round could be paired — each may now be paired against an opponent they would normally be kept apart from. All others kept their separations."
+msgid "These lower-ranked players were released so the round could be paired."
 msgstr ""
 
-msgid "These lower-ranked teams were released so the round could be paired — each may now be paired against an opponent it would normally be kept apart from. All others kept their separations."
+msgid "These lower-ranked teams were released so the round could be paired."
 msgstr ""
 
 msgid "These plugins can only be activated on events of their federation."
@@ -8736,19 +8736,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Added automatically, on top of any manual points above."
-#~ msgstr ""
-
-#~ msgid "All soft separations relaxed."
-#~ msgstr ""
-
-#~ msgid "Protected core (%(count)d):"
-#~ msgstr ""
-
-#~ msgid "Relaxed: top %(n)d protected"
-#~ msgstr ""
-
-#~ msgid "…each also kept apart from (%(count)d):"
-#~ msgstr ""
 

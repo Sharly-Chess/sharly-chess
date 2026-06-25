@@ -7154,10 +7154,10 @@ msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
 msgstr "Il doit y avoir au moins un écran ou une famille d'écrans définie pour que l'écran rotatif soit accessible."
 
-msgid "These lower-ranked players were released so the round could be paired — each may now be paired against an opponent they would normally be kept apart from. All others kept their separations."
+msgid "These lower-ranked players were released so the round could be paired."
 msgstr "Les protections de ces joueur·euses (en fin de classement) ont du être levées pour permettre l'appariement."
 
-msgid "These lower-ranked teams were released so the round could be paired — each may now be paired against an opponent it would normally be kept apart from. All others kept their separations."
+msgid "These lower-ranked teams were released so the round could be paired."
 msgstr "Les protections de ces équipes (en fin de classement) ont du être levées pour permettre l'appariement."
 
 msgid "These plugins can only be activated on events of their federation."
@@ -8738,19 +8738,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Added automatically, on top of any manual points above."
-#~ msgstr "Ajoutés automatiquement, en plus des points manuels ci-dessous."
-
-#~ msgid "All soft separations relaxed."
-#~ msgstr "Toutes les séparations souples ont été relâchées."
-
-#~ msgid "Protected core (%(count)d):"
-#~ msgstr "Noyau protégé (%(count)d) :"
-
-#~ msgid "Relaxed: top %(n)d protected"
-#~ msgstr "Relâché : les %(n)d premiers protégés"
-
-#~ msgid "…each also kept apart from (%(count)d):"
-#~ msgstr "…chacun aussi séparé de (%(count)d) :"
 
