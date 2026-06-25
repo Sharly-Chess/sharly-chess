@@ -506,7 +506,7 @@ class SharlyChessServerToga(toga.App):
             margin_bottom=10,
             visibility='hidden',
             align_items='center',
-            gap=10,
+            gap=20,
         )
         self.log_settings.add(
             log_level,
