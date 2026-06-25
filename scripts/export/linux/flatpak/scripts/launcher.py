@@ -9,7 +9,6 @@ handling proper initialization and launching the application in the Flatpak envi
 import os
 import sys
 import logging
-import importlib.metadata
 from pathlib import Path
 
 # Setup logging for the launcher
@@ -47,29 +46,12 @@ def setup_flatpak_environment():
         )
         os.environ['XDG_DATA_HOME'] = xdg_data_home
 
-    # Set working directory to XDG_DATA_HOME to ensure relative paths (events/, logs/) are created there
-    # To mimic Windows behavior and allow data migration between versions,
-    # we create a version-specific directory inside XDG_DATA_HOME.
-    try:
-        # Use importlib to get version without importing common (which has side effects like creating dirs)
-        version = importlib.metadata.version('sharly-chess')
-        version_dir_name = f'sharly-chess-{version}'
-    except Exception as e:
-        # Fallback if we can't import the version (should not happen in prod)
-        logger.warning(
-            f'Could not determine SHARLY_CHESS_VERSION: {e}, using generic directory.'
-        )
-        version_dir_name = 'sharly-chess-generic'
+    # Set working directory to XDG_DATA_HOME
+    data_path = Path(xdg_data_home)
+    data_path.mkdir(exist_ok=True, parents=True)
+    os.chdir(data_path)
 
-    work_dir = Path(xdg_data_home) / version_dir_name
-    work_dir.mkdir(parents=True, exist_ok=True)
-    (work_dir / 'tmp').mkdir(exist_ok=True)
-    (work_dir / 'logs').mkdir(exist_ok=True)
-    (work_dir / 'events').mkdir(exist_ok=True)
-    (work_dir / 'custom').mkdir(exist_ok=True)
-    os.chdir(work_dir)
-
-    logger.info(f'Working directory set to: {work_dir}')
+    logger.info(f'Working directory set to: {data_path}')
     logger.info('XDG directories configured')
 
 

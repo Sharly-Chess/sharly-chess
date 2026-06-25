@@ -739,9 +739,6 @@ msgstr ""
 msgid "All the boards"
 msgstr ""
 
-msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
-msgstr ""
-
 msgid "All the dependant objects will also be deleted:"
 msgstr ""
 
@@ -1498,6 +1495,9 @@ msgstr ""
 msgid "Configure the tie-breaks of the tournament."
 msgstr ""
 
+msgid "Confirm the new data folder \"{folder}\"?"
+msgstr ""
+
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr ""
 
@@ -1526,9 +1526,6 @@ msgid "Consider all paired games for the final round as draws."
 msgstr ""
 
 msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
-msgstr ""
-
-msgid "Console logging level: {console_log_level}"
 msgstr ""
 
 msgid "Consult the logs for more details."
@@ -1794,6 +1791,9 @@ msgid "Daily"
 msgstr ""
 
 msgid "Dashed border"
+msgstr ""
+
+msgid "Data folder"
 msgstr ""
 
 msgid "Data loss at tournaments, players and pairings level."
@@ -2827,6 +2827,9 @@ msgstr ""
 msgid "Genders"
 msgstr ""
 
+msgid "General"
+msgstr ""
+
 msgid "Generate"
 msgstr ""
 
@@ -3169,6 +3172,9 @@ msgstr ""
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr ""
 
+msgid "Invalid folder"
+msgstr ""
+
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
@@ -3379,9 +3385,6 @@ msgid "Lithuania"
 msgstr ""
 
 msgid "Loading more results…"
-msgstr ""
-
-msgid "Local URL: {local_url}"
 msgstr ""
 
 msgid "Local databases"
@@ -3645,6 +3648,9 @@ msgstr ""
 
 msgid "Mo *** MONDAY"
 msgstr "Mo"
+
+msgid "Modified, restart to apply"
+msgstr ""
 
 msgid "Moldova"
 msgstr ""
@@ -4238,6 +4244,9 @@ msgstr ""
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
 msgstr ""
 
+msgid "Open"
+msgstr ""
+
 msgid "Open IT1 certificate for this norm"
 msgstr ""
 
@@ -4245,9 +4254,6 @@ msgid "Open application (browser)"
 msgstr ""
 
 msgid "Open/close check-in"
-msgstr ""
-
-msgid "Opening the welcome page [{url}] in a browser…"
 msgstr ""
 
 msgid "Opponent"
@@ -4808,15 +4814,6 @@ msgstr ""
 msgid "Poland"
 msgstr ""
 
-msgid "Port [{port}] already in use, can not start Sharly Chess server."
-msgstr ""
-
-msgid "Port [{port}] already in use."
-msgstr ""
-
-msgid "Port: {port}"
-msgstr ""
-
 msgid "Portugal"
 msgstr ""
 
@@ -5153,6 +5150,9 @@ msgid "Reset check-in"
 msgstr ""
 
 msgid "Reset manual tie-break"
+msgstr ""
+
+msgid "Restarting will be required to apply the change."
 msgstr ""
 
 msgid "Restore"
@@ -5786,9 +5786,6 @@ msgstr ""
 msgid "Start of the sporting season"
 msgstr ""
 
-msgid "Starting Sharly Chess server, Please wait…"
-msgstr ""
-
 msgid "Starting rank"
 msgstr ""
 
@@ -5951,6 +5948,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "The first tournament of the screen."
+msgstr ""
+
+msgid "The folder should not be contained in the current data folder."
 msgstr ""
 
 msgid "The following categories will also be deleted:"
@@ -6287,6 +6287,9 @@ msgid "This field is required."
 msgstr ""
 
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
+msgstr ""
+
+msgid "This folder is not empty."
 msgstr ""
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
@@ -7026,9 +7029,6 @@ msgstr "We"
 msgid "Weak"
 msgstr ""
 
-msgid "Web server not started yet ({ex}), waiting…"
-msgstr ""
-
 msgid "Weekly"
 msgstr ""
 
@@ -7228,6 +7228,9 @@ msgid "You can't add any more permission to this account."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgstr ""
+
+msgid "You do not have write permission on this folder."
 msgstr ""
 
 msgid "You have no permissions"
@@ -7505,6 +7508,11 @@ msgstr ""
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} event"
+msgid_plural "{count} events"
 msgstr[0] ""
 msgstr[1] ""
 

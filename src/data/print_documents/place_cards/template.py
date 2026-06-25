@@ -4,7 +4,13 @@ import re
 from pathlib import Path
 from typing import Any, Self
 
-from common import BASE_DIR, SharlyChessException
+from common import (
+    BASE_DIR,
+    SharlyChessException,
+    CUSTOM_PLACE_CARDS_DIR,
+    EMBEDDED_PLACE_CARDS_DIR,
+    EXAMPLE_PLACE_CARDS_DIR,
+)
 from common.i18n import _
 from common.i18n.utils import parse_jinja_string, parse_jinja_template, normalized_key
 from common.logger import get_logger
@@ -30,6 +36,7 @@ from data.print_documents.place_cards.items import (
 from data.print_documents.place_cards.toml_container import TOMLContainer
 from data.print_documents.place_cards.types import PlaceCardType
 from data.tournament import Tournament
+from utils.enum import Extension
 from utils.file import ttf_file_inline_url, image_file_inline_url
 
 logger: logging.Logger = get_logger()
@@ -368,23 +375,15 @@ class PlaceCardTemplate(PlaceCardItemStyle):
     ) -> Self:
         """Loads a place card template from an ID."""
         template_file: Path
+        file_name = f'{template_id}.{Extension.TEMPLATE}'
         if embedded := ('/' not in template_id):
-            template_file = (
-                SharlyChessConfig.embedded_place_cards_path
-                / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
-            )
+            template_file = EMBEDDED_PLACE_CARDS_DIR / file_name
             if template_file.exists():
                 return cls(embedded, template_file)
-        template_file = (
-            SharlyChessConfig.custom_place_cards_path
-            / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
-        )
+        template_file = CUSTOM_PLACE_CARDS_DIR / file_name
         if template_file.exists():
             return cls(embedded, template_file)
-        template_file = (
-            SharlyChessConfig.example_place_cards_path
-            / f'{template_id}.{SharlyChessConfig.place_card_template_ext}'
-        )
+        template_file = EXAMPLE_PLACE_CARDS_DIR / file_name
         if template_file.exists():
             return cls(embedded, template_file)
         # Should never happen
@@ -401,22 +400,20 @@ class PlaceCardTemplate(PlaceCardItemStyle):
     ) -> dict[str, Self]:
         """Returns a dict of all the place card templates."""
         place_card_templates_by_id: dict[str, PlaceCardTemplate] = {}
-        for template_file in SharlyChessConfig.embedded_place_cards_path.glob(
-            f'*.{SharlyChessConfig.place_card_template_ext}'
-        ):
+        for template_file in EMBEDDED_PLACE_CARDS_DIR.glob(f'*.{Extension.TEMPLATE}'):
             template_id: str = template_file.stem
             place_card_templates_by_id[template_id] = cls.load(template_id)
         # custom templates override embedded ones
         if custom:
-            for template_file in SharlyChessConfig.custom_place_cards_path.glob(
-                f'*/*.{SharlyChessConfig.place_card_template_ext}'
+            for template_file in CUSTOM_PLACE_CARDS_DIR.glob(
+                f'*/*.{Extension.TEMPLATE}'
             ):
                 template_id: str = f'{template_file.parent.name}/{template_file.stem}'
                 place_card_templates_by_id[template_id] = cls.load(template_id)
         # example templates are loaded at the very end
         if examples:
-            for template_file in SharlyChessConfig.example_place_cards_path.glob(
-                f'*/*.{SharlyChessConfig.place_card_template_ext}'
+            for template_file in EXAMPLE_PLACE_CARDS_DIR.glob(
+                f'*/*.{Extension.TEMPLATE}'
             ):
                 template_id: str = f'{template_file.parent.name}/{template_file.stem}'
                 place_card_templates_by_id[template_id] = cls.load(template_id)

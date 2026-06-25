@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "sharly-chess"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.13.0"
-version = "4.2.2"
+version = "5.0.0dev1"
 
 authors = [
   { name = "Pascal Aubry", email = "support@sharly-chess.com" },
@@ -52,7 +52,12 @@ dependencies = [
   "toml ~= 0.10.2",
   "uvicorn ~= 0.34.0",
   "validators ~= 0.34.0",
-  "toga ~= 0.5.4",
+  "travertino @ https://github.com/Molrn/toga/releases/download/v0.5.4+sc1/travertino-0.5.4+sc1-py3-none-any.whl",
+  "toga-core @ https://github.com/Molrn/toga/releases/download/v0.5.4+sc1/toga_core-0.5.4+sc1-py3-none-any.whl",
+  "toga-winforms @ https://github.com/Molrn/toga/releases/download/v0.5.4+sc1/toga_winforms-0.5.4+sc1-py3-none-any.whl ; sys_platform=='win32'",
+  "toga-gtk @ https://github.com/Molrn/toga/releases/download/v0.5.4+sc1/toga_gtk-0.5.4+sc1-py3-none-any.whl ; sys_platform=='linux'",
+  "toga-gtk @ https://github.com/Molrn/toga/releases/download/v0.5.4+sc1/toga_gtk-0.5.4+sc1-py3-none-any.whl ; 'freebsd' in sys_platform",
+  "toga-cocoa @ https://github.com/Molrn/toga/releases/download/v0.5.4+sc1/toga_cocoa-0.5.4+sc1-py3-none-any.whl ; sys_platform=='darwin'",
   "wheel >= 0.45.1",
   "wsproto ~= 1.2.0",
 ]

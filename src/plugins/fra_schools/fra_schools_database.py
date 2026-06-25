@@ -12,6 +12,7 @@ from database.sqlite.local_source_database.actions import AutoUpdateOutdatedActi
 from database.sqlite.local_source_database.databases import GitHubLocalSourceDatabase
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from plugins import fra_schools
+from plugins.fra_schools import PLUGIN_NAME
 from plugins.fra_schools.utils import FRASchool
 from utils import Utils
 
@@ -28,12 +29,8 @@ class FRASchoolsDatabase(GitHubLocalSourceDatabase):
         return _('French Schools')
 
     @staticmethod
-    def _dir() -> Path:
-        return fra_schools.TMP_DIR
-
-    @property
-    def min_recovery_version(self) -> Version:
-        return Version('3.3.0')
+    def version() -> Version:
+        return Version('1')
 
     @property
     def _source_file_name(self) -> str:
@@ -101,3 +98,15 @@ class FRASchoolsDatabase(GitHubLocalSourceDatabase):
         if row := self.fetchone():
             return FRASchool.from_source_row(row)
         return None
+
+    # ---------------------------------------------------------------------------------
+    # Legacy
+    # ---------------------------------------------------------------------------------
+
+    @staticmethod
+    def _legacy_dir() -> Path:
+        return Path('tmp') / PLUGIN_NAME
+
+    @property
+    def legacy_min_recovery_version(self) -> Version:
+        return Version('3.3.0')
