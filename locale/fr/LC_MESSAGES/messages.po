@@ -7457,8 +7457,8 @@ msgstr "certain·es se sont déjà rencontré·es"
 msgid "standard ratings"
 msgstr "classements standard"
 
-msgid "the address of this server on your available networks:"
-msgstr "en utilisant l’adresse de ce serveur sur vos réseaux disponibles :"
+msgid "the server address on the networks to which it is connected:"
+msgstr "en utilisant l’adresse du serveur sur les réseaux auxquels il est connecté :"
 
 msgid "the number of moves is required for a non-final period."
 msgstr "le nombre de coups est requis pour une période non-finale."
