@@ -390,12 +390,17 @@ class TrfTournamentImporter(FileTournamentImporter):
             return
         score_config = TrfEncodedType.get_team_score_config(trf_tournament.encoded_type)
         if score_config:
+            # Score + colour config only ride on the team-Swiss codes
+            # (FIDE_TEAM_…MP/GP). Round-robin/two-game codes carry no
+            # score config, so leave the tournament's own settings alone.
             primary, secondary = score_config
             stored_tournament.primary_score = primary.value
             stored_tournament.secondary_score = secondary.value
-        colour_type = TrfEncodedType.get_team_colour_type(trf_tournament.encoded_type)
-        if colour_type:
-            stored_tournament.team_colour_type = colour_type.value
+            colour_type = TrfEncodedType.get_team_colour_type(
+                trf_tournament.encoded_type
+            )
+            if colour_type:
+                stored_tournament.team_colour_type = colour_type.value
         if trf_tournament.board_color_sequence:
             stored_tournament.color_pattern = trf_tournament.board_color_sequence
         match_points_by_symbol = trf_tournament.teams_point_system
@@ -1025,8 +1030,24 @@ class TrfTournamentImporter(FileTournamentImporter):
             stored_tournament.player_rating_type = PlayerRatingType.FIDE
         elif sr_method == 'NIDOF':
             stored_tournament.player_rating_type = PlayerRatingType.NATIONAL
+        encoded_type = trf_tournament.encoded_type
+        # Refuse files whose tournament type can't be honoured exactly: an
+        # unknown code (no matching pairing system) or a CUSTOM_* code (a
+        # third-party engine whose pairings we can't reproduce). Importing
+        # either would silently substitute a different pairing system.
+        if encoded_type and (
+            encoded_type.startswith('CUSTOM')
+            or TrfEncodedType.get_supported_pairing_variation(encoded_type) is None
+        ):
+            raise ImporterError(
+                _(
+                    'This file uses a tournament type ({type}) that Sharly '
+                    'Chess cannot import, because its pairings cannot be '
+                    'reproduced exactly.'
+                ).format(type=encoded_type)
+            )
         stored_tournament.pairing = TrfEncodedType.get_pairing_variation(
-            trf_tournament.encoded_type
+            encoded_type
         ).id
         cls._populate_team_fields(stored_tournament, trf_tournament)
         trf_tie_breaks = (

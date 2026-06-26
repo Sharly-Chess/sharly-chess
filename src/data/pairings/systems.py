@@ -118,6 +118,14 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def fide_team_swiss_code(self) -> bool:
+        """Whether TRF field 192 should carry the FIDE team-Swiss code
+        (``FIDE_TEAM_TYPE<X>_<primary>[_<secondary>]``) for this system.
+        True only for the team-Swiss system; other team systems (round
+        robin, two-game match, Molter) keep their own variation code."""
+        return False
+
+    @property
     def supports_complementary_pairings(self) -> bool:
         """Whether the system can leave entrants unpaired to be paired
         afterwards ('complementary pairings'). True for Swiss-style
@@ -342,6 +350,11 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
     @staticmethod
     def static_name() -> str:
         return _('Team Swiss')
+
+    @property
+    @override
+    def fide_team_swiss_code(self) -> bool:
+        return True
 
     @override
     def variation_manager(self, event: 'Event') -> EntityManager['TeamSwissVariation']:

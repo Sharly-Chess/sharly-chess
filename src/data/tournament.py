@@ -2869,7 +2869,12 @@ class Tournament:
         trf_teams.sort(key=lambda t: t.id)
         trf.teams = trf_teams
         trf.num_teams = len(trf_teams)
-        trf.encoded_type = self._team_trf_encoded_type()
+        # Only the team-Swiss system gets the score/colour-derived FIDE
+        # team-Swiss code; round-robin, two-game-match and flat fixed-table
+        # systems keep their own variation code (set from
+        # ``pairing_variation.trf_encoded_type`` when the TRF was built).
+        if self.pairing_system.fide_team_swiss_code:
+            trf.encoded_type = self._team_trf_encoded_type()
         trf.abnormal_points_assignments = self._team_abnormal_points_assignments(
             after_round=after_round, tpn_by_team_id=tpn_map
         )

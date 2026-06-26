@@ -179,7 +179,7 @@ class SwissVariation(PairingVariation, ABC):
 
     @property
     def trf_encoded_type(self) -> str:
-        return 'FIDE_DUTCH_2026'
+        return 'FIDE_DUTCH_2025'
 
 
 class RoundRobinVariation(PairingVariation, ABC):
@@ -298,7 +298,7 @@ class StandardTeamTwoGameMatchVariation(TeamTwoGameMatchVariation):
 
     @property
     def trf_encoded_type(self) -> str:
-        return 'OTHER_TEAM_TWO_GAME_MATCH'
+        return 'CUSTOM_TEAM_ROUNDROBIN'
 
 
 class TeamRoundRobinVariation(PairingVariation, ABC):
@@ -339,7 +339,7 @@ class BergerTeamRoundRobinVariation(TeamRoundRobinVariation):
 
     @property
     def trf_encoded_type(self) -> str:
-        return 'OTHER_TEAM_ROUNDROBIN'
+        return 'FIDE_TEAM_ROUNDROBIN'
 
 
 class DoubleBergerTeamRoundRobinVariation(TeamRoundRobinVariation):
@@ -361,4 +361,4 @@ class DoubleBergerTeamRoundRobinVariation(TeamRoundRobinVariation):
 
     @property
     def trf_encoded_type(self) -> str:
-        return 'OTHER_TEAM_DOUBLEROUNDROBIN'
+        return 'FIDE_TEAM_DOUBLEROUNDROBIN'
