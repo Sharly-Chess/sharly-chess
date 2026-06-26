@@ -232,6 +232,23 @@ class FixedTablePairingTestCase(TestCase):
         self.assertEqual(team0.lineup_source(1), 'explicit')
         self.assertEqual(team0.lineup_source(2), 'previous')
 
+    def test_first_unused_board_index_skips_forfeit_holes(self) -> None:
+        """A forfeit (one-sided, exempt) board still owns its table — the
+        next manual pairing must not be placed on its index."""
+        self._seed()
+        self._load()
+        tournament = self._load()
+        p = self.player_ids
+        tournament.create_flat_manual_board(1, p[0][0], p[1][0], 0)
+        tournament.create_flat_manual_board(1, p[2][0], None, 2)  # forfeit hole
+        tournament = self._load()
+        # Index 1 is the first truly-free table; index 2 (the hole) is taken.
+        self.assertEqual(tournament.first_unused_board_index(1), 1)
+        tournament.create_flat_manual_board(1, p[3][0], p[0][1], 1)
+        tournament = self._load()
+        # Now 0, 1, 2 are occupied → next is 3, never the hole at 2.
+        self.assertEqual(tournament.first_unused_board_index(1), 3)
+
     def test_incomplete_roster_pairs_with_holes(self) -> None:
         """A team with fewer players than team_player_count pairs without
         error; its players are each seated once and no one is double-booked."""

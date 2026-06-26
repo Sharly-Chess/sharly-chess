@@ -3919,6 +3919,18 @@ class Tournament:
             index for index in range(0, max_board_count) if index not in board_indexes
         ]
 
+    def first_unused_board_index(self, round_: int) -> int:
+        """Smallest table index occupied by NO board this round — counting
+        one-sided forfeit (exempt) boards, which still own a real table.
+        Unlike :meth:`get_available_board_indexes` (which frees an exempt
+        bye's index for reuse), this never reuses a hole's index, so a manual
+        flat pairing can't be placed on top of an existing forfeit table."""
+        used = {board.index for board in self.get_round_boards(round_)}
+        index = 0
+        while index in used:
+            index += 1
+        return index
+
     def get_pab_board_index(
         self,
         round_: int,

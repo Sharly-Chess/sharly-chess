@@ -1699,7 +1699,7 @@ class PairingsAdminController(BaseEventAdminController):
             elif kind2 == 'h':
                 index = value2
             else:
-                index = tournament.get_available_board_indexes(pairing_round)[0]
+                index = tournament.first_unused_board_index(pairing_round)
             tournament.create_flat_manual_board(
                 pairing_round, white_id, black_id, index
             )
