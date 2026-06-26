@@ -240,6 +240,9 @@ LOG_HTML = f"""<!doctype html>
 </html>
 """
 
+# Windows computes height after the frame title
+FRAME_HEIGHT_DELTA = 0 if sys.platform == 'win32' else 10
+
 # Fix a Windows Toga issue in v0.52 - _on_gain_focus is called by doesn't exist
 if not hasattr(toga.Window, '_on_gain_focus'):
 
@@ -552,7 +555,7 @@ class SharlyChessServerToga(toga.App):
             title=_('General'),
             content=general_frame_content,
             flex=1,
-            height=55,
+            height=55 + FRAME_HEIGHT_DELTA,
             font_weight='bold',
         )
 
@@ -590,7 +593,7 @@ class SharlyChessServerToga(toga.App):
             title=_('Data folder'),
             content=data_frame_content,
             flex=1,
-            height=95,
+            height=95 + FRAME_HEIGHT_DELTA,
             font_weight='bold',
         )
         self.settings_view.add(
@@ -732,7 +735,7 @@ class SharlyChessServerToga(toga.App):
             )
         )
         self.data_path_frame.content.style.align_items = 'center'
-        self.data_path_frame.style.height = 110
+        self.data_path_frame.style.height = 110 + FRAME_HEIGHT_DELTA
 
     def on_running(self):
         # Logging handler
