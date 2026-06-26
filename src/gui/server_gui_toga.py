@@ -689,7 +689,9 @@ class SharlyChessServerToga(toga.App):
             )
             self.networks_view.add(
                 toga.Label(
-                    text=_('the address of this server on your available networks:'),
+                    text=_(
+                        'the server address on the networks to which it is connected:'
+                    ),
                     align_items='center',
                     text_align='center',
                 )

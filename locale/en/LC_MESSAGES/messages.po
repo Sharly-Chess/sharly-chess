@@ -7455,7 +7455,7 @@ msgstr ""
 msgid "standard ratings"
 msgstr ""
 
-msgid "the address of this server on your available networks:"
+msgid "the server address on the networks to which it is connected:"
 msgstr ""
 
 msgid "the number of moves is required for a non-final period."
