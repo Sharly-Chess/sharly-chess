@@ -52,12 +52,7 @@ dependencies = [
   "toml ~= 0.10.2",
   "uvicorn ~= 0.34.0",
   "validators ~= 0.34.0",
-  "travertino @ https://github.com/Sharly-Chess/toga/releases/download/v0.5.4%2Bsc1/travertino-0.5.4+sc1-py3-none-any.whl",
-  "toga-core @ https://github.com/Sharly-Chess/toga/releases/download/v0.5.4%2Bsc1/toga_core-0.5.4+sc1-py3-none-any.whl",
-  "toga-winforms @ https://github.com/Sharly-Chess/toga/releases/download/v0.5.4%2Bsc1/toga_winforms-0.5.4+sc1-py3-none-any.whl ; sys_platform=='win32'",
-  "toga-gtk @ https://github.com/Sharly-Chess/toga/releases/download/v0.5.4%2Bsc1/toga_gtk-0.5.4+sc1-py3-none-any.whl ; sys_platform=='linux'",
-  "toga-gtk @ https://github.com/Sharly-Chess/toga/releases/download/v0.5.4%2Bsc1/toga_gtk-0.5.4+sc1-py3-none-any.whl ; 'freebsd' in sys_platform",
-  "toga-cocoa @ https://github.com/Sharly-Chess/toga/releases/download/v0.5.4%2Bsc1/toga_cocoa-0.5.4+sc1-py3-none-any.whl ; sys_platform=='darwin'",
+  "toga ~= 0.5.4",
   "wheel >= 0.45.1",
   "wsproto ~= 1.2.0",
 ]

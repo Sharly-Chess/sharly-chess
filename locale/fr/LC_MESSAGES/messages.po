@@ -1794,7 +1794,7 @@ msgid "Dashed border"
 msgstr "Bordure pointillée"
 
 msgid "Data folder"
-msgstr "Dossier de données"
+msgstr "Dossier des données"
 
 msgid "Data loss at tournaments, players and pairings level."
 msgstr "Perte de données au niveau du tournoi, des joueur·euses et des appariements."

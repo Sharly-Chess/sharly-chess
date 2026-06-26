@@ -240,9 +240,6 @@ LOG_HTML = f"""<!doctype html>
 </html>
 """
 
-# Windows computes height after the frame title
-FRAME_HEIGHT_DELTA = 0 if sys.platform == 'win32' else 10
-
 # Fix a Windows Toga issue in v0.52 - _on_gain_focus is called by doesn't exist
 if not hasattr(toga.Window, '_on_gain_focus'):
 
@@ -376,7 +373,6 @@ class SharlyChessServerToga(toga.App):
         # Settings view
         self.settings_view: Optional[toga.Box] = None
         self.launch_browser_switch: Optional[toga.Switch] = None
-        self.data_path_frame: Optional[toga.Frame] = None
         self.data_path_input: Optional[TextInput] = None
         self.data_path_edit_button: Optional[toga.Button] = None
 
@@ -429,7 +425,7 @@ class SharlyChessServerToga(toga.App):
 
         # Home View
         self.home_view = toga.Box(
-            style=Pack(direction=COLUMN, margin=10, gap=5, align_items='center'),
+            style=Pack(direction=COLUMN, margin=10, gap=7, align_items='center'),
         )
         self.home_main_label = toga.Label(
             _('Application startup...'), text_align='center'
@@ -549,21 +545,6 @@ class SharlyChessServerToga(toga.App):
             on_change=self._on_launch_browser_switch_change,
         )
 
-        general_frame_content = toga.Box(
-            direction=COLUMN,
-            children=[
-                self.launch_browser_switch,
-            ],
-            margin=(3, 10, 0),
-        )
-        general_frame = toga.Frame(
-            title=_('General'),
-            content=general_frame_content,
-            flex=1,
-            height=55 + FRAME_HEIGHT_DELTA,
-            font_weight='bold',
-        )
-
         self.data_path_input = toga.TextInput(
             value=str(DATA_DIR.absolute()),
             readonly=True,
@@ -579,31 +560,17 @@ class SharlyChessServerToga(toga.App):
                 _('Edit'), on_press=self._handle_data_path_selection
             )
             data_path_buttons.append(self.data_path_edit_button)
-        data_frame_content = toga.Box(
-            direction=COLUMN,
-            children=[
-                self.data_path_input,
-                toga.Box(
-                    direction=ROW,
-                    children=data_path_buttons,
-                    gap=10,
-                ),
-            ],
-            margin=(3, 10, 0),
-            align_items='center',
-            gap=2,
-            flex=1,
-        )
-        self.data_path_frame = toga.Frame(
-            title=_('Data folder'),
-            content=data_frame_content,
-            flex=1,
-            height=95 + FRAME_HEIGHT_DELTA,
-            font_weight='bold',
-        )
         self.settings_view.add(
-            general_frame,
-            self.data_path_frame,
+            toga.Label(_('General'), font_weight='bold'),
+            self.launch_browser_switch,
+            toga.Divider(margin=(5, 0)),
+            toga.Label(_('Data folder'), font_weight='bold'),
+            self.data_path_input,
+            toga.Box(
+                direction=ROW,
+                children=data_path_buttons,
+                gap=10,
+            ),
         )
 
         # Layout container
@@ -724,23 +691,21 @@ class SharlyChessServerToga(toga.App):
         set_env_variable(DATA_DIR_ENV, str(path))
         set_env_variable(PREVIOUS_DATA_DIR_ENV, str(DATA_DIR))
 
-        assert self.data_path_frame is not None
-        assert self.data_path_frame.content is not None
+        assert self.settings_view is not None
         assert self.data_path_input is not None
         assert self.data_path_edit_button is not None
         self.data_path_input.enabled = False
         self.data_path_edit_button.enabled = False
-        self.data_path_frame.content.add(
+        self.settings_view.index(self.data_path_input)
+        self.settings_view.insert(
+            self.settings_view.index(self.data_path_input) + 2,
             toga.Label(
                 _('Modified, restart to apply'),
                 color='red',
                 font_weight='bold',
-                margin_top=3,
                 text_align='center',
-            )
+            ),
         )
-        self.data_path_frame.content.style.align_items = 'center'
-        self.data_path_frame.style.height = 115 + FRAME_HEIGHT_DELTA
 
     def on_running(self):
         # Logging handler
