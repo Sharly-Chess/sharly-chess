@@ -8465,8 +8465,8 @@ msgid "from move 1"
 msgstr "depuis le 1er coup"
 
 #, python-format
-msgid "from round #%(round)d"
-msgstr "de la ronde n°%(round)d"
+msgid "unchanged"
+msgstr "inchangée"
 
 msgid "game points"
 msgstr "les points de partie"

@@ -29,19 +29,15 @@
                                 {% if round_info['round'] == default_round %}selected{% endif %}
                             >
                                 {{ _('Round #%(round)d', round=round_info['round']) }}
-                                {%- if round_info['lineup_source'] == 'roster' %} ({{ _('default') }})
-                                {%- elif round_info['lineup_source'] == 'previous' %} ({{ _('from round #%(round)d', round=round_info['round'] - 1) }})
+                                {%- if not round_info['is_paired'] %}
+                                    {%- if round_info['lineup_source'] == 'roster' %} ({{ _('default') }})
+                                    {%- elif round_info['lineup_source'] == 'previous' %} ({{ _('unchanged') }})
+                                    {%- endif -%}
                                 {%- endif -%}
                             </option>
                         {% endfor %}
                     </select>
                 </div>
-                <p class="text-muted small">
-                    {{ _(
-                        'Drag players between the board slots and the substitutes bench. '
-                        'Empty slots become holes in the lineup.'
-                    ) }}
-                </p>
                 {% for round_info in rounds_data %}
                     {% set round_num = round_info['round'] %}
                     {% set slots = round_info['slots'] %}
@@ -76,12 +72,22 @@
                             hx-indicator="#please-wait"
                         >
                             {% set roster_ids = roster_players|map(attribute='id')|list %}
-                            {% if round_num > 1 %}
+                            {% if round_num > 1 and not round_info['is_paired'] %}
+                                {# The checkbox is UI only; the form submits the
+                                   intent through this hidden input, kept in sync
+                                   by JS — so the value sent is unambiguous (a
+                                   bare checkbox is omitted when unticked, which
+                                   made the save misread the intent). #}
+                                <input
+                                    type="hidden"
+                                    name="use_previous"
+                                    class="lineup-use-previous-value"
+                                    value="{{ '1' if round_info['lineup_source'] != 'explicit' else '0' }}"
+                                >
                                 <div class="form-check mb-2">
                                     <input
                                         class="form-check-input lineup-use-previous"
                                         type="checkbox"
-                                        name="use_previous"
                                         id="use-previous-r{{ round_num }}"
                                         {% if round_info['lineup_source'] != 'explicit' %}checked{% endif %}
                                     >
@@ -101,6 +107,12 @@
                                 </div>
                             {% endif %}
                             <div class="lineup-editor">
+                            <p class="text-muted small">
+                                {{ _(
+                                    'Drag players between the board slots and the substitutes bench. '
+                                    'Empty slots become holes in the lineup.'
+                                ) }}
+                            </p>
                             <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
                                 {{ _('Boards') }}
                             </h6>
@@ -252,10 +264,12 @@
                             // reveals the editor (prefilled with the inherited
                             // lineup) and stores it as this round's own.
                             const usePrev = section.querySelector('.lineup-use-previous');
+                            const usePrevValue = section.querySelector('.lineup-use-previous-value');
                             const editor = section.querySelector('.lineup-editor');
                             const prevNote = section.querySelector('.lineup-previous-note');
                             function applyUsePrevious() {
                                 if (!usePrev) return;
+                                if (usePrevValue) usePrevValue.value = usePrev.checked ? '1' : '0';
                                 if (editor) editor.style.display = usePrev.checked ? 'none' : '';
                                 if (prevNote) prevNote.style.display = usePrev.checked ? '' : 'none';
                             }

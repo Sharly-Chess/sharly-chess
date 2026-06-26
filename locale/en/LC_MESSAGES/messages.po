@@ -8463,7 +8463,7 @@ msgid "from move 1"
 msgstr ""
 
 #, python-format
-msgid "from round #%(round)d"
+msgid "unchanged"
 msgstr ""
 
 msgid "game points"

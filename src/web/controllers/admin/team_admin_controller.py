@@ -930,9 +930,13 @@ class TeamAdminController(BaseEventAdminController):
             slots = team.round_board_slots(round_) or fallback_slots
             slot_player_ids: set[int] = {p.id for p in slots if p is not None}
             bench = [p for p in team.players if p.id not in slot_player_ids]
+            is_paired = (
+                tournament is not None and round_ <= tournament.last_paired_round
+            )
             rounds_data.append(
                 {
                     'round': round_,
+                    'is_paired': is_paired,
                     'has_override': team.has_explicit_round_lineup(round_),
                     'lineup_source': team.lineup_source(round_),
                     'slots': slots,
@@ -1033,7 +1037,7 @@ class TeamAdminController(BaseEventAdminController):
             tournament is not None
             and round_ > 1
             and not is_paired_round
-            and bool(raw_use_previous)
+            and raw_use_previous == '1'
         )
         if use_previous:
             assert tournament is not None
