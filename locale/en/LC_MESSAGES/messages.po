@@ -7264,6 +7264,9 @@ msgstr ""
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr ""
 
+msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
+msgstr ""
+
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr ""
 

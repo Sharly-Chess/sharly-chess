@@ -7266,6 +7266,9 @@ msgstr "Ce champ est obligatoire."
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
 
+msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
+msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly Chess car ses appariements ne peuvent être exactement reproduits."
+
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
 
