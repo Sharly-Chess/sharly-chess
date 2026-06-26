@@ -3,6 +3,9 @@
     class="pairing-row {{ row_class }} {{ extra_row_class }}"
     data-board-id="{{ board.identifier }}"
     data-player-id="{{ wtp.id if wtp }}"
+    {# A flat team (Molter) board with a missing side is a forfeit hole —
+       it can't take a keyboard result, so keyboard navigation skips it. #}
+    {% if admin_event.is_team_event and (not wtp or not btp) %}data-no-result-entry="1"{% endif %}
     {% if swap_oob %}
         hx-swap-oob="true"
     {% endif %}
