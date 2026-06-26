@@ -768,6 +768,13 @@ body[data-bs-theme=light] .btn-primary {
     color: black;
 }
 
+/* Molter manual pairing: the first-picked entry's row is highlighted while
+   waiting for the second pick. */
+table.prominent tr.flat-pair-selected > td,
+table.prominent tr.flat-pair-selected > th {
+    background-color: rgba(var(--bs-primary-rgb), 0.30) !important;
+}
+
 [data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary, [data-bs-theme=dark] table.prominent .header td .btn-outline-primary {
     --bs-btn-color: var(--bs-body-bg);
     --bs-btn-border-color: var(--bs-body-bg);

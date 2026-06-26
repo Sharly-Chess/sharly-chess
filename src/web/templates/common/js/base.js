@@ -5,16 +5,17 @@ let _flatPairSelection = null;
 let _flatPairSelectionButton = null;
 function flatPairToggle(button) {
     const entity = button.dataset.pairEntity;
+    const row = button.closest('tr');
     if (_flatPairSelection === entity) {
-        button.classList.remove('btn-primary');
-        button.classList.add('btn-outline-primary');
+        // Click the same entry again to deselect.
+        if (row) row.classList.remove('flat-pair-selected');
         _flatPairSelection = null;
         _flatPairSelectionButton = null;
         return;
     }
     if (_flatPairSelection === null) {
-        button.classList.remove('btn-outline-primary');
-        button.classList.add('btn-primary');
+        // First pick: highlight its row (it becomes White).
+        if (row) row.classList.add('flat-pair-selected');
         _flatPairSelection = entity;
         _flatPairSelectionButton = button;
         return;
@@ -26,6 +27,10 @@ function flatPairToggle(button) {
     const url = container.dataset.flatPairUrl
         .replace('__FIRST__', _flatPairSelection)
         .replace('__SECOND__', entity);
+    if (_flatPairSelectionButton) {
+        const firstRow = _flatPairSelectionButton.closest('tr');
+        if (firstRow) firstRow.classList.remove('flat-pair-selected');
+    }
     _flatPairSelection = null;
     _flatPairSelectionButton = null;
     htmx.ajax('PATCH', url, {target: 'body'});
