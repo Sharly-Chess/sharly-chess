@@ -29,7 +29,9 @@
                                 {% if round_info['round'] == default_round %}selected{% endif %}
                             >
                                 {{ _('Round #%(round)d', round=round_info['round']) }}
-                                {%- if not round_info['has_override'] %} ({{ _('default') }}){% endif -%}
+                                {%- if round_info['lineup_source'] == 'roster' %} ({{ _('default') }})
+                                {%- elif round_info['lineup_source'] == 'previous' %} ({{ _('from round #%(round)d', round=round_info['round'] - 1) }})
+                                {%- endif -%}
                             </option>
                         {% endfor %}
                     </select>
@@ -74,6 +76,31 @@
                             hx-indicator="#please-wait"
                         >
                             {% set roster_ids = roster_players|map(attribute='id')|list %}
+                            {% if round_num > 1 %}
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input lineup-use-previous"
+                                        type="checkbox"
+                                        name="use_previous"
+                                        id="use-previous-r{{ round_num }}"
+                                        {% if round_info['lineup_source'] != 'explicit' %}checked{% endif %}
+                                    >
+                                    <label class="form-check-label" for="use-previous-r{{ round_num }}">
+                                        {{ _(
+                                            "Use the previous round's line-up "
+                                            "(untick to set this round)"
+                                        ) }}
+                                    </label>
+                                </div>
+                                <div class="lineup-previous-note text-muted small mb-2">
+                                    {{ _(
+                                        "This round will use round #%(round)d's "
+                                        "line-up when paired.",
+                                        round=round_num - 1
+                                    ) }}
+                                </div>
+                            {% endif %}
+                            <div class="lineup-editor">
                             <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
                                 {{ _('Boards') }}
                             </h6>
@@ -145,6 +172,7 @@
                                         <span>{{ player.full_name }}</span>
                                     </div>
                                 {% endfor %}
+                            </div>
                             </div>
                         </form>
                     </div>
@@ -218,6 +246,26 @@
                             const form = section.querySelector('.lineup-form');
                             const slots = section.querySelectorAll('.lineup-slot');
                             const bench = section.querySelector('.lineup-bench');
+                            // "Use previous round's lineup" toggle: when ticked,
+                            // hide the editor (the round inherits) and show the
+                            // note; saving drops any stored lineup. Unticking
+                            // reveals the editor (prefilled with the inherited
+                            // lineup) and stores it as this round's own.
+                            const usePrev = section.querySelector('.lineup-use-previous');
+                            const editor = section.querySelector('.lineup-editor');
+                            const prevNote = section.querySelector('.lineup-previous-note');
+                            function applyUsePrevious() {
+                                if (!usePrev) return;
+                                if (editor) editor.style.display = usePrev.checked ? 'none' : '';
+                                if (prevNote) prevNote.style.display = usePrev.checked ? '' : 'none';
+                            }
+                            if (usePrev) {
+                                applyUsePrevious();
+                                usePrev.addEventListener('change', function () {
+                                    applyUsePrevious();
+                                    htmx.trigger(form, 'lineup-changed');
+                                });
+                            }
                             // Stamp containers with a stable origin id so the
                             // "max-1" swap rule can find where a card came
                             // from.

@@ -917,18 +917,24 @@ class TeamAdminController(BaseEventAdminController):
         rounds_data: list[dict[str, Any]] = []
         for round_ in editable_rounds:
             # Once a round is paired, the boards are the source of truth —
-            # show what's actually on them, not the default-roster fallback
-            # (which would disagree with the pairings tab when no explicit
-            # lineup was stored).
-            slots = team.round_board_slots(round_) or team.effective_round_slots(
-                round_, board_count=team_player_count
-            )
+            # show what's actually on them, not the fallback. With no stored
+            # lineup, ``effective_round_slots`` returns the inherited previous
+            # round (for an assigned team); the ``board_count`` override is
+            # only for the not-yet-assigned base-lineup editor.
+            if tournament is not None:
+                fallback_slots = team.effective_round_slots(round_)
+            else:
+                fallback_slots = team.effective_round_slots(
+                    round_, board_count=team_player_count
+                )
+            slots = team.round_board_slots(round_) or fallback_slots
             slot_player_ids: set[int] = {p.id for p in slots if p is not None}
             bench = [p for p in team.players if p.id not in slot_player_ids]
             rounds_data.append(
                 {
                     'round': round_,
                     'has_override': team.has_explicit_round_lineup(round_),
+                    'lineup_source': team.lineup_source(round_),
                     'slots': slots,
                     'bench': bench,
                     'out_of_order': team.lineup_out_of_roster_order(round_),
@@ -1014,7 +1020,27 @@ class TeamAdminController(BaseEventAdminController):
         is_paired_round = (
             tournament is not None and round_ <= tournament.last_paired_round
         )
-        if is_paired_round:
+        # "Use previous round's lineup" (ticked = no override): drop any
+        # stored lineup so the round inherits the previous one. Only for an
+        # unpaired round after the first.
+        raw_use_previous = data.get('use_previous', '')
+        raw_use_previous = (
+            raw_use_previous[0]
+            if isinstance(raw_use_previous, list)
+            else raw_use_previous
+        )
+        use_previous = (
+            tournament is not None
+            and round_ > 1
+            and not is_paired_round
+            and bool(raw_use_previous)
+        )
+        if use_previous:
+            assert tournament is not None
+            with EventDatabase(event.uniq_id, True) as database:
+                team.delete_round_lineup(round_, database)
+                tournament.resort_teams(database)
+        elif is_paired_round:
             assert tournament is not None
             self._reconcile_paired_round_lineup(
                 event, tournament, team, round_, slot_values

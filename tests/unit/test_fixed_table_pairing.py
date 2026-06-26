@@ -206,6 +206,32 @@ class FixedTablePairingTestCase(TestCase):
             self._event.teams_by_id[self.team_ids[0]].has_explicit_round_lineup(1)
         )
 
+    def test_lineup_inherits_previous_round(self) -> None:
+        """With no stored lineup, round 1 falls back to the roster and later
+        rounds inherit the previous round's lineup (chaining back)."""
+        self._seed()
+        self._load()
+        team0 = self._event.teams_by_id[self.team_ids[0]]
+        p = self.player_ids[0]
+
+        def ids(round_: int) -> list[int | None]:
+            return [pl.id if pl else None for pl in team0.effective_round_slots(round_)]
+
+        self.assertEqual(ids(1), p[:N])
+        self.assertEqual(team0.lineup_source(1), 'roster')
+        self.assertEqual(team0.lineup_source(2), 'previous')
+
+        with EventDatabase(EVENT_ID, write=True) as db:
+            team0.set_round_lineup(1, [p[1], p[0], p[2], p[3]], db)
+        self._load()
+        team0 = self._event.teams_by_id[self.team_ids[0]]
+        self.assertEqual(ids(1), [p[1], p[0], p[2], p[3]])
+        # Rounds 2 and 3 have no lineup of their own → inherit round 1.
+        self.assertEqual(ids(2), ids(1))
+        self.assertEqual(ids(3), ids(1))
+        self.assertEqual(team0.lineup_source(1), 'explicit')
+        self.assertEqual(team0.lineup_source(2), 'previous')
+
     def test_incomplete_roster_pairs_with_holes(self) -> None:
         """A team with fewer players than team_player_count pairs without
         error; its players are each seated once and no one is double-booked."""

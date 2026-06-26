@@ -286,7 +286,9 @@ class Team:
 
     def effective_round_lineup(self, round_: int) -> list['Player']:
         """Lineup applied for *round_* as a compact (no-hole) list of
-        players. Returns the stored override if any, otherwise the
+        players. The stored override if any; otherwise, for rounds after
+        the first, the *previous* round's effective lineup (which chains
+        back to round 1); round 1 (or no tournament) falls back to the
         first *team_player_count* roster players. Holes are skipped —
         use :meth:`effective_round_slots` to see them."""
         if self.has_explicit_round_lineup(round_):
@@ -298,7 +300,20 @@ class Team:
             return list(self.players)
         if tournament.team_player_count is None:
             return []
+        if round_ > 1:
+            return self.effective_round_lineup(round_ - 1)
         return self.players[: tournament.team_player_count]
+
+    def lineup_source(self, round_: int) -> str:
+        """How *round_*'s effective lineup is obtained: ``'explicit'`` when
+        a lineup is stored, ``'roster'`` for round 1 (or no tournament) with
+        none stored, else ``'previous'`` (inherited from the prior round).
+        Drives the editor's labelling and the "use previous" checkbox."""
+        if self.has_explicit_round_lineup(round_):
+            return 'explicit'
+        if self.tournament is None or round_ <= 1:
+            return 'roster'
+        return 'previous'
 
     def effective_round_slots(
         self, round_: int, board_count: int | None = None
@@ -328,6 +343,12 @@ class Team:
                 if 0 <= entry.index < n and entry.player_id in players_by_id:
                     slots[entry.index] = players_by_id[entry.player_id]
             return slots
+        # No stored lineup: rounds after the first inherit the previous
+        # round's lineup (chains back to round 1's roster default). The
+        # ``board_count`` override is the base-lineup editor for a team not
+        # yet in a tournament — that's always round-1 / roster semantics.
+        if board_count is None and round_ > 1:
+            return self.effective_round_slots(round_ - 1)
         roster = self.players[:n]
         for i, player in enumerate(roster):
             slots[i] = player

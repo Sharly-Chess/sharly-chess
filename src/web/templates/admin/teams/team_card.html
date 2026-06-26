@@ -182,11 +182,14 @@
     {% if _has_tournament_lineup or (not team.tournament and team.players) %}
         {% if _has_tournament_lineup %}
             {# Show the lineup for the next round that still needs pairing
-               when the current round is already finished; otherwise the
-               current round itself. Cap at the total round count so the
-               card stays meaningful past the final round. #}
+               when the current round is already paired and finished;
+               otherwise the current round itself. The round must actually
+               be paired — an unpaired round is "finished" only vacuously
+               (no boards), which would jump the card ahead a round before
+               round 1 is even paired. Cap at the total round count. #}
             {% set current_round = team.tournament.current_round or 1 %}
-            {% if team.tournament.is_round_finished(current_round)
+            {% if team.tournament.round_has_pairings(current_round)
+                and team.tournament.is_round_finished(current_round)
                 and current_round < team.tournament.rounds %}
                 {% set current_round = current_round + 1 %}
             {% endif %}
