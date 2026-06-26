@@ -306,7 +306,7 @@ class SharlyChessServerToga(toga.App):
 
         # Thread-safe communication
         self.message_queue: queue.Queue[tuple[str, str, Optional[str]]] = queue.Queue()
-        self.compact_size = (400, 100)
+        self.compact_size = (450, 100)
         self.expanded_size = (1200, 700)
 
         # Styles
