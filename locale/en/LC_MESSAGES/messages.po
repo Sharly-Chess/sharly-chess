@@ -83,6 +83,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d empty table to pair"
+msgid_plural "%(num)d empty tables to pair"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d family"
 msgid_plural "%(num)d families"
 msgstr[0] ""
@@ -614,6 +620,9 @@ msgstr ""
 msgid "Absent teams (%(count)d)"
 msgstr ""
 
+msgid "Absent — forfeit"
+msgstr ""
+
 msgid "Absents"
 msgstr ""
 
@@ -1069,6 +1078,9 @@ msgid "Average rating: {rating}"
 msgstr ""
 
 msgid "Avoid pairing by"
+msgstr ""
+
+msgid "Awaiting opponent"
 msgstr ""
 
 msgid "Azerbaijan"
@@ -1750,6 +1762,9 @@ msgid "Costa Rica"
 msgstr ""
 
 msgid "Cote d’Ivoire"
+msgstr ""
+
+msgid "Could not add the pairing."
 msgstr ""
 
 msgid "Could not connect to data source [{data_source}]."
@@ -4814,9 +4829,6 @@ msgstr ""
 msgid "Only {n} more player(s) can be added ({max} max for this rule set)."
 msgstr ""
 
-msgid "Open Admin Interface"
-msgstr ""
-
 msgid "Open IT1 certificate for this norm"
 msgstr ""
 
@@ -4979,6 +4991,9 @@ msgid "Pairing Allocated Bye"
 msgstr ""
 
 msgid "Pairing Cards"
+msgstr ""
+
+msgid "Pairing added."
 msgstr ""
 
 msgid "Pairing allocated bye. Defaults to the Draw value."
@@ -5164,6 +5179,9 @@ msgid "Phone number"
 msgstr ""
 
 msgid "Phone number:"
+msgstr ""
+
+msgid "Pick at least one player — two empty tables cannot pair."
 msgstr ""
 
 msgid "Place Cards"
@@ -6235,6 +6253,12 @@ msgid "Select the players and the data to update:"
 msgstr ""
 
 msgid "Select the tournaments to add players to."
+msgstr ""
+
+msgid "Select this empty table (forfeit for the paired player)"
+msgstr ""
+
+msgid "Select to pair (White, then pick the opponent)"
 msgstr ""
 
 msgid "Selection"
@@ -7336,6 +7360,10 @@ msgstr ""
 msgid "This round is paired; the prohibited pairings used are frozen."
 msgstr ""
 
+#, python-format
+msgid "This round will use round #%(round)d's line-up when paired."
+msgstr ""
+
 msgid "This row contains errors that prevent it from being imported."
 msgstr ""
 
@@ -7894,6 +7922,9 @@ msgstr ""
 msgid "Use the alert message defined on each screen."
 msgstr ""
 
+msgid "Use the previous round's line-up (untick to set this round)"
+msgstr ""
+
 msgid "Use the standard FIDE rating for unrated players"
 msgstr ""
 
@@ -8431,6 +8462,10 @@ msgstr ""
 msgid "from move 1"
 msgstr ""
 
+#, python-format
+msgid "from round #%(round)d"
+msgstr ""
+
 msgid "game points"
 msgstr ""
 
@@ -8617,12 +8652,6 @@ msgstr ""
 msgid "teams on {parts} screens"
 msgstr ""
 
-msgid "the address of this server on your available networks:"
-msgstr ""
-
-msgid "the server address on the networks to which it is connected:"
-msgstr ""
-
 msgid "the number of moves is required for a non-final period."
 msgstr ""
 
@@ -8630,6 +8659,9 @@ msgid "the number of moves must be a positive integer."
 msgstr ""
 
 msgid "the number of moves must not be specified for the final period."
+msgstr ""
+
+msgid "the server address on the networks to which it is connected:"
 msgstr ""
 
 msgid "the whole ranking"
@@ -8776,4 +8808,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-

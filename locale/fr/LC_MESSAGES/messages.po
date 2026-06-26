@@ -83,6 +83,12 @@ msgstr[0] "%(num)d critère"
 msgstr[1] "%(num)d critères"
 
 #, python-format
+msgid "%(num)d empty table to pair"
+msgid_plural "%(num)d empty tables to pair"
+msgstr[0] "%(num)d table vide à apparier"
+msgstr[1] "%(num)d tables vides à apparier"
+
+#, python-format
 msgid "%(num)d family"
 msgid_plural "%(num)d families"
 msgstr[0] "%(num)d famille"
@@ -614,6 +620,9 @@ msgstr "Joueur·euses absent·es (%(count)d)"
 msgid "Absent teams (%(count)d)"
 msgstr "Équipes absentes (%(count)d)"
 
+msgid "Absent — forfeit"
+msgstr "Absent·e — forfait"
+
 msgid "Absents"
 msgstr "Absent·es"
 
@@ -1070,6 +1079,9 @@ msgstr "Classement moyen : {rating}"
 
 msgid "Avoid pairing by"
 msgstr "Éviter d'apparier par"
+
+msgid "Awaiting opponent"
+msgstr "En attente d'adversaire"
 
 msgid "Azerbaijan"
 msgstr "Azerbaïdjan"
@@ -1751,6 +1763,9 @@ msgstr "Costa Rica"
 
 msgid "Cote d’Ivoire"
 msgstr "Côte d'Ivoire"
+
+msgid "Could not add the pairing."
+msgstr "Impossible d'ajouter l'appariement."
 
 msgid "Could not connect to data source [{data_source}]."
 msgstr "Impossible de se connecter à la source de données [{data_source}]."
@@ -4816,9 +4831,6 @@ msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois
 msgid "Only {n} more player(s) can be added ({max} max for this rule set)."
 msgstr "Seulement {n} joueur·euse(s) supplémentaires peuvent être ajouté·e(s) ({max} maximum pour ce jeu de règles)."
 
-msgid "Open Admin Interface"
-msgstr "Ouvrir l'interface d'administration"
-
 msgid "Open IT1 certificate for this norm"
 msgstr "Ouvrir le certificat IT1 pour cette norme"
 
@@ -4982,6 +4994,9 @@ msgstr "Exempt·e"
 
 msgid "Pairing Cards"
 msgstr "Chevalets d'appariement"
+
+msgid "Pairing added."
+msgstr "Appariement ajouté."
 
 msgid "Pairing allocated bye. Defaults to the Draw value."
 msgstr "BYE d'appariement. Par défaut, valeur de la nulle."
@@ -5167,6 +5182,9 @@ msgstr "Numéro de téléphone"
 
 msgid "Phone number:"
 msgstr "Numéro de téléphone :"
+
+msgid "Pick at least one player — two empty tables cannot pair."
+msgstr "Choisissez au moins un·e joueur·euse — deux tables vides ne peuvent pas être appariées."
 
 msgid "Place Cards"
 msgstr "Chevalets"
@@ -6238,6 +6256,12 @@ msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
+
+msgid "Select this empty table (forfeit for the paired player)"
+msgstr "Sélectionner cette table vide (forfait pour le·la joueur·euse apparié·e)"
+
+msgid "Select to pair (White, then pick the opponent)"
+msgstr "Sélectionner pour apparier (Blanc, puis choisir l'adversaire)"
 
 msgid "Selection"
 msgstr "Sélection"
@@ -7338,6 +7362,10 @@ msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} ronde
 msgid "This round is paired; the prohibited pairings used are frozen."
 msgstr "Cette ronde est appariée ; les protections d'appariement utilisées sont figées."
 
+#, python-format
+msgid "This round will use round #%(round)d's line-up when paired."
+msgstr "Cette ronde utilisera la composition de la ronde n°%(round)d lors de l'appariement."
+
 msgid "This row contains errors that prevent it from being imported."
 msgstr "Cette ligne contient des erreurs empêchant son import."
 
@@ -7896,6 +7924,9 @@ msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
 msgid "Use the alert message defined on each screen."
 msgstr "Utiliser le message d'alerte défini pour chaque écran."
 
+msgid "Use the previous round's line-up (untick to set this round)"
+msgstr "Utiliser la composition de la ronde précédente (décocher pour définir cette ronde)"
+
 msgid "Use the standard FIDE rating for unrated players"
 msgstr "Utiliser le classement FIDE standard pour les joueur·euses non-classé·es"
 
@@ -8433,6 +8464,10 @@ msgstr "de"
 msgid "from move 1"
 msgstr "depuis le 1er coup"
 
+#, python-format
+msgid "from round #%(round)d"
+msgstr "de la ronde n°%(round)d"
+
 msgid "game points"
 msgstr "les points de partie"
 
@@ -8619,12 +8654,6 @@ msgstr "équipes du début au n°{last}, sur {parts} écrans"
 msgid "teams on {parts} screens"
 msgstr "équipes sur {parts} écrans"
 
-msgid "the address of this server on your available networks:"
-msgstr "en utilisant l’adresse de ce serveur sur vos réseaux disponibles :"
-
-msgid "the server address on the networks to which it is connected:"
-msgstr "en utilisant l’adresse du serveur sur les réseaux auxquels il est connecté :"
-
 msgid "the number of moves is required for a non-final period."
 msgstr "le nombre de coups est requis pour une période non-finale."
 
@@ -8633,6 +8662,9 @@ msgstr "le nombre de coups doit être un entier positif."
 
 msgid "the number of moves must not be specified for the final period."
 msgstr "le nombre de coups ne doit pas être spécifié pour la période finale."
+
+msgid "the server address on the networks to which it is connected:"
+msgstr "en utilisant l’adresse du serveur sur les réseaux auxquels il est connecté :"
 
 msgid "the whole ranking"
 msgstr "classement complet"
@@ -8778,4 +8810,3 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
