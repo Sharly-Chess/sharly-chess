@@ -117,6 +117,27 @@ class TournamentImporterTestCase(TestCase):
         ]
         self.assertEqual(results, expected_results)
 
+    def test_trf_unsupported_type_is_rejected(self):
+        """TRF files whose 192 tournament type is unknown or CUSTOM_* must
+        be refused, not silently coerced to another pairing system."""
+        from common.exception import ImporterError
+
+        base = (BASE_PATH / 'trf-import-test.trf').read_text(encoding='utf-8')
+        self.assertIn('FIDE_DUTCH_2026_BAKU', base)
+        for bad_type in ('CUSTOM_SCHILLER', 'CUSTOM_TEAM_ROUNDROBIN', 'WAT_IS_THIS'):
+            content = base.replace('FIDE_DUTCH_2026_BAKU', bad_type)
+            with tempfile.NamedTemporaryFile(
+                'w', encoding='utf-8', suffix='.trfx', delete=False
+            ) as fh:
+                fh.write(content)
+                trf_path = fh.name
+            try:
+                importer = TrfTournamentImporter([FileOption(Path(trf_path))])
+                with self.assertRaises(ImporterError, msg=f'{bad_type} not rejected'):
+                    importer.load_tournament(self.event)
+            finally:
+                Path(trf_path).unlink(missing_ok=True)
+
     def test_trf_team_swiss_import(self):
         """Import a TRF26 file carrying team rosters (310) + team
         match-point system (362) + board-colour sequence (352) +

@@ -18,6 +18,7 @@ from data.input_output.trf.trf_serializer import TrfSerializer
 from data.pairings.variations import (
     BergerTeamRoundRobinVariation,
     DoubleBergerTeamRoundRobinVariation,
+    StandardSwissVariation,
     StandardTeamSwissVariation,
 )
 from utils.enum import ScoreType, TeamColourType
@@ -74,6 +75,43 @@ class TestTrfSerializer(TestCase):
                 'OTHER_TEAM_DOUBLEROUNDROBIN'
             ),
             DoubleBergerTeamRoundRobinVariation,
+        )
+
+        # FIDE table codes for team round-robin must route to the Berger
+        # team-RR variations, NOT be swallowed by the FIDE_TEAM_ team-Swiss
+        # prefix — and they carry no score config.
+        for code in (
+            'FIDE_TEAM_ROUNDROBIN',
+            'BERGER_TEAM_ROUNDROBIN',
+            'CUSTOM_TEAM_ROUNDROBIN',
+        ):
+            self.assertIsInstance(
+                TrfEncodedType.get_supported_pairing_variation(code),
+                BergerTeamRoundRobinVariation,
+                f'{code} should map to Berger team round-robin',
+            )
+            self.assertIsNone(TrfEncodedType.get_team_score_config(code))
+        self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation(
+                'FIDE_TEAM_DOUBLEROUNDROBIN'
+            ),
+            DoubleBergerTeamRoundRobinVariation,
+        )
+
+        # Individual Swiss FIDE table code.
+        self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation('FIDE_DUTCH_2025'),
+            StandardSwissVariation,
+        )
+
+        # Export side: variations emit valid FIDE table codes.
+        self.assertEqual(StandardSwissVariation().trf_encoded_type, 'FIDE_DUTCH_2025')
+        self.assertEqual(
+            BergerTeamRoundRobinVariation().trf_encoded_type, 'FIDE_TEAM_ROUNDROBIN'
+        )
+        self.assertEqual(
+            DoubleBergerTeamRoundRobinVariation().trf_encoded_type,
+            'FIDE_TEAM_DOUBLEROUNDROBIN',
         )
 
     def test_load_example_trf16(self):
