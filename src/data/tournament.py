@@ -589,6 +589,13 @@ class Tournament:
             not player.matches_tournament_criteria for player in self.tournament_players
         )
 
+    def player_matches_criteria(self, tournament_player: TournamentPlayer) -> bool:
+        """Check if the player matches all criteria of this tournament."""
+        return all(
+            criterion.is_player_included_function(tournament_player)
+            for criterion in self.criteria
+        )
+
     @property
     def sorted_criteria(self) -> list[TournamentCriterion]:
         return sorted(self.criteria, key=lambda criteria: criteria.id)

@@ -8,6 +8,7 @@
 ## Tournaments
 
 - TRF26 import / export (4.2.0)
+- Fixed player distribution by criteria (4.2.3)
 
 ## Players
 
