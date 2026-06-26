@@ -580,6 +580,9 @@ msgstr "Niveau d'accès"
 msgid "Access level already defined for the account."
 msgstr "Niveau d'accès déjà défini pour ce compte."
 
+msgid "Access log files"
+msgstr "Accéder aux fichiers de logs"
+
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
 
@@ -828,6 +831,9 @@ msgstr "Fédération du·de la candidat·e"
 
 msgid "Application"
 msgstr "Application"
+
+msgid "Application startup..."
+msgstr "Démarrage de l'application..."
 
 msgid "Apply"
 msgstr "Appliquer"
@@ -1364,9 +1370,6 @@ msgstr "Choisir les colonnes affichées."
 msgid "Choose your language"
 msgstr "Veuillez choisir votre langue"
 
-msgid "Clear Log"
-msgstr "Effacer le journal"
-
 msgid "Clear all"
 msgstr "Tout supprimer"
 
@@ -1375,6 +1378,9 @@ msgstr "Supprimer tous les horaires"
 
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
+
+msgid "Clear logs"
+msgstr "Effacer les logs"
 
 msgid "Click and drag to select balanced groups."
 msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
@@ -2102,6 +2108,9 @@ msgstr "Le document [{document}] a été généré dans un autre onglet."
 
 msgid "Document:"
 msgstr "Document :"
+
+msgid "Documentation"
+msgstr "Documentation"
 
 msgid "Documents"
 msgstr "Documents"
@@ -2914,12 +2923,6 @@ msgstr "Avoir un nombre de joueur·euses et de prix proches présente un risque 
 msgid "Hide"
 msgstr "Cacher"
 
-msgid "Hide Log"
-msgstr "Cacher les logs"
-
-msgid "Hide Networks"
-msgstr "Masquer les réseaux"
-
 msgid "Highlight"
 msgstr "Surbrillance"
 
@@ -3337,6 +3340,9 @@ msgstr "Les départages obsolètes ne peuvent plus être créés ou édités."
 msgid "Lesotho"
 msgstr "Lesotho"
 
+msgid "Level specific colors"
+msgstr "Couleurs spécifiques au niveau"
+
 msgid "Liberia"
 msgstr "Libéria"
 
@@ -3390,12 +3396,15 @@ msgstr "Connexion"
 msgid "Log out"
 msgstr "Déconnexion"
 
-msgid "Log-level specific colors"
-msgstr "Couleurs spécifiques au niveau de log"
+msgid "Log settings"
+msgstr "Paramètres des logs"
 
 #, python-format
 msgid "Logged in as [%(account_name)s]"
 msgstr "Connecté en tant que [%(account_name)s]"
+
+msgid "Logs"
+msgstr "Logs"
 
 msgid "Loss"
 msgstr "Défaite"
@@ -3414,6 +3423,9 @@ msgstr "Macao, Chine"
 
 msgid "Madagascar"
 msgstr "Madagascar"
+
+msgid "Mail"
+msgstr "E-mail"
 
 msgid "Main category"
 msgstr "Catégorie générale"
@@ -3604,6 +3616,9 @@ msgstr "Min :"
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
 
+msgid "Minimum level:"
+msgstr "Niveau minimum :"
+
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
@@ -3744,6 +3759,9 @@ msgstr "Championnat national par équipes (1.4.3b)"
 msgid "Nauru"
 msgstr "Nauru"
 
+msgid "Need help?"
+msgstr "Besoin d'aide ?"
+
 msgid "Needs"
 msgstr "Requis"
 
@@ -3764,6 +3782,9 @@ msgstr "Réseau"
 
 msgid "Network:"
 msgstr "Réseau :"
+
+msgid "Networks"
+msgstr "Réseaux"
 
 msgid "New Caledonia"
 msgstr "Nouvelle-Calédonie"
@@ -4219,14 +4240,11 @@ msgstr "Uniquement requis pour les utilisateur·ices devant se connecter au serv
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
 msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois. Il est donc recommandé de ne demander que l'année de naissance de vos joueur·euses afin de respecter leur vie privée."
 
-msgid "Open Admin Interface"
-msgstr "Ouvrir l'interface d'administration"
-
 msgid "Open IT1 certificate for this norm"
 msgstr "Ouvrir le certificat IT1 pour cette norme"
 
-msgid "Open documentation"
-msgstr "Ouvrir la documentation"
+msgid "Open application (browser)"
+msgstr "Ouvrir l'application (navigateur)"
 
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"
@@ -5060,6 +5078,9 @@ msgstr "Référence à un·e joueur·euse inconnu·e [{player_id}]."
 msgid "Refresh"
 msgstr "Actualiser"
 
+msgid "Refresh networks"
+msgstr "Actualiser les réseaux"
+
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
@@ -5457,9 +5478,6 @@ msgstr "Recherche en cours…"
 msgid "Sector arbitration"
 msgstr "Arbitrage de secteur"
 
-msgid "See Networks"
-msgstr "Afficher les réseaux"
-
 msgid "See the pairings information for the start of this round."
 msgstr "Voir les informations d’appariement pour le début de cette ronde."
 
@@ -5561,9 +5579,6 @@ msgstr "Prix partagés"
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
-msgid "Sharly Chess Server"
-msgstr "Serveur Sharly Chess"
-
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
@@ -5594,11 +5609,8 @@ msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
 
-msgid "Show Log"
-msgstr "Montrer les logs"
-
-msgid "Show logging level"
-msgstr "Afficher le niveau de log"
+msgid "Show level"
+msgstr "Afficher le niveau"
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
@@ -6899,9 +6911,6 @@ msgstr "Verdict"
 msgid "Verdict:"
 msgstr "Verdict :"
 
-msgid "Version: {version}"
-msgstr "Version : {version}"
-
 msgid "Vietnam"
 msgstr "Vietnam"
 
@@ -7448,8 +7457,8 @@ msgstr "certain·es se sont déjà rencontré·es"
 msgid "standard ratings"
 msgstr "classements standard"
 
-msgid "the address of this server on your available networks:"
-msgstr "en utilisant l’adresse de ce serveur sur vos réseaux disponibles :"
+msgid "the server address on the networks to which it is connected:"
+msgstr "en utilisant l’adresse du serveur sur les réseaux auxquels il est connecté :"
 
 msgid "the number of moves is required for a non-final period."
 msgstr "le nombre de coups est requis pour une période non-finale."
@@ -7597,3 +7606,4 @@ msgstr "½ - ½ (NC)"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
