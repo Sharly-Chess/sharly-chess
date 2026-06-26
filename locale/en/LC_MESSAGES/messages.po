@@ -632,6 +632,9 @@ msgstr ""
 msgid "Access level already defined for the account."
 msgstr ""
 
+msgid "Access log files"
+msgstr ""
+
 msgid "Access unrated and penalty results."
 msgstr ""
 
@@ -912,6 +915,9 @@ msgid "Applicant's federation"
 msgstr ""
 
 msgid "Application"
+msgstr ""
+
+msgid "Application startup..."
 msgstr ""
 
 msgid "Apply"
@@ -1531,9 +1537,6 @@ msgstr ""
 msgid "Choose your language"
 msgstr ""
 
-msgid "Clear Log"
-msgstr ""
-
 msgid "Clear all"
 msgstr ""
 
@@ -1544,6 +1547,9 @@ msgid "Clear all the filters."
 msgstr ""
 
 msgid "Clear board results between players first before unpairing."
+msgstr ""
+
+msgid "Clear logs"
 msgstr ""
 
 msgid "Clear result"
@@ -2325,6 +2331,9 @@ msgid "Document [{document}] has been generated in another tab."
 msgstr ""
 
 msgid "Document:"
+msgstr ""
+
+msgid "Documentation"
 msgstr ""
 
 msgid "Documents"
@@ -3264,12 +3273,6 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-msgid "Hide Log"
-msgstr ""
-
-msgid "Hide Networks"
-msgstr ""
-
 msgid "Highlight"
 msgstr ""
 
@@ -3730,6 +3733,9 @@ msgstr ""
 msgid "Lesotho"
 msgstr ""
 
+msgid "Level specific colors"
+msgstr ""
+
 msgid "Liberia"
 msgstr ""
 
@@ -3797,11 +3803,14 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
-msgid "Log-level specific colors"
+msgid "Log settings"
 msgstr ""
 
 #, python-format
 msgid "Logged in as [%(account_name)s]"
+msgstr ""
+
+msgid "Logs"
 msgstr ""
 
 msgid "Loss"
@@ -3829,6 +3838,9 @@ msgid "Macau, China"
 msgstr ""
 
 msgid "Madagascar"
+msgstr ""
+
+msgid "Mail"
 msgstr ""
 
 msgid "Main category"
@@ -4077,6 +4089,9 @@ msgstr ""
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr ""
 
+msgid "Minimum level:"
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr ""
 
@@ -4226,6 +4241,9 @@ msgstr ""
 msgid "Nauru"
 msgstr ""
 
+msgid "Need help?"
+msgstr ""
+
 msgid "Needs"
 msgstr ""
 
@@ -4245,6 +4263,9 @@ msgid "Network"
 msgstr ""
 
 msgid "Network:"
+msgstr ""
+
+msgid "Networks"
 msgstr ""
 
 msgid "New Caledonia"
@@ -4799,7 +4820,7 @@ msgstr ""
 msgid "Open IT1 certificate for this norm"
 msgstr ""
 
-msgid "Open documentation"
+msgid "Open application (browser)"
 msgstr ""
 
 msgid "Open/close check-in"
@@ -5724,6 +5745,9 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
+msgid "Refresh networks"
+msgstr ""
+
 msgid "Refresh this page."
 msgstr ""
 
@@ -6176,9 +6200,6 @@ msgstr ""
 msgid "Sector arbitration"
 msgstr ""
 
-msgid "See Networks"
-msgstr ""
-
 msgid "See the pairings information for the start of this round."
 msgstr ""
 
@@ -6309,9 +6330,6 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
-msgid "Sharly Chess Server"
-msgstr ""
-
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
@@ -6342,10 +6360,7 @@ msgstr ""
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
 
-msgid "Show Log"
-msgstr ""
-
-msgid "Show logging level"
+msgid "Show level"
 msgstr ""
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
@@ -7939,9 +7954,6 @@ msgstr ""
 msgid "Verdict:"
 msgstr ""
 
-msgid "Version: {version}"
-msgstr ""
-
 msgid "Vietnam"
 msgstr ""
 
@@ -8606,6 +8618,9 @@ msgid "teams on {parts} screens"
 msgstr ""
 
 msgid "the address of this server on your available networks:"
+msgstr ""
+
+msgid "the server address on the networks to which it is connected:"
 msgstr ""
 
 msgid "the number of moves is required for a non-final period."

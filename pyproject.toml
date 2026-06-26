@@ -52,7 +52,7 @@ dependencies = [
   "toml ~= 0.10.2",
   "uvicorn ~= 0.34.0",
   "validators ~= 0.34.0",
-  "toga ~= 0.5.2",
+  "toga ~= 0.5.4",
   "wheel >= 0.45.1",
   "wsproto ~= 1.2.0",
 ]
