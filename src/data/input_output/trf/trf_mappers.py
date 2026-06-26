@@ -126,7 +126,7 @@ class TrfEncodedType:
     @staticmethod
     def get_supported_pairing_variation(encoded_type: str) -> PairingVariation | None:
         match encoded_type:
-            case 'FIDE_DUTCH_2026' | 'FIDE_DUTCH':
+            case 'FIDE_DUTCH_2025' | 'FIDE_DUTCH_2026' | 'FIDE_DUTCH':
                 return StandardSwissVariation()
             case 'FIDE_DUTCH_2026_BAKU' | 'FIDE_DUTCH_BAKU':
                 return BakuSwissVariation()
@@ -134,9 +134,19 @@ class TrfEncodedType:
                 return BergerRoundRobinVariation()
             case 'FIDE_DOUBLEROUNDROBIN':
                 return DoubleBergerRoundRobinVariation()
-            case 'OTHER_TEAM_ROUNDROBIN':
+            case (
+                'FIDE_TEAM_ROUNDROBIN'
+                | 'BERGER_TEAM_ROUNDROBIN'
+                | 'BERGER_TEAM_ROUNDROBIN_G1'
+                | 'CUSTOM_TEAM_ROUNDROBIN'
+                | 'OTHER_TEAM_ROUNDROBIN'
+            ):
                 return BergerTeamRoundRobinVariation()
-            case 'OTHER_TEAM_DOUBLEROUNDROBIN':
+            case (
+                'FIDE_TEAM_DOUBLEROUNDROBIN'
+                | 'BERGER_TEAM_DOUBLEROUNDROBIN'
+                | 'OTHER_TEAM_DOUBLEROUNDROBIN'
+            ):
                 return DoubleBergerTeamRoundRobinVariation()
             case _ if encoded_type.startswith(
                 ('FIDE_TEAM_TYPEA_', 'FIDE_TEAM_TYPEB_', 'FIDE_TEAM_')

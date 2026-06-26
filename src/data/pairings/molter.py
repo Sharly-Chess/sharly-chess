@@ -118,9 +118,9 @@ class MolterVariation(FixedTableVariation):
 
     @property
     def trf_encoded_type(self) -> str:
-        # No FIDE TRF26 code for Molter; OTHER_ prefix per the convention
-        # for non-FIDE acronyms.
-        return 'OTHER_MOLTER'
+        # Molter has no FIDE TRF26 team code; exported under the custom
+        # Schiller pairing-engine identifier.
+        return 'CUSTOM_SCHILLER'
 
 
 class StandardMolterVariation(MolterVariation):
