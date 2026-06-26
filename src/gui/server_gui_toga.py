@@ -740,7 +740,7 @@ class SharlyChessServerToga(toga.App):
             )
         )
         self.data_path_frame.content.style.align_items = 'center'
-        self.data_path_frame.style.height = 110 + FRAME_HEIGHT_DELTA
+        self.data_path_frame.style.height = 115 + FRAME_HEIGHT_DELTA
 
     def on_running(self):
         # Logging handler
