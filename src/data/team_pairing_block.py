@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 from database.sqlite.event.event_store import StoredTeamPairingBlock
 
 if TYPE_CHECKING:
-    from _weakref import ReferenceType
     from data.team import Team
     from data.tournament import Tournament
 
@@ -18,7 +17,9 @@ class TeamPairingBlock:
         tournament: 'Tournament',
         stored_block: StoredTeamPairingBlock,
     ):
-        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        self._tournament_ref: 'weakref.ReferenceType[Tournament]' = weakref.ref(
+            tournament
+        )
         self.stored_block = stored_block
 
     @property

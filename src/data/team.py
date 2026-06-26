@@ -14,7 +14,6 @@ from database.sqlite.event.event_store import (
 )
 
 if TYPE_CHECKING:
-    from _weakref import ReferenceType
     from data.event import Event
     from data.player import Player
     from data.tournament import Tournament
@@ -26,7 +25,7 @@ class TeamGroup:
     from being paired together."""
 
     def __init__(self, event: 'Event', stored_team_group: StoredTeamGroup):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: 'weakref.ReferenceType[Event]' = weakref.ref(event)
         self.stored_team_group = stored_team_group
 
     @property
@@ -59,7 +58,7 @@ class Team:
     """A team of players competing as a unit in a team tournament."""
 
     def __init__(self, event: 'Event', stored_team: StoredTeam):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: 'weakref.ReferenceType[Event]' = weakref.ref(event)
         self.stored_team = stored_team
 
     @property

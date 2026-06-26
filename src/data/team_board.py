@@ -9,7 +9,6 @@ from utils.date_time import format_datetime
 from utils.enum import TeamByeType, Result, ScoreType
 
 if TYPE_CHECKING:
-    from _weakref import ReferenceType
     from data.board import Board
     from data.team import Team
     from data.tournament import Tournament
@@ -25,7 +24,9 @@ class TeamBoard:
         tournament: 'Tournament',
         stored_team_board: StoredTeamBoard,
     ):
-        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        self._tournament_ref: 'weakref.ReferenceType[Tournament]' = weakref.ref(
+            tournament
+        )
         self.stored_team_board = stored_team_board
 
     @property
