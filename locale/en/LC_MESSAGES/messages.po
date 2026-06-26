@@ -41,7 +41,15 @@ msgid "%(minutes)d minutes before"
 msgstr ""
 
 #, python-format
+msgid "%(n)d players freed from their soft constraints"
+msgstr ""
+
+#, python-format
 msgid "%(n)d team(s) could not be determined and were left unchanged."
+msgstr ""
+
+#, python-format
+msgid "%(n)d teams freed from their soft constraints"
 msgstr ""
 
 #, python-format
@@ -735,7 +743,7 @@ msgstr ""
 msgid "Add tournaments"
 msgstr ""
 
-msgid "Added automatically, on top of any manual points above."
+msgid "Added automatically, on top of any manual points below."
 msgstr ""
 
 msgid "Administration"
@@ -803,9 +811,6 @@ msgstr ""
 
 msgid "All present *** ALL TEAMS PRESENT"
 msgstr "All present"
-
-msgid "All soft separations relaxed."
-msgstr ""
 
 msgid "All teams are assigned to a tournament."
 msgstr ""
@@ -1233,6 +1238,9 @@ msgstr ""
 msgid "Bolivia"
 msgstr ""
 
+msgid "Bonus / penalty"
+msgstr ""
+
 msgid "Bonus / penalty points"
 msgstr ""
 
@@ -1509,6 +1517,9 @@ msgid "Choose one, many or no players."
 msgstr ""
 
 msgid "Choose one, many or no tournaments."
+msgstr ""
+
+msgid "Choose one, several or no teams (all if none)."
 msgstr ""
 
 msgid "Choose screens to add"
@@ -2555,6 +2566,9 @@ msgid "Edit Player"
 msgstr ""
 
 msgid "Edit account"
+msgstr ""
+
+msgid "Edit bonus / penalty"
 msgstr ""
 
 msgid "Edit criterion"
@@ -3650,6 +3664,9 @@ msgstr ""
 msgid "Laos"
 msgstr ""
 
+msgid "Largest number of players a team may have on its roster. Leave blank for no limit."
+msgstr ""
+
 msgid "Last board:"
 msgstr ""
 
@@ -4005,6 +4022,9 @@ msgid "Maximum number of results displayed:"
 msgstr ""
 
 msgid "Maximum rating"
+msgstr ""
+
+msgid "Maximum roster size:"
 msgstr ""
 
 msgid "May"
@@ -5376,6 +5396,9 @@ msgstr ""
 msgid "Please select at least one player."
 msgstr ""
 
+msgid "Please select at least one team."
+msgstr ""
+
 msgid "Please select the account."
 msgstr ""
 
@@ -5530,10 +5553,6 @@ msgid "Prohibited pairings"
 msgstr ""
 
 msgid "Properties"
-msgstr ""
-
-#, python-format
-msgid "Protected core (%(count)d):"
 msgstr ""
 
 msgid "Protected pairings editing"
@@ -5709,10 +5728,6 @@ msgid "Refresh this page."
 msgstr ""
 
 msgid "Regular event"
-msgstr ""
-
-#, python-format
-msgid "Relaxed: top %(n)d protected"
 msgstr ""
 
 msgid "Release {version} has been installed in [{folder}]."
@@ -6732,6 +6747,9 @@ msgstr ""
 msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
 msgstr ""
 
+msgid "Teams:"
+msgstr ""
+
 #, python-format
 msgid "Teams: %(num)d"
 msgstr ""
@@ -7038,6 +7056,13 @@ msgstr ""
 msgid "The related objects will also be deleted:"
 msgstr ""
 
+msgid "The roster cap cannot be smaller than the team-match size."
+msgstr ""
+
+#, python-format
+msgid "The roster has %(count)d players, more than the maximum of %(max)d."
+msgstr ""
+
 msgid "The rotating delay between two screens."
 msgstr ""
 
@@ -7149,6 +7174,12 @@ msgstr ""
 msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
 msgstr ""
 
+msgid "These lower-ranked players were released so the round could be paired."
+msgstr ""
+
+msgid "These lower-ranked teams were released so the round could be paired."
+msgstr ""
+
 msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
@@ -7233,6 +7264,9 @@ msgstr ""
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr ""
 
+msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
+msgstr ""
+
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr ""
 
@@ -7261,6 +7295,9 @@ msgid "This player already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "This player has already been paired; their team cannot be changed."
+msgstr ""
+
+msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first)."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -8720,10 +8757,6 @@ msgid "—"
 msgstr ""
 
 msgid "— Unassigned —"
-msgstr ""
-
-#, python-format
-msgid "…each also kept apart from (%(count)d):"
 msgstr ""
 
 msgid "← Back to IT1 certificate"

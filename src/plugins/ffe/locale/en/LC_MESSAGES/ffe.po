@@ -346,6 +346,9 @@ msgstr ""
 msgid "Make visible on FFE site"
 msgstr ""
 
+msgid "Match lost by forfeit, counted as 0 match points."
+msgstr ""
+
 msgid "Max. teams per league:"
 msgstr ""
 
@@ -434,6 +437,9 @@ msgid "Pending"
 msgstr ""
 
 msgid "Player rating above {cap}: {names}."
+msgstr ""
+
+msgid "Player without an A (competition) FFE licence: {names}."
 msgstr ""
 
 msgid "Players:"
