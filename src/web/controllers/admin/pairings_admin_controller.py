@@ -146,6 +146,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_filtered_boards = self.admin_boards
 
         self.admin_unpaired: list[TournamentPlayer] = []
+        self.admin_unpaired_holes: list[dict[str, Any]] = []
         self.admin_bye_players: list[TournamentPlayer] = []
         self.admin_absent_players: list[TournamentPlayer] = []
         self.admin_team_bye: list[Team] = []
@@ -228,6 +229,19 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         unpaired = self.admin_tournament.get_unpaired_tournament_players(
             self.admin_boards
         )
+        if self.admin_tournament.event.is_team_event:
+            # Flat team systems (Molter) reach here — team-vs-team systems
+            # already returned above. Only players seated in a team's line-up
+            # for this round belong in the "to pair" list; benched players
+            # aren't meant to play. Reads the line-up, never writes it.
+            round_ = self.admin_round or 1
+            seated_ids: set[int] = set()
+            for team in self.admin_tournament.teams:
+                for player in team.effective_round_slots(round_):
+                    if player is not None:
+                        seated_ids.add(player.id)
+            unpaired = [player for player in unpaired if player.id in seated_ids]
+            self.admin_unpaired_holes = self._unpaired_holes(round_)
         if self.admin_tournament.pairing_system.split_unpaired_and_bye_players:
             for player in sorted(unpaired, key=attrgetter('name_sort_key')):
                 check_in_status = player.check_in_status_for_round(self.admin_round)
@@ -239,6 +253,17 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                     self.admin_bye_players.append(player)
         else:
             self.admin_unpaired = sorted(unpaired, key=attrgetter('name_sort_key'))
+
+    def _unpaired_holes(self, round_: int) -> list[dict[str, Any]]:
+        """The round's unboarded table cells as ``{'index', 'label'}`` for the
+        sidebar — a waiting player can be given a forfeit win on one. Thin
+        wrapper over :meth:`Tournament.unboarded_holes`."""
+        if self.admin_tournament is None:
+            return []
+        return [
+            {'index': index, 'label': label}
+            for index, label in self.admin_tournament.unboarded_holes(round_)
+        ]
 
     def reload_unpaired_team_lists(self):
         """Populate the team-side equivalents of the player byes /
@@ -364,6 +389,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 else []
             ),
             'admin_unpaired': self.admin_unpaired,
+            'admin_unpaired_holes': self.admin_unpaired_holes,
             'admin_bye_players': self.admin_bye_players,
             'admin_absent_players': self.admin_absent_players,
             'admin_team_bye': self.admin_team_bye,
@@ -1589,9 +1615,11 @@ class PairingsAdminController(BaseEventAdminController):
         pairing_round = web_context.admin_round or 1
         tournament = web_context.get_admin_tournament()
         tournament_player = web_context.get_admin_player()
-        exempt_tournament_player = next(
-            (b.white_tournament_player for b in web_context.admin_boards if b.exempt),
-            None,
+        # The waiting opponent is the player on the awaiting bye board, not a
+        # settled forfeit hole (also black-less) — matching create_round_pairing.
+        pab_board = tournament.get_round_pab_board(pairing_round)
+        exempt_tournament_player = (
+            pab_board.optional_white_tournament_player if pab_board else None
         )
         if exempt_tournament_player is not None:
             board = tournament.create_round_pairing(
@@ -1622,6 +1650,66 @@ class PairingsAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             round_=round,
             player_id=tournament_player.id,
+            reload_event=True,
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @patch(
+        path=(
+            '/pairings/pair-flat/{event_uniq_id:str}/'
+            '{tournament_id:int}/{first:str}/{second:str}/{round:int}'
+        ),
+        name='admin-pairings-pair-flat',
+        guards=[TournamentActionGuard(AuthAction.MANUALLY_PAIR_PLAYERS)],
+    )
+    async def htmx_admin_pair_flat(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        first: str,
+        second: str,
+    ) -> Template:
+        """Flat (Molter) manual pairing from the sidebar's select-then-pick
+        flow. ``first``/``second`` are tokens: ``p<id>`` for a player,
+        ``h<index>`` for an empty table cell (hole). The first selection is
+        white, the second black; one player + a hole ⇒ forfeit win."""
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            action=PairingAction.MANUAL_PAIRING,
+        )
+        pairing_round = web_context.admin_round or 1
+        tournament = web_context.get_admin_tournament()
+
+        def _parse(token: str) -> tuple[str, int]:
+            return token[0], int(token[1:])
+
+        try:
+            (kind1, value1), (kind2, value2) = _parse(first), _parse(second)
+            if kind1 == 'h' and kind2 == 'h':
+                raise SharlyChessException(
+                    _('Pick at least one player — two empty tables cannot pair.')
+                )
+            white_id = value1 if kind1 == 'p' else None
+            black_id = value2 if kind2 == 'p' else None
+            if kind1 == 'h':
+                index = value1
+            elif kind2 == 'h':
+                index = value2
+            else:
+                index = tournament.get_available_board_indexes(pairing_round)[0]
+            tournament.create_flat_manual_board(
+                pairing_round, white_id, black_id, index
+            )
+            Message.success(request, _('Pairing added.'))
+        except (SharlyChessException, ValueError, KeyError, IndexError) as error:
+            Message.error(request, str(error) or _('Could not add the pairing.'))
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
             reload_event=True,
         )
         return self._admin_event_pairings_render(web_context)
@@ -1945,6 +2033,7 @@ class PairingsAdminController(BaseEventAdminController):
             {
                 'modal': 'unfinished-round',
                 'unpaired_count': len(web_context.admin_unpaired),
+                'hole_count': len(web_context.admin_unpaired_holes),
                 'absent_count': len(web_context.admin_absent_players),
                 'no_result_board_count': len(
                     [

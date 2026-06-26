@@ -791,11 +791,11 @@ class MatchSheetsPrintDocument(PrintDocument):
 
     @property
     def flat_board_refs(self) -> dict[int, tuple[str, str]]:
-        """``board.index`` → table player references (white first, e.g.
-        ``('A1', 'B3')``) for fixed-table systems; empty otherwise.
-        Straight from the pairing table: the reference identifies the
-        SEAT prescribed by the table, even when the players actually
-        on the board diverge from it (substitutions, manual edits)."""
+        """``board.index`` → table cell codes ``(white_ref, black_ref)`` for
+        fixed-table (Molter) systems; empty otherwise. Used only as the
+        fallback code for an empty seat (a hole), to show which player is
+        missing on a forfeit board — a seated player's code comes from their
+        own line-up slot."""
         from data.pairings.fixed_table import FixedTablePairingEngine
 
         engine = self.tournament.pairing_variation.engine

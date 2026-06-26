@@ -109,6 +109,21 @@ class Team:
             return chr(ord('A') + number - 1)
         return f'#{number}'
 
+    def player_round_label(self, player: 'Player', round_: int) -> str | None:
+        """Fixed-table code for ``player`` this round — the team letter plus
+        the player's 1-based line-up slot (e.g. ``A1``, ``B3``). Derived from
+        the player's actual seat in :meth:`effective_round_slots`, so it
+        follows the player wherever they end up (manual re-pairing included),
+        independent of which physical board they sit at. ``None`` when the
+        team has no letter or the player isn't in this round's line-up."""
+        letter = self.pairing_label
+        if letter is None:
+            return None
+        for index, slot_player in enumerate(self.effective_round_slots(round_)):
+            if slot_player is not None and slot_player.id == player.id:
+                return f'{letter}{index + 1}'
+        return None
+
     @property
     def group_id(self) -> int | None:
         return self.stored_team.group_id

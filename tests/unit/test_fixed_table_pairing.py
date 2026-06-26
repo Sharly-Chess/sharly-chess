@@ -26,7 +26,7 @@ from database.sqlite.event.event_store import (
 from data.loader import EventLoader
 from plugins.ffe.ffe_rule_sets import CoupeJeanClaudeLoubatiereRuleSet
 from tests.test_config import TestUtils
-from utils.enum import EventType
+from utils.enum import EventType, Result
 
 
 EVENT_ID = 'test-fixed-table-pairing'
@@ -154,6 +154,56 @@ class FixedTablePairingTestCase(TestCase):
         )
         self.assertEqual(
             self._boards_of(tournament, p[2]), 0, 'benched player not seated'
+        )
+
+    def test_player_round_label_uses_team_letter_and_lineup_slot(self) -> None:
+        """The A1/B3 code reflects the player's own team letter + 1-based
+        line-up slot, so it follows the player (not the table cell)."""
+        self._seed()
+        self._load()
+        team0 = self._event.teams_by_id[self.team_ids[0]]
+        p = self.player_ids[0]
+        with EventDatabase(EVENT_ID, write=True) as db:
+            team0.set_round_lineup(1, [p[3], p[0], p[1], None], db)
+        self._load()
+        team0 = self._event.teams_by_id[self.team_ids[0]]
+        players = self._event.players_by_id
+        self.assertEqual(team0.player_round_label(players[p[3]], 1), 'A1')
+        self.assertEqual(team0.player_round_label(players[p[0]], 1), 'A2')
+        self.assertEqual(team0.player_round_label(players[p[1]], 1), 'A3')
+        # Benched player has no slot this round → no code.
+        self.assertIsNone(team0.player_round_label(players[p[2]], 1))
+        # A team with no explicit line-up falls back to roster order, and
+        # the second team is lettered B.
+        team1 = self._event.teams_by_id[self.team_ids[1]]
+        q = self.player_ids[1]
+        self.assertEqual(team1.player_round_label(players[q[0]], 1), 'B1')
+
+    def test_create_flat_manual_board_two_players(self) -> None:
+        """Manually boarding two players makes a normal game (no result)."""
+        self._seed()
+        tournament = self._load()
+        p0, p1 = self.player_ids[0][0], self.player_ids[1][0]
+        tournament.create_flat_manual_board(1, p0, p1, 0)
+        tournament = self._load()
+        board = next(b for b in tournament.get_round_boards(1) if b.index == 0)
+        self.assertEqual(board.stored_board.white_player_id, p0)
+        self.assertEqual(board.stored_board.black_player_id, p1)
+        self.assertEqual(board.optional_white_pairing.result, Result.NO_RESULT)
+
+    def test_create_flat_manual_board_player_vs_hole(self) -> None:
+        """A player boarded against a hole wins by forfeit; no line-up change."""
+        self._seed()
+        tournament = self._load()
+        p0 = self.player_ids[0][0]
+        tournament.create_flat_manual_board(1, p0, None, 3)
+        tournament = self._load()
+        board = next(b for b in tournament.get_round_boards(1) if b.index == 3)
+        self.assertEqual(board.stored_board.white_player_id, p0)
+        self.assertIsNone(board.stored_board.black_player_id)
+        self.assertEqual(board.optional_white_pairing.result, Result.FORFEIT_WIN)
+        self.assertFalse(
+            self._event.teams_by_id[self.team_ids[0]].has_explicit_round_lineup(1)
         )
 
     def test_incomplete_roster_pairs_with_holes(self) -> None:

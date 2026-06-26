@@ -1,3 +1,36 @@
+// Flat-team (Molter) manual pairing: click an entry (player or empty table)
+// to select it as White (button turns primary); click again to deselect;
+// click a second entry to create the pairing. No transient bye board.
+let _flatPairSelection = null;
+let _flatPairSelectionButton = null;
+function flatPairToggle(button) {
+    const entity = button.dataset.pairEntity;
+    if (_flatPairSelection === entity) {
+        button.classList.remove('btn-primary');
+        button.classList.add('btn-outline-primary');
+        _flatPairSelection = null;
+        _flatPairSelectionButton = null;
+        return;
+    }
+    if (_flatPairSelection === null) {
+        button.classList.remove('btn-outline-primary');
+        button.classList.add('btn-primary');
+        _flatPairSelection = entity;
+        _flatPairSelectionButton = button;
+        return;
+    }
+    const container = button.closest('[data-flat-pair-url]');
+    if (!container) {
+        return;
+    }
+    const url = container.dataset.flatPairUrl
+        .replace('__FIRST__', _flatPairSelection)
+        .replace('__SECOND__', entity);
+    _flatPairSelection = null;
+    _flatPairSelectionButton = null;
+    htmx.ajax('PATCH', url, {target: 'body'});
+}
+
 function setSize() {
     //  We store the size of the viewport, without the scrollbars, in CSS variables #}
     //  This is necessary since dvh/dwh is broken on Chrome

@@ -114,6 +114,25 @@
             or board.stored_board.black_player_id is none
         )
     ) %}
+    {# Flat team (Molter) board with an empty seat: results can't be entered
+       against a hole, so the modal offers only Unpair, and the missing seat
+       is shown by its table code (e.g. B3). #}
+    {% set _flat_team = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
+    {% set _flat_hole = _flat_team and (wtp is none or btp is none) %}
+    {% set _molter_refs = admin_tournament.pairing_variation.engine.board_references(
+        admin_tournament, admin_round
+    ) if _flat_team else none %}
+    {% set _molter_code = _molter_refs[board.index] if (_molter_refs and board.index < _molter_refs|length) else none %}
+    {% set _left_code = (
+        left_tp.team.player_round_label(left_tp, admin_round)
+        if (left_tp and left_tp.team)
+        else ((_molter_code[0] if left_is_white else _molter_code[1]) if _molter_code else none)
+    ) %}
+    {% set _right_code = (
+        right_tp.team.player_round_label(right_tp, admin_round)
+        if (right_tp and right_tp.team)
+        else ((_molter_code[1] if left_is_white else _molter_code[0]) if _molter_code else none)
+    ) %}
     <div
         class="modal-dialog modal-dialog-scrollable"
         style="--bs-modal-width: min(95vw, 600px);"
@@ -133,10 +152,10 @@
                             <span class="board-color-chip {{ 'white' if left_is_white else 'black' }}"></span>{{ _('White') if left_is_white else _('Black') }}
                         </div>
                         <div class="text-nowrap fw-bold">
-                            {{ left_tp.full_name if left_tp else '—' }}
+                            {{ left_tp.full_name if left_tp else (_left_code or '—') }}
                         </div>
                         <div class="text-muted small">
-                            {{ left_tp.rating_str if left_tp else '' }}
+                            {{ left_tp.rating_str if left_tp else _('Absent — forfeit') if _left_code else '' }}
                         </div>
                         {% if left_team %}
                             <div class="text-muted small">{{ left_team.name }}</div>
@@ -148,10 +167,10 @@
                             <span class="board-color-chip {{ 'black' if left_is_white else 'white' }}"></span>{{ _('Black') if left_is_white else _('White') }}
                         </div>
                         <div class="text-nowrap fw-bold">
-                            {{ right_tp.full_name if right_tp else '—' }}
+                            {{ right_tp.full_name if right_tp else (_right_code or '—') }}
                         </div>
                         <div class="text-muted small">
-                            {{ right_tp.rating_str if right_tp else '' }}
+                            {{ right_tp.rating_str if right_tp else _('Absent — forfeit') if _right_code else '' }}
                         </div>
                         {% if right_team %}
                             <div class="text-muted small">{{ right_team.name }}</div>
@@ -159,36 +178,63 @@
                     </div>
                 </div>
 
-                {# Result ids stay white-oriented — only the button
-                   placement follows the left/right sides. #}
+                {% if not _flat_hole %}
+                    {# Result ids stay white-oriented — only the button
+                       placement follows the left/right sides. #}
+                    <div class="row g-2">
+                        <div class="col-4">
+                            {{ result_button(3 if left_is_white else 1, base_locked, '1 – 0', 'btn-outline-primary') }}
+                        </div>
+                        <div class="col-4">
+                            {{ result_button(2, base_locked, '½ – ½', 'btn-outline-primary') }}
+                        </div>
+                        <div class="col-4">
+                            {{ result_button(1 if left_is_white else 3, base_locked, '0 – 1', 'btn-outline-primary') }}
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mt-2">
+                        <div class="col-4">
+                            {{ result_button(6 if left_is_white else 4, special_locked, '1 – F', 'btn-outline-primary') }}
+                        </div>
+                        <div class="col-4">
+                            {{ result_button(5, special_locked, 'F – F', 'btn-outline-primary') }}
+                        </div>
+                        <div class="col-4">
+                            {{ result_button(4 if left_is_white else 6, special_locked, 'F – 1', 'btn-outline-primary') }}
+                        </div>
+                    </div>
+
+                    <hr class="my-3" />
+                {% endif %}
+
+                {% if _flat_hole %}
+                    {# A board with a hole can only be unpaired — to free the
+                       present player so they can be re-paired correctly. #}
+                    <div class="row g-2">
+                        <div class="col-12">
+                            {{ action_button(
+                                'MANUAL_UNPAIRING',
+                                'delete',
+                                url_for(
+                                    'admin-pairings-unpair-board',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    board_id=board.identifier,
+                                ),
+                                (
+                                    'MANUAL_UNPAIRING' not in existing_actions
+                                    or not client.can_unpair_boards(admin_tournament.id)
+                                ),
+                                _('Unpair'),
+                                'btn-outline-primary w-100',
+                            ) }}
+                        </div>
+                    </div>
+                {% else %}
                 <div class="row g-2">
                     <div class="col-4">
-                        {{ result_button(3 if left_is_white else 1, base_locked, '1 – 0', 'btn-outline-primary') }}
-                    </div>
-                    <div class="col-4">
-                        {{ result_button(2, base_locked, '½ – ½', 'btn-outline-primary') }}
-                    </div>
-                    <div class="col-4">
-                        {{ result_button(1 if left_is_white else 3, base_locked, '0 – 1', 'btn-outline-primary') }}
-                    </div>
-                </div>
-
-                <div class="row g-2 mt-2">
-                    <div class="col-4">
-                        {{ result_button(6 if left_is_white else 4, special_locked, '1 – F', 'btn-outline-primary') }}
-                    </div>
-                    <div class="col-4">
-                        {{ result_button(5, special_locked, 'F – F', 'btn-outline-primary') }}
-                    </div>
-                    <div class="col-4">
-                        {{ result_button(4 if left_is_white else 6, special_locked, 'F – 1', 'btn-outline-primary') }}
-                    </div>
-                </div>
-
-                <hr class="my-3" />
-
-                <div class="row g-2">
-                    <div class="col-6">
                         {{ action_button(
                             'RESULT_UPDATE',
                             'put',
@@ -216,8 +262,8 @@
                             'bi bi-trash',
                         ) }}
                     </div>
-                    {% if not admin_tournament.event.is_team_event %}
-                        <div class="col-6">
+                    {% if not admin_tournament.event.is_team_event or not admin_tournament.pairing_system.paired_by_team %}
+                        <div class="col-4">
                             {{ action_button(
                                 'MANUAL_UNPAIRING',
                                 'delete',
@@ -238,7 +284,7 @@
                             ) }}
                         </div>
                     {% endif %}
-                    <div class="col-6">
+                    <div class="col-4">
                         {{ action_button(
                             'COLOR_PERMUTE',
                             'patch',
@@ -255,7 +301,9 @@
                         ) }}
                     </div>
                 </div>
+                {% endif %}
 
+                {% if not _flat_hole %}
                 <div class="mt-3">
                     <button
                         type="button"
@@ -307,6 +355,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% endif %}
             </div>
             <div class="modal-footer">
                 <button

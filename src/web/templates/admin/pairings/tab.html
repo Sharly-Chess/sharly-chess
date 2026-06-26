@@ -186,6 +186,13 @@
                                 {% include '/admin/pairings/team_unpaired_table.html' %}
                             {% endwith %}
                         {% elif is_flat_team_mode %}
+                            {# Only once the round is paired — before that the
+                               arbiter generates pairings, not pairs by hand. #}
+                            {% if admin_tournament.round_has_pairings(admin_round) %}
+                                {% with title=_('To pair'), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
+                                    {% include '/admin/pairings/unpaired_table.html' %}
+                                {% endwith %}
+                            {% endif %}
                             {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
                                 {% include '/admin/pairings/team_lineup_table.html' %}
                             {% endwith %}
@@ -241,8 +248,10 @@
                             </colgroup>
                             {% include '/admin/pairings/pairing_table_header.html' %}
                             <tbody>
-                                {# Molter table codes (e.g. A1 / B3) per board,
-                                   shown as a small prefix in flat team systems. #}
+                                {# Table cell codes (A1 / B3): only used as the
+                                   fallback for an empty seat (a hole), to show
+                                   which player is missing. A seated player's code
+                                   comes from their own line-up slot. #}
                                 {% set molter_refs = (
                                     admin_tournament.pairing_variation.engine.board_references(
                                         admin_tournament, admin_round

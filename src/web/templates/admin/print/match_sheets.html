@@ -182,14 +182,13 @@
                         {% for board in flat_boards %}
                             {% set wtp = board.optional_white_tournament_player %}
                             {% set btp = board.black_tournament_player %}
+                            {# Codes (A1/B3): a seated player's own team letter +
+                               line-up slot (follows them through re-pairing); an
+                               empty seat falls back to the table cell code so a
+                               forfeit shows which player is missing. #}
                             {% set refs = flat_board_refs.get(board.index) %}
-                            {# Codes (A1/B3) follow the player's team, not the
-                               physical side, so a colour permute keeps each code
-                               with its player. #}
-                            {% set _wl = wtp.team.pairing_label if (wtp and wtp.team) else none %}
-                            {% set _bl = btp.team.pairing_label if (btp and btp.team) else none %}
-                            {% set _wc = refs[1] if (refs and _wl and refs[1] and refs[1][0] == _wl) else (refs[0] if refs else none) %}
-                            {% set _bc = refs[0] if (refs and _bl and refs[0] and refs[0][0] == _bl) else (refs[1] if refs else none) %}
+                            {% set _wc = wtp.team.player_round_label(wtp, at_round) if (wtp and wtp.team) else (refs[0] if refs else none) %}
+                            {% set _bc = btp.team.player_round_label(btp, at_round) if (btp and btp.team) else (refs[1] if refs else none) %}
                             {% set raw_result = board.result_str %}
                             {% if raw_result and '-' in raw_result %}
                                 {% set parts = raw_result.split('-') %}
@@ -203,7 +202,7 @@
                                 <td class="col-bd">
                                     <div class="board-number">{{ board.number }}</div>
                                     {% if _wc or _bc %}
-                                        <div class="board-refs">{{ _wc }}-{{ _bc }}</div>
+                                        <div class="board-refs">{{ _wc or '' }}-{{ _bc or '' }}</div>
                                     {% endif %}
                                 </td>
                                 <td class="col-name left">

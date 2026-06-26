@@ -7,16 +7,12 @@
         hx-swap-oob="true"
     {% endif %}
 >
-    {# Molter codes (A1 / B3) follow the player's team, not the physical
-       side — so a colour permute keeps each code with its player. #}
-    {% set _white_molter_code = none %}
-    {% set _black_molter_code = none %}
-    {% if molter_code is defined and molter_code %}
-        {% set _wl = wtp.team.pairing_label if (wtp and wtp.team) else none %}
-        {% set _bl = btp.team.pairing_label if (btp and btp.team) else none %}
-        {% set _white_molter_code = molter_code[1] if (_wl and molter_code[1] and molter_code[1][0] == _wl) else molter_code[0] %}
-        {% set _black_molter_code = molter_code[0] if (_bl and molter_code[0] and molter_code[0][0] == _bl) else molter_code[1] %}
-    {% endif %}
+    {# Molter codes (A1 / B3). A seated player's code is their own team letter
+       + line-up slot, so it follows them (manual re-pairing, colour permute).
+       An empty seat (hole) falls back to the table cell's expected code, so a
+       forfeit shows which player is missing. #}
+    {% set _white_molter_code = wtp.team.player_round_label(wtp, admin_round) if (wtp and wtp.team) else (molter_code[0] if molter_code is defined and molter_code else none) %}
+    {% set _black_molter_code = btp.team.player_round_label(btp, admin_round) if (btp and btp.team) else (molter_code[1] if molter_code is defined and molter_code else none) %}
     <td class="text-center text-nowrap">{{ board.number }}{% if board.number != board.id %} ({{ board.id }}){% endif %}</td>
     <td class="text-center">{% if wtp %}{{ wtp.vpoints_str }}{% endif %}</td>
     {% if admin_tournament.print_real_points(admin_round) %}
@@ -62,10 +58,18 @@
                 {% set allowed=true %}
             {% endif %}
         >
+            {% set _flat_team = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
+            {% if _flat_team %}
+                {# Flat team (Molter): open the modal whenever a board has at
+                   least one player, so a forfeit/hole board can be unpaired. #}
+                {% set _modal_disabled = not_allowed or (not wtp and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+            {% else %}
+                {% set _modal_disabled = not_allowed or not wtp or (admin_event.is_team_event and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+            {% endif %}
             <button
                 class="btn btn-sm btn-outline-primary text-nowrap"
                 style="width: 4.5rem;"
-                {% if not_allowed or not wtp or (admin_event.is_team_event and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+                {% if _modal_disabled %}
                     disabled
                 {% else %}
                     hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier) }}"
@@ -112,12 +116,19 @@
             <td></td>
         {% endif %}
         <td>
-            {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
             {% if admin_event.is_team_event %}
-                {# A missing side in a flat team system is a lineup
-                   hole (forfeit), not a pairing-allocated bye. #}
-                <em class="text-muted">—</em>
+                {% if board.result.is_bye %}
+                    {# Player manually paired and waiting for an opponent —
+                       not a forfeit hole, so no table code. #}
+                    <em class="text-muted">{{ _('Awaiting opponent') }}</em>
+                {% else %}
+                    {# A missing side in a flat team system is a lineup
+                       hole (forfeit); show which seat is empty. #}
+                    {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
+                    <em class="text-muted">—</em>
+                {% endif %}
             {% else %}
+                {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
                 {% set first_pab_round = wtp.first_pab_round if wtp else none %}
                 {% if first_pab_round and first_pab_round < admin_round %}
                     <span class="text-danger">

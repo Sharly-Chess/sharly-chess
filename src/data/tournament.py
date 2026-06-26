@@ -8,6 +8,7 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any
 from _weakref import ReferenceType
 
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
@@ -2499,13 +2500,83 @@ class Tournament:
         )
 
     def get_round_pab_board(self, round_: int) -> Board | None:
+        """The round's pairing-allocated-bye board — a player seated alone,
+        *waiting* for an opponent. A flat-system forfeit hole is also
+        black-less but is a settled result (``FORFEIT_WIN``), not an empty
+        bye, so it's excluded: manual pairing must not attach a new player
+        to a legitimate forfeit board."""
         return next(
             (
                 board
                 for board in self.boards_by_id.values()
-                if board.round == round_ and not board.black_tournament_player
+                if board.round == round_
+                and not board.black_tournament_player
+                and board.result == Result.PAIRING_ALLOCATED_BYE
             ),
             None,
+        )
+
+    def unboarded_holes(self, round_: int) -> list[tuple[int, str]]:
+        """Flat fixed-table (Molter): empty table cells with no board this
+        round — absent seats, e.g. freed by unpairing and awaiting a forfeit
+        pairing. Each is ``(board_index, label)`` like ``(5, 'B3')``. Empty
+        for other systems. A present-but-unpaired player's seat isn't a hole
+        (it's filled in the line-up); only ``None`` slots count."""
+        from data.pairings.fixed_table import FixedTablePairingEngine
+
+        engine = self.pairing_variation.engine
+        if not isinstance(engine, FixedTablePairingEngine):
+            return []
+        refs = engine.board_references(self, round_)
+        team_by_letter = engine.team_by_letter(self)
+        boarded = {board.index for board in self.get_round_boards(round_)}
+        holes: list[tuple[int, str]] = []
+        for index, (white_ref, black_ref) in enumerate(refs):
+            if index in boarded:
+                continue
+            for ref in (white_ref, black_ref):
+                team = team_by_letter.get(ref[0])
+                if team is None:
+                    continue
+                slot = int(ref[1:]) - 1
+                slots = team.effective_round_slots(round_)
+                if 0 <= slot < len(slots) and slots[slot] is None:
+                    holes.append((index, ref))
+        return holes
+
+    def create_flat_manual_board(
+        self,
+        round_: int,
+        white_id: int | None,
+        black_id: int | None,
+        index: int,
+    ) -> None:
+        """Create one flat (Molter) board from a manual selection. Either side
+        may be ``None`` (a hole) — but not both. Two players ⇒ a game; one
+        player + a hole ⇒ a forfeit win for the present player (handled by
+        :meth:`create_boards`, which scores a one-sided flat board as a
+        forfeit). No line-up is touched."""
+        if white_id is None and black_id is None:
+            raise SharlyChessException('A board needs at least one player.')
+        for player_id in (white_id, black_id):
+            if player_id is None:
+                continue
+            pairing = self.tournament_players_by_id[player_id].pairings[round_]
+            if pairing.exists and pairing.stored_pairing.board_id is not None:
+                raise SharlyChessException(
+                    f'Player {player_id} is already paired in round {round_}.'
+                )
+        self.create_boards(
+            [
+                StoredBoard(
+                    id=None,
+                    white_player_id=white_id,
+                    black_player_id=black_id,
+                    index=index,
+                )
+            ],
+            round_,
+            Result.FORFEIT_WIN,
         )
 
     def get_unpaired_tournament_players(
@@ -3981,12 +4052,15 @@ class Tournament:
                 database.update_stored_board(board.stored_board)
             else:
                 result = Result.PAIRING_ALLOCATED_BYE
-                round_boards = self.get_round_boards(round_nb)
+                # Fill the first free table index (a hole left by an unpaired
+                # board), not the end — so a manually paired player lands on
+                # the lowest vacant table rather than after the last one.
+                available_indexes = self.get_available_board_indexes(round_nb)
                 stored_board = StoredBoard(
                     id=None,
                     white_player_id=white_tournament_player.id,
                     black_player_id=None,
-                    index=round_boards[-1].index + 1 if round_boards else 0,
+                    index=available_indexes[0] if available_indexes else 0,
                 )
                 board_id = database.add_stored_board(stored_board)
                 stored_board.id = board_id
