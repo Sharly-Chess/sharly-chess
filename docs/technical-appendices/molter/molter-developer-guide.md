@@ -1,596 +1,286 @@
-# Molter table generation — developer guide
+# Molter Table Recipes — Developer Guide
 
-This explains **how the Molter table generator works**, for developers who will
-maintain it later. It assumes no special maths background: the few graph-theory
-terms that appear are explained in plain words as we go.
+This guide explains the current Molter implementation for maintainers. The key
+point is architectural:
 
-> When this guide and the code disagree, the code and the verifier are the source
-> of truth.
+> The app does not solve or construct Molter tables at pairing time. It replays a
+> packed recipe artifact and refuses unsupported shapes.
 
-A language-neutral **specification** — enough to reproduce the tables in any
-program — is in [`molter-specification.md`](molter-specification.md); this guide
-is its code-level companion.
+The hard rules and quality contract are defined in
+[`molter-specification.md`](molter-specification.md). If this guide and the code
+disagree, the code and verifier are the source of truth.
 
-The three source files:
+## 1. Source Files
 
 | File | Role |
 |------|------|
-| `src/data/pairings/molter_generator.py` | **Builds** a table for a given shape. |
-| `src/data/pairings/molter_verifier.py` | **Checks** a table against the Molter rules. |
-| `src/data/pairings/molter.py` | Wires Molter into the pairing-system framework. |
+| `src/data/pairings/molter.py` | Molter pairing-system integration. Checks rule-set overrides, then asks for a packed recipe table. |
+| `src/data/pairings/molter_recipes.py` | Runtime `.mrec` loader and deterministic recipe replay. |
+| `src/data/pairings/molter_recipe_replay.py` | Small runtime-only schedule expansion helpers used by recipe replay. |
+| `src/data/pairings/resources/molter_recipes.mrec` | Compact recipe artifact shipped with the app. |
+| `src/data/pairings/fixed_table.py` | Generic fixed-table engine used after a recipe has produced a `FixedPairingTable`. |
+| `src/data/pairings/molter_verifier.py` | Hard-rule verifier and quality notes. |
+| `docs/technical-appendices/molter/molter_recipe_generator.py` | Portable table builder used for baselines and recipe research. Not imported by the app. |
+| `docs/technical-appendices/molter/build_solver_recipe_suite.py` | Reproducible offline recipe-builder orchestration. |
+| `docs/technical-appendices/molter/build_solver_recipes.py` | Low-level recipe build, replay, packing and metrics helpers. |
+| `docs/technical-appendices/molter/build_quality_summary.py` | Audit workbook for validation, timing and quality grades. |
+| `docs/technical-appendices/molter/build_xlsx.py` | Human-readable table workbooks. |
 
----
+## 2. Runtime Path
 
-## 1. What problem are we solving?
+At pairing time:
 
-A team event has **N teams**, each with **P players** (P is even). Players sit on
-numbered **boards** 1…P; board 1 is the strongest player, board P the weakest.
+1. `MolterPairingSystem.get_table(N, P, tournament)` checks whether the rule set
+   provides an official override for `(N, P)`.
+2. If no override exists, it calls
+   `get_molter_recipe_table(N, P, rounds=tournament.rounds)`.
+3. `molter_recipes.py` loads `resources/molter_recipes.mrec`, finds the exact
+   recipe, materializes uncoloured matches, applies colour bits and returns a
+   `FixedPairingTable`.
+4. `FixedTablePairingEngine` turns the table row for the requested round into
+   concrete pairings.
 
-Every round we must pair players across boards so that:
+Important behaviour:
 
-- everybody plays (no byes),
-- you never play a team-mate,
-- your colours stay balanced (as many Whites as Blacks),
-- each team meets a fair spread of the other teams,
-- nobody meets the same team twice across the event.
+- Unsupported shapes are reported as unavailable.
+- If `(N, P)` is missing from the recipe file, the app returns no Molter table.
+- If `(N, P)` is known but the exact `R` is missing, the recipe loader can return
+  the maximum known recipe for that shape so the fixed-table layer can report a
+  concrete round limit. It must not silently wrap a shorter table.
+- Supported team counts come from the recipe file itself via
+  `supported_molter_recipe_team_counts()`.
 
-A **Molter table** is a precomputed schedule that satisfies all of this. The
-generator builds one for any valid shape, and the verifier checks it before it is
-used.
+## 3. What a Recipe Stores
 
-**Notation used throughout:** `N` = `team_count`, `P` = `players_per_team`,
-`R` = number of regular rounds. Teams are letters `A, B, C…`; player `A1` is
-team A's board-1 player.
+The `.mrec` file is compact binary data, not a verbose dump of all printed
+pairings. It starts with a magic header (`MLTRCP`) and a packed version, then a
+varint-encoded list of cases.
 
----
+Each case contains:
 
-## 2. How the code represents a table
+- `team_count`;
+- `players_per_team`;
+- `rounds`;
+- a schedule payload;
+- `colour_bit_count`;
+- packed colour bytes.
 
-```python
-_Player = tuple[int, int]   # (team index 0-based, slot 0-based);  board = slot + 1
-_Match  = tuple[_Player, _Player]   # an *uncoloured* board: who plays whom
-_Board  = tuple[_Player, _Player]   # a *coloured* board: (white player, black player)
-_Round  = list[_Board]
-```
+The current schedule kinds are:
 
-So a player is just "which team, which board". A **match** says *who plays whom*
-but not the colours; a **board** adds the colours (the first element has White).
-The public result is a `FixedPairingTable` whose `rounds` are tuples of
-`TablePairing` (white team/board + black team/board).
+| Kind | Meaning |
+|------|---------|
+| `even_factor_rows` | Even-team cases. Stores rows of one-factor indices. Replay expands them with `_even_matches_from_factor_rows`. |
+| `odd_cell_drops` | Odd-team cases using offset rows and one dropped floater edge per `(block, factor)` cell. |
+| `odd_cell_occurrences` | Odd-team cases using explicit cell occurrences: factor, dropped edge, reverse phase and optional team shift. This is larger than `odd_cell_drops` but still much smaller than storing final tables. |
 
----
+Replay is deterministic:
 
-## 3. The rules a table must satisfy
+1. Expand the schedule into uncoloured matches.
+2. Read one colour bit per match.
+3. If the bit is true, keep `(first, second)`; otherwise reverse it.
+4. Emit the resulting coloured rounds through the normal `_emit` ordering.
 
-Everything the generator does is in service of these rules. They come in two kinds,
-and the verifier (`molter_verifier.py`) enforces the split: **a table is only
-emitted if every *hard* rule passes**; the nice-to-haves are reported as notes, not
-errors. (Terms like *layer*, *floater* and *round-pair* are defined in the sections
-that follow — skim past them for now.)
+Because colours are bits, the app does not need to solve C1/C2/C3 at runtime. The
+artifact is verified by tests and by the quality workbook.
 
-**Hard invariants (always true, every shape):**
+## 4. Hard Rules and Ideals in Code
 
-- **S1** P is even; there are `N × P / 2` boards per round.
-- **S2** every player plays exactly one game per round, the same number overall.
-- **S3** team-mates are never paired.
-- **S4** in strict tables, you never meet two opponents from the same team (this
-  forces `R < N`). Rule sets may supply a marked compromise override for an
-  otherwise impossible shape; the verifier then checks the stated compromise
-  properties instead of strict S4.
-- **S5** each team plays as many Whites as Blacks.
-- **S6a/S6b/S6c** the floater rules: none at all for even N; for odd N a
-  floater only joins two consecutive boards with the odd (stronger) board
-  descending, at most one per odd board per round, and the floater role rotates so
-  nobody floats the same way twice across the regular rounds.
-- **C1 / C2 / C3** colour balance per player; never the same colour three rounds
-  running; a repeat only across an even→odd boundary in strict tables. Marked
-  compromise overrides still keep per-player colour balance and forbid triples,
-  but may relax the boundary-repeat convention when that is part of the override.
+The verifier is responsible for the hard contract:
 
-**Ideals (only fully achievable on complete tables):**
+- S1 board count.
+- S2 every player exactly once per round.
+- S3 no team-mates.
+- S4 no repeated opponent team.
+- S4b no per-round opponent collapse.
+- S5 bounded team colour drift with return to zero after every two-round block
+  and at the final round.
+- S6a/S6b/S6c floater legality.
+- C1 final player colour balance.
+- C2 no colour triple.
+- C3 bounded player prefix drift.
 
-- **I1** *(priority)* each team meets the others equally **every round** — exact
-  when `N − 1` divides `P`; otherwise every prefix should cover as many distinct
-  opposing teams as possible.
-- **I2** *(priority after I1)* descending-floater counts as even across teams as
-  arithmetic allows.
-- **I3** each team has as many ascending as descending floaters.
-- **I4** each round spreads a team's players evenly across opponents.
-- **I5** at most one descending and one ascending floater per team per round-pair —
-  exact only when `P = N − 1` (a single layer); impossible once `P > N − 1`.
+Quality metrics are computed by the workbook and recipe builders:
 
-### When each ideal holds
+- `I1`: cumulative opponent-count spread, plus `I1 prefix deficit` for early
+  distinct-opponent coverage. `0` ideal, `<=1` spread target.
+- `I2 L1`: `sum(abs(descending - ascending))` over teams.
+- `I3`: descending-floater spread.
+- `I4`: repeated floater roles inside round-pairs.
+- `I5`: per-round opponent spread.
+- `Exact S5`: whether every team has `P/2` Whites and `P/2` Blacks in every
+  round.
 
-- The hard invariants (S1–S6c, C1–C3) hold for **every** strict shape — by
-  construction, and confirmed by the verifier before a table is emitted. A rule
-  set override can mark a table as a compromise; those are not emitted by the
-  default generator.
-- **I1** is reached on every round exactly when `N − 1` divides `P` (the table is
-  whole layers). A final partial layer otherwise maximizes prefix coverage:
-  after `r` rounds each team has met `min(N − 1, P × r)` distinct opposing teams
-  when that is arithmetically possible.
-- **I2** reaches spread ≤ 1 on the single full odd layer for every checked
-  `N >= 7`; `N=5` needs spread 2. Stacked and partial odd layers rotate team
-  labels to keep I2 as even as possible, but I1/prefix spread and hard floater
-  rules come first.
-- **I5** holds only for a single layer (`P = N − 1`, odd `N`); once `P > N − 1` it
-  is arithmetically impossible.
-- **I3/I4** are not separate optimization targets in the current construction.
-  I3 is mostly a consequence of round-pair reversal on regular paired rounds,
-  while I4 follows I1 on full layers and becomes best-effort on partial layers.
-  The verifier reports any remaining gaps as notes.
-- Ideals that fall short are reported as notes — they never block a table.
+The practical quality target for a good Molter table is grade A or B in
+`build_quality_summary.py`. Grade C requires review. Grade D is structurally
+valid but should be treated as an unsolved quality case.
 
----
+## 5. Current Coverage and Quality
 
-## 4. The one big idea: teams first, colours second
+The app-visible Molter range is capped for quality:
 
-The hard part is deciding, for each board in each round, **which two teams** the
-players come from. Once you know "board 5 this round is `A` vs `D`", filling in
-the exact players and the colours is mechanical.
+- `N = 3..20`;
+- even `P = 2..12`;
+- `R = 1..13` where legal.
 
-So the generator works in two passes:
+The packed research artifact currently covers:
 
-1. **Build the team schedule** — the uncoloured matches (`_Match`). This is where
-   all the cleverness is.
-2. **Colour it** — decide White/Black, with no searching.
+- `N = 3..25`;
+- even `P = 2..12`;
+- `R = 1..13` where legal.
 
-Then it runs the verifier.
+Latest validated snapshot:
 
----
+- `1398/1398` covered cases pass hard validation.
+- `1008` covered cases with `N <= 20` are exposed by the runtime app.
+- Quality grades: `A=360`, `B=902`, `C=33`, `D=103`, `FAIL=0`.
+- The serious weaknesses are mostly I1/prefix coverage at larger `N`.
+- High quality is generally good through about twenty teams; after that, the
+  artifact is valid but visibly not fully solved in many cases.
 
-## 5. Building the team schedule
+This is why the docs present the recipe suite as the maintained source for the
+runtime artifact. The portable builder is a useful component in the
+recipe-building portfolio, not the final answer.
 
-### 5.1 A "layer" = everyone-meets-everyone once
+## 6. Offline Recipe Build Workflow
 
-Picture each team as a dot. Draw a line between two dots when those teams play.
-If **every team plays every other team exactly once**, you've drawn every possible
-line — mathematicians call that a *complete graph* and write it `K_N`. It has
-`N × (N−1) / 2` lines.
+Use `build_solver_recipe_suite.py` when rebuilding the collection. It is the
+reproducibility layer over `build_solver_recipes.py`.
 
-A **layer** is `N − 1` boards arranged so that, on each round, the teams playing
-form exactly one such `K_N`. Why `N − 1` boards? Because that's how many boards it
-takes for one team to meet all `N − 1` others. Building a layer differs by whether
-N is even or odd:
+The suite:
 
-**Even N — the circle method (`_one_factorization`).** This is the classic
-round-robin trick: fix one team as a pivot and rotate the rest around it. Each
-"rotation" is a **perfect matching** — a way to pair up *all* the teams at once
-with nobody left over (possible because N is even). There are `N − 1` matchings,
-and together they cover every team pair once. A full layer uses every matching
-once per round. A partial leftover layer uses `_even_partial_factor_plan`: it
-takes factors from a cyclic stream so every prefix is balanced, then edge-colours
-those factor occurrences into board slots so a fixed player never repeats a team.
-No floaters here — both players on a board share the same board number.
+1. Builds a baseline grid.
+2. Selects weak cases by current metrics.
+3. Runs deterministic improvement passes for odd/even cases.
+4. Uses CP-SAT/OR-Tools where useful for row, offset, integrated schedule/colour
+   and strict-S5 recolouring attempts.
+5. Writes each pass to its own resumable file under `.context`.
+6. Merges pass outputs by metric priority.
+7. Writes a manifest with the builder hash and pass configuration.
+8. Packs the promoted result to `.mrec`.
 
-**Odd N — one dropped edge per two-board block.** With an odd number of teams you
-*can't* pair everyone up on one board — there's always one team left over. That
-leftover is handled by a **floater**: one player drops from an odd board down to
-the next (even) board to find an opponent. The generator has two ways to build the
-team graph behind that layout:
-
-- **Full layers, checked sizes `N = 7..99`: prescribed one-odd 2-factorization.**
-  A 2-factor is a set of cycles where every team has degree 2. The generator first
-  fixes the floater edges by the affine rule
-  `{r+b, r+b+m+1} mod N`, where `m = (N−1)/2`, `r` is the round-pair and `b` is the
-  two-board block. Then `_one_odd_factorization` starts from the cyclic
-  length-class 2-factorization, uses a deterministic recolouring pass to force
-  those affine floater edges into the required factors, and runs a deterministic
-  4-edge repair pass so the prescribed floater edge sits in the single odd
-  component and all other components are even. `_complete_i1_one_odd_blocks` can
-  then drop that edge and materialize the two-board block. This path makes I1
-  exact and gives optimal single-layer I2 spread for every checked `N >= 7`.
-- **Partial layers, checked sizes `N = 7..99`: one-odd factors with spread
-  offsets.** The same repaired 2-factors are reused for partial layers. The
-  blocks take evenly spaced offsets through the factor list, and every round
-  advances each block by one factor. For `N=9, P=4`, the two blocks use factors
-  `{0, 2}` in round 1 and `{1, 3}` in round 2, so every team has met all eight
-  opposing teams after two rounds. This deliberately protects the I1 prefix
-  objective before I2/I5 on incomplete layers.
-- **Small exceptions `N=3` and `N=5`: fixed one-odd factors.** `N=3` is below
-  the general factor-search range. `N=5` cannot use the affine perfect-I2 target,
-  but two fixed 5-cycles still fit the one-odd materializer. The planner is
-  allowed to settle at I2 spread 2, which exhaustive search showed is the best
-  possible while preserving S6c.
-
-### 5.2 Stacking layers to reach P players
-
-One layer fills `N − 1` boards. For `P` players we stack `k = P / (N − 1)` layers.
-Each layer is its own full `K_N`, so each round ends up with `k` copies of
-everyone-meets-everyone — meaning **each pair of teams meets exactly `k` times per
-round**. That per-round balance is the priority ideal **I1**.
-
-When `N − 1` doesn't divide `P` evenly, the leftover boards form a **partial
-layer**. It still obeys every hard rule (distinct opponent each round, and a
-legal floater per odd block). It gives up exact per-round I1, but it does not
-simply repeat the same opponent teams: odd partial blocks and even partial board
-slots both use prefix-balanced factor plans, so the first `r` rounds cover
-`min(N − 1, P × r)` distinct opposing teams per team. Full layers use a cached
-construction, so repeated requests for the same size are free. Partial layers are
-arithmetic once their factors exist. Unsupported odd sizes fail explicitly
-instead of running a slow alternate search.
-
-After each odd layer is built, the generator can rotate all team labels in that
-layer. This preserves the pairings, future colour assignment, S6a/S6b/S6c, and
-I1; it only changes which real teams receive that layer's descending-floater
-incidences. A final deterministic rotation pass chooses layer shifts that
-minimize I2. This prevents repeated small layers from charging the same teams
-over and over — notably `N=3` and `N=7, P=14`.
-
-These rotations keep repeated layers from charging the same teams when that can
-be done without changing the pairings. The only known small full-layer exception
-is `N=5`, where S6c and perfect I2 conflict and spread 2 can be forced. For a
-single full odd layer with `N >= 7`, current searches and constructions indicate
-that I2 spread `0` or `1` is the right target. On partial layers, a larger I2 note
-can be the price of the stronger prefix-opponent spread.
-
-### 5.3 Why rounds are capped at N − 1
-
-Within a layer, the cycle/matching assigned to each board **rotates** every
-round-pair, so a fixed board sees a new opposing team each round. After `N − 1`
-rounds you've used them all up — hence `1 ≤ R ≤ N − 1`. Any shorter prefix is
-valid too, so a 2-round table is just the first two rounds of the full one.
-
----
-
-## 6. Colouring — no search needed
-
-The colour rule (invariants C1–C3): each player ends balanced, never plays the
-same colour three rounds running, and may only **repeat** a colour across an
-**even→odd** round boundary. Everywhere else colours must alternate.
-
-That rule makes colours local to a round-pair. `_pair_flip_colour` takes the
-union of two uncoloured rounds as a graph on players; it is bipartite. One side
-gets White in the first round, the other side gets White in the second, so every
-player flips colour. This is what lets a partial layer use two different factor
-sets in the two rounds without breaking colour balance.
-
-A round-pair leaves each player balanced. If `R` is odd, the final round has no
-partner to flip with, so it is coloured Eulerian on its own — which is
-self-balancing because every team plays an even number `P` of games.
-
----
-
-## 7. Keeping floaters fair (odd N only)
-
-For odd N the floater choice is the only place where S6a/S6b/S6c and I2 can
-conflict. The reference method uses fixed one-odd factors for `N=3` and `N=5`,
-and searched/repaired one-odd factors for checked sizes `N = 7..99`.
-
-### Full layers: affine floaters plus one-odd factors
-
-For a full layer (`P` contributes exactly `N−1` boards), the preferred path uses
-the affine floater edge:
+The merge priority is intentionally stricter than "anything valid". It follows
+the numbered I definitions, with the I1 prefix signals immediately after I1:
 
 ```text
-floater(r,b) = {r+b, r+b+m+1} mod N, where m = (N−1)/2
+I1
+I1 prefix deficit
+I1 prefix deficit total/vector
+I2 L1
+I3
+I4
+I5
+exact S5
 ```
 
-In one round-pair, those `m` edges are vertex-disjoint, so exactly one team is
-omitted and the others float once. Over the full schedule, the omitted team
-rotates through the field and descending-floater incidence differs by at most one
-for every checked `N >= 7`.
+A candidate that validates but worsens an earlier metric is rejected even if a
+later metric improves.
 
-Those prescribed floater edges are then embedded into a 2-factorization of `K_N`:
+Typical command:
 
-1. `_one_odd_initial_factors` starts from the cyclic length-class
-   2-factorization of `K_N`.
-2. It pins every prescribed affine floater edge to its required factor, then
-   recolours only non-prescribed edges. The score is the total deviation from
-   degree 2 over all `(factor, team)` pairs, so score 0 means every factor is a
-   spanning 2-regular graph and every team-pair edge appears exactly once.
-3. `_one_odd_repair_factors` applies deterministic 4-edge switches between
-   factors until each factor can be laid out across two boards: the prescribed
-   floater edges are in one odd component, and every other component has even
-   size.
-4. `_one_odd_cell_matches` drops the prescribed edge for a cell. The remaining
-   odd path and even cycles alternate across the adjacent boards, giving legal
-   floaters without repeating a floater role.
-
-This is why the former hard cases such as `N=17`, `N=21` and `N=49` are fast
-without embedded grid constants.
-
-`N=5` is the small exception: exhaustive search showed S6c and perfect I2 are
-mutually exclusive there, so the hard no-repeat floater rule wins and I2 spread
-is 2. It still uses the one-odd materializer, with two fixed 5-cycle factors.
-
-### Worked odd example: N=5, P=4, first round-pair
-
-This is the smallest useful example because `N=5` gives `m=(N−1)/2=2`, so one
-full layer has two adjacent board blocks: boards `1/2` and boards `3/4`.
-
-For round-pair `r=0`, the affine floater edge for block `b` is:
-
-```text
-floater(r,b) = {r+b, r+b+m+1} mod N
+```sh
+python3 docs/technical-appendices/molter/build_solver_recipe_suite.py \
+  --output .context/quality_grid_all_recipes.json
 ```
 
-So the two dropped edges are:
+The JSON is verbose by design: it is the resumable audit state. The adjacent
+`.mrec` is the compact replay artifact. After promoting a new artifact, run the
+tests and rebuild the audit workbook before committing.
 
-```text
-b=0: {0, 3}  -> teams A and D
-b=1: {1, 4}  -> teams B and E
+## 7. Quality Workbook
+
+Use `build_quality_summary.py` for broad review:
+
+```sh
+python3 docs/technical-appendices/molter/build_quality_summary.py \
+  docs/technical-appendices/molter/molter_quality_summary.xlsx \
+  --workers 8 \
+  --recipe-file src/data/pairings/resources/molter_recipes.mrec
 ```
 
-They are disjoint, so the round-pair has legal odd-team floaters: four teams
-float once and team `C` is omitted from floating in that pair.
+The workbook includes:
 
-The fixed `N=5` factors are:
+- dashboard totals;
+- grade matrix by `N/P/R`;
+- I1 matrix;
+- prefix-deficit matrix;
+- timing matrix;
+- all row-level cases;
+- cases to inspect;
+- rollups by team count.
 
-```text
-factor 0 = (0-3, 0-4, 1-2, 1-3, 2-4)
-factor 1 = (0-1, 0-2, 1-4, 2-3, 3-4)
+This workbook replaces the old split between summary, NPR and I1 diagnostics for
+most decisions. Use `build_solver_recipes.py` directly only when investigating
+or improving one recipe-builder pass.
+
+## 8. Human-Readable Table Workbooks
+
+Use `build_xlsx.py` for the tables themselves:
+
+```sh
+python3 docs/technical-appendices/molter/build_xlsx.py \
+  docs/technical-appendices/molter/molter_tables.xlsx \
+  --recipe-file src/data/pairings/resources/molter_recipes.mrec
 ```
 
-For block `b=0`, `factor_index = (r+b) mod m = 0`, and the dropped edge is
-`0-3`. Removing `0-3` from factor 0 leaves the path:
+The table workbook includes per-sheet controls: a team-letter selector and a
+checkbox that colours floater matches red. It also includes the colour
+transition tab. These files are generated artifacts, not sources of truth.
 
-```text
-0 - 4 - 2 - 1 - 3
+## 9. Testing
+
+Run the recipe tests after changing the artifact or replay code. Run the
+generator tests when changing the offline builder, generator helpers, or
+baseline construction:
+
+```sh
+python3 -m pytest tests/unit/test_molter_recipes.py tests/unit/test_molter_recipe_generator.py
 ```
 
-`_one_odd_cell_matches` places that path across boards 1 and 2:
+Useful focused checks:
 
-```text
-floater:  D1 vs A2   (D descends from board 1, A ascends from board 2)
-board 1:  A1 vs E1
-board 1:  C1 vs B1
-board 2:  E2 vs C2
-board 2:  B2 vs D2
-```
+- `iter_molter_recipe_tables()` materializes every packed recipe.
+- `verify_molter_table(table)` must pass for every recipe table.
+- The XLSX files should open as valid zip packages after regeneration.
 
-For block `b=1`, factor 1 drops edge `1-4`; that fills boards 3 and 4 in the
-same way. The second round of the pair reuses the same dropped edges with the
-path reversed, so the floater direction flips and each player gets the other
-incident edge of the same factor.
+Do not rely only on a visual workbook. The verifier is the hard-rule gate.
 
-The important mechanics visible in this tiny case are the same for larger odd
-`N`: affine dropped edges make the round-pair floaters disjoint, each block uses
-a factor whose odd component contains the dropped edge, and the remaining path
-alternates across the adjacent boards.
+## 10. Extending Coverage
 
-### Why the team schedule works
+To add more cases:
 
-The construction is designed so each local fact maps directly to one Molter rule:
+1. Change the grid constants or command-line bounds in the recipe builder.
+2. Run the suite into `.context`.
+3. Compare quality against the previous artifact.
+4. Promote only cases that validate and are not worse by the metric priority.
+5. Copy the new `.mrec` to `src/data/pairings/resources/molter_recipes.mrec`.
+6. Rebuild `molter_quality_summary.xlsx` and the human-readable workbooks.
+7. Run tests.
 
-- **Everyone plays exactly once (S2).** In an even layer, each board slot is a
-  perfect matching, so every team appears once on that board. In an odd two-board
-  block, dropping one factor edge turns the odd component into a path; the path
-  alternates between the odd and even board, and the dropped edge becomes the
-  floater. The result covers every team once on each of the two board numbers,
-  with the two endpoint players used in the floater instead of a same-board game.
-- **No team-mates, and no repeated opponent team (S3/S4).** Factors contain only
-  edges between different teams. Across a full set of factors, every team-pair
-  edge of `K_N` appears exactly once. Full layers use one factor over a round-pair
-  and then rotate; partial layers advance by one factor every round and use the
-  alternate materialization when a factor reappears. Since the factors partition
-  `K_N`, a player cannot meet the same opposing team twice before the `N−1`
-  round cap.
-- **Legal floaters (S6b).** A dropped edge always belongs to one adjacent
-  two-board block. `_one_odd_cell_matches` always places one endpoint on the odd
-  board and the other on the even board, with the odd-board endpoint descending.
-  The planner also requires the dropped edges in a round-pair to be
-  vertex-disjoint, so a round cannot ask the same team to float twice.
-- **No repeated floater role (S6c).** In full layers, the dropped edges for a
-  fixed two-board block are vertex-disjoint across round-pairs. In partial
-  layers, a block keeps one dropped edge per `(block, factor)` cell; when that
-  cell reappears, the materialization phase flips. Either way, the same player
-  cannot repeat descending or ascending floater status.
-- **Per-round I1 on full layers.** A full odd layer has `m=(N−1)/2` blocks, and
-  round `r` uses factor `(r+b) mod m` on block `b`. That permutation uses each
-  factor exactly once in the round; because the factors partition `K_N`, every
-  team-pair appears exactly once. Even layers have the same property with
-  one-factor matchings.
-- **I2 balancing does not disturb legality.** Final layer rotations are team-name
-  automorphisms: they relabel every team in the layer by the same offset. That
-  cannot create team-mates, repeated opponents, illegal floaters, or colour
-  conflicts; it only changes which real teams receive that layer's descending
-  floater counts.
+If a shape is not in the recipe file, the app should continue to refuse it. That
+keeps support limits explicit and avoids silent quality regressions.
 
-### Partial layers: spread offsets
+## 11. Research Notes
 
-For an odd partial layer, only `block_count < m` two-board blocks are used. The
-helper `_one_odd_spread_partial_blocks` chooses evenly spaced offsets:
+Current bad cases are not caused by runtime replay. Replay is fast. The hard part
+is finding schedules that simultaneously satisfy:
 
-```text
-offset(block) = floor(block × m / block_count)
-factor(round, block) = (round + offset(block)) mod m
-```
+- strict hard validation;
+- strong I1/prefix coverage;
+- colourability under S5/C1/C2/C3;
+- acceptable I2/I3/I4/I5.
 
-The dropped edge for a `(block, factor)` cell is stable. The first time the cell
-appears it uses the normal materialization; the second time it uses the reversed
-phase. This has three useful consequences:
+Some weak larger-`N` cases have good raw opponent schedules that become difficult
+or impossible to colour under the hard colour rules. This suggests that better
+results probably require a stronger combined schedule-and-colour model, not just
+minor tweaks to the existing constructive generator.
 
-- every round is legal and every player still meets a new team;
-- early prefixes spread opponents quickly, e.g. `N=9, P=4` reaches all eight
-  opposing teams after two rounds instead of repeating the first four;
-- generation is deterministic and near-instant once the one-odd factors are
-  cached.
+Potential future approaches:
 
-The tradeoff is explicit: on incomplete layers I2/I5 can be worse than the
-arithmetic lower bound. The verifier reports that as a note, not an error,
-because the hard rules and the higher-priority opponent-spread objective still
-hold.
+- CP-SAT model that chooses opponent schedule and colour together.
+- SAT/SMT encoding for hard feasibility and proof of impossibility.
+- ILP/min-cost-flow hybrids for prefix coverage plus colour drift.
+- Native C++/Rust search for larger deterministic portfolios.
+- New combinatorial constructions for high-`N` prefix coverage.
 
-Even partial layers use the same prefix idea without floaters. `_even_partial_factor_plan`
-takes the leftover `slot_count` factors per round from a cyclic stream, then
-edge-colours the resulting bipartite graph into board slots. Each prefix uses
-each 1-factor either floor or ceil times, and each slot sees a factor at most
-once, so I1 coverage is fast while S4 still holds.
-
-## 8. Requested Rounds
-
-`generate_molter_table` emits exactly the requested regular rounds. For normal
-tournament generation the Molter pairing system passes the event's actual round
-count to `generate_molter_table`, so a requested count such as 1, 3, 5, ... is a
-real table whenever `R < N`. A one-round event is therefore just round 1 of a
-valid one-round Molter table, already colour-balanced by construction.
-
----
-
-## 9. The code path, end to end
-
-`generate_molter_table(team_count, players_per_team, rounds=None)`:
-
-1. **Validate**: `P` even, `N ≥ 3`, and `1 ≤ R ≤ N − 1`. `rounds` defaults via
-   `default_molter_rounds` (odd counts 5 and 7 run "complete" = `N − 1` rounds;
-   everything else defaults to 2). Bad input raises `MolterGenerationError`.
-2. **Build matches** then **colour**, by parity:
-   - odd N → `_complete_i1_matches` → `_colour_complete_i1_matches`
-   - even N → `_complete_i1_even_matches` → `_colour_complete_i1_even_matches`
-3. **Render** each round with `_emit` (sorts boards: all board-1 games first, a
-   block's floater grouped with its lower board).
-4. **Verify (opt-in).** When `_VERIFY_GENERATED_TABLES` is set, run
-   `verify_molter_table` and raise `MolterGenerationError` on any hard-rule
-   violation. It's **off by default** — the construction is trusted in production;
-   turn it on when changing the algorithm or run the verifier from tests.
-
-Results are `@lru_cache`d, so repeated requests for the same shape are free.
-
-| Want to… | Function |
-|----------|----------|
-| Generate a table | `generate_molter_table` |
-| Default round count | `default_molter_rounds` |
-| Even-N team schedule | `_one_factorization`, `_complete_i1_even_matches` |
-| Odd-N full-layer team schedule | `_one_odd_factorization`, `_complete_i1_one_odd_blocks`, `_complete_i1_matches` |
-| Odd-N partial schedule | `_one_odd_spread_partial_blocks` |
-| Even-N partial schedule | `_even_partial_factor_plan` |
-| Full-layer floater edges / I2 | `_affine_floater_edge`, `_layer_descending_incidence`, `_optimise_layer_shifts` |
-| Partial floater edges | `_one_odd_spread_partial_blocks` |
-| Colour a lone final round | `_eulerian_colour` |
-| Colour a round-pair | `_pair_flip_colour` |
-
-### From a table to round pairings (runtime)
-
-When the event is known, `MolterPairingSystem.get_table` asks for
-`generate_molter_table(N, P, rounds=tournament.rounds)`, so odd round counts are
-generated directly whenever the generator supports them.
-
-If a rule set ships an official override, that override is consulted first. This
-is how the FFE cup `3 teams × 4 players × 3 rounds` table is allowed: it is
-impossible under strict S4, so it is marked `is_compromise=True` and verified with
-the compromise checks instead of being emitted by the default generator.
-
-A generated `FixedPairingTable` is then turned into a round's actual pairings by
-the fixed-table engine, via
-`FixedPairingTable.round_pairings(round_index, total_rounds)` (in
-`fixed_table.py`). It returns `rounds[(round_index − 1) % regular_round_count]`;
-the Molter pairing system asks for a table with the event's own round count, so
-standard Molter tournaments do not need a separate terminal round.
-
----
-
-## 10. Worked examples
-
-### Generate and read a table
-
-```python
-from data.pairings.molter_generator import generate_molter_table
-
-table = generate_molter_table(team_count=3, players_per_team=4)  # default rounds
-for round_number, rnd in enumerate(table.rounds, start=1):
-    print(f"Round {round_number}")
-    for board in rnd:
-        print(f"  {board.white_team}{board.white_index} (W)"
-              f" – {board.black_team}{board.black_index} (B)")
-```
-
-### A complete odd table — 3 teams, 4 players
-
-`generate_molter_table(3, 4)` gives 2 rounds. Each round
-has `N × P / 2 = 6` games, written `white – black`:
-
-```
-Round 1:  B1–A1   C1–B2   A2–C2   B3–C3   C4–A3   A4–B4
-Round 2:  A1–C1   C2–B1   B2–A2   A3–B3   C3–A4   B4–C4
-```
-
-What to notice:
-
-- **Six games per round** (S1: `N × P / 2`), and **no game pairs team-mates** — the
-  two letters always differ (S3).
-- **`C1–B2` and `C4–A3` are floaters.** Their two board numbers differ (a board-2
-  player meets a board-1 player). With an odd team count you can't pair every board
-  straight across, so the stronger (lower) board drops to its neighbour — that's
-  the floater, and it's why nobody sits out (S6b).
-- **The two layers are visible.** `P / (N−1) = 4 / 2 = 2` layers: boards 1–2 form
-  one everyone-meets-everyone block (`B1–A1`, `C1–B2`, `A2–C2`), boards 3–4 the
-  other (`B3–C3`, `C4–A3`, `A4–B4`).
-- **Colours alternate.** A1 has Black in round 1 (`B1–A1`) and White in round 2
-  (`A1–C1`) (C1/C3).
-
-### The FFE three-team, three-round override
-
-`generate_molter_table(3, 4, rounds=3)` is rejected by the default generator
-because it asks for as many rounds as there are teams. Strict S4 is then
-impossible: each player has only two opposing teams, so over three games one
-opponent team must repeat.
-
-The FFE cup rule set supplies an explicit `3×4×3` override marked
-`is_compromise=True`. That table makes the forced repeat as harmless as possible:
-
-```
-Round 1:  A1–B1   A2–C1   B2–C2   C3–B3   C4–A3   B4–A4
-Round 2:  B1–C1   B2–A1   C2–A2   A3–C3   A4–B3   C4–B4
-Round 3:  C1–A1   C2–B1   A2–B2   B3–A3   B4–C3   A4–C4
-```
-
-What is still true:
-
-- every round has two `AB`, two `AC`, and two `BC` games;
-- every player repeats one opponent team exactly once (`2/1` split);
-- no player meets the same individual opponent twice;
-- floaters stay between adjacent boards only;
-- each player gets either two Whites and one Black, or one White and two Blacks,
-  with no three identical colours in a row.
-
-### No floaters with an even team count — 4 teams, 4 players
-
-```
-Round 1:  A1–D1   B1–C1   A2–C2   D2–B2   A3–B3   C3–D3   A4–D4   B4–C4
-```
-
-Every game pairs **equal board numbers** (`A1–D1`, `B1–C1`, `A2–C2`, …): with an
-even team count every board pairs straight across — no floaters at all (S6a). That
-is the whole reason even and odd team counts take different construction paths.
-
----
-
-## 11. Determinism, portability, performance
-
-- **Deterministic and portable.** In this implementation, `(N, P, R)` defines
-  exactly one table; there is no external solver and no user-visible seed. The
-  full-odd path uses a small fixed pseudo-random stream only for tie-breaks in
-  factor recolouring/repair; it is implemented in the generator and can be
-  ported directly. Partial odd layers use arithmetic spread offsets.
-- **Validation should be the acceptance criterion.** This Python generator is the
-  portable reference implementation, but its exact byte output should not be
-  treated as the definition of Molter validity. The proposal is that a table
-  generated by another implementation should be acceptable if it passes the
-  verifier's hard invariants and respects the declared ideal priorities (I1
-  before I2). A C++, SAT, CP, ILP, or otherwise specialized library may produce
-  different valid tables, and may do so faster because it can propagate
-  constraints in native code or use a stronger search engine. The intended
-  acceptance test is the validated table, not the internal construction path.
-- **Fast.** Even tables and partial tables are almost pure arithmetic after the
-  factors have been built.
-  The full-odd path avoids the former large floater-grid CSP: on the 2026-06-20
-  local factorization probe, every odd `N=53..99` succeeded; `N=69` built its
-  reusable factors in about 2.4s. Partial odd tables use the same one-odd
-  factors with spread offsets, avoiding the former slow partial-I2 search. The
-  factor repair pass keeps per-factor scores incrementally, so only the two
-  factors touched by a candidate swap are rescored; this avoids the former
-  cold-start spikes in larger odd factorization experiments.
-
----
-
-## 12. Extending it
-
-- **New / changed rules** → edit `molter_verifier.py`. Keep the hard/soft split:
-  hard rules `report.errors.append(...)`, ideals `report.notes.append(...)`.
-- **Default round counts** → `default_molter_rounds`.
-- **An official federation table for a specific size** → don't touch the generator.
-  A rule set returns it from `molter_table_overrides()`, and
-  `MolterPairingSystem.get_table` (in `molter.py`) prefers an override before
-  falling back to the generator. That hook is the single extension point left to
-  downstream consumers.
+Any such approach is welcome if it keeps the verifier as the gate and improves
+the quality vector.

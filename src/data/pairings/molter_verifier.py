@@ -6,22 +6,25 @@ team-pairing system. The principles split into two groups:
 **Hard invariants** — must hold for *every* strict Molter table: even
 players-per-team and board count = teams × P/2; one game per player per
 round (and equal games overall); no team-mates paired; no player meeting
-two opponents from the same team (so rounds < teams); exact per-team colour
-balance (possible because P is even); and the floater rules — for an even
-team count no floaters at all (S6a), and for an odd team count floaters only
-between consecutive boards with the odd board descending, at most one per
-odd board level per round (S6b); and the colour rules — over the regular
-rounds each player is colour-balanced and never plays one colour three
-rounds running, and a colour only repeats across an even→odd round boundary.
+two opponents from the same team (so rounds < teams); no multi-board team may
+face only one opposing team in a round when there are more than two teams;
+bounded cumulative team colour drift, restored after each two-round block and at
+the final round; and the floater rules — for an even team count no floaters at
+all (S6a), and for an odd team count floaters only between consecutive boards
+with the odd board descending, at most one per odd board level per round (S6b);
+and the individual colour rules — over the regular rounds each player is
+colour-balanced, never plays one colour three rounds running, and never drifts
+too far from colour balance during a truncated table.
 Rule-set overrides may mark an otherwise impossible table as a compromise;
-those are checked against explicit best-compromise repeat/colour rules.
+those are checked against explicit best-compromise repeat rules.
 
 **Ideals** — reached only on the *complete* tables or when arithmetic permits
-them, so unmet ideals are reported as notes rather than errors: uniform
-team-vs-team distribution (principle 3), balanced up/down floaters (principle
-5), an equal count of descending floaters per team (a priority ideal after
-opponent spread), even per-round opponent spread (principle 1), maximum distinct
-opponent-team coverage in every prefix, and per-player colour balance.
+them, so unmet ideals are reported as notes rather than errors: exact per-round
+team colour balance, uniform team-vs-team distribution (principle 3), balanced
+up/down floaters (principle 5), I2 L1 up/down floater balance after opponent
+spread, an equal count of descending floaters per team as an I3 tie-breaker, even
+per-round opponent spread (principle 1), and maximum distinct opponent-team
+coverage in every prefix.
 
 ``verify_molter_table`` returns a :class:`MolterReport`; ``errors`` lists
 hard-invariant breaches (non-empty ⇒ invalid), ``notes`` lists unmet
@@ -77,8 +80,6 @@ def _check_rounds(
     seen_opp_seats: set[tuple[int, int]] = set()
     repeated_opp_seats: set[tuple[int, int]] = set()
     seen_stamp = [0] * seat_count
-    team_white = [0] * team_count
-    team_black = [0] * team_count
     up = [0] * team_count
     down = [0] * team_count
     seat_down = [0] * seat_count
@@ -90,9 +91,12 @@ def _check_rounds(
     i5_violated = False
     spread_note: tuple[int, str, dict[str, int]] | None = None
     prefix_spread_note: tuple[int, str, int, int] | None = None
-    relaxed_colour_boundary = False
+    colour_errors: list[str] = []
+    colour_drift_error_seats: set[int] = set()
     n_rounds = len(rounds)
     team_prefix_mask = [0] * team_count
+    team_colour_drift = [0] * team_count
+    relaxed_s5_note: tuple[int, str, int, int] | None = None
 
     def seat_name(seat: int) -> str:
         return f'{letters[seat // players_per_team]}{seat % players_per_team + 1}'
@@ -105,6 +109,8 @@ def _check_rounds(
                 f'expected {expected_boards} (= {team_count} × {players_per_team}/2).'
             )
         opp_this = [[0] * team_count for _ in range(team_count)]
+        round_team_white = [0] * team_count
+        round_team_black = [0] * team_count
         floater_levels = [0] * (players_per_team + 1)
         round_pair = r_zero // 2
         for p in rnd:
@@ -130,8 +136,8 @@ def _check_rounds(
                 if white_team == black_team:
                     err(f'{label} round {r_index}: team-mates paired ({p}).')
 
-                team_white[white_team] += 1
-                team_black[black_team] += 1
+                round_team_white[white_team] += 1
+                round_team_black[black_team] += 1
                 opp_this[white_team][black_team] += 1
                 opp_this[black_team][white_team] += 1
                 pair_count[white_team][black_team] += 1
@@ -165,21 +171,9 @@ def _check_rounds(
                 if n_rounds >= 2:
                     prev = prev_colour[white_seat]
                     if prev == 1:
-                        name = None
-                        if r_zero % 2 == 1:
-                            if is_compromise:
-                                relaxed_colour_boundary = True
-                            else:
-                                name = seat_name(white_seat)
-                                err(
-                                    f'{label}: {name} repeats colour from round '
-                                    f'{r_zero} to {r_zero + 1} — only an even→odd '
-                                    f'boundary may repeat.'
-                                )
                         if prev_prev_colour[white_seat] == prev:
-                            if name is None:
-                                name = seat_name(white_seat)
-                            err(
+                            name = seat_name(white_seat)
+                            colour_errors.append(
                                 f'{label}: {name} plays the same colour three '
                                 f'rounds running (rounds {r_zero - 1}–'
                                 f'{r_zero + 1}).'
@@ -197,21 +191,9 @@ def _check_rounds(
                 if n_rounds >= 2:
                     prev = prev_colour[black_seat]
                     if prev == 0:
-                        name = None
-                        if r_zero % 2 == 1:
-                            if is_compromise:
-                                relaxed_colour_boundary = True
-                            else:
-                                name = seat_name(black_seat)
-                                err(
-                                    f'{label}: {name} repeats colour from round '
-                                    f'{r_zero} to {r_zero + 1} — only an even→odd '
-                                    f'boundary may repeat.'
-                                )
                         if prev_prev_colour[black_seat] == prev:
-                            if name is None:
-                                name = seat_name(black_seat)
-                            err(
+                            name = seat_name(black_seat)
+                            colour_errors.append(
                                 f'{label}: {name} plays the same colour three '
                                 f'rounds running (rounds {r_zero - 1}–'
                                 f'{r_zero + 1}).'
@@ -293,6 +275,36 @@ def _check_rounds(
                     f'board {level} — at most one is allowed per round (S6b).'
                 )
 
+        target_team_white = players_per_team // 2
+        for team, letter in enumerate(letters):
+            if (
+                round_team_white[team] != target_team_white
+                or round_team_black[team] != target_team_white
+            ):
+                if relaxed_s5_note is None:
+                    relaxed_s5_note = (
+                        r_index,
+                        letter,
+                        round_team_white[team],
+                        round_team_black[team],
+                    )
+            team_colour_drift[team] += round_team_white[team] - round_team_black[team]
+            if abs(team_colour_drift[team]) > 2:
+                err(
+                    f'{label} round {r_index}: team {letter} cumulative colour '
+                    f'drift is {team_colour_drift[team]} — the maximum allowed '
+                    f'drift is 2.'
+                )
+            if (r_index % 2 == 0 or r_index == n_rounds) and team_colour_drift[
+                team
+            ] != 0:
+                err(
+                    f'{label} round {r_index}: team {letter} cumulative colour '
+                    f'drift is {team_colour_drift[team]} — teams must return to '
+                    f'colour balance after each two-round block and at the final '
+                    f'round.'
+                )
+
         for team, counts in enumerate(opp_this):
             spread_values = [count for count in counts if count]
             if team_count > 2 and len(spread_values) == 1 and spread_values[0] > 1:
@@ -322,6 +334,20 @@ def _check_rounds(
                         expected_distinct,
                     )
                     break
+
+        if n_rounds >= 2:
+            prefix_limit = 1 if r_index == n_rounds else 2
+            for seat, whites in enumerate(white_count):
+                if seat in colour_drift_error_seats:
+                    continue
+                blacks = r_index - whites
+                if abs(whites - blacks) > prefix_limit:
+                    colour_drift_error_seats.add(seat)
+                    colour_errors.append(
+                        f'{label}: {seat_name(seat)} colour imbalance after '
+                        f'round {r_index} ({whites} white / {blacks} black); '
+                        f'the maximum allowed difference is {prefix_limit}.'
+                    )
 
     if games and max(games) != min(games):
         err(f'{label}: players do not all play the same number of games.')
@@ -357,12 +383,6 @@ def _check_rounds(
     # Per-player colour rules (read off the official tables). Checked over a
     # multi-round set only — a single round has nothing to alternate.
     if n_rounds >= 2:
-        for seat, whites in enumerate(white_count):
-            if abs(whites - (n_rounds - whites)) > n_rounds % 2:
-                err(
-                    f'{label}: {seat_name(seat)} colour imbalance '
-                    f'({whites} white / {n_rounds - whites} black).'
-                )
         # S6c — over the regular rounds no player is a descending floater
         # more than once (nor an ascending floater more than once).
         for seat, count in enumerate(seat_down):
@@ -377,16 +397,14 @@ def _check_rounds(
                     f'{label}: {seat_name(seat)} is an ascending floater '
                     f'{count} times — at most once is allowed (S6c).'
                 )
-    for team, letter in enumerate(letters):
-        if team_white[team] != team_black[team]:
-            err(
-                f'{label}: team {letter} colour imbalance '
-                f'(white {team_white[team]} / black {team_black[team]}).'
-            )
-    if relaxed_colour_boundary:
+    if colour_errors:
+        report.errors.extend(colour_errors)
+    if relaxed_s5_note is not None:
+        r_index, letter, whites, blacks = relaxed_s5_note
         note(
-            f'{label}: colour repeats occur outside the usual even→odd boundary; '
-            f'the compromise table still forbids three identical colours in a row.'
+            f'{label} round {r_index}: team {letter} does not have exact per-round '
+            f'colour balance (white {whites} / black {blacks}); S5 is checked as '
+            f'bounded cumulative drift, with balance restored within two rounds.'
         )
 
     for team, counts in enumerate(pair_count):
@@ -397,9 +415,10 @@ def _check_rounds(
                 f'team — only the complete tables equalise this (I1).'
             )
             break
-    # I3 (equal ascending/descending floaters per team) is a whole-schedule
+    # I2 (equal ascending/descending floaters per team) is a whole-schedule
     # ideal — meaningless for a single round, where a team floats at most one
     # way. Only assess it over a multi-round set.
+    i2_l1 = sum(abs(down[team] - up[team]) for team in range(team_count))
     unbalanced = [
         letter for team, letter in enumerate(letters) if up[team] != down[team]
     ]
@@ -407,16 +426,17 @@ def _check_rounds(
         note(
             f'{label}: floaters not balanced for team(s) '
             f'{", ".join(unbalanced)} — each team should have as many ascending as '
-            f'descending floaters; only the complete tables equalise this (I3).'
+            f'descending floaters; I2 L1 = {i2_l1} '
+            f'(sum of |descending − ascending| per team).'
         )
     down_counts = list(down)
     if down_counts and max(down_counts) - min(down_counts) > 1:
         note(
             f'{label}: descending floaters unequal across teams '
             f'(range {min(down_counts)}–{max(down_counts)}) — descending '
-            f'floaters should be as equal as possible after opponent spread (I2).'
+            f'floaters should be as equal as possible after opponent spread (I3).'
         )
-    # I5 — a single-layer table (P ≤ N − 1) should float each team at most once
+    # I4 — a single-layer table (P ≤ N − 1) should float each team at most once
     # up and once down per round-pair. (For more than one layer this is
     # arithmetically impossible, so it is only checked for a single layer.)
     if team_count % 2 == 1 and 0 < players_per_team <= team_count - 1:
@@ -424,14 +444,14 @@ def _check_rounds(
             note(
                 f'{label}: a team floats more than once within a round-pair — a '
                 f'single-layer table should float each team at most once up and '
-                f'once down per round-pair (I5).'
+                f'once down per round-pair (I4).'
             )
     if spread_note is not None:
         r_index, team_name, spread = spread_note
         note(
             f'{label} round {r_index}: team {team_name} opponent spread {spread} '
             f'is uneven — a team should be spread evenly across opponents each '
-            f'round; only the smaller tables equalise this (I4).'
+            f'round; only the smaller tables equalise this (I5).'
         )
     if prefix_spread_note is not None:
         r_index, team_name, distinct, expected = prefix_spread_note

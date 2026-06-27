@@ -1,416 +1,359 @@
-# Molter table — formal specification
+# Molter Tables — Specification and Quality Contract
 
-This document is a **formal, language-neutral specification** of the Molter
-team-pairing table: the combinatorial objects it is built from, the invariants it
-must satisfy, and the mathematical construction that produces one. It is written
-for a reader who wants to *understand and validate* the method, not to transcribe
-code.
+This document defines what a Molter team-pairing table must satisfy, how table
+quality is judged, and how the current Sharly implementation obtains its tables.
+It is intentionally **not** a claim that we have found a final constructive
+algorithm. The shipped implementation uses compact offline-built recipes, then
+replays them deterministically at runtime.
 
-Two notions of conformance are defined (§11):
+The important distinction is:
 
-- **Validity** — the actual contract. A table is *valid* if it satisfies every
-  hard invariant of §3. Validity is independent of how the table was produced;
-  any method — the construction below, a constraint solver, a hand table — that
-  yields a table passing §3 is acceptable.
-- **Reproduction** — exact agreement with the **reference implementation**. The
-  construction of §§5–9 fixes a unique table for each input `(N, P, R)`, but it
-  leaves a handful of choices (which factorisation, how internal ties are broken)
-  to a *canonical deterministic rule*. Spelling that rule out in prose would not
-  add mathematical content, so it is delegated: the script
-  [`molter_standalone.py`](molter_standalone.py) in this folder **is** the
-  canonical reference, and a table *reproduces* the reference iff it equals that
-  script's output for the same `(N, P, R)`. The script is deterministic in
-  `(N, P, R)` alone — there is no external seed.
+- **Structural validity**: every hard rule in section 3 passes the verifier.
+- **Molter-quality validity**: the table is structurally valid and its ideal
+  metrics are good enough to be considered a satisfactory Molter table.
+- **Reproduction**: exact byte-for-byte agreement with the current recipe
+  artifact. Reproduction is useful for tests; it is not the mathematical
+  definition of Molter.
 
-Notation. `N` = number of teams, `P` = players per team (`P` even, `P ≥ 2`),
-`R` = number of regular rounds. `ℤ_N = {0, …, N−1}`; arithmetic on team indices
-is modulo `N` with non-negative residues. Set `m = (N−1)/2` when `N` is odd.
+An alternative implementation may use a solver, a different constructive
+argument, an official hand table, or a native executable. It is acceptable if it
+passes the hard verifier and matches or improves the quality vector described
+below.
 
----
+Notation:
+
+- `N`: number of teams, `N >= 3`.
+- `P`: players per team, even and `P >= 2`.
+- `R`: number of regular rounds, `1 <= R < N`.
+- Teams are indexed by `0..N-1`; display names are `A, B, C, ...`.
+- Board 1 is the strongest player, board `P` the weakest.
 
 ## 1. Objects
 
-**Teams.** `ℤ_N`. The display letter of team `t` is the `(t+1)`-th letter
-`A, B, C, …` (for `t ≥ 26`, the Unicode character after `Z`, etc.).
+**Player.** A pair `(team, board)` where `team in 0..N-1` and
+`board in 1..P`.
 
-**Boards.** Each team fields `P` players on boards `1, …, P` (board 1 strongest).
-A **player** is a pair `(t, i) ∈ ℤ_N × {1, …, P}`. Write `P = ℤ_N × {1, …, P}` for
-the set of all `N·P` players.
+**Uncoloured match.** An unordered pair of players from different teams.
 
-**Match.** An unordered pair of players `{(t, i), (t′, j)}` with `t ≠ t′`. It says
-*who plays whom* on one board, without colours.
+**Coloured board.** An ordered pair `(white_player, black_player)`.
 
-**Board (coloured).** An ordered pair `(w, b)` of players; `w` has White, `b` has
-Black.
+**Round.** A set of `N*P/2` coloured boards that partitions all players exactly
+once.
 
-**Round.** A set of `N·P/2` coloured boards whose underlying matches partition
-`P` (every player appears on exactly one board). A **table** is a sequence
-`(ρ_1, …, ρ_R)` of rounds.
+**Table.** A sequence of `R` rounds.
 
-**Layer.** A block of `N−1` consecutive boards (board slots) on which, in each
-round, the *teams* that meet form a complete graph `K_N`: every team meets every
-other exactly once. A layer accounts for `N−1` of a team's `P` players, so a table
-uses `⌈P/(N−1)⌉` layers, the last possibly partial.
+**Floater.** For odd `N`, a match between adjacent board numbers `{i, i+1}` with
+`i` odd. The player on the odd/lower board descends; the player on the even
+higher board ascends. Even `N` tables must have no floaters.
 
-**Floater (odd `N` only).** A board whose two players have *different* board
-numbers, necessarily consecutive `{i, i+1}` with `i` odd. The player on the odd
-(lower, stronger) board **descends**; the player on the even board **ascends**.
-A floater is forced exactly when `N` is odd: an odd number of teams cannot be
-paired across equal boards.
+**Round-pair.** Rounds are often analysed in blocks `(1,2)`, `(3,4)`, etc.; an
+odd `R` leaves a final single round.
 
-**Round-pair.** Rounds are grouped two at a time: round-pair `p` is the pair
-`(ρ_{2p+1}, ρ_{2p+2})`. The construction and the colouring both operate per
-round-pair; an odd `R` leaves one unpaired final round.
+## 2. Validation Levels
 
-**Descending count.** For team `t`, `d_t` is the number of rounds in which one of
-`t`’s players is the descending side of a floater. The **descending spread** is
-`max_t d_t − min_t d_t`.
+The verifier distinguishes errors from notes.
 
----
+- A **hard error** means the table is invalid and must not be emitted.
+- A **quality note** means the table is structurally valid, but one ideal is not
+  at its preferred value.
 
-## 2. The shape of the construction
+This split is deliberate: the app must never pair an invalid table, but the
+research process also needs to see valid tables whose quality can still be
+improved.
 
-The table is built in two independent passes, mirroring the structure of the
-invariants:
+## 3. Hard Rules
 
-1. **Team schedule (§§5–7).** Choose, for every board of every round, the
-   unordered match — *which two teams meet, on which board numbers*. All the
-   combinatorial work is here.
-2. **Colouring (§8).** Orient each match into `(White, Black)`. This needs no
-   search.
+A table is structurally valid if and only if all of these rules pass.
 
-Both passes are deterministic functions of `(N, P, R)` (see §10). The top-level
-map is
+### S1 — Board Count
 
-```
-generate(N, P, R):
-    require P even, P ≥ 2, N ≥ 3, 1 ≤ R ≤ N − 1
-    S ← team_schedule(N, P, R)            # §§5–7 — a sequence of R rounds of matches
-    return [ colour(S, p) for each round ]  # §8
-```
+`P` is even and every round contains exactly `N*P/2` boards.
 
-`R` defaults by convention when unspecified (`R = N−1` for `N ∈ {5, 7}`, otherwise
-`R = min(2, N−1)`); any `1 ≤ R ≤ N−1` is admissible (§9).
+### S2 — One Game Per Player Per Round
 
----
+Every player appears exactly once in each round. Over the table, all players
+therefore play the same number of games.
 
-## 3. Hard invariants
+### S3 — No Team-Mates
 
-A table is **valid** iff it satisfies all of the following. Each is a finite
-property, checkable directly on the emitted rounds.
+The two players on a board belong to different teams.
 
-- **S1 (board count).** `P` is even and every round has exactly `N·P/2` boards.
-- **S2 (one game per round).** In each round every player appears on exactly one
-  board, and every player plays the same number of games over the table.
-- **S3 (no team-mates).** The two players of any board belong to different teams.
-- **S4 (no repeated opponent team).** No player meets two opponents from the same
-  team. Since a player meets one opponent team per round and there are `N−1`
-  others, this forces `R < N`.
-- **S5 (team colour balance).** In every round each team has as many players with
-  White as with Black. (Possible because every team plays an even number of
-  boards per round.)
-- **S6a (even `N`: no floaters).** If `N` is even, every board pairs equal board
-  numbers.
-- **S6b (odd `N`: legal floaters).** If `N` is odd, a floater joins only
-  consecutive boards `{i, i+1}` with `i` odd, with the odd board descending; at
-  most one descending floater occurs per odd board per round.
-- **S6c (no repeated floater role).** Over the `R` rounds no player descends more
-  than once, and none ascends more than once.
-- **C1 (player colour balance).** Over the `R` rounds each player has equal White
-  and Black counts when `R` is even, differing by one when `R` is odd.
-- **C2 (no colour triple).** No player has the same colour in three consecutive
-  rounds.
-- **C3 (repeat only even→odd).** A player may repeat a colour from round `r` to
-  `r+1` only when `r` is even (1-based); every other adjacent pair of rounds
-  alternates that player's colour.
+### S4 — No Repeated Opponent Team
 
----
+No player meets two opponents from the same team. Since each player meets one
+opponent team per round, this requires `R < N`.
+
+Official rule-set overrides may mark a known impossible shape as a compromise,
+but the default Molter recipe collection is strict.
+
+### S4b — Per-Round Opponent Non-Degeneracy
+
+When `N > 2`, if a team has several boards in one round, those boards must not
+all be against the same opponent team. The round must be spread across at least
+two opponent teams whenever that is possible.
+
+### S5 — Team Colour Balance
+
+For each team, cumulative `Whites - Blacks` drift:
+
+- may never exceed `2` in absolute value;
+- must return to `0` after every two-round block;
+- must return to `0` at the final round.
+
+Exact per-round team balance (`P/2` Whites and `P/2` Blacks for each team in
+each round) is an ideal, not the hard S5 rule.
+
+### S6a — Even-Team Floater Rule
+
+If `N` is even, every match pairs equal board numbers. No floaters are allowed.
+
+### S6b — Odd-Team Floater Legality
+
+If `N` is odd:
+
+- floaters may only join consecutive boards `{i, i+1}` with `i` odd;
+- the player on the odd/lower board is the descending side;
+- at most one descending floater occurs per odd board per round.
+
+### S6c — No Repeated Floater Role
+
+Across the table, no player descends more than once and no player ascends more
+than once.
+
+### C1 — Final Player Colour Balance
+
+Over the full table, each player has equal White and Black counts when `R` is
+even, or differs by one when `R` is odd.
+
+### C2 — No Colour Triple
+
+No player has the same colour in three consecutive rounds.
+
+### C3 — Bounded Player Prefix Drift
+
+After any non-final round, no player may have colour drift above `2` in absolute
+value. After the final round, no player may drift above `1`, which is also C1.
+
+Examples:
+
+- `WWBB` is acceptable in a four-round event.
+- `WBWWB` is acceptable in a five-round event.
+- `BBB` is rejected by C2.
+- `WWBWWW` is rejected because the intermediate drift becomes too large.
 
 ## 4. Ideals
 
-These are graded objectives, not requirements; the construction attains them
-under the stated conditions and otherwise approaches them. A valid table never
-fails to be emitted because an ideal is missed; the priority order is **I1 before
-I2**.
+The ideals are normative quality requirements applied **after** hard validity.
+The `I` metrics are numbered in recipe-selection priority order: I1, I2, I3,
+I4, I5. Exact per-round S5 is an additional named ideal, not an extra numbered
+`I` metric.
 
-- **I1 (opponent uniformity).** In every round each team meets every other team
-  equally often. Attained exactly iff `(N−1) ∣ P` (the table is whole layers).
-  When `(N−1) ∤ P`, the construction instead maximises *prefix coverage*: after
-  `r` rounds each team has met `min(N−1, P·r)` distinct opponent teams whenever
-  that is arithmetically possible.
-- **I2 (floater balance).** The descending spread (§1) is as small as the
-  arithmetic allows — `≤ 1` for a single full odd layer with `N ≥ 7`. The lone
-  exception is `N = 5`, where I2 and S6c cannot both be perfect and the minimum
-  spread is `2`.
-- **I3 (ascend/descend balance).** Each team descends as often as it ascends.
-- **I4 (per-round spread).** Within a round a team's players are spread evenly
-  across opponents.
-- **I5 (single floater per role per round-pair).** Each team descends at most once
-  and ascends at most once per round-pair. Attainable only for a single layer
-  (`P = N−1`); arithmetically impossible once `P > N−1`.
+When two valid candidates conflict, an implementation should not knowingly
+worsen an earlier numbered criterion to improve a later one. Exact S5 is kept
+when compatible with the numbered priorities.
 
-I3 and I4 are consequences of the round-pair structure and of I1 rather than
-separate optimisation targets.
+### I1 — Opponent Uniformity and Prefix Coverage
 
----
+The perfect target is that each team meets every other team equally often in
+every round. This is exact when `(N-1)` divides `P`.
 
-## 5. Decomposing `K_N` into layers
+When exact per-round I1 is arithmetically impossible, short prefixes become the
+critical target: after `r` rounds, each team should have met as many distinct
+opponent teams as arithmetic permits, ideally `min(N-1, P*r)`.
 
-A layer realises one `K_N` per round. Its construction depends on the parity of
-`N`.
+The audit workbook reports:
 
-### 5.1 Even `N` — a 1-factorisation (circle method)
+- `I1`: cumulative opponent-count spread. `0` is perfect; `<=1` is the practical
+  target.
+- `I1 prefix deficit`: missing distinct opponents in the worst prefix. `0` is
+  the target.
 
-When `N` is even, `K_N` decomposes into `N−1` **perfect matchings** (1-factors)
-`F_0, …, F_{N−2}` whose edge sets partition the `N(N−1)/2` team pairs. With team
-`N−1` as pivot and the others on a ring of size `N−1`:
+### I2 — Ascend/Descend Balance
 
-```
-F_b = { {N−1, b} } ∪ { { (b+i) mod (N−1), (b−i) mod (N−1) } : 1 ≤ i ≤ N/2 − 1 }.
+For each team:
+
+```text
+signed_i2[team] = descending_floaters[team] - ascending_floaters[team]
 ```
 
-Each `F_b` is a perfect matching (no team omitted), so a board slot assigned `F_b`
-pairs equal board numbers — **no floaters (S6a)**.
+Positive means the team was favoured by descending more often than ascending;
+negative means the team was disadvantaged. The score used for comparison is the
+L1 total:
 
-### 5.2 Odd `N` — a one-odd 2-factorisation
-
-When `N` is odd no perfect matching exists, so the layer is built from
-**2-factors**. A *one-odd 2-factorisation* is a partition of the edges of `K_N`
-into `m = (N−1)/2` spanning subgraphs `G_0, …, G_{m−1}`, each **2-regular** (every
-team has degree 2, so each `G_h` is a union of cycles), with two further
-properties tied to the *floater edges* defined next.
-
-**Affine floater edge.** For round-pair `p` and block `b`,
-
-```
-e(p, b) = { (p + b) mod N , (p + b + m + 1) mod N }.
+```text
+I2 = sum(abs(signed_i2[team]) for team in teams)
 ```
 
-Within one round-pair the `m` edges `e(p, 0), …, e(p, m−1)` are vertex-disjoint
-(they form a near-perfect matching of `ℤ_N` omitting exactly one team), so each
-round-pair floats `N−1` teams once and omits one; the omitted team rotates with
-`p`. This rotation is what makes the descending spread small (I2).
+Bands:
 
-**Prescribed edges.** Block `b` in round-pair `p` uses factor
-`h = (p + b) mod m`. Collecting the floater edges that fall to each factor gives,
-for every `h`, a set `E_h` of *prescribed edges* that `G_h` must contain.
+- `I2 = 0`: perfect.
+- `I2 <= N-1`: good.
+- `N-1 < I2 < 2*(N-1)`: uncomfortable.
+- `I2 >= 2*(N-1)`: avoid.
 
-**Materialisability.** `G_h` must be laid out across two adjacent boards by
-*dropping* its prescribed edge (§6.2). This is possible exactly when the
-prescribed edges of `G_h` lie in a single **odd-length** cycle of `G_h`, and every
-other cycle of `G_h` has even length. A one-odd 2-factorisation is required to be
-materialisable for every factor.
+### I3 — Descending Floater Spread
 
-**Existence.** A materialisable one-odd 2-factorisation exists for every checked
-odd `7 ≤ N ≤ 99`; the reference implementation finds one by a deterministic search
-(start from the length-class 2-factorisation, pin the prescribed edges, repair the
-component structure by local edge switches). `N = 3` and `N = 5` use fixed factors
-(`N = 5` cannot reach perfect I2 and is allowed descending spread `2`). An odd `N`
-for which no materialisable factorisation is known is rejected outright — there is
-no silent fallback. The *existence* is what matters here; the canonical choice
-among admissible factorisations is fixed by the reference (§10).
+Descending-floater counts should be as even across teams as arithmetic allows.
+The metric is `max(descending_count) - min(descending_count)`.
 
-### 5.3 Materialising a 2-factor across two boards
+### I4 — Floater Roles Per Round-Pair
 
-Let `G_h` have prescribed edge `ε` lying in its odd cycle `C`. Deleting `ε` from
-`C` turns the cycle into a **path** `v_0 — v_1 — … — v_k` (with `{v_0, v_k} = ε`).
-Place this path across the block's two board numbers — odd board `2(o+b)+1` say,
-and even board `2(o+b)+2`, where `o` is the layer's board offset:
+In a round-pair, a team should descend at most once and ascend at most once when
+that is arithmetically possible. This is exact only for some single-layer shapes;
+once `P > N-1`, it can be impossible.
 
-- the **floater** is the board `{(v_k, odd), (v_0, even)}` — the dropped edge’s
-  endpoints, the odd-board player descending;
-- consecutive path edges alternate between the odd board and the even board, so
-  every team on the path appears once on each board number.
+### I5 — Per-Round Opponent Spread
 
-Every other (even) cycle of `G_h` is laid "straight across": its teams alternate
-between the two boards with no floater. The result is a legal two-board block in
-which each team appears once on each board (S2), the only cross-board pairing is
-the single floater (S6b), and the floater edge is `ε`.
+Within a round, a team's players should be spread evenly across opponent teams
+rather than concentrated unnecessarily.
 
-In the **second** round of the round-pair the same block reuses the same dropped
-edge with the path **reversed**; this swaps which endpoint descends, so a team
-that descended in the free round ascends in the flip round.
+### Exact S5 — Per-Round Team Colour Balance
 
----
+The preferred colour shape is `P/2` Whites and `P/2` Blacks for every team in
+every round.
 
-## 6. Assembling the schedule
+This is kept whenever it is compatible with stronger opponent/floater objectives.
+If exact per-round S5 forces worse I1/prefix quality, the hard bounded S5 rule may
+be used instead. The workbook reports this as `Exact S5 per round` or `S5
+relaxed`.
 
-For `P` players a layer covers `N−1` board numbers, so there are
-`k = ⌊P/(N−1)⌋` **full** layers and, when `(N−1) ∤ P`, one **partial** layer of
-the remaining `P − k(N−1)` boards.
+## 5. Quality Requirement
 
-### 6.1 Full layers
+The project uses two validities:
 
-Per round-pair `p`, block `b` of a full layer uses factor `h = (p + b) mod m`
-(odd `N`) with dropped edge `e(p, b)`, or 1-factor `F_{(b+r) mod (N−1)}` in round
-`r` (even `N`). Because the factor index rotates with the round, a fixed board
-meets a new opponent team every round, and across the `m` (resp. `N−1`) blocks of
-a round every team pair appears exactly once — i.e. **per-round I1**. Stacking `k`
-full layers gives `k` copies of `K_N` per round, so each team pair meets exactly
-`k` times per round.
+| Status | Meaning |
+|--------|---------|
+| Invalid | At least one hard rule S1-S6c or C1-C3 fails. Must never be emitted. |
+| Structurally valid | All hard rules pass. Safe to pair, but quality may still be weak. |
+| Molter-quality valid | Hard rules pass and the ideal metrics are good enough for an official-quality table. |
 
-### 6.2 Partial layer, odd `N` — spread offsets
+The quality workbook assigns grades:
 
-A partial odd layer has `c < m` blocks. To make early prefixes cover opponents
-fast (the I1 priority), the blocks are spread through the factor list rather than
-packed together. With
+| Grade | Meaning |
+|-------|---------|
+| A | Structurally valid; no measured quality penalty. |
+| B | Structurally valid; only small ideal misses. |
+| C | Structurally valid; visible ideal miss. Requires review or justification. |
+| D | Structurally valid, but serious ideal miss. This is research debt, not a solved Molter case. |
+| FAIL | Generation or verification failure. |
 
-```
-offset(b) = ⌊ b·m / c ⌋ ,        factor(r, b) = ( r + offset(b) ) mod m ,
+For a **good Molter table**, the target is A or B. A C table may be accepted only
+with a documented reason, such as evidence that the loss is forced by a
+higher-priority rule. A D table should not be described as high quality even when
+it passes the hard verifier.
+
+## 6. Current Implementation Approach
+
+When pairing a Molter tournament, the app replays a packed resource:
+
+```text
+src/data/pairings/resources/molter_recipes.mrec
 ```
 
-block `b` advances by one factor each round, and the `c` blocks sit at evenly
-spaced factor offsets. The dropped edge of each `(block, factor)` cell is fixed;
-the first occurrence uses the forward materialisation of §5.3, a later reuse the
-reversed phase. Consequently every round is legal and meets new teams, and a short
-prefix sees many distinct opponents quickly — e.g. for `N = 9, P = 4` the two
-blocks use factors `{0, 2}` then `{1, 3}`, so all eight opponents are met after two
-rounds. The cost is that I2/I5 on an incomplete layer may exceed their arithmetic
-minimum; this is the deliberate trade in favour of the higher-priority opponent
-spread.
+Each recipe case stores:
 
-### 6.3 Partial layer, even `N` — prefix-balanced factor plan
+- `team_count`, `players_per_team`, `rounds`;
+- a compact schedule description;
+- one colour bit per board.
 
-A partial even layer of `s < N−1` board slots assigns, to round `r`, a set of `s`
-1-factors taken as the next `s` entries of the cyclic stream
-`F_0, F_1, …, F_{N−2}, F_0, …`. Two properties are required and met:
+The recipe is not a dump of final printed pairings. It is a compact, deterministic
+instruction stream. Runtime replay expands the schedule into uncoloured matches,
+applies the colour bits, emits a `FixedPairingTable`, and lets the fixed-table
+engine use that table.
 
-- **prefix balance:** every round-prefix uses each 1-factor either `⌊·⌋` or `⌈·⌉`
-  times — so opponent coverage grows as evenly as arithmetic permits;
-- **slot regularity:** the factor occurrences are assigned to the `s` physical
-  board slots by a proper edge-colouring of the (factor, round) bipartite
-  incidence, so each slot carries a given factor at most once. A fixed slot
-  therefore never repeats an opponent team (S4).
+The current schedule encodings are:
 
-No floaters arise (S6a), as for full even layers.
+- `even_factor_rows`: rows of 1-factor indices for even `N`;
+- `odd_cell_drops`: odd two-board cells described by factor offsets and dropped
+  floater edges;
+- `odd_cell_occurrences`: explicit odd cell choices, including factor, dropped
+  edge, reverse phase and optional team shift.
 
-### 6.4 Layer-shift balancing (odd `N`)
+Missing shapes are refused. If the exact `(N, P, R)` recipe is absent, the app
+does not invent a table at runtime.
 
-Rotating *all* team labels of a built layer by a fixed `σ ∈ ℤ_N`
-(`t ↦ (t+σ) mod N`, board numbers unchanged) is a graph automorphism of the
-layer. It preserves S2–S6, the colours later assigned, and per-round I1; it only
-relabels *which* real teams carry that layer's descending floaters. After all
-layers are built, one rotation per layer is chosen so that the combined descending
-counts are as level as possible (minimising the descending spread, hence I2). This
-prevents repeated small layers from charging the same teams — the rotation is the
-only freedom used to optimise I2, and it cannot disturb any hard invariant.
+## 7. How Recipes Are Built
 
----
+The recipe builders are offline research tools. They are deterministic and
+resumable, but they are a portfolio of searches rather than a final mathematical
+algorithm.
 
-## 7. Why the schedule satisfies the invariants
+The broad workflow is:
 
-- **S1, S2.** Each layer assigns every team once to each of its board numbers
-  (a 1-factor in the even case; a materialised 2-factor in the odd case, §5.3),
-  and layers occupy disjoint board ranges. Summed over layers, every player plays
-  exactly one game per round.
-- **S3.** Every factor edge joins distinct teams, so no board pairs team-mates.
-- **S4.** The factors partition the edges of `K_N`; within a layer a fixed board's
-  factor index advances by one each round, so it never repeats an opponent team
-  before the `N−1` round cap. Across layers the same holds per layer. Hence no
-  player meets an opponent team twice.
-- **S6a/S6b.** Even layers pair equal boards (1-factors); odd layers produce
-  exactly one floater per block, on consecutive boards with the odd board
-  descending (§5.3).
-- **S6c.** In a full odd layer the dropped edges for a fixed block are
-  vertex-disjoint across round-pairs, and the phase reversal swaps ascend/descend
-  within a pair; in a partial odd layer each `(block, factor)` cell keeps one
-  dropped edge whose phase flips on reuse. Either way no player repeats a floater
-  role.
-- **I1.** Established in §6.1 for full layers; §§6.2–6.3 give the best-effort
-  prefix coverage for partial layers.
+1. Start from the current portable generator to get a valid baseline when
+   possible.
+2. Try alternative schedule families for weak cases, especially I1 and prefix
+   failures.
+3. Use CP-SAT/OR-Tools passes where useful to search rows, offsets, integrated
+   schedule/colour choices and strict-S5 recolourings.
+4. Verify every candidate against the hard Molter rules.
+5. Keep only candidates that are not worse than the current best metric vector.
+6. Merge pass outputs by priority metric.
+7. Pack the winning cases into `.mrec`.
 
----
+The merge priority follows the numbered `I` definitions:
 
-## 8. Colouring
+```text
+I1,
+I1 prefix deficit,
+total/vector I1 prefix deficit,
+I2 L1,
+I3,
+I4,
+I5,
+S5 exactness
+```
 
-Colour is assigned per round-pair, with no search.
+The JSON output is intentionally verbose because it is an audit and resume file.
+The `.mrec` output is the compact runtime artifact.
 
-**Round-pair colouring.** For a round-pair `(ρ, ρ′)` of *matches*, form the graph
-`H` on the player set whose edges are the matches of `ρ` together with the matches
-of `ρ′`. Every player has degree ≤ 2 in `H` (at most one board in each round), so
-`H` is a disjoint union of paths and even cycles — in particular **bipartite**.
-Fix a 2-colouring (a bipartition) `χ : P → {0, 1}` of `H`. Orient:
+## 8. Current Coverage and Limits
 
-- in round `ρ`, the player with `χ = 1` takes White;
-- in round `ρ′`, the player with `χ = 0` takes White.
+The runtime app exposes:
 
-Then every player that appears in both rounds gets White exactly once and Black
-exactly once across the pair, and within each round the two endpoints of a match
-receive opposite colours (a proper orientation). This yields **per-pair, per-player
-colour balance**: over a completed round-pair each player has one White and one
-Black.
+- `N = 3..20`;
+- even `P = 2..12`;
+- `R = 1..13`, where legal.
 
-Per-round **team** balance (S5) is a separate property: it requires that, in each
-single round, exactly half of every team's players hold White. It is a structural
-consequence of the schedule together with this colouring — note that the flip
-between the two rounds of a pair makes a team's White count in the second round the
-complement of its count in the first, so S5 holds in one round of a pair iff it
-holds in the other — and it is enforced as a hard invariant (§3), checked directly
-on the emitted rounds.
+The current packed research artifact covers:
 
-**Lone final round.** If `R` is odd the last round `ρ_R` has no partner. Colour it
-by an **Eulerian orientation** of its team multigraph: each team plays an even
-number `P` of boards, so the multigraph has all even degrees and decomposes into
-closed walks; orienting each walk consistently gives every team equal White and
-Black. The round is therefore self-balanced.
+- `N = 3..25`;
+- even `P = 2..12`;
+- `R = 1..13`, where legal.
 
-**The colour invariants follow.** Each player is balanced over every completed
-round-pair, and over a lone final round it is balanced per team; this gives **C1**.
-A colour can repeat only between the second round of one pair and the first round
-of the next — i.e. only across an *even→odd* boundary — which is exactly **C3**,
-and it makes a three-in-a-row impossible, which is **C2**.
+Current quality snapshot:
 
----
+- `1398/1398` covered cases are structurally valid.
+- `1008` covered cases with `N <= 20` are exposed by the runtime app.
+- `A = 360`, `B = 902`, `C = 33`, `D = 103`, `FAIL = 0`.
+- Serious D-grade cases are mostly larger-team I1/prefix coverage failures,
+  concentrated from roughly `N = 19` onward and especially at `N = 21`, `23`,
+  and `25`.
 
-## 9. Round count, prefixes, and rendering
+In practical terms: the current work gives high-quality tables up to about twenty
+teams, with a few visible exceptions before that. Beyond that, more research is
+needed. This may be better CP/SAT/ILP modelling, a stronger constructive
+argument, better native search, or official table expertise.
 
-**Round cap and prefixes.** Within every layer the factor assigned to each board
-rotates by one per round-pair, so after `N−1` rounds all factors are exhausted;
-hence `1 ≤ R ≤ N−1`. Moreover the schedule for `R` rounds is the
-length-`R` prefix of the schedule for any larger round count up to `N−1`: a
-short table is just the first `R` rounds of the full one, and remains valid. A
-one-round event is round 1 of a valid table, already colour-balanced.
+## 9. Conformance
 
-**Rendering.** Each round is emitted with boards ordered by board number — all
-board-1 games first, then board-2, and so on — with a block's floater grouped with
-its lower (odd) board. Within a board number, games are ordered by (White team,
-Black team). A board `(w, b)` is printed as the pair of `(team letter, board
-number)` for White then Black.
+An implementation may target three levels.
 
----
+### Structural Conformance
 
-## 10. Determinism and the reference implementation
+Every emitted table passes all hard rules S1-S6c and C1-C3.
 
-At three points the construction admits more than one admissible choice: the
-materialisable one-odd 2-factorisation (§5.2), the internal repair that produces
-it, and the layer rotations (§6.4). Each such choice is over a finite set, and the
-**reference implementation fixes a canonical deterministic rule** for it (a fixed
-search order with a fixed, seedless tie-break). Consequently:
+### Quality Conformance
 
-> The map `(N, P, R) ↦ table` is a well-defined function. It is computed by
-> [`molter_standalone.py`](molter_standalone.py), which depends only on
-> `(N, P, R)` — there is no external seed or stored data.
+Every emitted table is structurally valid and reaches the best known metric
+vector under the priority order in section 4. At minimum, it should not be worse
+than the shipped recipe for the same `(N, P, R)` unless the loss is documented
+and justified by a higher-priority constraint.
 
-This document specifies *what* a Molter table is (§§1–4) and *how* the method
-constructs one (§§5–9). The exact canonical choices needed for byte-identical
-output are defined operationally by the reference script, not restated here; a
-re-implementation that wishes to reproduce the reference exactly should match that
-script's output rather than re-deriving tie-breaks from prose.
+### Reproduction Conformance
 
----
+The emitted table is exactly identical to the table replayed from the current
+`.mrec` artifact for the same `(N, P, R)`.
 
-## 11. Conformance
-
-An implementation may target either level.
-
-- **Validity conformance.** Its output, for every admissible `(N, P, R)`,
-  satisfies S1–S6c and C1–C3 of §3 and respects the ideal priority I1-before-I2.
-  This is the real contract: any constructor — this one, a SAT/CP/ILP solver, an
-  official hand table — that passes §3 is acceptable, and validity is checkable
-  independently of the construction.
-- **Reproduction conformance.** Its output equals, board-for-board and
-  colour-for-colour, the output of `molter_standalone.py` for the same
-  `(N, P, R)`.
-
-Validity is the definition; the construction of §§5–9 is one route to it, and the
-reference script pins the single canonical table among the valid ones.
+Reproduction is useful for regression tests. Structural and quality conformance
+are the real Molter contract.

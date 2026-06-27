@@ -1,6 +1,4 @@
-"""Molter team-pairing system — a fixed-table system whose tables are
-produced on the fly by the deterministic core generator
-(:func:`data.pairings.molter_generator.generate_molter_table`).
+"""Molter team-pairing system driven by packed fixed-table recipes.
 
 A rule set may override the table for a specific size with an official
 table (see :meth:`data.rule_sets.rule_sets.RuleSet.molter_table_overrides`);
@@ -18,9 +16,10 @@ from data.pairings.fixed_table import (
     FixedTablePairingSystem,
     FixedTableVariation,
 )
-from data.pairings.molter_generator import (
-    MolterGenerationError,
-    generate_molter_table,
+from data.pairings.molter_recipes import (
+    MolterRecipeError,
+    get_molter_recipe_table,
+    supported_molter_recipe_team_counts,
 )
 from data.pairings.settings import PairingSetting
 from data.pairings.systems import SwissPairingSystem
@@ -30,10 +29,6 @@ from utils.entity import EntityManager, EventBoundEntityManager
 if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
-
-# Team counts the system offers in the UI. The generator itself handles any
-# N >= 3; this caps the UI at a practical maximum.
-_SUPPORTED_TEAM_COUNTS: tuple[int, ...] = tuple(range(3, 70))
 
 
 class MolterPairingSystem(FixedTablePairingSystem):
@@ -83,17 +78,19 @@ class MolterPairingSystem(FixedTablePairingSystem):
                 )
                 if override_table is not None:
                     return override_table
-        # Otherwise generate the table deterministically. ``None`` for shapes
-        # the generator can't satisfy (odd players-per-team, etc.).
+        # Otherwise replay a packed recipe. ``get_molter_recipe_table`` returns
+        # the exact requested round count when available; if only a shorter max
+        # recipe exists for this (N, P), returning that table lets the fixed-table
+        # engine report the concrete round limit to the user.
         try:
             rounds = tournament.rounds if tournament is not None else None
-            return generate_molter_table(team_count, players_per_team, rounds=rounds)
-        except MolterGenerationError:
+            return get_molter_recipe_table(team_count, players_per_team, rounds)
+        except MolterRecipeError:
             return None
 
     @override
     def supported_team_counts(self) -> tuple[int, ...]:
-        return _SUPPORTED_TEAM_COUNTS
+        return supported_molter_recipe_team_counts()
 
 
 class MolterEngine(FixedTablePairingEngine):

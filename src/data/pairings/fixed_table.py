@@ -269,6 +269,20 @@ class FixedTablePairingEngine(PairingEngine):
         if chosen_table is None:
             candidates = self._candidate_player_counts(len(teams), tournament)
             if not candidates:
+                candidate_max_rounds = self._max_candidate_round_count(
+                    len(teams), tournament
+                )
+                if (
+                    candidate_max_rounds is not None
+                    and tournament.rounds > candidate_max_rounds
+                ):
+                    return _(
+                        'This pairing table covers up to {max_rounds} rounds '
+                        'for {t} teams. Reduce the round count.'
+                    ).format(
+                        max_rounds=candidate_max_rounds,
+                        t=len(teams),
+                    )
                 return _('No tables available for {t} teams.').format(t=len(teams))
             if not _can_tile(n, candidates):
                 return _(
@@ -559,8 +573,27 @@ class FixedTablePairingEngine(PairingEngine):
     ) -> tuple[int, ...]:
         """The set of players_per_team values for which we have base tables
         at ``team_count`` teams. Default: probe common sizes."""
-        return tuple(
-            pc
-            for pc in (4, 6, 8, 10, 12)
-            if self.system.get_table(team_count, pc, tournament) is not None
-        )
+        out: list[int] = []
+        for pc in (4, 6, 8, 10, 12):
+            table = self.system.get_table(team_count, pc, tournament)
+            if table is None:
+                continue
+            if tournament is not None and table.regular_round_count < tournament.rounds:
+                continue
+            out.append(pc)
+        return tuple(out)
+
+    def _max_candidate_round_count(
+        self, team_count: int, tournament: 'Tournament | None' = None
+    ) -> int | None:
+        max_rounds: int | None = None
+        for pc in (4, 6, 8, 10, 12):
+            table = self.system.get_table(team_count, pc, tournament)
+            if table is None:
+                continue
+            max_rounds = (
+                table.regular_round_count
+                if max_rounds is None
+                else max(max_rounds, table.regular_round_count)
+            )
+        return max_rounds
