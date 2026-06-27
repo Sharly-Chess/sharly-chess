@@ -3956,6 +3956,9 @@ msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ron
 msgid "Marshall Islands"
 msgstr "Îles Marshall"
 
+msgid "Match *** ROUND-ROBIN SCHEDULE ROW HEADER"
+msgstr "Match"
+
 msgid "Match points"
 msgstr "Points de match"
 
@@ -6026,6 +6029,9 @@ msgstr "Ronde {} commencée depuis %%s"
 msgid "Round-Robin"
 msgstr "Toutes rondes"
 
+msgid "Round-robin schedule"
+msgstr "Calendrier toutes rondes"
+
 msgid "Round:"
 msgstr "Ronde :"
 
@@ -7272,6 +7278,9 @@ msgstr "Ce document n'est disponible que pour les tournois au système Molter."
 msgid "This document is only available for Round-Robin tournaments."
 msgstr "Ce document est seulement disponible pour les tournois Toutes-Rondes."
 
+msgid "This document is only available for round-robin tournaments."
+msgstr "Ce document n'est disponible que pour les tournois toutes rondes."
+
 msgid "This document is only available for standard time control tournaments."
 msgstr "Ce document est disponible uniquement pour les tournois en cadence classique."
 
@@ -7814,6 +7823,9 @@ msgstr "Désapparier toutes les rondes du tournoi."
 
 msgid "Unpair one board"
 msgstr "Désapparier un échiquier"
+
+msgid "Unpair the tournament before changing its pairing system."
+msgstr "Désappariez le tournoi avant de changer son système d'appariement."
 
 msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
@@ -8464,10 +8476,6 @@ msgstr "de"
 msgid "from move 1"
 msgstr "depuis le 1er coup"
 
-#, python-format
-msgid "unchanged"
-msgstr "inchangée"
-
 msgid "game points"
 msgstr "les points de partie"
 
@@ -8676,6 +8684,9 @@ msgstr "puis"
 msgid "total: %(total)s"
 msgstr "total : %(total)s"
 
+msgid "unchanged"
+msgstr "inchangée"
+
 msgid "value: {value}"
 msgstr "valeur : {value}"
 
@@ -8810,3 +8821,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import cached_property, partial
-from typing import Any, Callable, override
+from typing import Any, Callable, cast, override
 
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
@@ -19,8 +19,13 @@ from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.event import Event
 from data.norms import ForecastRequirement
-from data.pairings.engines import RoundRobinPairingEngine
+from data.pairings.engines import (
+    BergerPairingEngine,
+    RoundRobinPairingEngine,
+    _TeamRoundRobinEngine,
+)
 from data.pairings.molter import MolterPairingSystem
+from data.pairings.settings import BergerNumbersSetting
 from data.pairings.systems import (
     RoundRobinPairingSystem,
     SwissPairingSystem,
@@ -1381,6 +1386,146 @@ class MolterTablePrintDocument(PrintDocument):
             'tournament': tournament,
             'round_names': round_names,
             'board_rows': board_rows,
+            'legend': legend,
+        }
+
+
+class RoundRobinSchedulePrintDocument(PrintDocument):
+    """Round-by-round pairing schedule for a round-robin tournament
+    (individual or team). Built from the Berger tables, so it's available
+    before the rounds are paired: one row per match, one column per round.
+    Cells show the two competitors by Berger number (individuals) or team
+    letter (teams); a legend at the end maps each to its name."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'round-robin-schedule'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Round-robin schedule')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption]
+
+    @property
+    def title(self) -> str:
+        return self.name
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/round_robin_schedule.html'
+
+    @staticmethod
+    def _is_round_robin(tournament: Tournament) -> bool:
+        return isinstance(
+            tournament.pairing_system,
+            (RoundRobinPairingSystem, TeamRoundRobinPairingSystem),
+        )
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(cls._is_round_robin(t) for t in allowed_tournaments)
+
+    def validate_options(self):
+        super().validate_options()
+        if not self._is_round_robin(self.tournament):
+            raise OptionError(
+                _('This document is only available for round-robin tournaments.'),
+                self._get_option(TournamentPrintOption),
+            )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        tournament = self.tournament
+        rounds = tournament.rounds
+        round_names = [f'{_("R")}{i + 1}' for i in range(rounds)]
+        engine = tournament.pairing_variation.engine
+
+        if isinstance(tournament.pairing_system, TeamRoundRobinPairingSystem):
+            assert isinstance(engine, _TeamRoundRobinEngine)
+            teams = sorted(
+                tournament.teams,
+                key=lambda team: (
+                    team.pairing_number
+                    if team.pairing_number is not None
+                    else float('inf'),
+                    team.name.lower(),
+                ),
+            )
+            label_by_id = {
+                team.id: chr(ord('A') + index) for index, team in enumerate(teams)
+            }
+            legend = [
+                {'key': label_by_id[team.id], 'name': team.name} for team in teams
+            ]
+            schedule = engine.full_schedule(tournament)
+            rounds_pairs = [schedule.get(round_, []) for round_ in range(1, rounds + 1)]
+
+            def label(competitor: int | None) -> str | None:
+                return label_by_id.get(competitor) if competitor is not None else None
+        else:
+            assert isinstance(engine, BergerPairingEngine)
+            player_count = tournament.player_count
+            number_by_player = BergerNumbersSetting.get_value(tournament)
+            player_by_number = {
+                number: tournament.tournament_players_by_id[player_id]
+                for player_id, number in number_by_player.items()
+                if player_id in tournament.tournament_players_by_id
+            }
+            legend = [
+                {'key': str(number), 'name': player_by_number[number].full_name}
+                for number in sorted(player_by_number)
+            ]
+            rounds_pairs = cast(
+                'list[list[tuple[int, int | None]]]',
+                [
+                    engine.get_round_pairings(player_count, round_)
+                    for round_ in range(1, rounds + 1)
+                ],
+            )
+
+            def label(competitor: int | None) -> str | None:
+                return (
+                    str(competitor)
+                    if competitor is not None and competitor in player_by_number
+                    else None
+                )
+
+        # Per round: the real matches, and — separately — the exempt
+        # competitor (a bye pair has only one valid side).
+        match_columns: list[list[str]] = []
+        exempt_row: list[str] = []
+        for pairs in rounds_pairs:
+            matches: list[str] = []
+            exempt = ''
+            for left_id, right_id in pairs:
+                left, right = label(left_id), label(right_id)
+                if left is not None and right is not None:
+                    matches.append(f'{left} – {right}')
+                elif left is not None:
+                    exempt = left
+                elif right is not None:
+                    exempt = right
+            match_columns.append(matches)
+            exempt_row.append(exempt)
+
+        max_slots = max((len(matches) for matches in match_columns), default=0)
+        rows = [
+            [
+                match_columns[col][slot] if slot < len(match_columns[col]) else ''
+                for col in range(len(match_columns))
+            ]
+            for slot in range(max_slots)
+        ]
+        return {
+            'tournament': tournament,
+            'round_names': round_names,
+            'rows': rows,
+            'exempt_row': exempt_row if any(exempt_row) else None,
             'legend': legend,
         }
 

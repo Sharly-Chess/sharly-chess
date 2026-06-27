@@ -3956,6 +3956,9 @@ msgstr ""
 msgid "Marshall Islands"
 msgstr ""
 
+msgid "Match *** ROUND-ROBIN SCHEDULE ROW HEADER"
+msgstr "Match"
+
 msgid "Match points"
 msgstr ""
 
@@ -6024,6 +6027,9 @@ msgstr ""
 msgid "Round-Robin"
 msgstr ""
 
+msgid "Round-robin schedule"
+msgstr ""
+
 msgid "Round:"
 msgstr ""
 
@@ -7270,6 +7276,9 @@ msgstr ""
 msgid "This document is only available for Round-Robin tournaments."
 msgstr ""
 
+msgid "This document is only available for round-robin tournaments."
+msgstr ""
+
 msgid "This document is only available for standard time control tournaments."
 msgstr ""
 
@@ -7811,6 +7820,9 @@ msgid "Unpair all the rounds of the tournament."
 msgstr ""
 
 msgid "Unpair one board"
+msgstr ""
+
+msgid "Unpair the tournament before changing its pairing system."
 msgstr ""
 
 msgid "Unpair tournament"
@@ -8462,10 +8474,6 @@ msgstr ""
 msgid "from move 1"
 msgstr ""
 
-#, python-format
-msgid "unchanged"
-msgstr ""
-
 msgid "game points"
 msgstr ""
 
@@ -8674,6 +8682,9 @@ msgstr ""
 msgid "total: %(total)s"
 msgstr ""
 
+msgid "unchanged"
+msgstr ""
+
 msgid "value: {value}"
 msgstr ""
 
@@ -8808,3 +8819,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
