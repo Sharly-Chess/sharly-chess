@@ -1,9 +1,8 @@
 {% import '/common/macros.j2' as macros with context %}
-{# Side-column table for flat team systems (fixed-table pairings):
-   teams are always paired from the table, so there is no status to
-   manage — the column lists every team with a lineup-edit button,
-   and stays visible once the round is paired so lineups can still
-   be changed. Requires: ``teams``, ``title``, ``table_id``. #}
+{# Side-column "Teams" table for team systems (flat fixed-table, Swiss and
+   round-robin): lists every team with a lineup-edit button, persistent
+   access to lineups whatever the pairing state.
+   Requires: ``teams``, ``title``, ``table_id``. #}
 {% if teams %}
     <table
         id="{{ table_id }}"

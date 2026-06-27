@@ -40,7 +40,10 @@
                         <td class="player">{% if row.first_of_team %}{{ row.team.name }}{% endif %}</td>
                         {% for opponent_row in player_rows %}
                             {% set _col_sep = 'team-col-separator' if opponent_row.first_of_team and not loop.first else '' %}
-                            {% if opponent_row.grid_id == row.grid_id %}
+                            {% if opponent_row.team.id == row.team.id %}
+                                {# Teammates never face each other — grey the
+                                   whole same-team block, not just the
+                                   player-vs-self diagonal cell. #}
                                 <td class="result self-game {{ _col_sep }}"></td>
                             {% else %}
                                 <td class="result {{ _col_sep }}">

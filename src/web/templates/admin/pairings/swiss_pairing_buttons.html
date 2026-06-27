@@ -183,7 +183,7 @@
         tournament_id=admin_tournament.id,
         round=admin_round,
     ) %}
-    {% if action in existing_actions %}
+    {% if action in existing_actions and admin_tournament.round_has_pairings(admin_round) %}
         {# Auto-forfeit results from marking a player absent shouldn't
            block round-unpair; only actual played results (or
            user-entered forfeit wins on present players) should. #}

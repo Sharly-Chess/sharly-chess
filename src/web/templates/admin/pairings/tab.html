@@ -182,8 +182,16 @@
                             {% with title=_('Absents'), teams=admin_team_absent, table_id='absent-teams-table' %}
                                 {% include '/admin/pairings/team_unpaired_table.html' %}
                             {% endwith %}
-                            {% with title=_('To pair'), teams=admin_team_unpaired, table_id='unpaired-teams-table' %}
-                                {% include '/admin/pairings/team_unpaired_table.html' %}
+                            {# Round-robin pairs every team from the Berger
+                               table — there's no manual "to pair" step, so
+                               only show it for systems that support it. #}
+                            {% if admin_tournament.pairing_system.show_unpaired_team_modal %}
+                                {% with title=_('To pair'), teams=admin_team_unpaired, table_id='unpaired-teams-table' %}
+                                    {% include '/admin/pairings/team_unpaired_table.html' %}
+                                {% endwith %}
+                            {% endif %}
+                            {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
+                                {% include '/admin/pairings/team_lineup_table.html' %}
                             {% endwith %}
                         {% elif is_flat_team_mode %}
                             {# Only once the round is paired — before that the

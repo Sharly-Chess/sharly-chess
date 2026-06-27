@@ -627,6 +627,21 @@ class TournamentAdminController(BaseEventAdminController):
                         errors[field] = _(
                             "This field can't be updated once the tournament has started."
                         )
+            elif tournament.has_pairings:
+                # Not "started" (no current round) but already paired:
+                # changing the pairing system would orphan the existing
+                # boards. Block it — the arbiter must unpair first.
+                for field, expected_value in (
+                    (
+                        tournament.pairing_system.variation_field_id,
+                        tournament.pairing_variation.id,
+                    ),
+                    ('pairing_system', tournament.pairing_system.id),
+                ):
+                    if data.get(field, '') != expected_value:
+                        errors[field] = _(
+                            'Unpair the tournament before changing its pairing system.'
+                        )
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
             errors['name'] = _('This field is required.')

@@ -2685,7 +2685,12 @@ class Tournament:
                 envelope_team_ids.add(stb.team_a_id)
                 if stb.team_b_id is not None:
                     envelope_team_ids.add(stb.team_b_id)
-            return any(team.id not in envelope_team_ids for team in self.teams)
+            # "Partially" paired means some teams are paired and some aren't —
+            # a fully unpaired round (no envelopes at all) is not partial, so
+            # the complementary-pairing button stays hidden.
+            return bool(envelope_team_ids) and any(
+                team.id not in envelope_team_ids for team in self.teams
+            )
         return self.round_has_pairings(round_) and not self.is_round_paired(round_)
 
     def round_has_result(self, round_: int) -> bool:

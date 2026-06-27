@@ -69,7 +69,7 @@
                         >{% if _a_mp %}{{ '%+g'|format(_a_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _a_mp and _a_gp %} {% endif %}{% if _a_gp %}{{ '%+g'|format(_a_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</a>
                     {% endif %}
                 </strong>
-                {% if team_board.team_b and client.can_update_tournaments %}
+                {% if client.can_update_tournaments %}
                     <button
                         type="button"
                         class="btn btn-sm btn-outline-primary ms-2"
