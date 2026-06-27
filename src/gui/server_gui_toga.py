@@ -560,11 +560,12 @@ class SharlyChessServerToga(toga.App):
                 _('Edit'), on_press=self._handle_data_path_selection
             )
             data_path_buttons.append(self.data_path_edit_button)
+        title_style = Pack(font_weight='bold', font_size=10, text_align='center')
         self.settings_view.add(
-            toga.Label(_('General'), font_weight='bold'),
-            self.launch_browser_switch,
+            toga.Label(_('General'), style=title_style),
+            toga.Box(children=[self.launch_browser_switch]),
             toga.Divider(margin=(5, 0)),
-            toga.Label(_('Data folder'), font_weight='bold'),
+            toga.Label(_('Data folder'), style=title_style),
             self.data_path_input,
             toga.Box(
                 direction=ROW,
