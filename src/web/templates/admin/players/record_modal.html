@@ -51,7 +51,7 @@
                         >
                             {{ _('Return to tournament') }}
                         </button>
-                    {% elif not tournament.started or tournament_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye %}
+                    {% else %}
                         <button
                             class="btn btn-sm btn-outline-danger w-100"
                             {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
