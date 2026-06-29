@@ -579,6 +579,16 @@ class ScreenSet:
             )
 
     @property
+    def teams_by_name_lists(self) -> list[list[Any]]:
+        """Per screen column, the column's teams (no tuple-splitting for
+        correct column display).
+        Counterpart to :attr:`tournament_players_by_name_lists` for teams."""
+        self._extract_teams_by_name()
+        if TYPE_CHECKING:
+            assert isinstance(self._team_items_lists, list)
+        return self._team_items_lists
+
+    @property
     def teams_by_name_tuple_lists(self) -> 'Iterable[tuple[list[Any], list[Any]]]':
         """Per screen column, the column's teams split into two halves
         (mirroring :attr:`tournament_players_by_name_tuple_lists`)."""

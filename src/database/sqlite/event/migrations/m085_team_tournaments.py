@@ -293,7 +293,30 @@ class Migration(BaseMigration):
         )
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `pab_value`')
 
+        # Fix historical check-in screen column-display bug: check-in screens
+        # always rendered 2 visual columns per logical column due to tuple-splitting
+        # in templates. Double the configured column count for existing check-in
+        # screens (and families) so they keep their visual appearance. A NULL
+        # column count means the default of 1 logical column, which also displayed
+        # as 2, so it is doubled too.
+        self.database.execute(
+            'UPDATE `screen` SET `columns` = COALESCE(`columns`, 1) * 2 '
+            "WHERE `type` = 'check-in'"
+        )
+        self.database.execute(
+            'UPDATE `family` SET `columns` = COALESCE(`columns`, 1) * 2 '
+            "WHERE `type` = 'check-in'"
+        )
+
     def backward(self):
+        # Reverse the check-in column doubling
+        self.database.execute(
+            "UPDATE `screen` SET `columns` = `columns` / 2 WHERE `type` = 'check-in'"
+        )
+        self.database.execute(
+            "UPDATE `family` SET `columns` = `columns` / 2 WHERE `type` = 'check-in'"
+        )
+
         self.database.execute('ALTER TABLE `pairing` DROP COLUMN `effective_points`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `team_colour_type`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `secondary_score`')

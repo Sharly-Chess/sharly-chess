@@ -13,27 +13,21 @@
         }}
     </h2>
     <div class="row gy-2 gx-3 screen-set-row mx-0">
-        {% for players_by_name_tuple in screen_set.tournament_players_by_name_tuple_lists %}
+        {% for players_by_name in screen_set.tournament_players_by_name_lists %}
             <div class="col screen-set-col">
-                <div class="row gy-2 gx-3 screen-set-tuple-row px-0">
-                    {% for players_by_name in players_by_name_tuple %}
-                        <div class="col screen-set-tuple-col px-1">
-                            <div
-                                class="d-grid grid-striped"
-                                style="
-                                    grid-template-columns:
-                                        1fr            /* player */
-                                "
-                            >
-                                <div class="grid-header">
-                                    {{ _('Player / Elo') }}
-                                </div>
-                                {% for player in players_by_name %}
-                                    <div class="player-row">
-                                        {% include 'player_row_player_cell.html' %}
-                                    </div>
-                                {% endfor %}
-                            </div>
+                <div
+                    class="d-grid grid-striped"
+                    style="
+                        grid-template-columns:
+                            1fr            /* player */
+                    "
+                >
+                    <div class="grid-header">
+                        {{ _('Player / Elo') }}
+                    </div>
+                    {% for player in players_by_name %}
+                        <div class="player-row">
+                            {% include 'player_row_player_cell.html' %}
                         </div>
                     {% endfor %}
                 </div>
