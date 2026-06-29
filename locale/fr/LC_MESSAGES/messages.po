@@ -1404,8 +1404,17 @@ msgstr "Effacer les logs"
 msgid "Click and drag to select balanced groups."
 msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
 
+msgid "Click here to support to the Sharly Chess project and get your supporter certificate!"
+msgstr "Cliquer ici pour soutenir le projet Sharly Chess et obtenir votre certificat de soutien !"
+
+msgid "Click to check-in the player."
+msgstr "Cliquer ici pour pointer le·la joueur·euse."
+
 msgid "Click to cancel"
 msgstr "Cliquer pour annuler"
+
+msgid "Click to check-out the player."
+msgstr "Cliquer ici pour supprimer le pointage du·de la joueur·euse."
 
 msgid "Click to copy"
 msgstr "Cliquer pour copier"

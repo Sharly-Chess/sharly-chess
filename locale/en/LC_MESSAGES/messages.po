@@ -1404,7 +1404,16 @@ msgstr ""
 msgid "Click and drag to select balanced groups."
 msgstr ""
 
+msgid "Click here to support to the Sharly Chess project and get your supporter certificate!"
+msgstr ""
+
 msgid "Click to cancel"
+msgstr ""
+
+msgid "Click to check-in the player."
+msgstr ""
+
+msgid "Click to check-out the player."
 msgstr ""
 
 msgid "Click to copy"

@@ -214,4 +214,21 @@
             {% include '/common/messages.html' %}
         </div>
     {% endif %}
+    <span
+            id="donation"
+            class="position-fixed bottom-0 start-0 ps-3 pb-3"
+            {% if donation_certificate %}
+                {{ macros.tooltip_attributes('info', donation_certificate.tooltip, 'right') }}
+            {% else %}
+                onclick="window.open('https://events.sharly-chess.com/donate', '_blank');"
+                style="cursor: pointer;"
+                {{ macros.tooltip_attributes('info', _('Click here to support to the Sharly Chess project and get your supporter certificate!'), 'right') }}
+            {% endif %}
+    >
+        {% if donation_certificate %}
+            <img src="/static/images/donation-certificate-207x300.png" style="height: 50px;" />
+        {% else %}
+            <img src="/static/images/donation-click-300x195.png" style="width: 50px;">
+        {% endif %}
+    </span>
 </html>
