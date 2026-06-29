@@ -14,6 +14,7 @@ from common.exception import FormError
 from common.sharly_chess_config import SharlyChessConfig
 from common.i18n import _, ngettext
 from data.access_levels.actions import AuthAction
+from data.event_load_spec import needs_event
 from data.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimer, StoredTimerHour
@@ -95,6 +96,18 @@ class TimerAdminController(BaseEventAdminController):
     @get(
         path='/event/{event_uniq_id:str}/timers',
         name='admin-event-timers-tab',
+    )
+    @needs_event(
+        load_players=False,
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_display_controllers=False,
+        load_accounts=False,
+        tournament_load_players=False,
+        tournament_load_boards=False,
+        tournament_load_tie_breaks=False,
+        tournament_load_prize_groups=False,
     )
     async def htmx_admin_event_timers_tab(self, request: HTMXRequest) -> Template:
         return self._admin_event_timers_render(TimerAdminWebContext(request))

@@ -6,11 +6,14 @@ from datetime import date, datetime
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Literal
+from typing import Literal, TYPE_CHECKING
 from urllib.parse import quote
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
+
+if TYPE_CHECKING:
+    from data.event_load_spec import EventLoadSpec
 
 from common import (
     SHARLY_CHESS_VERSION,
@@ -144,10 +147,10 @@ class EventLoader:
             base_name, [event.name for event in self.get_events_metadata()]
         )
 
-    def load_event(self, uniq_id: str) -> Event:
+    def load_event(self, uniq_id: str, spec: 'EventLoadSpec | None' = None) -> Event:
         self.load_event_ids(uniq_id)
         with EventDatabase(uniq_id) as event_database:
-            event = Event(event_database.load_stored_event())
+            event = Event(event_database.load_stored_event(spec=spec))
         return event
 
     @classmethod

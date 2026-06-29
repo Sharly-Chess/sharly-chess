@@ -2,7 +2,10 @@ import base64
 import hashlib
 import secrets
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from data.event_load_spec import EventLoadSpec
 
 from anyio import run
 from litestar.exceptions import (
@@ -57,13 +60,40 @@ class RequestUtils:
     REQUEST_EVENT_ATTR: str = 'sharly_chess_event'
     EVENT_UNIQ_ID_PARAM: str = 'event_uniq_id'
 
+    @staticmethod
+    def _handler_event_load_spec(
+        request: HTMXRequest,
+    ) -> 'EventLoadSpec | None':
+        """Read the `@needs_event(...)` spec attached to the route handler,
+        if any, and resolve it against the current request's path/query
+        params. Returns None when the handler isn't decorated."""
+        from data.event_load_spec import get_handler_spec
+
+        handler = request.scope.get('route_handler')
+        if handler is None:
+            return None
+        fn = getattr(handler, 'fn', None) or handler
+        params: dict[str, Any] = {}
+        try:
+            params.update(dict(request.path_params))
+        except Exception:
+            pass
+        try:
+            params.update(dict(request.query_params))
+        except Exception:
+            pass
+        return get_handler_spec(fn, request, params)
+
     @classmethod
     def get_event(cls, request: HTMXRequest, reload: bool = False) -> Event:
         if cls.REQUEST_EVENT_ATTR in request.state and not reload:
             return request.state[cls.REQUEST_EVENT_ATTR]
         event_uniq_id = cls._get_request_param(request, cls.EVENT_UNIQ_ID_PARAM)
+        # If the route handler declared a `@needs_event(...)` spec, use it
+        # to load only the requested subset. Default = full load.
+        spec = cls._handler_event_load_spec(request)
         try:
-            event = EventLoader.get(request).load_event(event_uniq_id)
+            event = EventLoader.get(request).load_event(event_uniq_id, spec=spec)
         except SharlyChessException as sce:
             raise NotFoundException(f'Event [{event_uniq_id}] not found.') from sce
         for plugin_id in event.stored_event.enabled_plugins:

@@ -18,6 +18,7 @@ from common.exception import SharlyChessException, OptionError, ImporterError, F
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
+from data.event_load_spec import needs_event
 from data.board import Board, PlayerRatingType
 from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
@@ -215,6 +216,14 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/event/{event_uniq_id:str}/tournaments',
         name='admin-event-tournaments-tab',
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_admin_event_tournaments_tab(
         self,

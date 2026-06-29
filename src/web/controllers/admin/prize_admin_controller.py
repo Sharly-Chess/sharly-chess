@@ -23,6 +23,7 @@ from common.exception import OptionError
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
+from data.event_load_spec import needs_event
 from data.player_categories import NoCategory, PlayerCategory
 from data.print_documents.documents import (
     PrizeAssignmentPrintDocument,
@@ -225,6 +226,14 @@ class PrizeAdminController(BaseEventAdminController):
             '/event/{event_uniq_id:str}/prizes/{tournament_id:int}/{prize_group_id:int}',
         ],
         name='admin-event-prizes-tab',
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_admin_prizes_tab(
         self,

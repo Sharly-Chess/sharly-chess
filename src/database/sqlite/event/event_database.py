@@ -46,6 +46,7 @@ from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
+    from data.event_load_spec import EventLoadSpec
     from database.sqlite.migration import DatabaseMigrationManager
 
 logger: Logger = get_logger()
@@ -329,21 +330,32 @@ class EventDatabase(MigrationDatabase):
 
         return cast(T, stored_event)
 
-    def load_stored_event(self) -> StoredEvent:
+    def load_stored_event(self, spec: 'EventLoadSpec | None' = None) -> StoredEvent:
+        from data.event_load_spec import EventLoadSpec as _Spec
+
+        spec = spec or _Spec()
         self.execute('SELECT * FROM `info`')
         stored_event: StoredEvent = self._row_to_base_stored_event(
             self.fetchone(), StoredEvent
         )
-        stored_event.stored_players = self.load_stored_players()
-        stored_event.stored_tournaments = self.load_stored_tournaments()
-        stored_event.stored_timers = list(self.load_stored_timers())
-        stored_event.stored_families = list(self.load_stored_families())
-        stored_event.stored_screens = list(self.load_stored_screens())
-        stored_event.stored_rotators = self.load_stored_rotators()
-        stored_event.stored_display_controllers = list(
-            self.load_stored_display_controllers()
-        )
-        stored_event.stored_accounts = self.load_stored_accounts()
+        if spec.load_players:
+            stored_event.stored_players = self.load_stored_players()
+        if spec.load_tournaments:
+            stored_event.stored_tournaments = self.load_stored_tournaments(spec=spec)
+        if spec.load_timers:
+            stored_event.stored_timers = list(self.load_stored_timers())
+        if spec.load_families:
+            stored_event.stored_families = list(self.load_stored_families())
+        if spec.load_screens:
+            stored_event.stored_screens = list(self.load_stored_screens())
+        if spec.load_rotators:
+            stored_event.stored_rotators = self.load_stored_rotators()
+        if spec.load_display_controllers:
+            stored_event.stored_display_controllers = list(
+                self.load_stored_display_controllers()
+            )
+        if spec.load_accounts:
+            stored_event.stored_accounts = self.load_stored_accounts()
         return stored_event
 
     def load_stored_event_metadata(self) -> EventMetadata:
@@ -652,25 +664,40 @@ class EventDatabase(MigrationDatabase):
             return self._row_to_stored_tournament(row)
         return None
 
-    def load_stored_tournaments(self) -> list[StoredTournament]:
-        self.execute('SELECT * FROM `tournament` ORDER BY `name`')
+    def load_stored_tournaments(
+        self, spec: 'EventLoadSpec | None' = None
+    ) -> list[StoredTournament]:
+        from data.event_load_spec import EventLoadSpec as _Spec
+
+        spec = spec or _Spec()
+        if spec.selected_tournament_id is not None:
+            self.execute(
+                'SELECT * FROM `tournament` WHERE `id` = ? ORDER BY `name`',
+                (spec.selected_tournament_id,),
+            )
+        else:
+            self.execute('SELECT * FROM `tournament` ORDER BY `name`')
         stored_tournaments: list[StoredTournament] = []
         for row in self.fetchall():
             stored_tournament = self._row_to_stored_tournament(row)
             id_ = stored_tournament.id
             assert id_ is not None
-            stored_tournament.stored_tie_breaks = (
-                self.load_tournament_stored_tie_breaks(id_)
-            )
-            stored_tournament.stored_prize_groups = (
-                self.load_tournament_stored_prize_groups(id_)
-            )
-            stored_tournament.stored_tournament_players = (
-                self.load_stored_tournament_players(id_)
-            )
-            stored_tournament.stored_boards_by_round = (
-                self.load_tournament_stored_boards_by_round(id_)
-            )
+            if spec.tournament_load_tie_breaks:
+                stored_tournament.stored_tie_breaks = (
+                    self.load_tournament_stored_tie_breaks(id_)
+                )
+            if spec.tournament_load_prize_groups:
+                stored_tournament.stored_prize_groups = (
+                    self.load_tournament_stored_prize_groups(id_)
+                )
+            if spec.tournament_load_players:
+                stored_tournament.stored_tournament_players = (
+                    self.load_stored_tournament_players(id_)
+                )
+            if spec.tournament_load_boards:
+                stored_tournament.stored_boards_by_round = (
+                    self.load_tournament_stored_boards_by_round(id_)
+                )
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
 

@@ -12,6 +12,7 @@ from litestar_htmx import HTMXTemplate
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
+from data.event_load_spec import needs_event
 from data.family import Family
 from utils import Utils
 from utils.enum import ScreenType
@@ -538,6 +539,13 @@ class FamilyAdminController(BaseEventAdminController):
     @get(
         path='/event/{event_uniq_id:str}/families',
         name='admin-event-families-tab',
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_admin_event_families_tab(
         self,

@@ -28,6 +28,7 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.columns.handlers import PlayersTabColumnHandler, PlayerDatasheetColumnHandler
+from data.event_load_spec import needs_event
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.players_tab import PlayersTabColumn
 from data.event import Event
@@ -504,6 +505,14 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/event/{event_uniq_id:str}/players',
         name='admin-event-players-tab',
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_admin_event_players_tab(self, request: HTMXRequest) -> Template:
         return self._render_players_tab(PlayerAdminWebContext(request))
@@ -1538,6 +1547,14 @@ class PlayerAdminController(BaseEventAdminController):
         path='/check-in/tournaments-modal/{event_uniq_id:str}',
         name='check-in-tournaments-modal',
     )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
+    )
     async def htmx_check_in_tournaments_modal(self, request: HTMXRequest) -> Template:
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -1562,6 +1579,14 @@ class PlayerAdminController(BaseEventAdminController):
         path='/player-table/check-in-player/{event_uniq_id:str}/{player_id:int}',
         name='player-table-check-in-player',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_player_table_check_in_player(
         self,
@@ -1590,6 +1615,14 @@ class PlayerAdminController(BaseEventAdminController):
         name='check-in-player-modal',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
+    )
     async def htmx_check_in_player_modal(
         self, request: HTMXRequest, player_id: int
     ) -> Template:
@@ -1603,6 +1636,15 @@ class PlayerAdminController(BaseEventAdminController):
         name='check-in-tournament-reset-modal',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
+    @needs_event(
+        selected_tournament_param='tournament_id',
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
+    )
     async def htmx_check_in_tournament_reset_modal(
         self, request: HTMXRequest, tournament_id: int
     ) -> Template:
@@ -1615,6 +1657,15 @@ class PlayerAdminController(BaseEventAdminController):
         path='/check-in/reset-tournament/{event_uniq_id:str}/{tournament_id:int}',
         name='check-in-reset-tournament',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    @needs_event(
+        selected_tournament_param='tournament_id',
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_check_in_reset_tournament(
         self,
@@ -1640,6 +1691,15 @@ class PlayerAdminController(BaseEventAdminController):
         path='/check-in/tournament-toggle-open/{event_uniq_id:str}/{tournament_id:int}',
         name='check-in-tournament-toggle-open',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    @needs_event(
+        selected_tournament_param='tournament_id',
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_check_in_tournament_toggle_open(
         self,
