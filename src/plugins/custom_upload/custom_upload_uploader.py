@@ -257,10 +257,6 @@ class CustomUploadUploader:
             tournament
         )
 
-        temporary_files_with_destination = cls._generate_documents_in_memory(
-            event, tournament_plugin_data
-        )
-
         with paramiko.SSHClient() as client:
             failure_status = None
 
@@ -270,6 +266,10 @@ class CustomUploadUploader:
             username = tournament_plugin_data.ftp_username
             password = tournament_plugin_data.ftp_password
             try:
+                temporary_files_with_destination = cls._generate_documents_in_memory(
+                    event, tournament_plugin_data
+                )
+
                 client.connect(host, username=username, password=password)
                 sftp_client = client.open_sftp()
 
@@ -300,10 +300,8 @@ class CustomUploadUploader:
                     logger.info('Uploaded document file [%s]', file_name)
                     temporary_document_file.close()
                 sftp_client.close()
-            except Exception as e:
-                logger.error(
-                    'Error uploading tournament [%s]: [%s]', tournament.name, e
-                )
+            except Exception:
+                logger.exception('Error uploading tournament [%s]', tournament.name)
                 cls.upload_status_messages[result_id] = CustomUploadResult(
                     CustomUploadStatus.ERROR,
                     _('Error uploading tournament'),
