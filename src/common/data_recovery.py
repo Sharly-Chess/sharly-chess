@@ -1,4 +1,3 @@
-# Methods used to recover data of versions < 5
 import re
 import shutil
 from collections.abc import Collection
@@ -33,9 +32,6 @@ logger = get_logger()
 
 class DataRecovery:
     RECOVERABLE_VERSIONS: list[Version] = []
-    RECOVERABLE_PATCH: Version | None = None
-    RECOVERABLE_BETA: Version | None = None
-    RECOVERABLE_MINOR: Version | None = None
 
     @classmethod
     def setup(cls):

@@ -651,9 +651,6 @@ class SharlyChessServerToga(toga.App):
 
         assert isinstance(self.main_window, toga.Window)
         self.main_window.show()
-        asyncio.run_coroutine_threadsafe(
-            self._search_for_updates(is_startup=True), self.server_loop
-        )
 
     def update_from_sharly_chess_config(self):
         config = SharlyChessConfig()
@@ -823,7 +820,7 @@ class SharlyChessServerToga(toga.App):
                     self.home_view.insert(0, self.update_available_box)
                 if not skip_settings:
                     self.latest_version_label.style.font_weight = 'bold'
-                    self.latest_version_btn.text = _('Update')
+                    self.latest_version_btn.text = _('Install')
                     self.latest_version_btn.on_press = self._show_update_dialog
             else:
                 if latest == SHARLY_CHESS_VERSION:
@@ -853,7 +850,6 @@ class SharlyChessServerToga(toga.App):
             try:
                 check_beta = config.check_beta_versions
                 VersionUpdater.search_for_latest_version(check_beta)
-                # VersionUpdater.LATEST_VERSION = Version('5.0.0')
             finally:
                 self.version_search_ongoing = False
                 self._update_latest_version_components()
@@ -948,7 +944,10 @@ class SharlyChessServerToga(toga.App):
         assert self.home_progress_bar is not None
         self.home_progress_bar.value = 1
         self.home_progress_bar.start()
-
+        # Look for updates. Run asynchronously to speed up server startup
+        asyncio.run_coroutine_threadsafe(
+            self._search_for_updates(is_startup=True), self.server_loop
+        )
         # Start message processing and kick the server immediately
         asyncio.create_task(self._process_message_queue())
         if not self.server_running:
