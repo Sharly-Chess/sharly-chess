@@ -221,7 +221,7 @@ def input_interactive(string: str) -> str:
 
 
 def input_interactive_choices(
-    question: str, choices: dict[str, str], default: str
+    title: str, question: str, choices: dict[str, str], default: str
 ) -> str | None:
     """Prints the message to stdout with color, and returns the user input.
     If the message could not be Unicode decoded, raises KeyboardInterrupt."""
@@ -231,7 +231,7 @@ def input_interactive_choices(
 
     if GUILogHandler.instance:
         return GUILogHandler.instance.gui.handle_interactive_choices(
-            question, choices, default
+            title, question, choices, default
         )
 
     question = question + _(' [{default_choice}: {default_value}]: ').format(
@@ -250,7 +250,9 @@ def input_interactive_choices(
     return result
 
 
-def input_interactive_yn(question: str, yes_is_default: bool = False) -> bool:
+def input_interactive_yn(
+    title: str, question: str, yes_is_default: bool = False
+) -> bool:
     """Prints the message to stdout with color postfixed with [Y/n] etc, and returns the user input.
     If the message could not be Unicode decoded, raises KeyboardInterrupt."""
     from common.i18n import _
@@ -259,7 +261,7 @@ def input_interactive_yn(question: str, yes_is_default: bool = False) -> bool:
 
     if GUILogHandler.instance:
         return GUILogHandler.instance.gui.handle_interactive_yn(
-            question, yes_is_default
+            title, question, yes_is_default
         )
 
     yes_answer = _('Y *** THE LETTER TO ANSWER YES')

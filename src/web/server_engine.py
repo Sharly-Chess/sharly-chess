@@ -24,7 +24,8 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.types import Scope, HTTPScope
 
 from common import REQUEST_TIMEOUT
-from common.engine import Engine
+from common.installation_checker import InstallationChecker
+from common.data_recovery import DataRecovery
 from common.logger import get_logger, set_logging_config
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -70,7 +71,7 @@ def launch_browser(url: str):
     open(url, new=2)
 
 
-class ServerEngine(Engine):
+class ServerEngine:
     app: ClassVar[Litestar | None] = None
     server: ClassVar[uvicorn.Server | None] = None
 
@@ -82,13 +83,24 @@ class ServerEngine(Engine):
         handle_signals: bool = True,
         on_port_chosen: Callable[[], None] | None = None,
     ):
-        super().__init__()
         self.debug = debug
         self.handle_signals = handle_signals
         self.port = port
         self.on_port_chosen = on_port_chosen
-        if self.error:
+
+        # before all the rest, initialize a SharlyChessConfig instance to set the language.
+        config = SharlyChessConfig()
+        config.load_and_set_env()
+        logger.info(
+            'Sharly Chess %s - %s - %s',
+            config.version,
+            config.copyright,
+            config.web_url,
+        )
+        logger.info('Locale: %s', config.locale)
+        if not InstallationChecker.check():
             return
+        DataRecovery.setup()
 
         self.loop = self._ensure_loop(loop)
 

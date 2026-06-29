@@ -221,6 +221,17 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.stored_config.launch_browser and not TEST_ENV
 
     @property
+    def check_beta_versions(self) -> bool:
+        return self.stored_config.check_beta_versions
+
+    @property
+    def last_notified_version(self) -> Version | None:
+        stored_value = self.stored_config.last_notified_version
+        if not stored_value:
+            return None
+        return Version(stored_value)
+
+    @property
     def federation(self) -> Optional['Federation']:
         from data.player import Federation
 
