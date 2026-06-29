@@ -7338,6 +7338,9 @@ msgstr "Ce système d'appariement supporte jusqu'à {n} équipes."
 msgid "This pairing table covers up to {max_rounds} rounds for {t} teams of {p} players. Reduce the round count."
 msgstr "Cette table d'appariement couvre au plus {max_rounds} rondes pour {t} équipes de {p} joueur·euses. Réduisez le nombre de rondes."
 
+msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce the round count."
+msgstr "Cette table d'appariement couvre jusqu'à {max_rounds} rondes pour {t} équipes, réduisez le nombre de rondes."
+
 msgid "This player already exists in the event."
 msgstr "Ce·tte joueur·euse existe déjà dans l'évènement."
 

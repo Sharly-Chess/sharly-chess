@@ -7336,6 +7336,9 @@ msgstr ""
 msgid "This pairing table covers up to {max_rounds} rounds for {t} teams of {p} players. Reduce the round count."
 msgstr ""
 
+msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce the round count."
+msgstr ""
+
 msgid "This player already exists in the event."
 msgstr ""
 
