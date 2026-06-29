@@ -1,0 +1,159 @@
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(95vw, 700px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Generate age categories') }}</h2>
+        </div>
+        <div class="modal-body">
+            <p class="text-secondary">
+                {{ _(
+                    'Select the age categories to create and enter the default prizes '
+                    'for each. One category is created per selected age, with a single '
+                    'age criterion. You can fine-tune the prizes and criteria afterwards.'
+                ) }}
+            </p>
+            {% if errors['categories'] %}
+                {% with type='danger', message=errors['categories'] %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                hx-post="{{ url_for(
+                    'admin-prize-categories-generate-age',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                ) }}"
+            >
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <label for="place_count" class="text-nowrap">
+                        {{ _('%(string)s:', string=_('Number of prize places')) }}
+                    </label>
+                    <input
+                        type="number"
+                        id="place_count"
+                        name="place_count"
+                        class="form-control"
+                        style="width: 6rem;"
+                        min="0"
+                        max="{{ max_prize_places }}"
+                        value="{{ data['place_count'] or 3 }}"
+                    />
+                    <span class="text-secondary">
+                        {{ _('(amounts in %(currency)s)', currency=prize_currency) }}
+                    </span>
+                </div>
+                <table class="table table-sm align-middle prize-generate-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>{{ _('Category') }}</th>
+                            {% for place in range(1, max_prize_places + 1) %}
+                                <th
+                                    class="text-center prize-place-col"
+                                    data-place="{{ place }}"
+                                >
+                                    {{ ordinal_integer(place)|safe }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in generate_age_categories %}
+                            <tr>
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        class="form-check-input include-check"
+                                        name="include_{{ category.id }}"
+                                        id="include_{{ category.id }}"
+                                        {% if data['include_' ~ category.id] == 'on' %}
+                                            checked
+                                        {% endif %}
+                                    />
+                                </td>
+                                <td>
+                                    <label
+                                        for="include_{{ category.id }}"
+                                        class="text-nowrap"
+                                    >
+                                        {{ category.name }}
+                                    </label>
+                                </td>
+                                {% for place in range(1, max_prize_places + 1) %}
+                                    <td class="prize-place-col" data-place="{{ place }}">
+                                        <input
+                                            type="number"
+                                            class="form-control form-control-sm prize-value"
+                                            style="min-width: 5rem;"
+                                            name="prize_{{ category.id }}_{{ place }}"
+                                            data-row="{{ category.id }}"
+                                            step="0.01"
+                                            min="0"
+                                            value="{{ data['prize_' ~ category.id ~ '_' ~ place] or '' }}"
+                                        />
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-plus-square pe-1"></i>
+                {{ _('Generate') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const placeCount = document.getElementById('place_count');
+        function applyPlaceCount() {
+            const max = {{ max_prize_places }};
+            let count = parseInt(placeCount.value, 10);
+            if (isNaN(count) || count < 0) count = 0;
+            if (count > max) count = max;
+            document.querySelectorAll('.prize-place-col').forEach((cell) => {
+                const place = parseInt(cell.dataset.place, 10);
+                const visible = place <= count;
+                cell.style.display = visible ? '' : 'none';
+                const input = cell.querySelector('input');
+                if (input) input.disabled = !visible;
+            });
+        }
+        placeCount.addEventListener('input', applyPlaceCount);
+        // Auto-check a row's include box as soon as a prize value is entered.
+        document.querySelectorAll('.prize-value').forEach((input) => {
+            input.addEventListener('input', () => {
+                if (input.value) {
+                    const check = document.getElementById('include_' + input.dataset.row);
+                    if (check) check.checked = true;
+                }
+            });
+        });
+        applyPlaceCount();
+    })();
+    requestRefresh();
+</script>

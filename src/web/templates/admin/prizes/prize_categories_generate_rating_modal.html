@@ -1,0 +1,194 @@
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(95vw, 600px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Generate rating categories') }}</h2>
+        </div>
+        <div class="modal-body">
+            <p class="text-secondary">
+                {{ _(
+                    'Define a rating range and how to split it. One category is created '
+                    'per rating band, with a single rating criterion and the default '
+                    'prizes below. You can fine-tune them afterwards.'
+                ) }}
+            </p>
+            {% for field in ['rating', 'group_count', 'step', 'prizes'] %}
+                {% if errors[field] %}
+                    {% with type='danger', message=errors[field] %}
+                        {% include '/common/alert.html' %}
+                    {% endwith %}
+                {% endif %}
+            {% endfor %}
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                hx-post="{{ url_for(
+                    'admin-prize-categories-generate-rating',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                ) }}"
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-6">
+                        {{ admin_macros.number_input(
+                            name='rating_min',
+                            label=_('%(string)s:', string=_('Minimum rating')),
+                            min=0,
+                            data=data, errors=errors,
+                        ) }}
+                    </div>
+                    <div class="col-6">
+                        {{ admin_macros.number_input(
+                            name='rating_max',
+                            label=_('%(string)s:', string=_('Maximum rating')),
+                            min=0,
+                            data=data, errors=errors,
+                        ) }}
+                    </div>
+                </div>
+                <h4 class="mt-3 mb-2">{{ _('Split method') }}</h4>
+                <div class="form-check">
+                    <input
+                        class="form-check-input method-radio"
+                        type="radio"
+                        name="method"
+                        id="method_groups"
+                        value="groups"
+                        data-target="method-groups-input"
+                        {% if data['method'] != 'step' %}checked{% endif %}
+                    />
+                    <label class="form-check-label" for="method_groups">
+                        {{ _('By number of groups (balanced player counts)') }}
+                    </label>
+                </div>
+                <div id="method-groups-input" class="ms-4 mb-2" style="max-width: 10rem;">
+                    {{ admin_macros.number_input(
+                        name='group_count',
+                        label=_('%(string)s:', string=_('Number of groups')),
+                        min=1,
+                        data=data, errors=errors,
+                    ) }}
+                </div>
+                <div class="form-check">
+                    <input
+                        class="form-check-input method-radio"
+                        type="radio"
+                        name="method"
+                        id="method_step"
+                        value="step"
+                        data-target="method-step-input"
+                        {% if data['method'] == 'step' %}checked{% endif %}
+                    />
+                    <label class="form-check-label" for="method_step">
+                        {{ _('By rating step') }}
+                    </label>
+                </div>
+                <div id="method-step-input" class="ms-4 mb-2" style="max-width: 10rem;">
+                    {{ admin_macros.number_input(
+                        name='step',
+                        label=_('%(string)s:', string=_('Rating step')),
+                        min=1,
+                        data=data, errors=errors,
+                    ) }}
+                </div>
+                <h4 class="mt-3 mb-2">
+                    {{ _('Default prizes') }}
+                    <span class="text-secondary" style="font-size: 0.8rem;">
+                        {{ _('(amounts in %(currency)s)', currency=prize_currency) }}
+                    </span>
+                </h4>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <label for="place_count" class="text-nowrap">
+                        {{ _('%(string)s:', string=_('Number of prize places')) }}
+                    </label>
+                    <input
+                        type="number"
+                        id="place_count"
+                        name="place_count"
+                        class="form-control"
+                        style="width: 6rem;"
+                        min="0"
+                        max="{{ max_prize_places }}"
+                        value="{{ data['place_count'] or 3 }}"
+                    />
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for place in range(1, max_prize_places + 1) %}
+                        <div class="prize-place-col" data-place="{{ place }}">
+                            <label class="form-label mb-0" style="font-size: 0.8rem;">
+                                {{ ordinal_integer(place)|safe }}
+                            </label>
+                            <input
+                                type="number"
+                                class="form-control form-control-sm"
+                                style="width: 6rem;"
+                                name="prize_{{ place }}"
+                                step="0.01"
+                                min="0"
+                                value="{{ data['prize_' ~ place] or '' }}"
+                            />
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-plus-square pe-1"></i>
+                {{ _('Generate') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        function applyMethod() {
+            document.querySelectorAll('.method-radio').forEach((radio) => {
+                const target = document.getElementById(radio.dataset.target);
+                if (!target) return;
+                const input = target.querySelector('input');
+                target.style.display = radio.checked ? '' : 'none';
+                if (input) input.disabled = !radio.checked;
+            });
+        }
+        document.querySelectorAll('.method-radio').forEach((radio) => {
+            radio.addEventListener('change', applyMethod);
+        });
+        const placeCount = document.getElementById('place_count');
+        function applyPlaceCount() {
+            const max = {{ max_prize_places }};
+            let count = parseInt(placeCount.value, 10);
+            if (isNaN(count) || count < 0) count = 0;
+            if (count > max) count = max;
+            document.querySelectorAll('.prize-place-col').forEach((cell) => {
+                const place = parseInt(cell.dataset.place, 10);
+                const visible = place <= count;
+                cell.style.display = visible ? '' : 'none';
+                const input = cell.querySelector('input');
+                if (input) input.disabled = !visible;
+            });
+        }
+        placeCount.addEventListener('input', applyPlaceCount);
+        applyMethod();
+        applyPlaceCount();
+    })();
+    requestRefresh();
+</script>
