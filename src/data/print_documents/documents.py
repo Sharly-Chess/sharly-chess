@@ -583,9 +583,7 @@ class PairingPrintDocument(PrintDocument):
     def sub_document(self) -> PrintDocument:
         return self._get_option(
             PairingStylePrintOption
-        ).pairing_style.print_document_type(
-            self.client, options=self.options, event=self.event
-        )
+        ).pairing_style.print_document_type(self.client, options=self.options)
 
     @property
     def title(self) -> str:

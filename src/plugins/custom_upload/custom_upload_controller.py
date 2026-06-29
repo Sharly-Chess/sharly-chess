@@ -275,7 +275,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     async def htmx_admin_custom_upload(self, request: HTMXRequest) -> Template:
         web_context = BaseEventAdminWebContext(request)
         CustomUploadUploader.upload_event_tournaments(
-            self._allowed_tournaments(web_context)
+            self._allowed_tournaments(web_context), web_context.client
         )
         return self._render_upload_results(web_context)
 

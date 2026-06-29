@@ -209,7 +209,7 @@ class CustomUploadUploader:
         cls,
         event_uniq_id: str,
         tournament_id: int,
-        httpClient: Client,
+        http_client: Client,
     ) -> CustomUploadResult | None:
         """Upload a tournament to custom website."""
 
@@ -269,7 +269,7 @@ class CustomUploadUploader:
             password = tournament_plugin_data.ftp_password
             try:
                 temporary_files_with_destination = cls._generate_documents_in_memory(
-                    event, tournament_plugin_data, httpClient
+                    event, tournament_plugin_data, http_client
                 )
 
                 client.connect(host, username=username, password=password)
@@ -330,7 +330,7 @@ class CustomUploadUploader:
         cls,
         event: Event,
         tournament_plugin_data: CustomUploadTournamentPluginData,
-        httpClient: Client,
+        http_client: Client,
     ) -> list[tuple[BytesIO, str]]:
         temporary_files_with_name: list[tuple[BytesIO, str]] = []
         for document_url in tournament_plugin_data.document_urls:
@@ -339,10 +339,10 @@ class CustomUploadUploader:
             decoded_document_options = document_options.replace('options=', '')
             decoded_document_options = urllib.parse.unquote(decoded_document_options)
             document_htmx_template = EventDocumentsController.document_view(
-                client=httpClient,
-                event=event,
-                document=document_id,
-                options=decoded_document_options,
+                http_client,
+                event,
+                document_id,
+                decoded_document_options,
             )
             html_content = parse_jinja_template(
                 document_htmx_template.template_name, document_htmx_template.context
@@ -353,7 +353,7 @@ class CustomUploadUploader:
         return temporary_files_with_name
 
     @classmethod
-    def schedule_upload(cls, tournament, httpClient: Client):
+    def schedule_upload(cls, tournament, http_client: Client):
         """Schedule the upload of a tournament."""
         if CustomUploadUtils.custom_upload_configuration_verification_message(
             tournament
@@ -364,13 +364,15 @@ class CustomUploadUploader:
         timer = Timer(
             0.1,
             cls.upload_tournament,
-            args=(tournament.event.uniq_id, tournament.id, httpClient),
+            args=(tournament.event.uniq_id, tournament.id, http_client),
         )
         cls.timeout_threads[result_id] = timer
         timer.start()
 
     @classmethod
-    def upload_event_tournaments(cls, tournaments: list[Tournament]):
+    def upload_event_tournaments(
+        cls, tournaments: list[Tournament], http_client: Client
+    ):
         """Upload all eligible SCE tournaments for an event in a background thread."""
         eligible_tournaments = [
             tournament
@@ -404,7 +406,7 @@ class CustomUploadUploader:
         def _run():
             set_locale(SharlyChessConfig().locale)
             for tournament in updated_tournaments:
-                cls.upload_tournament(event_uniq_id, tournament.id)
+                cls.upload_tournament(event_uniq_id, tournament.id, http_client)
 
         Thread(target=_run, daemon=True).start()
 
