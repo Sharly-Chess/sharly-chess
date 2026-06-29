@@ -52,7 +52,14 @@
                 <table class="table table-sm align-middle prize-generate-table">
                     <thead>
                         <tr>
-                            <th></th>
+                            <th>
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    id="include_all"
+                                    {{ macros.tooltip_attributes('info', _('Select all'), 'top') }}
+                                />
+                            </th>
                             <th>{{ _('Category') }}</th>
                             {% for place in range(1, max_prize_places + 1) %}
                                 <th
@@ -144,16 +151,31 @@
             });
         }
         placeCount.addEventListener('input', applyPlaceCount);
+        // Header checkbox toggles every row; it also reflects the rows' state.
+        const includeAll = document.getElementById('include_all');
+        const rowChecks = Array.from(document.querySelectorAll('.include-check'));
+        function refreshIncludeAll() {
+            const checked = rowChecks.filter((c) => c.checked).length;
+            includeAll.checked = checked === rowChecks.length;
+            includeAll.indeterminate = checked > 0 && checked < rowChecks.length;
+        }
+        includeAll.addEventListener('change', () => {
+            rowChecks.forEach((c) => { c.checked = includeAll.checked; });
+            includeAll.indeterminate = false;
+        });
+        rowChecks.forEach((c) => c.addEventListener('change', refreshIncludeAll));
         // Auto-check a row's include box as soon as a prize value is entered.
         document.querySelectorAll('.prize-value').forEach((input) => {
             input.addEventListener('input', () => {
                 if (input.value) {
                     const check = document.getElementById('include_' + input.dataset.row);
                     if (check) check.checked = true;
+                    refreshIncludeAll();
                 }
             });
         });
         applyPlaceCount();
+        refreshIncludeAll();
     })();
     requestRefresh();
 </script>

@@ -5531,6 +5531,9 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
+msgid "Select all"
+msgstr ""
+
 msgid "Select an account"
 msgstr ""
 

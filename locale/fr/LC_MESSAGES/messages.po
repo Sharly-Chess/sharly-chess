@@ -5533,6 +5533,9 @@ msgstr "Couleur initiale"
 msgid "Select All"
 msgstr "Tout sélectionner"
 
+msgid "Select all"
+msgstr "Tout sélectionner"
+
 msgid "Select an account"
 msgstr "Sélectionner un compte"
 
