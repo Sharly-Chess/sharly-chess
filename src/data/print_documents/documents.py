@@ -74,10 +74,9 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         self,
         client: Client | None = None,
         options: list[PrintOption] | None = None,
-        event: Event | None = None,
     ):
         self.client: Client | None = client
-        self.event: Event | None = event if self.client is None else self.client.event
+        self.event: Event | None = None if self.client is None else self.client.event
         super().__init__(options)
 
     def get_client(self) -> Client:

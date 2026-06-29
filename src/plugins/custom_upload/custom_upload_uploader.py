@@ -10,6 +10,7 @@ from pathlib import Path
 from threading import Thread, Timer
 
 import paramiko.client
+from httpx import Client
 from paramiko.sftp_client import SFTPClient
 from paramiko.ssh_exception import (
     BadHostKeyException,
@@ -208,6 +209,7 @@ class CustomUploadUploader:
         cls,
         event_uniq_id: str,
         tournament_id: int,
+        httpClient: Client,
     ) -> CustomUploadResult | None:
         """Upload a tournament to custom website."""
 
@@ -267,7 +269,7 @@ class CustomUploadUploader:
             password = tournament_plugin_data.ftp_password
             try:
                 temporary_files_with_destination = cls._generate_documents_in_memory(
-                    event, tournament_plugin_data
+                    event, tournament_plugin_data, httpClient
                 )
 
                 client.connect(host, username=username, password=password)
@@ -325,16 +327,19 @@ class CustomUploadUploader:
 
     @classmethod
     def _generate_documents_in_memory(
-        cls, event: Event, tournament_plugin_data: CustomUploadTournamentPluginData
+        cls,
+        event: Event,
+        tournament_plugin_data: CustomUploadTournamentPluginData,
+        httpClient: Client,
     ) -> list[tuple[BytesIO, str]]:
         temporary_files_with_name: list[tuple[BytesIO, str]] = []
-        print(tournament_plugin_data.document_urls)
         for document_url in tournament_plugin_data.document_urls:
             document_url_resource_part = document_url.split('/')[-1]
             document_id, document_options = document_url_resource_part.split('?')
             decoded_document_options = document_options.replace('options=', '')
             decoded_document_options = urllib.parse.unquote(decoded_document_options)
             document_htmx_template = EventDocumentsController.document_view(
+                client=httpClient,
                 event=event,
                 document=document_id,
                 options=decoded_document_options,
@@ -348,7 +353,7 @@ class CustomUploadUploader:
         return temporary_files_with_name
 
     @classmethod
-    def schedule_upload(cls, tournament):
+    def schedule_upload(cls, tournament, httpClient: Client):
         """Schedule the upload of a tournament."""
         if CustomUploadUtils.custom_upload_configuration_verification_message(
             tournament
@@ -359,7 +364,7 @@ class CustomUploadUploader:
         timer = Timer(
             0.1,
             cls.upload_tournament,
-            args=(tournament.event.uniq_id, tournament.id),
+            args=(tournament.event.uniq_id, tournament.id, httpClient),
         )
         cls.timeout_threads[result_id] = timer
         timer.start()

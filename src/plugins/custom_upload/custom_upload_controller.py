@@ -292,7 +292,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
 
-        CustomUploadUploader.schedule_upload(tournament)
+        CustomUploadUploader.schedule_upload(tournament, web_context.client)
 
         return self._render_upload_results(web_context)
 

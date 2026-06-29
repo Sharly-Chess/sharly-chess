@@ -1,6 +1,7 @@
 from collections import defaultdict
 from typing import Annotated
 
+from httpx import Client
 from litestar import get, post
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
@@ -282,7 +283,9 @@ class EventDocumentsController(BaseEventAdminController):
         )
 
     @classmethod
-    def document_view(cls, event: Event, document: str, options: str | None = None):
+    def document_view(
+        cls, client: Client, event: Event, document: str, options: str | None = None
+    ):
         document_type = PrintDocumentManager(event).get_type(document)
         option_data: dict[str, str] = {}
         if options:
@@ -290,12 +293,12 @@ class EventDocumentsController(BaseEventAdminController):
                 key, raw_value = option.split('=')
                 option_data[key] = raw_value
         print_options: list[PrintOption] = []
-        for print_option in document_type(event=event).default_options():
+        for print_option in document_type(client).default_options():
             value = WebContext.form_data_to_value(
                 option_data, print_option.id, print_option.type
             )
             print_options.append(type(print_option)(event, value))
-        print_document = document_type(options=print_options, event=event)
+        print_document = document_type(client, print_options)
 
         template_context = {
             'document': print_document,
