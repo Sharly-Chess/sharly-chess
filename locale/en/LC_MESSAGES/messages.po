@@ -250,6 +250,9 @@ msgstr ""
 msgid "(replace [%(object_uniq_id)s])"
 msgstr ""
 
+msgid "*** Changelog Link"
+msgstr ""
+
 msgid "*** Doc Link"
 msgstr "https://sharly-chess.com/getting-started/"
 
@@ -520,6 +523,9 @@ msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
 msgid "A file is expected."
+msgstr ""
+
+msgid "A new version is available!"
 msgstr ""
 
 msgid "A player with {column}=[{value}] already exists in the event."
@@ -808,6 +814,9 @@ msgstr ""
 msgid "An unexpected error occurred."
 msgstr ""
 
+msgid "An update is available!"
+msgstr ""
+
 msgid "Andorra"
 msgstr ""
 
@@ -1030,6 +1039,9 @@ msgid "Berger grid"
 msgstr ""
 
 msgid "Bermuda"
+msgstr ""
+
+msgid "Beta version updates"
 msgstr ""
 
 msgid "Bhutan"
@@ -1298,7 +1310,13 @@ msgstr ""
 msgid "Change the player's tournament."
 msgstr ""
 
+msgid "Changelog"
+msgstr ""
+
 msgid "Check connection"
+msgstr ""
+
+msgid "Check for updates"
 msgstr ""
 
 msgid "Check the box to allow other screens to display a link to the screen of this family."
@@ -3163,9 +3181,6 @@ msgstr ""
 msgid "Invalid expression [{expression}]"
 msgstr ""
 
-msgid "Invalid federation [{federation}]."
-msgstr ""
-
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr ""
 
@@ -3323,6 +3338,9 @@ msgid "Last update: {updated_at}"
 msgstr ""
 
 msgid "Last update: {updated_at} (outdated)"
+msgstr ""
+
+msgid "Latest version never checked"
 msgstr ""
 
 msgid "Latvia"
@@ -6912,6 +6930,9 @@ msgstr ""
 msgid "Verdict:"
 msgstr ""
 
+msgid "Version"
+msgstr ""
+
 msgid "Vietnam"
 msgstr ""
 
@@ -7233,7 +7254,13 @@ msgstr ""
 msgid "You do not have write permission on this folder."
 msgstr ""
 
+msgid "You have an unreleased version"
+msgstr ""
+
 msgid "You have no permissions"
+msgstr ""
+
+msgid "You have the latest version"
 msgstr ""
 
 msgid "You may also connect to this server from other devices using"
@@ -7356,6 +7383,19 @@ msgstr "incomplete"
 msgid "last"
 msgstr ""
 
+msgid "last checked a minute ago"
+msgid_plural "last checked {count} minutes ago"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "last checked an hour ago"
+msgid_plural "last checked {count} hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "last checked just now"
+msgstr ""
+
 msgid "min *** MINUTES"
 msgstr "min"
 
@@ -7458,9 +7498,6 @@ msgstr ""
 msgid "standard ratings"
 msgstr ""
 
-msgid "the server address on the networks to which it is connected:"
-msgstr ""
-
 msgid "the number of moves is required for a non-final period."
 msgstr ""
 
@@ -7468,6 +7505,9 @@ msgid "the number of moves must be a positive integer."
 msgstr ""
 
 msgid "the number of moves must not be specified for the final period."
+msgstr ""
+
+msgid "the server address on the networks to which it is connected:"
 msgstr ""
 
 msgid "the whole ranking"
@@ -7612,4 +7652,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Invalid federation [{federation}]."
+#~ msgstr ""
 

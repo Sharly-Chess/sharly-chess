@@ -92,6 +92,10 @@ class ConfigDatabase(MigrationDatabase):
             experimental=self.load_bool_from_database_field(row['experimental']),
             federation=row['federation'],
             launch_browser=self.load_bool_from_database_field(row['launch_browser']),
+            check_beta_versions=self.load_bool_from_database_field(
+                row['check_beta_versions']
+            ),
+            last_notified_version=row['last_notified_version'],
             locale=row['locale'],
             date_formatter=row['date_formatter'],
         )
@@ -120,6 +124,8 @@ class ConfigDatabase(MigrationDatabase):
                 'experimental',
                 'launch_browser',
                 'federation',
+                'check_beta_versions',
+                'last_notified_version',
                 'locale',
                 'date_formatter',
             ],

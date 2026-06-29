@@ -33,7 +33,6 @@ from utils.date_time import (
     format_date,
     DateFormatterManager,
 )
-from utils.types import Federation
 
 from litestar import get, post, patch, delete
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap
@@ -92,27 +91,20 @@ class IndexAdminController(BaseAdminController):
         cls,
         data: dict[str, str] | None = None,
     ) -> StoredConfig:
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+        config = SharlyChessConfig()
         if data is None:
             data = {}
         errors: dict[str, str] = {}
-        experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
-        launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
-        federation_name: str | None = WebContext.form_data_to_str(
-            data, field := 'federation'
-        )
-        federation: Federation | None = None
-        if federation_name:
-            if federation_name not in sharly_chess_config.federations:
-                errors[field] = _('Invalid federation [{federation}].').format(
-                    federation=federation_name
-                )
+        experimental = WebContext.form_data_to_bool(data, 'experimental')
+        federation = WebContext.form_data_to_str(data, field := 'federation')
+        if federation:
+            if federation not in config.federations:
+                errors[field] = f'Invalid federation [{federation}].'
                 data[field] = ''
-            else:
-                federation = Federation(federation_name)
+                federation = None
         else:
             errors[field] = _('Please choose a federation.')
-        locale: str | None = WebContext.form_data_to_str(data, field := 'locale')
+        locale = WebContext.form_data_to_str(data, field := 'locale')
         if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
@@ -123,22 +115,14 @@ class IndexAdminController(BaseAdminController):
             DateFormatterManager().get_object(date_formatter_id)
         except KeyError:
             errors[field] = f'invalid date formatter [{date_formatter_id}].'
-        return StoredConfig(
-            force_edit=False,
-            console_log_level=sharly_chess_config.console_log_level,
-            console_color=sharly_chess_config.console_color,
-            console_show_date=sharly_chess_config.console_show_date,
-            console_show_level=sharly_chess_config.console_show_level,
-            experimental=experimental,
-            launch_browser=launch_browser,
-            federation=federation.name if federation else None,
-            locale=locale,
-            date_formatter=date_formatter_id,
-            stored_player_category_sets=(
-                sharly_chess_config.stored_config.stored_player_category_sets
-            ),
-            errors=errors,
-        )
+        stored_config = copy(config.stored_config)
+        stored_config.force_edit = False
+        stored_config.experimental = experimental
+        stored_config.federation = federation
+        stored_config.locale = locale
+        stored_config.date_formatter = date_formatter_id
+        stored_config.errors = errors
+        return stored_config
 
     @classmethod
     def _admin_validate_plugins_update_data(

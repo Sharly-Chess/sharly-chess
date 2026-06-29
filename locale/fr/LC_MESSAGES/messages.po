@@ -250,6 +250,9 @@ msgstr "(aucun écran)"
 msgid "(replace [%(object_uniq_id)s])"
 msgstr "(remplace [%(object_uniq_id)s])"
 
+msgid "*** Changelog Link"
+msgstr ""
+
 msgid "*** Doc Link"
 msgstr "https://sharly-chess.com/fr/bien-demarrer/"
 
@@ -521,6 +524,9 @@ msgstr "<smart_count> semaine |||| <smart_count> semaines"
 
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
+
+msgid "A new version is available!"
+msgstr ""
 
 msgid "A player with {column}=[{value}] already exists in the event."
 msgstr "Un·e joueur·euse avec {column}=[{value}] existe déjà dans l'évènement."
@@ -808,6 +814,9 @@ msgstr "Une erreur inattendue s'est produite lors de la lecture du fichier CSV. 
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
+msgid "An update is available!"
+msgstr ""
+
 msgid "Andorra"
 msgstr "Andorre"
 
@@ -1031,6 +1040,9 @@ msgstr "Grille Berger"
 
 msgid "Bermuda"
 msgstr "Bermudes"
+
+msgid "Beta version updates"
+msgstr ""
 
 msgid "Bhutan"
 msgstr "Bhoutan"
@@ -1298,8 +1310,14 @@ msgstr "Tchad"
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
+msgid "Changelog"
+msgstr ""
+
 msgid "Check connection"
 msgstr "Vérifier la connexion"
+
+msgid "Check for updates"
+msgstr ""
 
 msgid "Check the box to allow other screens to display a link to the screen of this family."
 msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
@@ -3163,9 +3181,6 @@ msgstr "Format d'email invalide."
 msgid "Invalid expression [{expression}]"
 msgstr "Expression non valide [{expression}]"
 
-msgid "Invalid federation [{federation}]."
-msgstr "Fédération [{federation}] non valide."
-
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr "Extension de fichier [{extension}] invalide (attendue : {expected})."
 
@@ -3324,6 +3339,9 @@ msgstr "Dernière mise à jour : {updated_at}"
 
 msgid "Last update: {updated_at} (outdated)"
 msgstr "Dernière mise à jour : {updated_at} (dépassée)"
+
+msgid "Latest version never checked"
+msgstr ""
 
 msgid "Latvia"
 msgstr "Lettonie"
@@ -6914,6 +6932,9 @@ msgstr "Verdict"
 msgid "Verdict:"
 msgstr "Verdict :"
 
+msgid "Version"
+msgstr ""
+
 msgid "Vietnam"
 msgstr "Vietnam"
 
@@ -7235,8 +7256,14 @@ msgstr "Vous définissez le type de données à afficher (résultats, appariemen
 msgid "You do not have write permission on this folder."
 msgstr "Vous n'avez pas la permission d'écriture sur ce dossier."
 
+msgid "You have an unreleased version"
+msgstr ""
+
 msgid "You have no permissions"
 msgstr "Vous n'avez aucune permission"
+
+msgid "You have the latest version"
+msgstr ""
 
 msgid "You may also connect to this server from other devices using"
 msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres appareils"
@@ -7358,6 +7385,19 @@ msgstr "incomplète"
 msgid "last"
 msgstr "dernier"
 
+msgid "last checked a minute ago"
+msgid_plural "last checked {count} minutes ago"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "last checked an hour ago"
+msgid_plural "last checked {count} hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "last checked just now"
+msgstr ""
+
 msgid "min *** MINUTES"
 msgstr "min."
 
@@ -7460,9 +7500,6 @@ msgstr "certain·es se sont déjà rencontré·es"
 msgid "standard ratings"
 msgstr "classements standard"
 
-msgid "the server address on the networks to which it is connected:"
-msgstr "en utilisant l’adresse du serveur sur les réseaux auxquels il est connecté :"
-
 msgid "the number of moves is required for a non-final period."
 msgstr "le nombre de coups est requis pour une période non-finale."
 
@@ -7471,6 +7508,9 @@ msgstr "le nombre de coups doit être un entier positif."
 
 msgid "the number of moves must not be specified for the final period."
 msgstr "le nombre de coups ne doit pas être spécifié pour la période finale."
+
+msgid "the server address on the networks to which it is connected:"
+msgstr "en utilisant l’adresse du serveur sur les réseaux auxquels il est connecté :"
 
 msgid "the whole ranking"
 msgstr "classement complet"
@@ -7614,4 +7654,7 @@ msgstr "½ - ½ (NC)"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "Invalid federation [{federation}]."
+#~ msgstr "Fédération [{federation}] non valide."
 

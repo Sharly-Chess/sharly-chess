@@ -134,6 +134,8 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 if not os.access(DATA_DIR, os.W_OK):
     raise SharlyChessException(f'Data path [{DATA_DIR.absolute()}] is not writable.')
 
+IS_NEW_INSTALL = not VERSION_DATA_DIR.exists()
+
 
 def set_env_variable(name: str, value: str):
     match sys.platform:
@@ -162,7 +164,6 @@ if previous := os.environ.get(PREVIOUS_DATA_DIR_ENV):
             DATA_DIR,
         )
         set_env_variable(PREVIOUS_DATA_DIR_ENV, '')
-
 
 for directory in (
     ARCHIVES_DIR,
