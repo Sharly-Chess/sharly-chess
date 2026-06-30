@@ -281,7 +281,13 @@ class MatchSheetSelectionPrintOption(PrintOption):
                         stb = tb.stored_team_board
                         if stb.team_b_id is None or tb.team_b is None:
                             continue
-                        rows.append((tb.id, f'{tb.team_a.name} - {tb.team_b.name}'))
+                        rows.append(
+                            (
+                                tb.id,
+                                f'{tb.display_number}. '
+                                f'{tb.team_a.name} - {tb.team_b.name}',
+                            )
+                        )
                 if rows:
                     by_round[round_] = rows
             if by_round:
@@ -302,22 +308,6 @@ class MatchSheetSelectionPrintOption(PrintOption):
                 continue
             result[tournament.id] = tournament.current_round
         return result
-
-
-class MatchSheetPageBreakPrintOption(PrintOption):
-    """If on, start every match sheet on a fresh page (one per page)."""
-
-    @staticmethod
-    def static_id() -> str:
-        return 'match-sheet-page-break'
-
-    @property
-    def type(self) -> type | UnionType:
-        return bool
-
-    @property
-    def default_value(self) -> Any:
-        return True
 
 
 class TeamBergerGridPlayersPrintOption(PrintOption):

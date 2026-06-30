@@ -83,7 +83,6 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PairingStylePrintOption,
             options.RoundPrintOption,
             options.MatchSheetSelectionPrintOption,
-            options.MatchSheetPageBreakPrintOption,
             options.TeamBergerGridPlayersPrintOption,
             options.PlayerSplitPrintOption,
             options.GridPlayerSortPrintOption,

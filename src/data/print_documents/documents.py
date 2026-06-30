@@ -44,7 +44,6 @@ from data.print_documents.options import (
     QRCodePrintOption,
     RoundPrintOption,
     MatchSheetSelectionPrintOption,
-    MatchSheetPageBreakPrintOption,
     TeamBergerGridPlayersPrintOption,
     GridPlayerSortPrintOption,
     ListPlayerSortPrintOption,
@@ -739,7 +738,6 @@ class MatchSheetsPrintDocument(PrintDocument):
             TournamentPrintOption,
             RoundPrintOption,
             MatchSheetSelectionPrintOption,
-            MatchSheetPageBreakPrintOption,
         ]
 
     @property
@@ -756,7 +754,8 @@ class MatchSheetsPrintDocument(PrintDocument):
 
     @property
     def page_break(self) -> bool:
-        return bool(self._get_option(MatchSheetPageBreakPrintOption).value)
+        # Match sheets always start on a fresh page (one match per page).
+        return True
 
     @property
     def flat_mode(self) -> bool:
