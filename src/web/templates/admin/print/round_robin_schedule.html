@@ -1,66 +1,56 @@
 {% extends '/admin/print/base.html' %}
 
 {% block css %}
-    {% include 'round-robin.css' %}
-    .rr-table th,
-    .rr-table td {
-        padding: 3pt 6pt;
-        text-align: center;
-        white-space: nowrap;
-    }
-    .rr-legend {
-        margin-top: 10pt;
+    .rr-schedule {
+        width: 100%;
         border-collapse: collapse;
+        margin-bottom: 16pt;
     }
-    .rr-legend td {
-        padding: 2pt 8pt;
-        border: 0.5pt solid #999;
+    .rr-schedule td {
+        padding: 4pt 8pt;
+        vertical-align: middle;
     }
-    .rr-legend .key {
+    .rr-schedule td.team-left { text-align: left; width: 45%; }
+    .rr-schedule td.score {
+        text-align: right;
+        white-space: nowrap;
+        width: 10%;
         font-weight: bold;
-        text-align: center;
     }
+    .rr-schedule td.team-right { text-align: left; width: 45%; padding-left: 6pt; }
+    .rr-schedule tr.exempt td { font-style: italic; color: #555; }
 {% endblock %}
 
 {% block content %}
-    <table class="rr-table">
-        <thead class="rr-header">
-            <tr class="rr-header">
-                <th class="rr-number">{{ _('Match *** ROUND-ROBIN SCHEDULE ROW HEADER') }}</th>
-                {% for name in round_names %}
-                    <th>{{ name }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in rows %}
-                <tr class="row {% if loop.index is even %}even{% else %}odd{% endif %}">
-                    <td class="number">{{ loop.index }}</td>
-                    {% for cell in row %}
-                        <td class="result">{{ cell }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-            {% if exempt_row %}
-                <tr class="row exempt-row {% if (rows|length + 1) is even %}even{% else %}odd{% endif %}">
-                    <td class="number">{{ _('Bye') }}</td>
-                    {% for cell in exempt_row %}
-                        <td class="result">{{ cell }}</td>
-                    {% endfor %}
-                </tr>
-            {% endif %}
-        </tbody>
-    </table>
-
-    {# Legend at the end of the grid: maps each number / letter to its name. #}
-    <table class="rr-legend">
-        <tbody>
-            {% for entry in legend %}
-                <tr>
-                    <td class="key">{{ entry.key }}</td>
-                    <td>{{ entry.name }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {% if not rounds_data %}
+        <div class="error">{{ _('No rounds in this tournament.') }}</div>
+    {% else %}
+        {% for round in rounds_data %}
+            <section>
+                <div class="section-title">{{ _('Round #%(round)d', round=round.number) }}</div>
+                <table class="rr-schedule">
+                    <tbody>
+                        {% for match in round.matches %}
+                            <tr class="{% if loop.index is even %}even{% else %}odd{% endif %}">
+                                <td class="team-left">{{ match.left }}</td>
+                                <td class="score">
+                                    {%- if match.left_score is not none -%}
+                                        {{ match.left_score }} - {{ match.right_score }}
+                                    {%- endif -%}
+                                </td>
+                                <td class="team-right">{{ match.right }}</td>
+                            </tr>
+                        {% endfor %}
+                        {% if round.exempt %}
+                            <tr class="exempt {% if (round.matches|length + 1) is even %}even{% else %}odd{% endif %}">
+                                <td class="team-left">{{ round.exempt }}</td>
+                                <td class="score">{{ _('Bye') }}</td>
+                                <td class="team-right"></td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </section>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

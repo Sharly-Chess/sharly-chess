@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import cached_property, partial
-from typing import Any, Callable, cast, override
+from typing import Any, Callable, override
 
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
@@ -1203,8 +1203,6 @@ class TeamBergerGridPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        from data.pairings.engines import _TeamRoundRobinEngine
-
         tournament = self.tournament
         # Tally only up to the displayed round (the entire stored schedule
         # would over-count rounds that aren't finished yet, so the points
@@ -1515,92 +1513,115 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         tournament = self.tournament
         rounds = tournament.rounds
-        round_names = [f'{_("R")}{i + 1}' for i in range(rounds)]
         engine = tournament.pairing_variation.engine
-
         if isinstance(tournament.pairing_system, TeamRoundRobinPairingSystem):
-            assert isinstance(engine, _TeamRoundRobinEngine)
-            teams = sorted(
-                tournament.teams,
-                key=lambda team: (
-                    team.pairing_number
-                    if team.pairing_number is not None
-                    else float('inf'),
-                    team.name.lower(),
-                ),
-            )
-            label_by_id = {
-                team.id: chr(ord('A') + index) for index, team in enumerate(teams)
-            }
-            legend = [
-                {'key': label_by_id[team.id], 'name': team.name} for team in teams
-            ]
-            schedule = engine.full_schedule(tournament)
-            rounds_pairs = [schedule.get(round_, []) for round_ in range(1, rounds + 1)]
-
-            def label(competitor: int | None) -> str | None:
-                return label_by_id.get(competitor) if competitor is not None else None
+            rounds_data = self._team_rounds_data(tournament, engine, rounds)
         else:
-            assert isinstance(engine, BergerPairingEngine)
-            player_count = tournament.player_count
-            number_by_player = BergerNumbersSetting.get_value(tournament)
-            player_by_number = {
-                number: tournament.tournament_players_by_id[player_id]
-                for player_id, number in number_by_player.items()
-                if player_id in tournament.tournament_players_by_id
-            }
-            legend = [
-                {'key': str(number), 'name': player_by_number[number].full_name}
-                for number in sorted(player_by_number)
-            ]
-            rounds_pairs = cast(
-                'list[list[tuple[int, int | None]]]',
-                [
-                    engine.get_round_pairings(player_count, round_)
-                    for round_ in range(1, rounds + 1)
-                ],
-            )
+            rounds_data = self._individual_rounds_data(tournament, engine, rounds)
+        return {'tournament': tournament, 'rounds_data': rounds_data}
 
-            def label(competitor: int | None) -> str | None:
-                return (
-                    str(competitor)
-                    if competitor is not None and competitor in player_by_number
-                    else None
+    @staticmethod
+    def _team_rounds_data(
+        tournament: Tournament, engine: Any, rounds: int
+    ) -> list[dict[str, Any]]:
+        assert isinstance(engine, _TeamRoundRobinEngine)
+        name_by_id = {team.id: team.name for team in tournament.teams}
+        # The played match for each (round, team pair), to fill in the score.
+        match_by_round_pair: dict[tuple[int, frozenset], Any] = {}
+        for round_ in range(1, rounds + 1):
+            for team_board in tournament.get_round_team_boards(round_):
+                stb = team_board.stored_team_board
+                if stb.team_b_id is None:
+                    continue
+                match_by_round_pair[
+                    (round_, frozenset({stb.team_a_id, stb.team_b_id}))
+                ] = team_board
+        schedule = engine.full_schedule(tournament)
+        rounds_data: list[dict[str, Any]] = []
+        for round_ in range(1, rounds + 1):
+            matches: list[dict[str, Any]] = []
+            exempt: str | None = None
+            for a_id, b_id in schedule.get(round_, []):
+                if a_id is None or b_id is None:
+                    real = a_id if a_id is not None else b_id
+                    exempt = name_by_id.get(real) if real is not None else None
+                    continue
+                left_name = name_by_id.get(a_id, '')
+                right_name = name_by_id.get(b_id, '')
+                left_score = right_score = None
+                played = match_by_round_pair.get((round_, frozenset({a_id, b_id})))
+                if played is not None and played.match_score_pair is not None:
+                    # Orient the displayed score to the stored team_a/team_b.
+                    stb = played.stored_team_board
+                    left_name = name_by_id.get(stb.team_a_id, '')
+                    if stb.team_b_id is not None:
+                        right_name = name_by_id.get(stb.team_b_id, '')
+                    left_score, right_score = played.match_score_pair
+                matches.append(
+                    {
+                        'left': left_name,
+                        'right': right_name,
+                        'left_score': left_score,
+                        'right_score': right_score,
+                    }
                 )
+            rounds_data.append({'number': round_, 'matches': matches, 'exempt': exempt})
+        return rounds_data
 
-        # Per round: the real matches, and — separately — the exempt
-        # competitor (a bye pair has only one valid side).
-        match_columns: list[list[str]] = []
-        exempt_row: list[str] = []
-        for pairs in rounds_pairs:
-            matches: list[str] = []
-            exempt = ''
-            for left_id, right_id in pairs:
-                left, right = label(left_id), label(right_id)
-                if left is not None and right is not None:
-                    matches.append(f'{left} – {right}')
-                elif left is not None:
-                    exempt = left
-                elif right is not None:
-                    exempt = right
-            match_columns.append(matches)
-            exempt_row.append(exempt)
-
-        max_slots = max((len(matches) for matches in match_columns), default=0)
-        rows = [
-            [
-                match_columns[col][slot] if slot < len(match_columns[col]) else ''
-                for col in range(len(match_columns))
-            ]
-            for slot in range(max_slots)
-        ]
-        return {
-            'tournament': tournament,
-            'round_names': round_names,
-            'rows': rows,
-            'exempt_row': exempt_row if any(exempt_row) else None,
-            'legend': legend,
+    @staticmethod
+    def _individual_rounds_data(
+        tournament: Tournament, engine: Any, rounds: int
+    ) -> list[dict[str, Any]]:
+        assert isinstance(engine, BergerPairingEngine)
+        player_count = tournament.player_count
+        number_by_player = BergerNumbersSetting.get_value(tournament)
+        player_by_number = {
+            number: tournament.tournament_players_by_id[player_id]
+            for player_id, number in number_by_player.items()
+            if player_id in tournament.tournament_players_by_id
         }
+        board_by_round_pair: dict[tuple[int, frozenset], Any] = {}
+        for round_ in range(1, rounds + 1):
+            for board in tournament.get_round_boards(round_):
+                white = board.optional_white_tournament_player
+                black = board.black_tournament_player
+                if white is None or black is None:
+                    continue
+                board_by_round_pair[(round_, frozenset({white.id, black.id}))] = board
+        rounds_data: list[dict[str, Any]] = []
+        for round_ in range(1, rounds + 1):
+            matches: list[dict[str, Any]] = []
+            exempt: str | None = None
+            for left_num, right_num in engine.get_round_pairings(player_count, round_):
+                left_player = player_by_number.get(left_num)
+                right_player = player_by_number.get(right_num)
+                if left_player is None or right_player is None:
+                    real = left_player or right_player
+                    exempt = real.full_name if real is not None else None
+                    continue
+                left_score = right_score = None
+                played_board = board_by_round_pair.get(
+                    (round_, frozenset({left_player.id, right_player.id}))
+                )
+                if played_board is not None and played_board.result != Result.NO_RESULT:
+                    raw = str(played_board.result)
+                    if '-' in raw:
+                        white_str, black_str = raw.split('-', 1)
+                        white = played_board.optional_white_tournament_player
+                        if white is not None and white.id == left_player.id:
+                            left_score, right_score = white_str, black_str
+                        else:
+                            left_score, right_score = black_str, white_str
+                matches.append(
+                    {
+                        'left': left_player.full_name,
+                        'right': right_player.full_name,
+                        'left_score': left_score,
+                        'right_score': right_score,
+                    }
+                )
+            rounds_data.append({'number': round_, 'matches': matches, 'exempt': exempt})
+        return rounds_data
 
 
 class PrizeListPrintDocument(PrintDocument):
