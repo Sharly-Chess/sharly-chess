@@ -40,6 +40,12 @@
     {% set is_flat_team_mode = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
     {% if is_team_paired_mode %}
         {% set has_unpaired = admin_team_bye|length > 0 or admin_team_unpaired|length > 0 or admin_team_absent|length > 0 %}
+        {# Before a round is paired, show the team column so lineups can be set
+           — round-robin has no "to pair" list, so it would otherwise stay
+           hidden. Once paired, lineups are edited from the match headers. #}
+        {% if not admin_tournament.round_has_pairings(admin_round) and admin_tournament.teams|length > 0 %}
+            {% set has_unpaired = true %}
+        {% endif %}
     {% elif is_flat_team_mode %}
         {# Flat team systems keep the team column visible even once the
            round is paired so lineups can still be changed. #}
