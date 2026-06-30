@@ -10,8 +10,10 @@
             <p class="text-secondary">
                 {{ _(
                     'Select the age categories to create and enter the default prizes '
-                    'for each. One category is created per selected age, with a single '
-                    'age criterion. You can fine-tune the prizes and criteria afterwards.'
+                    'for each (amounts in %(currency)s). One category is created per '
+                    'selected age, with a single age criterion. You can fine-tune the '
+                    'prizes and criteria afterwards.',
+                    currency=prize_currency
                 ) }}
             </p>
             {% if errors['categories'] %}
@@ -45,9 +47,6 @@
                         max="{{ max_prize_places }}"
                         value="{{ data['place_count'] or 3 }}"
                     />
-                    <span class="text-secondary">
-                        {{ _('(amounts in %(currency)s)', currency=prize_currency) }}
-                    </span>
                 </div>
                 <table class="table table-sm align-middle prize-generate-table">
                     <thead>
@@ -90,7 +89,7 @@
                                         for="include_{{ category.id }}"
                                         class="text-nowrap"
                                     >
-                                        {{ category.name }}
+                                        {{ category.name }} <span class="text-secondary">({{ admin_tournament.category_counts[category] }})</span>
                                     </label>
                                 </td>
                                 {% for place in range(1, max_prize_places + 1) %}

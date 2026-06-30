@@ -1876,8 +1876,9 @@ msgstr "Paramètres par défaut des chronomètres"
 msgid "Default timers"
 msgstr "Chronomètres par défaut"
 
-msgid "Define a rating range and how to split it. One category is created per rating band, with a single rating criterion and the default prizes below. You can fine-tune them afterwards."
-msgstr "Définissez une plage d'Elo et la façon de la découper. Une catégorie est créée par tranche d'Elo, avec un unique critère d'Elo et les prix par défaut ci-dessous. Vous pourrez les ajuster ensuite."
+#, python-format
+msgid "Define a rating range and how to split it. One category is created per rating band, with a single rating criterion and the default prizes below (amounts in %(currency)s). You can fine-tune them afterwards."
+msgstr "Définissez une plage d'Elo et la façon de la découper. Une catégorie est créée par tranche d'Elo, avec un unique critère d'Elo et les prix par défaut ci-dessous (montants en %(currency)s). Vous pourrez les ajuster ensuite."
 
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
@@ -5549,8 +5550,9 @@ msgstr "Sélectionner une action pour les %(count)d joueur·euses absent·es :"
 msgid "Select player"
 msgstr "Sélectionner un·e joueur·euse"
 
-msgid "Select the age categories to create and enter the default prizes for each. One category is created per selected age, with a single age criterion. You can fine-tune the prizes and criteria afterwards."
-msgstr "Sélectionnez les catégories d'âge à créer et saisissez les prix par défaut pour chacune. Une catégorie est créée par âge sélectionné, avec un unique critère d'âge. Vous pourrez ajuster les prix et les critères ensuite."
+#, python-format
+msgid "Select the age categories to create and enter the default prizes for each (amounts in %(currency)s). One category is created per selected age, with a single age criterion. You can fine-tune the prizes and criteria afterwards."
+msgstr "Sélectionnez les catégories d'âge à créer et saisissez les prix par défaut pour chacune (montants en %(currency)s). Une catégorie est créée par âge sélectionné, avec un unique critère d'âge. Vous pourrez ajuster les prix et les critères ensuite."
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"

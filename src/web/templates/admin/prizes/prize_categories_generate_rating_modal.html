@@ -11,7 +11,8 @@
                 {{ _(
                     'Define a rating range and how to split it. One category is created '
                     'per rating band, with a single rating criterion and the default '
-                    'prizes below. You can fine-tune them afterwards.'
+                    'prizes below (amounts in %(currency)s). You can fine-tune them afterwards.',
+                    currency=prize_currency
                 ) }}
             </p>
             {% for field in ['rating', 'group_count', 'step', 'prizes'] %}
@@ -98,9 +99,6 @@
                 </div>
                 <h4 class="mt-3 mb-2">
                     {{ _('Default prizes') }}
-                    <span class="text-secondary" style="font-size: 0.8rem;">
-                        {{ _('(amounts in %(currency)s)', currency=prize_currency) }}
-                    </span>
                 </h4>
                 <div class="d-flex align-items-center gap-2 mb-2">
                     <label for="place_count" class="text-nowrap">
