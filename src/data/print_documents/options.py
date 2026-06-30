@@ -288,6 +288,21 @@ class MatchSheetSelectionPrintOption(PrintOption):
                 result[tournament.id] = by_round
         return result
 
+    def default_round_by_tournament(self) -> 'dict[int, int]':
+        """``{tournament_id: round}`` the selector falls back to when no
+        round is entered — the current round, matching the document's
+        ``at_round`` (``RoundPrintOption.value or current_round``). Without
+        this the modal would look up an empty round and show no matches
+        until a round is typed."""
+        result: dict[int, int] = {}
+        if self.event is None or not self.event.is_team_event:
+            return result
+        for tournament in self.event.tournaments_by_id.values():
+            if not tournament.is_team_tournament:
+                continue
+            result[tournament.id] = tournament.current_round
+        return result
+
 
 class MatchSheetPageBreakPrintOption(PrintOption):
     """If on, start every match sheet on a fresh page (one per page)."""

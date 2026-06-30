@@ -14,11 +14,15 @@
     <script>
         (function () {
             const map = {{ by_tournament_round | tojson }};
+            const defaultRound = {{ option.default_round_by_tournament() | tojson }};
             const selectedIds = new Set({{ selected_ids | tojson }});
             const $modal = $('#modal-wrapper');
             function refresh() {
                 const tid = String($modal.find('#tournament').val() || '');
-                const round = String($modal.find('#round').val() || '');
+                // No round entered -> fall back to the tournament's current
+                // round, matching what the document actually prints.
+                let round = String($modal.find('#round').val() || '');
+                if (!round) { round = String(defaultRound[tid] || ''); }
                 const matches = (map[tid] && map[tid][round]) || [];
                 const $list = $('#{{ option.id }}-list');
                 $list.empty();
