@@ -123,11 +123,14 @@ class BaseAdminController(BaseController):
         }
 
     @staticmethod
-    def _get_screen_type_options(family_screens_only: bool) -> dict[str, str]:
+    def _get_screen_type_options(
+        family_screens_only: bool, event: Event
+    ) -> dict[str, str]:
         return {'': '-'} | {
             screen_type.value: screen_type.name
             for screen_type in ScreenType
-            if not family_screens_only or screen_type.families_allowed
+            if (not family_screens_only or screen_type.families_allowed)
+            and screen_type.supports_event_type(event.event_type)
         }
 
     @staticmethod

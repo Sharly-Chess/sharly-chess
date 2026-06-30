@@ -42,6 +42,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
+    from data.team import Team
     from data.tournament import Tournament
     from data.input_output.trf.trf_data import TrfPlayer
 
@@ -177,11 +178,66 @@ class Player:
 
     @property
     def federation(self) -> Federation:
-        return Federation(self.stored_player.federation)
+        return Federation(self.stored_player.federation or '')
 
     @property
     def club(self) -> Club:
         return Club(self.stored_player.club or '')
+
+    @property
+    def team_id(self) -> int | None:
+        return self.stored_player.team_id
+
+    @property
+    def team_index(self) -> int | None:
+        return self.stored_player.team_index
+
+    @property
+    def event_default_rating(self) -> int | None:
+        """Best available rating for the event's default rating type."""
+        rating = self.event_default_rating_and_type
+        return rating.value or None
+
+    @cached_property
+    def event_default_rating_and_type(self) -> 'PlayerRatingAndType':
+        """Rating + its source type for display in team/event contexts.
+
+        Uses the team's tournament rating type (Standard/Rapid/Blitz) and
+        player-rating type (FIDE/National/Estimated) when the player is on a
+        team assigned to a tournament. Falls back to the event's default
+        cadence (the shared one when every tournament uses the same,
+        Standard otherwise) + event rating type for unassigned players."""
+        team = self.team
+        if team is not None and team.tournament is not None:
+            tournament = team.tournament
+            return self.get_rating_and_type(
+                tournament.rating,
+                tournament.player_rating_type,
+                self.category,
+            )
+        return self.get_rating_and_type(
+            self.event.default_tournament_rating,
+            self.event.player_rating_type,
+            self.category,
+        )
+
+    @property
+    def team(self) -> 'Team | None':
+        if (team_id := self.team_id) is None:
+            return None
+        return self.event.teams_by_id.get(team_id)
+
+    @property
+    def has_been_paired(self) -> bool:
+        """True if the player has been placed on a board in any of the
+        event's tournaments (whether or not a result was entered). Used
+        to lock the team picker — moving a paired player would orphan
+        their board(s)."""
+        for tournament in self.event.tournaments:
+            tournament_player = tournament.tournament_players_by_id.get(self.id)
+            if tournament_player is not None and tournament_player.has_been_paired:
+                return True
+        return False
 
     @property
     def fixed(self) -> int | None:
@@ -192,20 +248,48 @@ class Player:
         return self.stored_player.check_in
 
     @cached_property
-    def single_tournament_id(self) -> int:
-        """The tournament this player is assigned to (for single tournament events)"""
+    def optional_single_tournament_id(self) -> int | None:
+        """The tournament this player is assigned to, or None if unassigned.
+        For team events, derived from the player's team."""
+        if self.event.is_team_event:
+            team = self.team
+            if team is not None and team.tournament_id is not None:
+                return team.tournament_id
+            return None
         for tournament in self.event.tournaments:
             if self.id in tournament.tournament_players_by_id:
                 return tournament.id
-        raise RuntimeError('Player not assigned to a tournament')
+        return None
+
+    @property
+    def single_tournament_id(self) -> int:
+        """The tournament this player is assigned to. Raises if unassigned."""
+        tournament_id = self.optional_single_tournament_id
+        if tournament_id is None:
+            raise RuntimeError('Player not assigned to a tournament')
+        return tournament_id
 
     @property
     def single_tournament(self) -> 'Tournament':
         return self.event.tournaments_by_id[self.single_tournament_id]
 
     @property
+    def optional_single_tournament(self) -> 'Tournament | None':
+        tournament_id = self.optional_single_tournament_id
+        if tournament_id is None:
+            return None
+        return self.event.tournaments_by_id[tournament_id]
+
+    @property
     def single_tournament_player(self) -> 'TournamentPlayer':
         return self.single_tournament.tournament_players_by_id[self.id]
+
+    @property
+    def optional_single_tournament_player(self) -> 'TournamentPlayer | None':
+        tournament = self.optional_single_tournament
+        if tournament is None:
+            return None
+        return tournament.tournament_players_by_id.get(self.id)
 
     def replace_stored_player(self, stored_player: StoredPlayer):
         self.stored_player = stored_player
@@ -581,6 +665,28 @@ class TournamentPlayer(Player):
             if round_index <= after_round
         )
 
+    # Standard W/D/L values for the TRF26 team-mode "standard score".
+    # Tournament-level ``game_points`` overrides intentionally don't apply
+    # here — the spec defines this as an informative over-the-board sum.
+    _TEAM_TRF_STANDARD_POINTS: 'dict[Result, float]' = {
+        Result.WIN: 1.0,
+        Result.DRAW: 0.5,
+        Result.LOSS: 0.0,
+    }
+
+    def team_trf_standard_points_after(self, after_round: int) -> float:
+        """TRF26 §1.6 "standard score" for the 001 ``points`` field in
+        team competitions: the player's score from over-the-board games
+        and forfeit wins only, using fixed W=1 / D=0.5 / L=0 values.
+        Byes (ZPB, HPB, FPB, PAB), forfeit losses and ``REST_GAME``
+        don't count — they're informational fillers, not games."""
+        return sum(
+            pairing.result.points(self._TEAM_TRF_STANDARD_POINTS)
+            for round_index, pairing in self.pairings.items()
+            if round_index <= after_round
+            and (not pairing.result.is_unplayed or pairing.result == Result.FORFEIT_WIN)
+        )
+
     def total_points(self, only_played: bool = False) -> float:
         return sum(
             pairing.result.points(self.point_values)
@@ -672,7 +778,11 @@ class TournamentPlayer(Player):
             federation=self.federation.name,
             fide_id=self.fide_id,
             birth_date=trf_dob,
-            points=self.points_after(after_round),
+            points=(
+                self.team_trf_standard_points_after(after_round)
+                if self.tournament.is_team_tournament
+                else self.points_after(after_round)
+            ),
             rank=self.rank,
             games=games,
         )
@@ -948,3 +1058,13 @@ class TournamentPlayer(Player):
     @property
     def has_played_games(self) -> bool:
         return any(pairing.played for pairing in self.pairings.values())
+
+    @property
+    def has_been_paired(self) -> bool:
+        """True if the player has ever been placed on a board (a real
+        match slot) in any round. A bye — which carries a pairing but no
+        board — does not count as being paired."""
+        return any(
+            stored_pairing.board_id is not None
+            for stored_pairing in self.stored_tournament_player.stored_pairings
+        )

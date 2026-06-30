@@ -5,7 +5,7 @@
         {% endwith %}
     </span>
 
-    {% if not tournament_player.matches_tournament_criteria %}
+    {% if tournament_player and not tournament_player.matches_tournament_criteria %}
         <i
             class="bi-exclamation-triangle-fill text-warning px-1 flex-shrink-0"
             {{ macros.tooltip_attributes(

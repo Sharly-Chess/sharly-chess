@@ -41,6 +41,12 @@ class TournamentExporterManager(EventBoundEntityManager[TournamentExporter]):
         plugin_manager.hook_for_event(self.event, 'insert_tournament_exporters')(
             exporters=exporters
         )
+        if self.event is not None:
+            exporters = [
+                exporter
+                for exporter in exporters
+                if exporter.supports_event_type(self.event.event_type)
+            ]
         return exporters
 
 
@@ -51,6 +57,12 @@ class TournamentImporterManager(EventBoundEntityManager[TournamentImporter]):
         plugin_manager.hook_for_event(self.event, 'insert_tournament_importers')(
             importers=importers
         )
+        if self.event is not None:
+            importers = [
+                importer
+                for importer in importers
+                if importer.supports_event_type(self.event.event_type)
+            ]
         return importers
 
 

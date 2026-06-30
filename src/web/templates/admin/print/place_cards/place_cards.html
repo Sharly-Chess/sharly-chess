@@ -1,4 +1,4 @@
-{% macro render_card(board, player, pairing, preview) %}
+{% macro render_card(board, player, pairing, team, preview) %}
     {% set sides={'back': true, 'front': false} if back_side else {'single': false} %}
     <div class="card-wrapper {{ template_css_class }}" style="background-color: white">
         {% for side_name, side_back in sides.items() %}
@@ -10,7 +10,7 @@
                 <div class="card-content">
                     {% for item in items %}
                         {% if item.back == side_back %}
-                            {{ item.render_html(event=event, tournament=tournament, player=player, board=board, pairing=pairing, preview=preview) | safe }}
+                            {{ item.render_html(event=event, tournament=tournament, player=player, board=board, pairing=pairing, team=team, preview=preview) | safe }}
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -31,12 +31,15 @@
 </style>
 <div class="cards-wrapper">
     {% for player in players %}
-        {{ render_card(player=player, board=none, pairing=none, preview=preview) }}
+        {{ render_card(player=player, board=none, pairing=none, team=none, preview=preview) }}
     {% endfor %}
     {% for board in boards %}
-        {{ render_card(player=none, board=board, pairing=none, preview=preview) }}
+        {{ render_card(player=none, board=board, pairing=none, team=none, preview=preview) }}
     {% endfor %}
     {% for pairing in pairings %}
-        {{ render_card(player=none, board=none, pairing=pairing, preview=preview) }}
+        {{ render_card(player=none, board=none, pairing=pairing, team=none, preview=preview) }}
+    {% endfor %}
+    {% for team in teams %}
+        {{ render_card(player=none, board=none, pairing=none, team=team, preview=preview) }}
     {% endfor %}
 </div>

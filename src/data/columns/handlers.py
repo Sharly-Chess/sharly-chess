@@ -23,6 +23,7 @@ from data.columns.players_tab import (
     FideIdPlayersTabColumn,
     PaymentPlayersTabColumn,
     TournamentPlayersTabColumn,
+    TeamPlayersTabColumn,
     CommentPlayersTabColumn,
     RecordPlayersTabColumn,
 )
@@ -243,6 +244,7 @@ class PlayersTabColumnHandler:
             FideIdPlayersTabColumn(),
             PaymentPlayersTabColumn(),
             TournamentPlayersTabColumn(),
+            TeamPlayersTabColumn(),
             CommentPlayersTabColumn(),
             RecordPlayersTabColumn(),
         ]
@@ -292,6 +294,7 @@ class PlayersTabColumnHandler:
 
 class PlayerDatasheetColumnHandler:
     def __init__(self, event: Event, data_source: Optional['DataSource'] = None):
+        self._event = event
         columns = self._base_columns
         plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
             datasheet_columns=columns
@@ -326,7 +329,9 @@ class PlayerDatasheetColumnHandler:
             pds.PhoneColumn(),
             pds.GenderColumn(),
             pds.FideIDColumn(),
-            pds.TournamentColumn(),
+            # Team events list a team column (export + import) instead of
+            # the export-only tournament column.
+            pds.TeamColumn() if self._event.is_team_event else pds.TournamentColumn(),
             pds.FederationColumn(),
             pds.ClubColumn(),
             pds.OwedColumn(),

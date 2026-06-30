@@ -7,12 +7,18 @@
         data-delete="true"
     {% endif %}
 >
-    {% set tournament_player = player.single_tournament_player %}
-    {% set tournament = tournament_player.tournament %}
+    {% set tournament_player = player.optional_single_tournament_player %}
+    {% set tournament = tournament_player.tournament if tournament_player else none %}
     <td class="text-nowrap text-start compact-col ps-2">
         {% set can_update = client.can_update_players %}
-        {% set can_update_history=client.can_update_players_history(tournament.id) %}
-        {% set can_delete=client.can_delete_players and not tournament_player.has_real_pairings %}
+        {% set can_update_history = (
+            client.can_update_players_history(tournament.id)
+            if tournament else false
+        ) %}
+        {% set can_delete = (
+            client.can_delete_players
+            and (not tournament_player or not tournament_player.has_real_pairings)
+        ) %}
         {% if can_update or can_update_history or can_delete %}
             <span class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
@@ -105,8 +111,10 @@
     </td>
     {% for column in visible_columns %}
         {% set value = tournament_player if column.is_tournament_column else player %}
-        <td class="text-{{ 'start' if column.align_start else 'center' }} {% if column.is_compact %}compact-col{% endif %} {{ column.get_cell_classes(value) }}">
-            {% if column.cell_template %}
+        <td class="text-{{ 'start' if column.align_start else 'center' }} {% if column.is_compact %}compact-col{% endif %} {{ column.get_cell_classes(value) if value is not none else '' }}">
+            {% if column.is_tournament_column and not tournament_player %}
+                <span class="text-muted">—</span>
+            {% elif column.cell_template %}
                 {% include column.cell_template %}
             {% else %}
                 {{ column.get_cell_content(value) }}

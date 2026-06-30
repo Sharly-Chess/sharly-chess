@@ -9,6 +9,7 @@ from .managers import (  # Noqa F401
     PrintDocumentOptionManager,
     PrintPlayerSplitterManager,
     PrintGridPlayerSorterManager,
+    PrintTeamGridSorterManager,
     PrintListPlayerSorterManager,
     PrintPairingStyleManager,
     PrintQRCodeTypeManager,

@@ -1,0 +1,98 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div id="team-pairing-info-modal" class="modal-dialog modal-dialog-scrollable admin-players-update-modal" style="max-width: 90%;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Team pairing information for round %(round)d', round=admin_round) }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <table
+                id="team-pairings-info-table"
+                class="table prominent table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+            >
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-start compact-col">{{ _('TPN *** TOURNAMENT PAIRING NUMBER') }}</th>
+                        <th scope="col" class="text-start">{{ _('Team') }}</th>
+                        <th scope="col" class="text-end compact-col">{{ _('GP *** GAME POINTS') }}</th>
+                        {% if history_columns %}
+                            <th colspan="{{ history_columns }}" scope="col" class="text-start compact-col">
+                                {{ _('Opponents') }}
+                            </th>
+                            <th scope="col" class="text-start compact-col">
+                                {{ _('Colour history') }}
+                            </th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mp, entries in team_info_groups %}
+                        <tr class="header">
+                            <td class="group-title fw-bold text-center" colspan="10000">
+                                {{ ngettext(
+                                    '%(num).1f %(unit)s group',
+                                    '%(num).1f %(unit)s group',
+                                    mp,
+                                    unit=_('MP *** MATCH POINTS'),
+                                ) }}
+                                -
+                                {{ ngettext(
+                                    '%(num)d team',
+                                    '%(num)d teams',
+                                    entries|length,
+                                ) }}
+                            </td>
+                        </tr>
+                        {% for row in entries %}
+                            <tr id="team-info-{{ row.team.id }}" class="{{ 'even' if loop.index is even else 'odd' }}">
+                                <td class="compact-col text-center">
+                                    {% if row.tpn %}#{{ row.tpn }}{% endif %}
+                                </td>
+                                <td>{{ row.team.name }}</td>
+                                <td class="text-end compact-col">{{ '%g'|format(row.gp) }}</td>
+                                {% for opp_id in row.opponents %}
+                                    <td class="text-center compact-col px-1">
+                                        {% if opp_id and opp_id in teams_by_id %}
+                                            {% set opp = teams_by_id[opp_id] %}
+                                            <span
+                                                {{ macros.tooltip_attributes('info', opp.name) }}
+                                            >
+                                                {{ opp.pairing_number or opp.id }}
+                                            </span>
+                                        {% else %}
+                                            <span>·</span>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                                {% for _ in range(history_columns - row.opponents|length) %}
+                                    <td></td>
+                                {% endfor %}
+                                {% if history_columns %}
+                                    <td class="text-end compact-col ps-4 pe-2">
+                                        <div class="character-grid">
+                                            {% for c in row.colors %}
+                                                <span>{{ c|lower if c else '' }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

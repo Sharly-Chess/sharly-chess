@@ -42,6 +42,12 @@ msgstr ""
 msgid "At least one league is expected."
 msgstr ""
 
+msgid "At most 3 men allowed on the roster ({n} listed)."
+msgstr ""
+
+msgid "At most 3 women allowed on the roster ({n} listed)."
+msgstr ""
+
 msgid "Auto-upload disabled"
 msgstr ""
 
@@ -54,6 +60,9 @@ msgstr "B - Leisure"
 msgid "Back"
 msgstr ""
 
+msgid "Berlin"
+msgstr ""
+
 msgid "Black pairings are supposed to have an opponent"
 msgstr ""
 
@@ -64,6 +73,9 @@ msgid "Buchholz cut"
 msgstr ""
 
 msgid "By default, tournaments are not visible on the FFE site."
+msgstr ""
+
+msgid "Bye"
 msgstr ""
 
 msgid "Cheating complaint"
@@ -110,6 +122,9 @@ msgstr ""
 msgid "E.g.: %(string)s"
 msgstr ""
 
+msgid "Each board's score is multiplied by a coefficient — the top board by N, the next by N-1, and so on down to the bottom board by 1 — then summed across all rounds. Rewards results on the higher boards (FFE rules §11.1)."
+msgstr ""
+
 msgid "Edit the properties of the tournament."
 msgstr ""
 
@@ -128,6 +143,9 @@ msgstr ""
 msgid "FFE"
 msgstr ""
 
+msgid "FFE 4-board team cup. 5-player roster cap, max Elo 1800 per player, mixed-system schedule (Swiss / Molter / round-robin)."
+msgstr ""
+
 msgid "FFE Form:"
 msgstr ""
 
@@ -136,6 +154,15 @@ msgstr ""
 
 msgid "FFE Licence no. *** LICENCE NUMBER"
 msgstr "FFE Licence no."
+
+msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team matches, mixed Suisse / Molter / round-robin schedule. Roster must consist of women players only."
+msgstr ""
+
+msgid "FFE Women championship (N1F / N2F)"
+msgstr ""
+
+msgid "FFE Women championship (N1F / N2F) (no round-3 protection)"
+msgstr ""
 
 msgid "FFE arbiter title"
 msgstr "Titre d'arbitre FFE"
@@ -172,6 +199,9 @@ msgid "FFE licence B (leisure)"
 msgstr ""
 
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
+msgstr ""
+
+msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
 msgstr ""
 
 msgid "FFE password not defined."
@@ -226,6 +256,12 @@ msgstr ""
 msgid "Fédération Française des Échecs"
 msgstr ""
 
+msgid "Game points \"for\""
+msgstr ""
+
+msgid "Game points differential"
+msgstr ""
+
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
 msgstr ""
 
@@ -254,6 +290,12 @@ msgid "Invalid format (expected: {format})."
 msgstr ""
 
 msgid "JSON file (papi-converter format)"
+msgstr ""
+
+msgid "Jean-Claude Loubatière Cup"
+msgstr ""
+
+msgid "Jean-Claude Loubatière Cup (no round-3 protection)"
 msgstr ""
 
 msgid "Last upload"
@@ -295,7 +337,16 @@ msgstr ""
 msgid "Licence:"
 msgstr ""
 
+msgid "Loubatière pairing sheet"
+msgstr ""
+
+msgid "Lowest own average rating"
+msgstr ""
+
 msgid "Make visible on FFE site"
+msgstr ""
+
+msgid "Match lost by forfeit, counted as 0 match points."
 msgstr ""
 
 msgid "Max. teams per league:"
@@ -310,6 +361,12 @@ msgstr ""
 msgid "Minimum FFE licence required (only applies to players of the FRA federation)."
 msgstr ""
 
+msgid "Mixed Cup"
+msgstr ""
+
+msgid "Mixed Cup (no round-3 protection)"
+msgstr ""
+
 msgid "Modified"
 msgstr ""
 
@@ -317,6 +374,12 @@ msgid "N - Expired *** FFE licence"
 msgstr "N - Expired"
 
 msgid "Name"
+msgstr ""
+
+msgid "Need at least 2 men on the roster ({n} listed)."
+msgstr ""
+
+msgid "Need at least 2 women on the roster ({n} listed)."
 msgstr ""
 
 msgid "Never uploaded"
@@ -332,6 +395,9 @@ msgid "No changes detected since the last upload."
 msgstr ""
 
 msgid "No internet connection"
+msgstr ""
+
+msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
 msgstr ""
 
 msgid "No tournament configured for FFE upload."
@@ -358,10 +424,22 @@ msgstr ""
 msgid "Page of the tournament on the FFE website."
 msgstr ""
 
+msgid "Papi export is not available for team events."
+msgstr ""
+
+msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
+msgstr ""
+
 msgid "Papi file"
 msgstr ""
 
 msgid "Pending"
+msgstr ""
+
+msgid "Player rating above {cap}: {names}."
+msgstr ""
+
+msgid "Player without an A (competition) FFE licence: {names}."
 msgstr ""
 
 msgid "Players:"
@@ -374,6 +452,9 @@ msgid "Ranking by league after round #{round}"
 msgstr ""
 
 msgid "Replace the player to update this field."
+msgstr ""
+
+msgid "Roster must consist of women players only: {names}."
 msgstr ""
 
 msgid "Rules successfully uploaded."
@@ -412,6 +493,12 @@ msgid "Standard"
 msgstr ""
 
 msgid "Statuses"
+msgstr ""
+
+msgid "Sum over every round of (points for − points against), where each match score is floored at 0 before the subtraction. Byes count the awarded score against nothing."
+msgstr ""
+
+msgid "Sum over every round of the team's points for — each match score floored at 0. FFE Loubatière Cup rules §4.4.a."
 msgstr ""
 
 msgid "T1 Cover page"
@@ -457,6 +544,9 @@ msgid "The password of the tournament on the FFE website is made of 10 uppercase
 msgstr ""
 
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
+msgstr ""
+
+msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
 msgstr ""
 
 msgid "Tournament"
@@ -510,7 +600,7 @@ msgstr ""
 msgid "Unknown value [{value}]"
 msgstr ""
 
-msgid "Unrated *** SINGULAR"
+msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
 msgstr "Unrated"
 
 msgid "Up to date"
@@ -542,6 +632,9 @@ msgid "Variation"
 msgstr ""
 
 msgid "Warning"
+msgstr ""
+
+msgid "Won both of the first two matches"
 msgstr ""
 
 msgid "Writer:"
@@ -576,6 +669,16 @@ msgstr ""
 
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{n} forfeited board above a board on which a game was played, counted as -1."
+msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{n} game lost by forfeit, counted as -1."
+msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
 

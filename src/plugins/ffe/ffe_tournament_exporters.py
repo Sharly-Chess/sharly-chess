@@ -6,9 +6,13 @@ from data.input_output import TournamentExporter
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter
+from utils.enum import EventType
 
 
 class PapiTournamentExporter(TournamentExporter):
+    # Papi is an individual-tournament format.
+    supported_event_types = [EventType.INDIVIDUAL]
+
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-papi'

@@ -1,9 +1,19 @@
 <div class="col-12">
-    {{ admin_macros.text_input(
-        name=option.id,
-        label=_('Board numbers:'),
-        tooltip_text=_('Numbers or ranges of numbers of the boards (example: 1-10 20 25).'),
-        placeholder=_('All the boards'),
-        data=data, errors=errors
-    ) }}
+    {% if admin_event.is_team_event %}
+        {{ admin_macros.text_input(
+            name=option.id,
+            label=_('Table numbers:'),
+            tooltip_text=_('Numbers or ranges of numbers of the match tables (example: 1-10 20 25). Each table produces one card per board of the match. For fixed-table systems, plain board numbers.'),
+            placeholder=_('All the tables'),
+            data=data, errors=errors
+        ) }}
+    {% else %}
+        {{ admin_macros.text_input(
+            name=option.id,
+            label=_('Board numbers:'),
+            tooltip_text=_('Numbers or ranges of numbers of the boards (example: 1-10 20 25).'),
+            placeholder=_('All the boards'),
+            data=data, errors=errors
+        ) }}
+    {% endif %}
 </div>

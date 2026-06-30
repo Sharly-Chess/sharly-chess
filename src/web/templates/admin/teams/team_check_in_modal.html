@@ -1,0 +1,93 @@
+{% import '/common/macros.j2' as macros with context %}
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 700px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Team check-in') }}</h2>
+        </div>
+        <div class="modal-body">
+            <table
+                class="table prominent table-sm w-100 bg-light mx-auto mb-0 justify-content-center"
+            >
+                <thead>
+                    <tr>
+                        <th class="text-nowrap text-start">{{ _('Tournament') }}</th>
+                        <th class="text-nowrap text-center">{{ _('Absent') }}</th>
+                        <th class="text-nowrap text-center">{{ _('Present') }}</th>
+                        <th class="text-nowrap text-center">{{ _('Total') }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tournament in team_tournaments %}
+                        {% set counts = tournament.team_check_in_status_grouped_counts %}
+                        {% set team_count = tournament.teams|length %}
+                        <tr>
+                            <td class="text-nowrap text-ellipsis mw-10em">
+                                {{ tournament.name }}
+                            </td>
+                            <td class="text-center">{{ counts.get(4, 0) }}</td>
+                            <td class="text-center">{{ counts.get(5, 0) }}</td>
+                            <td class="text-center fw-bold">{{ team_count }}</td>
+                            <td class="d-flex gap-2 align-items-center justify-content-end">
+                                <span {{ macros.tooltip_attributes('info', _('Mark all teams as absent.'), 'top') }}>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        hx-post="{{ url_for(
+                                            'admin-team-check-in-reset',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            present=0,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                    >
+                                        <i class="bi-x-circle-fill pe-1"></i>{{ _('All absent *** ALL TEAMS ABSENT') }}
+                                    </button>
+                                </span>
+                                <span {{ macros.tooltip_attributes('info', _('Mark all teams as present.'), 'top') }}>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-success"
+                                        hx-post="{{ url_for(
+                                            'admin-team-check-in-reset',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            present=1,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                    >
+                                        <i class="bi-check-circle-fill pe-1"></i>{{ _('All present *** ALL TEAMS PRESENT') }}
+                                    </button>
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% if not team_tournaments %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted p-3">
+                                {{ _('No team tournaments in this event.') }}
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>
