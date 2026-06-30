@@ -30,6 +30,8 @@ class StoredConfig:
     console_show_level: bool
     experimental: bool
     launch_browser: bool
+    check_beta_versions: bool
+    last_notified_version: str | None
     date_formatter: str
     federation: str | None = None
     locale: str | None = None
