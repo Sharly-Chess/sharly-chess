@@ -39,9 +39,14 @@
         margin: 12pt 0 4pt;
     }
     .match-sheet-meta {
+        display: flex;
+        justify-content: space-between;
         text-align: center;
-        font-size: 11pt;
         margin-bottom: 8pt;
+    }
+    .match-sheet-meta * {
+        font-size: 15pt;
+        font-weight: bold;
     }
     table.match-sheet-table {
         width: 100%;
@@ -76,6 +81,7 @@
     }
     .player-name { font-weight: bold; font-size: 12pt; }
     table.match-sheet-table thead .team-name-head { font-size: 15pt; }
+    table.match-sheet-table thead .team-score-head { font-size: 15pt; }
     .player-meta { font-size: 9pt; color: #555; }
     .board-refs {
         font-size: 8pt;
@@ -259,15 +265,17 @@
                 {{ tournament.name }}
             </div>
             <div class="match-sheet-meta">
-                {{ _('Round #%(round)d', round=team_board.round) }} - {{ _('Table %(table)d', table=team_board.display_number) }}
+                <div>{{ _('Round #%(round)d', round=team_board.round) }}</div>
+                <div>{{ _('Table %(table)d', table=team_board.display_number) }}</div>
             </div>
             <table class="match-sheet-table">
                 <thead>
+                    {% set _a_gp, _b_gp = team_board.game_points %}
                     <tr>
                         <th class="col-bd">{{ _('Bd') }}</th>
                         <th class="col-name team-name-head">{{ team_board.team_a.name }}</th>
-                        <th class="col-result"></th>
-                        <th class="col-result"></th>
+                        <th class="col-result team-score-head">{{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }}</th>
+                        <th class="col-result team-score-head">{{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}</th>
                         <th class="col-name team-name-head">{{ team_board.team_b.name }}</th>
                     </tr>
                 </thead>
