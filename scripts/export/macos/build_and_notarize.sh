@@ -303,40 +303,38 @@ VERSION_FOLDER=$(basename "$PROJECT_DIR")
 VERSION=$(echo "$VERSION_FOLDER" | sed 's/sharly-chess-//')
 DMG_NAME="sharly-chess-${VERSION}-macos.dmg"
 DMG_PATH="dist/$DMG_NAME"
-STAGING_DIR=$(mktemp -d)
 VOLUME_NAME="Sharly Chess ${VERSION}"
 
-echo "Staging application content..."
-# Flattened layout: SharlyChess.app and the licence/support files sit at the
-# DMG top level (no versioned wrapper folder). The app is self-contained and
-# self-updates in place via Sparkle; user data lives under
-# ~/Library/Application Support, so nothing needs to ship beside the app.
-rsync -a "$APP_BUNDLE" "$STAGING_DIR/"
+echo "Preparing DMG contents..."
+WORK_DIR=$(mktemp -d)
 
-# Copy licence/support files alongside the app (skip build internals + the raw executable).
+# Gather the licence/support files into a single "Licenses" folder so the
+# window stays clean — just the app, the arrow and the Applications link.
+LICENSES_DIR="$WORK_DIR/Licenses"
+mkdir -p "$LICENSES_DIR"
 for item in "$PROJECT_DIR"/*; do
     item_name=$(basename "$item")
-    if [[ "$item_name" != "_internal" && "$item_name" != "tools" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" ]]; then
-        rsync -a "$item" "$STAGING_DIR/"
+    if [[ "$item_name" != "_internal" && "$item_name" != "tools" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" && "$item_name" != "custom" ]]; then
+        rsync -a "$item" "$LICENSES_DIR/"
     fi
 done
 
-# Calculate the size needed for the DMG. du -sk gives size in KB.
-SIZE_KB=$(du -sk "$STAGING_DIR" | awk '{print $1}')
-SIZE_MB=$((($SIZE_KB / 1024) + 20)) # Add 20MB buffer for filesystem overhead
+# Generate the "drag to Applications" arrow background.
+DMG_BG="$WORK_DIR/dmg-background.png"
+python scripts/export/macos/make_dmg_background.py "$DMG_BG"
 
-TEMP_DMG="dist/tmp.$DMG_NAME"
-echo "Creating temporary DMG of size ${SIZE_MB}MB..."
-hdiutil create -srcfolder "$STAGING_DIR" -volname "$VOLUME_NAME" -fs HFS+ \
-    -format UDRW -size ${SIZE_MB}m "$TEMP_DMG"
+# Build the styled DMG. dmgbuild writes the .DS_Store directly, so the layout
+# (background, icon positions, Applications symlink) works headless in CI.
+echo "Building styled DMG with dmgbuild..."
+rm -f "$DMG_PATH"
+dmgbuild -s scripts/export/macos/dmg_settings.py \
+    -D app="$APP_BUNDLE" \
+    -D licenses="$LICENSES_DIR" \
+    -D background="$DMG_BG" \
+    -D volicon="src/web/static/images/sharly-chess.icns" \
+    "$VOLUME_NAME" "$DMG_PATH"
 
-echo "Compressing and finalizing DMG..."
-rm -f "$DMG_PATH" # Remove old final DMG if it exists
-hdiutil convert "$TEMP_DMG" -format UDZO -imagekey zlib-level=9 -o "$DMG_PATH"
-
-echo "Cleaning up temporary files..."
-rm "$TEMP_DMG"
-rm -rf "$STAGING_DIR"
+rm -rf "$WORK_DIR"
 echo "DMG created successfully at: $DMG_PATH"
 echo
 
@@ -411,14 +409,12 @@ else
     echo "Process finished successfully!"
 fi
 echo "Final distributable disk image is at: $DMG_PATH"
-echo "  - Top level: SharlyChess.app + licence/support files (no versioned folder)"
-echo "    - SharlyChess.app (properly signed app bundle with all dependencies)"
-echo "  - The SharlyChess.app will launch the application in GUI mode"
+echo "  - Standard layout: SharlyChess.app, an arrow, and an Applications link"
+echo "    (plus a Licenses folder); drag the app onto Applications to install"
 if [ "$BUILD_ONLY" = true ]; then
     echo "  - Note: This app is signed but NOT notarized (build-only mode)"
 else
     echo "  - This app is fully signed and notarized for distribution"
 fi
-echo "  - To install, extract the DMG contents to any writable folder in your home directory"
-echo "  - Note: Do NOT place in /Applications - the app needs write access to its folder."
+echo "  - User data lives in ~/Library/Application Support, so /Applications is fine"
 echo
