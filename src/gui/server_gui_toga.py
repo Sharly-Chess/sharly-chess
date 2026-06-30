@@ -49,6 +49,7 @@ from common.data_recovery import DataRecovery
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.version_updater import VersionUpdater
+from common import sparkle_updater
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
 from web.server_engine import ServerEngine
@@ -881,6 +882,11 @@ class SharlyChessServerToga(toga.App):
             return
         latest = VersionUpdater.LATEST_VERSION
         assert latest is not None
+        # On a macOS build, Sparkle owns the confirm / download / verify /
+        # install / relaunch flow. Elsewhere (and in dev) fall back to the
+        # legacy external updater.
+        if sparkle_updater.check_for_update(latest):
+            return
         message = _('Sharly Chess {latest} is available, you have {current}.').format(
             latest=latest, current=SHARLY_CHESS_VERSION
         )
