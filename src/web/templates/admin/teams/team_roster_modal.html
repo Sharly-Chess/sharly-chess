@@ -1,0 +1,183 @@
+{% import '/common/macros.j2' as macros with context %}
+{% set roster = admin_team.players %}
+<div
+    class="modal-dialog modal-dialog-scrollable admin-team-roster-modal"
+    style="--bs-modal-width: min(95vw, 700px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Roster — %(team)s', team=admin_team.name) }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h5 class="mb-2">
+                {{ _('Add a player') }}
+                {% if roster_max_size is not none %}
+                    <span class="text-muted small">
+                        ({{ roster|length }}/{{ roster_max_size }})
+                    </span>
+                {% endif %}
+            </h5>
+            {% if roster_at_cap %}
+                <div class="form-text mb-3">
+                    {{ _(
+                        'Roster is full ({max} players max for this '
+                        'rule set). Remove a player to add another.'
+                    ).format(max=roster_max_size) }}
+                </div>
+            {% else %}
+            <form
+                id="add-player-form"
+                hx-post="{{ url_for(
+                    'admin-team-add-player',
+                    event_uniq_id=admin_event.uniq_id,
+                    team_id=admin_team.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                class="d-flex gap-2 align-items-end mb-3"
+            >
+                <div class="flex-grow-1">
+                    {{ admin_macros.select_input(
+                        name='player_id',
+                        label='',
+                        select_options=player_options,
+                        multiple_select=true,
+                        search_placeholder=_('Search players…'),
+                        placeholder=_('Choose one or more players.'),
+                        data={}, errors={}
+                    ) }}
+                </div>
+                <button
+                    type="submit"
+                    class="btn btn-primary text-nowrap"
+                    {% if not available_players %}disabled{% endif %}
+                >
+                    <i class="bi-plus-square pe-1"></i>
+                    {{ _('Add') }}
+                </button>
+            </form>
+            {% if not available_players %}
+                <div class="form-text mb-3">
+                    {{ _('No unassigned players available. '
+                          'Remove a player from another team first.') }}
+                </div>
+            {% endif %}
+            {% endif %}
+
+            <h5 class="mb-2">
+                {{ _('Current roster') }}
+                <span class="text-muted small">({{ roster|length }})</span>
+            </h5>
+            {% if not roster %}
+                <div class="text-muted">{{ _('No players in this team yet.') }}</div>
+            {% else %}
+                <form
+                    class="sortable d-flex flex-column gap-2"
+                    hx-patch="{{ url_for(
+                        'admin-team-reorder-players',
+                        event_uniq_id=admin_event.uniq_id,
+                        team_id=admin_team.id
+                    ) }}"
+                    hx-target="body"
+                    hx-trigger="end"
+                    hx-indicator="#please-wait"
+                >
+                    {% set show_grip = roster|length > 1 %}
+                    {% for player in roster %}
+                        <div class="border border-secondary bg-body-tertiary {% if show_grip %}cursor-grab{% endif %}">
+                            <input type="hidden" name="player_ids" value="{{ player.id }}"/>
+                            <div class="p-2 d-flex align-items-center gap-3">
+                                {% if show_grip %}
+                                    <i class="bi-grip-horizontal"></i>
+                                {% endif %}
+                                <span class="fw-bold">{{ loop.index }}.</span>
+                                <div class="text-start flex-grow-1">
+                                    <div>
+                                        {{ player.full_name }}
+                                        {%- set bracket_parts = [] -%}
+                                        {%- set _rating = player.event_default_rating_and_type -%}
+                                        {%- if _rating.value -%}
+                                            {%- do bracket_parts.append(_rating|string) -%}
+                                        {%- endif -%}
+                                        {%- if player.category and player.category.name and player.category.name != '-' -%}
+                                            {%- do bracket_parts.append(player.category.name) -%}
+                                        {%- endif -%}
+                                        {% if bracket_parts or player.gender.value %}
+                                            <span class="text-muted ms-1">
+                                                ({{ bracket_parts|join(' • ') }}{% if bracket_parts and player.gender.value %} • {% endif %}{% if player.gender.value %}{{ player.gender.short_name }}{% endif %})
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    {% if player.club.name %}
+                                        <div class="text-muted small fst-italic">{{ player.club.name }}</div>
+                                    {% endif %}
+                                </div>
+                                {% if admin_team.stored_team.captain_id == player.id %}
+                                    <i
+                                        class="bi-star-fill text-warning"
+                                        {{ macros.tooltip_attributes('info', _('Team captain.'), 'top') }}
+                                    ></i>
+                                {% endif %}
+                                {% if player.id in paired_player_ids %}
+                                    {# Tooltip lives on a wrapper span — a
+                                       disabled button has pointer-events:none
+                                       so it can't trigger its own tooltip. #}
+                                    <span
+                                        class="d-inline-block"
+                                        tabindex="0"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            _(
+                                                'This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first).'
+                                            ),
+                                            'top',
+                                        ) }}
+                                    >
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-danger text-nowrap"
+                                            style="pointer-events: none;"
+                                            disabled
+                                        >
+                                            <i class="bi-x-lg"></i>
+                                        </button>
+                                    </span>
+                                {% else %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-danger text-nowrap"
+                                        hx-delete="{{ url_for(
+                                            'admin-team-remove-player',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            team_id=admin_team.id,
+                                            player_id=player.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        title="{{ _('Remove from team') }}"
+                                    >
+                                        <i class="bi-x-lg"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </form>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

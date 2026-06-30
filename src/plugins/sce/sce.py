@@ -35,6 +35,7 @@ from plugins.utils import (
     Plugin,
 )
 from web.controllers.base_controller import BaseController
+from utils.enum import EventType
 
 if TYPE_CHECKING:
     from data.player import TournamentPlayer, Player
@@ -98,6 +99,10 @@ class SCEPlugin(Plugin):
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME
+
+    @property
+    def supported_event_types(self) -> list[EventType]:
+        return [EventType.INDIVIDUAL]
 
     @staticmethod
     def static_name() -> str:

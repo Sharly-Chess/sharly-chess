@@ -1,0 +1,16 @@
+{% include '/admin/pairings/team_block_header.html' %}
+<tbody
+    id="team-block-body-{{ team_board.id }}"
+>
+    {% if team_board.team_b %}
+        {% for board in team_board.boards %}
+            {# 'In play' keeps only the boards still awaiting a result
+               (fully finished matches are already filtered out). #}
+            {% if not show_without_results or board.no_result %}
+                {% with lineup_team_board=team_board %}
+                    {% include '/admin/pairings/team_block_row.html' %}
+                {% endwith %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</tbody>

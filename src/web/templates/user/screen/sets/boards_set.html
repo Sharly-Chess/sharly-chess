@@ -25,9 +25,15 @@
         {% endif %}
     </h2>
     {% set board_columns = columns_by_tournament_id[tournament.id] %}
+    {# Match blocks only exist for team-vs-team pairing systems; flat
+       fixed-table systems (e.g. Molter) render the individual board
+       list even in a team event. #}
+    {% if tournament.is_team_tournament and tournament.pairing_system.paired_by_team %}
+        {% include '/user/screen/sets/team_matches_set.html' %}
+    {% else %}
     <div class="row gy-2 gx-3 screen-set-row mx-0">
         {% for boards in screen_set.boards_lists %}
-            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
+            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2{% endif %}">
                 <div
                     class="d-grid grid-striped"
                     style="grid-template-columns: {% for column in board_columns %}{{ column.grid_column_template }} {% endfor %};"
@@ -56,7 +62,7 @@
                                 {% if editable %}editable{% endif %}
                                 {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
                                 {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
-                                {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
+                                {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.identifier %}last_result_updated{% endif %}"
                         >
                             {% for column in board_columns %}
                                 <div
@@ -74,7 +80,7 @@
                                             event_uniq_id=user_event.uniq_id,
                                             screen_uniq_id=screen.uniq_id,
                                             tournament_id=tournament.id,
-                                            board_id=board.id
+                                            board_id=board.identifier
                                         ) }}"
                                         hx-target="body"
                                         hx-indicator="#please-wait"
@@ -96,4 +102,5 @@
             </div>
         {% endfor %}
     </div>
+    {% endif %}
 </div>

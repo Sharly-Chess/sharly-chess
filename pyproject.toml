@@ -74,6 +74,9 @@ tests = ["pytest", "pytest-playwright", "pytest-asyncio", "pytest-base-url"]
 
 scripts = ["scour ~= 0.38.2"]
 
+[tool.setuptools.package-data]
+"data.pairings" = ["resources/*.mrec"]
+
 [tool.ruff.format]
 quote-style = "single"
 

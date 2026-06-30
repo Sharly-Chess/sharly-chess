@@ -18,6 +18,7 @@ from data.print_documents.place_cards.data import (
     PlaceCardPlayer,
     PlaceCardBoard,
     PlaceCardPairing,
+    PlaceCardTeam,
 )
 from data.print_documents.place_cards.item_style import PlaceCardItemStyle
 from data.print_documents.place_cards.toml_container import TOMLContainer
@@ -125,10 +126,11 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         player: PlaceCardPlayer | None = None,
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
+        team: PlaceCardTeam | None = None,
         preview: bool = False,
     ) -> str:
         """Returns the HTML to output for the item."""
-        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, player, board, pairing, preview)}</div>'
+        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, player, board, pairing, team, preview)}</div>'
 
     @abstractmethod
     def _inner_html(
@@ -138,6 +140,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         player: PlaceCardPlayer | None = None,
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
+        team: PlaceCardTeam | None = None,
         preview: bool = False,
     ) -> str:
         """Returns the inner HTML of the item."""
@@ -284,6 +287,7 @@ class PlaceCardText(PlaceCardItem):
         player: PlaceCardPlayer | None = None,
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
+        team: PlaceCardTeam | None = None,
         preview: bool = False,
     ) -> str:
         if not self.display:
@@ -298,6 +302,7 @@ class PlaceCardText(PlaceCardItem):
                 'player': player,
                 'board': board,
                 'pairing': pairing,
+                'team': team,
             },
             on_error=self.render_error('Jinja error'),
         )
@@ -316,6 +321,11 @@ class PlaceCardText(PlaceCardItem):
             'font-weight': 'bold' if self.bold else 'normal',
             'font-style': 'italic' if self.italic else 'normal',
         }
+        if self.italic:
+            # Italic glyphs overhang their advance width; without a
+            # little slack the item's overflow:hidden clips the last
+            # letter's slant.
+            item_css['padding-right'] = '0.15em'
         match self.text_align:
             case 'left' | 'center' | 'right' | 'auto':
                 item_css['text-align'] = self.text_align
@@ -446,6 +456,7 @@ class PlaceCardImage(PlaceCardItem):
         player: PlaceCardPlayer | None = None,
         board: PlaceCardBoard | None = None,
         pairing: PlaceCardPairing | None = None,
+        team: PlaceCardTeam | None = None,
         preview: bool = False,
     ) -> str:
         return f'<div class="card-item image {self.css_class}"></div>'

@@ -50,7 +50,7 @@
                             </td>
                         {% endif %}
                     {% endfor %}
-                    <td class="result">{{ document.grid_results_points(results) }}</td>
+                    <td class="result fw-bold">{{ document.grid_results_points(results) }}</td>
                     {% with player=tournament.tournament_players_by_id[player_id] %}
                         {% for tie_break_value in player.tie_break_values %}
                             <td class="tie-break text-nowrap">

@@ -51,10 +51,24 @@
     {% include 'players/players_import_diff_modal.html' %}
 {% elif modal == 'unpaired-player' %}
     {% include 'pairings/unpaired_player_modal.html' %}
+{% elif modal == 'unpaired-team' %}
+    {% include 'pairings/unpaired_team_modal.html' %}
+{% elif modal == 'team-record' %}
+    {% include 'players/team_record_modal.html' %}
 {% elif modal == 'safety-mode' %}
     {% include 'pairings/safety_mode_modal.html' %}
 {% elif modal == 'pairing' %}
     {% include 'pairings/pairing_modal.html' %}
+{% elif modal == 'team-pairing' %}
+    {% include 'pairings/team_pairing_modal.html' %}
+{% elif modal == 'team-point-adjustment' %}
+    {% include 'pairings/team_point_adjustment_modal.html' %}
+{% elif modal == 'team-check-in' %}
+    {% include 'teams/team_check_in_modal.html' %}
+{% elif modal == 'team-affiliations' %}
+    {% include 'teams/team_affiliations_modal.html' %}
+{% elif modal == 'pairing-team-absents' %}
+    {% include 'pairings/team_absents_modal.html' %}
 {% elif modal == 'unfinished-round' %}
     {% include 'pairings/unfinished_round_modal.html' %}
 {% elif modal == 'pairing-ratings-warning' %}
@@ -63,8 +77,12 @@
     {% include 'pairings/absents_modal.html' %}
 {% elif modal == 'pairing-settings' %}
     {% include 'pairings/settings/modal.html' %}
+{% elif modal == 'prohibited-pairings' %}
+    {% include 'pairings/prohibited_pairings_modal.html' %}
 {% elif modal == 'pairing_info' %}
     {% include 'pairings/pairing_info_modal.html' %}
+{% elif modal == 'team_pairing_info' %}
+    {% include 'pairings/team_pairing_info_modal.html' %}
 {% elif modal == 'screens_config' %}
     {% include 'screens/screens_config_modal.html' %}
 {% elif modal == 'screen' %}
@@ -113,6 +131,14 @@
     {% include 'prizes/prize_form_modal.html' %}
 {% elif modal == 'prize_players' %}
     {% include 'prizes/prize_players_modal.html' %}
+{% elif modal == 'team' %}
+    {% include 'teams/team_modal.html' %}
+{% elif modal == 'team_delete' %}
+    {% include 'teams/team_delete_modal.html' %}
+{% elif modal == 'team_roster' %}
+    {% include 'teams/team_roster_modal.html' %}
+{% elif modal == 'team_lineups' %}
+    {% include 'teams/team_lineups_modal.html' %}
 {% elif modal == 'account' %}
     {% include 'accounts/account_modal.html' %}
 {% elif modal == 'account_delete' %}

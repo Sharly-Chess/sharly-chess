@@ -110,7 +110,33 @@
                 {% set tournament=family.tournament %}
                 <div>
                     {{ loop.index }}.
-                    {% if tournament.current_round and family.type in ['boards', 'input'] %}
+                    {% if admin_event.is_team_event %}
+                        {% if tournament.current_round and family.type in ['boards', 'input'] and family.shows_team_matches %}
+                            {% if screen_set.first_team_match %}
+                                {{ _('Matches from #%(first)d to #%(last)d', first=screen_set.first_team_match.display_number, last=screen_set.last_team_match.display_number) }}
+                            {% else %}
+                                {{ _('Teams (none now)') }}
+                            {% endif %}
+                        {% elif tournament.current_round and family.type in ['boards', 'input'] %}
+                            {{ _(
+                                'Boards from #%(first)d to #%(last)d',
+                                first=screen_set.first_board.id + tournament.first_board_number - 1,
+                                last=screen_set.last_board.id + tournament.first_board_number - 1
+                            ) }}
+                        {% elif family.type in ['boards', 'input', 'players', 'check-in'] %}
+                            {% if screen_set.first_team_by_name %}
+                                {{ _('Teams from %(first)s to %(last)s', first=screen_set.first_team_by_name.name[:12], last=screen_set.last_team_by_name.name[:12]) }}
+                            {% else %}
+                                {{ _('Teams (none now)') }}
+                            {% endif %}
+                        {% else %} {# family.type == 'ranking' #}
+                            {% if screen_set.first_team_standing %}
+                                {{ _('Teams from #%(first)d to #%(last)d', first=screen_set.first_team_standing['rank'], last=screen_set.last_team_standing['rank']) }}
+                            {% else %}
+                                {{ _('Teams (none now)') }}
+                            {% endif %}
+                        {% endif %}
+                    {% elif tournament.current_round and family.type in ['boards', 'input'] %}
                         {{ _(
                             'Boards from #%(first)d to #%(last)d',
                             first=screen_set.first_board.id + tournament.first_board_number - 1,

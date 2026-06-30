@@ -16,60 +16,71 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mb-2">
+                        {% set is_team = admin_event.is_team_event %}
+                        {% set is_team_matches = admin_screen_set.shows_team_matches %}
+                        {% if admin_screen.type in ['boards', 'input'] %}
+                            {% set name_placeholder = _('E.g.: Matches %%f to %%l') if is_team_matches else _('E.g.: Boards %%f to %%l') %}
+                        {% else %}
+                            {% set name_placeholder = _('E.g.: Teams %%f to %%l') if is_team else _('E.g.: Players %%f to %%l') %}
+                        {% endif %}
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('Name:'),
-                            placeholder=_('E.g.: Boards %%f to %%l') if admin_screen.type in ['boards', 'input'] else _('E.g.: Players %%f to %%l'),
+                            placeholder=name_placeholder,
                             data=data, errors=errors
                         ) }}
                     </div>
                 </div>
                 {% if admin_screen.type in ['boards', 'input', 'players', 'ranking', 'check-in'] %}
+                    {% set is_team = admin_event.is_team_event %}
+                    {% set is_team_matches = admin_screen_set.shows_team_matches %}
+                    {% if admin_screen.type in ['boards', 'input'] %}
+                        {% set first_label = _('First match:') if is_team_matches else _('First board:') %}
+                        {% set last_label = _('Last match:') if is_team_matches else _('Last board:') %}
+                        {% set first_tooltip = _('The table number of the first match to select.') if is_team_matches else _('The number of the first board to select.') %}
+                        {% set last_tooltip = _('The table number of the last match to select.') if is_team_matches else _('The number of the last board to select.') %}
+                    {% elif admin_screen.type in ('players', 'check-in') %}
+                        {% set first_label = _('First team:') if is_team else _('First player:') %}
+                        {% set last_label = _('Last team:') if is_team else _('Last player:') %}
+                        {% set first_tooltip = _('The number of the first team to select.') if is_team else _('The number of the first player to select.') %}
+                        {% set last_tooltip = _('The number of the last team to select.') if is_team else _('The number of the last player to select.') %}
+                    {% else %}
+                        {% set first_label = _('First team:') if is_team else _('First player:') %}
+                        {% set last_label = _('Last team:') if is_team else _('Last player:') %}
+                        {% set first_tooltip = _('The rank of the first team to select.') if is_team else _('The rank of the first player to select.') %}
+                        {% set last_tooltip = _('The rank of the last team to select.') if is_team else _('The rank of the last player to select.') %}
+                    {% endif %}
                     <h4 class="mt-4">
                         {% if admin_screen.type in ['boards', 'input'] %}
-                            {{ _('Board selection (by number)') }}
+                            {{ _('Match selection (by table number)') if is_team_matches else _('Board selection (by number)') }}
                         {% elif admin_screen.type in ('players', 'check-in') %}
-                            {{ _('Player selection (by alphabetical order)') }}
+                            {{ _('Team selection (by alphabetical order)') if is_team else _('Player selection (by alphabetical order)') }}
                         {% else %}
-                            {{ _('Player selection (by rank)') }}
+                            {{ _('Team selection (by rank)') if is_team else _('Player selection (by rank)') }}
                         {% endif %}
                     </h4>
                     <div class="row gy-2 gx-3">
-                        <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
-                            {% if admin_screen.type in ['boards', 'input'] %}
-                                {% set tooltip_text=_('The number of the first board to select.') %}
-                            {% elif admin_screen.type in ('players', 'check-in') %}
-                                {% set tooltip_text=_('The number of the first player to select.') %}
-                            {% else %}
-                                {% set tooltip_text=_('The rank of the first player to select.') %}
-                            {% endif %}
+                        <div class="{% if admin_screen.type in ['boards', 'input'] and not is_team_matches %}col-4{% else %}col-6{% endif %}">
                             {{ admin_macros.number_input(
                                 name='first',
-                                label=_('First board:') if admin_screen.type in ['boards', 'input'] else _('First player:'),
+                                label=first_label,
                                 placeholder=1,
-                                tooltip_text=tooltip_text,
+                                tooltip_text=first_tooltip,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
-                        <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
-                            {% if admin_screen.type in ['boards', 'input'] %}
-                                {% set tooltip_text=_('The number of the last board to select.') %}
-                            {% elif admin_screen.type in ('players', 'check-in') %}
-                                {% set tooltip_text=_('The number of the last player to select.') %}
-                            {% else %}
-                                {% set tooltip_text=_('The rank of the last player to select.') %}
-                            {% endif %}
+                        <div class="{% if admin_screen.type in ['boards', 'input'] and not is_team_matches %}col-4{% else %}col-6{% endif %}">
                             {{ admin_macros.number_input(
                                 name='last',
-                                label=_('Last board:') if admin_screen.type in ['boards', 'input'] else _('Last player:'),
+                                label=last_label,
                                 placeholder=_('last'),
-                                tooltip_text=tooltip_text,
+                                tooltip_text=last_tooltip,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
-                        {% if admin_screen.type in ['boards', 'input'] %}
+                        {% if admin_screen.type in ['boards', 'input'] and not is_team_matches %}
                             <div class="col-4">
                                 {{ admin_macros.text_input(
                                     name='fixed_boards_str',

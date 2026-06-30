@@ -1,0 +1,5 @@
+{%- if player.team -%}
+    {{ player.team.name }}
+{%- else -%}
+    <span class="text-muted">{{ _('—') }}</span>
+{%- endif -%}

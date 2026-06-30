@@ -10,12 +10,16 @@ from data.input_output.dict_reader import dict_to_dataclass
 from data.input_output.tournament_importers import FileTournamentImporter
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from plugins.ffe import PLUGIN_NAME
+from utils.enum import EventType
 from plugins.ffe.papi_converter import PapiConverter, PapiData
 from plugins.manager import plugin_manager
 from plugins.pairing_acceleration.utils import PairingAccelerationUtils
 
 
 class FfeTournamentImporter(FileTournamentImporter):
+    # Papi (and its JSON twin) is an individual-tournament format.
+    supported_event_types = [EventType.INDIVIDUAL]
+
     @classmethod
     def static_id(cls) -> str:
         return f'{PLUGIN_NAME}-{cls.sub_id()}'

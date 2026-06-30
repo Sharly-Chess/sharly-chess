@@ -5,11 +5,44 @@
 <div id="messages" hx-swap-oob="beforeend">
     {% include '/common/messages.html' %}
 </div>
-{% with swap_oob=True %}
-    <template>
-        {% include '/admin/pairings/pairing_row.html' %}
-    </template>
-{% endwith %}
+{% if board.stored_board.team_board_id %}
+    {% with team_board=admin_tournament.team_boards_by_id[board.stored_board.team_board_id], lineup_team_board=admin_tournament.team_boards_by_id[board.stored_board.team_board_id], swap_oob=True %}
+        <template>
+            {% include '/admin/pairings/team_block_row.html' %}
+        </template>
+        <template>
+            {% include '/admin/pairings/team_block_header.html' %}
+        </template>
+    {% endwith %}
+{% else %}
+    {% set is_flat_team = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
+    {% set molter_code = none %}
+    {% if is_flat_team %}
+        {% set _refs = admin_tournament.pairing_variation.engine.board_references(
+            admin_tournament, admin_round
+        ) %}
+        {% set molter_code = _refs[board.index] if board.index < _refs|length else none %}
+    {% endif %}
+    {% with swap_oob=True, molter_code=molter_code %}
+        <template>
+            {% include '/admin/pairings/pairing_row.html' %}
+        </template>
+    {% endwith %}
+    {% if is_flat_team %}
+        {# Refresh the sidebar so penalty badges (e.g. a forfeit) update
+           without a manual page reload. #}
+        {% with
+            swap_oob=True,
+            teams=admin_tournament.teams_in_pairing_order,
+            title=_('Teams'),
+            table_id='lineup-teams-table'
+        %}
+            <template>
+                {% include '/admin/pairings/team_lineup_table.html' %}
+            </template>
+        {% endwith %}
+    {% endif %}
+{% endif %}
 {% with swap_oob=True %}
     <template>
         {% include '/admin/pairings/pairing_table_header.html' %}
