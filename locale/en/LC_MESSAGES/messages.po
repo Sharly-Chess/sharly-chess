@@ -3309,12 +3309,6 @@ msgstr ""
 msgid "Home page:"
 msgstr ""
 
-msgid "Home-and-away requires an even number of rounds."
-msgstr ""
-
-msgid "Home-and-away requires exactly {n} teams ({actual} found)."
-msgstr ""
-
 msgid "Honduras"
 msgstr ""
 
@@ -6583,9 +6577,6 @@ msgstr ""
 msgid "Standard team Swiss"
 msgstr ""
 
-msgid "Standard two-game team match"
-msgstr ""
-
 msgid "Standard:"
 msgstr ""
 
@@ -6698,9 +6689,6 @@ msgstr ""
 
 #, python-format
 msgid "Team [%(team)s] successfully created!"
-msgstr ""
-
-msgid "Team [{name}] has fewer than {n} players."
 msgstr ""
 
 msgid "Team [{team}] has been created."
@@ -7694,9 +7682,6 @@ msgid "Turkiye"
 msgstr ""
 
 msgid "Turkmenistan"
-msgstr ""
-
-msgid "Two-game team match"
 msgstr ""
 
 msgid "Type"

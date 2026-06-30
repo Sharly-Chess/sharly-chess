@@ -3309,12 +3309,6 @@ msgstr "Accueil"
 msgid "Home page:"
 msgstr "Site web :"
 
-msgid "Home-and-away requires an even number of rounds."
-msgstr "L'aller-retour exige un nombre pair de rondes."
-
-msgid "Home-and-away requires exactly {n} teams ({actual} found)."
-msgstr "L'aller-retour exige exactement {n} équipes ({actual} trouvées)."
-
 msgid "Honduras"
 msgstr "Honduras"
 
@@ -6585,9 +6579,6 @@ msgstr "Système suisse standard"
 msgid "Standard team Swiss"
 msgstr "Suisse par équipes standard"
 
-msgid "Standard two-game team match"
-msgstr "Match d'équipe aller-retour standard"
-
 msgid "Standard:"
 msgstr "Standard :"
 
@@ -6701,9 +6692,6 @@ msgstr "Suisse par équipes"
 #, python-format
 msgid "Team [%(team)s] successfully created!"
 msgstr "Équipe [%(team)s] créée avec succès !"
-
-msgid "Team [{name}] has fewer than {n} players."
-msgstr "L'équipe [{name}] a moins de {n} joueur·euses."
 
 msgid "Team [{team}] has been created."
 msgstr "L'équipe [{team}] a été créée."
@@ -7697,9 +7685,6 @@ msgstr "Turquie"
 
 msgid "Turkmenistan"
 msgstr "Turkménistan"
-
-msgid "Two-game team match"
-msgstr "Match d'équipe aller-retour"
 
 msgid "Type"
 msgstr "Type"
