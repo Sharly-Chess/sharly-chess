@@ -84,11 +84,6 @@
                             >
                         </div>
                     </div>
-                    <div class="d-grid mt-3">
-                        <button type="submit" class="btn btn-outline-primary btn-sm">
-                            <i class="bi-floppy-fill pe-1"></i>{{ _('Save points') }}
-                        </button>
-                    </div>
                 </form>
             {% endif %}
         </div>
@@ -101,6 +96,16 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Close') }}
             </button>
+            {% if client.can_update_results(admin_tournament.id) %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="btn btn-primary text-nowrap"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Save points') }}
+                </button>
+            {% endif %}
         </div>
     </div>
 </div>
