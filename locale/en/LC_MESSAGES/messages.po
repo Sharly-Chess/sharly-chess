@@ -782,6 +782,9 @@ msgstr ""
 msgid "Afghanistan"
 msgstr ""
 
+msgid "After round #{round}"
+msgstr ""
+
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
 msgstr ""
 
@@ -944,8 +947,11 @@ msgstr ""
 msgid "Arbiter"
 msgstr ""
 
+msgid "Arbiter:"
+msgstr ""
+
 #, python-format
-msgid "Arbiter — %(name)s"
+msgid "Arbiter: %(name)s"
 msgstr ""
 
 msgid "Archive"
@@ -1142,6 +1148,9 @@ msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Bd."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
+msgstr ""
+
+msgid "Before the first round"
 msgstr ""
 
 msgid "Belarus"
@@ -1418,14 +1427,14 @@ msgstr ""
 msgid "Captain name"
 msgstr ""
 
-#, python-format
-msgid "Captain — %(team)s"
-msgstr ""
-
 msgid "Captain's name"
 msgstr ""
 
 msgid "Captain:"
+msgstr ""
+
+#, python-format
+msgid "Captain: %(name)s"
 msgstr ""
 
 msgid "Cash"
@@ -3956,9 +3965,6 @@ msgstr ""
 msgid "Marshall Islands"
 msgstr ""
 
-msgid "Match *** ROUND-ROBIN SCHEDULE ROW HEADER"
-msgstr "Match"
-
 msgid "Match points"
 msgstr ""
 
@@ -4533,6 +4539,9 @@ msgid "No roles defined."
 msgstr ""
 
 msgid "No rotators"
+msgstr ""
+
+msgid "No rounds in this tournament."
 msgstr ""
 
 msgid "No saved sets."
@@ -6660,6 +6669,10 @@ msgid "TRF file"
 msgstr ""
 
 msgid "TRF26"
+msgstr ""
+
+#, python-format
+msgid "Table %(table)d"
 msgstr ""
 
 msgid "Table numbers:"

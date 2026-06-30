@@ -782,6 +782,9 @@ msgstr "Affiliation."
 msgid "Afghanistan"
 msgstr "Afghanistan"
 
+msgid "After round #{round}"
+msgstr "Après la ronde n°{round}"
+
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
 msgstr "Après la dernière ronde, réorganiser manuellement les joueur·euses ex æquo depuis l'onglet Appariements."
 
@@ -944,9 +947,12 @@ msgstr "Avril"
 msgid "Arbiter"
 msgstr "Arbitre"
 
+msgid "Arbiter:"
+msgstr "Arbitre :"
+
 #, python-format
-msgid "Arbiter — %(name)s"
-msgstr "Arbitre — %(name)s"
+msgid "Arbiter: %(name)s"
+msgstr "Arbitre : %(name)s"
 
 msgid "Archive"
 msgstr "Archiver"
@@ -1143,6 +1149,9 @@ msgstr "Éch."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"
+
+msgid "Before the first round"
+msgstr "Avant la première ronde"
 
 msgid "Belarus"
 msgstr "Bélarus"
@@ -1418,15 +1427,15 @@ msgstr "Capitaine"
 msgid "Captain name"
 msgstr "Nom du capitaine"
 
-#, python-format
-msgid "Captain — %(team)s"
-msgstr "Capitaine — %(team)s"
-
 msgid "Captain's name"
 msgstr "Nom du ou de la capitaine"
 
 msgid "Captain:"
 msgstr "Capitaine :"
+
+#, python-format
+msgid "Captain: %(name)s"
+msgstr "Capitaine : %(name)s"
 
 msgid "Cash"
 msgstr "Espèces"
@@ -3728,7 +3737,7 @@ msgid "Layout"
 msgstr "Présentation"
 
 msgid "Leave all unchecked to print every match."
-msgstr "Laisser décoché pour imprimer tous les matchs."
+msgstr "Ne cocher aucune case pour imprimer tous les matchs."
 
 msgid "Lebanon"
 msgstr "Liban"
@@ -3955,9 +3964,6 @@ msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ron
 
 msgid "Marshall Islands"
 msgstr "Îles Marshall"
-
-msgid "Match *** ROUND-ROBIN SCHEDULE ROW HEADER"
-msgstr "Match"
 
 msgid "Match points"
 msgstr "Points de match"
@@ -4534,6 +4540,9 @@ msgstr "Aucun rôle défini."
 
 msgid "No rotators"
 msgstr "Aucun écran rotatif"
+
+msgid "No rounds in this tournament."
+msgstr "Aucune ronde dans ce tournoi."
 
 msgid "No saved sets."
 msgstr "Aucun ensemble enregistré."
@@ -6663,6 +6672,10 @@ msgstr "Fichier TRF"
 
 msgid "TRF26"
 msgstr "TRF26"
+
+#, python-format
+msgid "Table %(table)d"
+msgstr "Table %(table)d"
 
 msgid "Table numbers:"
 msgstr "Numéros des tables :"

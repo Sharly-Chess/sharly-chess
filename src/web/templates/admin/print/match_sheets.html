@@ -240,11 +240,7 @@
                 <div class="signatures">
                     <div class="signature">
                         <div class="signature-label">
-                            {% if arbiter_name %}
-                                {{ _('Arbiter — %(name)s', name=arbiter_name) }}
-                            {% else %}
-                                {{ _('Arbiter') }}
-                            {% endif %}
+                            {{ _('Arbiter: %(name)s', name=arbiter_name or '') }}
                         </div>
                         <div class="signature-line"></div>
                     </div>
@@ -387,31 +383,19 @@
             <div class="signatures">
                 <div class="signature">
                     <div class="signature-label">
-                        {% if team_board.team_a.captain_display_name %}
-                            {{ _('Captain — %(name)s', name=team_board.team_a.captain_display_name) }}
-                        {% else %}
-                            {{ _('Captain — %(team)s', team=team_board.team_a.name) }}
-                        {% endif %}
+                        {{ _('Captain: %(name)s', name=team_board.team_a.captain_display_name or '') }}
                     </div>
                     <div class="signature-line"></div>
                 </div>
                 <div class="signature">
                     <div class="signature-label">
-                        {% if arbiter_name %}
-                            {{ _('Arbiter — %(name)s', name=arbiter_name) }}
-                        {% else %}
-                            {{ _('Arbiter') }}
-                        {% endif %}
+                        {{ _('Arbiter: %(name)s', name=arbiter_name or '') }}
                     </div>
                     <div class="signature-line"></div>
                 </div>
                 <div class="signature">
                     <div class="signature-label">
-                        {% if team_board.team_b.captain_display_name %}
-                            {{ _('Captain — %(name)s', name=team_board.team_b.captain_display_name) }}
-                        {% else %}
-                            {{ _('Captain — %(team)s', team=team_board.team_b.name) }}
-                        {% endif %}
+                        {{ _('Captain: %(name)s', name=team_board.team_b.captain_display_name or '') }}
                     </div>
                     <div class="signature-line"></div>
                 </div>
