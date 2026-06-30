@@ -285,6 +285,12 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             and self.admin_tournament.pairing_system.paired_by_team
         ):
             return
+        if not self.admin_tournament.pairing_system.show_unpaired_team_modal:
+            # Fixed-schedule team systems (round-robin, two-game match) pair
+            # every team from the schedule, present or not — there's no
+            # absent / unpaired team to manage, so leave the lists empty and
+            # let the Pair button generate directly (no absent-team prompt).
+            return
         teams = [
             team
             for team in self.admin_tournament.event.sorted_teams

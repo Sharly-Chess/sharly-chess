@@ -598,11 +598,6 @@ class DoubleBergerPairingEngine(BergerPairingEngine):
         ]
 
 
-# ---------------------------------------------------------------------------------
-# Team pairing engine stubs. Real implementations will land in future bites.
-# ---------------------------------------------------------------------------------
-
-
 def _team_ui_sort_key(team: 'Team') -> tuple[float, str]:
     """Sort key matching the team-admin UI:
     ``(pairing_number or ∞, name.lower())``. Shared by the pairing
@@ -762,6 +757,12 @@ class _TeamPairingBase(PairingEngine, ABC):
                 return (1, stronger, weaker, -stronger_tpn, -weaker_tpn)
 
             sorted_pairs = sorted(team_pairs, key=_pair_sort_key, reverse=True)
+            paired_team_ids = {
+                team_id
+                for pair in sorted_pairs
+                for team_id in pair
+                if team_id is not None
+            }
 
             kept = []
             # Real / PAB matches own the table numbers 0…d-1, exactly
@@ -796,9 +797,16 @@ class _TeamPairingBase(PairingEngine, ABC):
             # Absent teams (check_in=False) that aren't already on a
             # manual bye envelope get an auto-ZPB envelope for this
             # round. bbpPairings was instructed to skip them via 240
-            # records, so its output won't reference them either.
+            # records, so its output won't reference them either. Teams
+            # the schedule already paired this round (fixed-schedule
+            # systems pair every team, present or not) keep their match —
+            # no spurious ZPB on top of it.
             for team in tournament.teams:
-                if team.check_in or team.id in manual_bye_team_ids:
+                if (
+                    team.check_in
+                    or team.id in manual_bye_team_ids
+                    or team.id in paired_team_ids
+                ):
                     continue
                 absent_stb = StoredTeamBoard(
                     id=None,
