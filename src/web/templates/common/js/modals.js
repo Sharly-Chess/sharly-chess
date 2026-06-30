@@ -64,6 +64,7 @@ function handleModalOpened(static) {
                     if (event.target.getAttribute("type") === "search") {
                         return;
                     }
+                    event.preventDefault();
                     modalForm.dispatchEvent(new CustomEvent("enterKeypressFromModal"));
                 }
             })

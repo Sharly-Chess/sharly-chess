@@ -1,0 +1,94 @@
+{% import '/common/macros.j2' as macros with context %}
+{# Side-column "Teams" table for team systems (flat fixed-table, Swiss and
+   round-robin): lists every team with a lineup-edit button, persistent
+   access to lineups whatever the pairing state.
+   Requires: ``teams``, ``title``, ``table_id``. #}
+{% if teams %}
+    <table
+        id="{{ table_id }}"
+        {% if swap_oob %}hx-swap-oob="true"{% endif %}
+        class="table prominent table-striped table-sm w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
+    >
+        <thead
+            id="{{ table_id }}-header"
+            class="position-sticky z-2"
+            style="top: var(--header-height);"
+        >
+            <tr>
+                <th colspan="2">{{ title }} ({{ teams|length }})</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+                <tr
+                    id="team-row-{{ team.id }}"
+                    class="team-row"
+                    data-team-id="{{ team.id }}"
+                >
+                    <td class="align-middle">
+                        {% if team.pairing_label %}
+                            <strong class="text-muted me-1">{{ team.pairing_label }}</strong>
+                        {% endif %}
+                        <a
+                            class="player-link"
+                            hx-get="{{ url_for(
+                                'admin-team-record-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=team.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        ><strong>{{ team.name }}</strong></a>
+                        {% set _mp, _gp = admin_tournament.effective_point_adjustment(
+                            team.id, admin_round
+                        ) %}
+                        {% if _mp or _gp %}
+                            <a
+                                class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_mp < 0 or _gp < 0) else 'text-bg-success' }}"
+                                style="cursor: pointer;"
+                                hx-get="{{ url_for(
+                                    'admin-team-point-adjustment-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=admin_round,
+                                    team_id=team.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    macros.point_adjustment_tooltip(admin_tournament, team.id, admin_round),
+                                    'top'
+                                ) }}
+                            >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</a>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if client.can_update_tournaments %}
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                hx-get="{{ url_for(
+                                    'admin-team-lineups-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    team_id=team.id,
+                                ) }}?round={{ admin_round }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
+                            >
+                                <i class="bi-list-ol"></i>
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

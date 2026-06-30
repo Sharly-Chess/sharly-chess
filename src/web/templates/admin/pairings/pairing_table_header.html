@@ -6,6 +6,10 @@
         hx-swap-oob="true"
     {% endif %}
 >
+    {% set hide_player_points = (
+        admin_tournament.event.is_team_event
+        and admin_tournament.pairing_system.paired_by_team
+    ) %}
     <tr>
         <th class="text-nowrap">
             {{ _(
@@ -13,16 +17,20 @@
                 remaining=admin_tournament.boards_without_result(admin_round)|length
             ) }}
         </th>
-        <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
-        {% if admin_tournament.print_real_points(admin_round) %}
-            <th>&nbsp;</th>
+        {% if not hide_player_points %}
+            <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
+            {% if admin_tournament.print_real_points(admin_round) %}
+                <th>&nbsp;</th>
+            {% endif %}
         {% endif %}
         <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}</th>
         <th class="text-center">{{ _('Result') }}</th>
         <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}</th>
-        {% if admin_tournament.print_real_points(admin_round) %}
-            <th>&nbsp;</th>
+        {% if not hide_player_points %}
+            {% if admin_tournament.print_real_points(admin_round) %}
+                <th>&nbsp;</th>
+            {% endif %}
+            <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
         {% endif %}
-        <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
     </tr>
 </thead>

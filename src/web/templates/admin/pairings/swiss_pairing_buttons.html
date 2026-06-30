@@ -8,6 +8,7 @@
     {% set set_all_present_message = (
         _('Pairings generation disabled if there are no players to pair.')
         if not admin_boards and not admin_unpaired and admin_absent_players
+            and not admin_event.is_team_event
     ) %}
     {% if set_all_present_message %}
         <button
@@ -55,6 +56,7 @@
             {{ _('Info') }}
         </button>
     </div>
+    {% include 'prohibited_button.html' %}
     {% set can_use_pairing_engine = client.can_use_pairing_engine(admin_tournament.id) %}
     {% if 'FULL_PAIRING' in allowed_actions %}
         <div
@@ -82,9 +84,16 @@
                             tournament_id=admin_tournament.id,
                             round=admin_round
                         ) }}"
-                    {% elif admin_round == 1 %}
+                    {% elif admin_round == 1 and admin_tournament.pairing_variation.settings %}
                         hx-get="{{ url_for(
                             'pairings-settings-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round
+                        ) }}"
+                    {% elif admin_team_absent %}
+                        hx-get="{{ url_for(
+                            'pairings-team-absents-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round
@@ -120,14 +129,18 @@
         tournament_id=admin_tournament.id,
         round=admin_round,
     ) %}
-    {% if action in existing_actions and admin_tournament.is_round_partially_paired(admin_round) %}
+    {% if
+        admin_tournament.pairing_system.supports_complementary_pairings
+        and action in existing_actions
+        and admin_tournament.is_round_partially_paired(admin_round)
+    %}
         <div
             {% if not client.can_use_pairing_engine(admin_tournament.id) %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to generate complementary pairings.'), 'top') }}
             {% elif pairings_generation_disabled_message %}
                 {{ macros.tooltip_attributes('warning', pairings_generation_disabled_message, 'top') }}
             {% else %}
-                {{ macros.tooltip_attributes('info', _('Pair the unpaired players with each other.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Pair the unpaired teams with each other.') if admin_tournament.is_team_tournament else _('Pair the unpaired players with each other.'), 'top') }}
             {% endif %}
         >
             <button
@@ -170,8 +183,11 @@
         tournament_id=admin_tournament.id,
         round=admin_round,
     ) %}
-    {% if action in existing_actions %}
-        {% if not admin_tournament.round_has_result(admin_round) %}
+    {% if action in existing_actions and admin_tournament.round_has_pairings(admin_round) %}
+        {# Auto-forfeit results from marking a player absent shouldn't
+           block round-unpair; only actual played results (or
+           user-entered forfeit wins on present players) should. #}
+        {% if not admin_tournament.round_has_played_result(admin_round) %}
             <div
                 {% if not client.can_unpair_round(admin_tournament.id) %}
                     {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}

@@ -310,6 +310,9 @@ class TieBreakValue:
     def display_string_value(self) -> str:
         value = self.display_value
         if isinstance(value, float):
+            decimals = self.tie_break.display_decimals
+            if decimals is not None:
+                return f'{value:.{decimals}f}'
             return Utils.points_str(value)
         return value
 

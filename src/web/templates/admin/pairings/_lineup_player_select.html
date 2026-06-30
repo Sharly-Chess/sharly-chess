@@ -1,0 +1,97 @@
+{# Inline player swap dropdown rendered inside a team-block pairing row.
+
+   Two modes:
+   * ``side_player`` set: swap with a teammate currently on another
+     board of this team match, or punch a hole at this slot.
+   * ``side_player`` is None (hole): fill the slot from a teammate
+     already on another board (which then becomes a hole) or from a
+     bench player (a roster member not currently on any board of this
+     team match).
+
+   Requires: side_team (Team for this side), side ('W' or 'B'), board,
+   lineup_team_board. ``side_player`` is optional (None ⇒ hole).
+#}
+{% set is_hole = side_player is none %}
+{# Teammates currently on other boards of this team match. #}
+{% set teammates = [] %}
+{% set on_match_player_ids = [] %}
+{% for other in lineup_team_board.boards %}
+    {% set other_white = other.optional_white_tournament_player %}
+    {% set other_black = other.black_tournament_player %}
+    {% if other.identifier != board.identifier %}
+        {% if other_white and other_white.team_id == side_team.id %}
+            {% do teammates.append(other_white) %}
+        {% elif other_black and other_black.team_id == side_team.id %}
+            {% do teammates.append(other_black) %}
+        {% endif %}
+    {% endif %}
+    {% if other_white and other_white.team_id == side_team.id %}
+        {% do on_match_player_ids.append(other_white.id) %}
+    {% endif %}
+    {% if other_black and other_black.team_id == side_team.id %}
+        {% do on_match_player_ids.append(other_black.id) %}
+    {% endif %}
+{% endfor %}
+{# Bench: team players not on any board of this match — only relevant
+   when filling a hole. #}
+{% set bench = [] %}
+{% if is_hole %}
+    {% for p in side_team.players %}
+        {% if p.id not in on_match_player_ids %}
+            {% do bench.append(p) %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<select
+    name="new_player_id"
+    class="form-select form-select-sm lineup-player-select"
+    hx-patch="{{ url_for(
+        'admin-pairings-swap-board-player',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+        round=admin_round,
+        board_id=board.identifier,
+        side=side,
+    ) }}"
+    hx-target="body"
+    hx-include="this"
+    hx-trigger="change"
+    hx-indicator="#please-wait"
+    {% if not client.can_use_pairing_engine(admin_tournament.id) %}
+        disabled
+        {{ macros.tooltip_attributes(
+            'warning',
+            _('You are not allowed to change the lineup.'),
+            'top'
+        ) }}
+    {% endif %}
+>
+    {% if is_hole %}
+        <option value="" selected disabled>
+            — {{ _('Empty (hole)') }} —
+        </option>
+    {% else %}
+        <option value="{{ side_player.id }}" selected>
+            {{ side_player.full_name }} ({{ side_player.rating_str }})
+        </option>
+    {% endif %}
+    {% for tm in teammates %}
+        <option value="{{ tm.id }}">
+            {{ tm.full_name }} ({{ tm.rating_str }})
+        </option>
+    {% endfor %}
+    {% if bench %}
+        <optgroup label="{{ _('Substitutes Bench') }}">
+            {% for p in bench %}
+                <option value="{{ p.id }}">
+                    {{ p.full_name }}
+                </option>
+            {% endfor %}
+        </optgroup>
+    {% endif %}
+    {% if not is_hole %}
+        <option value="0">
+            — {{ _('Absent (hole in lineup)') }} —
+        </option>
+    {% endif %}
+</select>

@@ -92,9 +92,21 @@
     padding: 0.25rem 0.25rem;
     border-bottom: 1px solid var(--bs-border-color);
 }
-.grid-striped > .board-row:nth-of-type(odd) > * {
+.grid-striped > .board-row:nth-of-type(odd) > *,
+.grid-striped > .player-row:nth-of-type(odd) > * {
     color: var(--bs-table-striped-color);
     background-color: rgba(0, 0, 0, 0.05);
+}
+.board-color-chip {
+    display: inline-block;
+    width: 0.65em;
+    height: 0.65em;
+    margin-right: 0.35em;
+    border: 1px solid #555;
+    background-color: #fff;
+}
+.board-color-chip.black {
+    background-color: #000;
 }
 .input-screen .board-row.editable {
     cursor: pointer;
@@ -119,7 +131,8 @@
 .illegal-moves-cell.last_check_in_updated, .illegal-moves-cell.last_illegal_move_updated {
     color: red !important;
 }
-.board-row.last_result_updated > * {
+.board-row.last_result_updated > *,
+.board-row.last_result_updated .text-muted {
     color: red !important;
 }
 /*

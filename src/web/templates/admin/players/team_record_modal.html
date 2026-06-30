@@ -1,0 +1,207 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{% set tournament = admin_team.tournament %}
+{% set bye_definition_allowed = tournament.pairing_system.allow_bye_definition %}
+{% set can_set_hpb = client.can_set_half_point_bye(tournament.id) %}
+{% set can_set_fpb = client.can_set_full_point_bye(tournament.id) %}
+{% set current_round = tournament.current_round or 1 %}
+{% set bye_label_map = {
+    'ZPB': _('Zero-Point Bye'),
+    'HPB': _('Half-Point Bye'),
+    'FPB': _('Full-Point Bye'),
+    'PAB': _('Pairing Allocated Bye'),
+} %}
+<div id="team-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
+    <div class="modal-content" data-team-id="{{ admin_team.id }}">
+        <div class="modal-header d-flex justify-content-between align-items-end">
+            <div class="d-flex flex-column gap-0 align-items-start">
+                <h2 class="modal-title">
+                    {{ admin_team.name }}
+                    {% if client.can_check_in_players(tournament.id) %}
+                        {% set status_present = admin_team.check_in %}
+                        <i
+                            class="{% if status_present %}bi-check-circle-fill text-success{% else %}bi-x-circle-fill text-danger{% endif %} cursor-pointer ps-1 fs-4"
+                            {% set click_detail = _(
+                                'Click to mark as &quot;%(status)s&quot;',
+                                status=_('Absent') if status_present else _('Present')
+                            ) %}
+                            {{ macros.tooltip_attributes('', (
+                                '<div class="fw-bold">' ~ (_('Present') if status_present else _('Absent')) ~ '</div>'
+                                '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+                            ), 'right') }}
+                            hx-patch="{{ url_for(
+                                'records-check-in-team',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=admin_team.id,
+                            ) }}"
+                            onclick="refreshMessagesIgnored += 1"
+                        ></i>
+                    {% endif %}
+                </h2>
+                <div>{{ tournament.name }}</div>
+                <div>
+                    <strong>{{ _('Players:') }}</strong>
+                    {% for player in admin_team.players %}
+                        {{ player.full_name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="modal-body">
+            <h4>{{ _('Tournament record') }}</h4>
+            <table
+                id="team-record-table"
+                class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
+            >
+                <thead>
+                    <tr>
+                        <th class="text-nowrap text-center">{{ _('Round') }}</th>
+                        <th class="text-nowrap text-center">{{ _('Score') }}</th>
+                        <th class="text-nowrap text-start">{{ _('Result') }}</th>
+                        <th class="text-nowrap text-start">{{ _('Opponent') }}</th>
+                        <th class="text-nowrap text-center">{{ _('Bonus / penalty') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for round in range(1, tournament.rounds + 1) %}
+                        {% set name = 'round_' ~ round ~ '_result' %}
+                        {% set id = name|replace('_', '-') %}
+                        {% set ns = namespace(team_board=none) %}
+                        {% for tb in tournament.get_round_team_boards(round) %}
+                            {% set stb = tb.stored_team_board %}
+                            {% if stb.team_a_id == admin_team.id or stb.team_b_id == admin_team.id %}
+                                {% set ns.team_board = tb %}
+                            {% endif %}
+                        {% endfor %}
+                        {% set team_board = ns.team_board %}
+                        {% set is_paired = team_board is not none and team_board.team_b %}
+                        {% set is_bye_envelope = team_board is not none and not team_board.team_b %}
+                        {% set bye = admin_team.round_bye_type(round) %}
+                        {% set manual_bye = bye in ('ZPB', 'HPB', 'FPB') %}
+                        {% set bye_modifiable = (
+                            round >= current_round
+                            and not is_paired
+                            and (team_board is none or manual_bye)
+                        ) %}
+                        <tr
+                            id="round-{{ round }}"
+                            class="{{ 'highlight' if round == current_round and tournament.playing else '' }}"
+                        >
+                            <th class="text-nowrap text-center">{{ round }}</th>
+                            <td class="text-nowrap text-center">
+                                {% if is_paired %}{{ team_board.match_score_display }}{% endif %}
+                            </td>
+                            {% if bye_modifiable %}
+                                <td colspan="2" class="text-nowrap text-start">
+                                    {% if bye_definition_allowed %}
+                                        {{ admin_macros.select_input(
+                                            name=name,
+                                            select_options=get_team_bye_options(client, admin_team, round),
+                                            tooltip_select=true,
+                                            data=data,
+                                        ) }}
+                                        <script>
+                                            $('#{{ id }}').change(function () {
+                                                htmx.ajax('PATCH',
+                                                    "{{ url_for(
+                                                        'admin-team-set-bye',
+                                                        event_uniq_id=admin_event.uniq_id,
+                                                        team_id=admin_team.id,
+                                                        round=round
+                                                    ) }}?result=" + $(this).val(),
+                                                    {
+                                                        target: "body",
+                                                        swap: "outerHTML",
+                                                    },
+                                                );
+                                            });
+                                        </script>
+                                    {% else %}
+                                        {{ bye_label_map.get(bye, '') }}
+                                    {% endif %}
+                                </td>
+                            {% else %}
+                                <td class="text-nowrap text-start">
+                                    {% if is_paired %}
+                                        {% set a_gp, b_gp = team_board.game_points %}
+                                        {% set is_team_a = team_board.stored_team_board.team_a_id == admin_team.id %}
+                                        {% set own = a_gp if is_team_a else b_gp %}
+                                        {% set opp_pts = b_gp if is_team_a else a_gp %}
+                                        {% set all_unplayed = team_board.boards and team_board.boards|selectattr('no_result')|list|length == team_board.boards|length %}
+                                        {% if all_unplayed %}
+                                            {{ _('Pending') }}
+                                        {% elif own > opp_pts %}
+                                            {{ _('Win') }}
+                                        {% elif own < opp_pts %}
+                                            {{ _('Loss') }}
+                                        {% else %}
+                                            {{ _('Draw') }}
+                                        {% endif %}
+                                    {% elif is_bye_envelope %}
+                                        {{ bye_label_map.get(bye, '') }}
+                                    {% endif %}
+                                </td>
+                                <td class="text-nowrap text-start">
+                                    {% if is_paired %}
+                                        {% set opp_team = team_board.team_b if team_board.stored_team_board.team_a_id == admin_team.id else team_board.team_a %}
+                                        {{ opp_team.name }}
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                            <td class="text-nowrap text-center align-middle">
+                                {% set _mp, _gp = tournament.effective_point_adjustment(
+                                    admin_team.id, round
+                                ) %}
+                                {% if _mp or _gp %}
+                                    <span
+                                        class="badge rounded-pill {{ 'text-bg-danger' if (_mp < 0 or _gp < 0) else 'text-bg-success' }}"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            macros.point_adjustment_tooltip(tournament, admin_team.id, round),
+                                            'top'
+                                        ) }}
+                                    >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</span>
+                                {% endif %}
+                                {% if client.can_update_results(tournament.id) %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-outline-primary ms-1"
+                                        hx-get="{{ url_for(
+                                            'admin-team-point-adjustment-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            round=round,
+                                            team_id=admin_team.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-target="#modal-wrapper"
+                                        {{ macros.tooltip_attributes('info', _('Edit bonus / penalty'), 'top') }}
+                                    >
+                                        <i class="bi-pencil"></i>
+                                    </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <span class="fst-italic">
+                {{ _('Byes for past rounds can be edited from the pairings page for that round.') }}
+            </span>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    requestRefresh();
+</script>

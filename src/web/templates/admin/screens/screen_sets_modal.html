@@ -5,8 +5,15 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
+                {% set _first_set = admin_screen.sorted_screen_sets | first %}
                 {% if admin_screen.type in ['boards', 'input'] %}
-                    {{ _('Board sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                    {% if _first_set and _first_set.shows_team_matches %}
+                        {{ _('Match sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                    {% else %}
+                        {{ _('Board sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                    {% endif %}
+                {% elif admin_event.is_team_event %}
+                    {{ _('Team sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
                 {% else %}
                     {{ _('Player sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
                 {% endif %}

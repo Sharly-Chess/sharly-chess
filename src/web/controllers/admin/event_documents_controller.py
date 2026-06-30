@@ -107,6 +107,21 @@ class EventDocumentsController(BaseEventAdminController):
             ]
             for tournament in allowed_tournaments
         }
+        teams_per_tournament_id = {
+            tournament.id: [
+                {'id': team.id, 'name': team.name}
+                for team in sorted(
+                    tournament.teams,
+                    key=lambda team: (
+                        team.pairing_number
+                        if team.pairing_number is not None
+                        else float('inf'),
+                        team.name.lower(),
+                    ),
+                )
+            ]
+            for tournament in allowed_tournaments
+        }
 
         template_context = {
             'modal': 'print',
@@ -116,6 +131,7 @@ class EventDocumentsController(BaseEventAdminController):
                 allowed_tournaments
             ),
             'players_per_tournament_id': players_per_tournament_id,
+            'teams_per_tournament_id': teams_per_tournament_id,
             'document_ids_by_option_id': document_ids_by_option_id,
             'allowed_tournaments': allowed_tournaments,
             'document_options': {document.id: document.name for document in documents},

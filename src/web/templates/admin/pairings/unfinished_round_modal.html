@@ -22,6 +22,13 @@
                         unpaired_count
                     ) }}</li>
                 {% endif %}
+                {% if hole_count %}
+                    <li>{{ ngettext(
+                        '%(num)d empty table to pair',
+                        '%(num)d empty tables to pair',
+                        hole_count
+                    ) }}</li>
+                {% endif %}
                 {% if absent_count %}
                     <li>{{ ngettext(
                         '%(num)d absent player without byes',

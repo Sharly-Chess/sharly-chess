@@ -1,0 +1,119 @@
+{# Team-tournament body of the boards/input screen set: one block per
+   match — a header row showing the two teams left/right (mirroring the
+   white/black sides of an individual board row) with the match score,
+   followed by the match's board rows on the shared board-column grid.
+   The column split counts matches (a match spans several rows). #}
+<div class="row gy-2 gx-3 screen-set-row mx-0 px-3 py-2">
+    {% for matches in screen_set.team_matches_lists %}
+        <div class="col screen-set-col {% if not loop.first %}border-start border-2{% endif %}">
+            {% for team_board in matches %}
+                <div class="team-match-block mb-3">
+                    <div class="d-flex align-items-center justify-content-between fw-bold text-bg-dark rounded-top px-2 py-1 mb-1">
+                        <span class="text-start" style="flex: 1 1 0;">
+                            {% if team_board.display_number %}
+                                <span class="opacity-75 pe-2">{{ team_board.display_number }}.</span>
+                            {% endif %}
+                            {{ team_board.team_a.name }}
+                        </span>
+                        <span class="text-end" style="flex: 1 1 0;">
+                            {% if team_board.team_b %}
+                                {{ team_board.team_b.name }}
+                            {% else %}
+                                <span class="fst-italic opacity-75">{{ _('Bye') }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    {% if team_board.boards %}
+                        {% set pattern = tournament.color_pattern or '' %}
+                        <div
+                            class="d-grid grid-striped"
+                            style="grid-template-columns: 2em 1fr 4em 1fr;"
+                        >
+                            {% for board in team_board.boards %}
+                                {# Team A's player always sits on the left
+                                   (like the pairings table); the chips
+                                   carry the actual colours. Sides come
+                                   from the players' actual teams (permute-
+                                   safe); the colour pattern is only the
+                                   double-hole fallback. #}
+                                {% set _w_team_id, _b_team_id = team_board.board_team_ids(board) %}
+                                {% if _w_team_id is not none or _b_team_id is not none %}
+                                    {% set team_a_is_white = _w_team_id == team_board.stored_team_board.team_a_id %}
+                                {% elif board.index < pattern|length %}
+                                    {% set team_a_is_white = (pattern[board.index]|upper) == 'W' %}
+                                {% else %}
+                                    {% set team_a_is_white = (board.index or 0) % 2 == 0 %}
+                                {% endif %}
+                                {% set wtp = board.optional_white_tournament_player %}
+                                {% set btp = board.black_tournament_player %}
+                                {% if team_a_is_white %}
+                                    {% set left_tp, right_tp = wtp, btp %}
+                                {% else %}
+                                    {% set left_tp, right_tp = btp, wtp %}
+                                {% endif %}
+                                {% set raw_result = board.result_str %}
+                                {% if raw_result and '-' in raw_result %}
+                                    {% set parts = raw_result.split('-') %}
+                                    {% set display_result = (parts[0] ~ ' - ' ~ parts[1]) if team_a_is_white else (parts[1] ~ ' - ' ~ parts[0]) %}
+                                {% else %}
+                                    {% set display_result = raw_result %}
+                                {% endif %}
+                                {# A forfeit hole has no editable result —
+                                   both players must be present. #}
+                                {% set editable =
+                                    screen.type == 'input'
+                                    and wtp and btp
+                                    and (
+                                        client.can_update_results(tournament.id)
+                                        or
+                                        (not board.result_str and client.can_enter_results(tournament.id))
+                                    )
+                                %}
+                                <div
+                                    id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
+                                    class="
+                                        board-row
+                                        {% if editable %}editable{% endif %}
+                                        {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
+                                        {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
+                                        {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.identifier %}last_result_updated{% endif %}"
+                                    {% if editable %}
+                                        hx-get="{{ url_for(
+                                            'user-result-modal',
+                                            event_uniq_id=user_event.uniq_id,
+                                            display_controller_id=display_controller.id,
+                                            tournament_id=tournament.id,
+                                            board_id=board.identifier
+                                        ) if display_controller else url_for(
+                                            'user-result-modal',
+                                            is_screen=1,
+                                            event_uniq_id=user_event.uniq_id,
+                                            screen_uniq_id=screen.uniq_id,
+                                            tournament_id=tournament.id,
+                                            board_id=board.identifier
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-wrapper"
+                                    {% endif %}
+                                >
+                                    <div class="text-end pe-1">{{ board.index + 1 }}</div>
+                                    <div class="text-start text-nowrap overflow-hidden text-ellipsis">
+                                        <span class="board-color-chip {{ 'white' if team_a_is_white else 'black' }}"></span>
+                                        {%- if left_tp %} {{ left_tp.full_name }} <span class="text-muted">{{ left_tp.rating_str }}</span>{% elif board.result.name == 'REST_GAME' %} <span class="fst-italic text-muted">—</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                                    </div>
+                                    <div class="text-center px-2">{{ display_result }}</div>
+                                    <div class="text-start text-nowrap overflow-hidden text-ellipsis">
+                                        <span class="board-color-chip {{ 'black' if team_a_is_white else 'white' }}"></span>
+                                        {%- if right_tp %} {{ right_tp.full_name }} <span class="text-muted">{{ right_tp.rating_str }}</span>{% elif board.result.name == 'REST_GAME' %} <span class="fst-italic text-muted">—</span>{% else %} <span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>

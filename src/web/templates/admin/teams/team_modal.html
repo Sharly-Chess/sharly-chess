@@ -1,0 +1,138 @@
+<div
+    class="modal-dialog modal-dialog-scrollable admin-team-edit-modal"
+    style="--bs-modal-width: min(92vw, 640px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit team') }}
+                {% else %}
+                    {{ _('Create team') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if previous_team %}
+                {% with type='success', message=_(
+                    'Team [%(team)s] successfully created!',
+                    team=previous_team.name
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                {% if action == 'create' %}
+                    hx-post="{{ url_for('admin-team-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% else %}
+                    hx-patch="{{ url_for(
+                        'admin-team-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        team_id=admin_team.id,
+                    ) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('%(string)s:', string=_('Name')),
+                            placeholder=_('E.g.: Sharly Chess Club A'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='tournament_id',
+                            label=_('Tournament:'),
+                            tooltip_text=_(
+                                'Assign this team to a tournament now '
+                                'or leave unassigned.'
+                            ),
+                            select_options=tournament_options,
+                            disabled=tournament_locked,
+                            input_tooltip=_(
+                                'This team has already been paired; its '
+                                'tournament cannot be changed.'
+                            ) if tournament_locked else '',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='federation',
+                            label=_('Federation:'),
+                            select_options=federation_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {% include '/admin/teams/team_group_fields.html' %}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='captain',
+                            label=_('%(string)s:', string=_('Captain')),
+                            tooltip_text=_(
+                                'Choose a captain from the team roster, or '
+                                'enter the name of a non-playing captain.'
+                            ),
+                            select_options=captain_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div
+                        class="col-12"
+                        id="captain-name-field"
+                        {% if data.get('captain') != 'other' %}hidden{% endif %}
+                    >
+                        {{ admin_macros.text_input(
+                            name='captain_name',
+                            label=_('%(string)s:', string=_('Captain name')),
+                            placeholder=_('E.g.: John Smith'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+            </form>
+            <script>
+                $('#captain').on('change', function () {
+                    document.getElementById('captain-name-field').hidden =
+                        this.value !== 'other';
+                });
+            </script>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <span id="submit-button-container">
+                {% if action == 'create' %}
+                    {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+                {% else %}
+                    <button
+                        type="submit"
+                        form="modal-form"
+                        class="text-nowrap white btn btn-primary"
+                    >
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Save') }}
+                    </button>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+{% if previous_team %}
+    <script>requestRefresh()</script>
+{% endif %}
