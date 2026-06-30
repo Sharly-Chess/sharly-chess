@@ -1243,7 +1243,7 @@ class PlayerAdminController(BaseEventAdminController):
             },
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
             federation=WebContext.form_data_to_str(data, 'federation') or '',
-            club=WebContext.form_data_to_str(data, 'club') or '',
+            club=(WebContext.form_data_to_str(data, 'club') or '').strip(),
             fixed=WebContext.form_data_to_int(data, 'fixed'),
             # Carry the existing team membership through the rebuild; team
             # changes are applied separately (and skipped for paired
