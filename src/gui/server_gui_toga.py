@@ -40,9 +40,7 @@ from common import (
     LOG_DIR,
     FLATPAK_ID,
     DATA_DIR,
-    set_env_variable,
-    DATA_DIR_ENV,
-    PREVIOUS_DATA_DIR_ENV,
+    persist_data_directory,
     DEVEL_ENV,
 )
 from common.data_recovery import DataRecovery
@@ -580,7 +578,7 @@ class SharlyChessServerToga(toga.App):
         )
 
         self.data_path_input = toga.TextInput(
-            value=str(DATA_DIR.absolute()),
+            value=self._shorten_path(str(DATA_DIR.absolute())),
             readonly=True,
             flex=1,
         )
@@ -729,6 +727,16 @@ class SharlyChessServerToga(toga.App):
             self.settings_view.add(self.recover_box)
             self.recover_button.style = self.active_button_style
 
+    @staticmethod
+    def _shorten_path(path: str, max_len: int = 50) -> str:
+        """Middle-ellipsis a path so both the root and the final folder name
+        stay visible when it is too long for the field."""
+        if len(path) <= max_len:
+            return path
+        head = (max_len - 1) // 2
+        tail = max_len - 1 - head
+        return f'{path[:head]}…{path[-tail:]}'
+
     def _open_data_path_explorer(self, widget):
         self._open_dir_in_explorer(DATA_DIR)
 
@@ -762,8 +770,7 @@ class SharlyChessServerToga(toga.App):
         )
         if not await self.main_window.dialog(confirm_dialog):
             return
-        set_env_variable(DATA_DIR_ENV, str(path))
-        set_env_variable(PREVIOUS_DATA_DIR_ENV, str(DATA_DIR))
+        persist_data_directory(path, DATA_DIR)
 
         assert self.settings_view is not None
         assert self.data_path_input is not None
