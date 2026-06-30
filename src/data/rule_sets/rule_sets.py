@@ -88,12 +88,19 @@ class RuleSet(IdentifiableEntity, ABC):
         submitted values are overridden on save."""
         return set()
 
-    def form_defaults(self, pairing_system_id: str | None = None) -> dict[str, str]:
+    def form_defaults(
+        self,
+        pairing_system_id: str | None = None,
+        pairing_variation_id: str | None = None,
+    ) -> dict[str, str]:
         """Form-data string values for the rule set's managed fields,
         possibly varying with the chosen pairing system (different
         primary score / scoring values / round counts per system).
-        Used by the modal JS to populate inputs when the rule set or
-        pairing system changes. Sub-classes override; default empty."""
+        ``pairing_variation_id`` is the full variation id (system +
+        variation) for defaults that differ between variations of one
+        system — e.g. single vs double round-robin round counts. Used
+        by the modal JS to populate inputs when the rule set or pairing
+        changes. Sub-classes override; default empty."""
         return {}
 
     @property
@@ -118,12 +125,18 @@ class RuleSet(IdentifiableEntity, ABC):
         leaves the choice free."""
         return None
 
-    def rounds_for_pairing(self, pairing_system_id: str) -> int | None:
+    def rounds_for_pairing(
+        self,
+        pairing_system_id: str,
+        pairing_variation_id: str | None = None,
+    ) -> int | None:
         """Round count this rule set imposes for the given pairing
-        system id. ``None`` (default) means no lock — the arbiter
-        chooses freely. When set, :meth:`apply_defaults` writes the
-        value on save and the tournament modal locks the ``rounds``
-        field."""
+        system / variation. ``None`` (default) means no lock — the
+        arbiter chooses freely. ``pairing_variation_id`` lets the count
+        differ between variations of one system (e.g. a double
+        round-robin runs fewer rounds than the single one). When set,
+        :meth:`apply_defaults` writes the value on save and the
+        tournament modal locks the ``rounds`` field."""
         return None
 
     def molter_table_overrides(self) -> dict[tuple[int, int], 'FixedPairingTable']:

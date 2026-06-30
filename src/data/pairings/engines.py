@@ -500,8 +500,8 @@ class BergerPairingEngine(RoundRobinPairingEngine):
     @classmethod
     @cache
     def get_berger_table(cls, player_count: int) -> dict[int, list[tuple[int, int]]]:
-        if player_count <= 2:
-            raise ValueError(f'There must be at least 3 players, got {player_count}')
+        if player_count < 2:
+            raise ValueError(f'There must be at least 2 players, got {player_count}')
         if player_count % 2 == 1:
             player_count += 1
         round_count = cls.get_single_encounter_round_count(player_count)
@@ -1093,83 +1093,13 @@ class TeamSwissEngine(_TeamPairingBase):
         return pairs
 
 
-class TeamTwoGameMatchEngine(_TeamPairingBase):
-    """Two-team home-and-away engine: exactly 2 teams meet for an even
-    number of rounds, alternating colours. Round 1 = ``teams[0]`` (W)
-    vs ``teams[1]`` (B); round 2 swaps; the pattern repeats for any
-    additional even-numbered rounds the arbiter configures."""
-
-    REQUIRED_TEAMS = 2
-
-    @property
-    def pab_result(self) -> Result:
-        return Result.REST_GAME
-
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
-        teams = self._teams_for_tournament(tournament)
-        if len(teams) != self.REQUIRED_TEAMS:
-            return _(
-                'Home-and-away requires exactly {n} teams ({actual} found).'
-            ).format(n=self.REQUIRED_TEAMS, actual=len(teams))
-        if tournament.rounds <= 0 or tournament.rounds % 2 != 0:
-            return _('Home-and-away requires an even number of rounds.')
-        n = tournament.team_player_count or 0
-        if n <= 0:
-            return _('Tournament has no team-player count configured.')
-        for team in teams:
-            if len(team.players) < n:
-                return _('Team [{name}] has fewer than {n} players.').format(
-                    name=team.name,
-                    n=n,
-                )
-        return None
-
-    def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
-    ) -> str | None:
-        if message := super().pairings_generation_disabled_message(
-            tournament, at_round
-        ):
-            return message
-        if any(
-            not tournament.is_round_finished(round_) for round_ in range(1, at_round)
-        ):
-            return _(
-                'Pairings generation not allowed if previous rounds have '
-                'missing results.'
-            )
-        return None
-
-    @override
-    def generate_pairings(
-        self,
-        tournament: 'Tournament',
-        round_: int,
-        partial_pairings: bool = False,
-    ) -> str:
-        if self.pairings_generation_disabled_message(tournament, round_):
-            raise ValueError(
-                f'Pairings generation not allowed for round {round_} '
-                f'of tournament [{tournament.name}].'
-            )
-        teams = self._teams_for_tournament(tournament)
-        # Odd rounds: teams[0] takes white; even rounds: swap. The
-        # individual board colour pattern is applied downstream.
-        if round_ % 2 == 1:
-            team_pairs: list[tuple[int, int | None]] = [(teams[0].id, teams[1].id)]
-        else:
-            team_pairs = [(teams[1].id, teams[0].id)]
-        self._persist_team_round(tournament, round_, team_pairs)
-        return ''
-
-
 class _TeamRoundRobinEngine(_TeamPairingBase, ABC):
     """Team round-robin shared logic. Subclasses implement
     :meth:`_compute_team_pairs` for the round; this base validates
     round count and persists the resulting matches via
     :meth:`_persist_team_round`."""
 
-    MIN_TEAMS = 3
+    MIN_TEAMS = 2
 
     @property
     def pab_result(self) -> Result:
@@ -1203,11 +1133,9 @@ class _TeamRoundRobinEngine(_TeamPairingBase, ABC):
         n = tournament.team_player_count or 0
         if n <= 0:
             return _('Tournament has no team-player count configured.')
-        for team in teams:
-            if len(team.players) < n:
-                return _('Team [{name}] has fewer than {n} players.').format(
-                    name=team.name, n=n
-                )
+        # Incomplete rosters are allowed (as in team Swiss): a team with
+        # fewer than ``n`` players just leaves a hole on the missing
+        # boards, scored as a forfeit win for the present opponent.
         return None
 
     def pairings_generation_disabled_message(
@@ -1329,14 +1257,16 @@ class TeamDoubleBergerEngine(TeamBergerEngine):
         single_rounds = self.get_single_encounter_round_count(team_count)
         # Mirror the individual DoubleBergerPairingEngine remapping for
         # the two last rounds of each half (anti-tripling-colour rule).
-        if round_ <= single_rounds - 2:
-            source_round = round_
-            swap = False
-        elif round_ == single_rounds - 1:
-            source_round = round_ + 1
-            swap = False
-        elif round_ == single_rounds:
-            source_round = round_ - 1
+        # That reversal only exists from three rounds per cycle up; with
+        # fewer (a two-team double round-robin = home and away) the cycle
+        # is taken straight, colours simply inverted on the way back.
+        if round_ <= single_rounds:
+            if single_rounds >= 3 and round_ == single_rounds - 1:
+                source_round = round_ + 1
+            elif single_rounds >= 3 and round_ == single_rounds:
+                source_round = round_ - 1
+            else:
+                source_round = round_
             swap = False
         else:
             source_round = (round_ % (single_rounds + 1)) + 1

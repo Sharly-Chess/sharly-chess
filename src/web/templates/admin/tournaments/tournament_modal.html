@@ -718,18 +718,29 @@
                     <script>
                         (function() {
                             const RULE_SET_MANAGED = {{ rule_set_managed_fields|tojson }};
-                            // Per-pairing-system defaults: nested by
-                            // rule-set id, then by pairing system id
-                            // ('' = no system context).
+                            // Per-pairing defaults: nested by rule-set id,
+                            // then by pairing key — a full variation id, a
+                            // system id, or '' (no context). The variation
+                            // entry wins so variations of one system can
+                            // differ (e.g. single vs double round-robin rounds).
                             const RULE_SET_DEFAULTS = {{ rule_set_defaults|tojson }};
                             const RULE_SET_LOCK_TITLES = {{ rule_set_lock_titles|tojson }};
                             const $ruleSet = $('#rule-set');
                             const $pairingSystem = $('#pairing-system');
 
                             function currentDefaults(ruleId) {
-                                const bySystem = RULE_SET_DEFAULTS[ruleId] || {};
+                                const byPairing = RULE_SET_DEFAULTS[ruleId] || {};
                                 const systemId = $pairingSystem.val() || '';
-                                return bySystem[systemId] || bySystem[''] || {};
+                                let variationId = '';
+                                if (systemId) {
+                                    const fid = (systemId + '_pairing_variation')
+                                        .replace(/_/g, '-');
+                                    variationId = $('#' + fid).val() || '';
+                                }
+                                return byPairing[variationId]
+                                    || byPairing[systemId]
+                                    || byPairing['']
+                                    || {};
                             }
 
                             function inputId(name) {
@@ -811,10 +822,11 @@
                             }
 
                             $ruleSet.on('change', refresh);
-                            // Pairing-system changes flip the locked
-                            // values (different scoring / round counts
-                            // per system), so re-apply on that too.
+                            // Pairing-system and variation changes flip the
+                            // locked values (different scoring / round counts
+                            // per system or variation), so re-apply on both.
                             $pairingSystem.on('change', refresh);
+                            $('[name$="_pairing_variation"]').on('change', refresh);
                             // Disabled inputs are skipped by HTMX during
                             // form serialisation — re-inject their values
                             // into the request parameters at submit time.

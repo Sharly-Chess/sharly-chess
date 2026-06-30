@@ -222,27 +222,30 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         game_points.update(self._game_points_for(pairing_system_id))
         stored_tournament.game_points = game_points
         if pairing_system_id is not None:
-            rounds = self.rounds_for_pairing(pairing_system_id)
+            # ``stored_tournament.pairing`` is the full variation id, so the
+            # round count can differ between variations of a system (single
+            # vs double round-robin).
+            rounds = self.rounds_for_pairing(
+                pairing_system_id, stored_tournament.pairing
+            )
             if rounds is not None:
                 stored_tournament.rounds = rounds
 
     @staticmethod
     def _primary_score_for(pairing_system_id: str | None) -> str:
-        # Suisse / toutes rondes: match points. Molter: game points.
-        # A two-game match isn't mentioned in the cup regs — treat it like
-        # a head-to-head 2-game match where the result hinges on game
-        # points.
-        if pairing_system_id in ('MOLTER', 'TEAM_TWO_GAME_MATCH'):
+        # The cup regs group "Système Suisse ou toutes rondes" under match
+        # points; only Molter scores on game points. A two-game match is a
+        # (double) round-robin, so it falls in with the round-robin group.
+        if pairing_system_id == 'MOLTER':
             return ScoreType.GAME_POINTS.value
         return ScoreType.MATCH_POINTS.value
 
     @staticmethod
     def _game_points_for(pairing_system_id: str | None) -> dict[int, float]:
-        # Suisse / round-robin: wins-only (1 / 0 / 0) — draws are
-        # uncounted "X". Molter and the 2-team two-game match count
-        # every game (1 / 0.5 / 0), the standard chess convention for
-        # a head-to-head match.
-        if pairing_system_id in ('MOLTER', 'TEAM_TWO_GAME_MATCH'):
+        # Suisse / round-robin (incl. a two-game double round-robin):
+        # wins-only (1 / 0 / 0) — draws are the uncounted "X". Only Molter
+        # counts every game (1 / 0.5 / 0).
+        if pairing_system_id == 'MOLTER':
             return _FFE_GAME_POINTS_MOLTER
         return _FFE_GAME_POINTS_SUISSE_STYLE
 
@@ -252,19 +255,26 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         return {
             'TEAM_SWISS': _FFE_SUISSE_TIE_BREAKS,
             'TEAM_ROUND_ROBIN': _FFE_SUISSE_TIE_BREAKS,
-            'TEAM_TWO_GAME_MATCH': _FFE_SUISSE_TIE_BREAKS,
             'MOLTER': _FFE_MOLTER_TIE_BREAKS,
         }
 
     @override
-    def rounds_for_pairing(self, pairing_system_id: str) -> int | None:
-        # Phase rounds per pairing system (Loubatière / Parité):
-        # Swiss / Molter / single RR: 3 rounds; 2-team two-game match: 2.
+    def rounds_for_pairing(
+        self,
+        pairing_system_id: str,
+        pairing_variation_id: str | None = None,
+    ) -> int | None:
+        # Phase rounds (Loubatière / Parité): Swiss / Molter / single
+        # round-robin run 3 rounds; the aller-retour (double round-robin,
+        # a 2-team home-and-away) runs 2.
+        from data.pairings.variations import DoubleBergerTeamRoundRobinVariation
+
+        if pairing_variation_id == DoubleBergerTeamRoundRobinVariation.static_id():
+            return 2
         return {
             'TEAM_SWISS': 3,
             'MOLTER': 3,
             'TEAM_ROUND_ROBIN': 3,
-            'TEAM_TWO_GAME_MATCH': 2,
         }.get(pairing_system_id)
 
     @override
@@ -505,7 +515,11 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         )
 
     @override
-    def form_defaults(self, pairing_system_id: str | None = None) -> dict[str, str]:
+    def form_defaults(
+        self,
+        pairing_system_id: str | None = None,
+        pairing_variation_id: str | None = None,
+    ) -> dict[str, str]:
         gp = self._game_points_for(pairing_system_id)
         defaults: dict[str, str] = {
             'team_player_count': '4',
@@ -526,7 +540,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'gp_pab': _fmt(gp[Result.PAIRING_ALLOCATED_BYE.value]),
         }
         if pairing_system_id is not None:
-            rounds = self.rounds_for_pairing(pairing_system_id)
+            rounds = self.rounds_for_pairing(pairing_system_id, pairing_variation_id)
             if rounds is not None:
                 defaults['rounds'] = str(rounds)
         return defaults

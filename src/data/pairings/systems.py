@@ -19,7 +19,6 @@ if TYPE_CHECKING:
         RoundRobinVariation,
         TeamSwissVariation,
         TeamRoundRobinVariation,
-        TeamTwoGameMatchVariation,
     )
     from data.tournament import Tournament
     from data.event import Event
@@ -380,81 +379,6 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
 
     def default_current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
-
-
-class TeamTwoGameMatchPairingSystem(PairingSystem['TeamTwoGameMatchVariation']):
-    """Two-team mini-match: the same two teams meet for an even number
-    of rounds, alternating colours each round. No home / away
-    distinction — colours are the only thing that swaps."""
-
-    @staticmethod
-    def static_id() -> str:
-        return 'TEAM_TWO_GAME_MATCH'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Two-game team match')
-
-    @override
-    def variation_manager(
-        self, event: 'Event'
-    ) -> EntityManager['TeamTwoGameMatchVariation']:
-        from data.pairings.managers import TeamTwoGameMatchVariationManager
-
-        return TeamTwoGameMatchVariationManager(event)
-
-    @property
-    def allow_rounds_update_once_started(self) -> bool:
-        return False
-
-    @property
-    def allow_player_addition_once_paired(self) -> bool:
-        return False
-
-    @property
-    def allow_bye_definition(self) -> bool:
-        return False
-
-    @property
-    def show_unpaired_player_modal(self) -> bool:
-        return False
-
-    @property
-    def show_unpaired_team_modal(self) -> bool:
-        return False
-
-    @property
-    def allow_team_addition_once_paired(self) -> bool:
-        return False
-
-    @property
-    def split_unpaired_and_bye_players(self) -> bool:
-        return False
-
-    @property
-    def pairing_buttons_template(self) -> str:
-        # Pair round-by-round so the arbiter can adjust each team's
-        # lineup between rounds (a fixed-schedule bulk pair would lock
-        # the round-1 lineups across the whole tournament).
-        return '/admin/pairings/swiss_pairing_buttons.html'
-
-    @cached_property
-    def permission_handler(self) -> PermissionHandler[PairingAction]:
-        # Reuse the Swiss permission set: round-robin's handler omits
-        # FULL_PAIRING, which the single-round pair endpoint requires
-        # whenever the ratings-warning modal falls through to it
-        # (variations with no settings).
-        return SwissPairingSystem().permission_handler
-
-    def default_current_round(self, tournament: 'Tournament') -> int:
-        return next(
-            (
-                round_
-                for round_ in reversed(range(1, tournament.rounds + 1))
-                if tournament.round_has_played_result(round_)
-            ),
-            1 if tournament.has_pairings else 0,
-        )
 
 
 class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):

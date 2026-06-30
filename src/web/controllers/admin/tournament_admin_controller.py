@@ -483,20 +483,27 @@ class TournamentAdminController(BaseEventAdminController):
         rule_sets = RuleSetManager(admin_event).for_event_type(event_type)
         rule_set_options: dict[str, str] = {'': '—'}
         rule_set_managed_fields: dict[str, list[str]] = {}
-        # Per-pairing-system defaults: nested dict keyed by rule-set
-        # id → pairing system id ('' = no system selected). The modal
-        # JS picks the right inner dict on rule_set / pairing changes.
+        # Per-pairing defaults: nested dict keyed by rule-set id → pairing
+        # key ('' = no system, a system id, or a full variation id). The
+        # modal JS prefers the variation entry, falling back to the system
+        # then '', so defaults can differ between variations of one system
+        # (e.g. single vs double round-robin round counts).
         rule_set_defaults: dict[str, dict[str, dict[str, str]]] = {}
         rule_set_lock_titles: dict[str, str] = {}
         for rs in rule_sets:
             rule_set_options[rs.id] = rs.name
             rule_set_managed_fields[rs.id] = sorted(rs.managed_fields)
-            defaults_by_system: dict[str, dict[str, str]] = {
+            defaults_by_pairing: dict[str, dict[str, str]] = {
                 '': dict(rs.form_defaults()),
             }
             for system in pairing_systems:
-                defaults_by_system[system.id] = dict(rs.form_defaults(system.id))
-            rule_set_defaults[rs.id] = defaults_by_system
+                defaults_by_pairing[system.id] = dict(rs.form_defaults(system.id))
+                for variation in system.variation_manager(admin_event).entity_types():
+                    variation_id = variation.static_id()
+                    defaults_by_pairing[variation_id] = dict(
+                        rs.form_defaults(system.id, variation_id)
+                    )
+            rule_set_defaults[rs.id] = defaults_by_pairing
             rule_set_lock_titles[rs.id] = _('Set by rule set "{name}".').format(
                 name=rs.name
             )

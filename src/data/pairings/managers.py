@@ -14,8 +14,6 @@ from data.pairings.variations import (
     TeamRoundRobinVariation,
     BergerTeamRoundRobinVariation,
     DoubleBergerTeamRoundRobinVariation,
-    TeamTwoGameMatchVariation,
-    StandardTeamTwoGameMatchVariation,
 )
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager
@@ -28,7 +26,6 @@ class PairingSystemManager(EventBoundEntityManager[PairingSystem]):
             base: list[type[PairingSystem]] = [
                 systems.TeamSwissPairingSystem,
                 systems.TeamRoundRobinPairingSystem,
-                systems.TeamTwoGameMatchPairingSystem,
                 MolterPairingSystem,
             ]
             plugin_manager.hook_for_event(self.event, 'insert_team_pairing_systems')(
@@ -75,14 +72,6 @@ class TeamRoundRobinVariationManager(EventBoundEntityManager[TeamRoundRobinVaria
         ]
 
 
-class TeamTwoGameMatchVariationManager(
-    EventBoundEntityManager[TeamTwoGameMatchVariation]
-):
-    @override
-    def entity_types(self) -> list[type[TeamTwoGameMatchVariation]]:
-        return [StandardTeamTwoGameMatchVariation]
-
-
 class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
     @override
     def entity_types(self) -> list[type[PairingVariation]]:
@@ -95,10 +84,6 @@ class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
                 + cast(
                     list[type[PairingVariation]],
                     TeamRoundRobinVariationManager(self.event).entity_types(),
-                )
-                + cast(
-                    list[type[PairingVariation]],
-                    TeamTwoGameMatchVariationManager(self.event).entity_types(),
                 )
                 + cast(
                     list[type[PairingVariation]],

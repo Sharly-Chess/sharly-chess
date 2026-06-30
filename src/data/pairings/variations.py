@@ -271,36 +271,6 @@ class TeamSwissVariation(PairingVariation, ABC):
         return 'FIDE_TEAM_TYPEA_MP_GP'
 
 
-class TeamTwoGameMatchVariation(PairingVariation, ABC):
-    @staticmethod
-    def system() -> 'PairingSystem':
-        return systems.TeamTwoGameMatchPairingSystem()
-
-    @property
-    def engine(self) -> PairingEngine:
-        from data.pairings.engines import TeamTwoGameMatchEngine
-
-        return TeamTwoGameMatchEngine()
-
-    @property
-    def settings(self) -> list[PairingSetting]:
-        return []
-
-
-class StandardTeamTwoGameMatchVariation(TeamTwoGameMatchVariation):
-    @staticmethod
-    def variation_id() -> str:
-        return 'STANDARD'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Standard two-game team match')
-
-    @property
-    def trf_encoded_type(self) -> str:
-        return 'CUSTOM_TEAM_ROUNDROBIN'
-
-
 class TeamRoundRobinVariation(PairingVariation, ABC):
     @staticmethod
     def system() -> 'PairingSystem':

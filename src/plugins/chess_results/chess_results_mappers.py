@@ -7,7 +7,6 @@ from data.pairings.systems import (
     SwissPairingSystem,
     TeamRoundRobinPairingSystem,
     TeamSwissPairingSystem,
-    TeamTwoGameMatchPairingSystem,
 )
 from data.tie_breaks import TieBreak, tie_breaks as tb
 from data.tie_breaks import team_tie_breaks as ttb
@@ -35,9 +34,9 @@ class ChessResultsPlayerGender(CoreMapper[str, PlayerGender]):
 
 
 class ChessResultPairingSystem(CoreMapper[tuple[str, str], PairingSystem]):
-    """Pairing system to Chess-Results ``(type, replay)``. The type code
-    alone is not unique: team round-robin and team two-game match are both
-    type ``2``, distinguished by the replay count."""
+    """Pairing system to Chess-Results ``(type, replay)``. Team round-robin
+    is type ``2``; whether it's single- or double-cycle (the replay count)
+    is a variation, decided by the caller, not by the system itself."""
 
     @classmethod
     def _core_object_by_outer_value(cls) -> dict[tuple[str, str], PairingSystem]:
@@ -46,7 +45,6 @@ class ChessResultPairingSystem(CoreMapper[tuple[str, str], PairingSystem]):
             ('1', '1'): RoundRobinPairingSystem(),
             ('3', '1'): TeamSwissPairingSystem(),
             ('2', '1'): TeamRoundRobinPairingSystem(),
-            ('2', '2'): TeamTwoGameMatchPairingSystem(),
         }
 
 
