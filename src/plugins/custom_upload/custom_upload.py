@@ -90,7 +90,7 @@ class CustomUploadPlugin(Plugin):
             NavDataTransferItem(
                 key='custom_upload',
                 title=_('Custom location'),
-                icon_path='/images/web.png',
+                icon_path='/images/server.svg',
                 modal_route_name='custom-upload-modal',
                 has_upload_error=has_upload_error,
             )
