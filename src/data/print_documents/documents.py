@@ -47,6 +47,7 @@ from data.print_documents.options import (
     MatchSheetArbiterPrintOption,
     TeamBergerGridPlayersPrintOption,
     GridPlayerSortPrintOption,
+    TeamGridSortPrintOption,
     ListPlayerSortPrintOption,
     ShowWarningsPrintOption,
     NonMonetaryPrintOption,
@@ -1142,6 +1143,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
         return [
             TournamentPrintOption,
             RoundPrintOption,
+            TeamGridSortPrintOption,
             TeamBergerGridPlayersPrintOption,
         ]
 
@@ -1215,12 +1217,8 @@ class TeamBergerGridPrintDocument(PrintDocument):
         )
         engine = tournament.pairing_variation.engine
         assert isinstance(engine, _TeamRoundRobinEngine)
-        teams = sorted(
-            tournament.teams,
-            key=lambda t: (
-                t.pairing_number if t.pairing_number is not None else float('inf'),
-                t.name.lower(),
-            ),
+        teams = self._get_option(TeamGridSortPrintOption).team_grid_sorter.sorted_teams(
+            tournament
         )
         grid_id_by_team_id = {team.id: i + 1 for i, team in enumerate(teams)}
 

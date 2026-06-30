@@ -25,7 +25,11 @@ from data.print_documents.place_cards.types import (
     PairingCardType,
     TeamCardType,
 )
-from data.print_documents.player_sorters import GridPlayerSorter, ListPlayerSorter
+from data.print_documents.player_sorters import (
+    GridPlayerSorter,
+    ListPlayerSorter,
+    TeamGridSorter,
+)
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from data.print_documents.individual_teams import IndividualTeamType
@@ -87,6 +91,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.TeamBergerGridPlayersPrintOption,
             options.PlayerSplitPrintOption,
             options.GridPlayerSortPrintOption,
+            options.TeamGridSortPrintOption,
             options.ListPlayerSortPrintOption,
             options.ShowWarningsPrintOption,
             options.NonMonetaryPrintOption,
@@ -136,6 +141,16 @@ class PrintGridPlayerSorterManager(EventBoundEntityManager[GridPlayerSorter]):
             player_sorters.StartingRankGridPlayerSorter,
             player_sorters.NameGridPlayerSorter,
             player_sorters.PairingNumberGridPlayerSorter,
+        ]
+
+
+class PrintTeamGridSorterManager(EventBoundEntityManager[TeamGridSorter]):
+    @override
+    def entity_types(self) -> list[type[TeamGridSorter]]:
+        return [
+            player_sorters.RankTeamGridSorter,
+            player_sorters.PairingNumberTeamGridSorter,
+            player_sorters.NameTeamGridSorter,
         ]
 
 

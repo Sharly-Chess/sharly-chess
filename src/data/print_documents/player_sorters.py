@@ -1,11 +1,15 @@
 from abc import ABC, abstractmethod
 from operator import attrgetter
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from data.pairings.settings import BergerNumbersSetting
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
+
+if TYPE_CHECKING:
+    from data.team import Team
 
 
 class GridPlayerSorter(IdentifiableEntity, ABC):
@@ -86,6 +90,59 @@ class PairingNumberGridPlayerSorter(GridPlayerSorter):
             tournament.tournament_players,
             key=lambda p: berger_nb_by_player_id[p.id],
         )
+
+
+class TeamGridSorter(IdentifiableEntity, ABC):
+    @abstractmethod
+    def sorted_teams(self, tournament: Tournament) -> list['Team']:
+        """Get a sorted list of all the teams in a tournament."""
+
+
+class RankTeamGridSorter(TeamGridSorter):
+    @staticmethod
+    def static_id() -> str:
+        return 'team-grid-rank'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Rank')
+
+    def sorted_teams(self, tournament: Tournament) -> list['Team']:
+        return [row['team'] for row in tournament.team_standings()]
+
+
+class PairingNumberTeamGridSorter(TeamGridSorter):
+    @staticmethod
+    def static_id() -> str:
+        return 'team-grid-pairing-number'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Pairing number')
+
+    def sorted_teams(self, tournament: Tournament) -> list['Team']:
+        return sorted(
+            tournament.teams,
+            key=lambda team: (
+                team.pairing_number
+                if team.pairing_number is not None
+                else float('inf'),
+                team.name.lower(),
+            ),
+        )
+
+
+class NameTeamGridSorter(TeamGridSorter):
+    @staticmethod
+    def static_id() -> str:
+        return 'team-grid-name'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Name')
+
+    def sorted_teams(self, tournament: Tournament) -> list['Team']:
+        return sorted(tournament.teams, key=lambda team: team.name.lower())
 
 
 class ListPlayerSorter(IdentifiableEntity, ABC):

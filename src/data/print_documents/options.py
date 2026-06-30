@@ -21,6 +21,8 @@ from data.print_documents.player_sorters import (
     ListPlayerSorter,
     NameListPlayerSorter,
     RankGridPlayerSorter,
+    RankTeamGridSorter,
+    TeamGridSorter,
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
@@ -442,6 +444,41 @@ class GridPlayerSortPrintOption(PrintOption):
         except KeyError:
             # Untranslated, should not happen
             raise OptionError(f'Unknown grid player sorter: {self.value}', self)
+
+
+class TeamGridSortPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'team-grid-sort'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return RankTeamGridSorter.static_id()
+
+    @property
+    def team_grid_sorter_options(self) -> dict[str, str]:
+        from data.print_documents import PrintTeamGridSorterManager
+
+        return PrintTeamGridSorterManager(self.event).options()
+
+    @cached_property
+    def team_grid_sorter(self) -> TeamGridSorter:
+        from data.print_documents import PrintTeamGridSorterManager
+
+        return PrintTeamGridSorterManager(self.event).get_object(self.value)
+
+    @override
+    def validate(self):
+        super().validate()
+        try:
+            _sorter = self.team_grid_sorter
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown team grid sorter: {self.value}', self)
 
 
 class ListPlayerSortPrintOption(PrintOption):
