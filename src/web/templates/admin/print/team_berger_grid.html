@@ -51,7 +51,7 @@
                                 </td>
                             {% endif %}
                         {% endfor %}
-                        <td class="result">{{ row.points_str }}</td>
+                        <td class="result fw-bold">{{ row.points_str }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -66,6 +66,9 @@
                         <th>{{ berger_number }}</th>
                     {% endfor %}
                     <th class="result">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
+                    {% for tie_break in team_tie_breaks %}
+                        <th class="result text-nowrap">{{ tie_break.acronym }}</th>
+                    {% endfor %}
                 </tr>
             </thead>
             <tbody>
@@ -86,7 +89,10 @@
                             {% endif %}
                         {% endfor %}
                         {% set standing = standings_by_team_id.get(team.id) %}
-                        <td class="result">{% if standing %}{{ '%g'|format(standing.mp if tournament.primary_score.name == 'MATCH_POINTS' else standing.gp) }}{% endif %}</td>
+                        <td class="result fw-bold">{% if standing %}{{ '%g'|format(standing.mp if primary_is_mp else standing.gp) }}{% endif %}</td>
+                        {% for tie_break in team_tie_breaks %}
+                            <td class="result text-nowrap">{% if standing %}{{ standing.tie_break_values[loop.index0].display_string_value }}{% endif %}</td>
+                        {% endfor %}
                     </tr>
                 {% endfor %}
             </tbody>

@@ -1139,11 +1139,25 @@ class TeamBergerGridPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, TeamBergerGridPlayersPrintOption]
+        return [
+            TournamentPrintOption,
+            RoundPrintOption,
+            TeamBergerGridPlayersPrintOption,
+        ]
 
     @property
     def title(self) -> str:
         return self.name
+
+    @property
+    def ranking_round(self) -> int:
+        """Round the grid is tallied up to — the chosen round, else the
+        last finished one (same default as the team-ranking document, so
+        the points and tie-breaks match it)."""
+        return (
+            self._get_option(RoundPrintOption).value
+            or self.tournament.max_ranking_round
+        )
 
     @property
     def template_name(self) -> str:
@@ -1170,12 +1184,37 @@ class TeamBergerGridPrintDocument(PrintDocument):
                 _('This document is only available for Round-Robin tournaments.'),
                 option,
             )
+        round_option = self._get_option(RoundPrintOption)
+        if round_option.value is not None:
+            if round_option.value > self.tournament.rounds:
+                raise OptionError(
+                    _(
+                        'This round is not valid (the tournament has {rounds} rounds).'
+                    ).format(rounds=self.tournament.rounds),
+                    round_option,
+                )
+            if round_option.value > self.tournament.max_ranking_round:
+                raise OptionError(
+                    _('This round is not finished (last finished: #{round}).').format(
+                        round=self.tournament.max_ranking_round
+                    ),
+                    round_option,
+                )
 
     @property
     def template_context(self) -> dict[str, Any]:
         from data.pairings.engines import _TeamRoundRobinEngine
 
         tournament = self.tournament
+        # Tally only up to the displayed round (the entire stored schedule
+        # would over-count rounds that aren't finished yet, so the points
+        # and tie-breaks wouldn't match the team-ranking document).
+        bound_round = self.ranking_round
+        subtitle = (
+            _('Before the first round')
+            if bound_round == 0
+            else _('After round #{round}').format(round=bound_round)
+        )
         engine = tournament.pairing_variation.engine
         assert isinstance(engine, _TeamRoundRobinEngine)
         teams = sorted(
@@ -1207,22 +1246,37 @@ class TeamBergerGridPrintDocument(PrintDocument):
                 if b_id is None:
                     continue
                 match_tb = boards_by_round_pair.get((round_, frozenset({a_id, b_id})))
-                score_pair = match_tb.match_score_pair if match_tb is not None else None
+                if (
+                    round_ <= bound_round
+                    and match_tb is not None
+                    and match_tb.match_score_pair is not None
+                ):
+                    a_gp_eff, b_gp_eff = match_tb.effective_game_points
+                    team_a_id = match_tb.stored_team_board.team_a_id
+                else:
+                    a_gp_eff = b_gp_eff = team_a_id = None
                 for mine, theirs in ((a_id, b_id), (b_id, a_id)):
                     if mine not in cells or theirs not in cells[mine]:
                         continue
+                    # The cell shows the *match outcome* for ``mine`` (win 1,
+                    # draw ½, loss 0), decided on effective game points so
+                    # round penalties / bonuses count — same basis as the
+                    # standings, not the raw board score.
                     score = None
-                    if score_pair is not None and tb is not None:
-                        a_score, b_score = score_pair
-                        score = (
-                            f'{a_score} – {b_score}'
-                            if tb.stored_team_board.team_a_id == mine
-                            else f'{b_score} – {a_score}'
-                        )
+                    if team_a_id is not None:
+                        mine_gp = a_gp_eff if team_a_id == mine else b_gp_eff
+                        theirs_gp = b_gp_eff if team_a_id == mine else a_gp_eff
+                        if mine_gp > theirs_gp:
+                            score = '1'
+                        elif mine_gp < theirs_gp:
+                            score = '0'
+                        else:
+                            score = '½'
                     cells[mine][theirs].append({'round': round_, 'score': score})
 
         standings_by_team_id = {
-            entry['team'].id: entry for entry in tournament.team_standings()
+            entry['team'].id: entry
+            for entry in tournament.team_standings(after_round=bound_round)
         }
 
         # Player-level detail: one grid row per player, grouped by
@@ -1263,6 +1317,8 @@ class TeamBergerGridPrintDocument(PrintDocument):
             }
             for tp in ordered_players:
                 for pairing in tp.pairings.values():
+                    if pairing.round > bound_round:
+                        continue
                     opponent_id = pairing.opponent_id
                     if not opponent_id or opponent_id not in player_cells[tp.id]:
                         continue
@@ -1280,6 +1336,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
                 )
             return {
                 'tournament': self.tournament,
+                'subtitle': subtitle,
                 'by_player': True,
                 'player_rows': player_rows,
                 'player_cells': player_cells,
@@ -1288,11 +1345,21 @@ class TeamBergerGridPrintDocument(PrintDocument):
 
         return {
             'tournament': self.tournament,
+            'subtitle': subtitle,
             'by_player': False,
             'teams': teams,
             'grid_id_by_team_id': grid_id_by_team_id,
             'cells': cells,
             'standings_by_team_id': standings_by_team_id,
+            # Mirror the team-ranking document so the Pts column and the
+            # tie-break columns match it exactly.
+            'primary_is_mp': (
+                tournament.pairing_system.paired_by_team
+                and tournament.primary_score == ScoreType.MATCH_POINTS
+            ),
+            'team_tie_breaks': [
+                tb for tb in tournament.tie_breaks if tb.supports_team_mode
+            ],
         }
 
 

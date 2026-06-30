@@ -274,6 +274,10 @@ class Result(IntEnum):
 
     @property
     def to_berger_table(self) -> str:
+        # Berger grids read nicer with ½ for a draw (matching the Pts and
+        # tie-break columns) than the TRF '=' symbol.
+        if self.is_draw:
+            return '½'
         return self.to_trf
 
     @property
