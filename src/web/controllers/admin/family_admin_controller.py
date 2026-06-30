@@ -64,7 +64,10 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             'admin_family': self.admin_family,
             'family_type': self.family_type,
             'family_screen_types': [
-                type_ for type_ in ScreenType if type_.families_allowed
+                type_
+                for type_ in ScreenType
+                if type_.families_allowed
+                and type_.supports_event_type(self.get_admin_event().event_type)
             ],
         }
 
@@ -91,6 +94,11 @@ class FamilyAdminController(BaseEventAdminController):
             case 'create':
                 assert web_context.family_type is not None
                 type_ = web_context.family_type
+                if not ScreenType(type_).supports_event_type(event.event_type):
+                    raise ValueError(
+                        f'Screen type [{type_}] is not available for '
+                        f'[{event.event_type}] events.'
+                    )
             case 'update' | 'clone' | 'delete':
                 type_ = web_context.get_admin_family().stored_family.type
             case _:
@@ -518,7 +526,7 @@ class FamilyAdminController(BaseEventAdminController):
                 template_context |= {
                     'tournament_options': web_context.get_tournament_options(),
                     'screen_type_options': cls._get_screen_type_options(
-                        family_screens_only=True
+                        family_screens_only=True, event=event
                     ),
                     'timer_options': cls._get_timer_options(event),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
@@ -548,6 +556,21 @@ class FamilyAdminController(BaseEventAdminController):
             SessionFamiliesShowDetails(request).set(show_details)
         return self._admin_event_families_render(request)
 
+    @staticmethod
+    def _family_modal_live_data(request: HTMXRequest) -> dict[str, str] | None:
+        """When the modal reloads itself (e.g. on tournament change, to
+        refresh the tournament-dependent labels) the current form values
+        come along as query parameters — keep them instead of rebuilding
+        the defaults. The ``live`` marker distinguishes a reload from a
+        plain modal open."""
+        if request.query_params.get('live'):
+            return {
+                key: value[0] if isinstance(value, list) else value
+                for key, value in request.query_params.dict().items()
+                if key != 'live'
+            }
+        return None
+
     @get(
         path='/family-modal/create/{event_uniq_id:str}/{family_type:str}',
         name='admin-family-create-modal',
@@ -563,6 +586,7 @@ class FamilyAdminController(BaseEventAdminController):
             action='create',
             family_id=None,
             family_type=family_type,
+            data=self._family_modal_live_data(request),
         )
 
     @get(
@@ -580,6 +604,7 @@ class FamilyAdminController(BaseEventAdminController):
             modal='family',
             action=action,
             family_id=family_id,
+            data=self._family_modal_live_data(request),
         )
 
     def _admin_family_update(

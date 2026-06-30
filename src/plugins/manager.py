@@ -130,10 +130,13 @@ class AppPluginManager(PluginManager):
     def hook_for_event(self, event: Optional['Event'], hook_name: str):
         remove_plugins = []
         if event:
+            # event.enabled_plugins (not the raw stored list) so plugins
+            # that don't support the event's type stay out of the hooks.
+            event_plugin_ids = {plugin.id for plugin in event.enabled_plugins}
             remove_plugins = [
                 plugin
                 for plugin in self.enabled_plugins
-                if plugin.id not in event.stored_event.enabled_plugins
+                if plugin.id not in event_plugin_ids
             ]
         return self.subset_hook_caller(hook_name, remove_plugins)
 

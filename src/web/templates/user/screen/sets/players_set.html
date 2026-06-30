@@ -86,7 +86,7 @@
                                             bi-square player-check-in
                                         {% endif %}
                                         player-{{ tournament.id }}-{{ tournament_player.id }}"></i>
-                                    {% if tournament_player.title.short_name %}{{ tournament_player.title.short_name }}&nbsp;{% endif %}{{ tournament_player.full_name }} {{ tournament_player.rating_str }}
+                                    {{ screen_set.players_player_format.format(tournament_player) }}
                                 </div>
                                 <div class="pairing text-nowrap">
                                     {{ tournament_player.not_paired_str }}

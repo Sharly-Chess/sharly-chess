@@ -155,7 +155,8 @@
                                 {% endfor %}
                                 {% if show_tournament %}
                                     <td class="text-nowrap text-start {{ player_class }}">
-                                        {{ player.single_tournament.name }}
+                                        {% set _t = player.optional_single_tournament %}
+                                        {{ _t.name if _t else '' }}
                                     </td>
                                 {% endif %}
                             </tr>

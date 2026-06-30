@@ -21,6 +21,8 @@ from data.print_documents.player_sorters import (
     ListPlayerSorter,
     NameListPlayerSorter,
     RankGridPlayerSorter,
+    RankTeamGridSorter,
+    TeamGridSorter,
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
@@ -169,6 +171,41 @@ class OptionalPlayersPrintOption(PlayersPrintOption):
         return False
 
 
+class TeamsPrintOption(PrintOption, ABC):
+    @property
+    @abstractmethod
+    def mandatory(self) -> bool:
+        """Returns True if at least one team must be selected."""
+
+    @property
+    def template_file_name(self) -> str:
+        return 'teams'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    @override
+    def validate(self):
+        self._validate_list_type(int)
+        if self.mandatory and not self.value:
+            raise OptionError(_('Please select at least one team.'), self)
+
+
+class OptionalTeamsPrintOption(TeamsPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'optional-teams'
+
+    @property
+    def mandatory(self) -> bool:
+        return False
+
+
 class RoundPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
@@ -187,6 +224,157 @@ class RoundPrintOption(PrintOption):
         super().validate()
         if self.value is not None and self.value < 1:
             raise OptionError(_('A positive integer is expected.'), self)
+
+
+class MatchSheetSelectionPrintOption(PrintOption):
+    """List of team_board ids to print, or empty to print every team
+    match in the round."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'match-sheet-selection'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    @override
+    def validate(self):
+        self._validate_list_type(int)
+
+    def match_options_by_tournament_round(
+        self,
+    ) -> 'dict[int, dict[int, list[tuple[int, str]]]]':
+        """``{tournament_id: {round: [(id, label), ...]}}`` — every
+        paired team match in every team tournament of the event (one
+        row per board for flat fixed-table systems). Used by the print
+        modal to show only the rows matching the currently-selected
+        tournament + round."""
+        result: dict[int, dict[int, list[tuple[int, str]]]] = {}
+        if self.event is None or not self.event.is_team_event:
+            return result
+        for tournament in self.event.tournaments_by_id.values():
+            if not tournament.is_team_tournament:
+                continue
+            flat = not tournament.pairing_system.paired_by_team
+            by_round: dict[int, list[tuple[int, str]]] = {}
+            for round_ in range(1, tournament.rounds + 1):
+                rows: list[tuple[int, str]] = []
+                if flat:
+                    for board in sorted(
+                        tournament.get_round_boards(round_), key=lambda b: b.index
+                    ):
+                        wtp = board.optional_white_tournament_player
+                        btp = board.black_tournament_player
+                        rows.append(
+                            (
+                                board.identifier,
+                                f'{board.number}. '
+                                f'{wtp.full_name if wtp else ""} - '
+                                f'{btp.full_name if btp else ""}',
+                            )
+                        )
+                else:
+                    for tb in tournament.get_round_team_boards(round_):
+                        stb = tb.stored_team_board
+                        if stb.team_b_id is None or tb.team_b is None:
+                            continue
+                        rows.append(
+                            (
+                                tb.id,
+                                f'{tb.display_number}. '
+                                f'{tb.team_a.name} - {tb.team_b.name}',
+                            )
+                        )
+                if rows:
+                    by_round[round_] = rows
+            if by_round:
+                result[tournament.id] = by_round
+        return result
+
+    def default_round_by_tournament(self) -> 'dict[int, int]':
+        """``{tournament_id: round}`` the selector falls back to when no
+        round is entered — the current round, matching the document's
+        ``at_round`` (``RoundPrintOption.value or current_round``). Without
+        this the modal would look up an empty round and show no matches
+        until a round is typed."""
+        result: dict[int, int] = {}
+        if self.event is None or not self.event.is_team_event:
+            return result
+        for tournament in self.event.tournaments_by_id.values():
+            if not tournament.is_team_tournament:
+                continue
+            result[tournament.id] = tournament.current_round
+        return result
+
+
+class MatchSheetArbiterPrintOption(PrintOption):
+    """Arbiter whose name is printed on the match-sheet signature line,
+    chosen from the event's team-tournament staff (chief + deputy
+    arbiters). Empty falls back to the tournament's chief arbiter."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'match-sheet-arbiter'
+
+    @property
+    def template_file_name(self) -> str:
+        return 'match_sheet_arbiter'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def label(self) -> str:
+        return _('Arbiter:')
+
+    @property
+    def default_text(self) -> str:
+        return _('Chief arbiter')
+
+    def arbiter_options(self) -> 'dict[str, str]':
+        """``{account_id: full_name}`` for the arbiters (chief + deputies)
+        of the event's team tournaments — the staff that can sign a sheet."""
+        result: dict[str, str] = {}
+        if self.event is None or not self.event.is_team_event:
+            return result
+        for tournament in self.event.tournaments_by_id.values():
+            if not tournament.is_team_tournament:
+                continue
+            arbiters = []
+            if tournament.chief_arbiter is not None:
+                arbiters.append(tournament.chief_arbiter)
+            arbiters.extend(tournament.deputy_arbiters)
+            for account in arbiters:
+                result.setdefault(str(account.id), account.full_name)
+        return result
+
+
+class TeamBergerGridPlayersPrintOption(PrintOption):
+    """If on, the team Berger grid details down to the players: one row
+    per player (grouped by team), individual game results in the
+    cells."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'team-berger-grid-players'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
 
 
 class PlayerSplitPrintOption(PrintOption):
@@ -256,6 +444,41 @@ class GridPlayerSortPrintOption(PrintOption):
         except KeyError:
             # Untranslated, should not happen
             raise OptionError(f'Unknown grid player sorter: {self.value}', self)
+
+
+class TeamGridSortPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'team-grid-sort'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return RankTeamGridSorter.static_id()
+
+    @property
+    def team_grid_sorter_options(self) -> dict[str, str]:
+        from data.print_documents import PrintTeamGridSorterManager
+
+        return PrintTeamGridSorterManager(self.event).options()
+
+    @cached_property
+    def team_grid_sorter(self) -> TeamGridSorter:
+        from data.print_documents import PrintTeamGridSorterManager
+
+        return PrintTeamGridSorterManager(self.event).get_object(self.value)
+
+    @override
+    def validate(self):
+        super().validate()
+        try:
+            _sorter = self.team_grid_sorter
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown team grid sorter: {self.value}', self)
 
 
 class ListPlayerSortPrintOption(PrintOption):
@@ -568,10 +791,12 @@ class PlaceCardPrintOption(PrintOption):
         place_card_templates_by_type: dict[PlaceCardType, list[PlaceCardTemplate]] = (
             PlaceCardTemplate.get_place_card_templates_by_type()
         )
+        is_team_event = self.event is not None and self.event.is_team_event
         return {
             place_card_type.static_id(): place_card_type.static_name()
             for place_card_type in PrintPlaceCardTypeManager().objects()
             if place_card_templates_by_type[place_card_type]
+            and place_card_type.supports_event_type(is_team_event)
         }
 
     @cached_property

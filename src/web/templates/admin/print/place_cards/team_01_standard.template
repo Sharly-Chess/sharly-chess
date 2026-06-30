@@ -1,0 +1,25 @@
+type = "team"
+name = "{{ _('Standard') }}"
+creator = "Sharly Chess <support@sharly-chess.com>"
+
+[team_name]
+text = "{{ team.name }}"
+font_size = 24.0
+bold = true
+h_align = "center"
+v_align = "middle"
+
+[team_captain]
+text = "{% if team.captain %}{{ _('Captain:') }} {{ team.captain }}{% endif %}"
+font_size = 11.0
+h_align = "center"
+v_align = "bottom"
+v_pos = 0.0
+
+[event]
+text = "{{ event.name }}"
+font_size = 9.0
+italic = true
+h_align = "left"
+v_align = "bottom"
+v_pos = 0.0

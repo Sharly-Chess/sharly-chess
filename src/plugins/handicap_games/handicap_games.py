@@ -24,6 +24,7 @@ from plugins.utils import (
 from utils.time_control import parse_time_control_trf25
 from web.controllers.base_controller import WebContext
 from data.columns.column import ColumnUsage
+from utils.enum import EventType
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -36,6 +37,10 @@ class HandicapGamesPlugin(Plugin):
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME
+
+    @property
+    def supported_event_types(self) -> list[EventType]:
+        return [EventType.INDIVIDUAL]
 
     @staticmethod
     def static_name() -> str:

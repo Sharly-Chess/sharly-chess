@@ -1,3 +1,4 @@
+import os
 import random
 import xml.etree.ElementTree as ET
 from functools import partial
@@ -8,6 +9,10 @@ from requests import Session
 
 from common.logger import get_logger
 from data.tournament import Tournament
+from data.pairings.variations import (
+    DoubleBergerRoundRobinVariation,
+    DoubleBergerTeamRoundRobinVariation,
+)
 from database.sqlite.config.config_database import ConfigDatabase
 from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
@@ -32,6 +37,37 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 CHESS_RESULTS_URL: str = 'https://chess-results.com/Uploadxml.aspx'
 CHESS_RESULTS_SOURCE = 13
+
+
+def _forfeit_code(result: Result) -> str:
+    """Chess-Results ``forfeit`` marker: ``K`` for forfeits, ``D`` for
+    penalty results (0-0 and the half-point penalties), ``U`` for
+    unrated results, empty otherwise."""
+    match result:
+        case Result.FORFEIT_LOSS | Result.FORFEIT_WIN | Result.DOUBLE_FORFEIT:
+            return 'K'
+        case (
+            Result.PENALTY_LL
+            | Result.PENALTY_DL
+            | Result.PENALTY_LD
+            | Result.UNRATED_PENALTY_LL
+            | Result.UNRATED_PENALTY_DL
+            | Result.UNRATED_PENALTY_LD
+        ):
+            return 'D'
+        case Result.UNRATED_WIN | Result.UNRATED_DRAW | Result.UNRATED_LOSS:
+            return 'U'
+        case _:
+            return ''
+
+
+def _upload_federation(event) -> str:
+    """The federation sent to Chess-Results. Setting the
+    ``CHESS_RESULTS_TEST`` environment variable forces the ``XXX`` test
+    federation, which keeps the upload out of the real country listings."""
+    if os.getenv('CHESS_RESULTS_TEST'):
+        return 'XXX'
+    return event.federation or 'FID'
 
 
 class ChessResultsSession(Session):
@@ -67,7 +103,7 @@ class ChessResultsSession(Session):
                     source="{source}"
                     sid="{CRUtils.encrypt(sid)}"
                     creatorID="{creator_id}"
-                    federation="{tournament.event.federation}"
+                    federation="{_upload_federation(tournament.event)}"
                     tournament="{tournament.full_name}" />
             </chessresults>"""
 
@@ -102,6 +138,38 @@ class ChessResultsSession(Session):
         event = tournament.event
         root = ET.Element('chessresults')
 
+        # Team-vs-team systems upload as Chess-Results team tournaments
+        # (type 2/3 + team sections); flat fixed-table systems keep the
+        # individual layout. Systems without a dedicated Chess-Results
+        # type upload as individual Swiss.
+        is_team = (
+            tournament.is_team_tournament and tournament.pairing_system.paired_by_team
+        )
+        type_code, replay = ChessResultPairingSystem.get_outer_value(
+            tournament.pairing_system
+        ) or ('0', '1')
+        # "Replayed" (each pairing met more than once) is a variation, not a
+        # separate system: a double round-robin reports its round count as
+        # the replay so Chess-Results encodes it as a multi-cycle event.
+        is_replayed_pairing = isinstance(
+            tournament.pairing_variation,
+            (DoubleBergerRoundRobinVariation, DoubleBergerTeamRoundRobinVariation),
+        )
+        if is_replayed_pairing:
+            replay = str(tournament.rounds)
+        if is_team:
+            color_pattern = (tournament.color_pattern or 'W').upper()
+            home_color = 'w' if color_pattern[:1] == 'W' else 's'
+            # 'J' when every board of a team plays the same colour
+            # (all-white AND all-black patterns), 'N' when they alternate.
+            all_same_color = all(color == color_pattern[0] for color in color_pattern)
+            same_color = 'J' if all_same_color else 'N'
+            player_per_team = str(tournament.team_player_count or '')
+        else:
+            home_color = ''
+            same_color = ''
+            player_per_team = ''
+
         # --- Tournament section ---
         tdata = ET.SubElement(root, 'tournamentdata')
 
@@ -118,10 +186,7 @@ class ChessResultsSession(Session):
             'tournament',
             {
                 'key': str(tnr),
-                'type': ChessResultPairingSystem.get_outer_value(
-                    tournament.pairing_system
-                )
-                or '',
+                'type': type_code,
                 'name': tournament.full_name[:160],
                 'fideeventid': '',
                 'remark': f'#{CRUtils.resolve_remark(tournament)}'[:599],
@@ -143,7 +208,7 @@ class ChessResultsSession(Session):
                 'to': tournament.stop_date.strftime('%Y%m%d'),
                 'ratedfide': '-',
                 'ratednational': '-',
-                'replay': '1',
+                'replay': replay,
                 'timetype': ChessResultTournamentRating.get_outer_value(
                     tournament.rating
                 )
@@ -151,9 +216,9 @@ class ChessResultsSession(Session):
                 'timecontrol': trf25_to_human_readable(tournament.time_control_trf25)
                 if tournament.time_control_trf25
                 else '',
-                'homecolor': '',
-                'samecolor': '',
-                'playerperteam': '',
+                'homecolor': home_color,
+                'samecolor': same_color,
+                'playerperteam': player_per_team,
                 'ratingavg': str(round(tournament.average_player_rating)),
                 'endstatus': 'N',
                 'chiefarbiter': getattr(
@@ -164,7 +229,7 @@ class ChessResultsSession(Session):
                 ),
                 'homepageorganiser': (event.organiser_home_page or '')[:80],
                 'mail': (event.organiser_email or '')[:80],
-                'federation': tournament.event.federation or 'FID',
+                'federation': _upload_federation(tournament.event),
                 'federalstate': str(state) if state else '',
                 'creator': creator_id,
             }
@@ -186,8 +251,17 @@ class ChessResultsSession(Session):
                     'round': str(rnd),
                     'date': dt.strftime('%Y%m%d') if dt else '',
                     'time': dt.strftime('%H:%M') if dt else '',
+                    # In a two-game match every round replays the same
+                    # pairing — the round number is the encounter index.
+                    'replay': str(rnd) if is_replayed_pairing else '1',
                 },
             )
+
+        if is_team:
+            self._append_team_sections(root, tournament)
+            self._append_security(root, sid, tnr, creator_id)
+            xml_bytes = ET.tostring(root, encoding='utf-8', xml_declaration=True)
+            return xml_bytes.decode('utf-8')
 
         # --- Player list ---
         pdata = ET.SubElement(root, 'players')
@@ -245,7 +319,7 @@ class ChessResultsSession(Session):
         # --- Pairings / Results ---
         ppair = ET.SubElement(root, 'playerpairings')
         point_values: dict[Result, float] = {
-            Result.PAIRING_ALLOCATED_BYE: tournament.pab_value.point_value,
+            Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
         }
         for round_ in range(1, tournament.current_round + 1):
             tournament.set_for_round(round_)
@@ -274,16 +348,7 @@ class ChessResultsSession(Session):
                         )
                         if board.black_tournament_player
                         else '',
-                        'forfeit': 'K'
-                        if board.result
-                        in [
-                            Result.FORFEIT_LOSS,
-                            Result.FORFEIT_WIN,
-                            Result.DOUBLE_FORFEIT,
-                            Result.PENALTY_LL,
-                            Result.UNRATED_PENALTY_LL,
-                        ]
-                        else '',
+                        'forfeit': _forfeit_code(board.result),
                     },
                 )
                 last_board_id = board.board_id
@@ -306,7 +371,14 @@ class ChessResultsSession(Session):
                     },
                 )
 
-        # --- Security section ---
+        self._append_security(root, sid, tnr, creator_id)
+
+        # Return as UTF-8 XML
+        xml_bytes = ET.tostring(root, encoding='utf-8', xml_declaration=True)
+        return xml_bytes.decode('utf-8')
+
+    @staticmethod
+    def _append_security(root: ET.Element, sid: str, tnr: str, creator_id: str):
         security = ET.SubElement(root, 'security')
         ET.SubElement(
             security,
@@ -319,9 +391,221 @@ class ChessResultsSession(Session):
             },
         )
 
-        # Return as UTF-8 XML
-        xml_bytes = ET.tostring(root, encoding='utf-8', xml_declaration=True)
-        return xml_bytes.decode('utf-8')
+    def _append_team_sections(self, root: ET.Element, tournament: Tournament):
+        """Players, teams, team pairings and per-board player pairings of
+        a team-vs-team tournament (Chess-Results types 2/3). Players are
+        numbered sequentially grouped by team in roster order — the
+        numbering Chess-Results displays and that the pairings reference."""
+        from utils.enum import ScoreType
+
+        event = tournament.event
+        teams = sorted(
+            (
+                team
+                for team in event.teams_by_id.values()
+                if team.tournament_id == tournament.id
+            ),
+            key=lambda team: (team.pairing_number or 0, team.name.lower()),
+        )
+        team_no = {
+            team.id: team.pairing_number or index
+            for index, team in enumerate(teams, start=1)
+        }
+        tournament_players_by_id = tournament.tournament_players_by_id
+
+        # Dense individual ranks by points (the player tie-breaks are team
+        # tie-breaks here, meaningless per player — left empty).
+        ranked = sorted(
+            tournament_players_by_id.values(),
+            key=lambda tp: -(tp.points or 0),
+        )
+        rank_by_id: dict[int, int] = {}
+        previous_points: float | None = None
+        rank = 0
+        for index, tp in enumerate(ranked, start=1):
+            points = tp.points or 0
+            if previous_points is None or points < previous_points:
+                rank = index
+                previous_points = points
+            rank_by_id[tp.id] = rank
+
+        # --- Player list (grouped by team, roster order) ---
+        pdata = ET.SubElement(root, 'players')
+        no_by_player_id: dict[int, int] = {}
+        no = 0
+        for team in teams:
+            for board_index, player in enumerate(team.players, start=1):
+                no += 1
+                no_by_player_id[player.id] = no
+                member_tp = tournament_players_by_id.get(player.id)
+                ratings = (
+                    member_tp.ratings.get(tournament.rating) if member_tp else None
+                )
+                ET.SubElement(
+                    pdata,
+                    'player',
+                    {
+                        'no': str(no),
+                        'id': str(player.id),
+                        'lastname': player.last_name,
+                        'firstname': player.first_name or '',
+                        'atitle': '',
+                        'title': player.title.short_name,
+                        'rtg': str(member_tp.rating if member_tp else ''),
+                        'rtgfide': str(getattr(ratings, 'fide', '') or ''),
+                        'rtgnat': str(getattr(ratings, 'national', '') or ''),
+                        'dob': str(player.year_of_birth or ''),
+                        'sex': ChessResultsPlayerGender.get_outer_value(player.gender)
+                        or '',
+                        'fed': player.federation.name,
+                        'board': str(board_index),
+                        'teamno': str(team_no[team.id]),
+                        'fideid': str(player.fide_id or ''),
+                        'clubname': player.club.name or '',
+                        'typ': player.category.name,
+                        'rank': str(rank_by_id.get(player.id, '')),
+                        'pts': str((member_tp.points if member_tp else 0) or 0),
+                        'equal': 'N',
+                        'kfaktor': '',
+                        'state': '',
+                    }
+                    | {f'tb{i + 1}': '' for i in range(MAX_TIE_BREAKS)},
+                )
+
+        # --- Teams ---
+        standings_by_team_id = {
+            row['team'].id: row for row in tournament.team_standings()
+        }
+        primary_is_mp = tournament.primary_score == ScoreType.MATCH_POINTS
+        tdata = ET.SubElement(root, 'teams')
+        previous_tbs: list[str] | None = None
+        for team in teams:
+            row = standings_by_team_id.get(team.id)
+            tb_values: list[str] = []
+            if row:
+                for tbv in row.get('tie_break_values', [])[:MAX_TIE_BREAKS]:
+                    tb_values.append(f'{tbv.value:g}')
+            while len(tb_values) < MAX_TIE_BREAKS:
+                tb_values.append('')
+            same_as_previous = (
+                tb_values == previous_tbs if previous_tbs is not None else False
+            )
+            previous_tbs = tb_values
+            points = (row['mp'] if primary_is_mp else row['gp']) if row else 0
+            ET.SubElement(
+                tdata,
+                'team',
+                {
+                    'no': str(team_no[team.id]),
+                    'teamname': team.name[:40],
+                    'teamshort': team.name[:25],
+                    'rank': str(row['rank'] if row else ''),
+                    'points': f'{points:g}',
+                    'captain': (team.captain_display_name or '')[:70],
+                    'equal': 'J' if same_as_previous else 'N',
+                    'federation': team.federation,
+                    'state': '',
+                    'rtg_average': str(team.average_rating or ''),
+                }
+                | {f'tb{i + 1}': tb_values[i] for i in range(MAX_TIE_BREAKS)},
+            )
+
+        # --- Pairings ---
+        ppair = ET.SubElement(root, 'playerpairings')
+        tpair = ET.SubElement(root, 'teampairings')
+        point_values: dict[Result, float] = {
+            Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
+        }
+        for round_ in range(1, tournament.current_round + 1):
+            tournament.set_for_round(round_)
+            visible_matches = sorted(
+                (
+                    team_board
+                    for team_board in tournament.get_round_team_boards(round_)
+                    if team_board.display_number is not None
+                ),
+                key=lambda team_board: team_board.display_number or 0,
+            )
+            for team_board in visible_matches:
+                pairing_no = team_board.display_number
+                stb = team_board.stored_team_board
+                gp_a, gp_b = team_board.game_points
+                if stb.team_b_id is None:
+                    # PAB: full game points to the bye team, no boards
+                    # (team_board.game_points is 0 with no boards, so use
+                    # the team-level PAB game points).
+                    ET.SubElement(
+                        tpair,
+                        'teampairing',
+                        {
+                            'round': str(round_),
+                            'pairing': str(pairing_no),
+                            'no1': str(team_no[stb.team_a_id]),
+                            'no2': '-1',
+                            'res1': f'{tournament.team_pab_game_points:g}',
+                            'res2': '0',
+                        },
+                    )
+                    continue
+                boards = team_board.boards
+                # The 'white' team holds white on board 1.
+                white_team_id = None
+                if boards:
+                    white_team_id, _black_team_id = team_board.board_team_ids(boards[0])
+                if white_team_id is None:
+                    pattern = (tournament.color_pattern or 'W').upper()
+                    white_team_id = (
+                        stb.team_a_id if pattern[:1] == 'W' else stb.team_b_id
+                    )
+                if white_team_id == stb.team_a_id:
+                    no1, no2 = team_no[stb.team_a_id], team_no[stb.team_b_id]
+                    res1, res2 = gp_a, gp_b
+                else:
+                    no1, no2 = team_no[stb.team_b_id], team_no[stb.team_a_id]
+                    res1, res2 = gp_b, gp_a
+                ET.SubElement(
+                    tpair,
+                    'teampairing',
+                    {
+                        'round': str(round_),
+                        'pairing': str(pairing_no),
+                        'no1': str(no1),
+                        'no2': str(no2),
+                        'res1': f'{res1:g}',
+                        'res2': f'{res2:g}',
+                    },
+                )
+                for slot, board in enumerate(boards, start=1):
+                    wtp = board.optional_white_tournament_player
+                    btp = board.black_tournament_player
+                    white_pairing = board.optional_white_pairing
+                    black_pairing = board.optional_black_pairing
+                    ET.SubElement(
+                        ppair,
+                        'playerpairing',
+                        {
+                            'round': str(round_),
+                            'pairing': str(pairing_no),
+                            'board': str(slot),
+                            'whiteno': str(no_by_player_id.get(wtp.id, 0))
+                            if wtp
+                            else '0',
+                            'blackno': str(no_by_player_id.get(btp.id, 0))
+                            if btp
+                            else '0',
+                            'reswhite': str(
+                                white_pairing.result.points(point_values) or ''
+                            )
+                            if white_pairing
+                            else '',
+                            'resblack': str(
+                                black_pairing.result.points(point_values) or ''
+                            )
+                            if black_pairing
+                            else '',
+                            'forfeit': _forfeit_code(board.result),
+                        },
+                    )
 
     def upload(self) -> FailureCRUploadStatus | None:
         """Upload the tournament to Chess-Results.com."""

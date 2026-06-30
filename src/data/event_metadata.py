@@ -6,6 +6,7 @@ from common.i18n import _
 from database.sqlite.event.event_store import BaseStoredEvent
 from plugins.manager import plugin_manager
 from plugins.utils import Plugin
+from utils.enum import EventType
 
 
 @dataclass
@@ -17,10 +18,15 @@ class EventMetadata(BaseStoredEvent):
     stop_date: date = field(default_factory=date.today)
     tournament_count: int = 0
     player_count: int = 0
+    team_count: int = 0
     timer_count: int = 0
     screen_count: int = 0
     family_count: int = 0
     rotator_count: int = 0
+
+    @property
+    def is_team_event(self) -> bool:
+        return self.event_type == EventType.TEAM
 
     @property
     def plugins(self) -> list[Plugin]:

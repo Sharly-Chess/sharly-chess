@@ -13,7 +13,15 @@ from data.input_output.trf.trf_data import (
     TrfAbnormalPointsAssignment,
     TrfOOdOTeamPairing,
 )
+from data.input_output.trf.trf_mappers import TrfEncodedType
 from data.input_output.trf.trf_serializer import TrfSerializer
+from data.pairings.variations import (
+    BergerTeamRoundRobinVariation,
+    DoubleBergerTeamRoundRobinVariation,
+    StandardSwissVariation,
+    StandardTeamSwissVariation,
+)
+from utils.enum import ScoreType, TeamColourType
 
 CHINESE_WHISPERS_NUMBER = 10
 TRF_PATH = Path(__file__).parent.parent.parent / 'trf'
@@ -21,6 +29,90 @@ TRF_PATH = Path(__file__).parent.parent.parent / 'trf'
 
 class TestTrfSerializer(TestCase):
     maxDiff = None
+
+    def test_team_encoded_type_decoding(self):
+        """``TrfEncodedType`` decodes TRF26 team-Swiss codes into the
+        right variation and score config."""
+        mp = ScoreType.MATCH_POINTS
+        gp = ScoreType.GAME_POINTS
+        cases = {
+            'FIDE_TEAM_TYPEA_MP': (TeamColourType.A, mp, mp),
+            'FIDE_TEAM_TYPEA_GP': (TeamColourType.A, gp, gp),
+            'FIDE_TEAM_TYPEA_MP_GP': (TeamColourType.A, mp, gp),
+            'FIDE_TEAM_TYPEA_GP_MP': (TeamColourType.A, gp, mp),
+            'FIDE_TEAM_TYPEB_MP': (TeamColourType.B, mp, mp),
+            'FIDE_TEAM_TYPEB_MP_GP': (TeamColourType.B, mp, gp),
+            'FIDE_TEAM_TYPEB_GP_MP': (TeamColourType.B, gp, mp),
+            'FIDE_TEAM_MP': (TeamColourType.NONE, mp, mp),
+            'FIDE_TEAM_MP_GP': (TeamColourType.NONE, mp, gp),
+            'FIDE_TEAM_GP_MP': (TeamColourType.NONE, gp, mp),
+        }
+        for encoded_type, (colour, primary, secondary) in cases.items():
+            self.assertEqual(
+                TrfEncodedType.get_team_score_config(encoded_type),
+                (primary, secondary),
+                f'wrong score config for {encoded_type}',
+            )
+            self.assertEqual(
+                TrfEncodedType.get_team_colour_type(encoded_type),
+                colour,
+                f'wrong colour type for {encoded_type}',
+            )
+            variation = TrfEncodedType.get_supported_pairing_variation(encoded_type)
+            self.assertIsInstance(variation, StandardTeamSwissVariation)
+
+        self.assertIsNone(TrfEncodedType.get_team_score_config('FIDE_DUTCH_2026'))
+        self.assertIsNone(TrfEncodedType.get_team_score_config('FIDE_TEAM_TYPEA_FOO'))
+        self.assertIsNone(TrfEncodedType.get_team_score_config('FIDE_TEAM_TYPEA_'))
+        self.assertIsNone(TrfEncodedType.get_team_colour_type('FIDE_DUTCH_2026'))
+
+        self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation('OTHER_TEAM_ROUNDROBIN'),
+            BergerTeamRoundRobinVariation,
+        )
+        self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation(
+                'OTHER_TEAM_DOUBLEROUNDROBIN'
+            ),
+            DoubleBergerTeamRoundRobinVariation,
+        )
+
+        # FIDE table codes for team round-robin must route to the Berger
+        # team-RR variations, NOT be swallowed by the FIDE_TEAM_ team-Swiss
+        # prefix — and they carry no score config.
+        for code in (
+            'FIDE_TEAM_ROUNDROBIN',
+            'BERGER_TEAM_ROUNDROBIN',
+            'CUSTOM_TEAM_ROUNDROBIN',
+        ):
+            self.assertIsInstance(
+                TrfEncodedType.get_supported_pairing_variation(code),
+                BergerTeamRoundRobinVariation,
+                f'{code} should map to Berger team round-robin',
+            )
+            self.assertIsNone(TrfEncodedType.get_team_score_config(code))
+        self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation(
+                'FIDE_TEAM_DOUBLEROUNDROBIN'
+            ),
+            DoubleBergerTeamRoundRobinVariation,
+        )
+
+        # Individual Swiss FIDE table code.
+        self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation('FIDE_DUTCH_2025'),
+            StandardSwissVariation,
+        )
+
+        # Export side: variations emit valid FIDE table codes.
+        self.assertEqual(StandardSwissVariation().trf_encoded_type, 'FIDE_DUTCH_2025')
+        self.assertEqual(
+            BergerTeamRoundRobinVariation().trf_encoded_type, 'FIDE_TEAM_ROUNDROBIN'
+        )
+        self.assertEqual(
+            DoubleBergerTeamRoundRobinVariation().trf_encoded_type,
+            'FIDE_TEAM_DOUBLEROUNDROBIN',
+        )
 
     def test_load_example_trf16(self):
         filename = TRF_PATH / 'example_trf16.trf'

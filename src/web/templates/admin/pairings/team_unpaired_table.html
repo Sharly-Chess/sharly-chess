@@ -1,0 +1,99 @@
+{% import '/common/macros.j2' as macros with context %}
+{# Side-column table for the team-mode pairings page. Mirrors
+   ``unpaired_table.html`` but renders teams instead of individual
+   players. Requires: ``teams`` (list[Team]), ``title``, ``table_id``. #}
+{% set bye_icon_class = {
+    'ZPB': 'bi-0-circle-fill',
+    'HPB': 'bi-circle-half',
+    'FPB': 'bi-1-circle-fill',
+} %}
+{% set bye_label_map = {
+    'ZPB': _('Zero-Point Bye'),
+    'HPB': _('Half-Point Bye'),
+    'FPB': _('Full-Point Bye'),
+} %}
+{% if teams %}
+    <table
+        id="{{ table_id }}"
+        class="table prominent table-striped table-sm w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
+    >
+        <thead
+            id="{{ table_id }}-header"
+            class="position-sticky z-2"
+            style="top: var(--header-height);"
+        >
+            <tr>
+                <th colspan="{% if admin_tournament.pairing_system.show_unpaired_team_modal %}2{% else %}1{% endif %}">
+                    {{ title }} ({{ teams|length }})
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for team in teams %}
+                {% set bye_type = team.round_bye_type(admin_round) %}
+                <tr
+                    id="team-row-{{ team.id }}"
+                    class="team-row"
+                    data-team-id="{{ team.id }}"
+                >
+                    <td>
+                        <a
+                            class="player-link"
+                            hx-get="{{ url_for(
+                                'admin-team-record-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=team.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        ><strong>{{ team.name }}</strong></a>
+                    </td>
+                    {% if admin_tournament.pairing_system.show_unpaired_team_modal %}
+                    <td
+                        class="text-end text-nowrap cursor-pointer"
+                        hx-get="{{ url_for(
+                            'pairings-unpaired-team-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            team_id=team.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        {% if bye_type in bye_icon_class %}
+                            <i
+                                class="{{ bye_icon_class[bye_type] }} text-body text-secondary"
+                                {{ macros.tooltip_attributes('', (
+                                    '<div class="fw-bold">' ~ _('%(bye)s at round %(round)d', bye=bye_label_map[bye_type], round=admin_round) ~ '</div>'
+                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                ), 'right') }}
+                            ></i>
+                        {% elif not team.check_in %}
+                            <i
+                                class="bi-x-circle-fill text-danger"
+                                {{ macros.tooltip_attributes('', (
+                                    '<div class="fw-bold">' ~ _('Absent') ~ '</div>'
+                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                ), 'right') }}
+                            ></i>
+                        {% else %}
+                            <i
+                                class="bi-check-circle-fill text-success"
+                                {{ macros.tooltip_attributes('', (
+                                    '<div class="fw-bold">' ~ _('Present') ~ '</div>'
+                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                ), 'right') }}
+                            ></i>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}

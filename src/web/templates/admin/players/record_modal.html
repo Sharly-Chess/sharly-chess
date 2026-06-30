@@ -6,7 +6,7 @@
             <div class="flex flex-column gap-0 align-items-start">
                 <h2 class="modal-title">
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
-                    {% if not tournament_player.has_withdrawn %}
+                    {% if not tournament_player.has_withdrawn and not admin_event.is_team_event %}
                         {% set status = tournament_player.check_in_status_no_bye %}
                         <i
                             class="{{ status.icon_classes }} cursor-pointer ps-1 fs-4"
@@ -28,6 +28,9 @@
                     {% endif %}
                 </h2>
                 <div>{{ admin_player.club }}</div>
+                {% if admin_event.is_team_event and admin_player.team %}
+                    <div><strong>{{ _('Team:') }}</strong> {{ admin_player.team.name }}</div>
+                {% endif %}
                 {% set category = tournament_player.category.name %}
                 <div>{{ admin_player.federation }}, {{ tournament_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
             </div>
@@ -153,7 +156,11 @@
                                 {% set text=_('Pending') %}
                             {% endif %}
                         {% elif pairing.exempt %}
-                            {% set text=_('Pairing Allocated Bye') %}
+                            {% if pairing.opponent_was_hole %}
+                                {% set text=_('Forfeit Win (no opponent)') %}
+                            {% else %}
+                                {% set text=_('Pairing Allocated Bye') %}
+                            {% endif %}
                         {% elif pairing.unrated_loss %}
                             {% set text=_('Unrated Loss') %}
                         {% elif pairing.loss %}
@@ -310,31 +317,33 @@
                     {% endif %}
                 </tbody>
             </table>
-            <div>
+            {% if not admin_event.is_team_event %}
+                <div>
+                    <span class="fst-italic">
+                        {{ _(
+                            'Number of byes: %(byes)d (maximum: %(max_byes)d)',
+                            byes=tournament_player.byes_count,
+                            max_byes=tournament_player.tournament.max_byes
+                        ) }}
+                    </span>
+                    <i
+                        class="bi-info-circle-fill ps-1"
+                        {{ macros.tooltip_attributes(
+                            '',
+                            '<div class="text-center text-nowrap">' ~
+                                _('%(string)s:', string=_('Half-Point Bye')) ~
+                            ' 1</div>'
+                            '<div class="text-center text-nowrap">' ~
+                                _('%(string)s:', string=_('Full-Point Bye')) ~
+                            ' 2</div>',
+                            'right',
+                        ) }}
+                    ></i>
+                </div>
                 <span class="fst-italic">
-                    {{ _(
-                        'Number of byes: %(byes)d (maximum: %(max_byes)d)',
-                        byes=tournament_player.byes_count,
-                        max_byes=tournament_player.tournament.max_byes
-                    ) }}
+                    {{ _('To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player\'s name.') }}
                 </span>
-                <i
-                    class="bi-info-circle-fill ps-1"
-                    {{ macros.tooltip_attributes(
-                        '',
-                        '<div class="text-center text-nowrap">' ~
-                            _('%(string)s:', string=_('Half-Point Bye')) ~
-                        ' 1</div>'
-                        '<div class="text-center text-nowrap">' ~
-                            _('%(string)s:', string=_('Full-Point Bye')) ~
-                        ' 2</div>',
-                        'right',
-                    ) }}
-                ></i>
-            </div>
-            <span class="fst-italic">
-                {{ _('To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player\'s name.') }}
-            </span>
+            {% endif %}
         </div>
         <div class="modal-footer">
             {% if client.can_update_players %}

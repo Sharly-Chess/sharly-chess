@@ -89,9 +89,9 @@ class FraSchoolCodeDatasheetColumn(DatasheetColumn):
         pass
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament, stored_player: StoredPlayer, value: str
+        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
     ):
-        if not value:
+        if not value or tournament is None:
             return
         event = tournament.event
         school_code = FRASchoolsUtils.extract_school_code(value)
