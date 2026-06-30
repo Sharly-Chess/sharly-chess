@@ -548,10 +548,25 @@ class TrfTournamentImporter(FileTournamentImporter):
         team_index_by_internal_player_id: dict[int, int] = {}
         pairing_number_by_team_id: dict[int, int] = {}
         team_id_by_tpn: dict[int, int] = {}
+        # Team names are unique event-wide: reuse an existing team with the
+        # same name (e.g. a re-import, or the same club already created)
+        # instead of inserting a duplicate. New teams are registered as we
+        # go so a name repeated within this file also reuses the first.
+        existing_team_id_by_name: dict[str, int] = {
+            team.name: team.id
+            for team in database.load_stored_teams()
+            if team.id is not None
+        }
         for stored_team, trf_player_ids in self._pending_teams:
-            stored_team.tournament_id = tournament_id
-            team_id = database.add_stored_team(stored_team)
-            stored_team.id = team_id
+            reused_team_id = existing_team_id_by_name.get(stored_team.name)
+            if reused_team_id is not None:
+                team_id = reused_team_id
+                stored_team.id = team_id
+            else:
+                stored_team.tournament_id = tournament_id
+                team_id = database.add_stored_team(stored_team)
+                stored_team.id = team_id
+                existing_team_id_by_name[stored_team.name] = team_id
             if stored_team.pairing_number is not None:
                 pairing_number_by_team_id[team_id] = stored_team.pairing_number
                 team_id_by_tpn[stored_team.pairing_number] = team_id

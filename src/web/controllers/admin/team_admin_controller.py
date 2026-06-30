@@ -1517,10 +1517,15 @@ class TeamAdminController(BaseEventAdminController):
         if not name:
             errors[field] = _('This field is required.')
         else:
-            used_names = [t.name for t in event.teams]
-            if action == FormAction.UPDATE:
-                used_names.remove(web_context.get_admin_team().name)
-            if name in used_names:
+            # Exclude the team being edited by id, not by name: removing the
+            # current name from the list only drops the first match, so a
+            # stale duplicate name would survive and wrongly block the edit.
+            current_team_id = (
+                web_context.admin_team.id
+                if action == FormAction.UPDATE and web_context.admin_team is not None
+                else None
+            )
+            if any(t.name == name and t.id != current_team_id for t in event.teams):
                 errors[field] = _('This name is already used.')
 
         tournament_id: int | None = None
