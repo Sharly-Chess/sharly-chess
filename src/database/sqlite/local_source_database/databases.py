@@ -472,6 +472,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             try:
                 # Copy the new database to its proper location
                 self.file.unlink(missing_ok=True)
+                self.file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(tmp_file, self.file)
                 logger.debug(self.log_prefix + f'file copied to [{self.file}].')
             except OSError as e:
