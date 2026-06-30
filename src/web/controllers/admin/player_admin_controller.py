@@ -1142,7 +1142,7 @@ class PlayerAdminController(BaseEventAdminController):
             },
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
             federation=WebContext.form_data_to_str(data, 'federation') or '',
-            club=WebContext.form_data_to_str(data, 'club') or '',
+            club=(WebContext.form_data_to_str(data, 'club') or '').strip(),
             fixed=WebContext.form_data_to_int(data, 'fixed'),
             plugin_data=plugin_data,
             check_in=player.check_in if player else tournament.default_player_check_in,
