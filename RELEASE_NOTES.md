@@ -14,6 +14,7 @@
 
 - Clarify actions on absent players if over half absent players (4.2.1)
 - Remove trailing spaces from club names (4.2.4)
+- Fixed `Withdraw from tournament` button absent from the record modal (4.2.4)
 
 ## Documents
 
