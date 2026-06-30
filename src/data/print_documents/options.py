@@ -310,6 +310,53 @@ class MatchSheetSelectionPrintOption(PrintOption):
         return result
 
 
+class MatchSheetArbiterPrintOption(PrintOption):
+    """Arbiter whose name is printed on the match-sheet signature line,
+    chosen from the event's team-tournament staff (chief + deputy
+    arbiters). Empty falls back to the tournament's chief arbiter."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'match-sheet-arbiter'
+
+    @property
+    def template_file_name(self) -> str:
+        return 'match_sheet_arbiter'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def label(self) -> str:
+        return _('Arbiter:')
+
+    @property
+    def default_text(self) -> str:
+        return _('Chief arbiter')
+
+    def arbiter_options(self) -> 'dict[str, str]':
+        """``{account_id: full_name}`` for the arbiters (chief + deputies)
+        of the event's team tournaments — the staff that can sign a sheet."""
+        result: dict[str, str] = {}
+        if self.event is None or not self.event.is_team_event:
+            return result
+        for tournament in self.event.tournaments_by_id.values():
+            if not tournament.is_team_tournament:
+                continue
+            arbiters = []
+            if tournament.chief_arbiter is not None:
+                arbiters.append(tournament.chief_arbiter)
+            arbiters.extend(tournament.deputy_arbiters)
+            for account in arbiters:
+                result.setdefault(str(account.id), account.full_name)
+        return result
+
+
 class TeamBergerGridPlayersPrintOption(PrintOption):
     """If on, the team Berger grid details down to the players: one row
     per player (grouped by team), individual game results in the

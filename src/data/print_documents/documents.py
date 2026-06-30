@@ -44,6 +44,7 @@ from data.print_documents.options import (
     QRCodePrintOption,
     RoundPrintOption,
     MatchSheetSelectionPrintOption,
+    MatchSheetArbiterPrintOption,
     TeamBergerGridPlayersPrintOption,
     GridPlayerSortPrintOption,
     ListPlayerSortPrintOption,
@@ -738,6 +739,7 @@ class MatchSheetsPrintDocument(PrintDocument):
             TournamentPrintOption,
             RoundPrintOption,
             MatchSheetSelectionPrintOption,
+            MatchSheetArbiterPrintOption,
         ]
 
     @property
@@ -888,6 +890,11 @@ class MatchSheetsPrintDocument(PrintDocument):
 
     @property
     def arbiter_name(self) -> str | None:
+        account_id = self._get_option(MatchSheetArbiterPrintOption).value
+        if account_id is not None:
+            account = self.tournament.event.accounts_by_id.get(account_id)
+            if account is not None:
+                return account.full_name
         arbiter = self.tournament.chief_arbiter
         return arbiter.full_name if arbiter else None
 

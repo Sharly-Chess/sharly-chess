@@ -75,6 +75,7 @@
         font-weight: bold;
     }
     .player-name { font-weight: bold; font-size: 12pt; }
+    table.match-sheet-table thead .team-name-head { font-size: 15pt; }
     .player-meta { font-size: 9pt; color: #555; }
     .board-refs {
         font-size: 8pt;
@@ -259,19 +260,19 @@
     {% for team_board in team_boards %}
         <div class="match-sheet {% if page_break and not loop.first %}with-page-break{% endif %}">
             <div class="match-sheet-title">
-                {{ team_board.team_a.name }} &mdash; {{ team_board.team_b.name }}
+                {{ tournament.name }}
             </div>
             <div class="match-sheet-meta">
-                {{ _('Round #%(round)d', round=team_board.round) }}
+                {{ _('Round #%(round)d', round=team_board.round) }} - {{ _('Table %(table)d', table=team_board.display_number) }}
             </div>
             <table class="match-sheet-table">
                 <thead>
                     <tr>
                         <th class="col-bd">{{ _('Bd') }}</th>
-                        <th class="col-name">{{ team_board.team_a.name }}</th>
+                        <th class="col-name team-name-head">{{ team_board.team_a.name }}</th>
                         <th class="col-result"></th>
                         <th class="col-result"></th>
-                        <th class="col-name">{{ team_board.team_b.name }}</th>
+                        <th class="col-name team-name-head">{{ team_board.team_b.name }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -318,16 +319,6 @@
                         <tr>
                             <td class="col-bd">
                                 <div class="board-number">{{ board.index + 1 }}</div>
-                                {% set _la = team_letter_by_id.get(team_board.team_a.id) %}
-                                {% set _lb = team_letter_by_id.get(team_board.team_b.id) if team_board.team_b else none %}
-                                {% if _la and _lb %}
-                                    {# Table convention: white's reference first. #}
-                                    {% if team_a_is_white %}
-                                        <div class="board-refs">{{ _la }}{{ board.index + 1 }}-{{ _lb }}{{ board.index + 1 }}</div>
-                                    {% else %}
-                                        <div class="board-refs">{{ _lb }}{{ board.index + 1 }}-{{ _la }}{{ board.index + 1 }}</div>
-                                    {% endif %}
-                                {% endif %}
                             </td>
                             <td class="col-name left">
                                 {% if team_a_player %}
@@ -396,7 +387,11 @@
             <div class="signatures">
                 <div class="signature">
                     <div class="signature-label">
-                        {{ _('Captain — %(team)s', team=team_board.team_a.name) }}
+                        {% if team_board.team_a.captain_display_name %}
+                            {{ _('Captain — %(name)s', name=team_board.team_a.captain_display_name) }}
+                        {% else %}
+                            {{ _('Captain — %(team)s', team=team_board.team_a.name) }}
+                        {% endif %}
                     </div>
                     <div class="signature-line"></div>
                 </div>
@@ -412,7 +407,11 @@
                 </div>
                 <div class="signature">
                     <div class="signature-label">
-                        {{ _('Captain — %(team)s', team=team_board.team_b.name) }}
+                        {% if team_board.team_b.captain_display_name %}
+                            {{ _('Captain — %(name)s', name=team_board.team_b.captain_display_name) }}
+                        {% else %}
+                            {{ _('Captain — %(team)s', team=team_board.team_b.name) }}
+                        {% endif %}
                     </div>
                     <div class="signature-line"></div>
                 </div>
