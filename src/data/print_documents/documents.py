@@ -1249,27 +1249,32 @@ class TeamBergerGridPrintDocument(PrintDocument):
                     and match_tb is not None
                     and match_tb.match_score_pair is not None
                 ):
+                    played_match = match_tb
                     a_gp_eff, b_gp_eff = match_tb.effective_game_points
                     team_a_id = match_tb.stored_team_board.team_a_id
                 else:
+                    played_match = None
                     a_gp_eff = b_gp_eff = team_a_id = None
                 for mine, theirs in ((a_id, b_id), (b_id, a_id)):
                     if mine not in cells or theirs not in cells[mine]:
                         continue
                     # The cell shows the *match outcome* for ``mine`` (win 1,
-                    # draw ½, loss 0), decided on effective game points so
-                    # round penalties / bonuses count — same basis as the
-                    # standings, not the raw board score.
+                    # draw ½, loss 0) — or F when ``mine`` forfeited the whole
+                    # match. Decided on effective game points so round
+                    # penalties / bonuses count, same basis as the standings.
                     score = None
-                    if team_a_id is not None:
-                        mine_gp = a_gp_eff if team_a_id == mine else b_gp_eff
-                        theirs_gp = b_gp_eff if team_a_id == mine else a_gp_eff
-                        if mine_gp > theirs_gp:
-                            score = '1'
-                        elif mine_gp < theirs_gp:
-                            score = '0'
+                    if played_match is not None and team_a_id is not None:
+                        if played_match.team_all_forfeit(mine):
+                            score = 'F'
                         else:
-                            score = '½'
+                            mine_gp = a_gp_eff if team_a_id == mine else b_gp_eff
+                            theirs_gp = b_gp_eff if team_a_id == mine else a_gp_eff
+                            if mine_gp > theirs_gp:
+                                score = '1'
+                            elif mine_gp < theirs_gp:
+                                score = '0'
+                            else:
+                                score = '½'
                     cells[mine][theirs].append({'round': round_, 'score': score})
 
         standings_by_team_id = {
