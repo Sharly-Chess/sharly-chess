@@ -131,25 +131,30 @@ auto-update framework, and the app falls back to the legacy updater.
 
 ## Publishing a release
 
-Each release must attach a signed `appcast.xml` plus the update archive, so that
-`appcast_url(version)` —
-`https://github.com/Sharly-Chess/sharly-chess/releases/download/<tag>/appcast.xml` —
-resolves. After the app is built, signed and notarized:
+Releases are built by `.github/workflows/export.yml`. The macOS job:
 
-```bash
-# 1. Zip the app in Sparkle's required format (preserves symlinks + signature).
-ditto -c -k --keepParent dist/sharly-chess-<version>/SharlyChess.app SharlyChess.zip
+1. Vendors Sparkle (`fetch_sparkle.sh`) and builds + signs + notarizes the app,
+   embedding `SUPublicEDKey` from the `SPARKLE_ED_PUBLIC_KEY` secret.
+2. Generates a signed `appcast.xml` pointing at the release's `.dmg`:
+   `generate_appcast --ed-key-file -` reads the private key from the
+   `SPARKLE_ED_PRIVATE_KEY` secret (no keychain), and `--download-url-prefix`
+   is the release's asset base URL.
+3. Attaches the `.dmg` **and** `appcast.xml` to the GitHub release, so
+   `appcast_url(version)` —
+   `https://github.com/Sharly-Chess/sharly-chess/releases/download/<tag>/appcast.xml`
+   — resolves.
 
-# 2. Generate the signed appcast (reads the version from the zip, signs with the
-#    private key in the keychain). The prefix is the release's asset base URL.
-vendor/sparkle/bin/generate_appcast \
-    --download-url-prefix https://github.com/Sharly-Chess/sharly-chess/releases/download/<tag>/ \
-    <folder containing SharlyChess.zip>
-```
+Required GitHub Actions secrets (in addition to the signing secrets):
 
-Attach both `SharlyChess.zip` and the generated `appcast.xml` to the GitHub
-release. In CI, the private key comes from the `SPARKLE_ED_PRIVATE_KEY` secret
-instead of the keychain.
+| Secret | Value |
+|--------|-------|
+| `SPARKLE_ED_PUBLIC_KEY` | The public key printed by `generate_keys` |
+| `SPARKLE_ED_PRIVATE_KEY` | The private key from `generate_keys -x` |
+
+**Draft releases.** The workflow creates the release as a draft, and a draft's
+assets are not reachable at the `releases/download/<tag>/` URLs. Updates only
+reach users once you **publish** the draft — at which point the appcast and the
+`.dmg` it references become downloadable.
 
 ## Local end-to-end testing (no release)
 
