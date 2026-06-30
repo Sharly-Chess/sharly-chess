@@ -739,9 +739,6 @@ msgstr "Tou·tes les joueur·euses ont été marqué·es « Présent·e »."
 msgid "All the boards"
 msgstr "Tous les échiquiers"
 
-msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
-msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de démarrer le serveur web."
-
 msgid "All the dependant objects will also be deleted:"
 msgstr "Tous les objets dépendants seront également supprimés :"
 
@@ -1498,6 +1495,9 @@ msgstr "Configurer les ensembles de catégories, qui sont disponibles pour tous 
 msgid "Configure the tie-breaks of the tournament."
 msgstr "Configurer les départages du tournoi."
 
+msgid "Confirm the new data folder \"{folder}\"?"
+msgstr "Confirmer le nouveau dossier de données \"{folder}\"?"
+
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
 
@@ -1527,9 +1527,6 @@ msgstr "Considérer toutes les parties appariées pour la dernière ronde comme 
 
 msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
 msgstr "Considérer les parties gagnées ou perdues par forfait comme des parties jouées contre l'adversaire prévu."
-
-msgid "Console logging level: {console_log_level}"
-msgstr "Niveau de log sur la console : {console_log_level}"
 
 msgid "Consult the logs for more details."
 msgstr "Consultez les logs pour plus d'informations."
@@ -1795,6 +1792,9 @@ msgstr "Un jour"
 
 msgid "Dashed border"
 msgstr "Bordure pointillée"
+
+msgid "Data folder"
+msgstr "Dossier des données"
 
 msgid "Data loss at tournaments, players and pairings level."
 msgstr "Perte de données au niveau du tournoi, des joueur·euses et des appariements."
@@ -2827,6 +2827,9 @@ msgstr "Genre :"
 msgid "Genders"
 msgstr "Genres"
 
+msgid "General"
+msgstr "Général"
+
 msgid "Generate"
 msgstr "Générer"
 
@@ -3169,6 +3172,9 @@ msgstr "Extension de fichier [{extension}] invalide (attendue : {expected})."
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr "Numéro d'échiquier [{fixed_board}] non valide."
 
+msgid "Invalid folder"
+msgstr "Dossier invalide"
+
 msgid "Invalid format (expected: {format})."
 msgstr "Format invalide (attendu : {format})."
 
@@ -3380,9 +3386,6 @@ msgstr "Lituanie"
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
-
-msgid "Local URL: {local_url}"
-msgstr "URL locale : {local_url}"
 
 msgid "Local databases"
 msgstr "Bases de données locales"
@@ -3645,6 +3648,9 @@ msgstr "Femmes manquantes"
 
 msgid "Mo *** MONDAY"
 msgstr "Lu"
+
+msgid "Modified, restart to apply"
+msgstr "Modifié, redémarrer pour appliquer"
 
 msgid "Moldova"
 msgstr "République de Moldova"
@@ -4240,6 +4246,9 @@ msgstr "Uniquement requis pour les utilisateur·ices devant se connecter au serv
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
 msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois. Il est donc recommandé de ne demander que l'année de naissance de vos joueur·euses afin de respecter leur vie privée."
 
+msgid "Open"
+msgstr "Ouvrir"
+
 msgid "Open IT1 certificate for this norm"
 msgstr "Ouvrir le certificat IT1 pour cette norme"
 
@@ -4248,9 +4257,6 @@ msgstr "Ouvrir l'application (navigateur)"
 
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"
-
-msgid "Opening the welcome page [{url}] in a browser…"
-msgstr "Ouverture de la page d'accueil [{url}] dans un navigateur…"
 
 msgid "Opponent"
 msgstr "Adversaire"
@@ -4810,15 +4816,6 @@ msgstr "Points: %(max)s ou moins"
 msgid "Poland"
 msgstr "Pologne"
 
-msgid "Port [{port}] already in use, can not start Sharly Chess server."
-msgstr "Le port [{port}] est déjà utilisé, impossible de démarrer le serveur Sharly Chess."
-
-msgid "Port [{port}] already in use."
-msgstr "Le port [{port}] est déjà utilisé."
-
-msgid "Port: {port}"
-msgstr "Port : {port}"
-
 msgid "Portugal"
 msgstr "Portugal"
 
@@ -5156,6 +5153,9 @@ msgstr "Réinitialiser le pointage"
 
 msgid "Reset manual tie-break"
 msgstr "Réinitialiser le départage manuel"
+
+msgid "Restarting will be required to apply the change."
+msgstr "Un redémarrage sera requis pour appliquer le changement."
 
 msgid "Restore"
 msgstr "Restaurer"
@@ -5788,9 +5788,6 @@ msgstr "Début de la ronde {} dans %%s"
 msgid "Start of the sporting season"
 msgstr "Début de la saison sportive"
 
-msgid "Starting Sharly Chess server, Please wait…"
-msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
-
 msgid "Starting rank"
 msgstr "Classement initial"
 
@@ -5954,6 +5951,9 @@ msgstr[1] "Les {rounds} premières rondes sont ignorées."
 
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
+
+msgid "The folder should not be contained in the current data folder."
+msgstr "Le dossier ne doit pas être contenu dans le dossier de données actuel."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
@@ -6290,6 +6290,9 @@ msgstr "Ce champ est obligatoire."
 
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
+
+msgid "This folder is not empty."
+msgstr "Ce dossier n'est pas vide."
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
@@ -7028,9 +7031,6 @@ msgstr "Me"
 msgid "Weak"
 msgstr "Préférence faible"
 
-msgid "Web server not started yet ({ex}), waiting…"
-msgstr "Le serveur web n'est pas encore démarré ({ex}), veuillez patienter…"
-
 msgid "Weekly"
 msgstr "Une semaine"
 
@@ -7231,6 +7231,9 @@ msgstr "Vous ne pouvez pas pas ajouter davantage de permissions à ce compte."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
+
+msgid "You do not have write permission on this folder."
+msgstr "Vous n'avez pas la permission d'écriture sur ce dossier."
 
 msgid "You have no permissions"
 msgstr "Vous n'avez aucune permission"
@@ -7509,6 +7512,11 @@ msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
 msgstr[0] "{count} club représenté"
 msgstr[1] "{count} clubs représentés"
+
+msgid "{count} event"
+msgid_plural "{count} events"
+msgstr[0] "{count} évènement"
+msgstr[1] "{count} évènements"
 
 msgid "{count} federation represented"
 msgid_plural "{count} federations represented"

@@ -72,7 +72,7 @@ from database.sqlite.local_source_database.delays import (
 )
 from plugins.manager import Plugin, plugin_manager
 from utils import Utils
-from utils.enum import FormAction
+from utils.enum import FormAction, Extension
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -1000,7 +1000,7 @@ class IndexAdminController(BaseAdminController):
         normalized_data = await WebContext.normalize_multipart_data(data)
         file_path = WebContext.form_data_to_path(normalized_data, 'file')
         assert file_path is not None
-        suffix = '.' + SharlyChessConfig.event_database_ext
+        suffix = '.' + Extension.EVENT_DB
         if file_path.suffix != suffix:
             error_message = _(
                 'Invalid file extension [{extension}] (expected: {expected}).'

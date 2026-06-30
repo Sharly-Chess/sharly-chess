@@ -16,7 +16,7 @@ from typing import override
 from packaging.version import Version
 from requests import Response, get
 
-from common import TMP_DIR, SharlyChessException, DEVEL_ENV, TEMPFILE_DIR
+from common import SharlyChessException, DEVEL_ENV, TEMPFILE_DIR, DATA_SOURCES_DIR
 from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -35,6 +35,7 @@ from database.sqlite.local_source_database.delays import (
 )
 from database.sqlite.sqlite_database import SQLiteDatabase
 from utils.entity import IdentifiableEntity
+from utils.enum import Extension
 from web.channels import channels_plugin
 
 logger = get_logger()
@@ -172,21 +173,33 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         cls._stored_source_database = stored_source_database
 
     @staticmethod
-    def _dir() -> Path:
-        """Path to the SQlite file."""
-        return TMP_DIR
+    @abstractmethod
+    def version() -> Version:
+        """The version of the database. Change to force an update."""
+        # TODO (Molrn) Add matching GH releases versioning
+        # to allow source structure changes (if ever required)
 
     @classmethod
-    def file_path(cls) -> Path:
-        return (
-            cls._dir()
-            / f'{cls.static_id()}.{SharlyChessConfig.federation_database_ext}'
-        )
+    def file_path(cls):
+        id_ = cls.static_id()
+        return DATA_SOURCES_DIR / id_ / f'{id_}-{cls.version()}.{Extension.SOURCE_DB}'
+
+    @staticmethod
+    def _legacy_dir() -> Path:
+        """LEGACY: Dir of the SQlite file in versions < 5."""
+        return Path('tmp')
+
+    @classmethod
+    def legacy_file_path(cls) -> Path:
+        """LEGACY: Path to the SQlite file in versions < 5."""
+        return cls._legacy_dir() / f'{cls.static_id()}.db'
 
     @property
-    @abstractmethod
-    def min_recovery_version(self) -> Version:
-        """The minimal app version for which the database can be recovered."""
+    def legacy_min_recovery_version(self) -> Version | None:
+        """LEGACY: Only used to recover < 5 versions.
+        Increase the `version` property instead.
+        If < version 5 databases can't be recovered, set to None."""
+        return None
 
     @property
     def _schema_file_path(self) -> Path:
@@ -459,6 +472,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             try:
                 # Copy the new database to its proper location
                 self.file.unlink(missing_ok=True)
+                self.file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(tmp_file, self.file)
                 logger.debug(self.log_prefix + f'file copied to [{self.file}].')
             except OSError as e:

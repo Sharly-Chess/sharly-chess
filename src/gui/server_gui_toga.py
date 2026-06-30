@@ -24,18 +24,31 @@ from typing import Optional, Any
 from PIL import Image as PILImage
 
 import toga
+from toga import TextInput
 from toga.sources import ListSource
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 import qrcode
 
 import web
-from common import SHARLY_CHESS_VERSION, BASE_DIR, LOG_DIR
+from common import (
+    SHARLY_CHESS_VERSION,
+    BASE_DIR,
+    LOG_DIR,
+    FLATPAK_ID,
+    DATA_DIR,
+    set_env_variable,
+    DATA_DIR_ENV,
+    PREVIOUS_DATA_DIR_ENV,
+)
 from common.i18n import _
+from common.logger import get_logger
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
+
+logger = get_logger()
 
 # ---------- Minimal ANSI → HTML conversion for WebView ----------
 ANSI_SPLIT = r'\x1b\[([0-9;]*)[mK]'
@@ -284,7 +297,7 @@ class SharlyChessServerToga(toga.App):
         icon_path = web_dir / 'static' / 'images' / icon_file_name
 
         # Use FLATPAK_ID if available to match the sandbox ID
-        app_id = os.environ.get('FLATPAK_ID', 'com.sharlychess.app')
+        app_id = FLATPAK_ID or 'com.sharlychess.app'
 
         super().__init__(
             formal_name='Sharly Chess',
@@ -360,6 +373,8 @@ class SharlyChessServerToga(toga.App):
         # Settings view
         self.settings_view: Optional[toga.Box] = None
         self.launch_browser_switch: Optional[toga.Switch] = None
+        self.data_path_input: Optional[TextInput] = None
+        self.data_path_edit_button: Optional[toga.Button] = None
 
     @property
     def menu_buttons(self) -> list:
@@ -382,7 +397,6 @@ class SharlyChessServerToga(toga.App):
     # --- Toga lifecycle ---
     def startup(self):
         SharlyChessConfig().load_and_set_env()
-        config = SharlyChessConfig()
 
         # Menu buttons
         self.menu_home_btn = toga.Button(
@@ -411,7 +425,7 @@ class SharlyChessServerToga(toga.App):
 
         # Home View
         self.home_view = toga.Box(
-            style=Pack(direction=COLUMN, margin=10, gap=5, align_items='center'),
+            style=Pack(direction=COLUMN, margin=10, gap=7, align_items='center'),
         )
         self.home_main_label = toga.Label(
             _('Application startup...'), text_align='center'
@@ -530,8 +544,34 @@ class SharlyChessServerToga(toga.App):
             value=config.launch_browser,
             on_change=self._on_launch_browser_switch_change,
         )
+
+        self.data_path_input = toga.TextInput(
+            value=str(DATA_DIR.absolute()),
+            readonly=True,
+            flex=1,
+        )
+        data_path_buttons = [
+            toga.Button(_('Open'), on_press=self._open_data_path_explorer)
+        ]
+        if FLATPAK_ID:
+            self.data_path_input.enabled = False
+        else:
+            self.data_path_edit_button = toga.Button(
+                _('Edit'), on_press=self._handle_data_path_selection
+            )
+            data_path_buttons.append(self.data_path_edit_button)
+        title_style = Pack(font_weight='bold', font_size=10, text_align='center')
         self.settings_view.add(
+            toga.Label(_('General'), style=title_style),
             toga.Box(children=[self.launch_browser_switch]),
+            toga.Divider(margin=(5, 0)),
+            toga.Label(_('Data folder'), style=title_style),
+            self.data_path_input,
+            toga.Box(
+                direction=ROW,
+                children=data_path_buttons,
+                gap=10,
+            ),
         )
 
         # Layout container
@@ -553,7 +593,6 @@ class SharlyChessServerToga(toga.App):
 
         assert isinstance(self.main_window, toga.Window)
         self.main_window.show()
-        self.compact_size = self.main_window.size
 
     def update_from_sharly_chess_config(self):
         config = SharlyChessConfig()
@@ -616,6 +655,58 @@ class SharlyChessServerToga(toga.App):
         else:
             self.log_settings_container.add(self.log_settings)
             self.log_settings_btn.style = self.active_button_style
+
+    def _open_data_path_explorer(self, widget):
+        self._open_dir_in_explorer(DATA_DIR)
+
+    async def _handle_data_path_selection(self, widget):
+        folder_dialog = toga.SelectFolderDialog('')
+        assert isinstance(self.main_window, toga.Window)
+        path: Path | None = await self.main_window.dialog(folder_dialog)
+        if path is None or path == DATA_DIR:
+            return
+
+        error: str | None = None
+        if any(path.iterdir()):
+            # Directory is not empty
+            error = _('This folder is not empty.')
+        if not os.access(path, os.W_OK):
+            # directory is not writable
+            error = _('You do not have write permission on this folder.')
+        if DATA_DIR in path.parents:
+            error = _('The folder should not be contained in the current data folder.')
+        if error:
+            error_dialog = toga.ErrorDialog(
+                _('Invalid folder'), error.format(folder=path)
+            )
+            await self.main_window.dialog(error_dialog)
+            return
+        confirm_dialog = toga.ConfirmDialog(
+            _('Data folder'),
+            _('Confirm the new data folder "{folder}"?').format(folder=path)
+            + '\n'
+            + _('Restarting will be required to apply the change.'),
+        )
+        if not await self.main_window.dialog(confirm_dialog):
+            return
+        set_env_variable(DATA_DIR_ENV, str(path))
+        set_env_variable(PREVIOUS_DATA_DIR_ENV, str(DATA_DIR))
+
+        assert self.settings_view is not None
+        assert self.data_path_input is not None
+        assert self.data_path_edit_button is not None
+        self.data_path_input.enabled = False
+        self.data_path_edit_button.enabled = False
+        self.settings_view.index(self.data_path_input)
+        self.settings_view.insert(
+            self.settings_view.index(self.data_path_input) + 2,
+            toga.Label(
+                _('Modified, restart to apply'),
+                color='red',
+                font_weight='bold',
+                text_align='center',
+            ),
+        )
 
     def on_running(self):
         # Logging handler
@@ -1017,17 +1108,35 @@ class SharlyChessServerToga(toga.App):
         except Exception:
             return False
 
-    def quit_app(self) -> None:
+    def quit_app(self, restart: bool = False) -> None:
         loop = self.server_loop
         if loop is None or loop.is_closed():
             return
 
         def _stop() -> None:
             # Cancel the main server task
+            if ServerEngine.server:
+                asyncio.run_coroutine_threadsafe(ServerEngine.server.shutdown(), loop)
             task = self.serve_task
             if task is not None and not task.done():
                 task.cancel()
             loop.stop()
+            self.exit()
+            if restart:
+                restart_kwargs: dict[str, Any] = {}
+                if sys.platform == 'win32':
+                    restart_kwargs['creationflags'] = (
+                        subprocess.DETACHED_PROCESS
+                        | subprocess.CREATE_NEW_PROCESS_GROUP
+                    )
+                else:
+                    restart_kwargs['start_new_session'] = True
+                restart_args = [sys.executable] + sys.argv
+                if '--port' not in restart_args:
+                    port = SharlyChessConfig().web_port
+                    restart_args += ['--port', str(port)]
+                restart_process = subprocess.Popen(restart_args, **restart_kwargs)
+                restart_process.wait()
 
         loop.call_soon_threadsafe(_stop)
 
