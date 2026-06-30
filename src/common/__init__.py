@@ -1,5 +1,6 @@
 import importlib.metadata
 import os
+import plistlib
 import re
 import shutil
 import subprocess
@@ -86,17 +87,45 @@ def app_data_dir() -> Path:
     env_path = os.environ.get(DATA_DIR_ENV)
     if env_path:
         return Path(env_path)
+    # macOS reads the chosen location from the plist (dev or built), so the
+    # relocation works without depending on shell env vars.
+    if sys.platform == 'darwin':
+        return _macos_data_dir()
     if DEVEL_ENV:
         return BASE_DIR / 'dev-data'
     match sys.platform:
         case 'win32':
             return Path.home() / 'AppData' / 'Local' / 'Sharly Chess'
-        case 'darwin':
-            return (
-                Path.home() / 'Library' / 'Application Support' / 'com.sharlychess.app'
-            )
         case _:
             raise NotImplementedError(f'{sys.platform=}')
+
+
+# macOS records the data location in a small plist at a fixed support directory,
+# so the choice survives even when the data itself lives elsewhere. An env var
+# cannot work here: a GUI .app launched from Finder never sources the shell
+# profile, so an exported variable would simply be invisible to the app.
+MACOS_SUPPORT_DIR = (
+    Path.home() / 'Library' / 'Application Support' / 'com.sharlychess.thp'
+)
+# Lives next to (not inside) the data folder, so it survives the data moving.
+MACOS_DATA_PLIST = MACOS_SUPPORT_DIR.parent / 'com.sharlychess.plist'
+
+
+def _read_macos_data_plist() -> dict:
+    try:
+        with open(MACOS_DATA_PLIST, 'rb') as plist_file:
+            return plistlib.load(plist_file)
+    except (FileNotFoundError, OSError, plistlib.InvalidFileException):
+        return {}
+
+
+def _macos_data_dir() -> Path:
+    custom = _read_macos_data_plist().get('data_directory')
+    if custom:
+        return Path(custom)
+    if DEVEL_ENV:
+        return BASE_DIR / 'dev-data'
+    return MACOS_SUPPORT_DIR
 
 
 BASE_DIR: Path = _app_base_dir()
@@ -148,10 +177,50 @@ def set_env_variable(name: str, value: str):
     os.environ[name] = value
 
 
-if previous := os.environ.get(PREVIOUS_DATA_DIR_ENV):
-    # if previous is defined and the current
-    # data dir is empty move the previous content
-    previous_dir = Path(previous)
+def _write_macos_data_plist(data: dict):
+    MACOS_DATA_PLIST.parent.mkdir(parents=True, exist_ok=True)
+    with open(MACOS_DATA_PLIST, 'wb') as plist_file:
+        plistlib.dump(data, plist_file)
+
+
+def persist_data_directory(new_path: Path, previous_path: Path):
+    """Persist a user-chosen data directory and schedule the existing content to
+    be moved into it on the next launch.
+
+    On macOS this is recorded in a plist under Application Support (a
+    Finder-launched app never sees shell env vars); elsewhere it falls back to
+    the environment-variable mechanism.
+    """
+    if sys.platform == 'darwin':
+        data = _read_macos_data_plist()
+        data['data_directory'] = str(new_path)
+        data['move_from'] = str(previous_path)
+        _write_macos_data_plist(data)
+    else:
+        set_env_variable(DATA_DIR_ENV, str(new_path))
+        set_env_variable(PREVIOUS_DATA_DIR_ENV, str(previous_path))
+
+
+def _pending_data_move_source() -> Path | None:
+    """The directory whose content should be migrated into DATA_DIR, if any."""
+    if sys.platform == 'darwin':
+        move_from = _read_macos_data_plist().get('move_from')
+        return Path(move_from) if move_from else None
+    previous = os.environ.get(PREVIOUS_DATA_DIR_ENV)
+    return Path(previous) if previous else None
+
+
+def _clear_pending_data_move():
+    if sys.platform == 'darwin':
+        data = _read_macos_data_plist()
+        if data.pop('move_from', None) is not None:
+            _write_macos_data_plist(data)
+    else:
+        set_env_variable(PREVIOUS_DATA_DIR_ENV, '')
+
+
+if (previous_dir := _pending_data_move_source()) is not None:
+    # The data dir changed: move the previous content over if the new dir is empty.
     if previous_dir.exists() and not any(DATA_DIR.iterdir()):
         for elem_path in previous_dir.glob('*'):
             shutil.move(elem_path, DATA_DIR)
@@ -163,7 +232,7 @@ if previous := os.environ.get(PREVIOUS_DATA_DIR_ENV):
             previous_dir,
             DATA_DIR,
         )
-        set_env_variable(PREVIOUS_DATA_DIR_ENV, '')
+        _clear_pending_data_move()
 
 for directory in (
     ARCHIVES_DIR,

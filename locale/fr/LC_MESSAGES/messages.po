@@ -251,7 +251,7 @@ msgid "(replace [%(object_uniq_id)s])"
 msgstr "(remplace [%(object_uniq_id)s])"
 
 msgid "*** Changelog Link"
-msgstr ""
+msgstr "Changelog Link"
 
 msgid "*** Doc Link"
 msgstr "https://sharly-chess.com/fr/bien-demarrer/"
@@ -526,7 +526,7 @@ msgid "A file is expected."
 msgstr "Un fichier est attendu."
 
 msgid "A new version is available!"
-msgstr ""
+msgstr "Une nouvelle version est disponible !"
 
 msgid "A player with {column}=[{value}] already exists in the event."
 msgstr "Un·e joueur·euse avec {column}=[{value}] existe déjà dans l'évènement."
@@ -814,9 +814,6 @@ msgstr "Une erreur inattendue s'est produite lors de la lecture du fichier CSV. 
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
-msgid "An update is available!"
-msgstr ""
-
 msgid "Andorra"
 msgstr "Andorre"
 
@@ -1040,9 +1037,6 @@ msgstr "Grille Berger"
 
 msgid "Bermuda"
 msgstr "Bermudes"
-
-msgid "Beta version updates"
-msgstr ""
 
 msgid "Bhutan"
 msgstr "Bhoutan"
@@ -1311,13 +1305,10 @@ msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
 msgid "Changelog"
-msgstr ""
+msgstr "Journal des modifications"
 
 msgid "Check connection"
 msgstr "Vérifier la connexion"
-
-msgid "Check for updates"
-msgstr ""
 
 msgid "Check the box to allow other screens to display a link to the screen of this family."
 msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
@@ -2112,14 +2103,14 @@ msgstr "Ne pas restaurer"
 msgid "Do not use this order as ranking."
 msgstr "Ne pas utiliser cet ordre comme classement."
 
+msgid "Do you confirm wanting to recover version {version}?"
+msgstr "Confirmez-vous vouloir récupérer la version {version} ?"
+
 msgid "Do you want to install example event databases"
 msgstr "Voulez-vous installer des bases d'évènement d'exemple"
 
-msgid "Do you want to recover the data of release [{version}]"
-msgstr "Voulez-vous récupérer les données de la version [{version}]"
-
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
-msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
+msgid "Do you want to install it now?"
+msgstr "Voulez-vous l'installer maintenant ?"
 
 msgid "Document [{document}] has been generated in another tab."
 msgstr "Le document [{document}] a été généré dans un autre onglet."
@@ -2522,6 +2513,9 @@ msgstr "Évènements"
 
 msgid "Events ({num})"
 msgstr "Évènements ({num})"
+
+msgid "Example databases"
+msgstr "Bases de données d'exemple"
 
 msgid "Exclude"
 msgstr "Exclure"
@@ -3070,6 +3064,9 @@ msgstr "Dans le tournoi"
 msgid "Include IDs and passwords for uploading results"
 msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en ligne des résultats"
 
+msgid "Include beta versions in updates"
+msgstr "Inclure les versions bêta dans les mises à jour"
+
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
 
@@ -3129,9 +3126,6 @@ msgstr "Installer"
 
 msgid "Installation of [{lib}] failed."
 msgstr "L'installation de la bibliothèque [{lib}] a échoué."
-
-msgid "Installation of release [{version}] failed, exiting."
-msgstr "L'nstallation de la version [{version}] a échoué, abandon."
 
 msgid "Installed [{lib}]."
 msgstr "La bibliothèque [{lib}] a été installée."
@@ -3340,8 +3334,8 @@ msgstr "Dernière mise à jour : {updated_at}"
 msgid "Last update: {updated_at} (outdated)"
 msgstr "Dernière mise à jour : {updated_at} (dépassée)"
 
-msgid "Latest version never checked"
-msgstr ""
+msgid "Latest version never searched (no internet)"
+msgstr "Dernière version jamais recherchée (pas de connexion Internet)"
 
 msgid "Latvia"
 msgstr "Lettonie"
@@ -5084,6 +5078,12 @@ msgstr "A reçu un forfait pour la ronde à venir"
 msgid "Record"
 msgstr "Historique"
 
+msgid "Recover a previous version"
+msgstr "Récupérer une version précédente"
+
+msgid "Recover version {version}"
+msgstr "Récupérer la version {version}"
+
 msgid "Reference to unknown board [{board_id}]."
 msgstr "Référence à un échiquier inconnu [{board_id}]."
 
@@ -5490,6 +5490,12 @@ msgstr "Rechercher par : %(fields)s"
 msgid "Search for player"
 msgstr "Rechercher un·e joueur·euse"
 
+msgid "Search for updates"
+msgstr "Rechercher des mises à jour"
+
+msgid "Searching for updates..."
+msgstr "Recherche de mises à jour…"
+
 msgid "Searching…"
 msgstr "Recherche en cours…"
 
@@ -5546,9 +5552,6 @@ msgstr "Septembre"
 msgid "Serbia"
 msgstr "Serbie"
 
-msgid "Server Setup"
-msgstr "Configuration du serveur"
-
 msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
 
@@ -5597,6 +5600,9 @@ msgstr "Prix partagés"
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
+msgid "Sharly Chess Error"
+msgstr "Erreur Sharly Chess"
+
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
@@ -5623,6 +5629,9 @@ msgstr "La configuration de Sharly Chess a été mise à jour."
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
+
+msgid "Sharly Chess {latest} is available, you have {current}."
+msgstr "Sharly Chess {latest} est disponible, vous avez la version {current}."
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
@@ -6200,6 +6209,13 @@ msgstr "Les tournois sur lesquels la permission s'applique."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
+
+msgid ""
+"The updater file is missing at [{path}].\n"
+"The application needs to be re-installed manually."
+msgstr ""
+"Le fichier de mise à jour est introuvable à [{path}].\n"
+"L'application doit être réinstallée manuellement."
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
@@ -6933,7 +6949,7 @@ msgid "Verdict:"
 msgstr "Verdict :"
 
 msgid "Version"
-msgstr ""
+msgstr "Version"
 
 msgid "Vietnam"
 msgstr "Vietnam"
@@ -7022,6 +7038,12 @@ msgstr "Attention : plus de la moitié des joueur·euses sont absent·es !"
 
 msgid "Warning: potential data loss"
 msgstr "Attention : perte de données potentielle"
+
+msgid "Warning: recovering a previous version is irreversible, all the data you have modified since then will be lost."
+msgstr "Attention : récupérer une version précédente est irréversible, toutes les données que vous avez modifiées depuis seront perdues."
+
+msgid "Warning: recovering a version is irreversible!"
+msgstr "Attention : récupérer une version est irréversible !"
 
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
@@ -7256,14 +7278,14 @@ msgstr "Vous définissez le type de données à afficher (résultats, appariemen
 msgid "You do not have write permission on this folder."
 msgstr "Vous n'avez pas la permission d'écriture sur ce dossier."
 
-msgid "You have an unreleased version"
-msgstr ""
-
 msgid "You have no permissions"
 msgstr "Vous n'avez aucune permission"
 
+msgid "You have the latest unofficial version"
+msgstr "Vous avez la dernière version non officielle"
+
 msgid "You have the latest version"
-msgstr ""
+msgstr "Vous avez la dernière version"
 
 msgid "You may also connect to this server from other devices using"
 msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres appareils"
@@ -7385,18 +7407,18 @@ msgstr "incomplète"
 msgid "last"
 msgstr "dernier"
 
-msgid "last checked a minute ago"
-msgid_plural "last checked {count} minutes ago"
-msgstr[0] ""
-msgstr[1] ""
+msgid "last search a minute ago"
+msgid_plural "last search {count} minutes ago"
+msgstr[0] "dernière recherche il y a une minute"
+msgstr[1] "dernière recherche il y a {count} minutes"
 
-msgid "last checked an hour ago"
-msgid_plural "last checked {count} hours ago"
-msgstr[0] ""
-msgstr[1] ""
+msgid "last search an hour ago"
+msgid_plural "last search {count} hours ago"
+msgstr[0] "dernière recherche il y a une heure"
+msgstr[1] "dernière recherche il y a {count} heures"
 
-msgid "last checked just now"
-msgstr ""
+msgid "last search just now"
+msgstr "dernière recherche à l'instant"
 
 msgid "min *** MINUTES"
 msgstr "min."
@@ -7657,4 +7679,44 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Invalid federation [{federation}]."
 #~ msgstr "Fédération [{federation}] non valide."
+
+#~ msgid "An update is available!"
+#~ msgstr ""
+
+#~ msgid "Beta version updates"
+#~ msgstr ""
+
+#~ msgid "Check for updates"
+#~ msgstr ""
+
+#~ msgid "Do you want to recover the data of release [{version}]"
+#~ msgstr "Voulez-vous récupérer les données de la version [{version}]"
+
+#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
+#~ msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
+
+#~ msgid "Installation of release [{version}] failed, exiting."
+#~ msgstr "L'nstallation de la version [{version}] a échoué, abandon."
+
+#~ msgid "Latest version never checked"
+#~ msgstr ""
+
+#~ msgid "Server Setup"
+#~ msgstr "Configuration du serveur"
+
+#~ msgid "You have an unreleased version"
+#~ msgstr ""
+
+#~ msgid "last checked a minute ago"
+#~ msgid_plural "last checked {count} minutes ago"
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+
+#~ msgid "last checked an hour ago"
+#~ msgid_plural "last checked {count} hours ago"
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+
+#~ msgid "last checked just now"
+#~ msgstr ""
 

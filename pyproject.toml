@@ -68,7 +68,7 @@ lint = [
 
 translate = ["transformers", "torch", "sentencepiece", "sacremoses"]
 
-export = ["PyInstaller ~= 6.15.0", "pip-licenses"]
+export = ["PyInstaller ~= 6.15.0", "pip-licenses", "dmgbuild ~= 1.6"]
 
 tests = ["pytest", "pytest-playwright", "pytest-asyncio", "pytest-base-url"]
 

@@ -447,7 +447,13 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_DEVELOPER_USERNAME }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Sparkle public key, embedded in the bundle as SUPublicEDKey
+          SPARKLE_ED_PUBLIC_KEY: ${{ secrets.SPARKLE_ED_PUBLIC_KEY }}
         run: |
+          # Vendor Sparkle (framework to embed + tools) before building
+          echo "Vendoring Sparkle..."
+          bash scripts/export/macos/fetch_sparkle.sh
+
           # Build the application first
           echo "Building application with preserved artifacts..."
           python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
@@ -465,12 +471,28 @@ jobs:
           rm -rf dist/
           rm -rf build/
           rm -f *.spec
+      - name: Generate Sparkle appcast
+        shell: bash
+        env:
+          SPARKLE_ED_PRIVATE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Isolate the DMG so generate_appcast doesn't also sign the generic
+          # export/*.zip; sign with the private key from stdin (no keychain).
+          mkdir -p sparkle-feed
+          cp "export/sharly-chess-${VERSION}-macos.dmg" sparkle-feed/
+          echo "$SPARKLE_ED_PRIVATE_KEY" | vendor/sparkle/bin/generate_appcast \
+            --ed-key-file - \
+            --download-url-prefix "https://github.com/Sharly-Chess/sharly-chess/releases/download/${VERSION}/" \
+            sparkle-feed/
+          cp sparkle-feed/appcast.xml export/appcast.xml
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            export/appcast.xml
 
   create-release:
     needs: [tests, export-sharly-chess-windows, export-sharly-chess-macos, export-sharly-chess-linux, publish-linux-flatpak]
@@ -517,6 +539,8 @@ jobs:
           cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
           # macOS
           cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
+          # macOS Sparkle appcast (the app fetches this per-release to self-update)
+          cp export-macos/appcast.xml release-files/appcast.xml
           # Linux Flatpak bundles
           cp export-linux/sharly-chess-${VERSION}-linux-x86_64/sharly-chess-${VERSION}-linux-x86_64.flatpak release-files/
           cp export-linux/sharly-chess-${VERSION}-linux-arm64/sharly-chess-${VERSION}-linux-arm64.flatpak release-files/
@@ -530,6 +554,7 @@ jobs:
           files: |
             release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
             release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            release-files/appcast.xml
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.flatpak
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-arm64.flatpak
           body_path: RELEASE_NOTES.md
