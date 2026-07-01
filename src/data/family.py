@@ -75,21 +75,54 @@ class Family:
         )
         return name.replace('%t', self.tournament.name)
 
-    @property
-    def display_name(self) -> str:
-        """A user-facing name for the family (cards, menu label): the family
-        ``name`` with ``%f``/``%l`` resolved to the family's overall range —
-        the first value of its first screen and the last value of its last
-        screen."""
-        name = self.name  # %t already substituted; %f/%l still literal
-        if '%f' not in name and '%l' not in name:
-            return name
+    def resolve_label(self, template: str, abbreviated: bool = False) -> str:
+        """Substitute the tokens %t (tournament), %f/%l (first/last of the
+        family's overall range) in a label template. ``abbreviated`` shortens
+        player names (menu navigation)."""
+        text = template.replace('%t', self.tournament.name)
+        if '%f' not in text and '%l' not in text:
+            return text
         screens = list(self.screens_by_uniq_id.values())
         if not screens:
-            return name.replace('%f', '-').replace('%l', '-')
-        first_value = screens[0].sorted_screen_sets[0].range_bounds()[0]
-        last_value = screens[-1].sorted_screen_sets[0].range_bounds()[1]
-        return name.replace('%f', first_value).replace('%l', last_value)
+            return text.replace('%f', '-').replace('%l', '-')
+        first = screens[0].sorted_screen_sets[0].range_bounds(abbreviated)[0]
+        last = screens[-1].sorted_screen_sets[0].range_bounds(abbreviated)[1]
+        return text.replace('%f', first).replace('%l', last)
+
+    @property
+    def label_template(self) -> str:
+        """The family name as a label template: the range ``(%f - %l)`` is
+        appended when the name carries neither ``%f`` nor ``%l`` (so a family
+        always shows its range), otherwise the name is used as is."""
+        name = self.name
+        if '%f' in name or '%l' in name:
+            return name
+        return f'{name} (%f - %l)'
+
+    @property
+    def display_name(self) -> str:
+        """The family's full name for admin display (cards, menu details)."""
+        return self.resolve_label(self.label_template, abbreviated=False)
+
+    @property
+    def nav_label(self) -> str:
+        """The family's compact name for the navigation menu."""
+        return self.resolve_label(self.label_template, abbreviated=True)
+
+    @property
+    def menu_label(self) -> str:
+        """The family's menu label (full): the custom menu text with its
+        tokens resolved, or the family name."""
+        if self.menu_text:
+            return self.resolve_label(self.menu_text, abbreviated=False)
+        return self.display_name
+
+    @property
+    def nav_menu_label(self) -> str:
+        """The family's menu label for the navigation menu (abbreviated)."""
+        if self.menu_text:
+            return self.resolve_label(self.menu_text, abbreviated=True)
+        return self.nav_label
 
     @property
     def tournament_id(self) -> int:
@@ -121,47 +154,6 @@ class Family:
     @property
     def menu_text(self) -> str:
         return self.stored_family.menu_text
-
-    @cached_property
-    def menu_label(self) -> str | None:
-        if self.menu_text:
-            return self.menu_text
-        single_tournament: bool = len(self.event.tournaments_by_id) == 1
-        text: str
-        if (
-            self.type
-            in [
-                ScreenType.INPUT,
-                ScreenType.BOARDS,
-            ]
-            and self.tournament.current_round
-        ):
-            text = self.menu_text or Screen.default_boards_screen_menu_text(
-                single_tournament=single_tournament,
-                first_last=True,
-                team_matches=self.shows_team_matches,
-            )
-        elif self.type in [
-            ScreenType.PLAYERS,
-            ScreenType.INPUT,
-            ScreenType.BOARDS,
-        ]:
-            text = self.menu_text or Screen.default_players_screen_menu_text(
-                single_tournament=single_tournament, first_last=True
-            )
-        elif ScreenType.CHECK_IN:
-            text = self.menu_text or Screen.default_check_in_screen_menu_text(
-                single_tournament=single_tournament, first_last=True
-            )
-        elif self.type == ScreenType.RANKING:
-            text = self.menu_text or Screen.default_ranking_screen_menu_text(
-                single_tournament=single_tournament,
-                first_last=True,
-                crosstable=self.ranking_crosstable,
-            )
-        else:
-            text = self.menu_text
-        return text.replace('%t', self.tournament.name)
 
     @property
     def timer_id(self) -> int | None:

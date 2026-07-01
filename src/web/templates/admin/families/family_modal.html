@@ -65,7 +65,6 @@
                                 name='name',
                                 label=_('Name:'),
                                 placeholder=_('Automatic'),
-                                help_text=_('The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players\' names):  %%f=first, %%l=last, %%t=tournament.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -74,7 +73,7 @@
                                 name='menu_text',
                                 label=_('Menu label:'),
                                 placeholder=_('Automatic'),
-                                tooltip_text=_('The label used for this multi-screen in menus. If left empty, the multi-screen name is used.'),
+                                tooltip_text=_('The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced.'),
                                 data=data, errors=errors
                             ) }}
                         </div>

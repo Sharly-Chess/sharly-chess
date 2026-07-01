@@ -6968,6 +6968,9 @@ msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. 
 msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
 msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé."
 
+msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
+msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé. Les jetons %%f=premier, %%l=dernier, %%t=tournoi sont automatiquement remplacés."
+
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
 msgstr "Le libellé utilisé pour cet écran dans les menus. S'il est vide, le nom du tournoi est utilisé."
 

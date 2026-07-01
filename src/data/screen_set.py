@@ -496,10 +496,12 @@ class ScreenSet:
             assert self.last_item is None or isinstance(self.last_item, Board)
         return self.last_item
 
-    def range_bounds(self) -> tuple[str, str]:
+    def range_bounds(self, abbreviated: bool = False) -> tuple[str, str]:
         """The first (``%f``) and last (``%l``) display values shown by this
-        set, formatted as in the ``name_for_*`` titles. Used to resolve a
-        family's overall range from its first and last screens."""
+        set. Used to resolve a family's overall range from its first and last
+        screens. When ``abbreviated`` (menu navigation), player names are cut
+        to their first 3 characters in upper case; otherwise (admin display)
+        the fuller ``name_for_*`` forms are used."""
         dash = '-'
         screen_type = self.type
         tournament = self.tournament
@@ -551,9 +553,15 @@ class ScreenSet:
             )
         first = self.first_tournament_player_by_name
         last = self.last_tournament_player_by_name
+
+        def player_label(player: Any) -> str:
+            if player is None:
+                return dash
+            return player.last_name[:3].upper() if abbreviated else player.last_name[:8]
+
         return (
-            first.last_name[:8] if first else dash,
-            last.last_name[:8] if last else dash,
+            player_label(first),
+            player_label(last),
         )
 
     def _extract_players_by_name(self):

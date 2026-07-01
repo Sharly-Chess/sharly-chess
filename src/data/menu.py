@@ -33,7 +33,7 @@ class MenuNavEntry:
     @property
     def label(self) -> str:
         if self.family is not None:
-            return self.family.menu_text or self.family.display_name
+            return self.family.nav_menu_label
         return self.screens[0].menu_entry_label
 
 
