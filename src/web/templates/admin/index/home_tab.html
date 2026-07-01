@@ -47,7 +47,7 @@
         <div style="width: 200px; max-width: 60vw; margin: 20px auto 20px;" class="text-primary">
             {{ svg_logo | safe }}
         </div>
-        {% if client.can_manage_events %}
+        {% if client.can_create_events %}
             {% with is_dropdown = false %}
                 {% include 'create_event_button.html' %}
             {% endwith %}

@@ -25,7 +25,7 @@
             </div>
         {% endwith %}
     {% endif %}
-    {% if client.can_manage_events %}
+    {% if client.can_create_events %}
         <div class="d-flex gap-2 ms-auto align-items-center">
             {% with is_dropdown = true %}
                 {% include 'create_event_button.html' %}
