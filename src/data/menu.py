@@ -69,7 +69,7 @@ class MenuItem:
         if family := self.family:
             return list(family.screens_by_uniq_id.values())
         if screen_type := self.screen_type:
-            return self.event.sorted_basic_screens_by_screen_type[screen_type]
+            return self.event.sorted_screens_by_screen_type[screen_type]
         return []
 
 
@@ -140,6 +140,19 @@ class Menu:
     @property
     def screen_types(self) -> list[ScreenType]:
         return [item.screen_type for item in self.sorted_menu_items if item.screen_type]
+
+    def resolved_screens(self) -> list[Screen]:
+        """Every screen this menu points to, in item order, de-duplicated:
+        individual screens, each family's screens and every screen of any
+        included screen type."""
+        screens: list[Screen] = []
+        seen: set[str] = set()
+        for item in self.sorted_menu_items:
+            for screen in item.screens:
+                if screen.uniq_id not in seen:
+                    seen.add(screen.uniq_id)
+                    screens.append(screen)
+        return screens
 
     def _get_menu_items_by_id(self) -> dict[int, MenuItem]:
         menu_items_by_id = {}

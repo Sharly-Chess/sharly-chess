@@ -163,11 +163,21 @@ class MenuAdminController(BaseEventAdminController):
     @staticmethod
     def _family_options(event: Any) -> dict[str, dict[str, Any]]:
         claimed_family_ids = event.menu_claimed_family_ids
+        claimed_types = event.menu_claimed_screen_types
         options: dict[str, dict[str, Any]] = {}
         for screen_type, families in event.families_by_screen_type.items():
             group: dict[str, Any] = {}
             for family in sorted(families, key=attrgetter('name')):
-                if family.id in claimed_family_ids:
+                if family.type in claimed_types:
+                    group[str(family.id)] = SelectOption(
+                        name=family.name,
+                        disabled=True,
+                        tooltip=_(
+                            'All %(screen_type)s screens already belong to a menu.'
+                        )
+                        % {'screen_type': screen_type.name},
+                    )
+                elif family.id in claimed_family_ids:
                     group[str(family.id)] = SelectOption(
                         name=family.name,
                         disabled=True,
@@ -183,6 +193,7 @@ class MenuAdminController(BaseEventAdminController):
     def _screen_type_options(event: Any) -> dict[str, dict[str, Any]]:
         claimed_types = event.menu_claimed_screen_types
         claimed_ids = event.menu_claimed_screen_ids
+        claimed_family_ids = event.menu_claimed_family_ids
         options: dict[str, Any] = {}
         for screen_type in ScreenType:
             label = _('All %(screen_type)s screens') % {'screen_type': screen_type.name}
@@ -195,6 +206,9 @@ class MenuAdminController(BaseEventAdminController):
             elif any(
                 screen.id in claimed_ids
                 for screen in event.sorted_basic_screens_by_screen_type[screen_type]
+            ) or any(
+                family.id in claimed_family_ids
+                for family in event.families_by_screen_type[screen_type]
             ):
                 options[screen_type.value] = SelectOption(
                     name=label,

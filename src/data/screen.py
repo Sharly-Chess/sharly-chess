@@ -1,4 +1,3 @@
-import fnmatch
 import weakref
 from collections.abc import Iterator, Collection
 from datetime import datetime, timedelta
@@ -279,6 +278,10 @@ class Screen:
     def menu_label(self) -> str | None:
         if not self.menu_link:
             return None
+        return self.menu_entry_label
+
+    @property
+    def menu_entry_label(self) -> str:
         match self.type:
             case (
                 ScreenType.BOARDS
@@ -458,62 +461,28 @@ class Screen:
             case ScreenType.RESULTS:
                 assert self.stored_screen is not None
                 return self.stored_screen.menu_text or _('Last results')
+            case ScreenType.IMAGE:
+                menu_text = self.stored_screen.menu_text if self.stored_screen else None
+                return menu_text or self.name
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
     def _menu_screens(self, admin: bool) -> list['Screen']:
-        menu_screens: list['Screen'] = []
-        if self.menu is not None:
-            for menu_part in map(str.strip, self.menu.split(',')):
-                if not menu_part:
-                    continue
-                is_screen_category = True
-                screen_type_category: ScreenType | None = None
-                match menu_part:
-                    case '@boards':
-                        screen_type_category = ScreenType.BOARDS
-                    case '@input':
-                        screen_type_category = ScreenType.INPUT
-                    case '@check-in':
-                        screen_type_category = ScreenType.CHECK_IN
-                    case '@players':
-                        screen_type_category = ScreenType.PLAYERS
-                    case '@results':
-                        screen_type_category = ScreenType.RESULTS
-                    case '@ranking':
-                        screen_type_category = ScreenType.RANKING
-                    case '@family':
-                        if self.family_id is None:
-                            logger.warning(
-                                'Pattern [@family] can be used by screen families only.'
-                            )
-                        else:
-                            menu_screens += self.event.families_by_id[
-                                self.family_id
-                            ].screens_by_uniq_id.values()
-                    case _:
-                        is_screen_category = False
-                if screen_type_category:
-                    menu_screens += (
-                        self.event.sorted_screens_by_screen_type[screen_type_category]
-                        if admin
-                        else self.event.sorted_public_screens_by_screen_type[
-                            screen_type_category
-                        ]
-                    )
-                if is_screen_category:
-                    continue
-                if '*' in menu_part:
-                    menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
-                        self.event.screens_by_uniq_id.keys(), menu_part
-                    )
-                    menu_screens += [
-                        self.event.screens_by_uniq_id[screen_uniq_id]
-                        for screen_uniq_id in menu_part_screen_uniq_ids
-                    ]
-                elif menu_part in self.event.screens_by_uniq_id:
-                    menu_screens.append(self.event.screens_by_uniq_id[menu_part])
-        return menu_screens
+        """The navigation entries shown on this screen: the resolved screens
+        of the menu this screen belongs to. A screen belongs to at most one
+        menu; the menu is only displayed when it holds more than one screen
+        visible to the viewer."""
+        for menu in self.event.sorted_menus:
+            if not admin and not menu.public:
+                continue
+            resolved = menu.resolved_screens()
+            if not any(screen.uniq_id == self.uniq_id for screen in resolved):
+                continue
+            entries = (
+                resolved if admin else [screen for screen in resolved if screen.public]
+            )
+            return entries if len(entries) > 1 else []
+        return []
 
     @cached_property
     def public_menu_screens(self) -> list['Screen']:
