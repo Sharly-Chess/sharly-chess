@@ -386,6 +386,18 @@
         </div>
 
         <div class="modal-footer">
+            {% if action == 'update' and client.can_create_events %}
+                <button
+                    type="button"
+                    class="btn btn-outline-primary text-nowrap me-auto"
+                    hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="bi-copy pe-1"></i>
+                    {{ _('Duplicate') }}
+                </button>
+            {% endif %}
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"

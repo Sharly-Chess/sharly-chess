@@ -199,6 +199,11 @@ class Client:
         return AuthAction.VIEW_DETAILED_EVENT_CARDS in self.allowed_actions
 
     @property
+    def can_create_events(self) -> bool:
+        """Returns true if the client can create and duplicate events."""
+        return AuthAction.CREATE_EVENTS in self.allowed_actions
+
+    @property
     def can_manage_events(self) -> bool:
         """Returns true if the client can manage the events."""
         return AuthAction.MANAGE_EVENTS in self.allowed_actions
