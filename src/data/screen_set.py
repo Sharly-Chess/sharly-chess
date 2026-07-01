@@ -496,6 +496,66 @@ class ScreenSet:
             assert self.last_item is None or isinstance(self.last_item, Board)
         return self.last_item
 
+    def range_bounds(self) -> tuple[str, str]:
+        """The first (``%f``) and last (``%l``) display values shown by this
+        set, formatted as in the ``name_for_*`` titles. Used to resolve a
+        family's overall range from its first and last screens."""
+        dash = '-'
+        screen_type = self.type
+        tournament = self.tournament
+        if (
+            screen_type in (ScreenType.BOARDS, ScreenType.INPUT)
+            and tournament.current_round
+        ):
+            if self.shows_team_matches:
+                self._extract_team_matches()
+                first, last = self._team_first_item, self._team_last_item
+                return (
+                    str(first.display_number)
+                    if first is not None and first.display_number is not None
+                    else dash,
+                    str(last.display_number)
+                    if last is not None and last.display_number is not None
+                    else dash,
+                )
+            first_board, last_board = self.first_board, self.last_board
+            offset = tournament.first_board_number - 1
+            return (
+                str(first_board.id + offset)
+                if first_board and first_board.id is not None
+                else dash,
+                str(last_board.id + offset)
+                if last_board and last_board.id is not None
+                else dash,
+            )
+        if screen_type == ScreenType.RANKING:
+            if tournament.is_team_tournament:
+                self._extract_team_standings()
+                first, last = self._team_first_item, self._team_last_item
+                return (
+                    str(first['rank']) if first is not None else dash,
+                    str(last['rank']) if last is not None else dash,
+                )
+            first = self.first_tournament_player_by_rank
+            last = self.last_tournament_player_by_rank
+            return (
+                str(first.rank) if first else dash,
+                str(last.rank) if last else dash,
+            )
+        if screen_type == ScreenType.CHECK_IN and tournament.is_team_tournament:
+            self._extract_teams_by_name()
+            first, last = self._team_first_item, self._team_last_item
+            return (
+                first.name[:12] if first is not None else dash,
+                last.name[:12] if last is not None else dash,
+            )
+        first = self.first_tournament_player_by_name
+        last = self.last_tournament_player_by_name
+        return (
+            first.last_name[:8] if first else dash,
+            last.last_name[:8] if last else dash,
+        )
+
     def _extract_players_by_name(self):
         if self.items_lists is None:
             if self.players_show_unpaired:
@@ -682,6 +742,7 @@ class ScreenSet:
 
     def _extract_players_by_rank(self):
         if self.items_lists is None:
+            self.tournament.ensure_tournament_player_ranks_computed()
             self._extract_data(
                 items=[
                     player

@@ -64,7 +64,7 @@
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
-                                placeholder=_('E.g.: My screen family'),
+                                placeholder=_('Automatic'),
                                 help_text=_('The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players\' names):  %%f=first, %%l=last, %%t=tournament.'),
                                 data=data, errors=errors
                             ) }}
@@ -73,8 +73,8 @@
                             {{ admin_macros.text_input(
                                 name='menu_text',
                                 label=_('Menu label:'),
-                                placeholder=_('E.g.: Boards %%f-%%l') if family_type in ['input', 'boards', ] else _('E.g.: Players %%f-%%l'),
-                                tooltip_text=_('The label used for this family in menus. If left empty, a default label will be used.'),
+                                placeholder=_('Automatic'),
+                                tooltip_text=_('The label used for this family in menus. If left empty, the family name is used.'),
                                 data=data, errors=errors
                             ) }}
                         </div>

@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 import weakref
 from _weakref import ReferenceType
 
+from common.i18n import _
 from data.family import Family
 from data.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
@@ -32,7 +33,7 @@ class MenuNavEntry:
     @property
     def label(self) -> str:
         if self.family is not None:
-            return self.family.menu_text or self.family.name
+            return self.family.menu_text or self.family.display_name
         return self.screens[0].menu_entry_label
 
 
@@ -115,7 +116,18 @@ class MenuItem:
         if family := self.family:
             return list(family.screens_by_uniq_id.values())
         if screen_type := self.screen_type:
-            return self.event.sorted_screens_by_screen_type[screen_type]
+            # All screens of this type (basic and family-generated), ordered by
+            # uniq_id. Sorting by name is avoided on purpose: Screen.name for a
+            # ranking screen needs precomputed player ranks, which the menu
+            # resolution must not depend on.
+            return sorted(
+                (
+                    screen
+                    for screen in self.event.screens_by_uniq_id.values()
+                    if screen.type == screen_type
+                ),
+                key=lambda screen: screen.uniq_id,
+            )
         return []
 
 
@@ -151,13 +163,20 @@ class Menu:
 
     @property
     def name(self) -> str:
-        """The stored name, or — for a seeded default menu with no stored
-        name — the translatable label of its screen type."""
+        """The stored name, or — when none is set — an automatic name: the
+        seeded default's screen type label, otherwise the distinct screen
+        types the menu covers, joined by ' / '."""
         if self.stored_menu.name:
             return self.stored_menu.name
         if default_type := self.default_type:
             return default_type.name
-        return ''
+        screen_types: list[ScreenType] = []
+        for screen in self.resolved_screens():
+            if screen.type not in screen_types:
+                screen_types.append(screen.type)
+        if screen_types:
+            return ' / '.join(screen_type.name for screen_type in screen_types)
+        return _('Menu')
 
     @property
     def stored_menu_items(self) -> list[StoredMenuItem]:

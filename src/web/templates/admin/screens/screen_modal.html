@@ -64,7 +64,7 @@
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
-                                placeholder=_('E.g.: My screen'),
+                                placeholder=_('Automatic'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -73,8 +73,8 @@
                                 {{ admin_macros.text_input(
                                     name='menu_text',
                                     label=_('Menu label:'),
-                                    placeholder=_('E.g.: My screen'),
-                                    tooltip_text=_('The label used for this screen in menus. If left empty, a default label will be used.'),
+                                    placeholder=_('Automatic'),
+                                    tooltip_text=_('The label used for this screen in menus. If left empty, the tournament name is used.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>

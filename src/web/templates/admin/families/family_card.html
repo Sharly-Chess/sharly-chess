@@ -1,11 +1,11 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ admin_macros.family_visibility_icon(family, 'pe-1') }}{{ family.name }}
+    {{ admin_macros.family_visibility_icon(family, 'pe-1') }}{{ family.display_name }}
 {% endblock %}
 
 {% block card_title %}
-    <span class="pe-1">{{ macros.screen_type_icon(family.type, true) }}</span>{{ family.uniq_id }}
+    <span class="pe-1">{{ macros.screen_type_icon(family.type, true) }}</span>{{ family.type_str }}
 {% endblock %}
 
 {% block card_text %}

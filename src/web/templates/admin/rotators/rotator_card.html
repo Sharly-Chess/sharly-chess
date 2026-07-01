@@ -97,7 +97,7 @@
                             {% endif %}
                             {{ macros.screen_type_icon(family.type, true) }}
                         </span>
-                        {{ family.name }}
+                        {{ family.display_name }}
                         {% if family.screens_by_uniq_id %}
                             {{ ngettext(
                                 '(%(num)d screen)',
