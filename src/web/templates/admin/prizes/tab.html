@@ -52,6 +52,7 @@
             </button>
         </span>
         <span
+            class="dropdown-end"
             {% if not client.can_manage_prizes %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
             {% elif not admin_prize_group %}
@@ -61,26 +62,76 @@
             {% endif %}
         >
             <button
-                class="btn btn-primary text-nowrap"
+                class="btn btn-primary text-nowrap dropdown-toggle"
+                type="button"
                 {% if not admin_prize_group or not client.can_manage_prizes %}
                     disabled
                 {% else %}
-                    hx-trigger="click, SC_Plus from:body"
-                    hx-get="{{ url_for(
-                        'admin-prize-category-create-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        prize_group_id=admin_prize_group.id
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
                 {% endif %}
             >
                 <i class="bi-plus-square pe-1"></i>
                 {{ _('Create a category') }}
             </button>
+            {% if admin_prize_group and client.can_manage_prizes %}
+                <ul class="dropdown-menu">
+                    <li>
+                        <button
+                            class="dropdown-item text-start cursor-pointer"
+                            hx-get="{{ url_for(
+                                'admin-prize-category-create-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-plus-square pe-1"></i>
+                            {{ _('Create a category') }}
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            class="dropdown-item text-start cursor-pointer"
+                            hx-get="{{ url_for(
+                                'admin-prize-categories-generate-age-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-people-fill pe-1"></i>
+                            {{ _('Generate age categories') }}
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            class="dropdown-item text-start cursor-pointer"
+                            hx-get="{{ url_for(
+                                'admin-prize-categories-generate-rating-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-bar-chart-fill pe-1"></i>
+                            {{ _('Generate rating categories') }}
+                        </button>
+                    </li>
+                </ul>
+            {% endif %}
         </span>
     </div>
     {% if admin_prize_group and admin_tournament.prize_groups|length == 1 %}
