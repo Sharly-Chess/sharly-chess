@@ -1,7 +1,7 @@
 {% extends '../../common/admin_cards_container.html' %}
 
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(_('Families'), 'screens-families') }}
+    {{ admin_macros.admin_title(_('Multi-Screens'), 'screens-families') }}
     <script>
         preparePrintModal()
     </script>
@@ -34,7 +34,7 @@
         {% if not admin_event.tournaments_by_id %}
             {{ macros.tooltip_attributes(
                 'info',
-                _('You must create a tournament before creating a screen family.'),
+                _('You must create a tournament before creating a multi-screen.'),
                 'left'
             ) }}
         {% endif %}
@@ -49,7 +49,7 @@
             {% endif %}
         >
             <i class="bi-plus-square pe-1"></i>
-            {{ _('Create a screen family') }}
+            {{ _('Create a multi-screen') }}
         </button>
         <ul class="dropdown-menu">
             {% for screen_type in family_screen_types %}
@@ -84,19 +84,19 @@
         {% else %}
             <div class="mx-auto" style="max-width: 500px;">
                 <h5 class="mt-2 my-5 text-center">
-                    {{ _('No screen families') }}
+                    {{ _('No multi-screens') }}
                 </h5>
                 <p>
-                    {{ _('Families are used to split a large amount of information across multiple screens.') }}
+                    {{ _('Multi-Screens are used to split a large amount of information across multiple screens.') }}
                 </p>
                 <p>
                     {{ _('You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically.') }}
                 </p>
                 <p>
-                    {{ _('Unlike single Screens, families can only be used to display information about a single tournament.') }}
+                    {{ _('Unlike single Screens, multi-screens can only be used to display information about a single tournament.') }}
                 </p>
                 <p>
-                    {{ _('Create a family now to get started.') }}
+                    {{ _('Create a multi-screen now to get started.') }}
                 </p>
             </div>
         {% endif %}

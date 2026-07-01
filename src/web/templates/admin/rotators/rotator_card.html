@@ -20,7 +20,7 @@
         <div
             class="text-nowrap"
             data-testid="families-count"
-            {{ macros.tooltip_attributes('info', _('Number of screen families'), 'top') }}
+            {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
         >
             <i class="bi-window-split pe-1"></i>
             {{ rotator.families|length }}
@@ -30,7 +30,7 @@
                 class="bi-exclamation-triangle-fill text-danger"
                 {{ macros.tooltip_attributes(
                     'info', _(
-                        'There needs to be at least one screen or family '
+                        'There needs to be at least one screen or multi-screen '
                         'defined for the rotator to be accessible.'
                     ), 'top'
                 ) }}
@@ -88,7 +88,7 @@
             {% endif %}
             {% if rotator.families %}
                 <hr/>
-                {{ _('Screen families:') }}
+                {{ _('Multi-screens:') }}
                 {% for family in rotator.families %}
                     <div>
                         <span class="pe-1">
@@ -124,7 +124,7 @@
                 rotator_id=rotator.id
             ) }}"
             {{ macros.tooltip_attributes(
-                'info', _('Define the screens and screen families to display.'), 'top'
+                'info', _('Define the screens and multi-screens to display.'), 'top'
             ) }}
         >
             <i class="bi-window-stack pe-1"></i>

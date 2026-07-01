@@ -56,7 +56,7 @@
                 {{ admin_macros.inline_multi_select_form(
                     'families',
                     'family_id',
-                    placeholder=_('Choose families to add'),
+                    placeholder=_('Choose multi-screens to add'),
                     options=family_options,
                     post_url=url_for(
                         'admin-menu-items-create-family',
@@ -93,7 +93,7 @@
                 </span>
                 <span
                     {% if not family_options %}
-                       {{ macros.tooltip_attributes('info', _('No families in this event yet.'), 'top') }}
+                       {{ macros.tooltip_attributes('info', _('No multi-screens in this event yet.'), 'top') }}
                     {% endif %}
                 >
                     <button
@@ -103,7 +103,7 @@
                         {% if not family_options %}disabled{% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
-                        {{ _('Add families') }}
+                        {{ _('Add multi-screens') }}
                     </button>
                 </span>
             </div>

@@ -39,7 +39,7 @@
                 {{ admin_macros.inline_multi_select_form(
                     'families',
                     'family_id',
-                    placeholder=_('Choose families to add'),
+                    placeholder=_('Choose multi-screens to add'),
                     options=family_options,
                     post_url=url_for(
                         'admin-rotating-screens-create-family',
@@ -70,7 +70,7 @@
                 <span
                     {% if not family_options %}
                        {{ macros.tooltip_attributes(
-                            'info', _('No families to add.'), 'top'
+                            'info', _('No multi-screens to add.'), 'top'
                         ) }}
                     {% endif %}
                 >
@@ -81,7 +81,7 @@
                         {% if not family_options %}disabled{% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
-                        {{ _('Add families') }}
+                        {{ _('Add multi-screens') }}
                     </button>
                 </span>
             </div>

@@ -137,11 +137,11 @@
                 <i class="bi-arrows-fullscreen pe-1" ></i>
                 {% if event.family_count %}
                     {{ _(
-                        'Screen families: %(num)d',
+                        'Multi-screens: %(num)d',
                         num=event.family_count
                     ) }}
                 {% else %}
-                    {{ _('No screen families') }}
+                    {{ _('No multi-screens') }}
                 {% endif %}
             </div>
             <div class="{% if not event.rotator_count %}text-secondary{% endif %}">

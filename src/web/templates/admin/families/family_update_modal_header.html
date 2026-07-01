@@ -4,7 +4,7 @@
 <div class="vstack">
     <h2 class="modal-title">
         <span class="pe-1">
-            {{ _('Edit screen family') }}
+            {{ _('Edit multi-screen') }}
         </span>
     </h2>
     <div id="uniq-id-field" class="form-text pt-0 mt-0">
@@ -32,7 +32,7 @@
         {{ admin_macros.uniq_id_form(
             current_uniq_id=admin_family.uniq_id,
             existing_uniq_ids=family_uniq_ids,
-            placeholder=_('E.g.: %(string)s', string=_('my-family')),
+            placeholder=_('E.g.: %(string)s', string=_('my-multi-screen')),
             patch_url=url_for(
                 'admin-family-uniq-id-update',
                 event_uniq_id=admin_event.uniq_id,

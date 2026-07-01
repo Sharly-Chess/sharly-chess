@@ -11,7 +11,7 @@
             {% elif action in ['create', 'clone', ] %}
                 <div class="vstack">
                     <h2 class="modal-title">
-                        {{ _('Create screen family') }}
+                        {{ _('Create multi-screen') }}
                     </h2>
                     <div class="form-text pt-0 mt-0">
                         {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type.name) }}
@@ -19,7 +19,7 @@
                 </div>
             {% elif action == 'delete' %}
                  <h2 class="modal-title">
-                   {{ _('Delete screen family') }}
+                   {{ _('Delete multi-screen') }}
                 </h2>
             {% endif %}
         </div>
@@ -43,7 +43,7 @@
             >
                 {% if action == 'delete' %}
                     <h4>
-                        {{ _('%(string)s: %(value)s', string=_('Family'), value=admin_family.uniq_id) }}
+                        {{ _('%(string)s: %(value)s', string=_('Multi-Screen'), value=admin_family.uniq_id) }}
                     </h4>
                     <h4 class="text-danger">
                         {{ _('Warning: the deletion is permanent!') }}
@@ -55,8 +55,8 @@
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
-                                placeholder=_('Public family'),
-                                tooltip_text=_('Only allowed users can see private screen families.'),
+                                placeholder=_('Public multi-screen'),
+                                tooltip_text=_('Only allowed users can see private multi-screens.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -65,7 +65,7 @@
                                 name='name',
                                 label=_('Name:'),
                                 placeholder=_('Automatic'),
-                                help_text=_('The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players\' names):  %%f=first, %%l=last, %%t=tournament.'),
+                                help_text=_('The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players\' names):  %%f=first, %%l=last, %%t=tournament.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -74,7 +74,7 @@
                                 name='menu_text',
                                 label=_('Menu label:'),
                                 placeholder=_('Automatic'),
-                                tooltip_text=_('The label used for this family in menus. If left empty, the family name is used.'),
+                                tooltip_text=_('The label used for this multi-screen in menus. If left empty, the multi-screen name is used.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -82,7 +82,7 @@
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
-                                tooltip_text=_('The tournament of the screens of the family.'),
+                                tooltip_text=_('The tournament of the screens of the multi-screen.'),
                                 select_options=tournament_options,
                                 data=data, errors=errors
                             ) }}
@@ -222,7 +222,7 @@
                                 {{ admin_macros.select_input(
                                     name='timer_id',
                                     label=_('Timer:'),
-                                    tooltip_text=_('The timer displayed on the screens of the family.'),
+                                    tooltip_text=_('The timer displayed on the screens of the multi-screen.'),
                                     select_options=timer_options,
                                     data=data, errors=errors
                                 ) }}

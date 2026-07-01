@@ -25,7 +25,7 @@
         <div
             class="text-nowrap"
             data-testid="families-count"
-            {{ macros.tooltip_attributes('info', _('Number of screen families'), 'top') }}
+            {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
         >
             <i class="bi-window-split pe-1"></i>
             {{ menu.families|length }}
@@ -72,7 +72,7 @@
             {% endif %}
             {% if menu.families %}
                 <hr/>
-                {{ _('Screen families:') }}
+                {{ _('Multi-screens:') }}
                 {% for family in menu.families %}
                     <div>
                         <span class="pe-1">
