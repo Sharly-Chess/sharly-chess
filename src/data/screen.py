@@ -284,12 +284,30 @@ class Screen:
                 else:
                     return _('%t ranking')
 
+    def _resolve_menu_label(self, template: str) -> str:
+        """Substitute %t (tournament), %f/%l (this screen's first/last, with
+        abbreviated player names) in a menu label template."""
+        if not self.sorted_screen_sets:
+            return template
+        screen_set = self.sorted_screen_sets[0]
+        text = template.replace('%t', screen_set.tournament.name)
+        if '%f' in text or '%l' in text:
+            first, last = screen_set.range_bounds(abbreviated=True)
+            text = text.replace('%f', first).replace('%l', last)
+        return text
+
     @property
     def menu_entry_label(self) -> str:
-        """The label shown for this screen in menus: the custom menu text if
-        one is set, otherwise the screen name (which, when automatic, is the
-        screen's tournament name(s))."""
-        return self.menu_text or self.name
+        """The label shown for this screen in menus: the custom menu text
+        (tokens resolved) if set; for a family-generated screen its own range
+        with abbreviated player names (compact submenu items); otherwise the
+        screen name (which, when automatic, is the screen's tournament
+        name(s))."""
+        if self.menu_text:
+            return self._resolve_menu_label(self.menu_text)
+        if self.family is not None:
+            return self._resolve_menu_label(self.family.label_template)
+        return self.name
 
     def _menu_screens(self, admin: bool) -> list['Screen']:
         """The navigation entries shown on this screen: the resolved screens
