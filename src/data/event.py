@@ -950,10 +950,6 @@ class Event:
     def sorted_menus(self) -> list[Menu]:
         return sorted(self.menus_by_id.values(), key=by('name'))
 
-    @property
-    def public_sorted_menus(self) -> list[Menu]:
-        return [menu for menu in self.sorted_menus if menu.public]
-
     def get_unused_menu_name(self, base_name: str | None = None) -> str:
         """Returns the first unused menu name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""

@@ -21,7 +21,6 @@ class Migration(BaseMigration):
             'CREATE TABLE `menu` ('
             '   `id` INTEGER NOT NULL,'
             '   `name` TEXT,'
-            '   `public` INTEGER NOT NULL DEFAULT 1,'
             '   `default_type` TEXT,'
             '   PRIMARY KEY(`id` AUTOINCREMENT)'
             ')'
@@ -45,8 +44,7 @@ class Migration(BaseMigration):
         )
         for screen_type in _DEFAULT_MENU_SCREEN_TYPES:
             self.database.execute(
-                'INSERT INTO `menu` (`name`, `public`, `default_type`) '
-                'VALUES (NULL, 1, ?)',
+                'INSERT INTO `menu` (`name`, `default_type`) VALUES (NULL, ?)',
                 (screen_type,),
             )
             self.database.execute('SELECT last_insert_rowid() AS `id`')

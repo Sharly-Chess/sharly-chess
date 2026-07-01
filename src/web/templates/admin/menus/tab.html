@@ -46,9 +46,7 @@
     <div class="row gy-2 gx-3">
         {% if admin_menus %}
             {% for menu in admin_menus %}
-                {% with card_class='border-danger' if menu.private else '' %}
-                    {% include 'menu_card.html' %}
-                {% endwith %}
+                {% include 'menu_card.html' %}
             {% endfor %}
         {% else %}
             <div class="mx-auto" style="max-width: 500px;">

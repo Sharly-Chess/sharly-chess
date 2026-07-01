@@ -164,6 +164,33 @@
     background-color: #ffff00;
     color: #000080;
 }
+.screen-menu-group {
+    position: relative;
+    display: inline-block;
+}
+.screen-submenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1050;
+    background-color: var(--bs-body-bg, #ffffff);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding: 0.25rem 0;
+    min-width: max-content;
+}
+.screen-submenu-item {
+    color: red;
+}
+.screen-submenu-item.selected {
+    background-color: red;
+    color: white;
+}
+.screen-submenu-item:hover {
+    background-color: #ffff00;
+    color: #000080;
+}
 /*
 ###########################################################
 # TIMERS
