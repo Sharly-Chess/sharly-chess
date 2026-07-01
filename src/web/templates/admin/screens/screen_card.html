@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block card_title %}
-    <span class="pe-1">{{ macros.screen_type_icon(screen.type, true) }}</span>{{ screen.uniq_id }}
+    <span class="pe-1">{{ macros.screen_type_icon(screen.type, true) }}</span>{{ screen.type_str }}
 {% endblock %}
 
 {% block card_text %}
@@ -102,24 +102,9 @@
             <div>
                 {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
             </div>
-            <div class="{% if not screen.menu_link %}text-secondary{% endif %}">
+            <div>
                 <i class="bi-hand-index pe-1"></i>
-                {% if screen.menu_link %}
-                    {{ _('Menu link label: %(menu_label)s', menu_label=screen.menu_label) }}
-                    {% if not screen.menu_text %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
-                {% else %}
-                    <span class="fst-italic">
-                        {{ _('Menu link label: none') }}
-                    </span>
-                {% endif %}
-            </div>
-            <div class="{% if not screen.menu %}text-secondary{% endif %}">
-                <i class="bi-three-dots pe-1"></i>
-                {% if screen.menu %}{{ _('Menu: %(menu)s', menu=screen.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
+                {{ _('Menu label: %(menu_label)s', menu_label=screen.menu_entry_label) }}
             </div>
             <div class="{% if not screen.timer %}text-secondary{% endif %}">
                 <i class="bi-clock-fill pe-1"></i>

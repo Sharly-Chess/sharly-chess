@@ -103,9 +103,7 @@ class FamilyAdminController(BaseEventAdminController):
                 type_ = web_context.get_admin_family().stored_family.type
             case _:
                 raise ValueError(f'action=[{action}]')
-        menu_link: bool | None = None
         menu_text: str | None = None
-        menu: str | None = None
         columns: int | None = None
         font_size: int | None = None
         timer_id: int | None = None
@@ -154,9 +152,7 @@ class FamilyAdminController(BaseEventAdminController):
                     font_size = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                menu_link = WebContext.form_data_to_bool(data, 'menu_link')
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
-                menu = WebContext.form_data_to_str(data, 'menu', '')
                 field = 'timer_id'
                 try:
                     timer_id = WebContext.form_data_to_int(data, field)
@@ -286,9 +282,7 @@ class FamilyAdminController(BaseEventAdminController):
             name=name,
             columns=columns,
             font_size=font_size,
-            menu_link=bool(menu_link),
             menu_text=menu_text or '',
-            menu=menu or '',
             timer_id=timer_id,
             input_exit_button=input_exit_button,
             players_show_unpaired=players_show_unpaired,
@@ -339,9 +333,7 @@ class FamilyAdminController(BaseEventAdminController):
                 if data is None:
                     name: str | None = None
                     public: bool | None = None
-                    menu_link: bool | None = None
                     menu_text: str | None = None
-                    menu: str | None = None
                     columns: int | None = None
                     font_size: int | None = None
                     timer_id: int | None = None
@@ -387,9 +379,7 @@ class FamilyAdminController(BaseEventAdminController):
                             tournament_id = stored_family.tournament_id
                             columns = stored_family.columns
                             font_size = stored_family.font_size
-                            menu_link = stored_family.menu_link
                             menu_text = stored_family.menu_text
-                            menu = stored_family.menu
                             timer_id = stored_family.timer_id
                             first = stored_family.first
                             last = stored_family.last
@@ -433,17 +423,16 @@ class FamilyAdminController(BaseEventAdminController):
                         case 'create':
                             public = True
                             message_default = True
-                            menu_link = True
                             tournament_id = list(event.tournaments_by_id.keys())[0]
                             match family_type:
-                                case ScreenType.BOARDS:
-                                    menu = '@boards'
-                                case ScreenType.INPUT:
-                                    menu = '@input'
-                                case ScreenType.CHECK_IN:
-                                    menu = '@check-in'
+                                case (
+                                    ScreenType.BOARDS
+                                    | ScreenType.INPUT
+                                    | ScreenType.CHECK_IN
+                                    | ScreenType.RANKING
+                                ):
+                                    pass
                                 case ScreenType.PLAYERS:
-                                    menu = '@players'
                                     columns = cls.get_default_players_screen_columns(
                                         event
                                     )
@@ -462,8 +451,6 @@ class FamilyAdminController(BaseEventAdminController):
                                             event
                                         ).value
                                     )
-                                case ScreenType.RANKING:
-                                    menu = '@ranking'
                                 case _:
                                     raise ValueError(f'family_type={family_type}')
                         case 'delete':
@@ -476,9 +463,7 @@ class FamilyAdminController(BaseEventAdminController):
                         'tournament_id': WebContext.value_to_form_data(tournament_id),
                         'columns': WebContext.value_to_form_data(columns),
                         'font_size': WebContext.value_to_form_data(font_size),
-                        'menu_link': WebContext.value_to_form_data(menu_link),
                         'menu_text': WebContext.value_to_form_data(menu_text),
-                        'menu': WebContext.value_to_form_data(menu),
                         'timer_id': WebContext.value_to_form_data(timer_id),
                         'first': WebContext.value_to_form_data(first),
                         'last': WebContext.value_to_form_data(last),
@@ -646,7 +631,7 @@ class FamilyAdminController(BaseEventAdminController):
                     stored_family = event_database.add_stored_family(stored_family)
                     Message.success(
                         request,
-                        _('Family [{family_uniq_id}] has been created.').format(
+                        _('Multi-Screen [{family_uniq_id}] has been created.').format(
                             family_uniq_id=stored_family.uniq_id
                         ),
                     )
@@ -654,7 +639,7 @@ class FamilyAdminController(BaseEventAdminController):
                     stored_family = event_database.update_stored_family(stored_family)
                     Message.success(
                         request,
-                        _('Family [{family_uniq_id}] has been updated.').format(
+                        _('Multi-Screen [{family_uniq_id}] has been updated.').format(
                             family_uniq_id=stored_family.uniq_id
                         ),
                     )
@@ -663,7 +648,7 @@ class FamilyAdminController(BaseEventAdminController):
                     event_database.delete_stored_family(web_context.admin_family.id)
                     Message.success(
                         request,
-                        _('Family [{family_uniq_id}] has been deleted.').format(
+                        _('Multi-Screen [{family_uniq_id}] has been deleted.').format(
                             family_uniq_id=web_context.admin_family.uniq_id
                         ),
                     )

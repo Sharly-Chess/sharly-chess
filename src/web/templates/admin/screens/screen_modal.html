@@ -64,10 +64,21 @@
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
-                                placeholder=_('E.g.: My screen'),
+                                placeholder=_('Automatic'),
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        {% if screen_type.value != 'image' %}
+                            <div class="col-12 col-md-6">
+                                {{ admin_macros.text_input(
+                                    name='menu_text',
+                                    label=_('Menu label:'),
+                                    placeholder=_('Automatic'),
+                                    tooltip_text=_('The label used for this screen in menus. If left empty, the tournament name is used.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
                         {% if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', 'check-in'] %}
                             <div class="col-12 col-md-6">
                                 {{ admin_macros.select_input(
@@ -212,49 +223,6 @@
                             <div class="col-12">
                                 {% include '../common/modal/alert_message.html' %}
                             </div>
-                        </div>
-
-                        <h4>
-                            {{ _('Menus') }}
-                        </h4>
-                        <div class="row gy-2 gx-3">
-                            <div class="col-12">
-                                {{ admin_macros.text_input(
-                                    name='menu',
-                                    label=_('Links displayed on the screen menu:'),
-                                    placeholder=_('E.g.: @boards, @family, another-screen'),
-                                    help_text=_('This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {{ admin_macros.switch_input(
-                                    name='menu_link',
-                                    label='',
-                                    placeholder=_('Allow links to this screen'),
-                                    tooltip_text=_('Check the box to allow other screens to display a link to this screen.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {{ admin_macros.text_input(
-                                    name='menu_text',
-                                    label=_('Menu link label:'),
-                                    placeholder=_('E.g.: Link to my screen'),
-                                    tooltip_text=_('This label will be used for the link to other screens to this screen. If left empty, a default label will be used.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <script>
-                                $('#menu-text').prop('disabled', $('#menu-link').val() != 'on');
-                                $('#menu-link').click(function() {
-                                    if ($(this).is(':checked')) {
-                                        $('#menu-text').prop('disabled', false);
-                                    } else {
-                                        $('#menu-text').prop('disabled', true);
-                                    }
-                                });
-                            </script>
                         </div>
                     {% endif %}
                 {% endif %}

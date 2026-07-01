@@ -39,6 +39,9 @@
             </button>
             <ul class="dropdown-menu">
                 {% for basic_screen in sorted_screens %}
+                    {% if loop.changed(basic_screen.type) %}
+                        <li><h6 class="dropdown-header">{{ basic_screen.type_str }}</h6></li>
+                    {% endif %}
                     <li>
                         <button
                             class="dropdown-item text-start cursor-pointer"
@@ -46,7 +49,7 @@
                             hx-indicator="#please-wait"
                         >
                             {{ macros.screen_type_icon(basic_screen.type) }}
-                            <b>{{ basic_screen.uniq_id }}</b> ({{ basic_screen.name }})
+                            <b>{{ basic_screen.name }}</b>
                         </button>
                     </li>
                 {% endfor %}

@@ -13,7 +13,6 @@ function keyboardShortcutManager(event) {
         'a': "SC_A",
         'c': "SC_C",
         'd': "SC_D",
-        'f': "SC_F",
         'i': "SC_I",
         'j': "SC_J",
         'l': "SC_L",

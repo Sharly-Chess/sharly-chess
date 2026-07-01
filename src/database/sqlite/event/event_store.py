@@ -338,9 +338,7 @@ class StoredScreen:
     type: str
     columns: int | None
     font_size: int | None
-    menu_link: bool | None
     menu_text: str | None
-    menu: str | None
     timer_id: int | None
     input_exit_button: bool | None
     players_show_unpaired: bool | None
@@ -376,9 +374,7 @@ class StoredFamily:
     tournament_id: int
     columns: int | None
     font_size: int | None
-    menu_link: bool
     menu_text: str
-    menu: str
     timer_id: int | None
     input_exit_button: bool | None
     players_show_unpaired: bool | None
@@ -420,6 +416,26 @@ class StoredRotator:
     timer_id: int | None = None
     stored_rotating_screens: list[StoredRotatingScreen] = field(
         default_factory=list[StoredRotatingScreen]
+    )
+
+
+@dataclass
+class StoredMenuItem:
+    id: int | None
+    menu_id: int
+    screen_id: int | None = None
+    family_id: int | None = None
+    screen_type: str | None = None
+    index: int = 0
+
+
+@dataclass
+class StoredMenu:
+    id: int | None
+    name: str | None = None
+    default_type: str | None = None
+    stored_menu_items: list[StoredMenuItem] = field(
+        default_factory=list[StoredMenuItem]
     )
 
 
@@ -514,6 +530,7 @@ class StoredEvent(BaseStoredEvent):
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])
+    stored_menus: list[StoredMenu] = field(default_factory=list[StoredMenu])
     stored_display_controllers: list[StoredDisplayController] = field(
         default_factory=list[StoredDisplayController]
     )

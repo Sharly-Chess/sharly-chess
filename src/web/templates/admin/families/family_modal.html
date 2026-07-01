@@ -11,7 +11,7 @@
             {% elif action in ['create', 'clone', ] %}
                 <div class="vstack">
                     <h2 class="modal-title">
-                        {{ _('Create screen family') }}
+                        {{ _('Create multi-screen') }}
                     </h2>
                     <div class="form-text pt-0 mt-0">
                         {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type.name) }}
@@ -19,7 +19,7 @@
                 </div>
             {% elif action == 'delete' %}
                  <h2 class="modal-title">
-                   {{ _('Delete screen family') }}
+                   {{ _('Delete multi-screen') }}
                 </h2>
             {% endif %}
         </div>
@@ -43,7 +43,7 @@
             >
                 {% if action == 'delete' %}
                     <h4>
-                        {{ _('%(string)s: %(value)s', string=_('Family'), value=admin_family.uniq_id) }}
+                        {{ _('%(string)s: %(value)s', string=_('Multi-Screen'), value=admin_family.uniq_id) }}
                     </h4>
                     <h4 class="text-danger">
                         {{ _('Warning: the deletion is permanent!') }}
@@ -55,8 +55,8 @@
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
-                                placeholder=_('Public family'),
-                                tooltip_text=_('Only allowed users can see private screen families.'),
+                                placeholder=_('Public multi-screen'),
+                                tooltip_text=_('Only allowed users can see private multi-screens.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -64,8 +64,16 @@
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
-                                placeholder=_('E.g.: My screen family'),
-                                help_text=_('The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players\' names):  %%f=first, %%l=last, %%t=tournament.'),
+                                placeholder=_('Automatic'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.text_input(
+                                name='menu_text',
+                                label=_('Menu label:'),
+                                placeholder=_('Automatic'),
+                                tooltip_text=_('The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -73,7 +81,7 @@
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
-                                tooltip_text=_('The tournament of the screens of the family.'),
+                                tooltip_text=_('The tournament of the screens of the multi-screen.'),
                                 select_options=tournament_options,
                                 data=data, errors=errors
                             ) }}
@@ -213,7 +221,7 @@
                                 {{ admin_macros.select_input(
                                     name='timer_id',
                                     label=_('Timer:'),
-                                    tooltip_text=_('The timer displayed on the screens of the family.'),
+                                    tooltip_text=_('The timer displayed on the screens of the multi-screen.'),
                                     select_options=timer_options,
                                     data=data, errors=errors
                                 ) }}
@@ -256,50 +264,6 @@
                             {% include '../common/modal/alert_message.html' %}
                         </div>
                     </div>
-
-                    <h4 class="mt-4">
-                        {{ _('Menus') }}
-                    </h4>
-                    <div class="row gy-2 gx-3">
-                        <div class="col-12">
-                            {{ admin_macros.text_input(
-                                name='menu',
-                                label=_('Links displayed on the screen menu:'),
-                                placeholder=_('E.g.: @boards, @family, another-screen'),
-                                help_text=_('This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.switch_input(
-                                name='menu_link',
-                                label='',
-                                placeholder=_('Allow links to this screen'),
-                                tooltip_text=_('Check the box to allow other screens to display a link to the screen of this family.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.text_input(
-                                name='menu_text',
-                                label=_('Menu link label:'),
-                                placeholder=_('E.g.: Boards %%f-%%l') if family_type in ['input', 'boards', ] else _('E.g.: Players %%f-%%l'),
-                                tooltip_text=_('This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <script>
-                            $('#menu-text').prop('disabled', $('#menu-link').val() != 'on');
-                            $('#menu-link').click(function() {
-                                if ($(this).is(':checked')) {
-                                    $('#menu-text').prop('disabled', false);
-                                } else {
-                                    $('#menu-text').prop('disabled', true);
-                                }
-                            });
-                        </script>
-                    </div>
-
                 {% endif %}
             </form>
             {% if action in ['create', 'clone', 'update'] and admin_event.is_team_event %}

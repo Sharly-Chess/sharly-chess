@@ -1,0 +1,69 @@
+<div
+    class="modal-dialog modal-dialog-scrollable admin-menu-edit-modal"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit menu') }}
+                {% else %}
+                    {{ _('Create menu') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                {% if action == 'create' %}
+                    hx-post="{{ url_for('admin-menu-create', event_uniq_id=admin_event.uniq_id) }}"
+                {% elif action == 'clone' %}
+                    hx-post="{{ url_for(
+                        'admin-menu-clone',
+                        event_uniq_id=admin_event.uniq_id,
+                        menu_id=admin_menu.id
+                    ) }}"
+                {% else %}
+                    hx-patch="{{ url_for(
+                        'admin-menu-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        menu_id=admin_menu.id
+                    ) }}"
+                {% endif %}
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('%(string)s:', string=_('Name')),
+                            placeholder=_('Automatic'),
+                            tooltip_text=_('If left empty, a name is derived from the menu content.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Save') if action == 'update' else _('Create') }}
+            </button>
+        </div>
+    </div>
+</div>

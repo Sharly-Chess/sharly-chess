@@ -69,7 +69,7 @@
         {% elif object_type == 'screen' %}
             {% set _tooltip_text=tooltip_public_text or _('This screen is public (visible by the spectators).') %}
         {% elif object_type == 'family' %}
-            {% set _tooltip_text=tooltip_public_text or _('This screen family is public (visible by the spectators).') %}
+            {% set _tooltip_text=tooltip_public_text or _('This multi-screen is public (visible by the spectators).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_public_text or _('This rotator is public (visible by the spectators).') %}
         {% elif object_type == 'display_controller' %}
@@ -84,7 +84,7 @@
         {% elif object_type == 'screen' %}
             {% set _tooltip_text=tooltip_private_text or _('This screen is private (not visible by the spectators).') %}
         {% elif object_type == 'family' %}
-            {% set _tooltip_text=tooltip_private_text or _('This screen family is private (not visible by the spectators).') %}
+            {% set _tooltip_text=tooltip_private_text or _('This multi-screen is private (not visible by the spectators).') %}
         {% elif object_type == 'rotator' %}
             {% set _tooltip_text=tooltip_private_text or _('This rotator is private (not visible by the spectators).') %}
         {% elif object_type == 'display_controller' %}

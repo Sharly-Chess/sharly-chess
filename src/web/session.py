@@ -238,6 +238,12 @@ class SessionRotatorsShowDetails(BoolSessionVariable):
         return 'rotators_show_details'
 
 
+class SessionMenusShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'menus_show_details'
+
+
 class SessionAccountsShowDetails(BoolSessionVariable):
     @property
     def key(self) -> str:

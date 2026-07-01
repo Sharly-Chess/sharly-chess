@@ -5,7 +5,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Screens list') }}
+                {{ _('Menu content') }}
             </h2>
         </div>
         <div class="modal-body">
@@ -14,53 +14,77 @@
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
-            <div
-                id="screens-form-container"
-                data-testid="screens-form-container"
-                style="display: none"
-            >
+            {% macro back_button() %}
+                <button type="button" class="btn btn-sm btn-link menu-item-back px-0 mb-1">
+                    <i class="bi-arrow-left pe-1"></i>{{ _('Back') }}
+                </button>
+            {% endmacro %}
+            <div id="screen-types-form-container" style="display: none">
+                {{ back_button() }}
+                {{ admin_macros.inline_multi_select_form(
+                    'screen-types',
+                    'screen_type',
+                    placeholder=_('Choose screen types to add'),
+                    options=screen_type_options,
+                    post_url=url_for(
+                        'admin-menu-items-create-screen-type',
+                        event_uniq_id=admin_event.uniq_id,
+                        menu_id=admin_menu.id
+                    ),
+                    hx_target='#menu-item-list-container',
+                    tooltip_select=true
+                ) }}
+            </div>
+            <div id="screens-form-container" style="display: none">
+                {{ back_button() }}
                 {{ admin_macros.inline_multi_select_form(
                     'screens',
                     'screen_id',
                     placeholder=_('Choose screens to add'),
                     options=screen_options,
                     post_url=url_for(
-                        'admin-rotating-screens-create-screen',
+                        'admin-menu-items-create-screen',
                         event_uniq_id=admin_event.uniq_id,
-                        rotator_id=admin_rotator.id
+                        menu_id=admin_menu.id
                     ),
-                    hx_target='#screen-list-container'
+                    hx_target='#menu-item-list-container',
+                    tooltip_select=true
                 ) }}
             </div>
-            <div
-                id="families-form-container"
-                style="display: none"
-            >
+            <div id="families-form-container" style="display: none">
+                {{ back_button() }}
                 {{ admin_macros.inline_multi_select_form(
                     'families',
                     'family_id',
                     placeholder=_('Choose multi-screens to add'),
                     options=family_options,
                     post_url=url_for(
-                        'admin-rotating-screens-create-family',
+                        'admin-menu-items-create-family',
                         event_uniq_id=admin_event.uniq_id,
-                        rotator_id=admin_rotator.id
+                        menu_id=admin_menu.id
                     ),
-                    hx_target='#screen-list-container'
+                    hx_target='#menu-item-list-container',
+                    tooltip_select=true
                 ) }}
             </div>
             <div class="d-flex justify-content-end gap-2 mb-3">
+                <button
+                    id="screen-types-add-button"
+                    data-testid="screen-types-add-button"
+                    class="btn btn-primary text-nowrap menu-item-button"
+                >
+                    <i class="bi-plus-square pe-1"></i>
+                    {{ _('Add screen types') }}
+                </button>
                 <span
                     {% if not screen_options %}
-                       {{ macros.tooltip_attributes(
-                            'info', _('No screens to add.'), 'top'
-                        ) }}
+                       {{ macros.tooltip_attributes('info', _('No screens in this event yet.'), 'top') }}
                     {% endif %}
                 >
                     <button
                         id="screens-add-button"
                         data-testid="screens-add-button"
-                        class="btn btn-primary text-nowrap rotating-screen-button"
+                        class="btn btn-primary text-nowrap menu-item-button"
                         {% if not screen_options %}disabled{% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
@@ -69,15 +93,13 @@
                 </span>
                 <span
                     {% if not family_options %}
-                       {{ macros.tooltip_attributes(
-                            'info', _('No multi-screens to add.'), 'top'
-                        ) }}
+                       {{ macros.tooltip_attributes('info', _('No multi-screens in this event yet.'), 'top') }}
                     {% endif %}
                 >
                     <button
                         id="families-add-button"
                         data-testid="families-add-button"
-                        class="btn btn-primary text-nowrap rotating-screen-button"
+                        class="btn btn-primary text-nowrap menu-item-button"
                         {% if not family_options %}disabled{% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
@@ -86,25 +108,26 @@
                 </span>
             </div>
             <script>
+                $('.menu-item-back, .inline-form-cancel-button').click(() => {
+                    $('#screen-types-form-container, #screens-form-container, #families-form-container')
+                        .css('display', 'none');
+                    $('.menu-item-button').css('display', '');
+                });
+                $('#screen-types-add-button').click(() => {
+                    $('#screen-types-form-container').css('display', '');
+                    $('.menu-item-button').css('display', 'none');
+                });
                 $('#screens-add-button').click(() => {
                     $('#screens-form-container').css('display', '');
-                    $('.rotating-screen-button').css('display', 'none');
-                });
-                $('#screens-cancel-button').click(() => {
-                    $('#screens-form-container').css('display', 'none');
-                    $('.rotating-screen-button').css('display', '');
+                    $('.menu-item-button').css('display', 'none');
                 });
                 $('#families-add-button').click(() => {
                     $('#families-form-container').css('display', '');
-                    $('.rotating-screen-button').css('display', 'none');
-                });
-                $('#families-cancel-button').click(() => {
-                    $('#families-form-container').css('display', 'none');
-                    $('.rotating-screen-button').css('display', '');
+                    $('.menu-item-button').css('display', 'none');
                 });
             </script>
 
-            {% include 'rotator_screens_form.html' %}
+            {% include 'menu_items_form.html' %}
         </div>
         <div class="modal-footer">
             <button

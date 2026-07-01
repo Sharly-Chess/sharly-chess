@@ -93,21 +93,58 @@
         {% endif %}
         <div id="top-nav-content">
             {% if not rotator and not display_controller %}
-                {% set menu_screens = screen.admin_menu_screens if client.can_view_private_screens else screen.public_menu_screens %}
-                {% if menu_screens %}
+                {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
+                {% if menu_entries %}
                     <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
-                        {% for entry in menu_screens %}
-                            {% if entry.menu_label is not none %}
+                        {% for entry in menu_entries %}
+                            {% set spacing = '%s %s'|format('ms-0' if loop.first else 'ms-1', 'me-0' if loop.last else 'me-1') %}
+                            {% if entry.is_family %}
+                                {% set ns = namespace(selected=false) %}
+                                {% for sub in entry.screens %}
+                                    {% if sub.uniq_id == screen.uniq_id %}{% set ns.selected = true %}{% endif %}
+                                {% endfor %}
+                                <span class="screen-menu-group {{ spacing }}">
+                                    <span
+                                        class="screen-menu-item screen-menu-family cursor-pointer text-nowrap py-0 px-1 my-0 {% if ns.selected %}selected{% endif %}"
+                                        data-submenu-toggle
+                                    >{{ entry.label }} <i class="bi-caret-down-fill" style="font-size: 70%"></i></span>
+                                    <div class="screen-submenu" style="display: none">
+                                        {% for sub in entry.screens %}
+                                            <a
+                                                class="screen-submenu-item cursor-pointer text-nowrap d-block py-1 px-2 {% if sub.uniq_id == screen.uniq_id %}selected{% endif %}"
+                                                hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=sub.uniq_id) }}"
+                                                hx-target="body"
+                                                hx-push-url="true"
+                                                hx-indicator="#please-wait"
+                                            >{{ sub.menu_entry_label }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </span>
+                            {% else %}
                                 <a
-                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if loop.first %}ms-0{% else %}ms-1{% endif %} {% if loop.last %}me-0{% else %}me-1{% endif %} {% if screen.uniq_id == entry.uniq_id %}selected{% endif %}"
-                                    hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.uniq_id) }}"
+                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {{ spacing }} {% if entry.screen.uniq_id == screen.uniq_id %}selected{% endif %}"
+                                    hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.screen.uniq_id) }}"
                                     hx-target="body"
                                     hx-push-url="true"
                                     hx-indicator="#please-wait"
-                                >{{ entry.menu_label }}</a>
+                                >{{ entry.label }}</a>
                             {% endif %}
                         {% endfor %}
                     </div>
+                    <script>
+                        $('#screen-menu [data-submenu-toggle]').off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
+                            e.stopPropagation();
+                            const $submenu = $(this).siblings('.screen-submenu');
+                            const wasOpen = $submenu.is(':visible');
+                            $('#screen-menu .screen-submenu').hide();
+                            if (!wasOpen) $submenu.show();
+                        });
+                        $(document).off('click.screenSubmenu').on('click.screenSubmenu', function (e) {
+                            if (!$(e.target).closest('.screen-menu-group').length) {
+                                $('#screen-menu .screen-submenu').hide();
+                            }
+                        });
+                    </script>
                 {% endif %}
             {% endif %}
         </div>

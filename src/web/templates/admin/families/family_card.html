@@ -1,11 +1,11 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ admin_macros.family_visibility_icon(family, 'pe-1') }}{{ family.name }}
+    {{ admin_macros.family_visibility_icon(family, 'pe-1') }}{{ family.display_name }}
 {% endblock %}
 
 {% block card_title %}
-    <span class="pe-1">{{ macros.screen_type_icon(family.type, true) }}</span>{{ family.uniq_id }}
+    <span class="pe-1">{{ macros.screen_type_icon(family.type, true) }}</span>{{ family.type_str }}
 {% endblock %}
 
 {% block card_text %}
@@ -60,24 +60,9 @@
                     </div>
                 {% endif %}
             {% endif %}
-            <div class="{% if not family.menu_label %}text-secondary{% endif %}">
+            <div>
                 <i class="bi-hand-index pe-1"></i>
-                {% if family.menu_link %}
-                    {{ _('Menu link label: %(menu_label)s', menu_label=family.menu_label) }}
-                    {% if not family.menu_text %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
-                {% else %}
-                    <span class="fst-italic">
-                        {{ _('Menu link label: none') }}
-                    </span>
-                {% endif %}
-            </div>
-            <div class="{% if not family.menu %}text-secondary{% endif %}">
-                <i class="bi-three-dots pe-1"></i>
-                {% if family.menu %}{{ _('Menu: %(menu)s', menu=family.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
+                {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label) }}
             </div>
             <div class="{% if not family.timer %}text-secondary{% endif %}">
                 <i class="bi-clock-fill pe-1"></i>
@@ -180,7 +165,7 @@
 {% endblock %}
 
 {% block card_buttons_right %}
-    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the screen family.'), 'top') }}>
+    <span {{ macros.tooltip_attributes('info', _('Edit the properties of the multi-screen.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for('admin-family-modal', action='update', event_uniq_id=admin_event.uniq_id, family_id=family.id) }}"
@@ -192,7 +177,7 @@
             <i class="bi-pencil-fill"></i>
         </button>
     </span>
-    <span {{ macros.tooltip_attributes('info', _('Duplicate the screen family.'), 'top') }}>
+    <span {{ macros.tooltip_attributes('info', _('Duplicate the multi-screen.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary"
             hx-get="{{ url_for('admin-family-modal', action='clone', event_uniq_id=admin_event.uniq_id, family_id=family.id) }}"
@@ -204,7 +189,7 @@
             <i class="bi-copy"></i>
         </button>
     </span>
-    <span {{ macros.tooltip_attributes('info', _('Delete the screen family.'), 'top') }}>
+    <span {{ macros.tooltip_attributes('info', _('Delete the multi-screen.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-danger"
             hx-get="{{ url_for('admin-family-modal', action='delete', event_uniq_id=admin_event.uniq_id, family_id=family.id) }}"

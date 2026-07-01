@@ -153,9 +153,7 @@ class ScreenAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         name: str | None = None
         public: bool | None = None
-        menu_link: bool | None = None
         menu_text: str | None = None
-        menu: str | None = None
         columns: int | None = None
         font_size: int | None = None
         timer_id: int | None = None
@@ -190,9 +188,7 @@ class ScreenAdminController(BaseEventAdminController):
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 if type_ != ScreenType.IMAGE:
-                    menu_link = WebContext.form_data_to_bool(data, 'menu_link')
                     menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
-                    menu = WebContext.form_data_to_str(data, 'menu', '')
                 field = 'timer_id'
                 try:
                     timer_id = WebContext.form_data_to_int(data, field)
@@ -338,9 +334,7 @@ class ScreenAdminController(BaseEventAdminController):
             name=name,
             columns=columns,
             font_size=font_size,
-            menu_link=menu_link,
             menu_text=menu_text,
-            menu=menu,
             timer_id=timer_id,
             input_exit_button=input_exit_button,
             players_show_unpaired=players_show_unpaired,
@@ -527,9 +521,7 @@ class ScreenAdminController(BaseEventAdminController):
                     name: str | None = None
                     columns: int | None = None
                     font_size: int | None = None
-                    menu_link: bool | None = None
                     menu_text: str | None = None
-                    menu: str | None = None
                     timer_id: int | None = None
                     background_image: str | None = None
                     background_color: str | None = None
@@ -570,7 +562,8 @@ class ScreenAdminController(BaseEventAdminController):
                                     pass
                                 case _:
                                     raise ValueError(f'screen_type=[{screen_type}]')
-                            name = event.get_unused_screen_name(screen_type)
+                            # No default name: an unnamed screen is named
+                            # automatically from its tournament(s).
                             if ScreenType.RANKING:
                                 ranking_crosstable = False
                         case 'clone':
@@ -592,9 +585,7 @@ class ScreenAdminController(BaseEventAdminController):
                             columns = stored_screen.columns
                             font_size = stored_screen.font_size
                             if screen.type != ScreenType.IMAGE:
-                                menu_link = stored_screen.menu_link
                                 menu_text = stored_screen.menu_text
-                                menu = stored_screen.menu
                             timer_id = stored_screen.timer_id
                             match screen.type:
                                 case ScreenType.BOARDS:
@@ -643,17 +634,17 @@ class ScreenAdminController(BaseEventAdminController):
                         case 'create':
                             public = True
                             message_default = True
-                            if web_context.screen_type != ScreenType.IMAGE:
-                                menu_link = True
                             match web_context.screen_type:
-                                case ScreenType.BOARDS:
-                                    menu = '@boards'
-                                case ScreenType.INPUT:
-                                    menu = '@input'
-                                case ScreenType.CHECK_IN:
-                                    menu = '@check-in'
+                                case (
+                                    ScreenType.BOARDS
+                                    | ScreenType.INPUT
+                                    | ScreenType.CHECK_IN
+                                    | ScreenType.RANKING
+                                    | ScreenType.RESULTS
+                                    | ScreenType.IMAGE
+                                ):
+                                    pass
                                 case ScreenType.PLAYERS:
-                                    menu = '@players'
                                     columns = cls.get_default_players_screen_columns(
                                         event
                                     )
@@ -672,10 +663,6 @@ class ScreenAdminController(BaseEventAdminController):
                                             event
                                         ).value
                                     )
-                                case ScreenType.RANKING:
-                                    menu = '@ranking'
-                                case ScreenType.RESULTS | ScreenType.IMAGE:
-                                    pass
                                 case _:
                                     raise ValueError(
                                         f'screen_type={web_context.screen_type}'
@@ -690,9 +677,7 @@ class ScreenAdminController(BaseEventAdminController):
                             'name': name,
                             'columns': columns,
                             'font_size': font_size,
-                            'menu_link': menu_link,
                             'menu_text': menu_text,
-                            'menu': menu,
                             'timer_id': timer_id,
                             'input_exit_button': input_exit_button,
                             'players_show_unpaired': players_show_unpaired,

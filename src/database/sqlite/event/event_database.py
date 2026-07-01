@@ -24,6 +24,8 @@ from database.sqlite.event.event_store import (
     StoredTimerHour,
     StoredFamily,
     StoredRotator,
+    StoredMenu,
+    StoredMenuItem,
     StoredScreenSet,
     StoredScreen,
     StoredPrizeGroup,
@@ -351,6 +353,7 @@ class EventDatabase(MigrationDatabase):
         stored_event.stored_families = list(self.load_stored_families())
         stored_event.stored_screens = list(self.load_stored_screens())
         stored_event.stored_rotators = self.load_stored_rotators()
+        stored_event.stored_menus = self.load_stored_menus()
         stored_event.stored_display_controllers = list(
             self.load_stored_display_controllers()
         )
@@ -1926,9 +1929,7 @@ class EventDatabase(MigrationDatabase):
             ranking_max_points=row['ranking_max_points'],
             columns=row['columns'],
             font_size=row['font_size'],
-            menu_link=cls.load_bool_from_database_field(row['menu_link']),
             menu_text=row['menu_text'],
-            menu=row['menu'],
             timer_id=row['timer_id'],
             first=row['first'],
             last=row['last'],
@@ -1968,9 +1969,7 @@ class EventDatabase(MigrationDatabase):
             'tournament_id',
             'columns',
             'font_size',
-            'menu_link',
             'menu_text',
-            'menu',
             'timer_id',
             'input_exit_button',
             'players_show_unpaired',
@@ -1997,9 +1996,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.tournament_id,
             stored_family.columns,
             stored_family.font_size,
-            stored_family.menu_link,
             stored_family.menu_text,
-            stored_family.menu,
             stored_family.timer_id,
             stored_family.input_exit_button,
             stored_family.players_show_unpaired,
@@ -2071,9 +2068,7 @@ class EventDatabase(MigrationDatabase):
             public=cls.load_bool_from_database_field(row['public']),
             columns=row['columns'],
             font_size=row['font_size'],
-            menu_link=cls.load_bool_or_none_from_database_field(row['menu_link']),
             menu_text=row['menu_text'],
-            menu=row['menu'],
             timer_id=row['timer_id'],
             input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
@@ -2150,9 +2145,7 @@ class EventDatabase(MigrationDatabase):
             'players_opponent_format',
             'columns',
             'font_size',
-            'menu_link',
             'menu_text',
-            'menu',
             'timer_id',
             'results_limit',
             'results_max_age',
@@ -2189,9 +2182,7 @@ class EventDatabase(MigrationDatabase):
             else None,
             stored_screen.columns,
             stored_screen.font_size,
-            stored_screen.menu_link if stored_screen.type != 'image' else None,
             stored_screen.menu_text if stored_screen.type != 'image' else None,
-            stored_screen.menu if stored_screen.type != 'image' else None,
             stored_screen.timer_id,
             stored_screen.results_limit if stored_screen.type == 'results' else None,
             stored_screen.results_max_age if stored_screen.type == 'results' else None,
@@ -2551,6 +2542,106 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'DELETE FROM `rotating_screen` WHERE `id` = ?',
             (rotating_screen_id,),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredMenu
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_menu(cls, row: dict[str, Any]) -> StoredMenu:
+        return StoredMenu(
+            id=row['id'],
+            name=row['name'],
+            default_type=row['default_type'],
+        )
+
+    def load_stored_menus(self) -> list[StoredMenu]:
+        self.execute('SELECT * FROM `menu` ORDER BY `name`')
+        stored_menus: list[StoredMenu] = []
+        for row in self.fetchall():
+            stored_menu = self._row_to_stored_menu(row)
+            stored_menu.stored_menu_items = self.load_menu_stored_menu_items(row['id'])
+            stored_menus.append(stored_menu)
+        return stored_menus
+
+    def add_stored_menu(self, stored_menu: StoredMenu) -> int:
+        fields: dict[str, Any] = self._get_fields_dict(
+            stored_menu,
+            ['name', 'default_type'],
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `menu`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (menu_id := self._last_inserted_id()):
+            raise RuntimeError('Insertion failed')
+        return menu_id
+
+    def update_stored_menu(self, stored_menu: StoredMenu):
+        fields: dict[str, Any] = self._get_fields_dict(
+            stored_menu,
+            ['name', 'default_type'],
+        )
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
+        assert stored_menu.id is not None
+        self.execute(
+            f'UPDATE `menu` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_menu.id,),
+        )
+
+    def delete_stored_menu(self, menu_id: int):
+        self.execute('DELETE FROM `menu` WHERE `id` = ?;', (menu_id,))
+
+    # ---------------------------------------------------------------------------------
+    # StoredMenuItem
+    # ---------------------------------------------------------------------------------
+
+    @classmethod
+    def _row_to_stored_menu_item(cls, row: dict[str, Any]) -> StoredMenuItem:
+        return StoredMenuItem(
+            id=row['id'],
+            menu_id=row['menu_id'],
+            screen_id=row['screen_id'],
+            family_id=row['family_id'],
+            screen_type=row['screen_type'],
+            index=row['index'],
+        )
+
+    def load_menu_stored_menu_items(self, menu_id: int) -> list[StoredMenuItem]:
+        self.execute(
+            'SELECT * FROM `menu_item` WHERE `menu_id` = ? ORDER BY `index`',
+            (menu_id,),
+        )
+        return [self._row_to_stored_menu_item(row) for row in self.fetchall()]
+
+    def add_stored_menu_item(self, stored_menu_item: StoredMenuItem):
+        fields = self._get_fields_dict(
+            stored_menu_item,
+            ['menu_id', 'screen_id', 'family_id', 'screen_type', 'index'],
+        )
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `menu_item`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        if not (menu_item_id := self._last_inserted_id()):
+            raise RuntimeError('Insertion failed')
+        return menu_item_id
+
+    def update_stored_menu_item(self, stored_menu_item: StoredMenuItem):
+        self.execute(
+            'UPDATE `menu_item` SET `index` = ? WHERE `id` = ?',
+            (stored_menu_item.index, stored_menu_item.id),
+        )
+
+    def delete_stored_menu_item(self, menu_item_id: int):
+        self.execute(
+            'DELETE FROM `menu_item` WHERE `id` = ?',
+            (menu_item_id,),
         )
 
     # ---------------------------------------------------------------------------------
