@@ -14,7 +14,7 @@
         {% with id='show-family-screens', name='show_family_screens', show=show_family_screens %}
             <div
                 class="form-check form-switch d-inline-block pe-2"
-                {{ macros.tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Show/hide the screens created from multi-screens.'), 'top') }}
             >
                 <input
                     hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
@@ -26,7 +26,7 @@
                     id="{{ id }}"
                     {% if show %}checked{% endif %}
                 />
-                <label for="{{ id }}" class="form-check-label"> {{ _('Families') }}</label>
+                <label for="{{ id }}" class="form-check-label"> {{ _('Multi-Screens') }}</label>
             </div>
         {% endwith %}
         {% with id='show-details', name='show_details', show=show_details %}

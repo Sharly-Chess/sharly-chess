@@ -631,7 +631,7 @@ class FamilyAdminController(BaseEventAdminController):
                     stored_family = event_database.add_stored_family(stored_family)
                     Message.success(
                         request,
-                        _('Family [{family_uniq_id}] has been created.').format(
+                        _('Multi-Screen [{family_uniq_id}] has been created.').format(
                             family_uniq_id=stored_family.uniq_id
                         ),
                     )
@@ -639,7 +639,7 @@ class FamilyAdminController(BaseEventAdminController):
                     stored_family = event_database.update_stored_family(stored_family)
                     Message.success(
                         request,
-                        _('Family [{family_uniq_id}] has been updated.').format(
+                        _('Multi-Screen [{family_uniq_id}] has been updated.').format(
                             family_uniq_id=stored_family.uniq_id
                         ),
                     )
@@ -648,7 +648,7 @@ class FamilyAdminController(BaseEventAdminController):
                     event_database.delete_stored_family(web_context.admin_family.id)
                     Message.success(
                         request,
-                        _('Family [{family_uniq_id}] has been deleted.').format(
+                        _('Multi-Screen [{family_uniq_id}] has been deleted.').format(
                             family_uniq_id=web_context.admin_family.uniq_id
                         ),
                     )

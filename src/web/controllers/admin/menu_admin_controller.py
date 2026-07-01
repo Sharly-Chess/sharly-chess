@@ -173,7 +173,7 @@ class MenuAdminController(BaseEventAdminController):
                     group[str(family.id)] = SelectOption(
                         name=family.display_name,
                         disabled=True,
-                        tooltip=_('This family already belongs to a menu.'),
+                        tooltip=_('This multi-screen already belongs to a menu.'),
                     )
                 else:
                     group[str(family.id)] = family.display_name
@@ -514,4 +514,6 @@ class MenuAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         raw = WebContext.form_data_to_str(data, 'screen_type')
+        if not raw:
+            raise ClientException('Missing screen type.')
         return self._create_menu_item(request, screen_type=ScreenType(raw))
