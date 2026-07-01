@@ -25,6 +25,7 @@ from database.sqlite.event.event_store import StoredScreen
 if TYPE_CHECKING:
     from data.event import Event
     from data.family import Family
+    from data.menu import MenuNavEntry
 
 
 logger = get_logger()
@@ -473,8 +474,6 @@ class Screen:
         menu; the menu is only displayed when it holds more than one screen
         visible to the viewer."""
         for menu in self.event.sorted_menus:
-            if not admin and not menu.public:
-                continue
             resolved = menu.resolved_screens()
             if not any(screen.uniq_id == self.uniq_id for screen in resolved):
                 continue
@@ -491,6 +490,19 @@ class Screen:
     @cached_property
     def admin_menu_screens(self) -> list['Screen']:
         return self._menu_screens(True)
+
+    def _menu_nav_entries(self, admin: bool) -> list['MenuNavEntry']:
+        from data.menu import group_menu_nav_entries
+
+        return group_menu_nav_entries(self._menu_screens(admin))
+
+    @cached_property
+    def public_menu_nav_entries(self) -> list['MenuNavEntry']:
+        return self._menu_nav_entries(False)
+
+    @cached_property
+    def admin_menu_nav_entries(self) -> list['MenuNavEntry']:
+        return self._menu_nav_entries(True)
 
     @property
     def menu(self) -> str:

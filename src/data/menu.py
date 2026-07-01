@@ -13,6 +13,52 @@ if TYPE_CHECKING:
     from data.event import Event
 
 
+class MenuNavEntry:
+    """A single entry in a screen's navigation bar: either one screen, or a
+    family shown as one item opening a submenu of its screens."""
+
+    def __init__(self, screens: list[Screen], family: Family | None = None):
+        self.screens = screens
+        self.family = family
+
+    @property
+    def is_family(self) -> bool:
+        return self.family is not None
+
+    @property
+    def screen(self) -> Screen:
+        return self.screens[0]
+
+    @property
+    def label(self) -> str:
+        if self.family is not None:
+            return self.family.menu_text or self.family.name
+        return self.screens[0].menu_entry_label
+
+
+def group_menu_nav_entries(screens: list[Screen]) -> list['MenuNavEntry']:
+    """Group screens into navigation entries, collapsing each family's
+    screens (kept in first-appearance order) into a single entry."""
+    entries: list[MenuNavEntry] = []
+    family_entry_by_id: dict[int, MenuNavEntry] = {}
+    for screen in screens:
+        family = screen.family
+        if family is None:
+            entries.append(MenuNavEntry([screen]))
+            continue
+        entry = family_entry_by_id.get(family.id)
+        if entry is None:
+            entry = MenuNavEntry([], family)
+            family_entry_by_id[family.id] = entry
+            entries.append(entry)
+        entry.screens.append(screen)
+    # A menu that is just one family needs no submenu: show its screens
+    # directly as the top-level menu.
+    if len(entries) == 1 and entries[0].is_family:
+        return [MenuNavEntry([screen]) for screen in entries[0].screens]
+    return entries
+
+
 class MenuItem:
     def __init__(
         self,
@@ -98,14 +144,6 @@ class Menu:
         return self.stored_menu.id
 
     @property
-    def public(self) -> bool:
-        return self.stored_menu.public
-
-    @property
-    def private(self) -> bool:
-        return not self.public
-
-    @property
     def default_type(self) -> ScreenType | None:
         if self.stored_menu.default_type:
             return ScreenType(self.stored_menu.default_type)
@@ -140,6 +178,12 @@ class Menu:
     @property
     def screen_types(self) -> list[ScreenType]:
         return [item.screen_type for item in self.sorted_menu_items if item.screen_type]
+
+    @property
+    def first_screen(self) -> Screen | None:
+        """The first screen the menu points to, used to open the menu."""
+        screens = self.resolved_screens()
+        return screens[0] if screens else None
 
     def resolved_screens(self) -> list[Screen]:
         """Every screen this menu points to, in item order, de-duplicated:

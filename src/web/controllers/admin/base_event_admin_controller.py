@@ -241,11 +241,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': 'bi-repeat',
                 },
             }
-            menus = (
-                event.sorted_menus
-                if self.client.can_view_private_screens
-                else event.public_sorted_menus
-            )
+            menus = event.sorted_menus
             nav_tabs |= {
                 'admin-event-menus-tab': {
                     'title': _('Menus ({num})').format(num=len(menus) or '-'),

@@ -437,7 +437,6 @@ class StoredMenuItem:
 class StoredMenu:
     id: int | None
     name: str | None = None
-    public: bool = True
     default_type: str | None = None
     stored_menu_items: list[StoredMenuItem] = field(
         default_factory=list[StoredMenuItem]

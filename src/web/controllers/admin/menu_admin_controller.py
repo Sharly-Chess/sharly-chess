@@ -39,10 +39,8 @@ class MenuAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         event = self.get_admin_event()
         admin_menus: list[Menu] = []
-        if self.client.can_view_private_screens:
+        if self.client.can_view_public_screens:
             admin_menus = event.sorted_menus
-        elif self.client.can_view_public_screens:
-            admin_menus = event.public_sorted_menus
         return super().template_context | {
             'admin_event_tab': 'admin-event-menus-tab',
             'show_details': SessionMenusShowDetails(self.request).get(),
@@ -70,12 +68,7 @@ class MenuAdminController(BaseEventAdminController):
 
     @staticmethod
     def _menu_form_data_from_menu(menu: Menu) -> dict[str, str]:
-        return WebContext.values_dict_to_form_data(
-            {
-                'name': menu.name,
-                'public': menu.stored_menu.public,
-            }
-        )
+        return WebContext.values_dict_to_form_data({'name': menu.name})
 
     @get(
         path='/event/{event_uniq_id:str}/menus',
@@ -101,12 +94,7 @@ class MenuAdminController(BaseEventAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        default_data = WebContext.values_dict_to_form_data(
-            {
-                'name': '',
-                'public': True,
-            }
-        )
+        default_data = WebContext.values_dict_to_form_data({'name': ''})
         return {
             'modal': 'menu',
             'action': action,
@@ -313,11 +301,7 @@ class MenuAdminController(BaseEventAdminController):
                 errors[field] = _('This name is already used.')
         if errors:
             return None, errors
-        stored_menu = StoredMenu(
-            id=None,
-            name=name,
-            public=WebContext.form_data_to_bool(data, 'public'),
-        )
+        stored_menu = StoredMenu(id=None, name=name)
         return stored_menu, errors
 
     @post(

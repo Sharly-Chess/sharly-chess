@@ -1,15 +1,6 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {% if client.can_manage_screens %}
-        {% if menu.private %}
-            <i class="bi-eye-slash text-danger pe-1"
-               {{ macros.tooltip_attributes('info', _('Private menu'), 'top') }}></i>
-        {% else %}
-            <i class="bi-eye pe-1"
-               {{ macros.tooltip_attributes('info', _('Public menu'), 'top') }}></i>
-        {% endif %}
-    {% endif %}
     {{ menu.name }}
 {% endblock %}
 
@@ -114,6 +105,17 @@
             <i class="bi-window-stack pe-1"></i>
             {{ _('Content') }}
         </button>
+        {% if menu.first_screen %}
+            <span {{ macros.tooltip_attributes('info', _('View the menu.'), 'top') }}>
+                <a
+                    class="btn btn-sm btn-outline-primary"
+                    href="{{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=menu.first_screen.uniq_id) }}"
+                    target="_blank"
+                >
+                    <i class="bi bi-eye"></i>
+                </a>
+            </span>
+        {% endif %}
     {% endif %}
 {% endblock %}
 
