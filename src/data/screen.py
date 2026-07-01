@@ -2,7 +2,7 @@ import weakref
 from collections.abc import Iterator, Collection
 from datetime import datetime, timedelta
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common.background import inline_image_url
@@ -137,9 +137,30 @@ class Screen:
 
     @property
     def name(self) -> str:
-        if self.stored_screen:
-            if self.stored_screen.name:
-                return self.stored_screen.name
+        if self.stored_screen and self.stored_screen.name:
+            return self.stored_screen.name
+        if self.type == ScreenType.RESULTS:
+            # The selected tournament name(s), joined by ' / '; 'Last results'
+            # when the screen spans every tournament.
+            names: list[str] = []
+            for tournament_id in self.results_tournament_ids:
+                tournament_name = self.event.tournaments_by_id[tournament_id].name
+                if tournament_name and tournament_name not in names:
+                    names.append(tournament_name)
+            return ' / '.join(names) if names else _('Last results')
+        if self.type == ScreenType.IMAGE:
+            return _('Image')
+        if self.stored_screen is not None:
+            # A basic screen with no explicit name: the tournament name(s) of
+            # its sets, joined by ' / ' (deduplicated).
+            tournament_names: list[str] = []
+            for screen_set in self.sorted_screen_sets:
+                tournament_name = screen_set.tournament.name
+                if tournament_name and tournament_name not in tournament_names:
+                    tournament_names.append(tournament_name)
+            return ' / '.join(tournament_names) if tournament_names else _('Screen')
+        # A family-generated screen keeps its per-screen name (with first/last),
+        # as its family already carries the tournament-and-range default name.
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT:
                 return self.sorted_screen_sets[0].name_for_boards
@@ -153,10 +174,6 @@ class Screen:
                 return first_set.name_for_players
             case ScreenType.RANKING:
                 return self.sorted_screen_sets[0].name_for_ranking
-            case ScreenType.RESULTS:
-                return _('Last results')
-            case ScreenType.IMAGE:
-                return _('Image')
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -269,190 +286,10 @@ class Screen:
 
     @property
     def menu_entry_label(self) -> str:
-        match self.type:
-            case (
-                ScreenType.BOARDS
-                | ScreenType.INPUT
-                | ScreenType.PLAYERS
-                | ScreenType.RANKING
-                | ScreenType.CHECK_IN
-            ):
-                single_tournament = len(self.event.tournaments_by_id) == 1
-                screen_set: ScreenSet = self.sorted_screen_sets[0]
-                is_team = screen_set.tournament.is_team_tournament
-                team_matches = screen_set.shows_team_matches
-                first_item: Any
-                if team_matches and self.type in (
-                    ScreenType.INPUT,
-                    ScreenType.BOARDS,
-                ):
-                    first_item = screen_set.first_team_match
-                elif is_team and self.type == ScreenType.CHECK_IN:
-                    first_item = screen_set.first_team_by_name
-                elif is_team and self.type == ScreenType.RANKING:
-                    first_item = screen_set.first_team_standing
-                else:
-                    first_item = screen_set.first_item
-                first_last = (
-                    bool(screen_set.first or screen_set.last) and first_item is not None
-                )
-                text: str
-                if (
-                    self.type
-                    in [
-                        ScreenType.INPUT,
-                        ScreenType.BOARDS,
-                    ]
-                    and screen_set.tournament.current_round
-                ):
-                    text = self.menu_text or self.default_boards_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last,
-                        team_matches=team_matches,
-                    )
-                elif self.type in [
-                    ScreenType.PLAYERS,
-                    ScreenType.INPUT,
-                    ScreenType.BOARDS,
-                ]:
-                    text = self.menu_text or self.default_players_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last,
-                    )
-                elif self.type == ScreenType.CHECK_IN:
-                    text = self.menu_text or self.default_check_in_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last,
-                    )
-                elif self.type == ScreenType.RANKING:
-                    text = self.menu_text or self.default_ranking_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last,
-                        crosstable=self.ranking_crosstable,
-                    )
-                else:
-                    text = self.menu_text or ''
-                text = text.replace('%t', screen_set.tournament.name)
-                if self.type == ScreenType.RANKING:
-                    if is_team:
-                        if '%f' in text:
-                            first_standing = screen_set.first_team_standing
-                            text = text.replace(
-                                '%f',
-                                str(first_standing['rank']) if first_standing else '-',
-                            )
-                        if '%l' in text:
-                            last_standing = screen_set.last_team_standing
-                            text = text.replace(
-                                '%l',
-                                str(last_standing['rank']) if last_standing else '-',
-                            )
-                    else:
-                        if '%f' in text:
-                            text = text.replace(
-                                '%f',
-                                str(screen_set.first_tournament_player_by_rank.rank)
-                                if screen_set.first_tournament_player_by_rank
-                                else '-',
-                            )
-                        if '%l' in text:
-                            text = text.replace(
-                                '%l',
-                                str(screen_set.last_tournament_player_by_rank.rank)
-                                if screen_set.last_tournament_player_by_rank
-                                else '-',
-                            )
-                elif is_team and (
-                    self.type == ScreenType.CHECK_IN
-                    or (
-                        not team_matches
-                        and self.type in (ScreenType.INPUT, ScreenType.BOARDS)
-                        and not screen_set.tournament.current_round
-                    )
-                ):
-                    first_team = screen_set.first_team_by_name
-                    last_team = screen_set.last_team_by_name
-                    text = text.replace(
-                        '%f', first_team.name[:8] if first_team else '-'
-                    )
-                    text = text.replace('%l', last_team.name[:8] if last_team else '-')
-                elif team_matches and self.type in (
-                    ScreenType.INPUT,
-                    ScreenType.BOARDS,
-                ):
-                    first_match = screen_set.first_team_match
-                    last_match = screen_set.last_team_match
-                    if '%f' in text:
-                        text = text.replace(
-                            '%f',
-                            str(first_match.display_number)
-                            if first_match and first_match.display_number is not None
-                            else '-',
-                        )
-                    if '%l' in text:
-                        text = text.replace(
-                            '%l',
-                            str(last_match.display_number)
-                            if last_match and last_match.display_number is not None
-                            else '-',
-                        )
-                elif (
-                    self.type in (ScreenType.PLAYERS, ScreenType.CHECK_IN)
-                    or not screen_set.tournament.current_round
-                ):
-                    text = text.replace(
-                        '%f',
-                        str(
-                            screen_set.first_tournament_player_by_name.last_name[:3]
-                        ).upper()
-                        if screen_set.first_tournament_player_by_name
-                        else '-',
-                    )
-                    text = text.replace(
-                        '%l',
-                        str(
-                            screen_set.last_tournament_player_by_name.last_name[:3]
-                        ).upper()
-                        if screen_set.last_tournament_player_by_name
-                        else '-',
-                    )
-                elif self.type in [
-                    ScreenType.INPUT,
-                    ScreenType.BOARDS,
-                ]:
-                    if '%f' in text:
-                        text = text.replace(
-                            '%f',
-                            str(
-                                screen_set.first_board.id
-                                + screen_set.tournament.first_board_number
-                                - 1
-                            )
-                            if screen_set.first_board
-                            and screen_set.first_board.id is not None
-                            else '-',
-                        )
-                    if '%l' in text:
-                        text = text.replace(
-                            '%l',
-                            str(
-                                screen_set.last_board.id
-                                + screen_set.tournament.first_board_number
-                                - 1
-                            )
-                            if screen_set.last_board
-                            and screen_set.last_board.id is not None
-                            else '-',
-                        )
-                return text
-            case ScreenType.RESULTS:
-                assert self.stored_screen is not None
-                return self.stored_screen.menu_text or _('Last results')
-            case ScreenType.IMAGE:
-                menu_text = self.stored_screen.menu_text if self.stored_screen else None
-                return menu_text or self.name
-            case _:
-                raise ValueError(f'type=[{self.type}]')
+        """The label shown for this screen in menus: the custom menu text if
+        one is set, otherwise the screen name (which, when automatic, is the
+        screen's tournament name(s))."""
+        return self.menu_text or self.name
 
     def _menu_screens(self, admin: bool) -> list['Screen']:
         """The navigation entries shown on this screen: the resolved screens

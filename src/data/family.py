@@ -76,6 +76,22 @@ class Family:
         return name.replace('%t', self.tournament.name)
 
     @property
+    def display_name(self) -> str:
+        """A user-facing name for the family (cards, menu label): the family
+        ``name`` with ``%f``/``%l`` resolved to the family's overall range —
+        the first value of its first screen and the last value of its last
+        screen."""
+        name = self.name  # %t already substituted; %f/%l still literal
+        if '%f' not in name and '%l' not in name:
+            return name
+        screens = list(self.screens_by_uniq_id.values())
+        if not screens:
+            return name.replace('%f', '-').replace('%l', '-')
+        first_value = screens[0].sorted_screen_sets[0].range_bounds()[0]
+        last_value = screens[-1].sorted_screen_sets[0].range_bounds()[1]
+        return name.replace('%f', first_value).replace('%l', last_value)
+
+    @property
     def tournament_id(self) -> int:
         return self.stored_family.tournament_id
 

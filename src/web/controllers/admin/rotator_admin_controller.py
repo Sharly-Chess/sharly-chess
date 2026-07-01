@@ -170,7 +170,10 @@ class RotatorAdminController(BaseEventAdminController):
                 suffix = ''
                 if rotator_count := rotator_ids.count(getattr(entity, 'id')):
                     suffix = f' (x{rotator_count})'
-                options[screen_type.name][str(entity.id)] = entity.name + suffix
+                # Families expose display_name (their range resolved); screens
+                # fall back to their name.
+                label = getattr(entity, 'display_name', None) or entity.name
+                options[screen_type.name][str(entity.id)] = label + suffix
         for screen_type in ScreenType:
             if not options[screen_type.name]:
                 del options[screen_type.name]

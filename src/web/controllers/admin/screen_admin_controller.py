@@ -562,7 +562,8 @@ class ScreenAdminController(BaseEventAdminController):
                                     pass
                                 case _:
                                     raise ValueError(f'screen_type=[{screen_type}]')
-                            name = event.get_unused_screen_name(screen_type)
+                            # No default name: an unnamed screen is named
+                            # automatically from its tournament(s).
                             if ScreenType.RANKING:
                                 ranking_crosstable = False
                         case 'clone':

@@ -68,7 +68,11 @@ class MenuAdminController(BaseEventAdminController):
 
     @staticmethod
     def _menu_form_data_from_menu(menu: Menu) -> dict[str, str]:
-        return WebContext.values_dict_to_form_data({'name': menu.name})
+        # The raw stored name (empty for an automatically-named menu) so the
+        # field shows blank with the "Automatic" placeholder.
+        return WebContext.values_dict_to_form_data(
+            {'name': menu.stored_menu.name or ''}
+        )
 
     @get(
         path='/event/{event_uniq_id:str}/menus',
@@ -158,7 +162,7 @@ class MenuAdminController(BaseEventAdminController):
             for family in sorted(families, key=attrgetter('name')):
                 if family.type in claimed_types:
                     group[str(family.id)] = SelectOption(
-                        name=family.name,
+                        name=family.display_name,
                         disabled=True,
                         tooltip=_(
                             'All %(screen_type)s screens already belong to a menu.'
@@ -167,12 +171,12 @@ class MenuAdminController(BaseEventAdminController):
                     )
                 elif family.id in claimed_family_ids:
                     group[str(family.id)] = SelectOption(
-                        name=family.name,
+                        name=family.display_name,
                         disabled=True,
                         tooltip=_('This family already belongs to a menu.'),
                     )
                 else:
-                    group[str(family.id)] = family.name
+                    group[str(family.id)] = family.display_name
             if group:
                 options[screen_type.name] = group
         return options
@@ -290,10 +294,10 @@ class MenuAdminController(BaseEventAdminController):
     ) -> tuple[StoredMenu | None, dict[str, str]]:
         event = web_context.get_admin_event()
         errors: dict[str, str] = {}
+        # The name is optional: an empty name means the menu is named
+        # automatically from its content.
         name = WebContext.form_data_to_str(data, field := 'name') or ''
-        if not name:
-            errors[field] = _('This field is required.')
-        else:
+        if name:
             used_names = list(event.menus_by_name.keys())
             if action == FormAction.UPDATE:
                 used_names.remove(web_context.get_admin_menu().name)
@@ -301,7 +305,7 @@ class MenuAdminController(BaseEventAdminController):
                 errors[field] = _('This name is already used.')
         if errors:
             return None, errors
-        stored_menu = StoredMenu(id=None, name=name)
+        stored_menu = StoredMenu(id=None, name=name or None)
         return stored_menu, errors
 
     @post(
@@ -391,10 +395,6 @@ class MenuAdminController(BaseEventAdminController):
         stored_menu.id = menu.id
         stored_menu.default_type = menu.stored_menu.default_type
         stored_menu.stored_menu_items = menu.stored_menu_items
-        # Keep a seeded default's name NULL (so it stays translatable) unless
-        # the admin actually changed it away from the derived label.
-        if menu.stored_menu.name is None and stored_menu.name == menu.name:
-            stored_menu.name = None
         event.update_menu(stored_menu)
         menu.stored_menu = stored_menu
         Message.success(

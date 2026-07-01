@@ -39,7 +39,8 @@
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('%(string)s:', string=_('Name')),
-                            placeholder=_('E.g.: %(string)s', string=_('My menu')),
+                            placeholder=_('Automatic'),
+                            tooltip_text=_('If left empty, a name is derived from the menu content.'),
                             data=data, errors=errors
                         ) }}
                     </div>
