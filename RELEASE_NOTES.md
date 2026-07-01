@@ -4,6 +4,7 @@
 
 - Improved detection of internet connectivity (4.2.0)
 - Prevent reloading templates (4.2.1)
+- Fixed double form submission using the `Enter` key (4.2.4)
 
 ## Tournaments
 
