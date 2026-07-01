@@ -67,13 +67,17 @@
                         {{ _('By number of groups (balanced player counts)') }}
                     </label>
                 </div>
-                <div id="method-groups-input" class="ms-4 mb-2" style="max-width: 10rem;">
-                    {{ admin_macros.number_input(
-                        name='group_count',
-                        label=_('%(string)s:', string=_('Number of groups')),
-                        min=1,
-                        data=data, errors=errors,
-                    ) }}
+                <div class="row gy-2 gx-3">
+                    <div class="col-6">
+                        <div id="method-groups-input" class="ms-4 mb-2">
+                            {{ admin_macros.number_input(
+                                name='group_count',
+                                label=_('%(string)s:', string=_('Number of groups')),
+                                min=1,
+                                data=data, errors=errors,
+                            ) }}
+                        </div>
+                    </div>
                 </div>
                 <div class="form-check">
                     <input
@@ -89,13 +93,17 @@
                         {{ _('By rating step') }}
                     </label>
                 </div>
-                <div id="method-step-input" class="ms-4 mb-2" style="max-width: 10rem;">
-                    {{ admin_macros.number_input(
-                        name='step',
-                        label=_('%(string)s:', string=_('Rating step')),
-                        min=1,
-                        data=data, errors=errors,
-                    ) }}
+                <div class="row gy-2 gx-3">
+                    <div class="col-6">
+                        <div id="method-step-input" class="ms-4 mb-2">
+                            {{ admin_macros.number_input(
+                                name='step',
+                                label=_('%(string)s:', string=_('Rating step')),
+                                min=1,
+                                data=data, errors=errors,
+                            ) }}
+                        </div>
+                    </div>
                 </div>
                 <h4 class="mt-3 mb-2">
                     {{ _('Default prizes') }}
