@@ -60,24 +60,14 @@
                     </div>
                 {% endif %}
             {% endif %}
-            <div class="{% if not family.menu_label %}text-secondary{% endif %}">
+            <div>
                 <i class="bi-hand-index pe-1"></i>
-                {% if family.menu_link %}
-                    {{ _('Menu link label: %(menu_label)s', menu_label=family.menu_label) }}
-                    {% if not family.menu_text %}
-                        <span class="fst-italic">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
-                {% else %}
+                {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label) }}
+                {% if not family.menu_text %}
                     <span class="fst-italic">
-                        {{ _('Menu link label: none') }}
+                        {{ _('(by default)') }}
                     </span>
                 {% endif %}
-            </div>
-            <div class="{% if not family.menu %}text-secondary{% endif %}">
-                <i class="bi-three-dots pe-1"></i>
-                {% if family.menu %}{{ _('Menu: %(menu)s', menu=family.menu) }}{% else %}<span class="fst-italic">{{ _('Menu: none') }}</span>{% endif %}
             </div>
             <div class="{% if not family.timer %}text-secondary{% endif %}">
                 <i class="bi-clock-fill pe-1"></i>

@@ -178,14 +178,6 @@ class Screen:
         return None
 
     @property
-    def menu_link(self) -> bool | None:
-        if self.stored_screen:
-            return self.stored_screen.menu_link
-        if self.family:
-            return self.family.menu_link
-        return None
-
-    @property
     def menu_text(self) -> str | None:
         if self.stored_screen:
             return self.stored_screen.menu_text
@@ -274,12 +266,6 @@ class Screen:
                     return '%t crosstable'
                 else:
                     return _('%t ranking')
-
-    @property
-    def menu_label(self) -> str | None:
-        if not self.menu_link:
-            return None
-        return self.menu_entry_label
 
     @property
     def menu_entry_label(self) -> str:
@@ -503,14 +489,6 @@ class Screen:
     @cached_property
     def admin_menu_nav_entries(self) -> list['MenuNavEntry']:
         return self._menu_nav_entries(True)
-
-    @property
-    def menu(self) -> str:
-        if self.stored_screen:
-            return self.stored_screen.menu or ''
-        if self.family is None:
-            raise RuntimeError('Family reference unexpectedly None')
-        return self.family.menu or ''
 
     @property
     def timer(self) -> Timer | None:

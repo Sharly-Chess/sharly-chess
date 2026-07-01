@@ -55,6 +55,22 @@ class Migration(BaseMigration):
                 (menu_id, screen_type),
             )
 
+        # Drop the legacy per-screen/family menu configuration (`menu_link`
+        # and the `menu` DSL): navigation is now driven by these global menus.
+        # The per-entity label survives in `menu_text`.
+        self.database.execute('ALTER TABLE `screen` DROP COLUMN `menu_link`')
+        self.database.execute('ALTER TABLE `screen` DROP COLUMN `menu`')
+        self.database.execute('ALTER TABLE `family` DROP COLUMN `menu_link`')
+        self.database.execute('ALTER TABLE `family` DROP COLUMN `menu`')
+
     def backward(self):
+        self.database.execute('ALTER TABLE `screen` ADD `menu_link` INTEGER')
+        self.database.execute('ALTER TABLE `screen` ADD `menu` TEXT')
+        self.database.execute(
+            'ALTER TABLE `family` ADD `menu_link` INTEGER NOT NULL DEFAULT 0'
+        )
+        self.database.execute(
+            "ALTER TABLE `family` ADD `menu` TEXT NOT NULL DEFAULT ''"
+        )
         self.database.execute('DROP TABLE `menu_item`')
         self.database.execute('DROP TABLE `menu`')

@@ -181,18 +181,18 @@ class BaseEventAdminWebContext(AdminWebContext):
                             'template': 'families/tab.html',
                             'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB")} from:body',
                         },
+                        'admin-event-menus-tab': {
+                            'title': _('Menus ({num})').format(
+                                num=len(event.menus_by_id) or '-'
+                            ),
+                            'template': 'menus/tab.html',
+                        },
                         'admin-event-rotators-tab': {
                             'title': _(
                                 'Rotators ({num}) *** WITH_SHORTCUT_INDICATION'
                             ).format(num=len(event.rotators_by_id) or '-'),
                             'template': 'rotators/tab.html',
                             'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB")} from:body',
-                        },
-                        'admin-event-menus-tab': {
-                            'title': _('Menus ({num})').format(
-                                num=len(event.menus_by_id) or '-'
-                            ),
-                            'template': 'menus/tab.html',
                         },
                         'admin-event-timers-tab': {
                             'title': _(
@@ -233,14 +233,6 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'disabled': not screens,
                     'icon_class': screen_type.icon_str,
                 }
-            nav_tabs |= {
-                'admin-event-rotators-tab': {
-                    'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
-                    'template': 'rotators/tab.html',
-                    'disabled': not rotators,
-                    'icon_class': 'bi-repeat',
-                },
-            }
             menus = event.sorted_menus
             nav_tabs |= {
                 'admin-event-menus-tab': {
@@ -248,6 +240,14 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'template': 'menus/tab.html',
                     'disabled': not menus,
                     'icon_class': 'bi-list-nested',
+                },
+            }
+            nav_tabs |= {
+                'admin-event-rotators-tab': {
+                    'title': _('Rotators ({num})').format(num=len(rotators) or '-'),
+                    'template': 'rotators/tab.html',
+                    'disabled': not rotators,
+                    'icon_class': 'bi-repeat',
                 },
             }
             nav_tabs |= {
