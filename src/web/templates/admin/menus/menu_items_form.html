@@ -1,0 +1,70 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div id="menu-item-list-container">
+    {% set menu_items = admin_menu.sorted_menu_items %}
+    {% if not menu_items %}
+        <div class="text-danger">{{ _('This menu is empty.') }}</div>
+    {% else %}
+        <form
+            class="sortable d-flex flex-column gap-2"
+            hx-patch="{{ url_for(
+                'admin-menu-reorder-items',
+                event_uniq_id=admin_event.uniq_id,
+                menu_id=admin_menu.id
+            ) }}"
+            hx-target="body"
+            hx-trigger="end"
+            hx-indicator="#please-wait"
+        >
+            {% set reorder_items = menu_items|length > 1 %}
+            {% for menu_item in menu_items %}
+                {% set screen = menu_item.screen %}
+                {% set family = menu_item.family %}
+                {% set screen_type = menu_item.screen_type %}
+                <div class="border border-secondary bg-body-tertiary {% if reorder_items %}cursor-grab{% endif %}">
+                    <input type="hidden" name="menu_item_ids" value="{{ menu_item.id }}"/>
+                    <div class="p-2 d-flex align-items-center gap-4 menu-item-row">
+                        {% if reorder_items %}
+                            <i class="bi-grip-horizontal"></i>
+                        {% endif %}
+                        <div class="text-start flex-grow-1">
+                            {% if screen_type %}
+                                <span class="pe-1">
+                                    {{ macros.screen_type_icon(screen_type, true) }}
+                                </span>
+                                {{ _('All %(screen_type)s screens', screen_type=screen_type.name) }}
+                            {% elif screen %}
+                                <span class="pe-1">
+                                    {{ macros.screen_type_icon(screen.type, true) }}
+                                </span>
+                                {{ screen.name }}
+                            {% elif family %}
+                                <span class="pe-1">
+                                    {{ macros.screen_type_icon(family.type, true) }}
+                                </span>
+                                {{ family.name }}
+                                <i class="ps-1">{{ _('(family)') }}</i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                            <button
+                                class="btn btn-sm btn-outline-danger text-nowrap"
+                                hx-delete="{{ url_for(
+                                    'admin-menu-item-delete',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    menu_id=admin_menu.id,
+                                    menu_item_id=menu_item.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-target="#modal-wrapper"
+                            >
+                                <i class="bi-trash-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </form>
+    {% endif %}
+</div>

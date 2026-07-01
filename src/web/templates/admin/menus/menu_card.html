@@ -1,0 +1,172 @@
+{% extends '../common/card.html' %}
+
+{% block card_header %}
+    {% if client.can_manage_screens %}
+        {% if menu.private %}
+            <i class="bi-eye-slash text-danger pe-1"
+               {{ macros.tooltip_attributes('info', _('Private menu'), 'top') }}></i>
+        {% else %}
+            <i class="bi-eye pe-1"
+               {{ macros.tooltip_attributes('info', _('Public menu'), 'top') }}></i>
+        {% endif %}
+    {% endif %}
+    {{ menu.name }}
+{% endblock %}
+
+{% block card_title %}
+    <div class="d-flex gap-2 align-items-center justify-content-center">
+        <div
+            class="text-nowrap"
+            data-testid="screen-types-count"
+            {{ macros.tooltip_attributes('info', _('Number of screen types'), 'top') }}
+        >
+            <i class="bi-collection pe-1"></i>
+            {{ menu.screen_types|length }}
+        </div>
+        <div
+            class="text-nowrap"
+            data-testid="screens-count"
+            {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
+        >
+            <i class="bi-window pe-1"></i>
+            {{ menu.screens|length }}
+        </div>
+        <div
+            class="text-nowrap"
+            data-testid="families-count"
+            {{ macros.tooltip_attributes('info', _('Number of screen families'), 'top') }}
+        >
+            <i class="bi-window-split pe-1"></i>
+            {{ menu.families|length }}
+        </div>
+        {% if not menu.menu_items_by_id %}
+            <i
+                class="bi-exclamation-triangle-fill text-danger"
+                {{ macros.tooltip_attributes(
+                    'info', _('This menu is empty.'), 'top'
+                ) }}
+            ></i>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block card_text %}
+    {% if show_details %}
+        <div class="d-flex flex-column gap-1">
+            {% if menu.screen_types %}
+                {{ _('Screen types:') }}
+                {% for screen_type in menu.screen_types %}
+                    <div>
+                        <span class="pe-1">
+                            {{ macros.screen_type_icon(screen_type, true) }}
+                        </span>
+                        {{ _('All %(screen_type)s screens', screen_type=screen_type.name) }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if menu.screens %}
+                <hr/>
+                {{ _('Screens:') }}
+                {% for screen in menu.screens %}
+                    <div>
+                        <span class="pe-1">
+                            {% if client.can_manage_screens %}
+                                {{ macros.screen_visibility_icon(screen, 'pe-1') }}
+                            {% endif %}
+                            {{ macros.screen_type_icon(screen.type, true) }}
+                        </span>
+                        {{ screen.name }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if menu.families %}
+                <hr/>
+                {{ _('Screen families:') }}
+                {% for family in menu.families %}
+                    <div>
+                        <span class="pe-1">
+                            {% if client.can_manage_screens %}
+                                {{ admin_macros.family_visibility_icon(family, 'pe-1') }}
+                            {% endif %}
+                            {{ macros.screen_type_icon(family.type, true) }}
+                        </span>
+                        {{ family.name }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block card_buttons_left %}
+    {% if client.can_manage_screens %}
+        <button
+            class="btn btn-sm btn-outline-primary"
+            hx-get="{{ url_for(
+                'admin-menu-items-modal',
+                event_uniq_id=admin_event.uniq_id,
+                menu_id=menu.id
+            ) }}"
+            {{ macros.tooltip_attributes(
+                'info', _('Define the content of the menu.'), 'top'
+            ) }}
+        >
+            <i class="bi-window-stack pe-1"></i>
+            {{ _('Content') }}
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block card_buttons_right %}
+    {% if client.can_manage_screens %}
+        <span {{ macros.tooltip_attributes('info', _('Edit the properties of the menu.'), 'top') }}>
+            <button
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for(
+                    'admin-menu-update-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    menu_id=menu.id
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-pencil-fill"></i>
+            </button>
+        </span>
+        <span {{ macros.tooltip_attributes('info', _('Duplicate the menu.'), 'top') }}>
+            <button
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for(
+                    'admin-menu-clone-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    menu_id=menu.id
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-copy"></i>
+            </button>
+        </span>
+        <span {{ macros.tooltip_attributes('info', _('Delete the menu.'), 'top') }}>
+            <button
+                class="btn btn-sm btn-outline-danger"
+                hx-get="{{ url_for(
+                    'admin-menu-delete-modal',
+                    action='delete',
+                    event_uniq_id=admin_event.uniq_id,
+                    menu_id=menu.id
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-trash-fill"></i>
+            </button>
+        </span>
+    {% endif %}
+{% endblock %}

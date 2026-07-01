@@ -188,6 +188,12 @@ class BaseEventAdminWebContext(AdminWebContext):
                             'template': 'rotators/tab.html',
                             'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB")} from:body',
                         },
+                        'admin-event-menus-tab': {
+                            'title': _('Menus ({num})').format(
+                                num=len(event.menus_by_id) or '-'
+                            ),
+                            'template': 'menus/tab.html',
+                        },
                         'admin-event-timers-tab': {
                             'title': _(
                                 'Timers ({num}) *** WITH_SHORTCUT_INDICATION'
@@ -233,6 +239,19 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'template': 'rotators/tab.html',
                     'disabled': not rotators,
                     'icon_class': 'bi-repeat',
+                },
+            }
+            menus = (
+                event.sorted_menus
+                if self.client.can_view_private_screens
+                else event.public_sorted_menus
+            )
+            nav_tabs |= {
+                'admin-event-menus-tab': {
+                    'title': _('Menus ({num})').format(num=len(menus) or '-'),
+                    'template': 'menus/tab.html',
+                    'disabled': not menus,
+                    'icon_class': 'bi-list-nested',
                 },
             }
             nav_tabs |= {

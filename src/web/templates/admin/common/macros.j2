@@ -1667,7 +1667,8 @@ with_indicator: display a loading indicator, optional
     selected=[],
     placeholder='',
     post_url='',
-    hx_target=''
+    hx_target='',
+    tooltip_select=false
 ) %}
     <form
         hx-post="{{ post_url }}"
@@ -1686,6 +1687,7 @@ with_indicator: display a loading indicator, optional
             selected=selected,
             multiple=true,
             placeholder=placeholder,
+            tooltip_select=tooltip_select,
         ) }}
         <script>
             $('#{{ id }}-select').on('select2:selecting', function(e) {

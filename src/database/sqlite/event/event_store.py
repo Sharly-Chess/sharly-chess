@@ -424,6 +424,27 @@ class StoredRotator:
 
 
 @dataclass
+class StoredMenuItem:
+    id: int | None
+    menu_id: int
+    screen_id: int | None = None
+    family_id: int | None = None
+    screen_type: str | None = None
+    index: int = 0
+
+
+@dataclass
+class StoredMenu:
+    id: int | None
+    name: str | None = None
+    public: bool = True
+    default_type: str | None = None
+    stored_menu_items: list[StoredMenuItem] = field(
+        default_factory=list[StoredMenuItem]
+    )
+
+
+@dataclass
 class StoredDisplayController:
     id: int | None
     name: str
@@ -514,6 +535,7 @@ class StoredEvent(BaseStoredEvent):
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])
+    stored_menus: list[StoredMenu] = field(default_factory=list[StoredMenu])
     stored_display_controllers: list[StoredDisplayController] = field(
         default_factory=list[StoredDisplayController]
     )
