@@ -103,17 +103,11 @@ class Family:
         return self.stored_family.font_size or 100
 
     @property
-    def menu_link(self) -> bool:
-        return self.stored_family.menu_link
-
-    @property
     def menu_text(self) -> str:
         return self.stored_family.menu_text
 
     @cached_property
     def menu_label(self) -> str | None:
-        if not self.menu_link:
-            return None
         if self.menu_text:
             return self.menu_text
         single_tournament: bool = len(self.event.tournaments_by_id) == 1
@@ -152,10 +146,6 @@ class Family:
         else:
             text = self.menu_text
         return text.replace('%t', self.tournament.name)
-
-    @property
-    def menu(self) -> str:
-        return self.stored_family.menu
 
     @property
     def timer_id(self) -> int | None:

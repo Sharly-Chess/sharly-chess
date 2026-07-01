@@ -70,6 +70,15 @@
                             ) }}
                         </div>
                         <div class="col-12 col-md-6">
+                            {{ admin_macros.text_input(
+                                name='menu_text',
+                                label=_('Menu label:'),
+                                placeholder=_('E.g.: Boards %%f-%%l') if family_type in ['input', 'boards', ] else _('E.g.: Players %%f-%%l'),
+                                tooltip_text=_('The label used for this family in menus. If left empty, a default label will be used.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
@@ -256,50 +265,6 @@
                             {% include '../common/modal/alert_message.html' %}
                         </div>
                     </div>
-
-                    <h4 class="mt-4">
-                        {{ _('Menus') }}
-                    </h4>
-                    <div class="row gy-2 gx-3">
-                        <div class="col-12">
-                            {{ admin_macros.text_input(
-                                name='menu',
-                                label=_('Links displayed on the screen menu:'),
-                                placeholder=_('E.g.: @boards, @family, another-screen'),
-                                help_text=_('This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.switch_input(
-                                name='menu_link',
-                                label='',
-                                placeholder=_('Allow links to this screen'),
-                                tooltip_text=_('Check the box to allow other screens to display a link to the screen of this family.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.text_input(
-                                name='menu_text',
-                                label=_('Menu link label:'),
-                                placeholder=_('E.g.: Boards %%f-%%l') if family_type in ['input', 'boards', ] else _('E.g.: Players %%f-%%l'),
-                                tooltip_text=_('This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <script>
-                            $('#menu-text').prop('disabled', $('#menu-link').val() != 'on');
-                            $('#menu-link').click(function() {
-                                if ($(this).is(':checked')) {
-                                    $('#menu-text').prop('disabled', false);
-                                } else {
-                                    $('#menu-text').prop('disabled', true);
-                                }
-                            });
-                        </script>
-                    </div>
-
                 {% endif %}
             </form>
             {% if action in ['create', 'clone', 'update'] and admin_event.is_team_event %}

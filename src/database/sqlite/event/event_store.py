@@ -338,9 +338,7 @@ class StoredScreen:
     type: str
     columns: int | None
     font_size: int | None
-    menu_link: bool | None
     menu_text: str | None
-    menu: str | None
     timer_id: int | None
     input_exit_button: bool | None
     players_show_unpaired: bool | None
@@ -376,9 +374,7 @@ class StoredFamily:
     tournament_id: int
     columns: int | None
     font_size: int | None
-    menu_link: bool
     menu_text: str
-    menu: str
     timer_id: int | None
     input_exit_button: bool | None
     players_show_unpaired: bool | None
