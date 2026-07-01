@@ -1,0 +1,17 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}
+    {{ _('Delete menu') }}
+{% endblock %}
+
+{% block object_name %}
+    {{ _('%(string)s: %(value)s', string=_('Menu'), value=admin_menu.name) }}
+{% endblock %}
+
+{% block delete_url %}
+    {{ url_for(
+        'admin-menu-delete',
+        event_uniq_id=admin_event.uniq_id,
+        menu_id=admin_menu.id,
+    ) }}
+{% endblock %}

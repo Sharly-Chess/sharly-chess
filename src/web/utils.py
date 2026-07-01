@@ -24,6 +24,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.player import TournamentPlayer, Player
 from data.rotator import Rotator
+from data.menu import Menu
 from data.screen import Screen
 from data.team import Team
 from data.tournament import Tournament
@@ -136,6 +137,28 @@ class RequestUtils:
     def get_optional_rotator(cls, request: HTMXRequest) -> Rotator | None:
         try:
             return cls.get_rotator(request)
+        except ValidationException:
+            return None
+
+    REQUEST_MENU_ATTR: str = 'sharly_chess_menu'
+    MENU_ID_PARAM: str = 'menu_id'
+
+    @classmethod
+    def get_menu(cls, request: HTMXRequest) -> Menu:
+        if cls.REQUEST_MENU_ATTR in request.state:
+            return request.state[cls.REQUEST_MENU_ATTR]
+        menu_id = cls._get_request_param(request, cls.MENU_ID_PARAM)
+        try:
+            menu = cls.get_event(request).menus_by_id[menu_id]
+        except KeyError:
+            raise NotFoundException(f'Menu [{menu_id}] not found.')
+        request.state[cls.REQUEST_MENU_ATTR] = menu
+        return menu
+
+    @classmethod
+    def get_optional_menu(cls, request: HTMXRequest) -> Menu | None:
+        try:
+            return cls.get_menu(request)
         except ValidationException:
             return None
 
