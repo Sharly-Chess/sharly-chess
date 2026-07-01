@@ -63,6 +63,7 @@ class AuthAction(StrEnum):
     VIEW_PRIVATE_EVENTS = auto()
     VIEW_PASSED_EVENTS = auto()
     VIEW_DETAILED_EVENT_CARDS = auto()
+    CREATE_EVENTS = auto()
     MANAGE_EVENTS = auto()
 
     # Event
@@ -141,6 +142,7 @@ class AuthAction(StrEnum):
                 AuthAction.VIEW_PRIVATE_EVENTS
                 | AuthAction.VIEW_PASSED_EVENTS
                 | AuthAction.VIEW_DETAILED_EVENT_CARDS
+                | AuthAction.CREATE_EVENTS
                 | AuthAction.MANAGE_EVENTS
                 | AuthAction.RENAME_EVENT
                 | AuthAction.UPDATE_EVENT
@@ -221,6 +223,8 @@ class AuthAction(StrEnum):
                 return _('View passed events', locale)
             case AuthAction.VIEW_DETAILED_EVENT_CARDS:
                 return _('View event cards details', locale)
+            case AuthAction.CREATE_EVENTS:
+                return _('Create events', locale)
             case AuthAction.MANAGE_EVENTS:
                 return _('Manage events', locale)
             case AuthAction.RENAME_EVENT:

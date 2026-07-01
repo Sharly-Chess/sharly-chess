@@ -521,8 +521,8 @@ class OrganizationAccessLevel(AccessLevel):
     @staticmethod
     def access_level_actions() -> list[AuthAction]:
         return [
+            AuthAction.CREATE_EVENTS,
             AuthAction.UPDATE_EVENT,
-            AuthAction.VIEW_EVENT_CONFIG,
             AuthAction.VIEW_EVENT_CONFIG,
             AuthAction.DOWNLOAD_FEES,
         ]
@@ -577,6 +577,7 @@ class AdministrationAccessLevel(AccessLevel):
             AuthAction.MANAGE_ARCHIVES,
             AuthAction.VIEW_PRIVATE_EVENTS,
             AuthAction.VIEW_PASSED_EVENTS,
+            AuthAction.CREATE_EVENTS,
             AuthAction.MANAGE_EVENTS,
             AuthAction.VIEW_DETAILED_EVENT_CARDS,
             AuthAction.RENAME_EVENT,

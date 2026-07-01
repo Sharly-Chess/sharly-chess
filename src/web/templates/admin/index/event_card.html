@@ -204,6 +204,8 @@
                 <i class="bi-pencil-fill"></i>
             </button>
         </span>
+    {% endif %}
+    {% if client.can_create_events and event.are_all_plugins_enabled %}
         <span
            {{ macros.tooltip_attributes('info', _('Duplicate the event.'), 'top') }}
         >
@@ -225,6 +227,8 @@
                 <i class="bi-copy"></i>
             </button>
         </span>
+    {% endif %}
+    {% if client.can_manage_events and event.are_all_plugins_enabled %}
         <span
             {{ macros.tooltip_attributes('info', _('Archive the event.'), 'top') }}
         >

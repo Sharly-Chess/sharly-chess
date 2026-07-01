@@ -80,8 +80,12 @@ from web.controllers.admin.base_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard
 from web.messages import Message
-from web.session import SessionEventsShowDetails
-from web.urls import admin_event_tournaments_url, admin_event_url
+from web.session import (
+    SessionEventsShowDetails,
+    SessionUserAccountId,
+    SessionUserAccountPasswordHash,
+)
+from web.urls import admin_event_url
 
 logger: Logger = get_logger()
 
@@ -681,7 +685,7 @@ class IndexAdminController(BaseAdminController):
     @post(
         path='/{admin_tab:str}/create-event',
         name='admin-tab-create-event',
-        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+        guards=[ActionGuard(AuthAction.CREATE_EVENTS)],
     )
     async def htmx_admin_tab_event_create(
         self,
@@ -754,7 +758,7 @@ class IndexAdminController(BaseAdminController):
     @post(
         path='/event-clone/{event_uniq_id:str}',
         name='admin-event-clone',
-        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+        guards=[ActionGuard(AuthAction.CREATE_EVENTS)],
     )
     async def htmx_admin_event_clone(
         self,
@@ -811,11 +815,26 @@ class IndexAdminController(BaseAdminController):
                     database.update_stored_tournament(stored_tournament)
             plugin_manager.hook.on_event_duplicated(event_database=database)
 
+        # Carry the current login into the duplicate: the clone copies the
+        # accounts (same ids and password hashes), so a remote organiser stays
+        # authenticated on the new event instead of landing there anonymously.
+        account = web_context.client.account
+        if (
+            not account.administrator
+            and not account.anonymous
+            and account.password_hash
+        ):
+            new_event = Event(stored_event)
+            SessionUserAccountId(request, new_event).set(account.id)
+            SessionUserAccountPasswordHash(request, new_event).set(
+                account.password_hash
+            )
+
         Message.success(
             request,
             _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
         )
-        return ClientRedirect(redirect_to=admin_event_tournaments_url(request, uniq_id))
+        return ClientRedirect(redirect_to=admin_event_url(request, uniq_id))
 
     @patch(
         path=[
