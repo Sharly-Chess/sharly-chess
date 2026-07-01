@@ -8,19 +8,11 @@
     <div class="d-flex gap-2 align-items-center justify-content-center">
         <div
             class="text-nowrap"
-            data-testid="screen-types-count"
-            {{ macros.tooltip_attributes('info', _('Number of screen types'), 'top') }}
-        >
-            <i class="bi-collection pe-1"></i>
-            {{ menu.screen_types|length }}
-        </div>
-        <div
-            class="text-nowrap"
             data-testid="screens-count"
             {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
         >
             <i class="bi-window pe-1"></i>
-            {{ menu.screens|length }}
+            {{ menu.covered_basic_screens|length }}
         </div>
         <div
             class="text-nowrap"
@@ -28,7 +20,7 @@
             {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
         >
             <i class="bi-window-split pe-1"></i>
-            {{ menu.families|length }}
+            {{ menu.covered_families|length }}
         </div>
         {% if not menu.menu_items_by_id %}
             <i
