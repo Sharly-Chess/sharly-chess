@@ -199,6 +199,26 @@ class Menu:
         return [item.screen_type for item in self.sorted_menu_items if item.screen_type]
 
     @property
+    def covered_basic_screens(self) -> list[Screen]:
+        """All basic screens the menu claims: those added individually plus
+        every basic screen of an included screen type."""
+        screens: dict[str, Screen] = {screen.uniq_id: screen for screen in self.screens}
+        for screen_type in self.screen_types:
+            for screen in self.event.sorted_basic_screens_by_screen_type[screen_type]:
+                screens[screen.uniq_id] = screen
+        return list(screens.values())
+
+    @property
+    def covered_families(self) -> list[Family]:
+        """All families the menu claims: those added individually plus every
+        family of an included screen type."""
+        families: dict[int, Family] = {family.id: family for family in self.families}
+        for screen_type in self.screen_types:
+            for family in self.event.families_by_screen_type.get(screen_type, []):
+                families[family.id] = family
+        return list(families.values())
+
+    @property
     def first_screen(self) -> Screen | None:
         """The first screen the menu points to, used to open the menu."""
         screens = self.resolved_screens()
