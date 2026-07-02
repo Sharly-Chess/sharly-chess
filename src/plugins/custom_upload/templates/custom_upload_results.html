@@ -17,35 +17,44 @@
                 {% set tournament_statuses = custom_upload_utils.resolve_tournament_upload_statuses(tournament) %}
                 {% for status in tournament_statuses %}
                     {% set tooltip_message = status.tooltip_message(tournament) %}
-                    <span
-                            class="badge rounded-pill {{ status.css_classes }}"
-                            style="height: 20px"
-                            {% if tooltip_message %}
-                                {{ macros.tooltip_attributes('', tooltip_message) }}
-                            {% endif %}
-                    >
-                        {{ status.name }}
-                    </span>
+                    <div>
+                        <span
+                                class="badge rounded-pill {{ status.css_classes }}"
+                                style="height: 20px"
+                                {% if tooltip_message %}
+                                    {{ macros.tooltip_attributes('', tooltip_message) }}
+                                {% endif %}
+                        >
+                            {{ status.name }}
+                        </span>
+                    </div>
                 {% endfor %}
             </td>
             <td>
                 <!-- TODO: handle properly rendering of list of documents -->
-                <ul>
-                    {% for document in documents_by_tournament[tournament.id] %}
-                        <li>{{ document and _(document.static_name()) }}</li>
-                    {% endfor %}
-                </ul>
-                <button
-                    type="button"
-                    class="btn btn-outline-primary btn-sm text-nowrap"
-                    hx-get="{{ url_for('change-tournament-documents-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="text-nowrap white btn btn-secondary"
-                >
-                    <i class="bi bi-pencil-fill pe-1"></i>
-                    {{ _('Change documents') }}
-                </button>
+                {% for document in documents_by_tournament[tournament.id] %}
+                    <div class="mb-2">
+                        <span
+                        class="badge rounded-pill message-debug"
+                        style="height: 20px"
+                        >
+                            {{ document and _(document.static_name()) }}
+                        </span>
+                    </div>
+                {% endfor %}
+                <div class="my-2">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm text-nowrap"
+                        hx-get="{{ url_for('change-tournament-documents-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        class="text-nowrap white btn btn-secondary"
+                    >
+                        <i class="bi bi-pencil-fill pe-1"></i>
+                        {{ _('Change documents') }}
+                    </button>
+                </div>
             </td>
             <td class="text-center text-nowrap" style="width: 0;">
                 {{ plugin_data.last_upload_at_str }}
