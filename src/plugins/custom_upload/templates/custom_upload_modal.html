@@ -13,27 +13,6 @@
             >
                 <thead>
                     <th>
-                        <div
-                            class="form-check blue-checkbox form-switch d-inline-block"
-                            {{ macros.tooltip_attributes('', _(
-                                'Upload automatically every %(delay)d minutes.',
-                                delay=3
-                            )) }}
-                        >
-                            <input
-                                name="auto_upload"
-                                class="form-check-input blue-checkbox"
-                                type="checkbox"
-                                hx-patch="{{ url_for(
-                                    'ffe-update-event-auto-upload',
-                                    event_uniq_id=admin_event.uniq_id
-                                ) }}"
-                                value="on"
-                            />
-                            <i class="bi-arrow-repeat"></i>
-                        </div>
-                    </th>
-                    <th>
                         {{ _('Tournament') }}
                     </th>
                     <th>

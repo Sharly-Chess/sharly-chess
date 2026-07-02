@@ -10,17 +10,6 @@
         {% set configuration_verification_message = custom_upload_utils.custom_upload_configuration_verification_message(tournament) %}
         {% set plugin_data = tournament.plugin_data.custom_upload %}
         <tr>
-            <td class="text-nowrap text-center">
-                <div class="form-check form-switch d-inline-block pe-3">
-                    <input
-                        name="tournament_auto_upload_{{ tournament.id }}"
-                        class="form-check-input blue-checkbox mt-2"
-                        type="checkbox"
-                        value="on"
-                        disabled
-                    />
-                </div>
-            </td>
             <td style="width: 0;" class="text-nowrap">
                 {{ tournament.name }}
             </td>
