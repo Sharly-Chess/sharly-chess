@@ -18,6 +18,7 @@ tmp/
 /build/
 /dist/
 /export/
+/vendor/
 /test/
 /tests/data/
 /export-test/

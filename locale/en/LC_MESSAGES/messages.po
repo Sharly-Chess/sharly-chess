@@ -251,7 +251,7 @@ msgid "(replace [%(object_uniq_id)s])"
 msgstr ""
 
 msgid "*** Changelog Link"
-msgstr ""
+msgstr "Changelog Link"
 
 msgid "*** Doc Link"
 msgstr "https://sharly-chess.com/getting-started/"
@@ -814,9 +814,6 @@ msgstr ""
 msgid "An unexpected error occurred."
 msgstr ""
 
-msgid "An update is available!"
-msgstr ""
-
 msgid "Andorra"
 msgstr ""
 
@@ -1039,9 +1036,6 @@ msgid "Berger grid"
 msgstr ""
 
 msgid "Bermuda"
-msgstr ""
-
-msgid "Beta version updates"
 msgstr ""
 
 msgid "Bhutan"
@@ -1314,9 +1308,6 @@ msgid "Changelog"
 msgstr ""
 
 msgid "Check connection"
-msgstr ""
-
-msgid "Check for updates"
 msgstr ""
 
 msgid "Check the box to allow other screens to display a link to the screen of this family."
@@ -2112,13 +2103,13 @@ msgstr ""
 msgid "Do not use this order as ranking."
 msgstr ""
 
+msgid "Do you confirm wanting to recover version {version}?"
+msgstr ""
+
 msgid "Do you want to install example event databases"
 msgstr ""
 
-msgid "Do you want to recover the data of release [{version}]"
-msgstr ""
-
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
+msgid "Do you want to install it now?"
 msgstr ""
 
 msgid "Document [{document}] has been generated in another tab."
@@ -2521,6 +2512,9 @@ msgid "Events"
 msgstr ""
 
 msgid "Events ({num})"
+msgstr ""
+
+msgid "Example databases"
 msgstr ""
 
 msgid "Exclude"
@@ -3070,6 +3064,9 @@ msgstr ""
 msgid "Include IDs and passwords for uploading results"
 msgstr ""
 
+msgid "Include beta versions in updates"
+msgstr ""
+
 msgid "Include incomplete teams"
 msgstr ""
 
@@ -3128,9 +3125,6 @@ msgid "Install"
 msgstr ""
 
 msgid "Installation of [{lib}] failed."
-msgstr ""
-
-msgid "Installation of release [{version}] failed, exiting."
 msgstr ""
 
 msgid "Installed [{lib}]."
@@ -3340,7 +3334,7 @@ msgstr ""
 msgid "Last update: {updated_at} (outdated)"
 msgstr ""
 
-msgid "Latest version never checked"
+msgid "Latest version never searched (no internet)"
 msgstr ""
 
 msgid "Latvia"
@@ -5082,6 +5076,12 @@ msgstr ""
 msgid "Record"
 msgstr ""
 
+msgid "Recover a previous version"
+msgstr ""
+
+msgid "Recover version {version}"
+msgstr ""
+
 msgid "Reference to unknown board [{board_id}]."
 msgstr ""
 
@@ -5488,6 +5488,12 @@ msgstr ""
 msgid "Search for player"
 msgstr ""
 
+msgid "Search for updates"
+msgstr ""
+
+msgid "Searching for updates..."
+msgstr ""
+
 msgid "Searching…"
 msgstr ""
 
@@ -5544,9 +5550,6 @@ msgstr ""
 msgid "Serbia"
 msgstr ""
 
-msgid "Server Setup"
-msgstr ""
-
 msgid "Server is already running!"
 msgstr ""
 
@@ -5595,6 +5598,9 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
+msgid "Sharly Chess Error"
+msgstr ""
+
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
@@ -5620,6 +5626,9 @@ msgid "Sharly Chess settings have been updated."
 msgstr ""
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
+msgstr ""
+
+msgid "Sharly Chess {latest} is available, you have {current}."
 msgstr ""
 
 msgid "Should only be used when the wrong player has been added by mistake."
@@ -6197,6 +6206,11 @@ msgid "The tournaments on which the permission is applied."
 msgstr ""
 
 msgid "The type of criterion used to filter the players."
+msgstr ""
+
+msgid ""
+"The updater file is missing at [{path}].\n"
+"The application needs to be re-installed manually."
 msgstr ""
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
@@ -7021,6 +7035,12 @@ msgstr ""
 msgid "Warning: potential data loss"
 msgstr ""
 
+msgid "Warning: recovering a previous version is irreversible, all the data you have modified since then will be lost."
+msgstr ""
+
+msgid "Warning: recovering a version is irreversible!"
+msgstr ""
+
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
 msgstr ""
@@ -7254,10 +7274,10 @@ msgstr ""
 msgid "You do not have write permission on this folder."
 msgstr ""
 
-msgid "You have an unreleased version"
+msgid "You have no permissions"
 msgstr ""
 
-msgid "You have no permissions"
+msgid "You have the latest unofficial version"
 msgstr ""
 
 msgid "You have the latest version"
@@ -7383,17 +7403,17 @@ msgstr "incomplete"
 msgid "last"
 msgstr ""
 
-msgid "last checked a minute ago"
-msgid_plural "last checked {count} minutes ago"
+msgid "last search a minute ago"
+msgid_plural "last search {count} minutes ago"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "last checked an hour ago"
-msgid_plural "last checked {count} hours ago"
+msgid "last search an hour ago"
+msgid_plural "last search {count} hours ago"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "last checked just now"
+msgid "last search just now"
 msgstr ""
 
 msgid "min *** MINUTES"
@@ -7654,5 +7674,45 @@ msgid "← Back to IT1 certificate"
 msgstr ""
 
 #~ msgid "Invalid federation [{federation}]."
+#~ msgstr ""
+
+#~ msgid "An update is available!"
+#~ msgstr ""
+
+#~ msgid "Beta version updates"
+#~ msgstr ""
+
+#~ msgid "Check for updates"
+#~ msgstr ""
+
+#~ msgid "Do you want to recover the data of release [{version}]"
+#~ msgstr ""
+
+#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
+#~ msgstr ""
+
+#~ msgid "Installation of release [{version}] failed, exiting."
+#~ msgstr ""
+
+#~ msgid "Latest version never checked"
+#~ msgstr ""
+
+#~ msgid "Server Setup"
+#~ msgstr ""
+
+#~ msgid "You have an unreleased version"
+#~ msgstr ""
+
+#~ msgid "last checked a minute ago"
+#~ msgid_plural "last checked {count} minutes ago"
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+
+#~ msgid "last checked an hour ago"
+#~ msgid_plural "last checked {count} hours ago"
+#~ msgstr[0] ""
+#~ msgstr[1] ""
+
+#~ msgid "last checked just now"
 #~ msgstr ""
 
