@@ -60,6 +60,10 @@ from database.sqlite.event.event_store import (
     StoredTournament,
     StoredScreen,
     StoredPairing,
+    StoredPrizeGroup,
+    StoredPrizeCategory,
+    StoredPrizeCriterion,
+    StoredPrize,
 )
 from plugins.manager import plugin_manager
 from utils import Utils
@@ -1191,6 +1195,47 @@ class TournamentAdminController(BaseEventAdminController):
                         stored_tie_break = tie_break.to_stored_value()
                         stored_tie_break.tournament_id = tournament.id
                         database.add_stored_tie_break(stored_tie_break)
+                    for (
+                        base_group
+                    ) in base_tournament.stored_tournament.stored_prize_groups:
+                        group_id = database.add_stored_prize_group(
+                            StoredPrizeGroup(
+                                id=None,
+                                tournament_id=tournament.id,
+                                name=base_group.name,
+                            )
+                        )
+                        for base_category in base_group.stored_prize_categories:
+                            category_id = database.add_stored_prize_category(
+                                StoredPrizeCategory(
+                                    id=None,
+                                    prize_group_id=group_id,
+                                    name=base_category.name,
+                                    prize_sharing=base_category.prize_sharing,
+                                    sharing_threshold=base_category.sharing_threshold,
+                                    is_main=base_category.is_main,
+                                    index=base_category.index,
+                                )
+                            )
+                            for base_criterion in base_category.stored_prize_criteria:
+                                database.add_stored_prize_criterion(
+                                    StoredPrizeCriterion(
+                                        id=None,
+                                        prize_category_id=category_id,
+                                        type=base_criterion.type,
+                                        options=base_criterion.options,
+                                    )
+                                )
+                            for base_prize in base_category.stored_prizes:
+                                database.add_stored_prize(
+                                    StoredPrize(
+                                        id=None,
+                                        prize_category_id=category_id,
+                                        type=base_prize.type,
+                                        value=base_prize.value,
+                                        description=base_prize.description,
+                                    )
+                                )
                 self._apply_rule_set_tie_breaks(database, event, stored_tournament)
                 if 'add_screens' in data:
                     timer_id: int | None = None
