@@ -297,7 +297,7 @@ The merge priority follows the numbered `I` definitions:
 I1,
 I1 prefix deficit,
 total/vector I1 prefix deficit,
-I2 L1,
+I2,
 I3,
 I4,
 I5,
@@ -313,19 +313,19 @@ The runtime app exposes:
 
 - `N = 3..20`;
 - even `P = 2..12`;
-- `R = 1..13`, where legal.
+- `R = 1..13`, where legal, plus the full `N = 15`, `R = 14` DNA tables.
 
 The current packed research artifact covers:
 
 - `N = 3..25`;
 - even `P = 2..12`;
-- `R = 1..13`, where legal.
+- `R = 1..13`, where legal, plus `N = 15`, `R = 14` for each supported `P`.
 
 Current quality snapshot:
 
-- `1398/1398` covered cases are structurally valid.
-- `1008` covered cases with `N <= 20` are exposed by the runtime app.
-- `A = 360`, `B = 902`, `C = 33`, `D = 103`, `FAIL = 0`.
+- `1404/1404` covered cases are structurally valid.
+- `1014` covered cases with `N <= 20` are exposed by the runtime app.
+- `A = 360`, `B = 904`, `C = 34`, `D = 106`, `FAIL = 0`.
 - Serious D-grade cases are mostly larger-team I1/prefix coverage failures,
   concentrated from roughly `N = 19` onward and especially at `N = 21`, `23`,
   and `25`.

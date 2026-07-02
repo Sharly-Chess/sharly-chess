@@ -103,7 +103,7 @@ Quality metrics are computed by the workbook and recipe builders:
 
 - `I1`: cumulative opponent-count spread, plus `I1 prefix deficit` for early
   distinct-opponent coverage. `0` ideal, `<=1` spread target.
-- `I2 L1`: `sum(abs(descending - ascending))` over teams.
+- `I2`: `sum(abs(descending - ascending))` over teams.
 - `I3`: descending-floater spread.
 - `I4`: repeated floater roles inside round-pairs.
 - `I5`: per-round opponent spread.
@@ -120,18 +120,18 @@ The app-visible Molter range is capped for quality:
 
 - `N = 3..20`;
 - even `P = 2..12`;
-- `R = 1..13` where legal.
+- `R = 1..13` where legal, plus the full `N = 15`, `R = 14` DNA tables.
 
 The packed research artifact currently covers:
 
 - `N = 3..25`;
 - even `P = 2..12`;
-- `R = 1..13` where legal.
+- `R = 1..13` where legal, plus `N = 15`, `R = 14` for each supported `P`.
 
 Latest validated snapshot:
 
-- `1398/1398` covered cases pass hard validation.
-- `1008` covered cases with `N <= 20` are exposed by the runtime app.
+- `1404/1404` covered cases pass hard validation.
+- `1014` covered cases with `N <= 20` are exposed by the runtime app.
 - Quality grades: `A=360`, `B=902`, `C=33`, `D=103`, `FAIL=0`.
 - The serious weaknesses are mostly I1/prefix coverage at larger `N`.
 - High quality is generally good through about twenty teams; after that, the
@@ -165,7 +165,7 @@ the numbered I definitions, with the I1 prefix signals immediately after I1:
 I1
 I1 prefix deficit
 I1 prefix deficit total/vector
-I2 L1
+I2
 I3
 I4
 I5
