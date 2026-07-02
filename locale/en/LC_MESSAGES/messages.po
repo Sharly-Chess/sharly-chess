@@ -89,16 +89,16 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d multi-screen"
-msgid_plural "%(num)d multi-screens"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-format
 msgid "%(num)d informative *** COLUMNS"
 msgid_plural "%(num)d informative *** COLUMNS"
 msgstr[0] "%(num)d informative"
 msgstr[1] "%(num)d informative"
+
+#, python-format
+msgid "%(num)d multi-screen"
+msgid_plural "%(num)d multi-screens"
+msgstr[0] ""
+msgstr[1] ""
 
 #, python-format
 msgid "%(num)d optional *** COLUMNS"
@@ -813,11 +813,11 @@ msgid "All"
 msgstr ""
 
 #, python-format
-msgid "All %(screen_type)s screens"
+msgid "All \"%(screen_type)s\" screens"
 msgstr ""
 
 #, python-format
-msgid "All %(screen_type)s screens already belong to a menu."
+msgid "All \"%(screen_type)s\" screens already belong to a menu."
 msgstr ""
 
 msgid "All Events"
@@ -4801,9 +4801,6 @@ msgstr ""
 msgid "Number of prizes"
 msgstr ""
 
-msgid "Number of screen types"
-msgstr ""
-
 msgid "Number of screens"
 msgstr ""
 
@@ -6963,7 +6960,8 @@ msgstr ""
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr ""
 
-msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
+#, python-format
+msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
 msgstr ""
 
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
@@ -7023,10 +7021,6 @@ msgid "The minimum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
-msgstr ""
-
-#, python-format
-msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr ""
 
 msgid "The network on which the devices are connected."

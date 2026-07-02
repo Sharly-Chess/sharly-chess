@@ -89,16 +89,16 @@ msgstr[0] "%(num)d table vide à apparier"
 msgstr[1] "%(num)d tables vides à apparier"
 
 #, python-format
-msgid "%(num)d multi-screen"
-msgid_plural "%(num)d multi-screens"
-msgstr[0] "%(num)d écran multiple"
-msgstr[1] "%(num)d écrans multiples"
-
-#, python-format
 msgid "%(num)d informative *** COLUMNS"
 msgid_plural "%(num)d informative *** COLUMNS"
 msgstr[0] "%(num)d informative"
 msgstr[1] "%(num)d informatives"
+
+#, python-format
+msgid "%(num)d multi-screen"
+msgid_plural "%(num)d multi-screens"
+msgstr[0] "%(num)d écran multiple"
+msgstr[1] "%(num)d écrans multiples"
 
 #, python-format
 msgid "%(num)d optional *** COLUMNS"
@@ -363,10 +363,10 @@ msgid "1.4.1e/f: round(s) %(rounds)s ignored"
 msgstr "1.4.1e/f : ronde(s) %(rounds)s ignorée(s)"
 
 msgid "1.4.1e: game after the title result was reached, ignored by the subset search."
-msgstr "1.4.1e : partie jouée après l'obtention du résultat de norme, ignorée par la recherche de sous-ensembles."
+msgstr "1.4.1e : partie jouée après l'obtention du résultat de norme, ignorée par la recherche de sous-ensembles."
 
 msgid "1.4.1f: game against a defeated opponent, ignored by the subset search."
-msgstr "1.4.1f : partie contre un·e adversaire battu·e, ignorée par la recherche de sous-ensembles."
+msgstr "1.4.1f : partie contre un·e adversaire battu·e, ignorée par la recherche de sous-ensembles."
 
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
 msgstr "1.4.2a : adversaire sans fédération FIDE (NON) — non compté·e."
@@ -601,7 +601,7 @@ msgid "APPLIED"
 msgstr "APPLIQUÉ"
 
 msgid "Absence:"
-msgstr "Absence :"
+msgstr "Absence :"
 
 msgid "Absent"
 msgstr "Absent·e"
@@ -813,12 +813,12 @@ msgid "All"
 msgstr "Tous"
 
 #, python-format
-msgid "All %(screen_type)s screens"
-msgstr "Tous les écrans %(screen_type)s"
+msgid "All \"%(screen_type)s\" screens"
+msgstr "Tous les écrans « %(screen_type)s »"
 
 #, python-format
-msgid "All %(screen_type)s screens already belong to a menu."
-msgstr "Tous les écrans %(screen_type)s appartiennent déjà à un menu."
+msgid "All \"%(screen_type)s\" screens already belong to a menu."
+msgstr "Tous les écrans « %(screen_type)s » appartiennent déjà à un menu."
 
 msgid "All Events"
 msgstr "Évènements"
@@ -1089,7 +1089,7 @@ msgstr "Elo moyen de l'effectif."
 
 #, python-format
 msgid "Average rating: %(rating)d"
-msgstr "Elo moyen : %(rating)d"
+msgstr "Elo moyen : %(rating)d"
 
 msgid "Average rating: {rating}"
 msgstr "Classement moyen : {rating}"
@@ -1150,7 +1150,7 @@ msgid "Base date"
 msgstr "Date de référence"
 
 msgid "Base lineup:"
-msgstr "Composition de base :"
+msgstr "Composition de base :"
 
 msgid "Bd"
 msgstr "Éch"
@@ -1442,7 +1442,7 @@ msgid "Captain's name"
 msgstr "Nom du ou de la capitaine"
 
 msgid "Captain:"
-msgstr "Capitaine :"
+msgstr "Capitaine :"
 
 #, python-format
 msgid "Captain: %(name)s"
@@ -1659,16 +1659,16 @@ msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes 
 msgstr "La couleur n°3 est utilisée à partir du début des rondes et pendant {delay_3} minutes (délai n°3)."
 
 msgid "Colour allocation:"
-msgstr "Attribution des couleurs :"
+msgstr "Attribution des couleurs :"
 
 msgid "Colour history"
 msgstr "Couleurs"
 
 msgid "Colour pattern:"
-msgstr "Motif des couleurs :"
+msgstr "Motif des couleurs :"
 
 msgid "Colour rule:"
-msgstr "Règle des couleurs :"
+msgstr "Règle des couleurs :"
 
 msgid "Columns"
 msgstr "Colonnes"
@@ -2432,7 +2432,7 @@ msgid "Draw"
 msgstr "Nulle"
 
 msgid "Draw:"
-msgstr "Nulle :"
+msgstr "Nulle :"
 
 msgid "Duplicate"
 msgstr "Dupliquer"
@@ -2499,19 +2499,19 @@ msgid "E.g.: 20 (players per screen)"
 msgstr "Ex. : 20 (joueur·euses par écran)"
 
 msgid "E.g.: 4 (matches per column)"
-msgstr "Ex. : 4 (matchs par colonne)"
+msgstr "Ex. : 4 (matchs par colonne)"
 
 msgid "E.g.: 4 (split boards over 4 screens)"
 msgstr "Ex. : 4 (échiquiers sur 4 écrans)"
 
 msgid "E.g.: 4 (split matches over 4 screens)"
-msgstr "Ex. : 4 (répartir les matchs sur 4 écrans)"
+msgstr "Ex. : 4 (répartir les matchs sur 4 écrans)"
 
 msgid "E.g.: 4 (split players over 4 screens)"
 msgstr "Ex. : 4 (joueur·euses sur 4 écrans)"
 
 msgid "E.g.: 4 (split teams over 4 screens)"
-msgstr "Ex. : 4 (répartir les équipes sur 4 écrans)"
+msgstr "Ex. : 4 (répartir les équipes sur 4 écrans)"
 
 #, python-format
 msgid "E.g.: Boards %%f to %%l"
@@ -2528,14 +2528,14 @@ msgid "E.g.: John"
 msgstr "Ex. : Pierre"
 
 msgid "E.g.: John Smith"
-msgstr "Ex. : Jean Dupont"
+msgstr "Ex. : Jean Dupont"
 
 msgid "E.g.: Main tournament"
 msgstr "Ex. : Tournoi principal"
 
 #, python-format
 msgid "E.g.: Matches %%f to %%l"
-msgstr "Ex. : Matchs %%f à %%l"
+msgstr "Ex. : Matchs %%f à %%l"
 
 msgid "E.g.: My display controller"
 msgstr "Ex. : Mon pilote d'afficheur"
@@ -2557,7 +2557,7 @@ msgid "E.g.: Sharly Chess Club"
 msgstr "Ex. : Sharly Chess Club"
 
 msgid "E.g.: Sharly Chess Club A"
-msgstr "Exemple : Sharly Chess Club A"
+msgstr "Exemple : Sharly Chess Club A"
 
 msgid "E.g.: Start of check-in"
 msgstr "Ex. : Début du pointage"
@@ -2568,7 +2568,7 @@ msgstr "Ex. : Début du pointage dans %%s"
 
 #, python-format
 msgid "E.g.: Teams %%f to %%l"
-msgstr "Ex. : Équipes %%f à %%l"
+msgstr "Ex. : Équipes %%f à %%l"
 
 msgid "E.g.: World championship"
 msgstr "Ex.: Championnat du monde"
@@ -2825,7 +2825,7 @@ msgid "Event tournaments"
 msgstr "Tournois de l'évènement"
 
 msgid "Event type:"
-msgstr "Type d'événement :"
+msgstr "Type d'événement :"
 
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
@@ -3036,7 +3036,7 @@ msgid "First board:"
 msgstr "Premier échiquier :"
 
 msgid "First match:"
-msgstr "Premier match :"
+msgstr "Premier match :"
 
 msgid "First name"
 msgstr "Prénom"
@@ -3051,7 +3051,7 @@ msgid "First round"
 msgstr "Première ronde"
 
 msgid "First team:"
-msgstr "Première équipe :"
+msgstr "Première équipe :"
 
 msgid "Fixed board"
 msgstr "Échiquier fixe"
@@ -3695,7 +3695,7 @@ msgid "Last check"
 msgstr "Dernière vérification"
 
 msgid "Last match:"
-msgstr "Dernier match :"
+msgstr "Dernier match :"
 
 msgid "Last name:"
 msgstr "Nom de famille :"
@@ -3710,7 +3710,7 @@ msgid "Last results"
 msgstr "Derniers résultats"
 
 msgid "Last team:"
-msgstr "Dernière équipe :"
+msgstr "Dernière équipe :"
 
 msgid "Last update"
 msgstr "Dernière mise à jour"
@@ -3779,7 +3779,7 @@ msgstr "Ligne non reconnue : {line}"
 
 #, python-format
 msgid "Lineup for round #%(round)d:"
-msgstr "Composition pour la ronde n°%(round)d :"
+msgstr "Composition pour la ronde n°%(round)d :"
 
 msgid "Lineups"
 msgstr "Compositions"
@@ -3810,7 +3810,7 @@ msgid "Location"
 msgstr "Lieu"
 
 msgid "Locked: team is already paired."
-msgstr "Verrouillé : l'équipe est déjà appariée."
+msgstr "Verrouillé : l'équipe est déjà appariée."
 
 msgid "Log in"
 msgstr "Connexion"
@@ -3832,7 +3832,7 @@ msgid "Loss"
 msgstr "Défaite"
 
 msgid "Loss:"
-msgstr "Défaite :"
+msgstr "Défaite :"
 
 msgid "Luxembourg"
 msgstr "Luxembourg"
@@ -3993,7 +3993,7 @@ msgid "Matches from #%(first)d to #%(last)d"
 msgstr "Matchs du n°%(first)d au n°%(last)d"
 
 msgid "Matches per column:"
-msgstr "Matchs par colonne :"
+msgstr "Matchs par colonne :"
 
 msgid "Matches to print:"
 msgstr "Matchs à imprimer :"
@@ -4085,11 +4085,11 @@ msgid "Menu content"
 msgstr "Contenu du menu"
 
 msgid "Menu label:"
-msgstr "Libellé de menu :"
+msgstr "Libellé de menu :"
 
 #, python-format
 msgid "Menu label: %(menu_label)s"
-msgstr "Libellé de menu : %(menu_label)s"
+msgstr "Libellé de menu : %(menu_label)s"
 
 msgid "Menus"
 msgstr "Menus"
@@ -4801,9 +4801,6 @@ msgstr "Nombre de joueur·euses : %(num)d"
 msgid "Number of prizes"
 msgstr "Nombre de prix"
 
-msgid "Number of screen types"
-msgstr "Nombre de types d'écran"
-
 msgid "Number of screens"
 msgstr "Nombre d'écrans"
 
@@ -4821,7 +4818,7 @@ msgid "Numbers or ranges of numbers of the boards (example: 1-10 20 25)."
 msgstr "Numéros ou plage de numéros d'échiquiers (exemple : 1-10 20 25)."
 
 msgid "Numbers or ranges of numbers of the match tables (example: 1-10 20 25). Each table produces one card per board of the match. For fixed-table systems, plain board numbers."
-msgstr "Numéros ou plage de numéros des tables de match (exemple : 1-10 20 25). Chaque table produit un chevalet par échiquier du match. Pour les systèmes à table fixe, numéros d'échiquiers simples."
+msgstr "Numéros ou plage de numéros des tables de match (exemple : 1-10 20 25). Chaque table produit un chevalet par échiquier du match. Pour les systèmes à table fixe, numéros d'échiquiers simples."
 
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr "Les nombres {first} et {last} ne sont pas compatibles ({first} > {last})."
@@ -4988,13 +4985,13 @@ msgid "Owed:"
 msgstr "Dû :"
 
 msgid "PAB (Team):"
-msgstr "Exempt (équipe) :"
+msgstr "Exempt (équipe) :"
 
 msgid "PAB is already assigned"
 msgstr "il y a déjà un·e joueur·euse exempt·e"
 
 msgid "PAB:"
-msgstr "Exempt :"
+msgstr "Exempt :"
 
 msgid "PAI"
 msgstr "APP"
@@ -5396,7 +5393,7 @@ msgid "Players of category [%(category)s]"
 msgstr "Joueur·euses de la catégorie [%(category)s]"
 
 msgid "Players per team match:"
-msgstr "Joueur·euses par match d'équipe :"
+msgstr "Joueur·euses par match d'équipe :"
 
 msgid "Players per tournament"
 msgstr "Joueur·euses par tournoi"
@@ -5573,7 +5570,7 @@ msgid "Previous round"
 msgstr "Ronde précédente"
 
 msgid "Primary score:"
-msgstr "Score principal :"
+msgstr "Score principal :"
 
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prix"
@@ -5941,7 +5938,7 @@ msgid "Results screens show the last results (most recent first)."
 msgstr "Les écrans de résultats affichent les derniers résultats saisis par ordre anti-chronologique (le plus récent d'abord)."
 
 msgid "Results: 1 = win, X = draw, 0 = loss, F = forfeit"
-msgstr "Résultats : 1 = gain, X = nulle, 0 = perte, F = forfait"
+msgstr "Résultats : 1 = gain, X = nulle, 0 = perte, F = forfait"
 
 msgid "Retry"
 msgstr "Ré-essayer"
@@ -6233,7 +6230,7 @@ msgid "Screen types"
 msgstr "Types d'écran"
 
 msgid "Screen types:"
-msgstr "Types d'écran :"
+msgstr "Types d'écran :"
 
 msgid "Screens"
 msgstr "Écrans"
@@ -6722,7 +6719,7 @@ msgid "Table %(table)d"
 msgstr "Table %(table)d"
 
 msgid "Table numbers:"
-msgstr "Numéros des tables :"
+msgstr "Numéros des tables :"
 
 msgid "Tajikistan"
 msgstr "Tadjikistan"
@@ -6812,7 +6809,7 @@ msgid "Team's score"
 msgstr "Score de l'équipe"
 
 msgid "Team:"
-msgstr "Équipe :"
+msgstr "Équipe :"
 
 msgid "Teams"
 msgstr "Équipes"
@@ -6965,9 +6962,7 @@ msgstr "Les fonctionnalités suivant ne seront pas importées :"
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
 
-msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
-msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé."
-
+#, python-format
 msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
 msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé. Les jetons %%f=premier, %%l=dernier, %%t=tournoi sont automatiquement remplacés."
 
@@ -7029,10 +7024,6 @@ msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
-
-#, python-format
-msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-msgstr "Le nom de l'écran multiple, facultatif. Les jetons suivants sont automatiquement remplacés par les numéros d'échiquier ou les noms des joueur·euses) :  %%f=premier, %%l=dernier, %%t=tournoi."
 
 msgid "The network on which the devices are connected."
 msgstr "Le réseau auquel les appareils sont connectés."
@@ -7183,7 +7174,7 @@ msgid "The round count is incompatible with the number of players (expected: {ex
 msgstr "Le nombre de rondes est incompatible avec le nombre de joueur·euses (attendu : {expected})."
 
 msgid "The round count is incompatible with the number of teams (expected: {expected})."
-msgstr "Le nombre de rondes est incompatible avec le nombre d'équipes (attendu : {expected})."
+msgstr "Le nombre de rondes est incompatible avec le nombre d'équipes (attendu : {expected})."
 
 msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
@@ -7626,7 +7617,7 @@ msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr "Trop peu de joueur·euses pour générer les appariements (minimum : {min})."
 
 msgid "Too few teams to generate the pairings (minimum: {min})."
-msgstr "Trop peu d'équipes pour générer les appariements (minimum : {min})."
+msgstr "Trop peu d'équipes pour générer les appariements (minimum : {min})."
 
 msgid "Too many byes for player [{player_name}]."
 msgstr "Trop de byes pour le joueur [{player_name}]."
@@ -8246,7 +8237,7 @@ msgid "Win"
 msgstr "Victoire"
 
 msgid "Win:"
-msgstr "Victoire :"
+msgstr "Victoire :"
 
 msgid "With less players than prizes, some prizes will not be attributed."
 msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être attribués."
@@ -8887,3 +8878,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

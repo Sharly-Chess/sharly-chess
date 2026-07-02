@@ -136,7 +136,7 @@ class MenuAdminController(BaseEventAdminController):
                         name=screen.name,
                         disabled=True,
                         tooltip=_(
-                            'All %(screen_type)s screens already belong to a menu.'
+                            'All "%(screen_type)s" screens already belong to a menu.'
                         )
                         % {'screen_type': screen_type.name},
                     )
@@ -165,7 +165,7 @@ class MenuAdminController(BaseEventAdminController):
                         name=family.display_name,
                         disabled=True,
                         tooltip=_(
-                            'All %(screen_type)s screens already belong to a menu.'
+                            'All "%(screen_type)s" screens already belong to a menu.'
                         )
                         % {'screen_type': screen_type.name},
                     )
@@ -188,7 +188,9 @@ class MenuAdminController(BaseEventAdminController):
         claimed_family_ids = event.menu_claimed_family_ids
         options: dict[str, Any] = {}
         for screen_type in ScreenType:
-            label = _('All %(screen_type)s screens') % {'screen_type': screen_type.name}
+            label = _('All "%(screen_type)s" screens') % {
+                'screen_type': screen_type.name
+            }
             if screen_type in claimed_types:
                 options[screen_type.value] = SelectOption(
                     name=label,
