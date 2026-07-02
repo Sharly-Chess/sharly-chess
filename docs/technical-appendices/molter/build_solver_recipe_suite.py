@@ -27,6 +27,9 @@ ROOT = Path(__file__).resolve().parents[3]
 BUILDER = Path(__file__).with_name('build_solver_recipes.py')
 DEFAULT_OUTPUT = ROOT / '.context' / 'quality_grid_all_recipes.json'
 DEFAULT_WORK_DIR = ROOT / '.context' / 'solver_recipe_suite'
+
+Case = tuple[int, int, int]
+Selector = Callable[[dict[str, dict]], tuple[Case, ...]]
 GRID_CASES = recipes._grid_cases(
     recipes.DEFAULT_GRID_MIN_TEAM_COUNT,
     recipes.DEFAULT_GRID_MAX_TEAM_COUNT,
@@ -34,9 +37,6 @@ GRID_CASES = recipes._grid_cases(
     recipes.DEFAULT_GRID_MAX_ROUNDS,
     include_full_tables=recipes.DEFAULT_GRID_INCLUDE_FULL_TABLES,
 )
-
-Case = tuple[int, int, int]
-Selector = Callable[[dict[str, dict]], tuple[Case, ...]]
 
 
 @dataclass(frozen=True)
@@ -67,6 +67,8 @@ class PassSpec:
     even_row_solver_attempts: int = 1
     emit_baseline_recipes: bool = False
     strict_s5_recolour_existing: bool = False
+    odd_drop_flip_existing: bool = False
+    odd_drop_flip_attempts: int = 64
 
 
 def _builder_hash() -> str:
@@ -173,6 +175,23 @@ def _odd_worst_quality_gaps(recipe_by_key: dict[str, dict]) -> tuple[Case, ...]:
 
 def _even_quality_gaps(recipe_by_key: dict[str, dict]) -> tuple[Case, ...]:
     return _quality_gaps(recipe_by_key, parity='even')
+
+
+def _i2_watch_or_avoid_cases(recipe_by_key: dict[str, dict]) -> tuple[Case, ...]:
+    out: list[Case] = []
+    for case in GRID_CASES:
+        team_count, _players_per_team, _rounds = case
+        if team_count % 2 == 0:
+            continue
+        recipe = recipe_by_key.get(_case_key(case))
+        if recipe is None or recipe.get('schedule', {}).get('kind') != 'odd_cell_drops':
+            continue
+        metrics = _metrics_for_case(case, recipe_by_key)
+        if metrics.i2_l1 > 2 * (team_count - 1):
+            out.append(case)
+        elif metrics.i2_l1 > team_count - 1:
+            out.append(case)
+    return tuple(out)
 
 
 def _relaxed_s5_cases(recipe_by_key: dict[str, dict]) -> tuple[Case, ...]:
@@ -351,6 +370,17 @@ PASSES: tuple[PassSpec, ...] = (
         even_integrated_attempts=1,
     ),
     PassSpec(
+        name='odd_i2_drop_flip_existing',
+        selector=_i2_watch_or_avoid_cases,
+        candidate_limit=0,
+        strict_s5_timeout_seconds=30.0,
+        timeout_seconds=30.0,
+        workers=8,
+        case_workers=2,
+        odd_drop_flip_existing=True,
+        odd_drop_flip_attempts=512,
+    ),
+    PassSpec(
         name='strict_s5_recolour',
         selector=_relaxed_s5_cases,
         candidate_limit=0,
@@ -405,7 +435,7 @@ def _run_pass(
             str(pass_output),
             *(
                 ['--merge-input', str(output)]
-                if spec.strict_s5_recolour_existing
+                if spec.strict_s5_recolour_existing or spec.odd_drop_flip_existing
                 else []
             ),
             '--case-file',
@@ -459,6 +489,9 @@ def _run_pass(
                 if spec.strict_s5_recolour_existing
                 else []
             ),
+            *(['--odd-drop-flip-existing'] if spec.odd_drop_flip_existing else []),
+            '--odd-drop-flip-attempts',
+            str(spec.odd_drop_flip_attempts),
             '--builder-pass',
             spec.name,
         ],
@@ -530,6 +563,8 @@ def _write_manifest(output: Path, work_dir: Path, pass_outputs: list[Path]) -> N
                 'case_workers': spec.case_workers,
                 'emit_baseline_recipes': spec.emit_baseline_recipes,
                 'strict_s5_recolour_existing': spec.strict_s5_recolour_existing,
+                'odd_drop_flip_existing': spec.odd_drop_flip_existing,
+                'odd_drop_flip_attempts': spec.odd_drop_flip_attempts,
                 'output': str(pass_outputs[index]),
             }
             for index, spec in enumerate(PASSES[: len(pass_outputs)])
