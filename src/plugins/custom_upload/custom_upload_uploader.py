@@ -67,7 +67,7 @@ class CustomUploadResult:
 class CustomUploadUploader:
     upload_status_messages: dict[str, CustomUploadResult] = {}
     timeout_threads: dict[str, Timer] = {}
-    group_upload_wait_queue: set[str] = set()
+    queued_result_ids: set[str] = set()
     ongoing_result_ids: set[str] = set()
 
     @classmethod
@@ -95,7 +95,7 @@ class CustomUploadUploader:
     def is_upload_queued(cls, tournament: Tournament) -> bool:
         """Return True if a background upload is queued for this tournament."""
         key = cls.tournament_result_id(tournament)
-        return key in cls.group_upload_wait_queue
+        return key in cls.queued_result_ids
 
     @classmethod
     def remove_scheduled_upload(cls, tournament: Tournament):
@@ -215,7 +215,7 @@ class CustomUploadUploader:
 
         result_id: str = cls.result_id(event_uniq_id, tournament_id)
         cls.ongoing_result_ids.add(result_id)
-        cls.group_upload_wait_queue.discard(result_id)
+        cls.queued_result_ids.discard(result_id)
 
         # NOTE (Molrn) Ensures a minimum time for the thread
         # This prevents flashing and situations where both requests
@@ -259,69 +259,95 @@ class CustomUploadUploader:
             tournament
         )
 
-        with paramiko.SSHClient() as client:
-            failure_status = None
+        try:
+            temporary_files = cls._generate_documents_in_memory(
+                event, tournament_plugin_data, http_client
+            )
+        except Exception:
+            logger.exception('Error uploading tournament [%s]', tournament.name)
+            cls.upload_status_messages[result_id] = CustomUploadResult(
+                CustomUploadStatus.ERROR,
+                _('Cannot generate documents'),
+            )
+            return cls.upload_status_messages[result_id]
 
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        with paramiko.SSHClient() as ftp_client:
+            ftp_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-            host = tournament_plugin_data.ftp_host
-            username = tournament_plugin_data.ftp_username
-            password = tournament_plugin_data.ftp_password
-            try:
-                temporary_files_with_destination = cls._generate_documents_in_memory(
-                    event, tournament_plugin_data, http_client
+            return cls._ftp_upload(
+                tournament_plugin_data,
+                tournament,
+                result_id,
+                ftp_client,
+                temporary_files,
+            )
+
+    @classmethod
+    def _ftp_upload(
+        cls,
+        tournament_plugin_data: CustomUploadTournamentPluginData,
+        tournament: Tournament,
+        result_id: str,
+        ftp_client: paramiko.SSHClient,
+        temporary_files: list[tuple[BytesIO, str]],
+    ) -> CustomUploadResult | None:
+        failure_status = None
+
+        host = tournament_plugin_data.ftp_host
+        username = tournament_plugin_data.ftp_username
+        password = tournament_plugin_data.ftp_password
+
+        try:
+            ftp_client.connect(host, username=username, password=password)
+            sftp_client = ftp_client.open_sftp()
+
+            target_path = Path(tournament_plugin_data.server_path)
+            if not CustomUploadUploader._does_remote_path_exist(
+                sftp_client, target_path.as_posix()
+            ):
+                logger.error(
+                    'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
+                    tournament.name,
+                    tournament_plugin_data.server_path,
                 )
-
-                client.connect(host, username=username, password=password)
-                sftp_client = client.open_sftp()
-
-                target_path = Path(tournament_plugin_data.server_path)
-                if not CustomUploadUploader._does_remote_path_exist(
-                    sftp_client, target_path.as_posix()
-                ):
-                    logger.error(
-                        'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
-                        tournament.name,
-                        tournament_plugin_data.server_path,
-                    )
-                    cls.upload_status_messages[result_id] = CustomUploadResult(
-                        CustomUploadStatus.ERROR,
-                        _('Error uploading tournament'),
-                    )
-                    failure_status = TargetLocationNotFoundCustomUploadStatus()
-                    return cls.upload_status_messages[result_id]
-
-                for (
-                    temporary_document_file,
-                    file_name,
-                ) in temporary_files_with_destination:
-                    sftp_client.putfo(
-                        temporary_document_file,
-                        (target_path / file_name).as_posix(),
-                    )
-                    logger.info('Uploaded document file [%s]', file_name)
-                    temporary_document_file.close()
-                sftp_client.close()
-            except Exception:
-                logger.exception('Error uploading tournament [%s]', tournament.name)
                 cls.upload_status_messages[result_id] = CustomUploadResult(
                     CustomUploadStatus.ERROR,
                     _('Error uploading tournament'),
                 )
-                failure_status = UnexpectedFailureCustomUploadStatus()
-            finally:
-                cls.ongoing_result_ids.discard(result_id)
-                now = datetime.now()
-                if failure_status:
-                    tournament_plugin_data.upload_failure_id = failure_status.id
-                else:
-                    tournament_plugin_data.upload_failure_id = None
-                    tournament_plugin_data.last_upload_at = now
-                tournament_plugin_data.last_upload_attempt_at = now
-                CustomUploadUtils.update_tournament_plugin_data(
-                    tournament, tournament_plugin_data
+                failure_status = TargetLocationNotFoundCustomUploadStatus()
+                return cls.upload_status_messages[result_id]
+
+            for (
+                temporary_document_file,
+                file_name,
+            ) in temporary_files:
+                sftp_client.putfo(
+                    temporary_document_file,
+                    (target_path / file_name).as_posix(),
                 )
-                cls.publish_upload_event()
+                logger.info('Uploaded document file [%s]', file_name)
+                temporary_document_file.close()
+            sftp_client.close()
+        except Exception:
+            logger.exception('Error uploading tournament [%s]', tournament.name)
+            cls.upload_status_messages[result_id] = CustomUploadResult(
+                CustomUploadStatus.ERROR,
+                _('Error uploading tournament'),
+            )
+            failure_status = UnexpectedFailureCustomUploadStatus()
+        finally:
+            cls.ongoing_result_ids.discard(result_id)
+            now = datetime.now()
+            if failure_status:
+                tournament_plugin_data.upload_failure_id = failure_status.id
+            else:
+                tournament_plugin_data.upload_failure_id = None
+                tournament_plugin_data.last_upload_at = now
+            tournament_plugin_data.last_upload_attempt_at = now
+            CustomUploadUtils.update_tournament_plugin_data(
+                tournament, tournament_plugin_data
+            )
+            cls.publish_upload_event()
 
         return cls.upload_status_messages[result_id]
 
@@ -401,7 +427,7 @@ class CustomUploadUploader:
             return
 
         for tournament in updated_tournaments:
-            cls.group_upload_wait_queue.add(cls.tournament_result_id(tournament))
+            cls.queued_result_ids.add(cls.tournament_result_id(tournament))
 
         def _run():
             set_locale(SharlyChessConfig().locale)
