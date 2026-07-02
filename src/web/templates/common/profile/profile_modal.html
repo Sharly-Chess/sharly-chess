@@ -3,8 +3,14 @@
 
 <div class="modal-dialog modal-dialog-scrollable admin-profile-modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <div class="row gy-2 gx-3 w-100">
+        <div class="modal-header position-relative">
+            <button
+                type="button"
+                class="btn-close position-absolute top-0 end-0 mt-2 me-2"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
+            <div class="row gy-2 gx-3 w-100 pe-4">
                 <div class="col-6">
                     <h2 class="modal-title">
                         {{ _("Profile")}}<span style="font-size: 70%">{{ macros.doc_icon('profile', 'ms-2') }}</span>
@@ -165,16 +171,6 @@
                     {% endif %}
                 </tbody>
             </table>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap d-inline-flex gap-2 align-items-center"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill lh-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

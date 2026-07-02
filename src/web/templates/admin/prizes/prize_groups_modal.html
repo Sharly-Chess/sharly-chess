@@ -14,8 +14,35 @@
                     }}
                 ></i>
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
+            <div class="d-flex justify-content-end mb-3">
+                <form
+                    hx-post="{{ url_for(
+                        'admin-prize-group-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        type="submit"
+                        {{ macros.tooltip_attributes('info', _('Add a group to the list.'), 'top') }}
+                    >
+                        <i class="bi-plus-square-fill pe-1"></i>
+                        {{ _('Add') }}
+                    </button>
+                </form>
+            </div>
             <h4 class="mb-3">
                 {{ _('%(string)s:', string=_('Tournament')) }}
                 {{ admin_tournament.name }}
@@ -104,37 +131,6 @@
                     </script>
                 {% endfor %}
             </div>
-        </div>
-        <div class="modal-footer">
-            <div class="flex-grow-1"></div>
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-            <form
-                hx-post="{{ url_for(
-                    'admin-prize-group-create',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-target="#modal-wrapper"
-            >
-                <button
-                    class="btn btn-primary text-nowrap"
-                    type="submit"
-                    {{ macros.tooltip_attributes('info', _('Add a group to the list.'), 'top') }}
-                >
-                    <i class="bi-plus-square-fill pe-1"></i>
-                    {{ _('Add') }}
-                </button>
-            </form>
-
         </div>
     </div>
 </div>

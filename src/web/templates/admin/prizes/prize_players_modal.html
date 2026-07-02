@@ -9,6 +9,12 @@
             <h2 class="modal-title">
                 {{ _('Players of category [%(category)s]', category=admin_prize_category.name) }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
             <h4>
@@ -121,16 +127,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

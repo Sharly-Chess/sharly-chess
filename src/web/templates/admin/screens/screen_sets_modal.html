@@ -18,8 +18,26 @@
                     {{ _('Player sets of screen %(screen_name)s', screen_name=admin_screen.name) }}
                 {% endif %}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
+            <div class="d-flex justify-content-end mb-3">
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-get="{{ url_for('admin-screen-set-create-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Add a set') }}
+                </button>
+            </div>
             <p>
                 {% if admin_screen.screen_sets_by_id|length > 1 %}
                     {{ _('Drag the sets to order them.') }}
@@ -40,26 +58,6 @@
             {% if admin_screen.sorted_screen_sets|length > 1 %}
                 </form>
             {% endif %}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill"></i>
-                {{ _('Close') }}
-            </button>
-            <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for('admin-screen-set-create-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
-                data-bs-target="#modal-wrapper"
-            >
-                <i class="bi-plus-square-fill pe-1"></i>
-                {{ _('Add a set') }}
-            </button>
         </div>
     </div>
 </div>

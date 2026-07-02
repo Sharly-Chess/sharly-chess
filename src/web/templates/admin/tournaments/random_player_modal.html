@@ -7,6 +7,12 @@
             <h2 class="modal-title">
                 {{ _('Random player') }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
             {% if not random_player %}
@@ -42,16 +48,6 @@
                     </div>
                 {% endif %}
             {% endif %}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

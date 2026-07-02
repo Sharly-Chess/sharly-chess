@@ -7,8 +7,45 @@
             <h2 class="modal-title">
                 {{ _('Hours') }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
+            <div class="d-flex gap-2 mb-3 justify-content-end">
+                {% if admin_timer.timer_hours %}
+                    <button
+                        class="btn btn-sm btn-outline-danger text-nowrap"
+                        hx-get="{{ url_for(
+                            'admin-timer-hours-clear-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            timer_id=admin_timer.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        {{ macros.tooltip_attributes('info', _('Delete all hours for this timer and start fresh.'), 'top') }}
+                    >
+                        <i class="bi-trash-fill pe-1"></i>
+                        {{ _('Clear all') }}
+                    </button>
+                {% endif %}
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-get="{{ url_for(
+                        'admin-timer-hour-create-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=admin_timer.id,
+                    ) }}"
+                    hx-indicator="#please-wait"
+                    {{ macros.tooltip_attributes('info', _('Add an hour to the timer.'), 'top') }}
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Add') }}
+                </button>
+            </div>
             <h4 class="mb-3">
                 {{ _('%(string)s:', string=_('Timer')) }}
                 {{ admin_timer.name }}
@@ -191,47 +228,6 @@
                     });
                 </script>
             </div>
-        </div>
-        <div class="modal-footer">
-            <div class="flex-grow-1">
-                {% if admin_timer.timer_hours %}
-                    <button
-                        class="btn btn-sm btn-outline-danger text-nowrap"
-                        hx-get="{{ url_for(
-                            'admin-timer-hours-clear-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            timer_id=admin_timer.id,
-                        ) }}"
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        {{ macros.tooltip_attributes('info', _('Delete all hours for this timer and start fresh.'), 'top') }}
-                    >
-                        <i class="bi-trash-fill pe-1"></i>
-                        {{ _('Clear all') }}
-                    </button>
-                {% endif %}
-            </div>
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-            <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for(
-                    'admin-timer-hour-create-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    timer_id=admin_timer.id,
-                ) }}"
-                hx-indicator="#please-wait"
-                {{ macros.tooltip_attributes('info', _('Add an hour to the timer.'), 'top') }}
-            >
-                <i class="bi-plus-square-fill pe-1"></i>
-                {{ _('Add') }}
-            </button>
         </div>
     </div>
 </div>

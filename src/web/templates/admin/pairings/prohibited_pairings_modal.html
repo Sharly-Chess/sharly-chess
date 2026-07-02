@@ -3,7 +3,13 @@
 
 <div style="--bs-modal-width: min(92vw, 560px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
     <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header d-flex flex-column">
+        <div class="modal-header d-flex flex-column position-relative">
+            <button
+                type="button"
+                class="btn-close position-absolute top-0 end-0 mt-3 me-3"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
             <div class="modal-title fs-4 fw-bold w-100">
                 {{ _('Prohibited pairings') }}
             </div>
@@ -337,16 +343,6 @@
                     </div>
                 {% endif %}
             {% endif %}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

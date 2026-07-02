@@ -142,6 +142,12 @@
                 <h2 class="modal-title">
                     {{ _('Board %(board_number)s', board_number=board.number) }}
                 </h2>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="{{ _('Close') }}"
+                ></button>
             </div>
             <div class="modal-body">
                 {# White / neutral / Black columns. Buttons show just the
@@ -356,16 +362,6 @@
                     </div>
                 </div>
                 {% endif %}
-            </div>
-            <div class="modal-footer">
-                <button
-                    type="button"
-                    class="btn btn-secondary text-nowrap"
-                    data-bs-dismiss="modal"
-                >
-                    <i class="bi-x-circle-fill pe-1"></i>
-                    {{ _('Close') }}
-                </button>
             </div>
         </div>
     </div>
