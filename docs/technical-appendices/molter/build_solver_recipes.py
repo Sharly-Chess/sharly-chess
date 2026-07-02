@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import copy
 import json
 import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -57,7 +58,7 @@ DEFAULT_CASES = (
 DEFAULT_GRID_PLAYERS = tuple(range(2, 13, 2))
 DEFAULT_GRID_MIN_TEAM_COUNT = 3
 DEFAULT_GRID_MAX_TEAM_COUNT = 25
-DEFAULT_GRID_MAX_ROUNDS = 13
+DEFAULT_GRID_MAX_ROUNDS = 14
 DEFAULT_GRID_INCLUDE_FULL_TABLES = False
 
 Player = tuple[int, int]
@@ -3335,6 +3336,214 @@ def _strict_s5_recolour_task(
     )
 
 
+def _drop_flip_seed(
+    team_count: int,
+    players_per_team: int,
+    rounds: int,
+    attempt: int,
+    cell_index: int,
+) -> int:
+    value = (
+        team_count * 1_000_003
+        + players_per_team * 65_537
+        + rounds * 8_191
+        + attempt * 2_654_435_761
+        + cell_index * 131
+    ) & 0xFFFFFFFF
+    value ^= value >> 16
+    value = (value * 0x7FEB352D) & 0xFFFFFFFF
+    value ^= value >> 15
+    value = (value * 0x846CA68B) & 0xFFFFFFFF
+    value ^= value >> 16
+    return value
+
+
+def _flip_drop(schedule: dict[str, Any], index: int) -> dict[str, Any]:
+    candidate = copy.deepcopy(schedule)
+    dropped = candidate['cell_drops'][index]['dropped']
+    candidate['cell_drops'][index]['dropped'] = [dropped[1], dropped[0]]
+    return candidate
+
+
+def _drop_flip_raw_priority(
+    schedule: dict[str, Any],
+    team_count: int,
+    players_per_team: int,
+    rounds: int,
+) -> tuple[int, int, int, tuple[int, ...], int, int, int, int]:
+    matches = _materialize_matches(team_count, players_per_team, rounds, schedule)
+    metrics = _metrics(_table_from_rounds(matches, team_count, players_per_team))
+    return (
+        metrics.i1,
+        metrics.i1_prefix_deficit,
+        metrics.i1_prefix_deficit_total,
+        metrics.i1_prefix_deficit_vector,
+        metrics.i2_l1,
+        metrics.i3,
+        metrics.i4,
+        metrics.i5,
+    )
+
+
+def _locally_improve_odd_drop_directions(
+    schedule: dict[str, Any],
+    team_count: int,
+    players_per_team: int,
+    rounds: int,
+    *,
+    attempts: int,
+) -> dict[str, Any] | None:
+    if schedule.get('kind') != 'odd_cell_drops':
+        return None
+    if attempts <= 0:
+        return None
+
+    base_priority = _drop_flip_raw_priority(
+        schedule, team_count, players_per_team, rounds
+    )
+    best_schedule = copy.deepcopy(schedule)
+    best_priority = base_priority
+    drop_count = len(schedule.get('cell_drops', ()))
+    drop_indices = tuple(range(drop_count))
+
+    for attempt in range(attempts):
+        candidate = copy.deepcopy(schedule)
+        if attempt:
+            for index in drop_indices:
+                if (
+                    _drop_flip_seed(
+                        team_count, players_per_team, rounds, attempt, index
+                    )
+                    & 1
+                ):
+                    candidate = _flip_drop(candidate, index)
+
+        candidate_priority = _drop_flip_raw_priority(
+            candidate, team_count, players_per_team, rounds
+        )
+        improved = True
+        while improved:
+            improved = False
+            ordered_indices = sorted(
+                drop_indices,
+                key=lambda index: _drop_flip_seed(
+                    team_count, players_per_team, rounds, attempt + 10_000, index
+                ),
+            )
+            for index in ordered_indices:
+                flipped = _flip_drop(candidate, index)
+                flipped_priority = _drop_flip_raw_priority(
+                    flipped, team_count, players_per_team, rounds
+                )
+                if flipped_priority < candidate_priority:
+                    candidate = flipped
+                    candidate_priority = flipped_priority
+                    improved = True
+
+        if candidate_priority < best_priority:
+            best_schedule = candidate
+            best_priority = candidate_priority
+
+    if best_priority >= base_priority:
+        return None
+    return best_schedule
+
+
+def _odd_drop_flip_existing_recipe(
+    case_recipe: dict[str, Any],
+    *,
+    attempts: int,
+    strict_s5_timeout_seconds: float,
+    timeout_seconds: float,
+    workers: int,
+) -> tuple[dict[str, Any] | None, str, float]:
+    started = perf_counter()
+    team_count = int(case_recipe['team_count'])
+    players_per_team = int(case_recipe['players_per_team'])
+    rounds = int(case_recipe['rounds'])
+    current_table = materialize_recipe(case_recipe)
+    current_metrics = _metrics(current_table)
+
+    improved_schedule = _locally_improve_odd_drop_directions(
+        case_recipe['schedule'],
+        team_count,
+        players_per_team,
+        rounds,
+        attempts=attempts,
+    )
+    if improved_schedule is None:
+        return None, 'drop-flip:no-raw-improvement', perf_counter() - started
+
+    matches = _materialize_matches(
+        team_count, players_per_team, rounds, improved_schedule
+    )
+    coloured, status, colour_seconds = _solve_candidate_colours(
+        matches,
+        team_count,
+        players_per_team,
+        direct_colour_only=False,
+        strict_s5_timeout_seconds=strict_s5_timeout_seconds,
+        timeout_seconds=timeout_seconds,
+        workers=workers,
+    )
+    if coloured is None:
+        return None, f'drop-flip:{status}', perf_counter() - started
+
+    table = _table_from_rounds(coloured, team_count, players_per_team)
+    report = verify_molter_table(table)
+    if not report.ok:
+        return None, f'drop-flip:invalid:{report.errors[0]}', perf_counter() - started
+
+    metrics = _metrics(table)
+    if _metric_priority(metrics) >= _metric_priority(current_metrics):
+        return None, 'drop-flip:no-verified-improvement', perf_counter() - started
+
+    bits = _colour_bits(matches, coloured)
+    new_recipe = dict(case_recipe)
+    new_recipe.update(
+        {
+            'candidate_label': 'odd_cell_drop_direction_i2_local_search',
+            'schedule': improved_schedule,
+            'colour_bit_count': len(bits),
+            'colour_bits': _pack_bits(bits),
+            'current_metrics': _metric_dict(current_metrics),
+            'recipe_metrics': _metric_dict(metrics),
+            'solver_status': f'drop-flip:{status}',
+            'solver_seconds': colour_seconds,
+        }
+    )
+    return new_recipe, f'drop-flip:{status}', perf_counter() - started
+
+
+def _odd_drop_flip_existing_task(
+    task: tuple[dict[str, Any], int, float, float, int],
+) -> tuple[tuple[int, int, int], dict[str, Any] | None, str, float]:
+    (
+        case_recipe,
+        attempts,
+        strict_s5_timeout_seconds,
+        timeout_seconds,
+        workers,
+    ) = task
+    recipe, status, elapsed = _odd_drop_flip_existing_recipe(
+        case_recipe,
+        attempts=attempts,
+        strict_s5_timeout_seconds=strict_s5_timeout_seconds,
+        timeout_seconds=timeout_seconds,
+        workers=workers,
+    )
+    return (
+        (
+            int(case_recipe['team_count']),
+            int(case_recipe['players_per_team']),
+            int(case_recipe['rounds']),
+        ),
+        recipe,
+        status,
+        elapsed,
+    )
+
+
 def _parse_case(value: str) -> tuple[int, int, int]:
     parts = tuple(int(part) for part in value.replace('x', ',').split(','))
     if len(parts) != 3:
@@ -3470,6 +3679,8 @@ def _recipe_payload(
             'workers': args.workers,
             'case_workers': args.case_workers,
             'emit_baseline_recipes': args.emit_baseline_recipes,
+            'odd_drop_flip_existing': args.odd_drop_flip_existing,
+            'odd_drop_flip_attempts': args.odd_drop_flip_attempts,
         },
         'cases': recipes,
         'miss_schema': ['team_count', 'players_per_team', 'rounds', 'seconds'],
@@ -3712,6 +3923,87 @@ def _strict_s5_recolour_existing(
                     )
                     improved += 1
     return len(tasks), exact_before, improved
+
+
+def _odd_drop_flip_existing(
+    cases: tuple[tuple[int, int, int], ...],
+    recipe_by_key: dict[str, dict[str, Any]],
+    miss_by_key: dict[str, Any],
+    *,
+    attempts: int,
+    strict_s5_timeout_seconds: float,
+    timeout_seconds: float,
+    workers: int,
+    case_workers: int,
+    builder_pass: str | None,
+    progress_every: int,
+) -> tuple[int, int]:
+    requested_keys = {_tuple_case_key(case) for case in cases}
+    recipes = [
+        recipe
+        for key, recipe in recipe_by_key.items()
+        if (not requested_keys or key in requested_keys)
+        and recipe.get('schedule', {}).get('kind') == 'odd_cell_drops'
+    ]
+    tasks = [
+        (
+            recipe,
+            attempts,
+            strict_s5_timeout_seconds,
+            timeout_seconds,
+            workers,
+        )
+        for recipe in recipes
+    ]
+    improved = 0
+    if case_workers <= 1:
+        iterator = (_odd_drop_flip_existing_task(task) for task in tasks)
+        for index, (case, recipe, status, elapsed) in enumerate(iterator, start=1):
+            if _should_print_progress(index, len(tasks), progress_every):
+                print(
+                    f'[{index}/{len(tasks)}] drop-flip {case[0]}x{case[1]} '
+                    f'R{case[2]}: {status} ({elapsed:.3f}s)',
+                    flush=True,
+                )
+            if recipe is not None:
+                _store_case_result(
+                    recipe_by_key,
+                    miss_by_key,
+                    case,
+                    recipe,
+                    elapsed,
+                    builder_pass=builder_pass,
+                )
+                improved += 1
+    else:
+        with ProcessPoolExecutor(max_workers=case_workers) as executor:
+            future_by_case = {
+                executor.submit(_odd_drop_flip_existing_task, task): (
+                    int(task[0]['team_count']),
+                    int(task[0]['players_per_team']),
+                    int(task[0]['rounds']),
+                )
+                for task in tasks
+            }
+            for index, future in enumerate(as_completed(future_by_case), start=1):
+                case, recipe, status, elapsed = future.result()
+                if _should_print_progress(index, len(tasks), progress_every):
+                    print(
+                        f'[{index}/{len(tasks)}] drop-flip {case[0]}x{case[1]} '
+                        f'R{case[2]}: {status} ({elapsed:.3f}s)',
+                        flush=True,
+                    )
+                if recipe is not None:
+                    _store_case_result(
+                        recipe_by_key,
+                        miss_by_key,
+                        case,
+                        recipe,
+                        elapsed,
+                        builder_pass=builder_pass,
+                    )
+                    improved += 1
+    return len(tasks), improved
 
 
 def _default_packed_output(output: Path) -> Path:
@@ -3982,6 +4274,21 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        '--odd-drop-flip-existing',
+        action='store_true',
+        help=(
+            'Do not build new schedules; improve existing odd_cell_drops '
+            'recipes by flipping directed dropped edges, then recolour and '
+            'keep only verified metric improvements.'
+        ),
+    )
+    parser.add_argument(
+        '--odd-drop-flip-attempts',
+        type=int,
+        default=64,
+        help='Deterministic local-search restarts for --odd-drop-flip-existing.',
+    )
+    parser.add_argument(
         '--packed-output',
         type=Path,
         help=(
@@ -4128,6 +4435,39 @@ def main() -> None:
             f'{written} in {perf_counter() - started:.3f}s '
             f'({total} recipe(s), {exact_before} already exact-S5, '
             f'{improved} strict-S5 upgrade(s)).'
+        )
+        _replay_file(packed_output or args.output, details=args.replay_details)
+        return
+    if args.odd_drop_flip_existing:
+        started = perf_counter()
+        total, improved = _odd_drop_flip_existing(
+            cases,
+            recipe_by_key,
+            miss_by_key,
+            attempts=args.odd_drop_flip_attempts,
+            strict_s5_timeout_seconds=args.strict_s5_timeout_seconds,
+            timeout_seconds=args.timeout_seconds,
+            workers=args.workers,
+            case_workers=args.case_workers,
+            builder_pass=args.builder_pass,
+            progress_every=args.progress_every,
+        )
+        payload = _recipe_payload(
+            _ordered_recipes(cases, recipe_by_key),
+            _ordered_misses(cases, miss_by_key),
+            args,
+        )
+        _write_recipe_outputs(
+            args.output, packed_output, payload, pretty_json=args.pretty_json
+        )
+        written = f'Wrote {args.output} ({args.output.stat().st_size} bytes)'
+        if packed_output is not None:
+            written += (
+                f', packed {packed_output} ({packed_output.stat().st_size} bytes)'
+            )
+        print(
+            f'{written} in {perf_counter() - started:.3f}s '
+            f'({total} recipe(s), {improved} drop-flip upgrade(s)).'
         )
         _replay_file(packed_output or args.output, details=args.replay_details)
         return

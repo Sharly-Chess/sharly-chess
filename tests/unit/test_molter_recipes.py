@@ -16,6 +16,7 @@ from data.pairings.molter_verifier import verify_molter_table
 def test_molter_recipe_resource_declares_supported_range() -> None:
     assert supported_molter_recipe_team_counts() == tuple(range(3, 21))
     assert MolterPairingSystem().supported_team_counts() == tuple(range(3, 21))
+    assert available_molter_recipe_rounds(15, 12) == tuple(range(1, 15))
     assert available_molter_recipe_rounds(20, 12) == tuple(range(1, 14))
     assert available_molter_recipe_rounds(21, 12) == ()
 
@@ -73,7 +74,7 @@ def test_molter_engine_rejects_more_than_twenty_teams() -> None:
 def test_all_molter_recipes_replay_and_validate() -> None:
     tables = iter_molter_recipe_tables()
 
-    assert len(tables) == 1008
+    assert len(tables) == 1014
     for table in tables:
         report = verify_molter_table(table)
         assert report.ok, (
