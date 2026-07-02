@@ -287,29 +287,8 @@ class SharlyChessServerToga(toga.App):
         # Use FLATPAK_ID if available to match the sandbox ID
         app_id = os.environ.get('FLATPAK_ID', 'com.sharlychess.app')
 
-        # On Windows, the following error message is printed when searching for a valid .NET Core:
-        #
-        # You must install or update .NET to run this application.
-        #
-        # App: C:\OneDrive\echecs\sharly-chess\dev\.venv-3.13\Scripts\python.exe
-        # Architecture: x64
-        # Framework: 'Microsoft.NETCore.App' version '10.0.0' (x64)
-        # .NET location: C:\ProgramFiles\dotnet
-        #
-        # The following frameworks were found:
-        # 6.0.4 at [C:\ProgramFiles\dotnet\shared\Microsoft.NETCore.App]
-        # 9.0.11 at [C:\ProgramFiles\dotnet\shared\Microsoft.NETCore.App]
-        #
-        # Learn more:
-        # https://aka.ms/dotnet/app-launch-failed
-        #
-        # To install missing framework, download:
-        # https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=10.0.0&arch=x64&rid=win-x64&os=win10
-        #
-        # Explicitly request .NET Framework 4.x by setting this variable.
-        # See:
-        # - toga_winforms/__init__.py
-        # - toga_winforms/resources/runtime.json
+        # Explicitly request .NET Framework 4.x by setting this variable
+        # (see https://github.com/Sharly-Chess/sharly-chess/pull/2098)
         os.environ['TOGA_WINFORMS_USE_NETFX'] = '1'
 
         super().__init__(
