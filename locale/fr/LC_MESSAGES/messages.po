@@ -1926,6 +1926,9 @@ msgstr "Créer un écran rotatif"
 msgid "Create screen"
 msgstr "Créer un écran"
 
+msgid "Create set"
+msgstr "Créer un ensemble"
+
 msgid "Create team"
 msgstr "Créer l'équipe"
 
@@ -2674,6 +2677,9 @@ msgstr "Modifier l'écran rotatif"
 
 msgid "Edit screen"
 msgstr "Modifier l'écran"
+
+msgid "Edit set"
+msgstr "Modifier l’ensemble"
 
 msgid "Edit team"
 msgstr "Modifier l'équipe"
@@ -6231,9 +6237,6 @@ msgstr "Enregistrer le groupe"
 msgid "Save points"
 msgstr "Enregistrer les points"
 
-msgid "Save the set or cancel."
-msgstr "Enregistrez l'ensemble ou annulez."
-
 msgid "Schedule"
 msgstr "Horaires"
 
@@ -8969,3 +8972,14 @@ msgstr "— Non assigné·e —"
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
 
+#~ msgid "Number of screen types"
+#~ msgstr "Nombre de types d'écran"
+
+#~ msgid "Save the set or cancel."
+#~ msgstr "Enregistrez l'ensemble ou annulez."
+
+#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
+#~ msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé."
+
+#~ msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
+#~ msgstr "Le nom de l'écran multiple, facultatif. Les jetons suivants sont automatiquement remplacés par les numéros d'échiquier ou les noms des joueur·euses) :  %%f=premier, %%l=dernier, %%t=tournoi."

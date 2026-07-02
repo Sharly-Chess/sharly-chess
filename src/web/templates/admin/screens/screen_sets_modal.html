@@ -21,13 +21,11 @@
         </div>
         <div class="modal-body">
             <p>
-                {% if admin_screen_set %}
-                    {{ _('Save the set or cancel.') }}
-                {% elif admin_screen.screen_sets_by_id|length > 1 %}
+                {% if admin_screen.screen_sets_by_id|length > 1 %}
                     {{ _('Drag the sets to order them.') }}
                 {% endif %}
             </p>
-            {% if not admin_screen_set and admin_screen.sorted_screen_sets|length > 1 %}
+            {% if admin_screen.sorted_screen_sets|length > 1 %}
                 <form
                     class="sortable"
                     hx-patch="{{ url_for('admin-screen-reorder-sets', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
@@ -39,7 +37,7 @@
                 {% for screen_set in admin_screen.sorted_screen_sets %}
                     {% include 'screen_sets_modal_set_div.html' %}
                 {% endfor %}
-            {% if not admin_screen_set and admin_screen.sorted_screen_sets|length > 1 %}
+            {% if admin_screen.sorted_screen_sets|length > 1 %}
                 </form>
             {% endif %}
         </div>
@@ -47,24 +45,17 @@
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"
-                {% if admin_screen_set %}
-                    disabled
-                {% else %}
-                    data-bs-dismiss="modal"
-                {% endif %}
+                data-bs-dismiss="modal"
             >
                 <i class="bi-x-circle-fill"></i>
                 {{ _('Close') }}
             </button>
             <button
                 class="btn btn-primary text-nowrap"
-                {% if admin_screen_set %}
-                    disabled
-                {% else %}
-                    hx-post="{{ url_for('admin-screen-set-add', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                {% endif %}
+                hx-get="{{ url_for('admin-screen-set-create-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-target="#modal-wrapper"
             >
                 <i class="bi-plus-square-fill pe-1"></i>
                 {{ _('Add a set') }}
