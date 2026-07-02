@@ -89,8 +89,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d family"
-msgid_plural "%(num)d families"
+msgid "%(num)d multi-screen"
+msgid_plural "%(num)d multi-screens"
 msgstr[0] ""
 msgstr[1] ""
 

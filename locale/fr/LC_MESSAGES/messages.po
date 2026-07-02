@@ -89,10 +89,10 @@ msgstr[0] "%(num)d table vide à apparier"
 msgstr[1] "%(num)d tables vides à apparier"
 
 #, python-format
-msgid "%(num)d family"
-msgid_plural "%(num)d families"
-msgstr[0] "%(num)d famille"
-msgstr[1] "%(num)d familles"
+msgid "%(num)d multi-screen"
+msgid_plural "%(num)d multi-screens"
+msgstr[0] "%(num)d écran multiple"
+msgstr[1] "%(num)d écrans multiples"
 
 #, python-format
 msgid "%(num)d informative *** COLUMNS"
