@@ -62,6 +62,18 @@ class VersionUpdater:
     def search_for_latest_version(cls, check_beta: bool):
         """Retrieves the latest version from the GitHub repository."""
 
+        # Test override: pretend a given version is the latest, skipping the
+        # network. Lets the update/install path be exercised offline (pair with
+        # SHARLY_CHESS_APPCAST_URL to point Sparkle at a local appcast).
+        fake_latest = os.environ.get('SHARLY_CHESS_FAKE_LATEST_VERSION')
+        if fake_latest:
+            cls.LATEST_VERSION = Version(fake_latest)
+            cls.LATEST_VERSION_SEARCHED_AT = datetime.now()
+            logger.warning(
+                'Using fake latest version [%s] (test override).', fake_latest
+            )
+            return
+
         if not NetworkMonitor.connected(use_cached=False):
             logger.warning(
                 'Not connected, can not search for Sharly Chess newer releases.'
@@ -135,6 +147,23 @@ class VersionUpdater:
         base_url = 'https://github.com/Sharly-Chess/sharly-chess/releases/download'
         asset = cls._get_asset_name(version)
         return f'{base_url}/{version}/{asset}'
+
+    @classmethod
+    def appcast_url(cls, version: Version) -> str:
+        """URL of the per-release Sparkle appcast asset for *version*.
+
+        Each release attaches its own ``appcast.xml`` (signed in CI); the macOS
+        Sparkle updater is pointed at this at runtime instead of a static feed.
+
+        For local testing, ``SHARLY_CHESS_APPCAST_URL`` overrides the URL (e.g.
+        a ``http://localhost:8000/appcast.xml`` served from a folder), so the
+        full Sparkle flow can be exercised without an online release.
+        """
+        override = os.environ.get('SHARLY_CHESS_APPCAST_URL')
+        if override:
+            return override
+        base_url = 'https://github.com/Sharly-Chess/sharly-chess/releases/download'
+        return f'{base_url}/{version}/appcast.xml'
 
     @staticmethod
     def version_updater_path() -> Path:
