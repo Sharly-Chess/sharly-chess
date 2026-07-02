@@ -92,7 +92,6 @@ class WinProjectBuilder(ProjectBuilder):
                 return False
             if not self._sign_files():
                 return False
-        Path(self.project_dir / 'tmp/.unblock_files').touch()
         return True
 
     def build_control_file(self) -> bool:

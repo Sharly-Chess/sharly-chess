@@ -1,9 +1,6 @@
 import json
 import re
-import shutil
 import sys
-import tempfile
-import zipfile
 import os
 import platform
 import subprocess
@@ -13,16 +10,12 @@ from pathlib import Path
 from typing import Any
 
 from packaging.version import Version
-from requests import Response, get
+from requests import get
 from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
-from antivirus.control import search_missing_files
 from common import BASE_DIR
-from common.i18n import _
 from common.logger import (
     get_logger,
-    print_interactive_message,
-    quit_app,
 )
 from common.network import NetworkMonitor
 
@@ -142,13 +135,6 @@ class VersionUpdater:
         return f'sharly-chess-{version}-{cls._get_asset_suffix()}'
 
     @classmethod
-    def _get_asset_url(cls, version: Version):
-        """URL of the asset to download in order to install a new version."""
-        base_url = 'https://github.com/Sharly-Chess/sharly-chess/releases/download'
-        asset = cls._get_asset_name(version)
-        return f'{base_url}/{version}/{asset}'
-
-    @classmethod
     def appcast_url(cls, version: Version) -> str:
         """URL of the per-release Sparkle appcast asset for *version*.
 
@@ -183,166 +169,3 @@ class VersionUpdater:
         args = [str(exe_path), '--version', str(version)]
         restart_process = subprocess.Popen(args, **kwargs)
         restart_process.wait()
-
-    @staticmethod
-    def _install_new_version(version: Version, download_url: str) -> str | None:
-        """Install the new stable version at the same directory level.
-        Returns an error message on failure, None on success."""
-        new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
-        if new_version_dir.exists():
-            logger.error(
-                'Directory [%s] already exists.',
-                new_version_dir.resolve(),
-            )
-            return _('Directory [{folder}] already exists.').format(
-                folder=new_version_dir.resolve(),
-            )
-        else:
-            try:
-                with tempfile.TemporaryDirectory() as tmpdir:
-                    tmp_dir: Path = Path(tmpdir)
-                    logger.info(
-                        'Downloading release [%s] from GitHub ([%s])...',
-                        version,
-                        download_url,
-                    )
-                    response: Response = get(
-                        download_url, allow_redirects=True, timeout=10
-                    )
-                    response.raise_for_status()
-                    if not response:
-                        logger.error('No response from GitHub.')
-                        return _('No response from GitHub.')
-                    if response.status_code != 200:
-                        logger.error(
-                            'Downloading failed with code [%d].', response.status_code
-                        )
-                        return _('Downloading failed with code [{code}].').format(
-                            code=response.status_code
-                        )
-                    # Determine downloaded file name based on platform
-                    match sys.platform:
-                        case 'win32':
-                            downloaded_file = (
-                                tmp_dir / f'sharly-chess-{version}-windows.zip'
-                            )
-                        case 'darwin':
-                            downloaded_file = (
-                                tmp_dir / f'sharly-chess-{version}-macos.dmg'
-                            )
-                        case 'linux':
-                            build_arch = os.environ.get('BUILD_ARCH')
-                            if build_arch:
-                                machine = build_arch.lower()
-                            else:
-                                machine = platform.machine().lower()
-                            if machine in ('aarch64', 'arm64'):
-                                downloaded_file = (
-                                    tmp_dir / f'sharly-chess-{version}-linux-arm64.zip'
-                                )
-                            elif machine in ('x86_64', 'amd64'):
-                                downloaded_file = (
-                                    tmp_dir / f'sharly-chess-{version}-linux-x86_64.zip'
-                                )
-                        case _:
-                            raise NotImplementedError(f'{sys.platform=}')
-
-                    downloaded_file.write_bytes(response.content)
-                    logger.debug('File downloaded: [%s].', downloaded_file)
-
-                    match sys.platform:
-                        case 'win32':
-                            # For Windows: Unzip the file
-                            new_version_dir.mkdir()
-                            with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
-                                zip_ref.extractall(new_version_dir)
-                            if error_message := search_missing_files(
-                                folder=new_version_dir, delete_control_file=False
-                            ):
-                                logger.error(error_message)
-                                return _('Some files are missing.')
-                        case 'darwin':
-                            # For Mac: Handle the DMG file
-                            mount_point = tmp_dir / f'mount-{version}'
-                            try:
-                                # Mount the DMG
-                                subprocess.run(
-                                    [
-                                        'hdiutil',
-                                        'attach',
-                                        str(downloaded_file),
-                                        '-mountpoint',
-                                        str(mount_point),
-                                    ],
-                                    check=True,
-                                )
-                                dmg_content = list(mount_point.iterdir())
-                                if len(dmg_content) == 1 and dmg_content[0].is_dir():
-                                    # Copy the folder from DMG to the new version directory
-                                    # Use cp -R to preserve code signatures and extended attributes
-                                    subprocess.run(
-                                        [
-                                            'cp',
-                                            '-R',
-                                            str(dmg_content[0]),
-                                            str(new_version_dir.parent),
-                                        ],
-                                        check=True,
-                                    )
-                                else:
-                                    logger.error(
-                                        'DMG does not contain exactly one folder as expected.'
-                                    )
-                                    return _(
-                                        'DMG does not contain exactly one folder as expected.'
-                                    )
-                            finally:
-                                # Always try to unmount the DMG, even if copying failed
-                                try:
-                                    subprocess.run(
-                                        ['hdiutil', 'detach', str(mount_point)],
-                                        check=True,
-                                    )
-                                except subprocess.CalledProcessError:
-                                    logger.warning(
-                                        'Failed to unmount DMG at [%s]', mount_point
-                                    )
-                                # Clean up the mount point directory
-                                if mount_point.exists():
-                                    shutil.rmtree(mount_point, ignore_errors=True)
-                        case 'linux':
-                            # For Linux, just unzip
-                            new_version_dir.mkdir()
-                            with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
-                                zip_ref.extractall(new_version_dir)
-                        case _:
-                            raise NotImplementedError(f'{sys.platform=}')
-
-                logger.info(
-                    'New release [%s] has been installed in [%s].',
-                    version,
-                    new_version_dir.resolve(),
-                )
-            except RequestException as ex:
-                logger.exception('Failed to read [%s]: [%s].', download_url, ex)
-                return _('Failed to read [{download_url}]: [{ex}].').format(
-                    download_url=download_url, ex=ex
-                )
-            except subprocess.CalledProcessError as ex:
-                logger.exception('Failed to process DMG file: [%s].', ex)
-                return _('Failed to process DMG file: [{ex}].').format(ex=ex)
-            except Exception as ex:
-                logger.exception('Unexpected error during installation: [%s].', ex)
-                return _('Unexpected error during installation: [{ex}].').format(ex=ex)
-
-        if print_interactive_message(
-            _('Release {version} has been installed in [{folder}].').format(
-                version=version,
-                folder=new_version_dir.absolute(),
-            )
-            + '\n\n'
-            + _('Please launch the new version.'),
-        ):
-            quit_app()
-
-        return None
