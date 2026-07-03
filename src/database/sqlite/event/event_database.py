@@ -14,7 +14,6 @@ from common import (
     EVENTS_DIR,
 )
 from common.logger import get_logger
-from common.sharly_chess_config import SharlyChessConfig
 from data.event_metadata import EventMetadata
 from database.sqlite.event.event_store import (
     StoredDisplayController,
@@ -52,7 +51,7 @@ from database.sqlite.event.event_store import (
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
-from utils.enum import EventType
+from utils.enum import Extension, EventType
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
@@ -183,7 +182,7 @@ class EventDatabase(MigrationDatabase):
 
     @staticmethod
     def event_database_path(uniq_id: str) -> Path:
-        return EVENTS_DIR / f'{uniq_id}.{SharlyChessConfig.event_database_ext}'
+        return EVENTS_DIR / f'{uniq_id}.{Extension.EVENT_DB}'
 
     @classmethod
     def database_modified_at(cls, uniq_id: str) -> datetime:

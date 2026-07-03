@@ -4,15 +4,19 @@
 
 - Reorganize the desktop application into tabs (5.0.0)
 
+## Events
+
+- Allow event creation as an organiser (5.0.0)
+
 ## Teams
 
 - _Sharly Chess_ now supports **Teams** events! (5.0.0)
 
 ## Prizes
 
-- Duplicate prizes when duplicating a tournament (5.0.0)
 - Added a quick way to generate prize categories for age categories and rating ranges (5.0.0)
 - Duplication prize categories are now added immediately after the original (5.0.0)
+- Duplicate prizes when duplicating a tournament (5.0.0)
 
 ## Screens
 

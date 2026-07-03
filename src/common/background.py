@@ -4,6 +4,7 @@ from pathlib import Path
 
 import validators
 
+from common import CUSTOM_DIR
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 
@@ -21,12 +22,10 @@ def inline_image_url(image: str | None) -> str:
         return ''
     if image.startswith('/') or validators.url(image):
         return image
-    file: Path = SharlyChessConfig.custom_path / image
+    file: Path = CUSTOM_DIR / image
     if not file.exists():
-        file: Path = Path('src') / SharlyChessConfig.embedded_custom_path / image
-        if not file.exists():
-            logger.warning('Image [%s] not found.', file)
-            return SharlyChessConfig.error_background_image
+        logger.warning('Image [%s] not found.', file)
+        return SharlyChessConfig.error_background_image
     with open(file, 'rb') as f:
         data: bytes = f.read()
     encoded_data = base64.b64encode(data).decode('utf-8')
