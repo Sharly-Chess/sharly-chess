@@ -232,15 +232,18 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'disabled': not screens,
                     'icon_class': screen_type.icon_str,
                 }
-            menus = event.sorted_menus
-            nav_tabs |= {
-                'admin-event-menus-tab': {
-                    'title': _('Menus ({num})').format(num=len(menus) or '-'),
-                    'template': 'menus/tab.html',
-                    'disabled': not menus,
-                    'icon_class': 'bi-list-nested',
-                },
-            }
+            # The Menus tab is a staff/config view; hide it from public
+            # (network) viewers who can only see public screens.
+            if self.client.can_view_private_screens:
+                menus = event.sorted_menus
+                nav_tabs |= {
+                    'admin-event-menus-tab': {
+                        'title': _('Menus ({num})').format(num=len(menus) or '-'),
+                        'template': 'menus/tab.html',
+                        'disabled': not menus,
+                        'icon_class': 'bi-list-nested',
+                    },
+                }
             nav_tabs |= {
                 'admin-event-rotators-tab': {
                     'title': _('Rotators ({num})').format(num=len(rotators) or '-'),

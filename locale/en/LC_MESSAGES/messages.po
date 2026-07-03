@@ -734,19 +734,10 @@ msgstr ""
 msgid "Add manual estimated ratings"
 msgstr ""
 
-msgid "Add multi-screens"
-msgstr ""
-
 msgid "Add period"
 msgstr ""
 
 msgid "Add players"
-msgstr ""
-
-msgid "Add screen types"
-msgstr ""
-
-msgid "Add screens"
 msgstr ""
 
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
@@ -4213,6 +4204,9 @@ msgid "Multi-Screens ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>M</u>ulti-Screens ({num})"
 
 msgid "Multi-Screens are used to split a large amount of information across multiple screens."
+msgstr ""
+
+msgid "Multi-screens"
 msgstr ""
 
 msgid "Multi-screens:"

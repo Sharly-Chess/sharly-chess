@@ -734,20 +734,11 @@ msgstr "Ajouter un groupe"
 msgid "Add manual estimated ratings"
 msgstr "Ajouter des classement estimés manuels"
 
-msgid "Add multi-screens"
-msgstr "Ajouter des écrans multiples"
-
 msgid "Add period"
 msgstr "Ajouter une période"
 
 msgid "Add players"
 msgstr "Ajouter des joueur·euses"
-
-msgid "Add screen types"
-msgstr "Ajouter des types d'écran"
-
-msgid "Add screens"
-msgstr "Ajouter des écrans"
 
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
 msgstr "Ajouter des écrans, des écrans multiples ou des types d'écran entiers à un menu, puis les réorganiser à votre convenance."
@@ -1555,7 +1546,7 @@ msgid "Choose one, several or no teams (all if none)."
 msgstr "Choisir aucune, une ou plusieurs équipes (toutes si aucune choisie)."
 
 msgid "Choose screen types to add"
-msgstr "Choisir des types d'écran à ajouter"
+msgstr "Choisir des types d’écran à ajouter"
 
 msgid "Choose screens to add"
 msgstr "Choisir des écrans à ajouter"
@@ -4214,6 +4205,9 @@ msgstr "Écrans&nbsp;<u>M</u>ultiples ({num})"
 
 msgid "Multi-Screens are used to split a large amount of information across multiple screens."
 msgstr "Les écrans multiples sont utilisés pour répartir une grande quantité d'informations sur plusieurs écrans."
+
+msgid "Multi-screens"
+msgstr "Écrans multiples"
 
 msgid "Multi-screens:"
 msgstr "Écrans multiples :"
