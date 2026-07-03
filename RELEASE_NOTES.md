@@ -4,9 +4,13 @@
 
 - Reorganize the desktop application into tabs (5.0.0)
 
+## Events
+
+- Allow event creation as an organiser (5.0.0)
+
 ## Teams
 
-Sharly Chess now supports **Teams** events! (5.0.0)
+- Sharly Chess now supports **Teams** events! (5.0.0)
 
 ## Screens
 
