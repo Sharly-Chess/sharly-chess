@@ -1897,7 +1897,7 @@ msgid "Create event"
 msgstr "Créer un évènement"
 
 msgid "Create events"
-msgstr "Création d'évènements"
+msgstr "Créer des évènements"
 
 msgid "Create hour"
 msgstr "Créer un horaire"
