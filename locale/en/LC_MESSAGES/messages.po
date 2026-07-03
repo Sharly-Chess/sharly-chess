@@ -1893,6 +1893,9 @@ msgstr ""
 msgid "Create event"
 msgstr ""
 
+msgid "Create events"
+msgstr ""
+
 msgid "Create hour"
 msgstr ""
 
