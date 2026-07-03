@@ -3,6 +3,7 @@ import platform
 import signal
 import socket
 import sys
+import time
 from threading import Thread
 from time import sleep
 from types import FrameType
@@ -24,14 +25,7 @@ from litestar.types import Scope, HTTPScope
 
 from common import REQUEST_TIMEOUT
 from common.engine import Engine
-from common.i18n import _
-from common.logger import (
-    print_interactive_info,
-    print_interactive_error,
-    print_interactive_warning,
-    get_logger,
-    set_logging_config,
-)
+from common.logger import get_logger, set_logging_config
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import DataSourceManager
@@ -54,30 +48,31 @@ HANDLED_SIGNALS: list[int] = [
 if sys.platform == 'win32':  # pragma: py-not-win32
     HANDLED_SIGNALS.append(signal.SIGBREAK)  # Windows signal 21. Sent by Ctrl+Break.
 
+_PORT_TIMEOUT = 10  # Timeout when looking for a specific port
+
 
 def launch_browser(url: str):
     # Set the locale as the function is called in a new thread.
     SharlyChessConfig().load_and_set_env()
-    print_interactive_info(
-        _('Opening the welcome page [{url}] in a browser…').format(url=url)
-    )
+    logger.info(f'Opening the welcome page [{url}] in a browser…')
     while True:
         try:
             requests.get(url, timeout=REQUEST_TIMEOUT)
             break
         except requests.RequestException as e:
-            msg = _('Web server not started yet ({ex}), waiting…').format(
+            msg = 'Web server not started yet ({ex}), waiting…'.format(
                 ex=e.__class__.__name__
             )
             if isinstance(e, requests.TooManyRedirects) and e.response is not None:
                 msg += f' History: {[r.url for r in e.response.history]}'
-            print_interactive_info(msg)
+            logger.info(msg)
             sleep(1)
     open(url, new=2)
 
 
 class ServerEngine(Engine):
     app: ClassVar[Litestar | None] = None
+    server: ClassVar[uvicorn.Server | None] = None
 
     def __init__(
         self,
@@ -119,64 +114,51 @@ class ServerEngine(Engine):
         )
         logger.debug(' - Platform: %s', platform.platform())
         logger.debug(' - Architecture: %s', ' '.join(platform.architecture()))
-        print_interactive_info(_('Starting Sharly Chess server, Please wait…'))
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        print_interactive_info(
-            _('Console logging level: {console_log_level}').format(
-                console_log_level=sharly_chess_config.console_log_level_str
-            )
-        )
+        logger.info('Starting Sharly Chess server, Please wait…')
+        sc_config = SharlyChessConfig()
+        logger.info(f'Console logging level: {sc_config.console_log_level_str}')
 
         for data_source in DataSourceManager().objects():
             data_source.on_app_init()
 
         if self.port:
-            if self.__port_in_use(self.port):
-                print_interactive_warning(
-                    _(
-                        'Port [{port}] already in use, can not start Sharly Chess server.'
-                    ).format(port=self.port)
+            for __ in range(_PORT_TIMEOUT):
+                if not self.__port_in_use(self.port):
+                    sc_config.web_port = self.port
+                    break
+                logger.debug(f'Port {self.port} already in use (waiting)')
+                time.sleep(1)
+            if not sc_config.web_port:
+                logger.info(
+                    f'Timeout exceeded for port {self.port}, fallback to other ports'
                 )
-                return
-            sharly_chess_config.web_port = self.port
-        else:
-            for port in sharly_chess_config.web_ports:
-                if self.__port_in_use(port):
-                    print_interactive_warning(
-                        _('Port [{port}] already in use.').format(port=port)
-                    )
-                    continue
-                sharly_chess_config.web_port = port
-                break
-            if sharly_chess_config.web_port is None:
-                print_interactive_error(
-                    _(
-                        'All the candidate ports [{ports}] are already in use, can not start Sharly Chess server.'
-                    ).format(
-                        ports=', '.join(
-                            str(port) for port in sharly_chess_config.web_ports
-                        )
-                    )
+        if not sc_config.web_port:
+            for port in sc_config.web_ports:
+                if not self.__port_in_use(port):
+                    sc_config.web_port = port
+                    break
+                logger.debug(f'Port {port} already in use')
+            if sc_config.web_port is None:
+                ports_str = ', '.join(str(port) for port in sc_config.web_ports)
+                logger.error(
+                    f'All the candidate ports [{ports_str}] are already'
+                    f' in use, can not start Sharly Chess server.'
                 )
                 return
 
         if self.on_port_chosen:
             self.on_port_chosen()
 
-        print_interactive_info(
-            _('Port: {port}').format(port=sharly_chess_config.web_port)
-        )
-        print_interactive_info(
-            _('Local URL: {local_url}').format(local_url=sharly_chess_config.local_url)
-        )
+        logger.info(f'Port: {sc_config.web_port}')
+        logger.info(f'Local URL: {sc_config.local_url}')
 
-        if sharly_chess_config.launch_browser:
-            Thread(target=launch_browser, args=(sharly_chess_config.local_url,)).start()
+        if sc_config.launch_browser:
+            Thread(target=launch_browser, args=(sc_config.local_url,)).start()
 
         NetworkMonitor.start_monitoring()
 
         logging_config = set_logging_config(
-            console_log_level=sharly_chess_config.console_log_level,
+            console_log_level=sc_config.console_log_level,
         )
 
         def log_http_exception(exc: Exception, scope: Scope):
@@ -228,12 +210,13 @@ class ServerEngine(Engine):
 
         config = uvicorn.Config(
             app=app,
-            host=sharly_chess_config.web_host,
-            port=sharly_chess_config.web_port,
+            host=sc_config.web_host,
+            port=sc_config.web_port,
             log_config=logging_config,
             timeout_graceful_shutdown=5,
         )
         server = uvicorn.Server(config)
+        self.__class__.server = server
 
         def handle_exit(sig_: int, frame: FrameType | None) -> None:
             server.should_exit = True
