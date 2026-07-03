@@ -15,49 +15,21 @@ if TYPE_CHECKING:
 
 
 class MenuNavEntry:
-    """A single entry in a screen's navigation bar: either one screen, or a
-    family shown as one item opening a submenu of its screens."""
+    """A single entry in a screen's navigation bar: one screen."""
 
-    def __init__(self, screens: list[Screen], family: Family | None = None):
-        self.screens = screens
-        self.family = family
-
-    @property
-    def is_family(self) -> bool:
-        return self.family is not None
-
-    @property
-    def screen(self) -> Screen:
-        return self.screens[0]
+    def __init__(self, screen: Screen):
+        self.screen = screen
 
     @property
     def label(self) -> str:
-        if self.family is not None:
-            return self.family.nav_menu_label
-        return self.screens[0].menu_entry_label
+        return self.screen.menu_entry_label
 
 
 def group_menu_nav_entries(screens: list[Screen]) -> list['MenuNavEntry']:
-    """Group screens into navigation entries, collapsing each family's
-    screens (kept in first-appearance order) into a single entry."""
-    entries: list[MenuNavEntry] = []
-    family_entry_by_id: dict[int, MenuNavEntry] = {}
-    for screen in screens:
-        family = screen.family
-        if family is None:
-            entries.append(MenuNavEntry([screen]))
-            continue
-        entry = family_entry_by_id.get(family.id)
-        if entry is None:
-            entry = MenuNavEntry([], family)
-            family_entry_by_id[family.id] = entry
-            entries.append(entry)
-        entry.screens.append(screen)
-    # A menu that is just one family needs no submenu: show its screens
-    # directly as the top-level menu.
-    if len(entries) == 1 and entries[0].is_family:
-        return [MenuNavEntry([screen]) for screen in entries[0].screens]
-    return entries
+    """Build the navigation entries: one entry per screen. A family's screens
+    are expanded inline as top-level entries rather than collapsed into a
+    submenu."""
+    return [MenuNavEntry(screen) for screen in screens]
 
 
 class MenuItem:
