@@ -529,7 +529,7 @@ def _write_analysis_tabs(
         'Valid',
         'I1',
         'I1 prefix deficit',
-        'I2 L1',
+        'I2',
         'I3',
         'I4',
         'I5',

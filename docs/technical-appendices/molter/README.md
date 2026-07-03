@@ -14,10 +14,11 @@ Molter contract.
 |------|---------|
 | `molter-specification.md` | Standalone specification: hard rules, ideals, quality requirements, and a high-level overview of the recipe approach. |
 | `molter-developer-guide.md` | Developer guide: runtime path, `.mrec` format, rebuild scripts, validation, and known limits. |
-| `build_quality_summary.py` | Main quality-audit workbook for the recipe artifact: validation, timings, grades, I1, I1 prefix deficit, I2 L1, I3, I4, I5, exact/relaxed S5. By default it replays `src/data/pairings/resources/molter_recipes.mrec` and audits `N<=50`, `P=2,4,6,8,10,12`, `R<=14`. |
+| `build_quality_summary.py` | Main quality-audit workbook for the recipe artifact: validation, timings, grades, I1, I1 prefix deficit, I2, I3, I4, I5, exact/relaxed S5. By default it replays `src/data/pairings/resources/molter_recipes.mrec` and audits `N<=50`, `P=2,4,6,8,10,12`, `R<=14`. |
 | `build_solver_recipe_suite.py` | Reproducible recipe-suite orchestrator. It runs deterministic passes, resumes without discarding completed work, merges the best results by metric priority, and writes a manifest. |
 | `build_solver_recipes.py` | Low-level recipe build/replay tool. JSON is the readable resumable research state; the adjacent `.mrec` file is the compact runtime artifact. |
 | `build_xlsx.py` | Builds display workbooks with in-sheet controls for team and floater highlighting. |
+| `build_dna_xlsx.py` | Builds the DNA reference workbook: `N=3..15`, `P=2,4,6,8,10,12`, `R=2..N-1`, using the app recipe artifact. |
 
 ## Current Approach
 
@@ -30,7 +31,8 @@ The app-visible Molter range is capped for quality:
 
 - `N = 3..20` teams;
 - `P = 2,4,6,8,10,12` players per team;
-- `R = 1..13` rounds, where `R < N`.
+- `R = 1..13` rounds, where `R < N`, plus the full `N = 15`, `R = 14`
+  tables needed by the DNA reference range.
 
 The packed research artifact also contains recipes for `N = 21..25`. They stay
 available for audit and future improvement, but the application does not expose
@@ -43,7 +45,8 @@ The underlying recipe collection currently covers:
 
 - `N = 3..25` teams;
 - `P = 2,4,6,8,10,12` players per team;
-- `R = 1..13` rounds, where `R < N`.
+- `R = 1..13` rounds, where `R < N`, plus `N = 15`, `R = 14` for each
+  supported `P`.
 
 ## Hard Constraints
 
@@ -79,7 +82,7 @@ recipes:
 
 1. **I1 and prefix coverage**: spread opponents as uniformly as possible, and
    make teams meet as many distinct opponent teams as possible in early rounds.
-2. **I2 L1**: minimise `sum(abs(descending[t] - ascending[t]))`. `I2 = 0` is
+2. **I2**: minimise `sum(abs(descending[t] - ascending[t]))`. `I2 = 0` is
    perfect; `I2 <= N-1` is good; `N-1 < I2 < 2(N-1)` needs review;
    `I2 >= 2(N-1)` should be avoided.
 3. **I3**: equalise descending-floater counts across teams.
@@ -107,9 +110,9 @@ success.
 
 Current recipe snapshot:
 
-- `1398/1398` covered recipes are structurally valid.
-- The application quality gate exposes the `1008` recipes with `N <= 20`.
-- Quality distribution: `A=360`, `B=902`, `C=33`, `D=103`, `FAIL=0`.
+- `1404/1404` covered recipes are structurally valid.
+- The application quality gate exposes the `1014` recipes with `N <= 20`.
+- Quality distribution: `A=360`, `B=904`, `C=34`, `D=106`, `FAIL=0`.
 - A/B cases dominate up to roughly twenty teams.
 - The serious remaining weaknesses are mostly larger-`N` I1/prefix cases,
   especially around `N = 21`, `N = 23`, and `N = 25`.
@@ -127,6 +130,9 @@ python3 build_quality_summary.py molter_quality_summary.xlsx --workers 8 --recip
 
 # Display workbook; use the per-sheet checkbox to highlight floaters in red
 python3 build_xlsx.py molter_tables.xlsx --recipe-file ../../../src/data/pairings/resources/molter_recipes.mrec
+
+# DNA reference workbook for publication/reuse
+python3 build_dna_xlsx.py molter_dna_tables.xlsx
 
 # Rebuild a recipe collection, resuming by pass
 python3 build_solver_recipe_suite.py --output .context/quality_grid_all_recipes.json

@@ -21,10 +21,9 @@ those are checked against explicit best-compromise repeat rules.
 **Ideals** — reached only on the *complete* tables or when arithmetic permits
 them, so unmet ideals are reported as notes rather than errors: exact per-round
 team colour balance, uniform team-vs-team distribution (principle 3), balanced
-up/down floaters (principle 5), I2 L1 up/down floater balance after opponent
-spread, an equal count of descending floaters per team as an I3 tie-breaker, even
-per-round opponent spread (principle 1), and maximum distinct opponent-team
-coverage in every prefix.
+up/down floaters (I2) after opponent spread, an equal count of descending
+floaters per team as an I3 tie-breaker, even per-round opponent spread
+(principle 1), and maximum distinct opponent-team coverage in every prefix.
 
 ``verify_molter_table`` returns a :class:`MolterReport`; ``errors`` lists
 hard-invariant breaches (non-empty ⇒ invalid), ``notes`` lists unmet
@@ -426,7 +425,7 @@ def _check_rounds(
         note(
             f'{label}: floaters not balanced for team(s) '
             f'{", ".join(unbalanced)} — each team should have as many ascending as '
-            f'descending floaters; I2 L1 = {i2_l1} '
+            f'descending floaters; I2 = {i2_l1} '
             f'(sum of |descending − ascending| per team).'
         )
     down_counts = list(down)
