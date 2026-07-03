@@ -3315,6 +3315,9 @@ msgstr "L'horaire [{hour}] a été créé."
 msgid "Hours"
 msgstr "Horaires"
 
+msgid "How multi-screens appear in the menu: automatically, always as a dropdown submenu, or always expanded inline. Automatic uses dropdowns when the menu holds more than one multi-screen."
+msgstr "Comment les écrans multiples apparaissent dans le menu : automatiquement, toujours sous forme de sous-menu déroulant, ou toujours développés en ligne. Le mode automatique utilise des menus déroulants lorsque le menu contient plus d’un écran multiple."
+
 msgid "Hungary"
 msgstr "Hongrie"
 
@@ -4075,18 +4078,6 @@ msgstr "Le menu [{menu}] a été mis à jour."
 msgid "Menu content"
 msgstr "Contenu du menu"
 
-msgid "Multi-screen submenus"
-msgstr "Sous-menus des écrans multiples"
-
-msgid "Use dropdowns"
-msgstr "Utiliser des menus déroulants"
-
-msgid "No dropdowns"
-msgstr "Sans menus déroulants"
-
-msgid "How multi-screens appear in the menu: automatically, always as a dropdown submenu, or always expanded inline. Automatic uses dropdowns when the menu holds more than one multi-screen."
-msgstr "Comment les écrans multiples apparaissent dans le menu : automatiquement, toujours sous forme de sous-menu déroulant, ou toujours développés en ligne. Le mode automatique utilise des menus déroulants lorsque le menu contient plus d’un écran multiple."
-
 msgid "Menu label:"
 msgstr "Libellé de menu :"
 
@@ -4217,6 +4208,9 @@ msgstr "Écrans&nbsp;<u>M</u>ultiples ({num})"
 
 msgid "Multi-Screens are used to split a large amount of information across multiple screens."
 msgstr "Les écrans multiples sont utilisés pour répartir une grande quantité d'informations sur plusieurs écrans."
+
+msgid "Multi-screen submenus"
+msgstr "Sous-menus des écrans multiples"
 
 msgid "Multi-screens"
 msgstr "Écrans multiples"
@@ -4429,6 +4423,9 @@ msgstr "Aucun Directeur·ice "
 
 msgid "No display controllers"
 msgstr "Aucun pilote d'afficheurs"
+
+msgid "No dropdowns"
+msgstr "Sans menus déroulants"
 
 msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
 msgstr "Aucune ronde éditable. Les compositions des rondes déjà appariées ne peuvent être modifiées ici."
@@ -6968,9 +6965,8 @@ msgstr "Les fonctionnalités suivant ne seront pas importées :"
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
 
-#, python-format
-msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
-msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé. Les jetons %%f=premier, %%l=dernier, %%t=tournoi sont automatiquement remplacés."
+msgid "The label used for this multi-screen in menus. Its range is appended automatically."
+msgstr "Le libellé utilisé pour cet écran multiple dans les menus. Sa plage est ajoutée automatiquement."
 
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
 msgstr "Le libellé utilisé pour cet écran dans les menus. S'il est vide, le nom du tournoi est utilisé."
@@ -7984,6 +7980,9 @@ msgstr "Par défaut"
 msgid "Use default - {option}"
 msgstr "Par défaut – {option}"
 
+msgid "Use dropdowns"
+msgstr "Utiliser des menus déroulants"
+
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
 msgstr "Utiliser uniquement les caractères \"{w}\" et \"{b}\" (ou laisser vide pour la valeur par défaut)."
 
@@ -8884,4 +8883,7 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
+#~ msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé. Les jetons %%f=premier, %%l=dernier, %%t=tournoi sont automatiquement remplacés."
 

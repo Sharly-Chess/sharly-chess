@@ -3315,6 +3315,9 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
+msgid "How multi-screens appear in the menu: automatically, always as a dropdown submenu, or always expanded inline. Automatic uses dropdowns when the menu holds more than one multi-screen."
+msgstr ""
+
 msgid "Hungary"
 msgstr ""
 
@@ -4206,6 +4209,9 @@ msgstr "<u>M</u>ulti-Screens ({num})"
 msgid "Multi-Screens are used to split a large amount of information across multiple screens."
 msgstr ""
 
+msgid "Multi-screen submenus"
+msgstr ""
+
 msgid "Multi-screens"
 msgstr ""
 
@@ -4416,6 +4422,9 @@ msgid "No director"
 msgstr ""
 
 msgid "No display controllers"
+msgstr ""
+
+msgid "No dropdowns"
 msgstr ""
 
 msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
@@ -6954,8 +6963,7 @@ msgstr ""
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr ""
 
-#, python-format
-msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
+msgid "The label used for this multi-screen in menus. Its range is appended automatically."
 msgstr ""
 
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
@@ -7970,6 +7978,9 @@ msgstr ""
 msgid "Use default - {option}"
 msgstr ""
 
+msgid "Use dropdowns"
+msgstr ""
+
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
 msgstr ""
 
@@ -8870,4 +8881,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
+#~ msgstr ""
 

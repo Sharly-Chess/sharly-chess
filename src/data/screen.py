@@ -309,6 +309,15 @@ class Screen:
             return self._resolve_menu_label(self.family.label_template)
         return self.name
 
+    @property
+    def menu_range_label(self) -> str:
+        """This screen's range alone (``%f - %l`` with abbreviated player
+        names). Used for the items of a family submenu."""
+        if not self.sorted_screen_sets:
+            return ''
+        first, last = self.sorted_screen_sets[0].range_bounds(abbreviated=True)
+        return f'{first} - {last}'
+
     def _menu_and_screens(self, admin: bool) -> "tuple['Menu | None', list['Screen']]":
         """The menu this screen belongs to and the screens it navigates to. A
         screen belongs to at most one menu; the menu is only displayed when it
@@ -338,7 +347,7 @@ class Screen:
         from data.menu import group_menu_nav_entries
 
         menu, screens = self._menu_and_screens(admin)
-        return group_menu_nav_entries(screens, menu)
+        return group_menu_nav_entries(screens, menu, current_screen=self)
 
     @cached_property
     def public_menu_nav_entries(self) -> list['MenuNavEntry']:

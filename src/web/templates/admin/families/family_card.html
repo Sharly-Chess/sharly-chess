@@ -62,7 +62,7 @@
             {% endif %}
             <div>
                 <i class="bi-hand-index pe-1"></i>
-                {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label) }}
+                {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}
             </div>
             <div class="{% if not family.timer %}text-secondary{% endif %}">
                 <i class="bi-clock-fill pe-1"></i>

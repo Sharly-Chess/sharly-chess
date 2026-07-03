@@ -18,9 +18,15 @@ class MenuNavEntry:
     """A single entry in a screen's navigation bar: either one screen, or a
     family shown as one item opening a submenu of its screens."""
 
-    def __init__(self, screens: list[Screen], family: Family | None = None):
+    def __init__(
+        self,
+        screens: list[Screen],
+        family: Family | None = None,
+        label: str | None = None,
+    ):
         self.screens = screens
         self.family = family
+        self._label = label
 
     @property
     def is_family(self) -> bool:
@@ -32,21 +38,89 @@ class MenuNavEntry:
 
     @property
     def label(self) -> str:
+        if self._label is not None:
+            return self._label
         if self.family is not None:
-            return self.family.nav_menu_label
+            return self.family.nav_menu_label()
         return self.screens[0].menu_entry_label
 
 
+def _inline_family_label(screen: Screen, multiple_families: bool) -> str:
+    """Label for a family screen shown as an individual (inline) item:
+    - a custom menu label is used as a prefix before this screen's range;
+    - automatically, the tournament name is used as the prefix only when
+      several families coexist in the menu;
+    - a single-screen family shows the prefix alone (no range)."""
+    family = screen.family
+    assert family is not None
+    menu_text = family.menu_text or ''
+    if '%f' in menu_text or '%l' in menu_text:
+        # The user tokenised the label themselves: resolve it per screen.
+        return screen.menu_entry_label
+    if menu_text:
+        prefix = menu_text.replace('%t', family.tournament.name)
+    elif multiple_families:
+        prefix = family.tournament.name
+    else:
+        prefix = ''
+    if len(family.screens_by_uniq_id) <= 1:
+        return prefix or family.tournament.name
+    return f'{prefix} {screen.menu_range_label}'.strip()
+
+
+def _dropdown_family_label(family: Family, range_screen: Screen | None) -> str:
+    """Title of a family dropdown: a custom label as prefix, else the
+    tournament name, followed by a range. The range is that of the currently
+    displayed screen (``range_screen``) when it belongs to the family,
+    otherwise the family's overall range."""
+    menu_text = family.menu_text or ''
+    if '%f' in menu_text or '%l' in menu_text:
+        # The user tokenised the label themselves.
+        if range_screen is not None:
+            return range_screen.menu_entry_label
+        return family.resolve_label(menu_text, abbreviated=True)
+    prefix = (
+        menu_text.replace('%t', family.tournament.name)
+        if menu_text
+        else family.tournament.name
+    )
+    if range_screen is not None:
+        range_label = range_screen.menu_range_label
+    else:
+        range_label = family.resolve_label('%f - %l', abbreviated=True)
+    return f'{prefix} {range_label}'.strip()
+
+
 def group_menu_nav_entries(
-    screens: list[Screen], menu: 'Menu | None' = None
+    screens: list[Screen],
+    menu: 'Menu | None' = None,
+    current_screen: Screen | None = None,
 ) -> list['MenuNavEntry']:
     """Build the navigation entries for a menu's screens. When the menu uses
     submenus, each family's screens (kept in first-appearance order) are
     collapsed into a single dropdown entry; otherwise every screen is a
     top-level entry (families expanded inline)."""
+    family_ids = {screen.family.id for screen in screens if screen.family is not None}
+    multiple_families = len(family_ids) > 1
     if menu is None or not menu.use_submenus(screens):
-        return [MenuNavEntry([screen]) for screen in screens]
-    entries: list[MenuNavEntry] = []
+        entries: list[MenuNavEntry] = []
+        for screen in screens:
+            if screen.family is None:
+                entries.append(MenuNavEntry([screen]))
+            else:
+                entries.append(
+                    MenuNavEntry(
+                        [screen],
+                        label=_inline_family_label(screen, multiple_families),
+                    )
+                )
+        return entries
+    current_family_id = (
+        current_screen.family.id
+        if current_screen is not None and current_screen.family is not None
+        else None
+    )
+    entries = []
     family_entry_by_id: dict[int, MenuNavEntry] = {}
     for screen in screens:
         family = screen.family
@@ -55,7 +129,10 @@ def group_menu_nav_entries(
             continue
         entry = family_entry_by_id.get(family.id)
         if entry is None:
-            entry = MenuNavEntry([], family)
+            range_screen = current_screen if family.id == current_family_id else None
+            entry = MenuNavEntry(
+                [], family, label=_dropdown_family_label(family, range_screen)
+            )
             family_entry_by_id[family.id] = entry
             entries.append(entry)
         entry.screens.append(screen)

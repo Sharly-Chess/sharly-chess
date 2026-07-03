@@ -109,20 +109,44 @@ class Family:
         """The family's compact name for the navigation menu."""
         return self.resolve_label(self.label_template, abbreviated=True)
 
-    @property
-    def menu_label(self) -> str:
-        """The family's menu label (full): the custom menu text with its
-        tokens resolved, or the family name."""
-        if self.menu_text:
-            return self.resolve_label(self.menu_text, abbreviated=False)
-        return self.display_name
+    def _menu_label_template(self, with_tournament: bool = False) -> str:
+        """The menu-label template: the range ``%f - %l`` is appended to the
+        custom menu text (or used alone when there is none), unless the user
+        already placed a ``%f``/``%l`` token themselves. When automatic (no
+        custom text) and ``with_tournament``, the tournament name is prefixed
+        to disambiguate families of different tournaments. A single-screen
+        family has no meaningful range, so the range is not appended (the
+        tournament name is used when automatic)."""
+        text = self.menu_text or ''
+        if '%f' in text or '%l' in text:
+            return text
+        if len(self.screens_by_uniq_id) <= 1:
+            return text or '%t'
+        if not text and with_tournament:
+            text = '%t'
+        return f'{text} %f - %l'.strip()
+
+    def menu_label(self, with_tournament: bool = False) -> str:
+        """The family's menu label (full), with its tokens resolved."""
+        return self.resolve_label(
+            self._menu_label_template(with_tournament), abbreviated=False
+        )
+
+    def nav_menu_label(self, with_tournament: bool = False) -> str:
+        """The family's menu label for the navigation menu (abbreviated)."""
+        return self.resolve_label(
+            self._menu_label_template(with_tournament), abbreviated=True
+        )
 
     @property
-    def nav_menu_label(self) -> str:
-        """The family's menu label for the navigation menu (abbreviated)."""
-        if self.menu_text:
-            return self.resolve_label(self.menu_text, abbreviated=True)
-        return self.nav_label
+    def in_multi_family_menu(self) -> bool:
+        """Whether the menu this family belongs to covers more than one
+        family."""
+        for menu in self.event.sorted_menus:
+            families = menu.covered_families
+            if any(family.id == self.id for family in families):
+                return len(families) > 1
+        return False
 
     @property
     def tournament_id(self) -> int:

@@ -98,7 +98,7 @@
                     <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
                         {% for entry in menu_entries %}
                             {% set spacing = '%s %s'|format('ms-0' if loop.first else 'ms-1', 'me-0' if loop.last else 'me-1') %}
-                            {% if entry.is_family %}
+                            {% if entry.is_family and entry.screens|length > 1 %}
                                 {% set ns = namespace(selected=false) %}
                                 {% for sub in entry.screens %}
                                     {% if sub.uniq_id == screen.uniq_id %}{% set ns.selected = true %}{% endif %}
@@ -116,7 +116,7 @@
                                                 hx-target="body"
                                                 hx-push-url="true"
                                                 hx-indicator="#please-wait"
-                                            >{{ sub.menu_entry_label }}</a>
+                                            >{{ sub.menu_range_label }}</a>
                                         {% endfor %}
                                     </div>
                                 </span>
