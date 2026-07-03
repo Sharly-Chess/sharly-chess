@@ -734,19 +734,10 @@ msgstr ""
 msgid "Add manual estimated ratings"
 msgstr ""
 
-msgid "Add multi-screens"
-msgstr ""
-
 msgid "Add period"
 msgstr ""
 
 msgid "Add players"
-msgstr ""
-
-msgid "Add screen types"
-msgstr ""
-
-msgid "Add screens"
 msgstr ""
 
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
@@ -4215,6 +4206,9 @@ msgstr "<u>M</u>ulti-Screens ({num})"
 msgid "Multi-Screens are used to split a large amount of information across multiple screens."
 msgstr ""
 
+msgid "Multi-screens"
+msgstr ""
+
 msgid "Multi-screens:"
 msgstr ""
 
@@ -4799,9 +4793,6 @@ msgid "Number of players: %(num)d"
 msgstr ""
 
 msgid "Number of prizes"
-msgstr ""
-
-msgid "Number of screen types"
 msgstr ""
 
 msgid "Number of screens"
@@ -6963,7 +6954,8 @@ msgstr ""
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr ""
 
-msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
+#, python-format
+msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
 msgstr ""
 
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
@@ -7023,10 +7015,6 @@ msgid "The minimum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
-msgstr ""
-
-#, python-format
-msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr ""
 
 msgid "The network on which the devices are connected."
