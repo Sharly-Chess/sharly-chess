@@ -1555,7 +1555,7 @@ msgid "Choose one, several or no teams (all if none)."
 msgstr "Choisir aucune, une ou plusieurs équipes (toutes si aucune choisie)."
 
 msgid "Choose screen types to add"
-msgstr "Choisir des types d'écran à ajouter"
+msgstr "Choisir des types d’écran à ajouter"
 
 msgid "Choose screens to add"
 msgstr "Choisir des écrans à ajouter"
