@@ -11,7 +11,7 @@ from common.i18n.utils import normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
-from data.screen_set import ScreenSet
+from data.screen_set import ScreenSet, format_range
 from data.timer import Timer
 
 from utils.enum import (
@@ -286,13 +286,15 @@ class Screen:
 
     def _resolve_menu_label(self, template: str) -> str:
         """Substitute %t (tournament), %f/%l (this screen's first/last, with
-        abbreviated player names) in a menu label template."""
+        abbreviated player names) and %r (the first–last range) in a menu
+        label template."""
         if not self.sorted_screen_sets:
             return template
         screen_set = self.sorted_screen_sets[0]
         text = template.replace('%t', screen_set.tournament.name)
-        if '%f' in text or '%l' in text:
+        if '%f' in text or '%l' in text or '%r' in text:
             first, last = screen_set.range_bounds(abbreviated=True)
+            text = text.replace('%r', format_range(first, last))
             text = text.replace('%f', first).replace('%l', last)
         return text
 
@@ -316,7 +318,7 @@ class Screen:
         if not self.sorted_screen_sets:
             return ''
         first, last = self.sorted_screen_sets[0].range_bounds(abbreviated=True)
-        return f'{first} - {last}'
+        return format_range(first, last)
 
     def _menu_and_screens(self, admin: bool) -> "tuple['Menu | None', list['Screen']]":
         """The menu this screen belongs to and the screens it navigates to. A

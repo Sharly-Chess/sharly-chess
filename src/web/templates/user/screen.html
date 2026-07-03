@@ -97,13 +97,12 @@
                 {% if menu_entries %}
                     <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
                         {% for entry in menu_entries %}
-                            {% set spacing = '%s %s'|format('ms-0' if loop.first else 'ms-1', 'me-0' if loop.last else 'me-1') %}
                             {% if entry.is_family and entry.screens|length > 1 %}
                                 {% set ns = namespace(selected=false) %}
                                 {% for sub in entry.screens %}
                                     {% if sub.uniq_id == screen.uniq_id %}{% set ns.selected = true %}{% endif %}
                                 {% endfor %}
-                                <span class="screen-menu-group {{ spacing }}">
+                                <span class="screen-menu-group">
                                     <span
                                         class="screen-menu-item screen-menu-family cursor-pointer text-nowrap py-0 px-1 my-0 {% if ns.selected %}selected{% endif %}"
                                         data-submenu-toggle
@@ -122,7 +121,7 @@
                                 </span>
                             {% else %}
                                 <a
-                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {{ spacing }} {% if entry.screen.uniq_id == screen.uniq_id %}selected{% endif %}"
+                                    class="screen-menu-item cursor-pointer text-nowrap py-0 px-1 my-0 {% if entry.screen.uniq_id == screen.uniq_id %}selected{% endif %}"
                                     hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=entry.screen.uniq_id) }}"
                                     hx-target="body"
                                     hx-push-url="true"

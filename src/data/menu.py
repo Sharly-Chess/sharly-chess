@@ -87,7 +87,7 @@ def _dropdown_family_label(family: Family, range_screen: Screen | None) -> str:
     if range_screen is not None:
         range_label = range_screen.menu_range_label
     else:
-        range_label = family.resolve_label('%f - %l', abbreviated=True)
+        range_label = family.resolve_label('%r', abbreviated=True)
     return f'{prefix} {range_label}'.strip()
 
 

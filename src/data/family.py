@@ -8,6 +8,7 @@ from _weakref import ReferenceType
 
 from common.i18n import _
 from data.screen import Screen
+from data.screen_set import format_range
 
 from utils.enum import (
     ScreenType,
@@ -77,16 +78,18 @@ class Family:
 
     def resolve_label(self, template: str, abbreviated: bool = False) -> str:
         """Substitute the tokens %t (tournament), %f/%l (first/last of the
-        family's overall range) in a label template. ``abbreviated`` shortens
-        player names (menu navigation)."""
+        family's overall range) and %r (the first–last range) in a label
+        template. ``abbreviated`` shortens player names (menu navigation)."""
         text = template.replace('%t', self.tournament.name)
-        if '%f' not in text and '%l' not in text:
+        if '%f' not in text and '%l' not in text and '%r' not in text:
             return text
         screens = list(self.screens_by_uniq_id.values())
         if not screens:
-            return text.replace('%f', '-').replace('%l', '-')
-        first = screens[0].sorted_screen_sets[0].range_bounds(abbreviated)[0]
-        last = screens[-1].sorted_screen_sets[0].range_bounds(abbreviated)[1]
+            first = last = '-'
+        else:
+            first = screens[0].sorted_screen_sets[0].range_bounds(abbreviated)[0]
+            last = screens[-1].sorted_screen_sets[0].range_bounds(abbreviated)[1]
+        text = text.replace('%r', format_range(first, last))
         return text.replace('%f', first).replace('%l', last)
 
     @property
@@ -97,7 +100,7 @@ class Family:
         name = self.name
         if '%f' in name or '%l' in name:
             return name
-        return f'{name} (%f - %l)'
+        return f'{name} (%r)'
 
     @property
     def display_name(self) -> str:
@@ -124,7 +127,7 @@ class Family:
             return text or '%t'
         if not text and with_tournament:
             text = '%t'
-        return f'{text} %f - %l'.strip()
+        return f'{text} %r'.strip()
 
     def menu_label(self, with_tournament: bool = False) -> str:
         """The family's menu label (full), with its tokens resolved."""

@@ -152,6 +152,10 @@
 */
 .screen-menu {
     font-size: x-large;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.1rem 0.5rem;
 }
 .screen-menu-item {
     color: red;

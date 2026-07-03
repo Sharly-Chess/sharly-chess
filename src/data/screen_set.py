@@ -26,6 +26,12 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+def format_range(first: str, last: str) -> str:
+    """Format a first–last range for menu labels: ``-`` in English, ``à`` in
+    French."""
+    return _('%(first)s - %(last)s') % {'first': first, 'last': last}
+
+
 class ScreenSet:
     """A data wrapper around a stored screen set."""
 

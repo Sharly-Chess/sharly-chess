@@ -4078,6 +4078,9 @@ msgstr "Le menu [{menu}] a été mis à jour."
 msgid "Menu content"
 msgstr "Contenu du menu"
 
+msgid "%(first)s - %(last)s"
+msgstr "%(first)s à %(last)s"
+
 msgid "Menu label:"
 msgstr "Libellé de menu :"
 
