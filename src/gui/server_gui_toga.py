@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import io
 import json
+import locale
 import logging
 import os
 import queue
@@ -286,6 +287,10 @@ class SharlyChessServerToga(toga.App):
         # Use FLATPAK_ID if available to match the sandbox ID
         app_id = os.environ.get('FLATPAK_ID', 'com.sharlychess.app')
 
+        # Explicitly request .NET Framework 4.x by setting this variable
+        # (see https://github.com/Sharly-Chess/sharly-chess/pull/2098)
+        os.environ['TOGA_WINFORMS_USE_NETFX'] = '1'
+
         super().__init__(
             formal_name='Sharly Chess',
             app_id=app_id,
@@ -293,6 +298,16 @@ class SharlyChessServerToga(toga.App):
             home_page='https://sharly-chess.com',
             version=str(SHARLY_CHESS_VERSION),
         )
+
+        # reset the locale after having called toga.App.__init__(), needed by Togo 0.5.3+
+        locale.setlocale(
+            locale.LC_ALL,
+            (
+                None,
+                None,
+            ),
+        )
+
         self.debug = debug
         self.port = port
 
