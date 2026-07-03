@@ -109,7 +109,10 @@ class MenuAdminController(BaseEventAdminController):
             'action': action,
             'data': default_data | data,
             'errors': errors or {},
-            'submenu_mode_options': MenuSubmenuMode.select_options(),
+            'submenu_mode_options': {
+                mode.value: SelectOption(mode.name, tooltip=mode.tooltip)
+                for mode in MenuSubmenuMode
+            },
         }
 
     @classmethod

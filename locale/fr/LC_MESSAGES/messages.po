@@ -33,6 +33,10 @@ msgstr[0] "%(count)s groupe automatique"
 msgstr[1] "%(count)s groupes automatiques"
 
 #, python-format
+msgid "%(first)s - %(last)s"
+msgstr "%(first)s à %(last)s"
+
+#, python-format
 msgid "%(minutes)d minutes after"
 msgstr "%(minutes)d minutes après"
 
@@ -287,10 +291,6 @@ msgstr "(%(total)s au total, %(own)s de sa propre fédération)"
 
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr "(*) Connaître la liste des évènements en cours est nécessaire pour sélection les évènements avant de s'authentifier."
-
-#, python-format
-msgid "(amounts in %(currency)s)"
-msgstr "(montants en %(currency)s)"
 
 msgid "(by default)"
 msgstr "(par défaut)"
@@ -3347,9 +3347,6 @@ msgstr "L'horaire [{hour}] a été créé."
 msgid "Hours"
 msgstr "Horaires"
 
-msgid "How multi-screens appear in the menu: automatically, always as a dropdown submenu, or always expanded inline. Automatic uses dropdowns when the menu holds more than one multi-screen."
-msgstr "Comment les écrans multiples apparaissent dans le menu : automatiquement, toujours sous forme de sous-menu déroulant, ou toujours développés en ligne. Le mode automatique utilise des menus déroulants lorsque le menu contient plus d’un écran multiple."
-
 msgid "Hungary"
 msgstr "Hongrie"
 
@@ -4110,9 +4107,6 @@ msgstr "Le menu [{menu}] a été mis à jour."
 msgid "Menu content"
 msgstr "Contenu du menu"
 
-msgid "%(first)s - %(last)s"
-msgstr "%(first)s à %(last)s"
-
 msgid "Menu label:"
 msgstr "Libellé de menu :"
 
@@ -4249,6 +4243,15 @@ msgstr "Sous-menus des écrans multiples"
 
 msgid "Multi-screens"
 msgstr "Écrans multiples"
+
+msgid "Multi-screens always appear as dropdown submenus."
+msgstr "Les écrans multiples apparaissent toujours en sous-menus déroulants."
+
+msgid "Multi-screens appear as dropdowns when the menu holds more than one, otherwise they are expanded inline."
+msgstr "Les écrans multiples apparaissent en menus déroulants lorsque le menu en contient plus d’un, sinon ils sont développés en ligne."
+
+msgid "Multi-screens are always expanded inline."
+msgstr "Les écrans multiples sont toujours développés en ligne."
 
 msgid "Multi-screens:"
 msgstr "Écrans multiples :"
@@ -8948,7 +8951,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
-#~ msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé. Les jetons %%f=premier, %%l=dernier, %%t=tournoi sont automatiquement remplacés."
 

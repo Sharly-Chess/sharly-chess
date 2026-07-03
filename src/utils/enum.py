@@ -1244,9 +1244,20 @@ class MenuSubmenuMode(StrEnum):
             case _:
                 raise ValueError(f'Invalid submenu mode: {self}')
 
-    @classmethod
-    def select_options(cls) -> dict[str, str]:
-        return {mode.value: mode.name for mode in cls}
+    @property
+    def tooltip(self) -> str:
+        match self:
+            case MenuSubmenuMode.AUTOMATIC:
+                return _(
+                    'Multi-screens appear as dropdowns when the menu holds '
+                    'more than one, otherwise they are expanded inline.'
+                )
+            case MenuSubmenuMode.DROPDOWN:
+                return _('Multi-screens always appear as dropdown submenus.')
+            case MenuSubmenuMode.NO_DROPDOWN:
+                return _('Multi-screens are always expanded inline.')
+            case _:
+                raise ValueError(f'Invalid submenu mode: {self}')
 
 
 class PlayersScreenPlayerFormat(IntEnum):

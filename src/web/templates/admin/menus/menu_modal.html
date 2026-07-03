@@ -48,8 +48,8 @@
                         {{ admin_macros.select_input(
                             name='submenu_mode',
                             label=_('%(string)s:', string=_('Multi-screen submenus')),
-                            tooltip_text=_('How multi-screens appear in the menu: automatically, always as a dropdown submenu, or always expanded inline. Automatic uses dropdowns when the menu holds more than one multi-screen.'),
                             select_options=submenu_mode_options,
+                            tooltip_select=true,
                             data=data, errors=errors
                         ) }}
                     </div>

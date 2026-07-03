@@ -33,6 +33,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(first)s - %(last)s"
+msgstr ""
+
+#, python-format
 msgid "%(minutes)d minutes after"
 msgstr ""
 
@@ -286,10 +290,6 @@ msgid "(%(total)s total, %(own)s from own federation)"
 msgstr ""
 
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
-msgstr ""
-
-#, python-format
-msgid "(amounts in %(currency)s)"
 msgstr ""
 
 msgid "(by default)"
@@ -3347,9 +3347,6 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
-msgid "How multi-screens appear in the menu: automatically, always as a dropdown submenu, or always expanded inline. Automatic uses dropdowns when the menu holds more than one multi-screen."
-msgstr ""
-
 msgid "Hungary"
 msgstr ""
 
@@ -4245,6 +4242,15 @@ msgid "Multi-screen submenus"
 msgstr ""
 
 msgid "Multi-screens"
+msgstr ""
+
+msgid "Multi-screens always appear as dropdown submenus."
+msgstr ""
+
+msgid "Multi-screens appear as dropdowns when the menu holds more than one, otherwise they are expanded inline."
+msgstr ""
+
+msgid "Multi-screens are always expanded inline."
 msgstr ""
 
 msgid "Multi-screens:"
@@ -8943,7 +8949,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used. The tokens %%f=first, %%l=last, %%t=tournament are automatically replaced."
-#~ msgstr ""
 
