@@ -10,6 +10,8 @@ Sharly Chess now supports **Teams** events! (5.0.0)
 
 ## Screens
 
+- **Menu** support has been completely redesigned for a better experience (5.0.0)
+- **Families** have been renamed **Multi-Screens** (5.0.0)
 - **Check-in screens column display**: Check-in screens now correctly use the configure column count (5.0.0)
 
 ## Prizes

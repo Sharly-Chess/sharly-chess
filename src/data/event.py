@@ -25,6 +25,7 @@ from data.player_categories import (
     SeniorCategory,
 )
 from data.rotator import Rotator
+from data.menu import Menu
 from data.screen import Screen
 from data.team import Team, TeamGroup
 from data.timer import Timer
@@ -45,6 +46,7 @@ from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredAccount,
     StoredRotator,
+    StoredMenu,
     StoredPermission,
     StoredRole,
     StoredTeam,
@@ -931,6 +933,77 @@ class Event:
             self.stored_event.stored_rotators.remove(rotator.stored_rotator)
         if rotator.id in self.rotators_by_id:
             del self.rotators_by_id[rotator.id]
+
+    @cached_property
+    def menus_by_id(self) -> dict[int, Menu]:
+        return {
+            stored_menu.id: Menu(self, stored_menu)
+            for stored_menu in self.stored_event.stored_menus
+            if stored_menu.id is not None
+        }
+
+    @cached_property
+    def menus_by_name(self) -> dict[str, Menu]:
+        return {menu.name: menu for menu in self.menus_by_id.values()}
+
+    @property
+    def sorted_menus(self) -> list[Menu]:
+        return sorted(self.menus_by_id.values(), key=by('name'))
+
+    def get_unused_menu_name(self, base_name: str | None = None) -> str:
+        """Returns the first unused menu name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
+        return Utils.get_unused_item_name(
+            base_name or _('New menu'), self.menus_by_name
+        )
+
+    def create_menu(self, stored_menu: StoredMenu) -> Menu:
+        with EventDatabase(self.uniq_id, True) as database:
+            menu_id = database.add_stored_menu(stored_menu)
+            stored_menu.id = menu_id
+            for menu_item in stored_menu.stored_menu_items:
+                menu_item.menu_id = menu_id
+                menu_item.id = database.add_stored_menu_item(menu_item)
+        self.stored_event.stored_menus.append(stored_menu)
+        menu = Menu(self, stored_menu)
+        self.menus_by_id[menu.id] = menu
+        return menu
+
+    def update_menu(self, stored_menu: StoredMenu):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_menu(stored_menu)
+
+    def delete_menu(self, menu: Menu):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_menu(menu.id)
+        with suppress(ValueError):
+            self.stored_event.stored_menus.remove(menu.stored_menu)
+        if menu.id in self.menus_by_id:
+            del self.menus_by_id[menu.id]
+
+    @property
+    def menu_claimed_screen_types(self) -> set[ScreenType]:
+        """Screen types already used as an 'all screens of this type' item
+        in some menu. A screen may only belong to a single menu."""
+        return {
+            screen_type
+            for menu in self.menus_by_id.values()
+            for screen_type in menu.screen_types
+        }
+
+    @property
+    def menu_claimed_screen_ids(self) -> set[int]:
+        """Ids of screens added individually to some menu."""
+        return {
+            screen.id for menu in self.menus_by_id.values() for screen in menu.screens
+        }
+
+    @property
+    def menu_claimed_family_ids(self) -> set[int]:
+        """Ids of families added to some menu."""
+        return {
+            family.id for menu in self.menus_by_id.values() for family in menu.families
+        }
 
     @cached_property
     def display_controllers_by_id(self) -> dict[int, DisplayController]:

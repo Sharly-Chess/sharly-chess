@@ -3784,6 +3784,13 @@ class Tournament:
         )
         return self._tournament_players_by_rank
 
+    def ensure_tournament_player_ranks_computed(self) -> None:
+        """Compute player ranks on demand when they have not been computed
+        yet, so rank-dependent derivations (e.g. a ranking screen's default
+        name) work without the caller having to precompute them."""
+        if self._tournament_players_by_rank is None:
+            self.compute_tournament_player_ranks()
+
     def add_result(self, board: Board, white_result: Result):
         """Stores the given result for the given `board` in the current round.
         Stores the `white_result` directly, and uses the opposite result

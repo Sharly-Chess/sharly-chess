@@ -8,14 +8,14 @@
                 {% set _first_set = admin_screen.sorted_screen_sets | first %}
                 {% if admin_screen.type in ['boards', 'input'] %}
                     {% if _first_set and _first_set.shows_team_matches %}
-                        {{ _('Match sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                        {{ _('Match sets of screen %(screen_name)s', screen_name=admin_screen.name) }}
                     {% else %}
-                        {{ _('Board sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                        {{ _('Board sets of screen %(screen_name)s', screen_name=admin_screen.name) }}
                     {% endif %}
                 {% elif admin_event.is_team_event %}
-                    {{ _('Team sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                    {{ _('Team sets of screen %(screen_name)s', screen_name=admin_screen.name) }}
                 {% else %}
-                    {{ _('Player sets of screen [%(screen_uniq_id)s]', screen_uniq_id=admin_screen.uniq_id) }}
+                    {{ _('Player sets of screen %(screen_name)s', screen_name=admin_screen.name) }}
                 {% endif %}
             </h2>
         </div>

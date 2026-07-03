@@ -47,6 +47,7 @@ from web.controllers.admin.prize_config_admin_controller import (
 )
 from web.controllers.profile_controller import ProfileController
 from web.controllers.admin.rotator_admin_controller import RotatorAdminController
+from web.controllers.admin.menu_admin_controller import MenuAdminController
 from web.controllers.admin.screen_config_admin_controller import (
     ScreenConfigAdminController,
 )
@@ -96,6 +97,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     TimerAdminController,
     FamilyAdminController,
     RotatorAdminController,
+    MenuAdminController,
     PlayerAdminController,
     DisplayControllerAdminController,
     QRCodeController,

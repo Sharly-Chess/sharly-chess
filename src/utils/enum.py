@@ -1223,6 +1223,43 @@ class ScreenType(StrEnum):
                 raise ValueError(f'Invalid screen type: {self}')
 
 
+class MenuSubmenuMode(StrEnum):
+    """How a menu presents its multi-screens (families) in the navigation
+    bar: automatically, always as a dropdown submenu, or always expanded
+    inline."""
+
+    AUTOMATIC = 'automatic'
+    DROPDOWN = 'dropdown'
+    NO_DROPDOWN = 'no_dropdown'
+
+    @property
+    def name(self) -> str:
+        match self:
+            case MenuSubmenuMode.AUTOMATIC:
+                return _('Automatic')
+            case MenuSubmenuMode.DROPDOWN:
+                return _('Use dropdowns')
+            case MenuSubmenuMode.NO_DROPDOWN:
+                return _('No dropdowns')
+            case _:
+                raise ValueError(f'Invalid submenu mode: {self}')
+
+    @property
+    def tooltip(self) -> str:
+        match self:
+            case MenuSubmenuMode.AUTOMATIC:
+                return _(
+                    'Multi-screens appear as dropdowns when the menu holds '
+                    'more than one, otherwise they are expanded inline.'
+                )
+            case MenuSubmenuMode.DROPDOWN:
+                return _('Multi-screens always appear as dropdown submenus.')
+            case MenuSubmenuMode.NO_DROPDOWN:
+                return _('Multi-screens are always expanded inline.')
+            case _:
+                raise ValueError(f'Invalid submenu mode: {self}')
+
+
 class PlayersScreenPlayerFormat(IntEnum):
     NAME = 1
     NAME_RATING = 2
