@@ -1,11 +1,10 @@
 from functools import cached_property
 from logging import Logger
-from pathlib import Path
-from typing import Any, TYPE_CHECKING, ClassVar
+from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
-from common import EVENTS_DIR
+from common import CONFIG_FILE
 from common.exception import SharlyChessException
 from common.logger import get_logger
 from database.sqlite.config import migrations
@@ -27,15 +26,11 @@ logger: Logger = get_logger()
 class ConfigDatabase(MigrationDatabase):
     """The SQLite database class for Sharly Chess config."""
 
-    # The name of the file holding the configuration of the application.
-    config_database_name: ClassVar[str] = '.scc'
-    # The file holding the configuration of the application.
-    config_database_path: ClassVar[Path] = EVENTS_DIR / config_database_name
     is_setup = False
 
     def __init__(self, write: bool = False, enable_foreign_keys: bool = True):
         super().__init__(
-            self.config_database_path,
+            CONFIG_FILE,
             write,
             enable_foreign_keys=enable_foreign_keys,
         )
