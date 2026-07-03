@@ -84,7 +84,9 @@ def _app_base_dir() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
-def _default_prod_data_dir() -> Path:
+def _default_data_dir() -> Path:
+    if DEVEL_ENV:
+        return BASE_DIR / 'dev-data'
     match sys.platform:
         case 'win32':
             doc_reg_key = (
@@ -102,12 +104,10 @@ def _default_prod_data_dir() -> Path:
 def _app_data_dir() -> Path:
     if FLATPAK_ID:
         return Path()
-    custom = ProgramVar.DATA_DIR.read_value()
-    if custom:
-        return Path(custom)
-    elif DEVEL_ENV:
-        return BASE_DIR / 'dev-data'
-    default = _default_prod_data_dir()
+    data_dir_val = ProgramVar.DATA_DIR.read_value()
+    if data_dir_val:
+        return Path(data_dir_val)
+    default = _default_data_dir()
     ProgramVar.DATA_DIR.write_value(str(default))
     return default
 
@@ -150,26 +150,31 @@ if not os.access(DATA_DIR, os.W_OK):
 
 previous_dir_val = ProgramVar.PREVIOUS_DATA_DIR.read_value()
 if previous_dir_val:
-    # The data dir changed: move the previous content over if the new dir is empty.
     previous_dir = Path(previous_dir_val)
     if previous_dir.exists() and not any(DATA_DIR.iterdir()):
-        is_child = previous_dir in DATA_DIR.parents
-        for elem_path in previous_dir.glob('*'):
-            if is_child and (elem_path == DATA_DIR or elem_path in DATA_DIR.parents):
-                continue
-            shutil.move(elem_path, DATA_DIR)
-        if not is_child:
-            previous_dir.rmdir()
-        from common.logger import get_logger
+        # The data dir changed: move the previous content over
+        try:
+            # Remove the dir so it's copied at the location instead of in a subfolder
+            DATA_DIR.rmdir()
+            shutil.move(previous_dir, DATA_DIR)
+            # Only load the logger after the move (active logger fails the move)
+            from common.logger import get_logger
 
-        logger = get_logger()
-        logger.info(
-            'Data directory moved from "%s" to "%s"',
-            previous_dir,
-            DATA_DIR,
-        )
-        ProgramVar.PREVIOUS_DATA_DIR.clear_value()
-
+            logger = get_logger()
+            logger.info(
+                'Data directory moved from "%s" to "%s"',
+                previous_dir,
+                DATA_DIR,
+            )
+            ProgramVar.PREVIOUS_DATA_DIR.clear_value()
+        except OSError as e:
+            ProgramVar.DATA_DIR.write_value(str(previous_dir))
+            ProgramVar.PREVIOUS_DATA_DIR.clear_value()
+            raise SharlyChessException(
+                'An error occurred while moving the data directory '
+                f'from "{previous_dir}" to "{DATA_DIR}". '
+                f'The move has been canceled.\n\nError: {e}',
+            )
 
 for directory in (
     ARCHIVES_DIR,

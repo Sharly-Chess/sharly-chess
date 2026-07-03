@@ -696,6 +696,8 @@ class SharlyChessServerToga(toga.App):
         if not os.access(new_data_dir, os.W_OK):
             # directory is not writable
             error = _('You do not have write permission on this folder.')
+        if DATA_DIR in new_data_dir.parents:
+            error = _("The new folder can't be a sub folder of the current folder.")
         if error:
             error_dialog = toga.ErrorDialog(_('Invalid folder'), error)
             await self.main_window.dialog(error_dialog)
@@ -1131,7 +1133,7 @@ class SharlyChessServerToga(toga.App):
         except Exception:
             return False
 
-    def quit_app(self, restart: bool = False) -> None:
+    def quit_app(self) -> None:
         loop = self.server_loop
         if loop is None or loop.is_closed():
             return
@@ -1145,21 +1147,6 @@ class SharlyChessServerToga(toga.App):
                 task.cancel()
             loop.stop()
             self.exit()
-            if restart:
-                restart_kwargs: dict[str, Any] = {}
-                if sys.platform == 'win32':
-                    restart_kwargs['creationflags'] = (
-                        subprocess.DETACHED_PROCESS
-                        | subprocess.CREATE_NEW_PROCESS_GROUP
-                    )
-                else:
-                    restart_kwargs['start_new_session'] = True
-                restart_args = [sys.executable] + sys.argv
-                if '--port' not in restart_args:
-                    port = SharlyChessConfig().web_port
-                    restart_args += ['--port', str(port)]
-                restart_process = subprocess.Popen(restart_args, **restart_kwargs)
-                restart_process.wait()
 
         loop.call_soon_threadsafe(_stop)
 

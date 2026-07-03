@@ -7088,6 +7088,9 @@ msgstr ""
 msgid "The network on which the devices are connected."
 msgstr ""
 
+msgid "The new folder can't be a sub folder of the current folder."
+msgstr ""
+
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
 msgstr ""
 

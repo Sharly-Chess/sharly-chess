@@ -17,7 +17,8 @@ MACOS_SUPPORT_DIR = (
     Path.home() / 'Library' / 'Application Support' / 'com.sharlychess.thp'
 )
 MACOS_DATA_PLIST = MACOS_SUPPORT_DIR.parent / 'com.sharlychess.plist'
-MACOS_DATA_PLIST.parent.mkdir(parents=True, exist_ok=True)
+if sys.platform == 'darwin':
+    MACOS_DATA_PLIST.parent.mkdir(parents=True, exist_ok=True)
 
 LINUX_ENV_FILE = Path.home() / '.bashrc'
 WIN_REG_PATH = r'Software\Sharly Chess\Sharly Chess'

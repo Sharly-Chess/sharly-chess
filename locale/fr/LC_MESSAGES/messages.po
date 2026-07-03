@@ -7090,6 +7090,9 @@ msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seui
 msgid "The network on which the devices are connected."
 msgstr "Le réseau auquel les appareils sont connectés."
 
+msgid "The new folder can't be a sub folder of the current folder."
+msgstr "Le nouveau dossier ne peut être un sous-dossier do dossier actuel."
+
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
 msgstr "Le nombre d'échiquiers par écran, facultatif (le nombre d'écrans s'adapte au nombre d'échiquiers)."
 
