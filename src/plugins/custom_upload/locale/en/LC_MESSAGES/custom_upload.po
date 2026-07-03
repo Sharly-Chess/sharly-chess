@@ -1,5 +1,8 @@
+msgid "Add document"
+msgstr ""
+
 msgid "Cancel"
-msgstr "Annuler"
+msgstr ""
 
 msgid "Change documents"
 msgstr ""
@@ -17,6 +20,9 @@ msgid "Custom Upload"
 msgstr ""
 
 msgid "Document URL:"
+msgstr ""
+
+msgid "Document list"
 msgstr ""
 
 msgid "Documents"
@@ -85,8 +91,11 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+msgid "Remove the document from the upload list."
+msgstr ""
+
 msgid "Save"
-msgstr "Enregistrer"
+msgstr ""
 
 msgid "Site"
 msgstr ""

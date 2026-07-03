@@ -43,7 +43,7 @@ class CustomUploadUtils:
         plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.ftp_host:
             return _('FTP host is not defined.')
-        if not plugin_data.ftp_username or not plugin_data.ftp_password:
+        if not plugin_data.ftp_username:
             return _('FTP credentials are not defined.')
         return None
 
@@ -74,8 +74,6 @@ class CustomUploadUtils:
         if (
             not custom_upload_plugin_data.ftp_host
             or not custom_upload_plugin_data.ftp_username
-            or not custom_upload_plugin_data.ftp_password
-            or not custom_upload_plugin_data.server_path
         ):
             return [NotConfiguredCustomUploadStatus()]
 

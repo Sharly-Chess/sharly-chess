@@ -27,7 +27,6 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from database.sqlite.event.event_store import StoredTournament
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_status import (
     UnexpectedFailureCustomUploadStatus,
@@ -150,34 +149,12 @@ class CustomUploadUploader:
         return result
 
     @classmethod
-    def update_eligible_tournaments(
-        cls, tournaments: list[Tournament]
-    ) -> list[Tournament]:
-        eligible_tournaments: list[Tournament] = []
-        for tournament in tournaments:
-            result = cls.get_updated_tournament_upload_result(tournament)
-            if result.status == CustomUploadStatus.SETTINGS_ERROR:
-                # Skip this tournament if we have a SETTINGS_ERROR
-                continue
-
-            eligible_tournaments.append(tournament)
-        return eligible_tournaments
-
-    @classmethod
-    def custom_last_upload(
-        cls, tournament: Tournament | StoredTournament
-    ) -> datetime | None:
-        plugin_data: CustomUploadTournamentPluginData
-        if isinstance(tournament, Tournament):
-            plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
-        else:
-            raw_plugin_data = tournament.plugin_data.get(PLUGIN_NAME, {})
-            plugin_data = raw_plugin_data
-
+    def custom_last_upload(cls, tournament: Tournament) -> datetime | None:
+        plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
         return plugin_data.last_upload_at
 
     @classmethod
-    def custom_upload_needed(cls, tournament: Tournament | StoredTournament) -> bool:
+    def custom_upload_needed(cls, tournament: Tournament) -> bool:
         last_upload = cls.custom_last_upload(tournament)
         return not last_upload or Utils.tournament_results_modified_since(
             tournament, last_upload
@@ -196,7 +173,7 @@ class CustomUploadUploader:
 
     @classmethod
     def test_ftp(cls, ftp_host: str, ftp_username: str, ftp_password: str) -> bool:
-        """Tries to connect to the FTP server.
+        """Connection attempt to the FTP server.
         Returns True on success, False if the connection doesn't succeed"""
 
         logger.info('Testing SSH connection for [%s]...', ftp_host)
@@ -387,11 +364,12 @@ class CustomUploadUploader:
             return
 
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        timer = Timer(
-            0.1,
-            cls.upload_tournament,
-            args=(tournament.event.uniq_id, tournament.id, http_client),
-        )
+
+        def _run():
+            set_locale(SharlyChessConfig().locale)
+            cls.upload_tournament(tournament.event.uniq_id, tournament.id, http_client)
+
+        timer = Timer(0.1, _run)
         cls.timeout_threads[result_id] = timer
         timer.start()
 

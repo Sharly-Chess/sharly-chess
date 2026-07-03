@@ -1,3 +1,6 @@
+msgid "Add document"
+msgstr "Ajouter un document"
+
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -5,19 +8,22 @@ msgid "Change documents"
 msgstr "Changer de documents"
 
 msgid "Connection Custom Upload"
-msgstr "Connexion au site personnel"
+msgstr "Connexion au serveur personnel"
 
 msgid "Connection test"
 msgstr "Tester la connexion"
 
 msgid "Custom location"
-msgstr "Site personnel"
+msgstr "Serveur personnel"
 
 msgid "Custom Upload"
 msgstr "Mise en ligne personnalisée"
 
 msgid "Document URL:"
 msgstr "URL du document :"
+
+msgid "Document list"
+msgstr "Liste des documents"
 
 msgid "Documents"
 msgstr "Documents"
@@ -31,7 +37,7 @@ msgstr "Exemple : mon_mot_de_passe"
 msgid "E.g.: my_username"
 msgstr "Exemple : mon_identifiant"
 
-msgid "E.g.: /tournaments/my_tournament/"
+msgid "E.g.: /tournaments/my_tournament"
 msgstr "Exemple : /tournois/mon_tournoi"
 
 msgid "Failed to connect to server."
@@ -41,10 +47,10 @@ msgid "Failure"
 msgstr "Échec"
 
 msgid "FTP credentials are not defined."
-msgstr "Les identifiants FTP ne sont pas définis"
+msgstr "Les identifiants FTP ne sont pas définis."
 
 msgid "FTP host is not defined."
-msgstr "L'hôte FTP n'est pas défini"
+msgstr "L'hôte FTP n'est pas défini."
 
 msgid "FTP username:"
 msgstr "Identifiant FTP :"
@@ -54,7 +60,6 @@ msgstr "Mot de passe FTP :"
 
 msgid "Host:"
 msgstr "Hôte :"
-
 
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
@@ -71,8 +76,8 @@ msgstr "Jamais mis en ligne"
 msgid "No changes detected since the last upload."
 msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 
-msgid "No document type is matching input"
-msgstr "Aucun document ne correspond à cette entrée"
+msgid "No document type is matching input."
+msgstr "Aucun document ne correspond à cette entrée."
 
 msgid "Not configured"
 msgstr "Non configuré"
@@ -85,6 +90,9 @@ msgstr "Chemin sur le serveur :"
 
 msgid "Pending"
 msgstr "En attente"
+
+msgid "Remove the document from the upload list."
+msgstr "Retirer le document de la liste de mise en ligne."
 
 msgid "Save"
 msgstr "Enregistrer"
@@ -126,7 +134,7 @@ msgid "Upload all tournaments"
 msgstr "Mettre en ligne tous les tournois"
 
 msgid "Upload tournament documents to custom location"
-msgstr "Mise en ligne de documents sur un site personnel"
+msgstr "Mise en ligne de documents sur un serveur personnel"
 
 msgid "consult the logs"
 msgstr "consulter les logs"
