@@ -25,7 +25,7 @@ from database.sqlite.event.event_store import StoredScreen
 if TYPE_CHECKING:
     from data.event import Event
     from data.family import Family
-    from data.menu import MenuNavEntry
+    from data.menu import Menu, MenuNavEntry
 
 
 logger = get_logger()
@@ -309,11 +309,10 @@ class Screen:
             return self._resolve_menu_label(self.family.label_template)
         return self.name
 
-    def _menu_screens(self, admin: bool) -> list['Screen']:
-        """The navigation entries shown on this screen: the resolved screens
-        of the menu this screen belongs to. A screen belongs to at most one
-        menu; the menu is only displayed when it holds more than one screen
-        visible to the viewer."""
+    def _menu_and_screens(self, admin: bool) -> "tuple['Menu | None', list['Screen']]":
+        """The menu this screen belongs to and the screens it navigates to. A
+        screen belongs to at most one menu; the menu is only displayed when it
+        holds more than one screen visible to the viewer."""
         for menu in self.event.sorted_menus:
             resolved = menu.resolved_screens()
             if not any(screen.uniq_id == self.uniq_id for screen in resolved):
@@ -321,8 +320,11 @@ class Screen:
             entries = (
                 resolved if admin else [screen for screen in resolved if screen.public]
             )
-            return entries if len(entries) > 1 else []
-        return []
+            return (menu, entries) if len(entries) > 1 else (None, [])
+        return None, []
+
+    def _menu_screens(self, admin: bool) -> list['Screen']:
+        return self._menu_and_screens(admin)[1]
 
     @cached_property
     def public_menu_screens(self) -> list['Screen']:
@@ -335,7 +337,8 @@ class Screen:
     def _menu_nav_entries(self, admin: bool) -> list['MenuNavEntry']:
         from data.menu import group_menu_nav_entries
 
-        return group_menu_nav_entries(self._menu_screens(admin))
+        menu, screens = self._menu_and_screens(admin)
+        return group_menu_nav_entries(screens, menu)
 
     @cached_property
     def public_menu_nav_entries(self) -> list['MenuNavEntry']:

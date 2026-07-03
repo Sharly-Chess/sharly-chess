@@ -2554,6 +2554,7 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             name=row['name'],
             default_type=row['default_type'],
+            submenu_mode=row['submenu_mode'],
         )
 
     def load_stored_menus(self) -> list[StoredMenu]:
@@ -2568,7 +2569,7 @@ class EventDatabase(MigrationDatabase):
     def add_stored_menu(self, stored_menu: StoredMenu) -> int:
         fields: dict[str, Any] = self._get_fields_dict(
             stored_menu,
-            ['name', 'default_type'],
+            ['name', 'default_type', 'submenu_mode'],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -2583,7 +2584,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_menu(self, stored_menu: StoredMenu):
         fields: dict[str, Any] = self._get_fields_dict(
             stored_menu,
-            ['name', 'default_type'],
+            ['name', 'default_type', 'submenu_mode'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_menu.id is not None

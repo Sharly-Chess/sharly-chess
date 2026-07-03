@@ -8,28 +8,58 @@ from data.family import Family
 from data.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredMenu, StoredMenuItem
-from utils.enum import ScreenType
+from utils.enum import MenuSubmenuMode, ScreenType
 
 if TYPE_CHECKING:
     from data.event import Event
 
 
 class MenuNavEntry:
-    """A single entry in a screen's navigation bar: one screen."""
+    """A single entry in a screen's navigation bar: either one screen, or a
+    family shown as one item opening a submenu of its screens."""
 
-    def __init__(self, screen: Screen):
-        self.screen = screen
+    def __init__(self, screens: list[Screen], family: Family | None = None):
+        self.screens = screens
+        self.family = family
+
+    @property
+    def is_family(self) -> bool:
+        return self.family is not None
+
+    @property
+    def screen(self) -> Screen:
+        return self.screens[0]
 
     @property
     def label(self) -> str:
-        return self.screen.menu_entry_label
+        if self.family is not None:
+            return self.family.nav_menu_label
+        return self.screens[0].menu_entry_label
 
 
-def group_menu_nav_entries(screens: list[Screen]) -> list['MenuNavEntry']:
-    """Build the navigation entries: one entry per screen. A family's screens
-    are expanded inline as top-level entries rather than collapsed into a
-    submenu."""
-    return [MenuNavEntry(screen) for screen in screens]
+def group_menu_nav_entries(
+    screens: list[Screen], menu: 'Menu | None' = None
+) -> list['MenuNavEntry']:
+    """Build the navigation entries for a menu's screens. When the menu uses
+    submenus, each family's screens (kept in first-appearance order) are
+    collapsed into a single dropdown entry; otherwise every screen is a
+    top-level entry (families expanded inline)."""
+    if menu is None or not menu.use_submenus(screens):
+        return [MenuNavEntry([screen]) for screen in screens]
+    entries: list[MenuNavEntry] = []
+    family_entry_by_id: dict[int, MenuNavEntry] = {}
+    for screen in screens:
+        family = screen.family
+        if family is None:
+            entries.append(MenuNavEntry([screen]))
+            continue
+        entry = family_entry_by_id.get(family.id)
+        if entry is None:
+            entry = MenuNavEntry([], family)
+            family_entry_by_id[family.id] = entry
+            entries.append(entry)
+        entry.screens.append(screen)
+    return entries
 
 
 class MenuItem:
@@ -132,6 +162,25 @@ class Menu:
         if self.stored_menu.default_type:
             return ScreenType(self.stored_menu.default_type)
         return None
+
+    @property
+    def submenu_mode(self) -> MenuSubmenuMode:
+        return MenuSubmenuMode(self.stored_menu.submenu_mode)
+
+    def use_submenus(self, screens: list[Screen]) -> bool:
+        """Whether families among *screens* are shown as dropdown submenus
+        (rather than expanded inline). In automatic mode, dropdowns are used
+        when the menu covers more than one family."""
+        match self.submenu_mode:
+            case MenuSubmenuMode.DROPDOWN:
+                return True
+            case MenuSubmenuMode.NO_DROPDOWN:
+                return False
+            case _:  # AUTOMATIC
+                family_ids = {
+                    screen.family.id for screen in screens if screen.family is not None
+                }
+                return len(family_ids) > 1
 
     @property
     def name(self) -> str:

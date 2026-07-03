@@ -22,6 +22,7 @@ class Migration(BaseMigration):
             '   `id` INTEGER NOT NULL,'
             '   `name` TEXT,'
             '   `default_type` TEXT,'
+            "   `submenu_mode` TEXT NOT NULL DEFAULT 'automatic',"
             '   PRIMARY KEY(`id` AUTOINCREMENT)'
             ')'
         )

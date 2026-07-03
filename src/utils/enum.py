@@ -1223,6 +1223,32 @@ class ScreenType(StrEnum):
                 raise ValueError(f'Invalid screen type: {self}')
 
 
+class MenuSubmenuMode(StrEnum):
+    """How a menu presents its multi-screens (families) in the navigation
+    bar: automatically, always as a dropdown submenu, or always expanded
+    inline."""
+
+    AUTOMATIC = 'automatic'
+    DROPDOWN = 'dropdown'
+    NO_DROPDOWN = 'no_dropdown'
+
+    @property
+    def name(self) -> str:
+        match self:
+            case MenuSubmenuMode.AUTOMATIC:
+                return _('Automatic')
+            case MenuSubmenuMode.DROPDOWN:
+                return _('Use dropdowns')
+            case MenuSubmenuMode.NO_DROPDOWN:
+                return _('No dropdowns')
+            case _:
+                raise ValueError(f'Invalid submenu mode: {self}')
+
+    @classmethod
+    def select_options(cls) -> dict[str, str]:
+        return {mode.value: mode.name for mode in cls}
+
+
 class PlayersScreenPlayerFormat(IntEnum):
     NAME = 1
     NAME_RATING = 2

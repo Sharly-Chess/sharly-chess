@@ -4075,6 +4075,18 @@ msgstr "Le menu [{menu}] a été mis à jour."
 msgid "Menu content"
 msgstr "Contenu du menu"
 
+msgid "Multi-screen submenus"
+msgstr "Sous-menus des écrans multiples"
+
+msgid "Use dropdowns"
+msgstr "Utiliser des menus déroulants"
+
+msgid "No dropdowns"
+msgstr "Sans menus déroulants"
+
+msgid "How multi-screens appear in the menu: automatically, always as a dropdown submenu, or always expanded inline. Automatic uses dropdowns when the menu holds more than one multi-screen."
+msgstr "Comment les écrans multiples apparaissent dans le menu : automatiquement, toujours sous forme de sous-menu déroulant, ou toujours développés en ligne. Le mode automatique utilise des menus déroulants lorsque le menu contient plus d’un écran multiple."
+
 msgid "Menu label:"
 msgstr "Libellé de menu :"
 

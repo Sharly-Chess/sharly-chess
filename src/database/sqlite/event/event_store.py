@@ -434,6 +434,7 @@ class StoredMenu:
     id: int | None
     name: str | None = None
     default_type: str | None = None
+    submenu_mode: str = 'automatic'
     stored_menu_items: list[StoredMenuItem] = field(
         default_factory=list[StoredMenuItem]
     )

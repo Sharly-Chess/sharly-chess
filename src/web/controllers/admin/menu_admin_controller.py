@@ -14,7 +14,7 @@ from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.menu import Menu
 from database.sqlite.event.event_store import StoredMenu
-from utils.enum import FormAction, ScreenType
+from utils.enum import FormAction, MenuSubmenuMode, ScreenType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -71,7 +71,10 @@ class MenuAdminController(BaseEventAdminController):
         # The raw stored name (empty for an automatically-named menu) so the
         # field shows blank with the "Automatic" placeholder.
         return WebContext.values_dict_to_form_data(
-            {'name': menu.stored_menu.name or ''}
+            {
+                'name': menu.stored_menu.name or '',
+                'submenu_mode': menu.stored_menu.submenu_mode,
+            }
         )
 
     @get(
@@ -98,12 +101,15 @@ class MenuAdminController(BaseEventAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        default_data = WebContext.values_dict_to_form_data({'name': ''})
+        default_data = WebContext.values_dict_to_form_data(
+            {'name': '', 'submenu_mode': MenuSubmenuMode.AUTOMATIC.value}
+        )
         return {
             'modal': 'menu',
             'action': action,
             'data': default_data | data,
             'errors': errors or {},
+            'submenu_mode_options': MenuSubmenuMode.select_options(),
         }
 
     @classmethod
@@ -305,9 +311,16 @@ class MenuAdminController(BaseEventAdminController):
                 used_names.remove(web_context.get_admin_menu().name)
             if name in used_names:
                 errors[field] = _('This name is already used.')
+        raw_mode = WebContext.form_data_to_str(data, 'submenu_mode') or ''
+        try:
+            submenu_mode = MenuSubmenuMode(raw_mode)
+        except ValueError:
+            submenu_mode = MenuSubmenuMode.AUTOMATIC
         if errors:
             return None, errors
-        stored_menu = StoredMenu(id=None, name=name or None)
+        stored_menu = StoredMenu(
+            id=None, name=name or None, submenu_mode=submenu_mode.value
+        )
         return stored_menu, errors
 
     @post(
