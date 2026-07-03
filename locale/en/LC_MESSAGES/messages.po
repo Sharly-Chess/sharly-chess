@@ -7014,9 +7014,6 @@ msgstr[1] ""
 msgid "The first tournament of the screen."
 msgstr ""
 
-msgid "The folder should not be contained in the current data folder."
-msgstr ""
-
 msgid "The following categories will also be deleted:"
 msgstr ""
 

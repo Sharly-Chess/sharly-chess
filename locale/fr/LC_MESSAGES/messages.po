@@ -7016,9 +7016,6 @@ msgstr[1] "Les {rounds} premières rondes sont ignorées."
 msgid "The first tournament of the screen."
 msgstr "Le premier tournoi de l'écran."
 
-msgid "The folder should not be contained in the current data folder."
-msgstr "Le dossier ne doit pas être contenu dans le dossier de données actuel."
-
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 

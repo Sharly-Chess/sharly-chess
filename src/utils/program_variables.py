@@ -3,7 +3,14 @@ import plistlib
 import sys
 from enum import StrEnum
 from pathlib import Path
+from typing import Any
 
+
+if sys.platform == 'win32':
+    import winreg
+else:
+    # Avoid winreg mypy errors when not running on windows
+    winreg: Any = {}
 
 # OS-specific Paths
 MACOS_SUPPORT_DIR = (
@@ -42,8 +49,6 @@ class ProgramVar(StrEnum):
         name = self.stored_name
         match sys.platform:
             case 'win32':
-                import winreg
-
                 try:
                     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, WIN_REG_PATH) as key:
                         value, reg_type = winreg.QueryValueEx(key, name)
@@ -76,8 +81,6 @@ class ProgramVar(StrEnum):
     def write_variables(cls, value_by_var: dict['ProgramVar', str]):
         match sys.platform:
             case 'win32':  # Use windows registries
-                import winreg
-
                 with winreg.CreateKey(winreg.HKEY_CURRENT_USER, WIN_REG_PATH) as key:
                     for var, value in value_by_var.items():
                         winreg.SetValueEx(key, var.stored_name, 0, winreg.REG_SZ, value)

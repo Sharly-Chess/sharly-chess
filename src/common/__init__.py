@@ -5,11 +5,19 @@ import shutil
 import sys
 from collections import namedtuple
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
 from packaging.version import Version
 
 from common.exception import SharlyChessException
 from utils.program_variables import MACOS_SUPPORT_DIR, ProgramVar
+
+
+if sys.platform == 'win32':
+    import winreg
+else:
+    # Avoid winreg mypy errors when not running on windows
+    winreg: Any = {}
 
 APP_NAME: str = 'sharly-chess'
 SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
@@ -79,8 +87,6 @@ def _app_base_dir() -> Path:
 def _default_prod_data_dir() -> Path:
     match sys.platform:
         case 'win32':
-            import winreg
-
             doc_reg_key = (
                 r'Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders'
             )
