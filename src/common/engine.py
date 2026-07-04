@@ -249,6 +249,7 @@ class Engine:
 
     @classmethod
     def _prepare_for_version_5(cls):
+        ProgramVar.LEGACY_VERSION.write_value(str(SHARLY_CHESS_VERSION))
         ProgramVar.LEGACY_VERSION_DIR.write_value(str(BASE_DIR))
         if sys.platform == 'linux':
             # Flatpak upgrades to V5 automatically

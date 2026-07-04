@@ -29,6 +29,7 @@ class ProgramVar(StrEnum):
     These variables are stored at a user-level static path,
     and must be considered requiring a restart to be refreshed."""
 
+    LEGACY_VERSION = 'legacy_version'
     LEGACY_VERSION_DIR = 'legacy_version_directory'
 
     @property
