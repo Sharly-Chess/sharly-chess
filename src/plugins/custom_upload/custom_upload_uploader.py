@@ -1,9 +1,7 @@
 import socket
 import time
 import urllib
-from dataclasses import dataclass
 from datetime import datetime
-from enum import IntEnum
 from functools import partial
 from io import BytesIO
 from pathlib import Path
@@ -19,7 +17,7 @@ from paramiko.ssh_exception import (
     NoValidConnectionsError,
 )
 
-from common.i18n import _, set_locale
+from common.i18n import set_locale
 from common.i18n.utils import parse_jinja_template
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -45,26 +43,7 @@ logger = get_logger()
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
-class CustomUploadStatus(IntEnum):
-    NEVER = 0
-    UPLOADED = 1
-    CHANGED = 2
-    PENDING = 3
-    IN_PROGRESS = 4
-    SUCCESS = 5
-    INFO = 6
-    ERROR = 7
-    SETTINGS_ERROR = 8
-
-
-@dataclass
-class CustomUploadResult:
-    status: CustomUploadStatus
-    message: str
-
-
 class CustomUploadUploader:
-    upload_status_messages: dict[str, CustomUploadResult] = {}
     timeout_threads: dict[str, Timer] = {}
     queued_result_ids: set[str] = set()
     ongoing_result_ids: set[str] = set()
@@ -102,51 +81,6 @@ class CustomUploadUploader:
         thread = cls.timeout_threads.get(key)
         if thread and thread.is_alive():
             thread.cancel()
-
-    @classmethod
-    def get_updated_tournament_upload_result(
-        cls, tournament: Tournament
-    ) -> CustomUploadResult:
-        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        result = cls.upload_status_messages.get(result_id, None)
-
-        # Clear the message if it is a SETTINGS_ERROR, and refresh it later...
-        if result and result.status == CustomUploadStatus.SETTINGS_ERROR:
-            result = None
-
-        # Default status when we don't have a result
-        if result is None:
-            if cls.custom_last_upload(tournament):
-                result = CustomUploadResult(
-                    CustomUploadStatus.UPLOADED,
-                    _('Tournament previously uploaded.'),
-                )
-            else:
-                result = CustomUploadResult(
-                    CustomUploadStatus.NEVER,
-                    _('Tournament not yet uploaded.'),
-                )
-            cls.upload_status_messages[result_id] = result
-
-        if unavailable_message := (
-            CustomUploadUtils.custom_upload_configuration_verification_message(
-                tournament
-            )
-        ):
-            result = CustomUploadResult(
-                CustomUploadStatus.SETTINGS_ERROR, unavailable_message
-            )
-            cls.upload_status_messages[result_id] = result
-        elif result.status != CustomUploadStatus.NEVER and cls.custom_upload_needed(
-            tournament
-        ):
-            # For manual updates tell the user that the tournament has been modified
-            result = CustomUploadResult(
-                CustomUploadStatus.INFO,
-                _('Modified since last upload'),
-            )
-            cls.upload_status_messages[result_id] = result
-        return result
 
     @classmethod
     def custom_last_upload(cls, tournament: Tournament) -> datetime | None:
@@ -187,8 +121,8 @@ class CustomUploadUploader:
         event_uniq_id: str,
         tournament_id: int,
         http_client: Client,
-    ) -> CustomUploadResult | None:
-        """Upload a tournament to custom website."""
+    ):
+        """Upload a tournament to a custom location."""
 
         result_id: str = cls.result_id(event_uniq_id, tournament_id)
         cls.ongoing_result_ids.add(result_id)
@@ -203,32 +137,24 @@ class CustomUploadUploader:
         loader = EventLoader()
         if event_uniq_id not in loader.event_uniq_ids:
             # The event has been deleted
-            return None
+            return
         event = loader.load_event(event_uniq_id)
 
         tournament = event.tournaments_by_id.get(tournament_id, None)
         if not tournament:
             # The tournament has been deleted
-            return None
+            return
 
-        current_result = cls.get_updated_tournament_upload_result(tournament)
-        if current_result.status == CustomUploadStatus.SETTINGS_ERROR:
-            # Skip this tournament if we now have a SETTINGS_ERROR
-            return current_result
+        if CustomUploadUtils.custom_upload_configuration_verification_message(
+            tournament
+        ):
+            # Skip this tournament if configuration is invalid
+            return
 
         if not NetworkMonitor.connected():
             # The network is offline, we can't upload
-            cls.upload_status_messages[result_id] = CustomUploadResult(
-                CustomUploadStatus.ERROR,
-                _('Modified, but no internet connection'),
-            )
             cls.publish_upload_event()
-            return cls.upload_status_messages[result_id]
-
-        cls.upload_status_messages[result_id] = CustomUploadResult(
-            CustomUploadStatus.IN_PROGRESS,
-            _('Uploading tournament…'),
-        )
+            return
 
         logger.info('Uploading tournament [%s]...', tournament.name)
 
@@ -242,16 +168,12 @@ class CustomUploadUploader:
             )
         except Exception:
             logger.exception('Error uploading tournament [%s]', tournament.name)
-            cls.upload_status_messages[result_id] = CustomUploadResult(
-                CustomUploadStatus.ERROR,
-                _('Cannot generate documents'),
-            )
-            return cls.upload_status_messages[result_id]
+            return
 
         with paramiko.SSHClient() as ftp_client:
             ftp_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-            return cls._ftp_upload(
+            cls._ftp_upload(
                 tournament_plugin_data,
                 tournament,
                 result_id,
@@ -267,7 +189,7 @@ class CustomUploadUploader:
         result_id: str,
         ftp_client: paramiko.SSHClient,
         temporary_files: list[tuple[BytesIO, str]],
-    ) -> CustomUploadResult | None:
+    ):
         failure_status = None
 
         host = tournament_plugin_data.ftp_host
@@ -287,12 +209,8 @@ class CustomUploadUploader:
                     tournament.name,
                     tournament_plugin_data.server_path,
                 )
-                cls.upload_status_messages[result_id] = CustomUploadResult(
-                    CustomUploadStatus.ERROR,
-                    _('Error uploading tournament'),
-                )
                 failure_status = TargetLocationNotFoundCustomUploadStatus()
-                return cls.upload_status_messages[result_id]
+                return
 
             for (
                 temporary_document_file,
@@ -307,10 +225,6 @@ class CustomUploadUploader:
             sftp_client.close()
         except Exception:
             logger.exception('Error uploading tournament [%s]', tournament.name)
-            cls.upload_status_messages[result_id] = CustomUploadResult(
-                CustomUploadStatus.ERROR,
-                _('Error uploading tournament'),
-            )
             failure_status = UnexpectedFailureCustomUploadStatus()
         finally:
             cls.ongoing_result_ids.discard(result_id)
@@ -325,8 +239,6 @@ class CustomUploadUploader:
                 tournament, tournament_plugin_data
             )
             cls.publish_upload_event()
-
-        return cls.upload_status_messages[result_id]
 
     @classmethod
     def _generate_documents_in_memory(
@@ -394,13 +306,7 @@ class CustomUploadUploader:
         for tournament in eligible_tournaments:
             if cls.custom_upload_needed(tournament):
                 updated_tournaments.append(tournament)
-            else:
-                cls.upload_status_messages[
-                    cls.result_id(event_uniq_id, tournament.id)
-                ] = CustomUploadResult(
-                    CustomUploadStatus.INFO,
-                    _('Tournament not modified since last upload'),
-                )
+
         if not updated_tournaments:
             return
 

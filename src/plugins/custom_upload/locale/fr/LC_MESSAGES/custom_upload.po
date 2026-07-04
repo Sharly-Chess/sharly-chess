@@ -7,17 +7,20 @@ msgstr "Annuler"
 msgid "Change documents"
 msgstr "Changer de documents"
 
+msgid "Close"
+msgstr "Fermer"
+
 msgid "Connection Custom Upload"
 msgstr "Connexion au serveur personnel"
 
 msgid "Connection test"
 msgstr "Tester la connexion"
 
-msgid "Custom location"
-msgstr "Serveur personnel"
-
 msgid "Custom Upload"
 msgstr "Mise en ligne personnalisée"
+
+msgid "Custom location"
+msgstr "Serveur personnel"
 
 msgid "Document URL:"
 msgstr "URL du document :"
@@ -28,6 +31,9 @@ msgstr "Liste des documents"
 msgid "Documents"
 msgstr "Documents"
 
+msgid "E.g.: /tournaments/my_tournament"
+msgstr "Exemple : /tournois/mon_tournoi"
+
 msgid "E.g.: ftp.example.com"
 msgstr "Exemple : ftp.exemple.com"
 
@@ -37,26 +43,23 @@ msgstr "Exemple : mon_mot_de_passe"
 msgid "E.g.: my_username"
 msgstr "Exemple : mon_identifiant"
 
-msgid "E.g.: /tournaments/my_tournament"
-msgstr "Exemple : /tournois/mon_tournoi"
-
-msgid "Failed to connect to server."
-msgstr "Échec de la connexion au serveur distant."
-
-msgid "Failure"
-msgstr "Échec"
-
 msgid "FTP credentials are not defined."
 msgstr "Les identifiants FTP ne sont pas définis."
 
 msgid "FTP host is not defined."
 msgstr "L'hôte FTP n'est pas défini."
 
+msgid "FTP password:"
+msgstr "Mot de passe FTP :"
+
 msgid "FTP username:"
 msgstr "Identifiant FTP :"
 
-msgid "FTP password:"
-msgstr "Mot de passe FTP :"
+msgid "Failed to connect to server."
+msgstr "Échec de la connexion au serveur distant."
+
+msgid "Failure"
+msgstr "Échec"
 
 msgid "Host:"
 msgstr "Hôte :"
@@ -77,7 +80,7 @@ msgid "No changes detected since the last upload."
 msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 
 msgid "No document type is matching input."
-msgstr "Aucun document ne correspond à cette entrée."
+msgstr "Aucun type de document ne correspond à la saisie."
 
 msgid "Not configured"
 msgstr "Non configuré"
@@ -115,12 +118,6 @@ msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
 msgid "Tournament is currently being uploaded."
 msgstr "Le tournoi est en cours de mise en ligne."
 
-msgid "Tournament successfully uploaded."
-msgstr "Le tournoi a été mis en ligne avec succès."
-
-msgid "Tournament upload failed, consult the Custom Upload modal for more details."
-msgstr "La mise en ligne du tournoi a échoué, consultez la modale Site personnel pour plus d'informations."
-
 msgid "Tournament upload has been planned."
 msgstr "La mise en ligne du tournoi a été planifiée."
 
@@ -141,3 +138,4 @@ msgstr "consulter les logs"
 
 msgid "target server path not found"
 msgstr "le chemin sur le serveur n'a pas pu être trouvé"
+

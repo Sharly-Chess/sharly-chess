@@ -217,7 +217,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 try:
                     document_manager.get_type(document_id)
                 except KeyError:
-                    errors[name] = _('No document type is matching input')
+                    errors[name] = _('No document type is matching input.')
                     continue
                 updated_document_urls.append(value)
 
