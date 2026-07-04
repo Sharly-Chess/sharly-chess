@@ -250,7 +250,9 @@ def input_interactive_choices(
     return result
 
 
-def input_interactive_yn(question: str, yes_is_default: bool = False) -> bool:
+def input_interactive_yn(
+    title: str, question: str, yes_is_default: bool = False
+) -> bool:
     """Prints the message to stdout with color postfixed with [Y/n] etc, and returns the user input.
     If the message could not be Unicode decoded, raises KeyboardInterrupt."""
     from common.i18n import _
@@ -259,7 +261,7 @@ def input_interactive_yn(question: str, yes_is_default: bool = False) -> bool:
 
     if GUILogHandler.instance:
         return GUILogHandler.instance.gui.handle_interactive_yn(
-            question, yes_is_default
+            title, question, yes_is_default
         )
 
     yes_answer = _('Y *** THE LETTER TO ANSWER YES')
@@ -283,11 +285,11 @@ def input_interactive_yn(question: str, yes_is_default: bool = False) -> bool:
             return False
 
 
-def print_interactive_message(message: str) -> bool:
+def print_interactive_message(title: str, message: str) -> bool:
     __flush_logger()
 
     if GUILogHandler.instance:
-        return GUILogHandler.instance.gui.handle_interactive_message(message)
+        return GUILogHandler.instance.gui.handle_interactive_message(title, message)
 
     print(Fore.CYAN + Style.BRIGHT + message + Style.RESET_ALL, end='')
     return True

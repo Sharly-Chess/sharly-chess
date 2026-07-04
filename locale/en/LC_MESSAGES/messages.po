@@ -286,6 +286,12 @@ msgstr "SC_M"
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
 
+msgid "*** MACOS INSTALL URL"
+msgstr "https://sharly-chess.com/installation-mac/"
+
+msgid "*** WINDOWS INSTALL URL"
+msgstr "https://sharly-chess.com/installation-windows/"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -1793,6 +1799,9 @@ msgstr ""
 msgid "Data loss at tournaments, players and pairings level."
 msgstr ""
 
+msgid "Data recovery"
+msgstr ""
+
 msgid "Data source"
 msgstr ""
 
@@ -2091,6 +2100,9 @@ msgstr ""
 msgid "Do you want to install example event databases"
 msgstr ""
 
+msgid "Do you want to install it now"
+msgstr ""
+
 msgid "Do you want to recover the data of release [{version}]"
 msgstr ""
 
@@ -2122,6 +2134,12 @@ msgid "Double-round Berger"
 msgstr ""
 
 msgid "Download"
+msgstr ""
+
+msgid "Download the DMG file from the website that just opened, then drop it into your Applications folder."
+msgstr ""
+
+msgid "Download the installer executable from the page that just opened, then run it."
 msgstr ""
 
 msgid "Download the players matching the search into a file."
@@ -2494,6 +2512,9 @@ msgid "Events"
 msgstr ""
 
 msgid "Events ({num})"
+msgstr ""
+
+msgid "Example databases"
 msgstr ""
 
 msgid "Exclude"
@@ -3103,10 +3124,19 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
+msgid "Install version 5"
+msgstr ""
+
+msgid "Installation error"
+msgstr ""
+
 msgid "Installation of [{lib}] failed."
 msgstr ""
 
 msgid "Installation of release [{version}] failed, exiting."
+msgstr ""
+
+msgid "Installation succeeded"
 msgstr ""
 
 msgid "Installed [{lib}]."
@@ -5559,6 +5589,9 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
+msgid "Sharly Chess 5 is available!"
+msgstr ""
+
 msgid "Sharly Chess Server"
 msgstr ""
 
@@ -5584,6 +5617,9 @@ msgid "Sharly Chess settings"
 msgstr ""
 
 msgid "Sharly Chess settings have been updated."
+msgstr ""
+
+msgid "Sharly Chess upgrade"
 msgstr ""
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
@@ -5924,6 +5960,9 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
+msgid "The data of this version will be recovered when starting the new version."
+msgstr ""
+
 msgid "The default federation for your events."
 msgstr ""
 
@@ -5948,6 +5987,9 @@ msgid "The following features won't be imported:"
 msgstr ""
 
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
+msgstr ""
+
+msgid "The installation and update processes have been reworked in version 5."
 msgstr ""
 
 msgid "The least and the most significant values are removed."
@@ -7595,4 +7637,10 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid ""
+#~ "The installation and update processes have been reworked in version 5.\n"
+#~ "\n"
+#~ "Do you want to install it now"
+#~ msgstr ""
 

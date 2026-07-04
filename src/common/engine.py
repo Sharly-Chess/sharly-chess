@@ -10,6 +10,7 @@ import platform
 import subprocess
 from json import JSONDecodeError
 from pathlib import Path
+from threading import Thread
 from time import time
 from typing import Any
 
@@ -25,6 +26,7 @@ from common import (
     DEVEL_ENV,
     EVENTS_DIR,
     TMP_DIR,
+    BASE_DIR,
 )
 from common.i18n import _
 from common.installation_checker import InstallationChecker
@@ -42,6 +44,7 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from plugins.manager import plugin_manager
+from utils.program_variables import ProgramVar
 
 logger = get_logger()
 
@@ -77,6 +80,7 @@ class Engine:
             return
         if more_recent_version and download_url:
             if input_interactive_yn(
+                _('Sharly Chess upgrade'),
                 _(
                     'Do you want to upgrade from [{old_version}] to [{new_version}]'
                 ).format(
@@ -90,13 +94,14 @@ class Engine:
                     more_recent_version, download_url
                 ):
                     if print_interactive_message(
+                        _('Installation error'),
                         error_message
                         + '\n\n'
                         + _(
                             'Installation of release [{version}] failed, exiting.'
                         ).format(
                             version=more_recent_version,
-                        )
+                        ),
                     ):
                         quit_app()
                 return
@@ -177,6 +182,7 @@ class Engine:
                 version_num: int | None = None
                 if len(previous_databases) == 1:
                     if input_interactive_yn(
+                        _('Data recovery'),
                         _(
                             'Do you want to recover the data of release [{version}]'
                         ).format(version=previous_versions[0][0]),
@@ -228,6 +234,7 @@ class Engine:
                     )
             if DEVEL_ENV and not recovered_version:
                 if input_interactive_yn(
+                    _('Example databases'),
                     _('Do you want to install example event databases'),
                     yes_is_default=True,
                 ):
@@ -235,6 +242,45 @@ class Engine:
                         f'*.{SharlyChessConfig.event_database_ext}'
                     ):
                         shutil.copy(file, EVENTS_DIR / file.name)
+
+        if os.getenv('FAKE_V5_AVAILABLE') == '1':
+            # TODO (Molrn) Remove env requirement once V5 is available
+            self._prepare_for_version_5()
+
+    @classmethod
+    def _prepare_for_version_5(cls):
+        ProgramVar.LEGACY_VERSION_DIR.write_value(str(BASE_DIR))
+        if sys.platform == 'linux':
+            # Flatpak upgrades to V5 automatically
+            return
+        if not input_interactive_yn(
+            _('Sharly Chess 5 is available!'),
+            _('Do you want to install it now'),
+        ):
+            return
+        instruction = (
+            _('The installation and update processes have been reworked.') + '\n\n'
+        )
+        if sys.platform == 'win32':
+            install_url = _('*** WINDOWS INSTALL URL')
+            instruction += _(
+                'Download the installer executable from the '
+                'page that just opened, then run it.'
+            )
+        else:
+            install_url = _('*** MACOS INSTALL URL')
+            instruction += _(
+                'Download the DMG file from the website that just opened, '
+                'then drop it into your Applications folder.'
+            )
+        from web.server_engine import launch_browser
+
+        Thread(target=launch_browser, args=(install_url,)).start()
+        instruction += '\n\n' + _(
+            'The data of this version will be recovered when starting the new version.'
+        )
+        print_interactive_message(_('Install version 5'), instruction)
+        quit_app()
 
     @classmethod
     def _recover_previous_version(
@@ -712,6 +758,7 @@ class Engine:
                 return _('Unexpected error during installation: [{ex}].').format(ex=ex)
 
         if print_interactive_message(
+            _('Installation succeeded'),
             _('Release {version} has been installed in [{folder}].').format(
                 version=version,
                 folder=new_version_dir.absolute(),
