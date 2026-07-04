@@ -120,37 +120,56 @@
                     {% include template %}
                 {% endfor %}
 
-                <h4>
-                    {{ _('Tournament') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-sm-8">
-                        {{ admin_macros.select_input(
-                            name='tournament_id',
-                            label=_('Tournament:'),
-                            select_options=tournament_options,
-                            disabled=admin_player.has_real_pairings,
-                            input_tooltip=(
-                                _('The player has already been paired, removing them from the tournament is impossible.')
-                                if admin_player.has_real_pairings else ''
-                            ),
-                            data=data, errors=errors
-                        ) }}
-                        {% if admin_player.has_real_pairings %}
-                            <input type="hidden" name="tournament_id" value="{{ data['tournament_id'] }}" />
-                        {% endif %}
+                {% if is_team_event %}
+                    <h4>{{ _('Team') }}</h4>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12">
+                            {{ admin_macros.select_input(
+                                name='team_id',
+                                label=_('Team:'),
+                                select_options=team_options,
+                                disabled=team_locked,
+                                input_tooltip=_(
+                                    'This player has already been paired; '
+                                    'their team cannot be changed.'
+                                ) if team_locked else '',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                     </div>
+                {% else %}
+                    <h4>
+                        {{ _('Tournament') }}
+                    </h4>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-sm-8">
+                            {{ admin_macros.select_input(
+                                name='tournament_id',
+                                label=_('Tournament:'),
+                                select_options=tournament_options,
+                                disabled=admin_player.has_real_pairings,
+                                input_tooltip=(
+                                    _('The player has already been paired, removing them from the tournament is impossible.')
+                                    if admin_player.has_real_pairings else ''
+                                ),
+                                data=data, errors=errors
+                            ) }}
+                            {% if admin_player.has_real_pairings %}
+                                <input type="hidden" name="tournament_id" value="{{ data['tournament_id'] }}" />
+                            {% endif %}
+                        </div>
 
-                    <div class="col-12 col-sm-4">
-                        {{ admin_macros.number_input(
-                            name='fixed',
-                            label=_('Fixed board:'),
-                            tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).'),
-                            min=1,
-                            data=data, errors=errors
-                        ) }}
+                        <div class="col-12 col-sm-4">
+                            {{ admin_macros.number_input(
+                                name='fixed',
+                                label=_('Fixed board:'),
+                                tooltip_text=_('The board number the player will always be assigned to (use it for disabled people).'),
+                                min=1,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
 
                 <h4>
                     {{ _('Ratings') }}

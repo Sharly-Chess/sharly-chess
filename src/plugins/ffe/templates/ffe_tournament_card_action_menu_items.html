@@ -1,104 +1,107 @@
-{% set ffe_actions_unavailable_message=ffe_utils.ffe_actions_unavailable_message(tournament) %}
-{% if ffe_actions_unavailable_message %}
-    <li
-        {{ macros.tooltip_attributes(
-            'warning', ffe_actions_unavailable_message, 'top'
-        ) }}
-    >
-        <button
-            class="dropdown-item text-start text-secondary"
-            disabled
+{# The FFE site connection is Papi-based — individual events only. #}
+{% if not tournament.event.is_team_event %}
+    {% set ffe_actions_unavailable_message=ffe_utils.ffe_actions_unavailable_message(tournament) %}
+    {% if ffe_actions_unavailable_message %}
+        <li
+            {{ macros.tooltip_attributes(
+                'warning', ffe_actions_unavailable_message, 'top'
+            ) }}
         >
-            <img
-                src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
-                style="height: 1.2em"
-                class="pe-1"
-            />
-            {{ _('FFE site') }}
-        </button>
-    </li>
-{% else %}
-    <li class="dropdown-submenu">
-        <button class="dropdown-item d-flex justify-content-between">
-            <span>
+            <button
+                class="dropdown-item text-start text-secondary"
+                disabled
+            >
                 <img
                     src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
                     style="height: 1.2em"
                     class="pe-1"
                 />
                 {{ _('FFE site') }}
-            </span>
-            <i class="ps-3 bi bi-caret-right-fill"></i>
-        </button>
-        <ul class="dropdown-menu">
-            <li>
-                <span
-                    {% if not client.can_publish_results %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('By default, tournaments are not visible on the FFE site.'), 'right') }}
-                    {% endif %}
-                >
-                    <button
-                        class="dropdown-item text-nowrap"
-                        {% if client.can_publish_results %}
-                            hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
+            </button>
+        </li>
+    {% else %}
+        <li class="dropdown-submenu">
+            <button class="dropdown-item d-flex justify-content-between">
+                <span>
+                    <img
+                        src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
+                        style="height: 1.2em"
+                        class="pe-1"
+                    />
+                    {{ _('FFE site') }}
+                </span>
+                <i class="ps-3 bi bi-caret-right-fill"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <span
+                        {% if not client.can_publish_results %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
                         {% else %}
-                            disabled
+                            {{ macros.tooltip_attributes('info', _('By default, tournaments are not visible on the FFE site.'), 'right') }}
                         {% endif %}
                     >
-                        <i class="bi bi-eye-fill pe-1"></i>
-                        {{ _('Make visible on FFE site') }}
-                    </button>
-                </span>
-            </li>
-            <li>
-                <span
-                    {% if not client.can_publish_results %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
-                    {% endif %}
-                >
-                    <button
-                        class="dropdown-item text-nowrap"
-                        {% if client.can_publish_results %}
-                            hx-post="{{ url_for('ffe-upload-single-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% else %}
-                            disabled
+                        <button
+                            class="dropdown-item text-nowrap"
+                            {% if client.can_publish_results %}
+                                hx-post="{{ url_for('ffe-make-visible', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            {% else %}
+                                disabled
+                            {% endif %}
+                        >
+                            <i class="bi bi-eye-fill pe-1"></i>
+                            {{ _('Make visible on FFE site') }}
+                        </button>
+                    </span>
+                </li>
+                <li>
+                    <span
+                        {% if not client.can_publish_results %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to publish results.'), 'right') }}
                         {% endif %}
                     >
-                        <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
-                        {{ _('Upload to the FFE site') }}
-                    </button>
-                </span>
-            </li>
-            <li>
-                <span
-                    {% if not client.can_download_fees %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to download fees.'), 'right') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('Download the fees that the organizer should pay to the FFE.'), 'right') }}
-                    {% endif %}
-                >
-                    <button
-                        id="ffe-extract-fees-button"
-                        class="dropdown-item text-nowrap"
-                        {% if client.can_download_fees %}
-                            hx-get="{{ url_for('ffe-extract-fees', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
+                        <button
+                            class="dropdown-item text-nowrap"
+                            {% if client.can_publish_results %}
+                                hx-post="{{ url_for('ffe-upload-single-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            {% else %}
+                                disabled
+                            {% endif %}
+                        >
+                            <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
+                            {{ _('Upload to the FFE site') }}
+                        </button>
+                    </span>
+                </li>
+                <li>
+                    <span
+                        {% if not client.can_download_fees %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to download fees.'), 'right') }}
                         {% else %}
-                            disabled
+                            {{ macros.tooltip_attributes('info', _('Download the fees that the organizer should pay to the FFE.'), 'right') }}
                         {% endif %}
                     >
-                        <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
-                        {{ _('Download fees') }}
-                    </button>
-                </span>
-            </li>
-        </ul>
-    </li>
+                        <button
+                            id="ffe-extract-fees-button"
+                            class="dropdown-item text-nowrap"
+                            {% if client.can_download_fees %}
+                                hx-get="{{ url_for('ffe-extract-fees', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            {% else %}
+                                disabled
+                            {% endif %}
+                        >
+                            <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
+                            {{ _('Download fees') }}
+                        </button>
+                    </span>
+                </li>
+            </ul>
+        </li>
+    {% endif %}
 {% endif %}

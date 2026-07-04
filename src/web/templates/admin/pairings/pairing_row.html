@@ -1,24 +1,53 @@
 <tr
-    id="pairing-row-{{ board.id }}"
+    id="pairing-row-{{ board.identifier }}"
     class="pairing-row {{ row_class }} {{ extra_row_class }}"
-    data-board-id="{{ board.id }}"
-    data-player-id="{{ wtp.id }}"
+    data-board-id="{{ board.identifier }}"
+    data-player-id="{{ wtp.id if wtp }}"
+    {# A flat team (Molter) board with a missing side is a forfeit hole —
+       it can't take a keyboard result, so keyboard navigation skips it. #}
+    {% if admin_event.is_team_event and (not wtp or not btp) %}data-no-result-entry="1"{% endif %}
     {% if swap_oob %}
         hx-swap-oob="true"
     {% endif %}
 >
+    {# Molter codes (A1 / B3). A seated player's code is their own team letter
+       + line-up slot, so it follows them (manual re-pairing, colour permute).
+       An empty seat (hole) falls back to the table cell's expected code, so a
+       forfeit shows which player is missing. #}
+    {% set _white_molter_code = wtp.team.player_round_label(wtp, admin_round) if (wtp and wtp.team) else (molter_code[0] if molter_code is defined and molter_code else none) %}
+    {% set _black_molter_code = btp.team.player_round_label(btp, admin_round) if (btp and btp.team) else (molter_code[1] if molter_code is defined and molter_code else none) %}
     <td class="text-center text-nowrap">{{ board.number }}{% if board.number != board.id %} ({{ board.id }}){% endif %}</td>
-    <td class="text-center">{{ wtp.vpoints_str }}</td>
+    <td class="text-center">{% if wtp %}{{ wtp.vpoints_str }}{% endif %}</td>
     {% if admin_tournament.print_real_points(admin_round) %}
-        <td class="text-start">[{{ wtp.points_str }}]</td>
+        <td class="text-start">{% if wtp %}[{{ wtp.points_str }}]{% endif %}</td>
     {% endif %}
     {% if admin_tournament.record_illegal_moves %}
-        {% with player=wtp, illegal_moves=board.white_pairing.illegal_moves %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+        {% if wtp %}
+            {% with player=wtp, illegal_moves=board.white_pairing.illegal_moves %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+        {% else %}
+            <td></td>
+        {% endif %}
     {% endif %}
-    <td>
-        {% with tournament_player=wtp, display_rating=true %}
-            {% include '/admin/player_link.html' %}
-        {% endwith %}
+    <td class="text-truncate">
+        {% if _white_molter_code %}<small class="text-muted me-1">{{ _white_molter_code }}</small>{% endif %}
+        {% if not wtp %}
+            <em class="text-muted">—</em>
+        {% elif lineup_team_board is defined and wtp.team_id %}
+            <span class="lineup-view">
+                {% with tournament_player=wtp, display_rating=true %}
+                    {% include '/admin/player_link.html' %}
+                {% endwith %}
+            </span>
+            <span class="lineup-edit d-none">
+                {% with side_player=wtp, side='W' %}
+                    {% include '/admin/pairings/_lineup_player_select.html' %}
+                {% endwith %}
+            </span>
+        {% else %}
+            {% with tournament_player=wtp, display_rating=true %}
+                {% include '/admin/player_link.html' %}
+            {% endwith %}
+        {% endif %}
     </td>
     <td class="text-center" style="width: 4.5rem;">
         <span
@@ -32,13 +61,21 @@
                 {% set allowed=true %}
             {% endif %}
         >
+            {% set _flat_team = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
+            {% if _flat_team %}
+                {# Flat team (Molter): open the modal whenever a board has at
+                   least one player, so a forfeit/hole board can be unpaired. #}
+                {% set _modal_disabled = not_allowed or (not wtp and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+            {% else %}
+                {% set _modal_disabled = not_allowed or not wtp or (admin_event.is_team_event and not btp) or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+            {% endif %}
             <button
                 class="btn btn-sm btn-outline-primary text-nowrap"
                 style="width: 4.5rem;"
-                {% if not_allowed or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+                {% if _modal_disabled %}
                     disabled
                 {% else %}
-                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier) }}"
                     hx-trigger="click"
                     hx-target="body"
                     hx-indicator="#please-wait"
@@ -54,27 +91,55 @@
         {% if admin_tournament.record_illegal_moves %}
             {% with player=btp, illegal_moves=board.black_pairing.illegal_moves if btp else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
         {% endif %}
-        <td>
-            {% with tournament_player=btp, display_rating=true %}
-                {% include '/admin/player_link.html' %}
-            {% endwith %}
+        <td class="text-truncate">
+            {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
+            {% if lineup_team_board is defined and btp.team_id %}
+                <span class="lineup-view">
+                    {% with tournament_player=btp, display_rating=true %}
+                        {% include '/admin/player_link.html' %}
+                    {% endwith %}
+                </span>
+                <span class="lineup-edit d-none">
+                    {% with side_player=btp, side='B' %}
+                        {% include '/admin/pairings/_lineup_player_select.html' %}
+                    {% endwith %}
+                </span>
+            {% else %}
+                {% with tournament_player=btp, display_rating=true %}
+                    {% include '/admin/player_link.html' %}
+                {% endwith %}
+            {% endif %}
         </td>
         {% if admin_tournament.print_real_points(admin_round) %}
             <td class="text-end">[{{ btp.points_str }}]</td>
         {% endif %}
         <td class="text-center">{{ btp.vpoints_str }}</td>
     {% else %}
-        {% set first_pab_round = wtp.first_pab_round %}
         {% if admin_tournament.record_illegal_moves %}
             <td></td>
         {% endif %}
         <td>
-            {% if first_pab_round and first_pab_round < admin_round %}
-                <span class="text-danger">
-                    {{ _('EXEMPT (already received at round #%(round)d)', round=first_pab_round) }}
-                </span>
+            {% if admin_event.is_team_event %}
+                {% if board.result.is_bye %}
+                    {# Player manually paired and waiting for an opponent —
+                       not a forfeit hole, so no table code. #}
+                    <em class="text-muted">{{ _('Awaiting opponent') }}</em>
+                {% else %}
+                    {# A missing side in a flat team system is a lineup
+                       hole (forfeit); show which seat is empty. #}
+                    {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
+                    <em class="text-muted">—</em>
+                {% endif %}
             {% else %}
-                {{ _('EXEMPT') }}
+                {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
+                {% set first_pab_round = wtp.first_pab_round if wtp else none %}
+                {% if first_pab_round and first_pab_round < admin_round %}
+                    <span class="text-danger">
+                        {{ _('EXEMPT (already received at round #%(round)d)', round=first_pab_round) }}
+                    </span>
+                {% else %}
+                    {{ _('EXEMPT') }}
+                {% endif %}
             {% endif %}
         </td>
         <td></td>

@@ -1,0 +1,104 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{# Admin team-match modal (opened from the match button on the pairings
+   tab): sober styling with a normal Bootstrap button, matching
+   pairing_modal.html. Bonus/penalty points are edited from their own
+   modal (the penalty badge / the team-record modal), not here. #}
+
+{% set _a_gp, _b_gp = team_board.game_points %}
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(95vw, 480px);"
+>
+    <div class="modal-content">
+        <div class="modal-header d-flex flex-column">
+            <h2 class="modal-title fs-5 fw-bold text-center w-100">
+                {{ team_board.team_a.name }}
+                {% if team_board.team_b %}
+                    <span class="mx-2">{{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}</span>
+                    {{ team_board.team_b.name }}
+                {% else %}
+                    <span class="mx-2">— {{ _('EXEMPT') }}</span>
+                {% endif %}
+            </h2>
+            <div class="text-muted small w-100 text-center">
+                {{ _('Round #%(round)d', round=team_board.round) }}
+            </div>
+        </div>
+        <div class="modal-body">
+            {% set action = 'MANUAL_UNPAIRING' %}
+            {% set action_route = url_for(
+                'admin-pairings-unpair-team-board',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=team_board.round,
+                team_board_id=team_board.id,
+            ) %}
+            {% set has_played_result = namespace(value=false) %}
+            {% for board in team_board.boards %}
+                {% if
+                    not board.no_result
+                    and board.optional_white_tournament_player is not none
+                    and board.black_tournament_player is not none
+                %}
+                    {% set has_played_result.value = true %}
+                {% endif %}
+            {% endfor %}
+            {% set unpair_disabled = (
+                action not in existing_actions
+                or has_played_result.value
+                or not client.can_unpair_boards(admin_tournament.id)
+            ) %}
+            {% if unpair_disabled and has_played_result.value %}
+                <span class="d-grid" {{ macros.tooltip_attributes(
+                    'info',
+                    _('Clear board results between players first before unpairing.'),
+                    'top'
+                ) }}>
+            {% else %}
+                <div class="d-grid">
+            {% endif %}
+                <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    {% if unpair_disabled %}
+                        disabled
+                    {% else %}
+                        {% if action in allowed_actions %}
+                            hx-delete="{{ action_route }}"
+                        {% else %}
+                            hx-get="{{ url_for(
+                                'admin-pairings-safety-mode-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=team_board.round,
+                                action=action,
+                                redirect_method='DELETE',
+                                redirect_route=action_route,
+                            ) }}"
+                        {% endif %}
+                        hx-trigger="click"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                >
+                    {{ _('Unpair') }}
+                </button>
+            {% if unpair_disabled and has_played_result.value %}
+                </span>
+            {% else %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>

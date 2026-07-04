@@ -179,6 +179,42 @@ class FRASchoolsPlugin(Plugin):
         return self.id, FRASchoolsPlayerPluginData
 
     @hookimpl
+    def get_prohibited_pairing_dimensions(self):
+        from data.prohibited_pairings import ProhibitedPairingDimension
+
+        def school_key(player):
+            school = FRASchoolsUtils.get_player_school(player)
+            return str(school.id) if school and school.id is not None else None
+
+        return [
+            ProhibitedPairingDimension(
+                id='fra-school',
+                label=_('School'),
+                is_team=False,
+                group_key=school_key,
+            )
+        ]
+
+    @hookimpl
+    def get_team_affiliation_sources(self):
+        from data.team_affiliation import (
+            TeamAffiliationSource,
+            team_shared_player_value,
+        )
+
+        def school_name(player):
+            school = FRASchoolsUtils.get_player_school(player)
+            return school.name if school else None
+
+        return [
+            TeamAffiliationSource(
+                id='fra-school',
+                label=_('School'),
+                resolve=lambda team: team_shared_player_value(team, school_name),
+            )
+        ]
+
+    @hookimpl
     def get_player_form_template_context(
         self, web_context: 'PlayerAdminWebContext'
     ) -> dict[str, Any]:

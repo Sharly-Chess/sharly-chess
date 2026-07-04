@@ -72,7 +72,7 @@ from database.sqlite.local_source_database.delays import (
 )
 from plugins.manager import Plugin, plugin_manager
 from utils import Utils
-from utils.enum import FormAction
+from utils.enum import EventType, Extension, FormAction
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -80,8 +80,12 @@ from web.controllers.admin.base_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard
 from web.messages import Message
-from web.session import SessionEventsShowDetails
-from web.urls import admin_event_tournaments_url, admin_event_url
+from web.session import (
+    SessionEventsShowDetails,
+    SessionUserAccountId,
+    SessionUserAccountPasswordHash,
+)
+from web.urls import admin_event_url
 
 logger: Logger = get_logger()
 
@@ -362,6 +366,7 @@ class IndexAdminController(BaseAdminController):
             allow_multi_tournament_players = True
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
+            event_type = EventType.INDIVIDUAL.value
             location: str | None = None
             age_category_base_date: date | None = None
             age_category_change_month: int = 1
@@ -398,6 +403,7 @@ class IndexAdminController(BaseAdminController):
             organiser_email = stored_event.organiser_email
             organiser_director = stored_event.organiser_director
             player_rating_type = stored_event.player_rating_type
+            event_type = stored_event.event_type.value
             stored_plugin_data = stored_event.plugin_data
             event_enabled_plugins = admin_event.enabled_plugins
 
@@ -424,6 +430,7 @@ class IndexAdminController(BaseAdminController):
                     'public': public,
                     'allow_multi_tournament_players': allow_multi_tournament_players,
                     'federation': federation,
+                    'event_type': event_type,
                     'player_rating_type': player_rating_type,
                     'location': location,
                     'organiser_name': organiser_name,
@@ -474,6 +481,22 @@ class IndexAdminController(BaseAdminController):
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
 
+        if action == FormAction.CREATE:
+            event_type_raw = (
+                WebContext.form_data_to_str(
+                    data, field := 'event_type', EventType.INDIVIDUAL.value
+                )
+                or EventType.INDIVIDUAL.value
+            )
+            try:
+                event_type = EventType(event_type_raw)
+            except ValueError:
+                errors[field] = f'Invalid event type value [{event_type_raw}].'
+                event_type = EventType.INDIVIDUAL
+        else:
+            assert admin_event is not None
+            event_type = admin_event.event_type
+
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
         organiser_name = WebContext.form_data_to_str(data, 'organiser_name')
@@ -514,6 +537,7 @@ class IndexAdminController(BaseAdminController):
                 plugin
                 for plugin in plugin_manager.enabled_plugins
                 if WebContext.form_data_to_bool(data, plugin.form_key)
+                and plugin.supports_event_type(event_type)
             ]
         )
 
@@ -541,6 +565,7 @@ class IndexAdminController(BaseAdminController):
             uniq_id=uniq_id,
             name=name,
             federation=federation,
+            event_type=event_type,
             public=bool(public),
             allow_multi_tournament_players=allow_multi_tournament_players,
             location=location,
@@ -591,6 +616,7 @@ class IndexAdminController(BaseAdminController):
                     federation_plugin_used = True
                     break
         errors = errors or {}
+        event_type_locked = action != FormAction.CREATE
         template_context = {
             'federation_options': self._get_federation_options(),
             'months_options': self._months_options(),
@@ -598,6 +624,10 @@ class IndexAdminController(BaseAdminController):
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
             'plugins': plugin_manager.enabled_plugins,
             'federation_plugin_used': federation_plugin_used,
+            'event_type_options': {
+                event_type.value: str(event_type) for event_type in EventType
+            },
+            'event_type_locked': event_type_locked,
             'player_rating_type_options': {
                 str(PlayerRatingType.FIDE.value): _('FIDE'),
                 str(PlayerRatingType.NATIONAL.value): _(
@@ -655,7 +685,7 @@ class IndexAdminController(BaseAdminController):
     @post(
         path='/{admin_tab:str}/create-event',
         name='admin-tab-create-event',
-        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+        guards=[ActionGuard(AuthAction.CREATE_EVENTS)],
     )
     async def htmx_admin_tab_event_create(
         self,
@@ -728,7 +758,7 @@ class IndexAdminController(BaseAdminController):
     @post(
         path='/event-clone/{event_uniq_id:str}',
         name='admin-event-clone',
-        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+        guards=[ActionGuard(AuthAction.CREATE_EVENTS)],
     )
     async def htmx_admin_event_clone(
         self,
@@ -785,11 +815,26 @@ class IndexAdminController(BaseAdminController):
                     database.update_stored_tournament(stored_tournament)
             plugin_manager.hook.on_event_duplicated(event_database=database)
 
+        # Carry the current login into the duplicate: the clone copies the
+        # accounts (same ids and password hashes), so a remote organiser stays
+        # authenticated on the new event instead of landing there anonymously.
+        account = web_context.client.account
+        if (
+            not account.administrator
+            and not account.anonymous
+            and account.password_hash
+        ):
+            new_event = Event(stored_event)
+            SessionUserAccountId(request, new_event).set(account.id)
+            SessionUserAccountPasswordHash(request, new_event).set(
+                account.password_hash
+            )
+
         Message.success(
             request,
             _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id),
         )
-        return ClientRedirect(redirect_to=admin_event_tournaments_url(request, uniq_id))
+        return ClientRedirect(redirect_to=admin_event_url(request, uniq_id))
 
     @patch(
         path=[
@@ -1000,7 +1045,7 @@ class IndexAdminController(BaseAdminController):
         normalized_data = await WebContext.normalize_multipart_data(data)
         file_path = WebContext.form_data_to_path(normalized_data, 'file')
         assert file_path is not None
-        suffix = '.' + SharlyChessConfig.event_database_ext
+        suffix = '.' + Extension.EVENT_DB
         if file_path.suffix != suffix:
             error_message = _(
                 'Invalid file extension [{extension}] (expected: {expected}).'

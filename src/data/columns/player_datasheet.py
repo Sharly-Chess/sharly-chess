@@ -48,7 +48,7 @@ class DatasheetColumn(ABC):
         return False
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament, stored_player: StoredPlayer, value: str
+        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
     ):
         """Save the data of the cell value."""
         if self.is_required and not value:
@@ -251,6 +251,25 @@ class TournamentColumn(DatasheetColumn):
         pass
 
 
+class TeamColumn(DatasheetColumn):
+    """Team-mode counterpart to :class:`TournamentColumn`. Exports the
+    player's team name; on import the value is stashed on the stored
+    player and resolved to a team membership after persistence (matched
+    by name, created if absent). Optional — a player with no team is
+    still imported, they simply aren't assigned to one."""
+
+    @property
+    def id(self) -> str:
+        return 'team'
+
+    def get_cell_content(self, player: Player) -> Any:
+        team = player.team
+        return team.name if team is not None else ''
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        stored_player.transient_team_name = value.strip() or None
+
+
 class FederationColumn(DatasheetColumn):
     @property
     def id(self) -> str:
@@ -383,7 +402,10 @@ class RatingColumn(DatasheetColumn):
         return 'rating'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.single_tournament_player.rating
+        if player.optional_single_tournament_player:
+            return player.optional_single_tournament_player.rating
+        else:
+            return 0
 
     def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
         for column in used_columns:
@@ -392,14 +414,19 @@ class RatingColumn(DatasheetColumn):
                 return
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament, stored_player: StoredPlayer, value: str
+        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
     ):
         if not value:
             return
         if not value.isdigit() or (int_value := int(value)) == 0:
             raise SharlyChessException(_('A positive integer is expected.'))
         rating = PlayerRating(int_value, int_value, int_value)
-        stored_player.ratings[tournament.rating.value] = rating.stored_value
+        rating_bucket = (
+            tournament.rating.value
+            if tournament is not None
+            else TournamentRating.STANDARD.value
+        )
+        stored_player.ratings[rating_bucket] = rating.stored_value
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         pass
@@ -414,7 +441,10 @@ class RatingTypeColumn(DatasheetColumn):
         return 'rating_type'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.single_tournament_player.rating_type.key.upper()
+        if player.optional_single_tournament_player:
+            return player.optional_single_tournament_player.rating_type.key.upper()
+        else:
+            return ''
 
     def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
         for column in used_columns:
@@ -423,19 +453,24 @@ class RatingTypeColumn(DatasheetColumn):
                 return
 
     def augment_stored_player_with_tournament(
-        self, tournament: Tournament, stored_player: StoredPlayer, value: str
+        self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
     ):
         try:
             rating_type = PlayerRatingType.from_key(value)
         except ValueError:
             rating_type = PlayerRatingType.ESTIMATED
+        rating_bucket = (
+            tournament.rating.value
+            if tournament is not None
+            else TournamentRating.STANDARD.value
+        )
         rating = PlayerRating.from_stored_value(
-            stored_player.ratings.get(tournament.rating.value, {})
+            stored_player.ratings.get(rating_bucket, {})
         )
         for type_ in PlayerRatingType:
             if type_ != rating_type:
                 rating.set_value_from_type(None, rating_type)
-        stored_player.ratings[tournament.rating.value] = rating.stored_value
+        stored_player.ratings[rating_bucket] = rating.stored_value
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         pass

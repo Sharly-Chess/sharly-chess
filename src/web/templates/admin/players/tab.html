@@ -45,23 +45,27 @@
                         {% endwith %}
                     </ul>
                 </div>
-                <div>
-                    <button
-                        class="btn btn-outline-primary text-nowrap"
-                        hx-get="{{ url_for('check-in-tournaments-modal', event_uniq_id=admin_event.uniq_id) }}"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
-                        {{ _('Check-in') }}
-                    </button>
-                </div>
+                {% if not admin_event.is_team_event %}
+                    <div>
+                        <button
+                            class="btn btn-outline-primary text-nowrap"
+                            hx-get="{{ url_for('check-in-tournaments-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-indicator="#please-wait"
+                        >
+                            <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
+                            {{ _('Check-in') }}
+                        </button>
+                    </div>
+                {% endif %}
                 {% set add_player_error_message = (
                     _('You are not allowed to add players to the event.')
                     if not client.can_add_player else
                     _('Tournaments are finished, you can not add players any longer.')
-                    if not player_addable_tournaments and allowed_tournaments else
+                    if not player_addable_tournaments and allowed_tournaments
+                        and not admin_event.is_team_event else
                     _('Add a tournament before adding players.')
-                    if not player_addable_tournaments else ''
+                    if not player_addable_tournaments
+                        and not admin_event.is_team_event else ''
                 ) %}
                 <span
                     {%if add_player_error_message %}

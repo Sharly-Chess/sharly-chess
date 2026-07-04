@@ -238,6 +238,12 @@ class SessionRotatorsShowDetails(BoolSessionVariable):
         return 'rotators_show_details'
 
 
+class SessionMenusShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'menus_show_details'
+
+
 class SessionAccountsShowDetails(BoolSessionVariable):
     @property
     def key(self) -> str:
@@ -260,6 +266,26 @@ class SessionEventsShowDetails(BoolSessionVariable):
     @property
     def key(self) -> str:
         return 'events_show_details'
+
+
+class SessionTeamsShowRoster(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_show_roster'
+
+    @property
+    def default_value(self) -> bool:
+        return True
+
+
+class SessionTeamsShowLineup(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_show_lineup'
+
+    @property
+    def default_value(self) -> bool:
+        return True
 
 
 class SessionTimersAddOtherActive(BoolSessionVariable):
@@ -398,6 +424,12 @@ class SessionPlayersAddOtherActive(BoolSessionVariable):
     @property
     def key(self) -> str:
         return 'players_add_other_active'
+
+
+class SessionTeamsAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_add_other_active'
 
 
 class SessionPlayersImportUseDataSource(BoolSessionVariable):

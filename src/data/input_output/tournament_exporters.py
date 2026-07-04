@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import IO, override
+from typing import IO, ClassVar, override
 
 from common.i18n.utils import unicode_normalize
 
@@ -7,10 +7,21 @@ from common.i18n import _
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
+from utils.enum import EventType
 
 
 class TournamentExporter(IdentifiableEntity, ABC):
     """Abstract class representing an export format for a tournament."""
+
+    supported_event_types: ClassVar[list[EventType] | None] = None
+    """The event types this exporter supports, or None for all types.
+    Unsupported exporters are filtered out of the export menu."""
+
+    @classmethod
+    def supports_event_type(cls, event_type: EventType) -> bool:
+        return (
+            cls.supported_event_types is None or event_type in cls.supported_event_types
+        )
 
     @property
     def tooltip(self) -> str | None:

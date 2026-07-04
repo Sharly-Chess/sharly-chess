@@ -34,7 +34,6 @@ from plugins.pairing_acceleration.pairing_variations import (
     Acceleration3GroupsSwissVariation,
 )
 from plugins.utils import PluginUtils
-from utils.enum import Result
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -132,8 +131,8 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
             group=cls.get_player_group(tournament, tournament_player),
             points=tournament_player.points_before(at_round),
             tournament_rounds=tournament.rounds,
-            draw_points=Result.DRAW.points(tournament.point_values),
-            win_points=Result.WIN.points(tournament.point_values),
+            draw_points=tournament.draw_points,
+            win_points=tournament.win_points,
         )
 
     def get_tournament_accelerated_rules(
@@ -191,7 +190,7 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
     def _get_group_a_tooltip_lines(
         cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
-        win_points = Result.WIN.points(tournament.point_values)
+        win_points = tournament.win_points
         return [
             (cls._rounds_prefix(1, tournament.rounds - 2), 2 * win_points),
             (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
@@ -201,8 +200,8 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
     def _get_detailed_group_tooltip_lines(
         cls, tournament: Tournament, group: AccelerationGroup
     ) -> list[tuple[str, float | None]]:
-        draw_points = Result.DRAW.points(tournament.point_values)
-        win_points = Result.WIN.points(tournament.point_values)
+        draw_points = tournament.draw_points
+        win_points = tournament.win_points
         get_vpoints = partial(
             cls._compute_virtual_points,
             group=group,

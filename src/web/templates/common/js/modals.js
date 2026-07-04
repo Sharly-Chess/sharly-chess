@@ -40,6 +40,8 @@ function modalIsClosed() {
     return !document.getElementById('modal-wrapper').classList.contains('show');
 }
 
+var enterKeySubmitDisabled = false;
+
 function handleModalOpened(static) {
     var modal = bootstrap.Modal.getOrCreateInstance('#modal-wrapper', {});
 
@@ -64,7 +66,12 @@ function handleModalOpened(static) {
                     if (event.target.getAttribute("type") === "search") {
                         return;
                     }
-                    modalForm.dispatchEvent(new CustomEvent("enterKeypressFromModal"));
+                    if (!enterKeySubmitDisabled) {
+                        event.preventDefault();
+                        modalForm.dispatchEvent(new CustomEvent("enterKeypressFromModal"));
+                        enterKeySubmitDisabled = true;
+                        setTimeout(() => enterKeySubmitDisabled = false, 1000);
+                    }
                 }
             })
         }

@@ -1,0 +1,57 @@
+{% set by_tournament_round = option.match_options_by_tournament_round() %}
+<div class="col-12">
+    <label class="form-label mb-1">{{ _('Matches to print:') }}</label>
+    <div class="form-text text-muted mb-2">
+        {{ _('Leave all unchecked to print every match.') }}
+    </div>
+    {% set raw = data.get(option.id) or [] %}
+    {% set selected_ids = (raw if raw is iterable and raw is not string else [raw]) | map('string') | list %}
+    <div id="{{ option.id }}-list" class="d-flex flex-column gap-1">
+        <div class="form-text text-muted match-sheet-empty">
+            {{ _('No paired team matches for this round.') }}
+        </div>
+    </div>
+    <script>
+        (function () {
+            const map = {{ by_tournament_round | tojson }};
+            const defaultRound = {{ option.default_round_by_tournament() | tojson }};
+            const selectedIds = new Set({{ selected_ids | tojson }});
+            const $modal = $('#modal-wrapper');
+            function refresh() {
+                const tid = String($modal.find('#tournament').val() || '');
+                // No round entered -> fall back to the tournament's current
+                // round, matching what the document actually prints.
+                let round = String($modal.find('#round').val() || '');
+                if (!round) { round = String(defaultRound[tid] || ''); }
+                const matches = (map[tid] && map[tid][round]) || [];
+                const $list = $('#{{ option.id }}-list');
+                $list.empty();
+                if (!matches.length) {
+                    $list.append(
+                        '<div class="form-text text-muted">'
+                        + {{ _('No paired team matches for this round.') | tojson }}
+                        + '</div>'
+                    );
+                    return;
+                }
+                matches.forEach(function (pair) {
+                    const id = String(pair[0]);
+                    const label = pair[1];
+                    const $div = $('<div class="form-check"></div>');
+                    const $input = $('<input type="checkbox" class="form-check-input">')
+                        .attr('id', '{{ option.id }}-' + id)
+                        .attr('name', '{{ option.id }}')
+                        .attr('value', id);
+                    if (selectedIds.has(id)) { $input.prop('checked', true); }
+                    const $label = $('<label class="form-check-label"></label>')
+                        .attr('for', '{{ option.id }}-' + id)
+                        .text(label);
+                    $div.append($input).append($label);
+                    $list.append($div);
+                });
+            }
+            $modal.on('change', '#tournament, #round', refresh);
+            refresh();
+        })();
+    </script>
+</div>

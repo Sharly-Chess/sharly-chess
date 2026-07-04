@@ -5,7 +5,7 @@ creator = "Sharly Chess <support@sharly-chess.com>"
 width = 48
 
 [number]
-text = "{{ board.number }}"
+text = "{% if board.table %}{{ board.table }}.{% endif %}{{ board.number }}"
 font_size = 56.0
 bold = true
 h_align = "center"

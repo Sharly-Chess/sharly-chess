@@ -1,0 +1,15 @@
+{% set _arbiters = option.arbiter_options() %}
+{% if _arbiters %}
+    <div class="col-12">
+        {% set _opts = {'': '-- ' + option.default_text + ' --'} %}
+        {% do _opts.update(_arbiters) %}
+        {{ admin_macros.select_input(
+            name=option.id,
+            label=option.label,
+            select_options=_opts,
+            data=data, errors=errors
+        ) }}
+    </div>
+{% else %}
+    <input type="hidden" name="{{ option.id }}" value="" />
+{% endif %}

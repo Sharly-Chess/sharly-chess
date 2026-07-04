@@ -10,6 +10,7 @@ from common import TEST_ENV
 from packaging.version import Version
 
 from utils.entity import IdentifiableEntity
+from utils.enum import EventType
 from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
@@ -228,6 +229,16 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
     def federation(self) -> str | None:
         """The federation for which the plugin can be enabled, or None for all"""
         return None
+
+    @property
+    def supported_event_types(self) -> list[EventType] | None:
+        """The event types this plugin can be enabled for, or None when
+        the plugin supports every event type."""
+        return None
+
+    def supports_event_type(self, event_type: EventType) -> bool:
+        supported = self.supported_event_types
+        return supported is None or event_type in supported
 
     def can_be_enabled_for_event(self, federation: str) -> bool:
         return not self.federation or self.federation == federation

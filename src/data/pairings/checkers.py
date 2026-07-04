@@ -89,8 +89,8 @@ class CheckerBoard:
         return (
             CheckerBoard(
                 board.id,
-                CheckerPlayer.from_object(board.white_tournament_player)
-                if board.white_tournament_player
+                CheckerPlayer.from_object(board.optional_white_tournament_player)
+                if board.optional_white_tournament_player
                 else None,
                 CheckerPlayer.from_object(board.black_tournament_player)
                 if board.black_tournament_player

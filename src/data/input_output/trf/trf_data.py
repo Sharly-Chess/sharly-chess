@@ -4,6 +4,9 @@ from functools import cached_property
 from dataclasses import dataclass, field
 
 
+TRF_DATE_FORMAT = '%Y/%m/%d'
+
+
 @dataclass
 class TrfGame:
     opponent_id: int | None

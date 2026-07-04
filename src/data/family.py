@@ -8,6 +8,7 @@ from _weakref import ReferenceType
 
 from common.i18n import _
 from data.screen import Screen
+from data.screen_set import format_range
 
 from utils.enum import (
     ScreenType,
@@ -75,6 +76,81 @@ class Family:
         )
         return name.replace('%t', self.tournament.name)
 
+    def resolve_label(self, template: str, abbreviated: bool = False) -> str:
+        """Substitute the tokens %t (tournament), %f/%l (first/last of the
+        family's overall range) and %r (the first–last range) in a label
+        template. ``abbreviated`` shortens player names (menu navigation)."""
+        text = template.replace('%t', self.tournament.name)
+        if '%f' not in text and '%l' not in text and '%r' not in text:
+            return text
+        screens = list(self.screens_by_uniq_id.values())
+        if not screens:
+            first = last = '-'
+        else:
+            first = screens[0].sorted_screen_sets[0].range_bounds(abbreviated)[0]
+            last = screens[-1].sorted_screen_sets[0].range_bounds(abbreviated)[1]
+        text = text.replace('%r', format_range(first, last))
+        return text.replace('%f', first).replace('%l', last)
+
+    @property
+    def label_template(self) -> str:
+        """The family name as a label template: the range ``(%f - %l)`` is
+        appended when the name carries neither ``%f`` nor ``%l`` (so a family
+        always shows its range), otherwise the name is used as is."""
+        name = self.name
+        if '%f' in name or '%l' in name:
+            return name
+        return f'{name} (%r)'
+
+    @property
+    def display_name(self) -> str:
+        """The family's full name for admin display (cards, menu details)."""
+        return self.resolve_label(self.label_template, abbreviated=False)
+
+    @property
+    def nav_label(self) -> str:
+        """The family's compact name for the navigation menu."""
+        return self.resolve_label(self.label_template, abbreviated=True)
+
+    def _menu_label_template(self, with_tournament: bool = False) -> str:
+        """The menu-label template: the range ``%f - %l`` is appended to the
+        custom menu text (or used alone when there is none), unless the user
+        already placed a ``%f``/``%l`` token themselves. When automatic (no
+        custom text) and ``with_tournament``, the tournament name is prefixed
+        to disambiguate families of different tournaments. A single-screen
+        family has no meaningful range, so the range is not appended (the
+        tournament name is used when automatic)."""
+        text = self.menu_text or ''
+        if '%f' in text or '%l' in text:
+            return text
+        if len(self.screens_by_uniq_id) <= 1:
+            return text or '%t'
+        if not text and with_tournament:
+            text = '%t'
+        return f'{text} %r'.strip()
+
+    def menu_label(self, with_tournament: bool = False) -> str:
+        """The family's menu label (full), with its tokens resolved."""
+        return self.resolve_label(
+            self._menu_label_template(with_tournament), abbreviated=False
+        )
+
+    def nav_menu_label(self, with_tournament: bool = False) -> str:
+        """The family's menu label for the navigation menu (abbreviated)."""
+        return self.resolve_label(
+            self._menu_label_template(with_tournament), abbreviated=True
+        )
+
+    @property
+    def in_multi_family_menu(self) -> bool:
+        """Whether the menu this family belongs to covers more than one
+        family."""
+        for menu in self.event.sorted_menus:
+            families = menu.covered_families
+            if any(family.id == self.id for family in families):
+                return len(families) > 1
+        return False
+
     @property
     def tournament_id(self) -> int:
         return self.stored_family.tournament_id
@@ -82,6 +158,17 @@ class Family:
     @property
     def tournament(self) -> 'Tournament':
         return self.event.tournaments_by_id[self.tournament_id]
+
+    @property
+    def shows_team_matches(self) -> bool:
+        """Whether boards/input screens of this family show team-match
+        blocks: only team-vs-team pairing systems have match envelopes —
+        flat fixed-table systems (e.g. Molter) keep the individual board
+        list even in a team event."""
+        return (
+            self.tournament.is_team_tournament
+            and self.tournament.pairing_system.paired_by_team
+        )
 
     @property
     def columns(self) -> int:
@@ -92,57 +179,8 @@ class Family:
         return self.stored_family.font_size or 100
 
     @property
-    def menu_link(self) -> bool:
-        return self.stored_family.menu_link
-
-    @property
     def menu_text(self) -> str:
         return self.stored_family.menu_text
-
-    @cached_property
-    def menu_label(self) -> str | None:
-        if not self.menu_link:
-            return None
-        if self.menu_text:
-            return self.menu_text
-        single_tournament: bool = len(self.event.tournaments_by_id) == 1
-        text: str
-        if (
-            self.type
-            in [
-                ScreenType.INPUT,
-                ScreenType.BOARDS,
-            ]
-            and self.tournament.current_round
-        ):
-            text = self.menu_text or Screen.default_boards_screen_menu_text(
-                single_tournament=single_tournament, first_last=True
-            )
-        elif self.type in [
-            ScreenType.PLAYERS,
-            ScreenType.INPUT,
-            ScreenType.BOARDS,
-        ]:
-            text = self.menu_text or Screen.default_players_screen_menu_text(
-                single_tournament=single_tournament, first_last=True
-            )
-        elif ScreenType.CHECK_IN:
-            text = self.menu_text or Screen.default_check_in_screen_menu_text(
-                single_tournament=single_tournament, first_last=True
-            )
-        elif self.type == ScreenType.RANKING:
-            text = self.menu_text or Screen.default_ranking_screen_menu_text(
-                single_tournament=single_tournament,
-                first_last=True,
-                crosstable=self.ranking_crosstable,
-            )
-        else:
-            text = self.menu_text
-        return text.replace('%t', self.tournament.name)
-
-    @property
-    def menu(self) -> str:
-        return self.stored_family.menu
 
     @property
     def timer_id(self) -> int | None:
@@ -264,7 +302,20 @@ class Family:
             case ScreenType.BOARDS | ScreenType.INPUT:
                 if self.tournament.current_round:
                     players_instead_of_boards = False
-                    total_items_number: int = len(self.tournament.boards or [])
+                    if self.shows_team_matches:
+                        # Team screens list matches (a match spans several
+                        # rows); hidden byes carry no table number.
+                        total_items_number: int = len(
+                            [
+                                team_board
+                                for team_board in self.tournament.get_round_team_boards(
+                                    self.tournament.current_round
+                                )
+                                if team_board.display_number is not None
+                            ]
+                        )
+                    else:
+                        total_items_number = len(self.tournament.boards or [])
                     if total_items_number:
                         if self.first:
                             self._calculated_first = max(
@@ -290,7 +341,16 @@ class Family:
                         self._calculated_last = cut_items_number
             case ScreenType.CHECK_IN:
                 players_instead_of_boards = True
-                cut_items_number = len(self.tournament.sorted_tournament_players)
+                if self.tournament.is_team_tournament:
+                    cut_items_number = len(
+                        [
+                            team
+                            for team in self.event.teams_by_id.values()
+                            if team.tournament_id == self.tournament.id
+                        ]
+                    )
+                else:
+                    cut_items_number = len(self.tournament.sorted_tournament_players)
                 if cut_items_number:
                     self._calculated_first = 1
                     self._calculated_last = cut_items_number
@@ -354,6 +414,15 @@ class Family:
             if self.number:
                 if players_instead_of_boards:
                     self._calculated_number = self.number * 2
+                elif (
+                    self.type in (ScreenType.BOARDS, ScreenType.INPUT)
+                    and self.shows_team_matches
+                ):
+                    # In team mode ``number`` counts matches per COLUMN
+                    # (easier to reason about than display rows, since a
+                    # match spans several rows) — scale to a per-screen
+                    # item count.
+                    self._calculated_number = self.number * self.columns
                 else:
                     self._calculated_number = self.number
             elif self.parts:
@@ -410,139 +479,125 @@ class Family:
 
     @property
     def numbers_str(self) -> str:
+        is_team = self.tournament.is_team_tournament
+        offset = 0
         if self.type in (ScreenType.BOARDS, ScreenType.INPUT):
-            match (self.first, self.last, self.number, self.parts):
-                case (None, None, None, None):
-                    return _('all the boards')
-                case (first, None, None, None) if first is not None:
-                    return _('boards from #{first} to end').format(
-                        first=first + self.tournament.first_board_number - 1
-                    )
-                case (None, last, None, None) if last is not None:
-                    return _('boards from start to #{last}').format(
-                        last=last + self.tournament.first_board_number - 1
-                    )
-                case (first, last, None, None) if (
-                    first is not None and last is not None
-                ):
-                    return _('boards from #{first} to #{last}').format(
-                        first=first + self.tournament.first_board_number - 1,
-                        last=last + self.tournament.first_board_number - 1,
-                    )
-                case (None, None, number, None) if number is not None:
-                    return _('screens of {number} boards').format(number=number)
-                case (first, None, number, None) if (
-                    first is not None and number is not None
-                ):
-                    return _('screens of {number} boards from #{first} to end').format(
-                        first=first + self.tournament.first_board_number - 1,
-                        number=number,
-                    )
-                case (None, last, number, None) if (
-                    last is not None and number is not None
-                ):
-                    return _('screens of {number} boards from start to #{last}').format(
-                        last=last + self.tournament.first_board_number - 1,
-                        number=number,
-                    )
-                case (first, last, number, None) if (
-                    first is not None and last is not None and number is not None
-                ):
-                    return _(
+            if self.shows_team_matches:
+                strings = {
+                    'all': _('all the matches'),
+                    'from': _('matches from #{first} to end'),
+                    'to': _('matches from start to #{last}'),
+                    'range': _('matches from #{first} to #{last}'),
+                    'number': _('screens of {number} matches per column'),
+                    'number_from': _(
+                        'screens of {number} matches per column from #{first} to end'
+                    ),
+                    'number_to': _(
+                        'screens of {number} matches per column from start to #{last}'
+                    ),
+                    'number_range': _(
+                        'screens of {number} matches per column from #{first} to #{last}'
+                    ),
+                    'parts': _('matches on {parts} screens'),
+                    'parts_from': _('matches from #{first} to end, on {parts} screens'),
+                    'parts_to': _('matches from start to #{last}, on {parts} screens'),
+                    'parts_range': _(
+                        'matches from #{first} to #{last}, on {parts} screens'
+                    ),
+                }
+            else:
+                offset = self.tournament.first_board_number - 1
+                strings = {
+                    'all': _('all the boards'),
+                    'from': _('boards from #{first} to end'),
+                    'to': _('boards from start to #{last}'),
+                    'range': _('boards from #{first} to #{last}'),
+                    'number': _('screens of {number} boards'),
+                    'number_from': _('screens of {number} boards from #{first} to end'),
+                    'number_to': _('screens of {number} boards from start to #{last}'),
+                    'number_range': _(
                         'screens of {number} boards from #{first} to #{last}'
-                    ).format(
-                        first=first + self.tournament.first_board_number - 1,
-                        last=last + self.tournament.first_board_number - 1,
-                        number=number,
-                    )
-                case (None, None, None, parts) if parts is not None:
-                    return _('boards on {parts} screens').format(parts=parts)
-                case (first, None, None, parts) if (
-                    first is not None and parts is not None
-                ):
-                    return _('boards from #{first} to end, on {parts} screens').format(
-                        first=first + self.tournament.first_board_number - 1,
-                        parts=parts,
-                    )
-                case (None, last, None, parts) if (
-                    last is not None and parts is not None
-                ):
-                    return _('boards from start to #{last}, on {parts} screens').format(
-                        last=last + self.tournament.first_board_number - 1,
-                        parts=parts,
-                    )
-                case (first, last, None, parts) if (
-                    first is not None and last is not None and parts is not None
-                ):
-                    return _(
+                    ),
+                    'parts': _('boards on {parts} screens'),
+                    'parts_from': _('boards from #{first} to end, on {parts} screens'),
+                    'parts_to': _('boards from start to #{last}, on {parts} screens'),
+                    'parts_range': _(
                         'boards from #{first} to #{last}, on {parts} screens'
-                    ).format(
-                        first=first + self.tournament.first_board_number - 1,
-                        last=last + self.tournament.first_board_number - 1,
-                        parts=parts,
-                    )
-                case _:
-                    raise ValueError(
-                        f'first={self.first}, last={self.last}, parts={self.parts}, number={self.number}'
-                    )
+                    ),
+                }
+        elif is_team:
+            strings = {
+                'all': _('all the teams'),
+                'from': _('teams from #{first} to end'),
+                'to': _('teams from start to #{last}'),
+                'range': _('teams from #{first} to #{last}'),
+                'number': _('screens of {number} teams'),
+                'number_from': _('screens of {number} teams from #{first} to end'),
+                'number_to': _('screens of {number} teams from start to #{last}'),
+                'number_range': _('screens of {number} teams from #{first} to #{last}'),
+                'parts': _('teams on {parts} screens'),
+                'parts_from': _('teams from #{first} to end, on {parts} screens'),
+                'parts_to': _('teams from start to #{last}, on {parts} screens'),
+                'parts_range': _('teams from #{first} to #{last}, on {parts} screens'),
+            }
         else:
-            match (self.first, self.last, self.number, self.parts):
-                case (None, None, None, None):
-                    return _('all the players')
-                case (first, None, None, None) if first is not None:
-                    return _('players from #{first} to end').format(first=first)
-                case (None, last, None, None) if last is not None:
-                    return _('players from start to #{last}').format(last=last)
-                case (first, last, None, None) if (
-                    first is not None and last is not None
-                ):
-                    return _('players from #{first} to #{last}').format(
-                        first=first, last=last
-                    )
-                case (None, None, number, None) if number is not None:
-                    return _('screens of {number} players').format(number=number)
-                case (first, None, number, None) if (
-                    first is not None and number is not None
-                ):
-                    return _('screens of {number} players from #{first} to end').format(
-                        first=first, number=number
-                    )
-                case (None, last, number, None) if (
-                    last is not None and number is not None
-                ):
-                    return _(
-                        'screens of {number} players from start to #{last}'
-                    ).format(last=last, number=number)
-                case (first, last, number, None) if (
-                    first is not None and last is not None and number is not None
-                ):
-                    return _(
-                        'screens of {number} players from #{first} to #{last}'
-                    ).format(first=first, last=last, number=number)
-                case (None, None, None, parts) if parts is not None:
-                    return _('players on {parts} screens').format(parts=parts)
-                case (first, None, None, parts) if (
-                    first is not None and parts is not None
-                ):
-                    return _('players from #{first} to end, on {parts} screens').format(
-                        first=first, parts=parts
-                    )
-                case (None, last, None, parts) if (
-                    last is not None and parts is not None
-                ):
-                    return _(
-                        'players from start to #{last}, on {parts} screens'
-                    ).format(last=last, parts=parts)
-                case (first, last, None, parts) if (
-                    first is not None and last is not None and parts is not None
-                ):
-                    return _(
-                        'players from #{first} to #{last}, on {parts} screens'
-                    ).format(first=first, last=last, parts=parts)
-                case _:
-                    raise ValueError(
-                        f'first={self.first}, last={self.last}, parts={self.parts}, number={self.number}'
-                    )
+            strings = {
+                'all': _('all the players'),
+                'from': _('players from #{first} to end'),
+                'to': _('players from start to #{last}'),
+                'range': _('players from #{first} to #{last}'),
+                'number': _('screens of {number} players'),
+                'number_from': _('screens of {number} players from #{first} to end'),
+                'number_to': _('screens of {number} players from start to #{last}'),
+                'number_range': _(
+                    'screens of {number} players from #{first} to #{last}'
+                ),
+                'parts': _('players on {parts} screens'),
+                'parts_from': _('players from #{first} to end, on {parts} screens'),
+                'parts_to': _('players from start to #{last}, on {parts} screens'),
+                'parts_range': _(
+                    'players from #{first} to #{last}, on {parts} screens'
+                ),
+            }
+        first = self.first + offset if self.first is not None else None
+        last = self.last + offset if self.last is not None else None
+        match (self.first, self.last, self.number, self.parts):
+            case (None, None, None, None):
+                return strings['all']
+            case (f, None, None, None) if f is not None:
+                return strings['from'].format(first=first)
+            case (None, l, None, None) if l is not None:
+                return strings['to'].format(last=last)
+            case (f, l, None, None) if f is not None and l is not None:
+                return strings['range'].format(first=first, last=last)
+            case (None, None, number, None) if number is not None:
+                return strings['number'].format(number=number)
+            case (f, None, number, None) if f is not None and number is not None:
+                return strings['number_from'].format(first=first, number=number)
+            case (None, l, number, None) if l is not None and number is not None:
+                return strings['number_to'].format(last=last, number=number)
+            case (f, l, number, None) if (
+                f is not None and l is not None and number is not None
+            ):
+                return strings['number_range'].format(
+                    first=first, last=last, number=number
+                )
+            case (None, None, None, parts) if parts is not None:
+                return strings['parts'].format(parts=parts)
+            case (f, None, None, parts) if f is not None and parts is not None:
+                return strings['parts_from'].format(first=first, parts=parts)
+            case (None, l, None, parts) if l is not None and parts is not None:
+                return strings['parts_to'].format(last=last, parts=parts)
+            case (f, l, None, parts) if (
+                f is not None and l is not None and parts is not None
+            ):
+                return strings['parts_range'].format(
+                    first=first, last=last, parts=parts
+                )
+            case _:
+                raise ValueError(
+                    f'first={self.first}, last={self.last}, parts={self.parts}, number={self.number}'
+                )
 
     def __str__(self):
         return f'Tournament {self.tournament.name} ({self.numbers_str})'

@@ -6,11 +6,12 @@ from typing import TYPE_CHECKING
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
-from data.player import Player, TournamentPlayer
+from data.player import Player
 from data.print_documents.place_cards.data import (
     PlaceCardPlayer,
     PlaceCardBoard,
     PlaceCardPairing,
+    PlaceCardTeam,
 )
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
@@ -122,6 +123,23 @@ class PlaceCardType(IdentifiableEntity, ABC):
     ) -> list[PlaceCardPairing]:
         return []
 
+    @classmethod
+    def teams(
+        cls,
+        tournament: Tournament,
+    ) -> list[PlaceCardTeam]:
+        return []
+
+    @classmethod
+    def preview_teams(
+        cls,
+    ) -> list[PlaceCardTeam]:
+        return []
+
+    @classmethod
+    def supports_event_type(cls, is_team_event: bool) -> bool:
+        return True
+
     @property
     def mirror_rotate(self) -> bool:
         return True
@@ -150,9 +168,19 @@ class PlayerCardType(PlaceCardType):
         tournament: Tournament,
         player_ids: list[int] | None = None,
     ) -> list[PlaceCardPlayer]:
-        tournament_players: list[TournamentPlayer] = list(
-            tournament.tournament_players_by_starting_rank.values()
-        )
+        if tournament.event.is_team_event:
+            # Cards come out grouped by team, in roster order.
+            tournament_players = sorted(
+                tournament.tournament_players_by_id.values(),
+                key=lambda tp: (
+                    tp.team.name.lower() if tp.team else '',
+                    tp.team_index if tp.team_index is not None else 0,
+                ),
+            )
+        else:
+            tournament_players = list(
+                tournament.tournament_players_by_starting_rank.values()
+            )
         if player_ids:
             tournament_players = [
                 tournament_player
@@ -204,23 +232,36 @@ class BoardCardType(PlaceCardType):
     ) -> list[PlaceCardBoard]:
         if preview:
             return [cls.get_random_board()]
-        elif board_numbers:
-            return [PlaceCardBoard(board_number) for board_number in board_numbers]
-        else:
+        if tournament.event.is_team_event and tournament.pairing_system.paired_by_team:
+            # Team-paired systems: the numbers field selects match
+            # TABLES; each table emits one card per board of the match.
+            # Flat team systems (fixed tables) keep plain board numbers.
+            boards_per_match = tournament.team_player_count or 0
+            table_count = len(tournament.teams) // 2
+            tables = (
+                sorted(board_numbers) if board_numbers else range(1, table_count + 1)
+            )
             return [
-                PlaceCardBoard(board_number)
-                for board_number in sorted(
-                    [
-                        tournament.first_board_number + number
-                        for number in range(tournament.player_count // 2)
-                    ]
-                    + [
-                        tournament_player.fixed
-                        for tournament_player in tournament.tournament_players_by_id.values()
-                        if tournament_player.fixed
-                    ]
-                )
+                PlaceCardBoard(board_number, table=table)
+                for table in tables
+                for board_number in range(1, boards_per_match + 1)
             ]
+        if board_numbers:
+            return [PlaceCardBoard(board_number) for board_number in board_numbers]
+        return [
+            PlaceCardBoard(board_number)
+            for board_number in sorted(
+                [
+                    tournament.first_board_number + number
+                    for number in range(tournament.player_count // 2)
+                ]
+                + [
+                    tournament_player.fixed
+                    for tournament_player in tournament.tournament_players_by_id.values()
+                    if tournament_player.fixed
+                ]
+            )
+        ]
 
     @classmethod
     def preview_boards(
@@ -280,7 +321,19 @@ class PairingCardType(PlaceCardType):
         board_numbers: set[int] | None = None,
     ) -> list[PlaceCardPairing]:
         boards: list[Board] = tournament.get_round_boards(round_)
-        if board_numbers:
+        if tournament.event.is_team_event and tournament.pairing_system.paired_by_team:
+            # Team events: cards come out per match table, boards in
+            # match order; the numbers field selects tables.
+            def table_number(board: Board) -> int:
+                team_board = board.team_board
+                return team_board.display_number or 0 if team_board is not None else 0
+
+            boards = sorted(boards, key=lambda b: (table_number(b), b.index))
+            if board_numbers:
+                boards = [
+                    board for board in boards if table_number(board) in board_numbers
+                ]
+        elif board_numbers:
             boards = [board for board in boards if board.number in board_numbers]
         return [PlaceCardPairing(board) for board in boards]
 
@@ -290,4 +343,36 @@ class PairingCardType(PlaceCardType):
     ) -> list[PlaceCardPairing]:
         return [
             cls.get_random_pairing(),
+        ]
+
+
+class TeamCardType(PlaceCardType):
+    @staticmethod
+    def static_id() -> str:
+        return 'team'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Team Cards')
+
+    @classmethod
+    def supports_event_type(cls, is_team_event: bool) -> bool:
+        return is_team_event
+
+    @classmethod
+    def teams(
+        cls,
+        tournament: Tournament,
+    ) -> list[PlaceCardTeam]:
+        return [
+            PlaceCardTeam(name=team.name, captain=team.captain_display_name or '')
+            for team in sorted(tournament.teams, key=lambda t: t.name.lower())
+        ]
+
+    @classmethod
+    def preview_teams(
+        cls,
+    ) -> list[PlaceCardTeam]:
+        return [
+            PlaceCardTeam(name=_("TEAM'S NAME"), captain=_("Captain's name")),
         ]

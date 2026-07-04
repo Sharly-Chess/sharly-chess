@@ -11,6 +11,7 @@ from litestar.channels import ChannelsPlugin
 from data.access_levels.actions import AuthAction
 from data.board import Board
 from data.screen import Screen
+from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 from web.controllers.admin.player_admin_controller import PlayerAdminController
@@ -91,6 +92,18 @@ class PlayerUserWebContext(UserInputWebContext):
         }
 
 
+class TeamUserWebContext(UserInputWebContext):
+    def __init__(self, request: HTMXRequest):
+        super().__init__(request)
+        self.team = RequestUtils.get_team(request)
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return super().template_context | {
+            'team': self.team,
+        }
+
+
 class InputUserController(BaseScreenUserController):
     """Controller containing all the input endpoints accessed from screens.
     All endpoints have to be accessible from either a screen of a display controller."""
@@ -147,6 +160,38 @@ class InputUserController(BaseScreenUserController):
                 expiration=time.time() + 20,
             )
         )
+        return self._user_screen_render(web_context)
+
+    @get(
+        path='/view/team-checkin-modal/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{team_id:int}',
+        name='user-team-checkin-modal',
+    )
+    async def htmx_user_team_checkin_modal(self, request: HTMXRequest) -> Template:
+        web_context = TeamUserWebContext(request)
+        return HTMXTemplate(
+            template_name='user/modals/team_check_in_modal.html',
+            context=web_context.template_context,
+            re_target='#modal-wrapper',
+            trigger_event='modal_opened',
+            after='settle',
+        )
+
+    @patch(
+        path='/view/team-toggle-check-in/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{team_id:int}',
+        name='user-team-toggle-check-in',
+        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_user_team_toggle_check_in(
+        self,
+        request: HTMXRequest,
+        channels: ChannelsPlugin,
+    ) -> Template:
+        web_context = TeamUserWebContext(request)
+        tournament = web_context.tournament
+        team = web_context.team
+        with EventDatabase(tournament.event.uniq_id, True) as database:
+            team.set_check_in(not team.check_in, database)
+        PlayerAdminController.publish_new_checkin(channels, tournament)
         return self._user_screen_render(web_context)
 
     def _delete_or_add_illegal_move(self, request: HTMXRequest, add: bool) -> Template:
@@ -253,7 +298,9 @@ class InputUserController(BaseScreenUserController):
             LastBoardUpdated(
                 tournament_id=tournament.id,
                 round=round_,
-                board_id=board.id,
+                # DB identifier, not the display id — display ids repeat
+                # across team match blocks.
+                board_id=board.identifier,
                 expiration=time.time() + 20,
             )
         )

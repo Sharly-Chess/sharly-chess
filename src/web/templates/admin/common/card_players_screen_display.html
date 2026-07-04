@@ -15,11 +15,11 @@
             <th class="overflow-hidden text-nowrap">
                 {{ entity.players_board_format.header(tournament) }}
             </th>
-            <th class="overflow-hidden text-nowrap">
-                {% if entity.players_opponent_format.value != 1 %}
+            {% if entity.players_opponent_format.value != 1 %}
+                <th class="overflow-hidden text-nowrap">
                     {{ entity.players_opponent_format.header(tournament) }}
-                {% endif %}
-            </th>
+                </th>
+            {% endif %}
         </tr>
         <tr>
             <td class="overflow-hidden text-nowrap">
@@ -28,11 +28,11 @@
             <td class="overflow-hidden text-nowrap">
                 {{ entity.players_board_format.example }}
             </td>
-            <td class="overflow-hidden text-nowrap">
-                {% if entity.players_opponent_format.value != 1 %}
+            {% if entity.players_opponent_format.value != 1 %}
+                <td class="overflow-hidden text-nowrap">
                     {{ entity.players_opponent_format.example }}
-                {% endif %}
-            </td>
+                </td>
+            {% endif %}
         </tr>
     </table>
 </div>

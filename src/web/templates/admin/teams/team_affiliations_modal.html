@@ -1,0 +1,58 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(92vw, 480px);">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ _('Set affiliations') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <p class="text-muted small">
+                {{ _("Set each team's affiliation from its players. A team is filled only when all its players share the chosen value; teams where it cannot be determined are left unchanged.") }}
+            </p>
+
+            <form
+                id="aff-form"
+                hx-post="{{ url_for(
+                    'admin-team-affiliations-apply',
+                    event_uniq_id=admin_event.uniq_id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% for source in aff_sources %}
+                    <div class="form-check">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="source"
+                            id="aff-{{ source.id }}"
+                            value="{{ source.id }}"
+                            {% if loop.first %}checked{% endif %}
+                        />
+                        <label class="form-check-label" for="aff-{{ source.id }}">
+                            {{ source.label }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>{{ _('Close') }}
+            </button>
+            <button
+                type="submit"
+                form="aff-form"
+                class="btn btn-primary text-nowrap"
+            >
+                <i class="bi-collection-fill pe-1"></i>{{ _('Set') }}
+            </button>
+        </div>
+    </div>
+</div>

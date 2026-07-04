@@ -19,6 +19,15 @@
 
 {% block card_title %}
     <div class="d-flex gap-2 align-items-center justify-content-center">
+        {% if tournament.is_team_tournament %}
+            <div
+                class="text-nowrap"
+                {{ macros.tooltip_attributes('info', _('Number of teams: %(num)d', num=tournament.teams|length), 'top') }}
+            >
+                <i class="bi-flag-fill pe-1"></i>
+                {{ tournament.teams|length }}
+            </div>
+        {% endif %}
         <div
             class="text-nowrap {% if not tournament.rounds %}text-secondary{% endif %}"
             {{ macros.tooltip_attributes('info', _('Number of players: %(num)d', num=tournament.tournament_players_by_id|length), 'top') }}

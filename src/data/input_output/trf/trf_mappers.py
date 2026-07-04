@@ -1,12 +1,22 @@
 from data.pairings import PairingVariation
 from data.pairings.variations import (
-    StandardSwissVariation,
     BergerRoundRobinVariation,
+    BergerTeamRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
+    DoubleBergerTeamRoundRobinVariation,
+    StandardSwissVariation,
+    StandardTeamSwissVariation,
 )
 from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
 from utils import CoreMapper
-from utils.enum import PlayerGender, PlayerTitle, Result, BoardColor
+from utils.enum import (
+    BoardColor,
+    PlayerGender,
+    PlayerTitle,
+    Result,
+    ScoreType,
+    TeamColourType,
+)
 
 
 class TrfPlayerGender(CoreMapper[str, PlayerGender]):
@@ -116,7 +126,7 @@ class TrfEncodedType:
     @staticmethod
     def get_supported_pairing_variation(encoded_type: str) -> PairingVariation | None:
         match encoded_type:
-            case 'FIDE_DUTCH_2026' | 'FIDE_DUTCH':
+            case 'FIDE_DUTCH_2025' | 'FIDE_DUTCH_2026' | 'FIDE_DUTCH':
                 return StandardSwissVariation()
             case 'FIDE_DUTCH_2026_BAKU' | 'FIDE_DUTCH_BAKU':
                 return BakuSwissVariation()
@@ -124,8 +134,78 @@ class TrfEncodedType:
                 return BergerRoundRobinVariation()
             case 'FIDE_DOUBLEROUNDROBIN':
                 return DoubleBergerRoundRobinVariation()
+            case (
+                'FIDE_TEAM_ROUNDROBIN'
+                | 'BERGER_TEAM_ROUNDROBIN'
+                | 'BERGER_TEAM_ROUNDROBIN_G1'
+                | 'CUSTOM_TEAM_ROUNDROBIN'
+                | 'OTHER_TEAM_ROUNDROBIN'
+            ):
+                return BergerTeamRoundRobinVariation()
+            case (
+                'FIDE_TEAM_DOUBLEROUNDROBIN'
+                | 'BERGER_TEAM_DOUBLEROUNDROBIN'
+                | 'OTHER_TEAM_DOUBLEROUNDROBIN'
+            ):
+                return DoubleBergerTeamRoundRobinVariation()
+            case _ if encoded_type.startswith(
+                ('FIDE_TEAM_TYPEA_', 'FIDE_TEAM_TYPEB_', 'FIDE_TEAM_')
+            ):
+                # FIDE_TEAM_[TYPE<A|B>_]<primary>[_<secondary>] team-Swiss
+                # code. Score config + colour-preference rule are
+                # recovered separately via ``get_team_score_config`` and
+                # ``get_team_colour_type``; the variation itself is the
+                # same Standard Team Swiss in every case (the bare
+                # ``FIDE_TEAM_…`` prefix is the no-preference variant).
+                return StandardTeamSwissVariation()
             case _:
                 return None
+
+    @staticmethod
+    def get_team_score_config(
+        encoded_type: str,
+    ) -> tuple[ScoreType, ScoreType] | None:
+        """Decode a ``FIDE_TEAM_TYPE<A|B>_<primary>[_<secondary>]``
+        team-Swiss code into ``(primary_score, secondary_score)``.
+        Returns ``None`` for codes that don't carry score config
+        (non-team or unparseable). MP-only / GP-only codes echo the
+        primary as the secondary."""
+        suffix = TrfEncodedType._team_code_suffix(encoded_type)
+        if suffix is None:
+            return None
+        parts = suffix.split('_')
+        score_by_code = {'MP': ScoreType.MATCH_POINTS, 'GP': ScoreType.GAME_POINTS}
+        if not parts or parts[0] not in score_by_code:
+            return None
+        primary = score_by_code[parts[0]]
+        if len(parts) == 1:
+            return primary, primary
+        if parts[1] not in score_by_code:
+            return None
+        return primary, score_by_code[parts[1]]
+
+    @staticmethod
+    def get_team_colour_type(encoded_type: str) -> TeamColourType | None:
+        """Decode the colour-preference rule (A / B / NONE) embedded in a
+        team-Swiss encoded type. Returns ``None`` if the code isn't a
+        team-Swiss code at all. The bare ``FIDE_TEAM_<P>[_<S>]`` prefix
+        (no ``TYPE<A|B>_`` infix) corresponds to ``TeamColourType.NONE``
+        — the FIDE convention for events that opt out of colour
+        preferences."""
+        if encoded_type.startswith('FIDE_TEAM_TYPEA_'):
+            return TeamColourType.A
+        if encoded_type.startswith('FIDE_TEAM_TYPEB_'):
+            return TeamColourType.B
+        if encoded_type.startswith('FIDE_TEAM_'):
+            return TeamColourType.NONE
+        return None
+
+    @staticmethod
+    def _team_code_suffix(encoded_type: str) -> str | None:
+        for prefix in ('FIDE_TEAM_TYPEA_', 'FIDE_TEAM_TYPEB_', 'FIDE_TEAM_'):
+            if encoded_type.startswith(prefix):
+                return encoded_type[len(prefix) :]
+        return None
 
     @classmethod
     def get_not_supported_default_type(cls, encoded_type: str) -> str:

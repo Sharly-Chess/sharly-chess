@@ -1,0 +1,200 @@
+{% set has_illegal = admin_tournament.record_illegal_moves %}
+{# Row column layout (team mode): Bd | (illegal)? | Player | Result | (illegal)? | Player
+   team_a span covers Player.
+   team_b span covers Player. #}
+{% set team_a_colspan = 1 + (1 if has_illegal else 0) %}
+{% set team_b_colspan = 1 + (1 if has_illegal else 0) %}
+<tbody
+    id="team-block-header-{{ team_board.id }}"
+    class="team-block-header-tbody"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    <tr
+        class="team-block-header header"
+        data-block-id="team-block-body-{{ team_board.id }}"
+        data-collapse-key="{{ team_board.team_a.id }}-{{ team_board.team_b.id if team_board.team_b else 'bye' }}"
+        aria-expanded="true"
+        style="cursor: pointer;"
+    >
+        <td class="text-center text-nowrap">
+            <i class="bi bi-chevron-down team-block-chevron me-1"></i>
+            <strong>{{ team_board.display_number }}</strong>
+        </td>
+        <td colspan="{{ team_a_colspan }}">
+            <div class="d-flex align-items-center">
+                <strong class="flex-grow-1">
+                    {% set _a_score = admin_tournament.team_primary_score_before_round(
+                        team_board.team_a.id, team_board.round
+                    ) %}
+                    <span class="text-contrast me-1">{{ '%g'|format(_a_score) }}</span>
+                    <a
+                        class="player-link"
+                        hx-get="{{ url_for(
+                            'admin-team-record-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            team_id=team_board.team_a.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        onclick="event.stopPropagation()"
+                    >{{ team_board.team_a.name }}</a>
+                    {% set _a_mp, _a_gp = admin_tournament.effective_point_adjustment(
+                        team_board.team_a.id, team_board.round
+                    ) %}
+                    {% if _a_mp or _a_gp %}
+                        <a
+                            class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_a_mp < 0 or _a_gp < 0) else 'text-bg-success' }}"
+                            style="cursor: pointer;"
+                            onclick="event.stopPropagation()"
+                            hx-get="{{ url_for(
+                                'admin-team-point-adjustment-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=team_board.round,
+                                team_id=team_board.team_a.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                macros.point_adjustment_tooltip(admin_tournament, team_board.team_a.id, team_board.round),
+                                'top'
+                            ) }}
+                        >{% if _a_mp %}{{ '%+g'|format(_a_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _a_mp and _a_gp %} {% endif %}{% if _a_gp %}{{ '%+g'|format(_a_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</a>
+                    {% endif %}
+                </strong>
+                {% if client.can_update_tournaments %}
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary ms-2"
+                        hx-get="{{ url_for(
+                            'admin-team-lineups-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            team_id=team_board.team_a.id,
+                        ) }}?round={{ team_board.round }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        onclick="event.stopPropagation()"
+                        {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
+                    >
+                        <i class="bi-list-ol"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </td>
+        <td class="text-center align-middle">
+            {% set _score_text %}
+                {% if team_board.team_b %}
+                    {% set _a_gp, _b_gp = team_board.game_points %}
+                    {{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}
+                {% else %}
+                    {{ '%g'|format(admin_tournament.team_pab_game_points) }} – F
+                {% endif %}
+            {% endset %}
+            {% if admin_tournament.pairing_system.show_unpaired_team_modal %}
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-primary fw-bold text-nowrap"
+                    style="width: 4.5rem;"
+                    hx-get="{{ url_for(
+                        'admin-event-team-pairing-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=team_board.round,
+                        team_board_id=team_board.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                    onclick="event.stopPropagation()"
+                >{{ _score_text | trim }}</button>
+            {% else %}
+                {# Fixed-schedule systems (round-robin, two-game match): the
+                   match belongs to a fixed schedule and can't be unpaired, so
+                   show the score as plain text rather than a modal button. #}
+                <span class="fw-bold text-nowrap d-inline-block" style="width: 4.5rem;">{{ _score_text | trim }}</span>
+            {% endif %}
+        </td>
+        <td colspan="{{ team_b_colspan }}">
+            <div class="d-flex align-items-center">
+                {% if team_board.team_b and client.can_update_tournaments %}
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-primary me-2"
+                        hx-get="{{ url_for(
+                            'admin-team-lineups-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            team_id=team_board.team_b.id,
+                        ) }}?round={{ team_board.round }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        onclick="event.stopPropagation()"
+                        {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
+                    >
+                        <i class="bi-list-ol"></i>
+                    </button>
+                {% endif %}
+                <strong class="text-end flex-grow-1">
+                    {% if team_board.team_b %}
+                        <a
+                            class="player-link"
+                            hx-get="{{ url_for(
+                                'admin-team-record-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=team_board.team_b.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            onclick="event.stopPropagation()"
+                        >{{ team_board.team_b.name }}</a>
+                        {% set _b_mp, _b_gp = admin_tournament.effective_point_adjustment(
+                            team_board.team_b.id, team_board.round
+                        ) %}
+                        {% if _b_mp or _b_gp %}
+                            <a
+                                class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if (_b_mp < 0 or _b_gp < 0) else 'text-bg-success' }}"
+                                style="cursor: pointer;"
+                                onclick="event.stopPropagation()"
+                                hx-get="{{ url_for(
+                                    'admin-team-point-adjustment-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=admin_tournament.id,
+                                    round=team_board.round,
+                                    team_id=team_board.team_b.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    macros.point_adjustment_tooltip(admin_tournament, team_board.team_b.id, team_board.round),
+                                    'top'
+                                ) }}
+                            >{% if _b_mp %}{{ '%+g'|format(_b_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _b_mp and _b_gp %} {% endif %}{% if _b_gp %}{{ '%+g'|format(_b_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</a>
+                        {% endif %}
+                        {% set _b_score = admin_tournament.team_primary_score_before_round(
+                            team_board.team_b.id, team_board.round
+                        ) %}
+                        <span class="text-contrast ms-1">{{ '%g'|format(_b_score) }}</span>
+                    {% else %}
+                        {{ _('EXEMPT') }}
+                    {% endif %}
+                </strong>
+            </div>
+        </td>
+    </tr>
+</tbody>

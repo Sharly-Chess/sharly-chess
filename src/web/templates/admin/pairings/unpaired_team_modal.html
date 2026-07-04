@@ -1,0 +1,177 @@
+{% import '/common/macros.j2' as macros with context %}
+{# Bye-picker modal for a single team on the pairings side column.
+   Mirrors ``unpaired_player_modal.html`` but with team-level actions.
+   PAB is engine-only; only ZPB / HPB / FPB may be set manually. #}
+{% set can_set_zpb = client.can_set_zero_point_bye(admin_tournament.id) %}
+{% set can_set_hpb = client.can_set_half_point_bye(admin_tournament.id) %}
+{% set no_bye_possible = admin_round > admin_tournament.rounds - admin_tournament.last_rounds_no_byes %}
+{% set bye_label_map = {
+    'ZPB': _('Zero-Point Bye'),
+    'HPB': _('Half-Point Bye'),
+    'FPB': _('Full-Point Bye'),
+} %}
+<div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header d-flex flex-column mb-1">
+            <h2 class="modal-title fs-4 fw-bold">{{ admin_team.name }}</h2>
+            <div>{{ _('Round #%(round)d', round=admin_round) }}</div>
+        </div>
+        <div class="modal-body">
+            <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                {% if client.can_check_in_players(admin_tournament.id) %}
+                    <button
+                        class="btn btn-outline-primary w-100"
+                        hx-patch="{{ url_for(
+                            'pairings-team-toggle-check-in',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            team_id=admin_team.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        {{ _(
+                            'Mark as "%(status)s" ',
+                            status=_('Absent') if admin_team.check_in else _('Present')
+                        ) }}
+                    </button>
+                {% endif %}
+                {% if admin_team_bye_type in bye_label_map %}
+                    {% set action_route = url_for(
+                        'pairings-cancel-team-bye',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                        team_id=admin_team.id,
+                    ) %}
+                    <span
+                        class="w-100"
+                        {% if not can_set_zpb %}
+                            {{ macros.tooltip_attributes('', _('You are not allowed to cancel byes.'), 'right') }}
+                        {% endif %}
+                    >
+                        <button
+                            class="btn btn-outline-primary w-100"
+                            hx-patch="{{ action_route }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            {% if not can_set_zpb %}disabled{% endif %}
+                        >
+                            {{ _('Cancel "%(bye)s" ', bye=bye_label_map[admin_team_bye_type]) }}
+                        </button>
+                    </span>
+                {% endif %}
+                {% if admin_team_bye_type != 'ZPB' %}
+                    {% set action_route = url_for(
+                        'pairings-set-team-zpb',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                        team_id=admin_team.id,
+                    ) %}
+                    <span
+                        class="w-100"
+                        {% if not can_set_zpb %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to set Zero-Point Byes.'), 'right') }}
+                        {% endif %}
+                    >
+                        <button
+                            class="btn btn-outline-primary w-100"
+                            {% if not can_set_zpb %}disabled{% endif %}
+                            hx-patch="{{ action_route }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
+                            {{ _('Zero-Point Bye') }}
+                        </button>
+                    </span>
+                {% endif %}
+                {% if admin_team_bye_type != 'HPB' %}
+                    {% set action_route = url_for(
+                        'pairings-set-team-hpb',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round,
+                        team_id=admin_team.id,
+                    ) %}
+                    <span
+                        class="w-100"
+                        {% if not can_set_hpb %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to set Half-Point Byes.'), 'right') }}
+                        {% elif no_bye_possible %}
+                            {{ macros.tooltip_attributes('info', _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=admin_tournament.last_rounds_no_byes), 'top') }}
+                        {% endif %}
+                    >
+                        <button
+                            class="btn btn-outline-primary w-100"
+                            {% if not can_set_hpb or no_bye_possible %}disabled{% endif %}
+                            hx-patch="{{ action_route }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
+                            {{ _('Half-Point Bye') }}
+                        </button>
+                    </span>
+                {% endif %}
+                {% set action = 'MANUAL_PAIRING' %}
+                {% set action_route = url_for(
+                    'admin-pairings-pair-team',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round,
+                    team_id=admin_team.id,
+                ) %}
+                {% if action in existing_actions %}
+                    {% set can_manually_pair = client.can_manually_pair_players(admin_tournament.id) %}
+                    <span
+                        class="w-100"
+                        {% if not can_manually_pair %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to pair teams.'), 'right') }}
+                        {% endif %}
+                    >
+                        <button
+                            class="btn btn-outline-primary w-100 {% if exempt_team %}d-flex flex-column align-items-center gap-1{% endif %}"
+                            {% if not can_manually_pair %}
+                                disabled
+                            {% else %}
+                                {% if action in allowed_actions %}
+                                    hx-patch="{{ action_route }}"
+                                {% else %}
+                                    hx-get="{{ url_for(
+                                        'admin-pairings-safety-mode-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=admin_round,
+                                        action=action,
+                                        redirect_method='PATCH',
+                                        redirect_route=action_route,
+                                    ) }}"
+                                {% endif %}
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            {% endif %}
+                        >
+                            {% if exempt_team %}
+                                {{ _('Pair') }}
+                                <div>{{ _('vs %(team)s', team=exempt_team.name) }}</div>
+                            {% else %}
+                                {{ _('Pair') }}
+                            {% endif %}
+                        </button>
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -25,7 +25,17 @@
                         {% include '/common/alert.html' %}
                     {% endwith %}
                 {% endif %}
-                {% if player_addable_tournaments|length == 1 %}
+                {% if is_team_event %}
+                    {# Team events never show a tournament picker and import
+                       at the event level — the team column places players.
+                       New teams are created unassigned. #}
+                    <input
+                        id="tournament-id"
+                        name="tournament_id"
+                        type="hidden"
+                        value=""
+                    >
+                {% elif player_addable_tournaments|length == 1 %}
                     <input
                         id="tournament-id"
                         name="tournament_id"

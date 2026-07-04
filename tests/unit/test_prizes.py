@@ -1272,3 +1272,56 @@ class PrizesTestCase(TestCase):
         self.assert_has_prize(p2, first, prizes)
         self.assert_has_no_prize(p3, prizes)
         self.assert_has_no_prize(p4, prizes)
+
+
+@pytest.mark.unit
+class RatingBandsTestCase(TestCase):
+    @staticmethod
+    def _bands(method, rating_min, rating_max, group_count, step, ratings):
+        from web.controllers.admin.prize_admin_controller import PrizeAdminController
+
+        return PrizeAdminController._compute_rating_bands(
+            method, rating_min, rating_max, group_count, step, ratings
+        )
+
+    def test_step_exact(self):
+        bands = self._bands('step', 1000, 1799, 0, 200, [])
+        self.assertEqual(
+            bands, [(1000, 1199), (1200, 1399), (1400, 1599), (1600, 1799)]
+        )
+
+    def test_step_partial_last_band(self):
+        bands = self._bands('step', 1000, 1500, 0, 200, [])
+        self.assertEqual(bands, [(1000, 1199), (1200, 1399), (1400, 1500)])
+
+    def test_groups_balanced(self):
+        bands = self._bands('groups', 1000, 1500, 2, 0, [1000, 1100, 1200, 1300])
+        self.assertEqual(bands, [(1000, 1100), (1101, 1500)])
+        # The whole [min, max] range is covered without gaps or overlaps.
+        self.assertEqual(bands[0][0], 1000)
+        self.assertEqual(bands[-1][1], 1500)
+
+    def test_groups_more_groups_than_players(self):
+        bands = self._bands('groups', 1000, 1400, 4, 0, [1100, 1300])
+        # Degenerate groups are skipped; the range stays fully covered.
+        self.assertEqual(bands[0][0], 1000)
+        self.assertEqual(bands[-1][1], 1400)
+        for lo, hi in bands:
+            self.assertLessEqual(lo, hi)
+
+    def test_groups_tie_on_boundary_is_isolated(self):
+        # A rating shared by many players (here 1300 x10) must not be split
+        # across bands, nor lumped with other ratings when it can stand alone.
+        # The old index-based split produced skewed counts (e.g. 24/13/19/19).
+        ratings = [1000, 1100, 1200] + [1300] * 10 + [1400, 1500, 1600]
+        bands = self._bands('groups', 1000, 2000, 4, 0, ratings)
+        self.assertEqual(
+            bands,
+            [(1000, 1200), (1201, 1300), (1301, 1400), (1401, 2000)],
+        )
+        # Bands are contiguous and cover the whole range without overlap.
+        self.assertEqual(bands[0][0], 1000)
+        self.assertEqual(bands[-1][1], 2000)
+        for (lo, hi), (next_lo, _next_hi) in zip(bands, bands[1:]):
+            self.assertLessEqual(lo, hi)
+            self.assertEqual(hi + 1, next_lo)

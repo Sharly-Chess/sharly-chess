@@ -18,18 +18,30 @@ from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredBoard,
 )
+from typing import ClassVar
+
 from utils.date_time import format_date
-from utils.enum import Result
+from utils.enum import EventType, Result, TeamByeType
 from utils.option import OptionHandler
 
 
 class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
+    supported_event_types: ClassVar[list[EventType] | None] = None
+    """The event types this importer supports, or None for all types.
+    Unsupported importers are filtered out of the import menu."""
+
     def __init__(self, options: list[TournamentImporterOption] | None = None):
         super().__init__(options)
         self.stored_event_modified = False
         self.post_import_task: list[Callable[[Tournament], None]] = []
         if self.reorder_boards:
             self.post_import_task.append(self._reorder_tournament_boards)
+
+    @classmethod
+    def supports_event_type(cls, event_type: EventType) -> bool:
+        return (
+            cls.supported_event_types is None or event_type in cls.supported_event_types
+        )
 
     @property
     def display_in_menu(self) -> bool:
@@ -59,13 +71,92 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
 
     @staticmethod
     def _reorder_tournament_boards(tournament: Tournament):
+        # Individual boards within each round are sorted by
+        # ``Board.__lt__`` (strongest player's vpoints first). Team
+        # tournaments instead re-rank their team-match envelopes per
+        # round — strongest team match first, mirroring the engine's
+        # ``_persist_team_round`` sort. Boards within a team match
+        # keep their slot indexes, set by the TRF importer.
         with EventDatabase(tournament.event.uniq_id, True) as database:
             for round_ in range(1, tournament.rounds + 1):
                 tournament.set_for_round(round_)
-                boards = tournament.get_round_boards(round_)
-                for index, board in enumerate(sorted(boards, reverse=True)):
-                    board.stored_board.index = index
-                    database.update_stored_board(board.stored_board)
+                if tournament.is_team_tournament:
+                    TournamentImporter._reorder_team_boards_for_round(
+                        tournament, round_, database
+                    )
+                else:
+                    boards = tournament.get_round_boards(round_)
+                    for index, board in enumerate(sorted(boards, reverse=True)):
+                        board.stored_board.index = index
+                        database.update_stored_board(board.stored_board)
+
+    @staticmethod
+    def _reorder_team_boards_for_round(
+        tournament: Tournament, round_: int, database: EventDatabase
+    ) -> None:
+        """Sort the round's team-match envelopes by ``(primary score at
+        start of round, -TPN)`` and reassign their indexes. Real matches
+        take table numbers ``0…`` ranked by strength; a PAB envelope is
+        demoted to the last table number; hidden byes (HPB/FPB/ZPB) get a
+        NULL index (no table number)."""
+        team_boards = tournament.get_round_team_boards(round_)
+        manual_bye_types = TeamByeType.manual_bye_types()
+
+        def _tpn_or_inf(team_id: int) -> float:
+            team = tournament.event.teams_by_id.get(team_id)
+            pn = team.pairing_number if team is not None else None
+            return float(pn) if pn is not None else float('inf')
+
+        def _key(tb):
+            # ``bucket`` carves the round into three blocks (lower
+            # value = earlier in the display). Within each block,
+            # higher primary score wins → use a negative score so the
+            # ascending sort places higher scores first.
+            stb = tb.stored_team_board
+            if stb.team_b_id is None and stb.bye_type in manual_bye_types:
+                return (
+                    0,
+                    -tournament.team_primary_score_before_round(stb.team_a_id, round_),
+                    _tpn_or_inf(stb.team_a_id),
+                    float('inf'),
+                )
+            if stb.team_b_id is None:
+                return (
+                    2,
+                    -tournament.team_primary_score_before_round(stb.team_a_id, round_),
+                    _tpn_or_inf(stb.team_a_id),
+                    float('inf'),
+                )
+            a_score = tournament.team_primary_score_before_round(stb.team_a_id, round_)
+            b_score = tournament.team_primary_score_before_round(stb.team_b_id, round_)
+            a_tpn = _tpn_or_inf(stb.team_a_id)
+            b_tpn = _tpn_or_inf(stb.team_b_id)
+            if a_score >= b_score:
+                stronger, weaker, stronger_tpn, weaker_tpn = (
+                    a_score,
+                    b_score,
+                    a_tpn,
+                    b_tpn,
+                )
+            else:
+                stronger, weaker, stronger_tpn, weaker_tpn = (
+                    b_score,
+                    a_score,
+                    b_tpn,
+                    a_tpn,
+                )
+            return (1, -stronger, -weaker, stronger_tpn, weaker_tpn)
+
+        sorted_team_boards = sorted(team_boards, key=_key)
+        next_index = 0
+        for tb in sorted_team_boards:
+            stb = tb.stored_team_board
+            if stb.team_b_id is None and stb.bye_type in manual_bye_types:
+                stb.index = None
+            else:
+                stb.index = next_index
+                next_index += 1
+            database.update_stored_team_board(stb)
 
     def on_import_finished(self):
         """Function to execute when the import process ends, whether it fails or succeeds."""
@@ -132,8 +223,8 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             task(tournament)
         return tournament.id
 
-    @staticmethod
     def _write_stored_tournament(
+        self,
         stored_tournament: StoredTournament,
         stored_players: list[StoredPlayer],
         database: EventDatabase,
@@ -172,9 +263,10 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             for stored_board in stored_boards:
                 external_id = stored_board.id
                 stored_board.id = None
-                stored_board.white_player_id = player_id_by_external_id[
-                    stored_board.white_player_id
-                ]
+                if stored_board.white_player_id is not None:
+                    stored_board.white_player_id = player_id_by_external_id[
+                        stored_board.white_player_id
+                    ]
                 if stored_board.black_player_id is not None:
                     stored_board.black_player_id = player_id_by_external_id[
                         stored_board.black_player_id
@@ -184,7 +276,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 board_id_by_external_id[external_id] = board_id
                 stored_board.id = board_id
 
-        # Tournament players
+        # Tournament players. Team tournaments don't persist
+        # ``tournament_player`` rows for rostered players (they're
+        # synthesised from team membership at load), so only the
+        # pairings are stored in that case.
+        team_mode = bool(stored_tournament.team_player_count)
         for stored_tournament_player in stored_tournament.stored_tournament_players:
             stored_tournament_player.tournament_id = tournament_id
             stored_tournament_player.player_id = player_id_by_external_id[
@@ -199,7 +295,9 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                     stored_pairing.board_id = board_id_by_external_id[
                         stored_pairing.board_id
                     ]
-            database.add_stored_tournament_player(stored_tournament_player)
+            database.add_stored_tournament_player(
+                stored_tournament_player, persist_player_row=not team_mode
+            )
         return tournament_id
 
     _asymmetric_to_symmetric_results: dict[
@@ -251,7 +349,20 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 )
                 result = Result(pairing.result)
                 if pairing.board_id is None:
-                    if not result.is_no_board_bye and result != Result.NO_RESULT:
+                    # Forfeit results with no board are valid in team
+                    # competition: a ``0000`` game is a forfeit against an
+                    # undefined opponent (the opposing team left the board
+                    # empty). TRF-2026 permits this.
+                    board_less_forfeit = result in (
+                        Result.FORFEIT_WIN,
+                        Result.FORFEIT_LOSS,
+                        Result.DOUBLE_FORFEIT,
+                    )
+                    if (
+                        not result.is_no_board_bye
+                        and result != Result.NO_RESULT
+                        and not board_less_forfeit
+                    ):
                         raise ImporterError(
                             error_prefix
                             + _(
@@ -297,6 +408,16 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                         )
                     continue
                 if other_player_id is None:
+                    if result in (
+                        Result.FORFEIT_WIN,
+                        Result.FORFEIT_LOSS,
+                        Result.DOUBLE_FORFEIT,
+                        Result.NO_RESULT,
+                    ):
+                        # Hole-opponent in a team match (no player on
+                        # the other side) — forfeit results are valid
+                        # per TRF-2026 (player "not nominated by team").
+                        continue
                     raise ImporterError(
                         error_prefix
                         + _(

@@ -1,0 +1,70 @@
+{% extends '../../common/admin_cards_container.html' %}
+
+{% block top_left_nav %}
+    {{ admin_macros.admin_title(
+        _('Menus'),
+        'screens-menus' if client.can_manage_screens else ''
+    ) }}
+{% endblock %}
+
+{% block top_right_nav %}
+    {% if client.can_manage_screens %}
+        {% with id='show-details-on-menu-list', name='show_details', show=show_details %}
+            <div
+                class="form-check form-switch d-inline-block pe-2"
+                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
+            >
+                <input
+                    hx-get="{{ url_for('admin-event-menus-tab', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="form-check-input"
+                    type="checkbox"
+                    id="{{ id }}"
+                    {% if show %}checked{% endif %}
+                />
+                <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
+            </div>
+        {% endwith %}
+        <button
+            class="btn btn-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-menu-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+            hx-trigger="click, SC_Plus from:body"
+        >
+            <i class="bi-plus-square pe-1"></i>
+            {{ _('Create a menu') }}
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block cards_container_cards %}
+    <div class="row gy-2 gx-3">
+        {% if admin_menus %}
+            {% for menu in admin_menus %}
+                {% include 'menu_card.html' %}
+            {% endfor %}
+        {% else %}
+            <div class="mx-auto" style="max-width: 500px;">
+                <h5 class="mt-2 my-5 text-center">
+                    {{ _('No menus') }}
+                </h5>
+                {% if client.can_manage_screens %}
+                    <p>
+                        {{ _('Menus group screens together so users can navigate between them.') }}
+                    </p>
+                    <p>
+                        {{ _('Add screens, multi-screens or whole screen types to a menu, then reorder them as you like.') }}
+                    </p>
+                    <p>
+                        {{ _('Create a menu now to get started.') }}
+                    </p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

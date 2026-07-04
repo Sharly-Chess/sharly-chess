@@ -1,3 +1,41 @@
+// Flat-team (Molter) manual pairing: click an entry (player or empty table)
+// to select it as White (button turns primary); click again to deselect;
+// click a second entry to create the pairing. No transient bye board.
+let _flatPairSelection = null;
+let _flatPairSelectionButton = null;
+function flatPairToggle(button) {
+    const entity = button.dataset.pairEntity;
+    const row = button.closest('tr');
+    if (_flatPairSelection === entity) {
+        // Click the same entry again to deselect.
+        if (row) row.classList.remove('flat-pair-selected');
+        _flatPairSelection = null;
+        _flatPairSelectionButton = null;
+        return;
+    }
+    if (_flatPairSelection === null) {
+        // First pick: highlight its row (it becomes White).
+        if (row) row.classList.add('flat-pair-selected');
+        _flatPairSelection = entity;
+        _flatPairSelectionButton = button;
+        return;
+    }
+    const container = button.closest('[data-flat-pair-url]');
+    if (!container) {
+        return;
+    }
+    const url = container.dataset.flatPairUrl
+        .replace('__FIRST__', _flatPairSelection)
+        .replace('__SECOND__', entity);
+    if (_flatPairSelectionButton) {
+        const firstRow = _flatPairSelectionButton.closest('tr');
+        if (firstRow) firstRow.classList.remove('flat-pair-selected');
+    }
+    _flatPairSelection = null;
+    _flatPairSelectionButton = null;
+    htmx.ajax('PATCH', url, {target: 'body'});
+}
+
 function setSize() {
     //  We store the size of the viewport, without the scrollbars, in CSS variables #}
     //  This is necessary since dvh/dwh is broken on Chrome
@@ -422,6 +460,48 @@ function setPrintTournamentPlayerSelectOptions(
                 playerSelect.children().length === 0
             ) {
                 updatePlayers();
+            }
+        });
+    }
+}
+
+function setPrintTournamentTeamSelectOptions(
+    teamsPerTournamentId,
+    optionId,
+    documentIds=[],
+) {
+    const tournamentSelect = $('.modal #tournament');
+    const teamSelect = $('.modal #' + optionId);
+    function updateTeams() {
+        const tId = parseInt(tournamentSelect.val(), 10);
+        const teams = teamsPerTournamentId[tId] || [];
+
+        teamSelect.empty();
+        teams.forEach(team => {
+            teamSelect.append(
+                $('<option>', {
+                    value: team.id,
+                    text: team.name,
+                })
+            );
+            teamSelect.prop('disabled', false);
+        });
+        teamSelect.trigger('change');
+        setTimeout(() => {
+            $('.select2-search__field').css('width', '100%');
+        }, 0);
+    }
+    tournamentSelect.on('change', updateTeams);
+    const documentSelect = $('.modal #document');
+    if (documentIds.includes(documentSelect.val())) {
+        updateTeams();
+    } else {
+        documentSelect.on('change', function () {
+            if (
+                documentIds.includes($(this).val()) &&
+                teamSelect.children().length === 0
+            ) {
+                updateTeams();
             }
         });
     }

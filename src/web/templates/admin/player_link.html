@@ -1,6 +1,8 @@
 <span>
-    {% set full_name = tournament_player.last_name ~ ' ' ~ tournament_player.first_name if last_name_first else tournament_player.full_name %}
-    {% if client.can_update_players_history(tournament_player.tournament.id)%}
+    {% set link_target = tournament_player if tournament_player else player %}
+    {% set full_name = link_target.last_name ~ ' ' ~ link_target.first_name if last_name_first else link_target.full_name %}
+    {% set rating_suffix = (' (' ~ tournament_player.rating_str ~ ')') if (display_rating and tournament_player) else '' %}
+    {% if tournament_player and client.can_update_players_history(tournament_player.tournament.id) %}
         <a
             class="player-link{% if secondary_link %} player-secondary-link{% endif %}"
             hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=tournament_player.id) }}"
@@ -8,8 +10,19 @@
             hx-indicator="#please-wait"
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
-        >{{ full_name }}{% if display_rating %} ({{ tournament_player.rating_str }}){% endif %}</a>
+        >{{ full_name }}{{ rating_suffix }}</a>
+    {% elif player is defined and player and client.can_update_players %}
+        {# Event-level player (no tournament): no record to show, so the
+           name opens the edit modal instead. #}
+        <a
+            class="player-link{% if secondary_link %} player-secondary-link{% endif %}"
+            hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >{{ full_name }}{{ rating_suffix }}</a>
     {% else %}
-        {{ full_name }}{% if display_rating %} ({{ tournament_player.rating_str }}){% endif %}
+        {{ full_name }}{{ rating_suffix }}
     {% endif %}
 </span>

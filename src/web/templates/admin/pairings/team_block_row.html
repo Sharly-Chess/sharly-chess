@@ -1,0 +1,146 @@
+{# Team-block pairing row. Aligns team_a on the left, team_b on the right
+   regardless of the players' colors on this specific board. A color chip
+   next to each player indicates their actual color. Result text is shown
+   from team_a's perspective. Requires: board, lineup_team_board. #}
+{# Physical white/black sides on this board are determined directly by
+   ``white_player_id`` and ``black_player_id`` — either may be NULL for a
+   lineup hole. Team_a's physical side comes from the players' actual
+   teams (so a colour permute keeps each player on their own team's
+   side); the colour pattern is only the fallback when both slots are
+   holes. #}
+{% set wtp = board.optional_white_tournament_player %}
+{% set btp = board.black_tournament_player %}
+{% set _w_team_id, _b_team_id = lineup_team_board.board_team_ids(board) %}
+{% if _w_team_id is not none or _b_team_id is not none %}
+    {% set team_a_is_white = _w_team_id == lineup_team_board.stored_team_board.team_a_id %}
+{% else %}
+    {% set _pattern = admin_tournament.color_pattern or '' %}
+    {% if board.index is not none and board.index < _pattern|length %}
+        {% set team_a_is_white = (_pattern[board.index]|upper) == 'W' %}
+    {% else %}
+        {% set team_a_is_white = (board.index or 0) % 2 == 0 %}
+    {% endif %}
+{% endif %}
+{% set team_a_color = 'W' if team_a_is_white else 'B' %}
+{% set team_b_color = 'B' if team_a_is_white else 'W' %}
+{% if team_a_is_white %}
+    {% set team_a_player = wtp %}
+    {% set team_b_player = btp %}
+    {% set team_a_pairing = board.optional_white_pairing %}
+    {% set team_b_pairing = board.optional_black_pairing %}
+{% else %}
+    {% set team_a_player = btp %}
+    {% set team_b_player = wtp %}
+    {% set team_a_pairing = board.optional_black_pairing %}
+    {% set team_b_pairing = board.optional_white_pairing %}
+{% endif %}
+{% set raw_result_str = board.result_str %}
+{# Result string is stored in physical white-black order; flip it
+   when team_a is on the black side so the row reads team_a-on-left. #}
+{% if not team_a_is_white and raw_result_str %}
+    {% set parts = raw_result_str.split('-') %}
+    {% if parts|length == 2 %}
+        {% set display_result_str = parts[1] ~ '-' ~ parts[0] %}
+    {% else %}
+        {% set display_result_str = raw_result_str %}
+    {% endif %}
+{% else %}
+    {% set display_result_str = raw_result_str %}
+{% endif %}
+{# Only a true hole (an empty slot) blocks result entry. A listed
+   player who lost by forfeit still occupies the slot and can have
+   their result edited. #}
+{% set _row_has_hole = (
+    board.stored_board.white_player_id is none
+    or board.stored_board.black_player_id is none
+) %}
+<tr
+    id="pairing-row-{{ board.identifier }}"
+    class="pairing-row {{ row_class }} {{ extra_row_class }}"
+    data-board-id="{{ board.identifier }}"
+    {% if wtp %}data-player-id="{{ wtp.id }}"{% endif %}
+    {% if _row_has_hole %}data-no-result-entry="1"{% endif %}
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    <td class="text-center text-nowrap">{{ board.number }}{% if board.number != board.id %} ({{ board.id }}){% endif %}</td>
+    {% if admin_tournament.record_illegal_moves %}
+        {% with player=team_a_player, illegal_moves=team_a_pairing.illegal_moves if team_a_pairing else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+    {% endif %}
+    <td class="lineup-side-a">
+        <div class="d-flex align-items-center">
+            <span class="color-chip color-chip-{{ team_a_color|lower }}"></span>
+            <span class="lineup-view flex-grow-1 text-truncate" style="min-width: 0;">
+                {% if team_a_player and team_a_player.team_id %}
+                    {% with tournament_player=team_a_player, display_rating=true %}
+                        {% include '/admin/player_link.html' %}
+                    {% endwith %}
+                {% else %}
+                    <em class="text-muted">—</em>
+                {% endif %}
+            </span>
+            <span class="lineup-edit d-none flex-grow-1">
+                {% with side_player=team_a_player, side_team=lineup_team_board.team_a, side=team_a_color %}
+                    {% include '/admin/pairings/_lineup_player_select.html' %}
+                {% endwith %}
+            </span>
+        </div>
+    </td>
+    {% set has_hole = (
+        board.stored_board.white_player_id is none
+        or board.stored_board.black_player_id is none
+    ) %}
+    <td class="text-center" style="width: 4.5rem;">
+        <span
+            {% if not client.can_enter_results(admin_tournament.id) %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to enter results.'), 'top') }}
+                {% set allowed=false %}
+            {% elif board.result_str and not client.can_update_results(admin_tournament.id) %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to update results.'), 'top') }}
+                {% set allowed=false %}
+            {% else %}
+                {% set allowed=true %}
+            {% endif %}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary text-nowrap"
+                style="width: 4.5rem;"
+                {% if not allowed or has_hole or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+                    disabled
+                {% else %}
+                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier) }}"
+                    hx-trigger="click"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% endif %}
+            >
+                {% if display_result_str %}{{ display_result_str }}{% else %}-{% endif %}
+            </button>
+        </span>
+    </td>
+    {% if admin_tournament.record_illegal_moves %}
+        {% with player=team_b_player, illegal_moves=team_b_pairing.illegal_moves if team_b_pairing else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+    {% endif %}
+    <td class="lineup-side-b">
+        <div class="d-flex align-items-center">
+            <span class="color-chip color-chip-{{ team_b_color|lower }}"></span>
+            <span class="lineup-view flex-grow-1 text-truncate" style="min-width: 0;">
+                {% if team_b_player and team_b_player.team_id %}
+                    {% with tournament_player=team_b_player, display_rating=true %}
+                        {% include '/admin/player_link.html' %}
+                    {% endwith %}
+                {% else %}
+                    <em class="text-muted">—</em>
+                {% endif %}
+            </span>
+            <span class="lineup-edit d-none flex-grow-1">
+                {% with side_player=team_b_player, side_team=lineup_team_board.team_b, side=team_b_color %}
+                    {% include '/admin/pairings/_lineup_player_select.html' %}
+                {% endwith %}
+            </span>
+        </div>
+    </td>
+</tr>

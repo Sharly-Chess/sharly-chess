@@ -318,7 +318,7 @@ class PapiRound:
     @staticmethod
     def is_convertible_to_papi(result: Result, tournament: Tournament) -> bool:
         try:
-            PapiRound._result_to_papi_result(result, tournament.pab_value)
+            PapiRound._result_to_papi_result(result, tournament.pab_equivalent_result)
             return True
         except ValueError:
             return False

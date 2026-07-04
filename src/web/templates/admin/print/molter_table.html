@@ -1,0 +1,57 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    {% include 'round-robin.css' %}
+    .rr-table th,
+    .rr-table td {
+        padding: 3pt 6pt;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .molter-legend {
+        margin-top: 10pt;
+        border-collapse: collapse;
+    }
+    .molter-legend td {
+        padding: 2pt 8pt;
+        border: 0.5pt solid #999;
+    }
+    .molter-legend .letter {
+        font-weight: bold;
+        text-align: center;
+    }
+{% endblock %}
+
+{% block content %}
+    <table class="rr-table">
+        <thead class="rr-header">
+            <tr class="rr-header">
+                <th class="rr-number">{{ _('Bd. *** BOARD NUMBER COLUMN HEADER') }}</th>
+                {% for name in round_names %}
+                    <th>{{ name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in board_rows %}
+                <tr class="row {% if loop.index is even %}even{% else %}odd{% endif %}">
+                    <td class="number">{{ loop.index }}</td>
+                    {% for cell in row %}
+                        <td class="result">{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="molter-legend">
+        <tbody>
+            {% for entry in legend %}
+                <tr>
+                    <td class="letter">{{ entry.letter }}</td>
+                    <td>{{ entry.team.name }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

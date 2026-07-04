@@ -7,7 +7,7 @@ from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from types import NotImplementedType
-from typing import Collection
+from typing import Collection, TYPE_CHECKING
 
 from common.i18n import _
 from common.i18n.utils import by, normalized_key
@@ -25,7 +25,9 @@ from data.player_categories import (
     SeniorCategory,
 )
 from data.rotator import Rotator
+from data.menu import Menu
 from data.screen import Screen
+from data.team import Team, TeamGroup
 from data.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -34,18 +36,26 @@ from plugins.utils import PluginData, Plugin
 from utils import Utils
 from utils.date_time import format_date, format_date_range
 from utils.enum import (
+    EventType,
     RoleType,
     ScreenType,
+    TournamentRating,
 )
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredPlayer,
     StoredAccount,
     StoredRotator,
+    StoredMenu,
     StoredPermission,
     StoredRole,
+    StoredTeam,
+    StoredTeamGroup,
     StoredTimer,
 )
+
+if TYPE_CHECKING:
+    from data.team_affiliation import TeamAffiliationSource
 
 logger: Logger = get_logger()
 
@@ -113,8 +123,27 @@ class Event:
         return self.stored_event.federation
 
     @property
+    def event_type(self) -> EventType:
+        return self.stored_event.event_type
+
+    @property
+    def is_team_event(self) -> bool:
+        return self.event_type == EventType.TEAM
+
+    @property
     def player_rating_type(self) -> PlayerRatingType:
         return PlayerRatingType(self.stored_event.player_rating_type)
+
+    @property
+    def default_tournament_rating(self) -> TournamentRating:
+        """Time-control cadence used for ratings outside any tournament
+        context (unassigned players / teams): the shared cadence when
+        every tournament of the event uses the same one, Standard
+        otherwise (multiple cadences or no tournament yet)."""
+        cadences = {tournament.rating for tournament in self.tournaments}
+        if len(cadences) == 1:
+            return next(iter(cadences))
+        return TournamentRating.STANDARD
 
     @property
     def allow_multi_tournament_players(self) -> bool:
@@ -187,9 +216,15 @@ class Event:
 
     @property
     def enabled_plugins(self) -> list[Plugin]:
+        """The event's enabled plugins, excluding any that don't support
+        the event's type (e.g. enabled before the type was set, or stored
+        by an older version that didn't enforce type support)."""
         return [
-            plugin_manager.plugins_by_id[plugin_id]
+            plugin
             for plugin_id in self.stored_event.enabled_plugins
+            if (plugin := plugin_manager.plugins_by_id[plugin_id]).supports_event_type(
+                self.event_type
+            )
         ]
 
     @property
@@ -386,6 +421,10 @@ class Event:
     @cached_property
     def player_distribution_error_message(self) -> str | None:
         """Returns an error message if distributing the player among the tournaments is not allowed, None otherwise."""
+        if self.is_team_event:
+            # Players belong to teams — distributing them individually
+            # would tear the rosters apart.
+            return _('Players cannot be distributed in a team event.')
         if not self.tournaments:
             return _('Can not distribute the players (no tournaments found).')
         if not self.player_count:
@@ -445,7 +484,9 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_player(player.id)
         del self.players_by_id[player.id]
-        del player.single_tournament.tournament_players_by_id[player.id]
+        tournament = player.optional_single_tournament
+        if tournament is not None:
+            del tournament.tournament_players_by_id[player.id]
         plugin_manager.hook_for_event(self, 'on_player_deleted')(player=player)
 
     def update_player(self, player: Player, new_stored_player: StoredPlayer):
@@ -514,6 +555,10 @@ class Event:
     def player_count(self) -> int:
         return len(self.players_by_id)
 
+    @property
+    def team_count(self) -> int:
+        return len(self.stored_event.stored_teams)
+
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
         return {
@@ -560,8 +605,128 @@ class Event:
             )
             database.delete_stored_tournament_player(source_tournament.id, player.id)
             del source_tournament.tournament_players_by_id[player.id]
-        player.single_tournament_id = destination_tournament.id
+        player.optional_single_tournament_id = destination_tournament.id
         self.clear_player_cache()
+
+    # --------------------------------------------------------------------------
+    # Teams
+    # --------------------------------------------------------------------------
+
+    @cached_property
+    def teams_by_id(self) -> dict[int, Team]:
+        return {
+            stored_team.id: Team(self, stored_team)
+            for stored_team in self.stored_event.stored_teams
+            if stored_team.id is not None
+        }
+
+    @property
+    def teams(self) -> Collection[Team]:
+        return self.teams_by_id.values()
+
+    @cached_property
+    def sorted_teams(self) -> list[Team]:
+        return sorted(self.teams, key=attrgetter('name'))
+
+    def clear_team_cache(self):
+        Utils.reset_cached_properties(
+            self, 'teams_by_id', 'sorted_teams', 'team_groups_by_id'
+        )
+
+    @cached_property
+    def team_groups_by_id(self) -> dict[int, TeamGroup]:
+        return {
+            stored_team_group.id: TeamGroup(self, stored_team_group)
+            for stored_team_group in self.stored_event.stored_team_groups
+            if stored_team_group.id is not None
+        }
+
+    @property
+    def team_groups(self) -> Collection[TeamGroup]:
+        return self.team_groups_by_id.values()
+
+    def team_group_team_counts(self) -> dict[int, int]:
+        """How many teams reference each group id."""
+        counts: dict[int, int] = {}
+        for team in self.teams:
+            if team.group_id is not None:
+                counts[team.group_id] = counts.get(team.group_id, 0) + 1
+        return counts
+
+    def add_team_group(self, name: str) -> TeamGroup:
+        with EventDatabase(self.uniq_id, True) as database:
+            group_id = database.add_stored_team_group(name)
+            self.stored_event.stored_team_groups.append(
+                StoredTeamGroup(id=group_id, name=name)
+            )
+        self.clear_team_cache()
+        return self.team_groups_by_id[group_id]
+
+    def find_or_create_team_group(self, name: str) -> TeamGroup:
+        """Reuse the team group with this name (case-insensitive) or create
+        one. Used when filling affiliations in bulk."""
+        for group in self.team_groups:
+            if group.name.lower() == name.lower():
+                return group
+        return self.add_team_group(name)
+
+    def team_affiliation_sources(self) -> 'list[TeamAffiliationSource]':
+        """The ways a team's affiliation can be derived from its players —
+        core (the players' common club) plus any contributed by plugins."""
+        from data.team_affiliation import core_team_affiliation_sources
+        from plugins.manager import plugin_manager
+
+        sources = list(core_team_affiliation_sources())
+        for plugin_result in plugin_manager.hook_for_event(
+            self, 'get_team_affiliation_sources'
+        )():
+            if plugin_result:
+                sources.extend(plugin_result)
+        return sources
+
+    def update_team_group(self, group_id: int, name: str):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_team_group(group_id, name)
+        for stored_team_group in self.stored_event.stored_team_groups:
+            if stored_team_group.id == group_id:
+                stored_team_group.name = name
+        self.clear_team_cache()
+
+    def delete_team_group(self, group_id: int):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_team_group(group_id)
+        self.stored_event.stored_team_groups = [
+            stored_team_group
+            for stored_team_group in self.stored_event.stored_team_groups
+            if stored_team_group.id != group_id
+        ]
+        # Detach the group from any team that referenced it (the DB FK
+        # already set those to NULL via ON DELETE SET NULL).
+        for stored_team in self.stored_event.stored_teams:
+            if stored_team.group_id == group_id:
+                stored_team.group_id = None
+        self.clear_team_cache()
+
+    def add_team(self, stored_team: StoredTeam) -> Team:
+        with EventDatabase(self.uniq_id, True) as database:
+            stored_team.id = database.add_stored_team(stored_team)
+            self.stored_event.stored_teams.append(stored_team)
+        self.clear_team_cache()
+        for tournament in self.tournaments:
+            tournament.clear_team_cache()
+        return self.teams_by_id[stored_team.id]
+
+    def delete_team(self, team: Team):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_team(team.id)
+        self.stored_event.stored_teams = [
+            stored_team
+            for stored_team in self.stored_event.stored_teams
+            if stored_team.id != team.id
+        ]
+        self.clear_team_cache()
+        for tournament in self.tournaments:
+            tournament.clear_team_cache()
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:
@@ -768,6 +933,77 @@ class Event:
             self.stored_event.stored_rotators.remove(rotator.stored_rotator)
         if rotator.id in self.rotators_by_id:
             del self.rotators_by_id[rotator.id]
+
+    @cached_property
+    def menus_by_id(self) -> dict[int, Menu]:
+        return {
+            stored_menu.id: Menu(self, stored_menu)
+            for stored_menu in self.stored_event.stored_menus
+            if stored_menu.id is not None
+        }
+
+    @cached_property
+    def menus_by_name(self) -> dict[str, Menu]:
+        return {menu.name: menu for menu in self.menus_by_id.values()}
+
+    @property
+    def sorted_menus(self) -> list[Menu]:
+        return sorted(self.menus_by_id.values(), key=by('name'))
+
+    def get_unused_menu_name(self, base_name: str | None = None) -> str:
+        """Returns the first unused menu name looking like base_name:
+        base_name, or base_name (2), or base_name (n+1)..."""
+        return Utils.get_unused_item_name(
+            base_name or _('New menu'), self.menus_by_name
+        )
+
+    def create_menu(self, stored_menu: StoredMenu) -> Menu:
+        with EventDatabase(self.uniq_id, True) as database:
+            menu_id = database.add_stored_menu(stored_menu)
+            stored_menu.id = menu_id
+            for menu_item in stored_menu.stored_menu_items:
+                menu_item.menu_id = menu_id
+                menu_item.id = database.add_stored_menu_item(menu_item)
+        self.stored_event.stored_menus.append(stored_menu)
+        menu = Menu(self, stored_menu)
+        self.menus_by_id[menu.id] = menu
+        return menu
+
+    def update_menu(self, stored_menu: StoredMenu):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.update_stored_menu(stored_menu)
+
+    def delete_menu(self, menu: Menu):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_menu(menu.id)
+        with suppress(ValueError):
+            self.stored_event.stored_menus.remove(menu.stored_menu)
+        if menu.id in self.menus_by_id:
+            del self.menus_by_id[menu.id]
+
+    @property
+    def menu_claimed_screen_types(self) -> set[ScreenType]:
+        """Screen types already used as an 'all screens of this type' item
+        in some menu. A screen may only belong to a single menu."""
+        return {
+            screen_type
+            for menu in self.menus_by_id.values()
+            for screen_type in menu.screen_types
+        }
+
+    @property
+    def menu_claimed_screen_ids(self) -> set[int]:
+        """Ids of screens added individually to some menu."""
+        return {
+            screen.id for menu in self.menus_by_id.values() for screen in menu.screens
+        }
+
+    @property
+    def menu_claimed_family_ids(self) -> set[int]:
+        """Ids of families added to some menu."""
+        return {
+            family.id for menu in self.menus_by_id.values() for family in menu.families
+        }
 
     @cached_property
     def display_controllers_by_id(self) -> dict[int, DisplayController]:

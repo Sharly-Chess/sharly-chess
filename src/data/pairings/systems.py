@@ -17,6 +17,8 @@ if TYPE_CHECKING:
         PairingVariation,
         SwissVariation,
         RoundRobinVariation,
+        TeamSwissVariation,
+        TeamRoundRobinVariation,
     )
     from data.tournament import Tournament
     from data.event import Event
@@ -45,6 +47,13 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         """Get the current round to use as default when it is not defined in the DB."""
 
     @property
+    def supports_prohibited_pairings(self) -> bool:
+        """Whether prohibited pairings can be configured. Round-robin
+        systems pair from fixed tables where everyone meets everyone,
+        so prohibitions cannot be honored."""
+        return False
+
+    @property
     def allow_rounds_update_once_started(self) -> bool:
         """Determines if the number of rounds can be updated once a tournament is started."""
         return True
@@ -52,6 +61,14 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     @property
     def allow_player_addition_once_paired(self) -> bool:
         """Determines if players can be added on a tournament with pairings."""
+        return True
+
+    @property
+    def allow_team_addition_once_paired(self) -> bool:
+        """Determines if teams can be added on a tournament with
+        pairings. Systems pairing from fixed tables (round-robins,
+        two-game matches, fixed-table systems) cannot absorb a new
+        team once the schedule has started."""
         return True
 
     @property
@@ -71,6 +88,14 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def show_unpaired_team_modal(self) -> bool:
+        """Determines if the modal allowing to handle unpaired teams
+        (check-in, byes, manual pairing) is displayed. Systems pairing
+        teams from fixed tables always pair every team, so there is no
+        team status to manage."""
+        return True
+
+    @property
     def split_unpaired_and_bye_players(self) -> bool:
         """Determines if the unpaired and bye players are separated in the unpaired table."""
         return True
@@ -82,8 +107,46 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
-    def hide_pab_value_field(self) -> bool:
-        """Defines if the pab_value field should be displayed in the tournament form."""
+    def paired_by_team(self) -> bool:
+        """Whether this system pairs entire teams against each other (each
+        round groups boards into team-vs-team blocks). True for the standard
+        team systems; False for individual systems and for team systems
+        like flat-mixed-pairing systems where boards aren't grouped.
+        Default True — most team systems pair by team; non-team systems
+        override to False."""
+        return True
+
+    @property
+    def fide_team_swiss_code(self) -> bool:
+        """Whether TRF field 192 should carry the FIDE team-Swiss code
+        (``FIDE_TEAM_TYPE<X>_<primary>[_<secondary>]``) for this system.
+        True only for the team-Swiss system; other team systems (round
+        robin, two-game match, Molter) keep their own variation code."""
+        return False
+
+    @property
+    def supports_complementary_pairings(self) -> bool:
+        """Whether the system can leave entrants unpaired to be paired
+        afterwards ('complementary pairings'). True for Swiss-style
+        engines; fixed-table systems (round-robin, Molter) pair everyone
+        straight from the table, so it makes no sense — they override to
+        False."""
+        return True
+
+    @property
+    def supports_match_points(self) -> bool:
+        """Whether the system exposes a match-point score alongside
+        game points. Tie-breaks (or tie-break options) that need MP
+        as a reference score can use this to declare themselves
+        incompatible with systems where MP doesn't exist."""
+        return True
+
+    @property
+    def uses_team_letters(self) -> bool:
+        """Whether teams are conventionally identified by a letter
+        (``A``, ``B``, …) rather than a numeric pairing number. True for
+        the fixed-schedule team systems (round-robin Berger grids, Molter
+        tables), which present teams alphabetically. Default False."""
         return False
 
     @property
@@ -120,6 +183,10 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
     @property
     def pairing_buttons_template(self) -> str:
         return '/admin/pairings/swiss_pairing_buttons.html'
+
+    @property
+    def supports_prohibited_pairings(self) -> bool:
+        return True
 
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
@@ -226,12 +293,14 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         return False
 
     @property
-    def hide_pab_value_field(self) -> bool:
-        return True
-
-    @property
     def pairing_buttons_template(self) -> str:
         return '/admin/pairings/round_robin_pairing_buttons.html'
+
+    @property
+    @override
+    def supports_complementary_pairings(self) -> bool:
+        # Round-robin pairs everyone from the Berger table.
+        return False
 
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
@@ -263,3 +332,128 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
             ),
             1 if tournament.has_pairings else 0,
         )
+
+
+# ---------------------------------------------------------------------------------
+# Team pairing systems. Engines / variations live in variations.py / engines.py.
+# These mirror their individual counterparts; specific team-mode behaviour will
+# land alongside the engine implementations in future bites.
+# ---------------------------------------------------------------------------------
+
+
+class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
+    @staticmethod
+    def static_id() -> str:
+        return 'TEAM_SWISS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Team Swiss')
+
+    @property
+    @override
+    def fide_team_swiss_code(self) -> bool:
+        return True
+
+    @override
+    def variation_manager(self, event: 'Event') -> EntityManager['TeamSwissVariation']:
+        from data.pairings.managers import TeamSwissVariationManager
+
+        return TeamSwissVariationManager(event)
+
+    @property
+    def pairing_buttons_template(self) -> str:
+        return '/admin/pairings/swiss_pairing_buttons.html'
+
+    @property
+    def supports_prohibited_pairings(self) -> bool:
+        return True
+
+    @cached_property
+    def permission_handler(self) -> PermissionHandler[PairingAction]:
+        return SwissPairingSystem().permission_handler
+
+    @property
+    def allow_bye_definition(self) -> bool:
+        return False
+
+    def default_current_round(self, tournament: 'Tournament') -> int:
+        return tournament.last_paired_round
+
+
+class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
+    @staticmethod
+    def static_id() -> str:
+        return 'TEAM_ROUND_ROBIN'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Team Round-Robin')
+
+    @property
+    @override
+    def uses_team_letters(self) -> bool:
+        # Teams appear as letters (A, B, …) in the Berger grid.
+        return True
+
+    @override
+    def variation_manager(
+        self, event: 'Event'
+    ) -> EntityManager['TeamRoundRobinVariation']:
+        from data.pairings.managers import TeamRoundRobinVariationManager
+
+        return TeamRoundRobinVariationManager(event)
+
+    @property
+    def allow_rounds_update_once_started(self) -> bool:
+        return False
+
+    @property
+    def allow_player_addition_once_paired(self) -> bool:
+        return False
+
+    @property
+    def allow_bye_definition(self) -> bool:
+        return False
+
+    @property
+    def show_unpaired_player_modal(self) -> bool:
+        return False
+
+    @property
+    def show_unpaired_team_modal(self) -> bool:
+        return False
+
+    @property
+    def allow_team_addition_once_paired(self) -> bool:
+        return False
+
+    @property
+    def split_unpaired_and_bye_players(self) -> bool:
+        return False
+
+    @property
+    def pairing_buttons_template(self) -> str:
+        # Pair round-by-round so each team can edit its lineup between
+        # rounds — a bulk pair would lock every round to the round-1
+        # lineup.
+        return '/admin/pairings/swiss_pairing_buttons.html'
+
+    @property
+    @override
+    def supports_complementary_pairings(self) -> bool:
+        # Round-robin pairs every team from the Berger table.
+        return False
+
+    @cached_property
+    def permission_handler(self) -> PermissionHandler[PairingAction]:
+        # Reuse the Swiss permission set so FULL_PAIRING is permitted
+        # when the ratings-warning modal falls through to the single-
+        # round pair endpoint (variations with no settings).
+        return SwissPairingSystem().permission_handler
+
+    def default_current_round(self, tournament: 'Tournament') -> int:
+        # Swiss semantics (last PAIRED round), matching the round-by-round
+        # pairing flow and the Swiss permission set above: a freshly
+        # paired round must be CURRENT for its results to be enterable.
+        return tournament.last_paired_round

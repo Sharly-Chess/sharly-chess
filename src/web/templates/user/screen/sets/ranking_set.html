@@ -9,6 +9,9 @@
         {% endif %}
     </h2>
     {% set player_columns = columns_by_tournament_id[tournament.id] %}
+    {% if tournament.is_team_tournament %}
+        {% include '/user/screen/sets/team_ranking_set.html' %}
+    {% else %}
     <div class="row gy-2 gx-3 screen-set-row mx-0 w-100">
         {% for tournament_players in screen_set.tournament_players_by_rank_lists %}
             <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
@@ -53,4 +56,5 @@
             </div>
         {% endfor %}
     </div>
+    {% endif %}
 </div>

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "sharly-chess"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.13.0"
-version = "4.2.1"
+version = "5.0.0dev1"
 
 authors = [
   { name = "Pascal Aubry", email = "support@sharly-chess.com" },
@@ -52,7 +52,7 @@ dependencies = [
   "toml ~= 0.10.2",
   "uvicorn ~= 0.34.0",
   "validators ~= 0.34.0",
-  "toga ~= 0.5.2",
+  "toga == 0.5.4",
   "wheel >= 0.45.1",
   "wsproto ~= 1.2.0",
   "paramiko>=4.0.0",
@@ -74,6 +74,9 @@ export = ["PyInstaller ~= 6.15.0", "pip-licenses"]
 tests = ["pytest", "pytest-playwright", "pytest-asyncio", "pytest-base-url"]
 
 scripts = ["scour ~= 0.38.2"]
+
+[tool.setuptools.package-data]
+"data.pairings" = ["resources/*.mrec"]
 
 [tool.ruff.format]
 quote-style = "single"

@@ -20,13 +20,32 @@
                     <tr class="result-row">
                         <td scope="row gy-2 gx-3" class="time bg-transparent text-center">{{ board.last_result_update_str }}</td>
                         {% with tournament=board.tournament %}
-                        {% with wtp=board.white_tournament_player %}
+                        {% with wtp=board.optional_white_tournament_player %}
                         {% with btp=board.black_tournament_player %}
+                        {% with team_board=board.team_board %}
                         {% if print_tournament %}<td scope="row gy-2 gx-3" class="tournament bg-transparent">{{ tournament.name }}</td>{% endif %}
-                        <td scope="row gy-2 gx-3" class="board-number bg-transparent text-center">{{ board.round }}.{{ board.number }}</td>
-                        <td scope="row gy-2 gx-3" class="player bg-transparent">{{ wtp.full_name }} {{ wtp.rating_str }}</td>
-                        <td scope="row gy-2 gx-3" class="score bg-transparent text-center">{{ board.result_str }}</td>
-                        <td scope="row gy-2 gx-3" class="player bg-transparent">{{ btp.full_name }} {{ btp.rating_str }}</td>
+                        <td scope="row gy-2 gx-3" class="board-number bg-transparent text-center">{{ board.round }}.{{ board.team_match_number_str or board.number }}</td>
+                        {% if team_board %}
+                            {% set white_team_id, black_team_id = team_board.board_team_ids(board) %}
+                            <td scope="row gy-2 gx-3" class="player bg-transparent">
+                                {% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                                {% with team=user_event.teams_by_id.get(white_team_id) %}
+                                    {% if team %}<div class="small text-muted">{{ team.name }}</div>{% endif %}
+                                {% endwith %}
+                            </td>
+                            <td scope="row gy-2 gx-3" class="score bg-transparent text-center">{{ board.result_str }}</td>
+                            <td scope="row gy-2 gx-3" class="player bg-transparent">
+                                {% if btp %}{{ btp.full_name }} {{ btp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
+                                {% with team=user_event.teams_by_id.get(black_team_id) %}
+                                    {% if team %}<div class="small text-muted">{{ team.name }}</div>{% endif %}
+                                {% endwith %}
+                            </td>
+                        {% else %}
+                            <td scope="row gy-2 gx-3" class="player bg-transparent">{% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</td>
+                            <td scope="row gy-2 gx-3" class="score bg-transparent text-center">{{ board.result_str }}</td>
+                            <td scope="row gy-2 gx-3" class="player bg-transparent">{% if btp %}{{ btp.full_name }} {{ btp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</td>
+                        {% endif %}
+                        {% endwith %}
                         {% endwith %}
                         {% endwith %}
                         {% endwith %}

@@ -1,0 +1,51 @@
+{# Team-tournament body of the check-in screen set: teams in name order
+   (team events check whole teams in, not individual players). Clicking
+   a team opens the team check-in modal. #}
+<div class="check-in-set">
+    <h2 class="set-title text-center">
+        {{
+            _('%(set_name)s (check-in)', set_name=screen_set.name_for_teams)
+            if check_in_enabled else
+            _('%(set_name)s (registered teams)', set_name=screen_set.name_for_teams)
+        }}
+    </h2>
+    <div class="row gy-2 gx-3 screen-set-row mx-0 px-3 py-2">
+        {% for teams_by_name in screen_set.teams_by_name_lists %}
+            <div class="col screen-set-col {% if not loop.first %}border-start border-2{% endif %}">
+                <div
+                    class="d-grid grid-striped"
+                    style="grid-template-columns: 1fr;"
+                >
+                    <div class="grid-header">
+                        {{ _('Team') }}
+                    </div>
+                    {% for team in teams_by_name %}
+                        <div class="player-row">
+                            <div
+                                class="player-cell {% if check_in_enabled %}cursor-pointer{% endif %} overflow-hidden text-nowrap"
+                                style="text-overflow: ellipsis;"
+                                {% if check_in_enabled %}
+                                    hx-get="{{ url_for(
+                                        'user-team-checkin-modal',
+                                        event_uniq_id=user_event.uniq_id,
+                                        screen_uniq_id=screen.uniq_id,
+                                        tournament_id=tournament.id,
+                                        team_id=team.id
+                                    ) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-wrapper"
+                                {% endif %}
+                            >
+                                <i class="{% if team.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"></i>
+                                {{ team.name }}
+                                <span class="text-muted small">({{ team.players|length }})</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

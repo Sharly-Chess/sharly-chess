@@ -1,8 +1,7 @@
+from functools import cached_property
 from typing import override
 
-from cryptography.utils import cached_property
-
-from data.tie_breaks import cutters, options, tie_breaks
+from data.tie_breaks import cutters, options, team_tie_breaks, tie_breaks
 from data.tie_breaks.cutters import TieBreakCutter
 from data.tie_breaks.options import TieBreakOption
 from data.tie_breaks.tie_breaks import TieBreak
@@ -11,9 +10,16 @@ from utils.entity import EntityManager, EventBoundEntityManager
 
 
 class TieBreakManager(EventBoundEntityManager[TieBreak]):
+    """Single registry covering both individual and team tie-breaks.
+
+    Team tie-breaks are :class:`TeamTieBreak` subclasses (which are
+    themselves :class:`TieBreak` subclasses, with
+    ``is_team_tiebreak=True``) so they live in the same lookup table —
+    no separate manager and no DB scope discriminator needed."""
+
     @override
     def entity_types(self) -> list[type[TieBreak]]:
-        tie_break_types = [
+        tie_break_types: list[type[TieBreak]] = [
             tie_breaks.WinsTieBreak,
             tie_breaks.GamesWonTieBreak,
             tie_breaks.GamesPlayedWithBlackTieBreak,
@@ -37,6 +43,11 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             tie_breaks.PlayerRatingTieBreak,
             tie_breaks.DirectEncounterTieBreak,
             tie_breaks.ManualTieBreak,
+            # Team tie-breaks (is_team_tiebreak = True)
+            team_tie_breaks.MatchPointsVsGamePointsTieBreak,
+            team_tie_breaks.ExtendedSonnebornBergerTeamTieBreak,
+            team_tie_breaks.ScoresAndScheduleStrengthCombinationTieBreak,
+            team_tie_breaks.ExtendedDirectEncounterTieBreak,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tie_break_types')(
             tie_break_types=tie_break_types
@@ -71,6 +82,19 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             ),
             None,
         )
+        if tie_break is None:
+            # Some tie-breaks have a variant option whose value drives
+            # the base_acronym (e.g. ESB → ``EMMSB`` / ``EMGSB`` / ...).
+            # Try setting each tie-break's options from ``base_acronym``
+            # and re-checking.
+            for candidate in self.objects():
+                if any(
+                    option.set_value_from_variation_acronym(base_acronym)
+                    for option in candidate.options
+                ):
+                    if candidate.base_acronym.upper() == base_acronym:
+                        tie_break = candidate
+                        break
         if not tie_break:
             return None
         for variation_acronym in acronym.split('/')[1:]:
@@ -94,6 +118,10 @@ class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):
             options.ReversedTieBreakOption,
             options.EstimatedRatingsTieBreakOption,
             options.LegacyMarch2026TieBreakOption,
+            options.TeamScoreTieBreakOption,
+            options.NormalizationFactorOverrideTieBreakOption,
+            team_tie_breaks.ESBVariantTieBreakOption,
+            team_tie_breaks.ESBCutterTieBreakOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tie_break_option_types')(
             tie_break_option_types=tie_break_option_types

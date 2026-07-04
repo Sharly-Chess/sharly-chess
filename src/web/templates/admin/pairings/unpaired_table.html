@@ -1,7 +1,24 @@
-{% if unpaired_players %}
+{# Flat team systems (Molter): the sidebar pairs by selection — click an entry
+   (player or empty table) as White, click a second to create the pairing.
+   Empty table cells (holes) are listed too so a player can be given a forfeit
+   win on one (or a hole picked first, as White). #}
+{% set _flat_team_repair = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
+{% set _holes = admin_unpaired_holes if (_flat_team_repair and admin_unpaired_holes is defined) else [] %}
+{% set _can_flat_pair = _flat_team_repair and client.can_manually_pair_players(admin_tournament.id) %}
+{% if unpaired_players or _holes %}
     <table
         id="{{ table_id }}"
         class="table prominent table-striped table-sm w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
+        {% if _can_flat_pair %}
+            data-flat-pair-url="{{ url_for(
+                'admin-pairings-pair-flat',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                first='__FIRST__',
+                second='__SECOND__',
+                round=admin_round,
+            ) }}"
+        {% endif %}
     >
         <thead
             id="{{ table_id }}-header"
@@ -9,8 +26,8 @@
             style="top: var(--header-height);"
         >
             <tr>
-                <th colspan="{% if admin_tournament.pairing_system.show_unpaired_player_modal %}3{% else %}2{% endif %}">
-                    {{ title }} ({{ unpaired_players|length }})
+                <th colspan="{% if admin_tournament.pairing_system.show_unpaired_player_modal or _flat_team_repair %}3{% else %}2{% endif %}">
+                    {{ title }} ({{ unpaired_players|length + _holes|length }})
                 </th>
             </tr>
         </thead>
@@ -20,6 +37,8 @@
                 <tr id="player-{{ tournament_player.id }}" class="player-row" data-player-id="{{ tournament_player.id }}">
                     <td>
                         <div class="d-flex align-items-center gap-2">
+                            {% set _code = tournament_player.team.player_round_label(tournament_player, admin_round) if tournament_player.team else none %}
+                            {% if _code %}<small class="text-muted">{{ _code }}</small>{% endif %}
                             {% with secondary_link = status == 0 %}
                                 {% include '/admin/player_link.html' %}
                             {% endwith %}
@@ -64,6 +83,42 @@
                                     '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
+                        </td>
+                    {% elif _can_flat_pair %}
+                        <td class="text-end text-nowrap">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                data-pair-entity="p{{ tournament_player.id }}"
+                                onclick="flatPairToggle(this)"
+                                {{ macros.tooltip_attributes('', _('Select to pair (White, then pick the opponent)'), 'right') }}
+                            >
+                                <i class="bi-arrow-left-right"></i>
+                            </button>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            {% for hole in _holes %}
+                <tr class="player-row">
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <small class="text-muted">{{ hole.label }}</small>
+                            <em class="text-muted">{{ _('Absent — forfeit') }}</em>
+                        </div>
+                    </td>
+                    <td></td>
+                    {% if _can_flat_pair %}
+                        <td class="text-end text-nowrap">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-outline-primary"
+                                data-pair-entity="h{{ hole.index }}"
+                                onclick="flatPairToggle(this)"
+                                {{ macros.tooltip_attributes('', _('Select this empty table (forfeit for the paired player)'), 'right') }}
+                            >
+                                <i class="bi-arrow-left-right"></i>
+                            </button>
                         </td>
                     {% endif %}
                 </tr>

@@ -27,6 +27,7 @@ from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.utils import Plugin, PluginData, NavDataTransferItem
 from web.controllers.base_controller import WebContext, BaseController
+from utils.enum import EventType
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -48,6 +49,10 @@ class ChessEventPlugin(Plugin):
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME
+
+    @property
+    def supported_event_types(self) -> list[EventType]:
+        return [EventType.INDIVIDUAL]
 
     @staticmethod
     def static_name() -> str:

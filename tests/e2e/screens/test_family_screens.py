@@ -32,7 +32,7 @@ class TestFamilyScreensFunctionality:
 
     def test_create_and_delete_family_screen(self, page: Page):
         page.goto(f'/event/{EVENT_ID}/families')
-        TestUtils.button_by_text(page, 'Create a screen family').click()
+        TestUtils.button_by_text(page, 'Create a multi-screen').click()
         TestUtils.button_by_text(page, 'Results entry').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()

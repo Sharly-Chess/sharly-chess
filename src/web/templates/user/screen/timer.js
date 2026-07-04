@@ -75,7 +75,7 @@ function update_timer() {
 	if (time < {{ timer_hour.timestamp_1 }}) {
 		color = 'rgb({{ color_1_r }}, {{ color_1_g }}, {{ color_1_b }})';
 		dur = duration_string({{ timer_hour.timestamp }} - time);
-		text_html = '{{ timer_hour.text_before }}'.replace('%s', dur);
+		text_html = '{{ timer_hour.text_before | replace ("'", "\\'") | safe }}'.replace('%s', dur);
 		update_timer_values(clock_html, text_html, color);
 		return;
 	}
@@ -85,7 +85,7 @@ function update_timer() {
 		color_b = Math.floor({{ color_1_b }} + (time - {{ timer_hour.timestamp_1 }})/({{ delay_1 * 60 }})*({{ color_2_b - color_1_b }}));
 		color = 'rgb(' + color_r + ', ' + color_g + ', ' + color_b + ')';
 		dur = duration_string({{ timer_hour.timestamp }} - time);
-		text_html = '{{ timer_hour.text_before }}'.replace('%s', dur);
+		text_html = '{{ timer_hour.text_before | replace ("'", "\\'") | safe }}'.replace('%s', dur);
 		update_timer_values(clock_html, text_html, color);
 		return;
 	}
@@ -95,14 +95,14 @@ function update_timer() {
 		color_b = Math.floor({{ color_2_b }} + (time - {{ timer_hour.timestamp_2 }})/({{ delay_2 * 60 }})*({{ color_3_b - color_2_b }}));
 		color = 'rgb(' + color_r + ', ' + color_g + ', ' + color_b + ')';
 		dur = duration_string({{ timer_hour.timestamp }} - time);
-		text_html = '{{ timer_hour.text_before }}'.replace('%s', dur);
+		text_html = '{{ timer_hour.text_before | replace ("'", "\\'") | safe }}'.replace('%s', dur);
 		update_timer_values(clock_html, text_html, color);
 		return;
 	}
 	if (time < {{ timer_hour.timestamp_next }}) {
 		color = 'rgb({{ color_3_r }}, {{ color_3_g }}, {{ color_3_b }})';
 		dur = duration_string(time - {{ timer_hour.timestamp }});
-		text_html = '{{ timer_hour.text_after }}'.replace('%s', dur);
+		text_html = '{{ timer_hour.text_after | replace ("'", "\\'") | safe }}'.replace('%s', dur);
 		update_timer_values(clock_html, text_html, color);
 		return;
 	}

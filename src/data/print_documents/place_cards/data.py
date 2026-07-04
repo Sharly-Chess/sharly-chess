@@ -34,7 +34,16 @@ class PlaceCardPlayer:
         self.club: str = ''
         self.category: str = ''
         self.color: str = ''
+        # Swatch colours for the colour marker: the player's actual
+        # piece colour (the marker text may be a seat letter on team
+        # cards, where colours alternate from board to board).
+        self.color_background: str = '#fff'
+        self.color_text: str = '#000'
+        self.team_name: str = ''
         if tournament_player:
+            team = tournament_player.team
+            if team is not None:
+                self.team_name = team.name
             if tournament_player.rating:
                 self.rating = str(tournament_player.rating)
             self.rating_type = tournament_player.rating_type.short_name
@@ -68,8 +77,24 @@ class PlaceCardBoard:
     def __init__(
         self,
         number: int,
+        table: int | None = None,
     ):
         self.number: int = number
+        # Team events: the match table the board belongs to. Empty for
+        # individual events.
+        self.table: int | str = table if table is not None else ''
+
+
+class PlaceCardTeam:
+    """A utility class to pass unmodifiable teams' data to print documents."""
+
+    def __init__(
+        self,
+        name: str = '',
+        captain: str = '',
+    ):
+        self.name: str = name
+        self.captain: str = captain
 
 
 class PlaceCardPairing:
@@ -84,14 +109,53 @@ class PlaceCardPairing:
         self.black_player: PlaceCardPlayer
         if board:
             self.number = board.number
-            self.white_player = PlaceCardPlayer(
-                board.white_tournament_player,
-                color=_('W *** WHITE COLOR FOR PLACE CARDS'),
-            )
-            self.black_player = PlaceCardPlayer(
-                board.black_tournament_player,
-                color=_('B *** BLACK COLOR FOR PLACE CARDS'),
-            )
+            team_board = board.team_board
+            if team_board is not None:
+                # Team events: the card shows the table seats — team A's
+                # player on the left, team B's on the right, like the
+                # pairings table. The colour marker shows each player's
+                # actual colour (colours alternate from board to board).
+                w_team_id, _b_team_id = team_board.board_team_ids(board)
+                white_is_team_a = w_team_id == team_board.stored_team_board.team_a_id
+                left_tp = (
+                    board.optional_white_tournament_player
+                    if white_is_team_a
+                    else board.black_tournament_player
+                )
+                right_tp = (
+                    board.black_tournament_player
+                    if white_is_team_a
+                    else board.optional_white_tournament_player
+                )
+                white_marker = _('W *** WHITE COLOR FOR PLACE CARDS')
+                black_marker = _('B *** BLACK COLOR FOR PLACE CARDS')
+                self.white_player = PlaceCardPlayer(
+                    left_tp,
+                    color=white_marker if white_is_team_a else black_marker,
+                )
+                self.black_player = PlaceCardPlayer(
+                    right_tp,
+                    color=black_marker if white_is_team_a else white_marker,
+                )
+                self.white_player.color_background = (
+                    '#fff' if white_is_team_a else '#000'
+                )
+                self.white_player.color_text = '#000' if white_is_team_a else '#fff'
+                self.black_player.color_background = (
+                    '#000' if white_is_team_a else '#fff'
+                )
+                self.black_player.color_text = '#fff' if white_is_team_a else '#000'
+            else:
+                self.white_player = PlaceCardPlayer(
+                    board.optional_white_tournament_player,
+                    color=_('W *** WHITE COLOR FOR PLACE CARDS'),
+                )
+                self.black_player = PlaceCardPlayer(
+                    board.black_tournament_player,
+                    color=_('B *** BLACK COLOR FOR PLACE CARDS'),
+                )
+                self.black_player.color_background = '#000'
+                self.black_player.color_text = '#fff'
         else:
             self.number = 0
             self.white_player = PlaceCardPlayer()

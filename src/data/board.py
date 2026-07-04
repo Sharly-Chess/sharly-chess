@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.pairing import Pairing
     from data.player import TournamentPlayer
+    from data.team_board import TeamBoard
     from data.tournament import Tournament
 
 
@@ -26,23 +27,50 @@ class Board:
     ):
         self.round = round_
         self.stored_board = stored_board
-        self._white_player_ref: 'ReferenceType[TournamentPlayer]' = weakref.ref(
-            tournament.tournament_players_by_id[stored_board.white_player_id]
+        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        # A board may reference a player who is no longer a tournament
+        # player (e.g. one removed from a team roster). Treat the dangling
+        # slot as a hole rather than raising — a KeyError here would make
+        # the whole event unopenable.
+        white = (
+            tournament.tournament_players_by_id.get(stored_board.white_player_id)
+            if stored_board.white_player_id
+            else None
         )
-        self._black_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
-            weakref.ref(
-                tournament.tournament_players_by_id[stored_board.black_player_id]
-            )
+        black = (
+            tournament.tournament_players_by_id.get(stored_board.black_player_id)
             if stored_board.black_player_id
             else None
+        )
+        self._white_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
+            weakref.ref(white) if white is not None else None
+        )
+        self._black_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
+            weakref.ref(black) if black is not None else None
         )
 
     @property
     def tournament(self) -> 'Tournament':
-        return self.white_tournament_player.tournament
+        if (tournament := self._tournament_ref()) is None:
+            raise RuntimeError('Reference has been garbage collected')
+        return tournament
 
     @property
     def white_tournament_player(self) -> 'TournamentPlayer':
+        """Player on the physical white side. Raises if the slot is a
+        hole — use ``optional_white_tournament_player`` from hole-aware
+        code."""
+        player = self.optional_white_tournament_player
+        if player is None:
+            raise RuntimeError(f'Board {self.stored_board.id} has no white player.')
+        return player
+
+    @property
+    def optional_white_tournament_player(self) -> Optional['TournamentPlayer']:
+        """Player on the physical white side, or ``None`` when the
+        slot is a lineup hole (only possible inside a team match)."""
+        if not self._white_player_ref:
+            return None
         if (player := self._white_player_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return player
@@ -60,8 +88,21 @@ class Board:
         return self.white_tournament_player.pairings_by_round[self.round]
 
     @property
+    def optional_white_pairing(self) -> Optional['Pairing']:
+        player = self.optional_white_tournament_player
+        if player is None:
+            return None
+        return player.pairings_by_round[self.round]
+
+    @property
     def black_pairing(self) -> 'Pairing':
         assert self.black_tournament_player is not None
+        return self.black_tournament_player.pairings_by_round[self.round]
+
+    @property
+    def optional_black_pairing(self) -> Optional['Pairing']:
+        if self.black_tournament_player is None:
+            return None
         return self.black_tournament_player.pairings_by_round[self.round]
 
     @property
@@ -80,7 +121,8 @@ class Board:
 
     @property
     def fixed_number(self) -> int | None:
-        fixed_white: int | None = self.white_tournament_player.fixed
+        white_tp = self.optional_white_tournament_player
+        fixed_white: int | None = white_tp.fixed if white_tp else None
         fixed_black: int | None = getattr(self.black_tournament_player, 'fixed', None)
         if fixed_white and fixed_black:
             return max(fixed_white, fixed_black)
@@ -102,8 +144,56 @@ class Board:
         return str(standard)
 
     @property
+    def team_board(self) -> 'TeamBoard | None':
+        """The team match this board belongs to, or ``None`` for an
+        individual board (no envelope)."""
+        team_board_id = self.stored_board.team_board_id
+        if team_board_id is None:
+            return None
+        return self.tournament.team_boards_by_id.get(team_board_id)
+
+    @property
+    def team_match_number_str(self) -> str | None:
+        """``match.slot`` display for a board inside a team match (e.g.
+        ``3.2`` = second board of the match at table 3), or ``None``
+        outside team mode."""
+        team_board = self.team_board
+        if team_board is None:
+            return None
+        slot = next(
+            (
+                position
+                for position, board in enumerate(team_board.boards, start=1)
+                if board.id == self.id
+            ),
+            None,
+        )
+        match_number = team_board.display_number
+        if match_number is None or slot is None:
+            return None
+        return f'{match_number}.{slot}'
+
+    @property
     def result(self) -> Result:
-        return self.white_pairing.result
+        white_pairing = self.optional_white_pairing
+        if white_pairing is not None:
+            return white_pairing.result
+        black_pairing = self.optional_black_pairing
+        if black_pairing is not None:
+            # White is a hole — black_pairing's result is the *player's*
+            # outcome (e.g. ``FORFEIT_WIN`` when the opponent didn't
+            # show up). The board-level result string is rendered from
+            # white's perspective, so flip it when reversible. Byes
+            # (PAB / HPB / FPB / ZPB) stay as-is — they aren't
+            # board-level outcomes.
+            result = black_pairing.result
+            if result.is_bye:
+                return result
+            try:
+                return result.opposite_result
+            except ValueError:
+                return result
+        return Result.NO_RESULT
 
     @property
     def no_result(self) -> bool:
@@ -112,17 +202,14 @@ class Board:
     @property
     def result_str(self) -> str:
         if self.result == Result.PAIRING_ALLOCATED_BYE:
-            match self.tournament.pab_value:
-                case Result.WIN:
-                    return str(Result.PAIRING_ALLOCATED_BYE)
-                case Result.DRAW:
-                    return str(Result.PENALTY_DL)
-                case Result.LOSS:
-                    return str(Result.REST_GAME)
-                case _:
-                    raise ValueError(
-                        f'Unexpected pab value: {self.tournament.pab_value}'
-                    )
+            tournament = self.tournament
+            if tournament.pab_points == tournament.win_points:
+                return str(Result.PAIRING_ALLOCATED_BYE)
+            if tournament.pab_points == tournament.draw_points:
+                return str(Result.PENALTY_DL)
+            if tournament.pab_points == tournament.loss_points:
+                return str(Result.REST_GAME)
+            return str(Result.PAIRING_ALLOCATED_BYE)
         return str(self.result)
 
     @property
@@ -146,6 +233,11 @@ class Board:
             self.stored_board.black_player_id = new_player.id
 
     def permute_colors(self):
+        if self.optional_white_tournament_player is None:
+            raise ValueError(
+                f'Board [{self.stored_board.id}] has a forfeit hole, '
+                'its colors cannot be permuted.'
+            )
         white_player = self.white_tournament_player
         black_player = self.black_tournament_player
         assert black_player is not None
@@ -167,6 +259,9 @@ class Board:
         pairings_usage: bool = True,
     ) -> str:
         assert self.number is not None
+        if self.optional_white_tournament_player is None:
+            # A forfeit hole has no game to export.
+            return ''
         result = self.result.to_pgn if self.result and not pairings_usage else '*'
         return (
             f'[Event "{self._format_pgn_string(tournament.full_name)}"]\n'

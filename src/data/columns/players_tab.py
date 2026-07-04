@@ -214,7 +214,8 @@ class NamePlayersTabColumn(FilterPlayersTabColumn):
         return f'{player.last_name} {player.first_name}'
 
     def get_filter_key(self, player: Player) -> str:
-        if player.single_tournament_player.matches_tournament_criteria:
+        tournament_player = player.optional_single_tournament_player
+        if tournament_player is None or tournament_player.matches_tournament_criteria:
             return 'match'
         return 'no-match'
 
@@ -254,14 +255,18 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
         return 'filter_rows/check_in.html'
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return (player.single_tournament_player.check_in_status,)
+        tp = player.optional_single_tournament_player
+        return (tp.check_in_status if tp is not None else CheckInStatus.ABSENT,)
 
     @property
     def is_tournament_column(self) -> bool:
         return True
 
     def get_filter_key(self, player: Player) -> str:
-        return str(player.single_tournament_player.check_in_status.value)
+        tp = player.optional_single_tournament_player
+        if tp is None:
+            return str(CheckInStatus.ABSENT.value)
+        return str(tp.check_in_status.value)
 
     def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
         return CheckInStatus(int(filter_key))
@@ -279,6 +284,11 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
     def get_filter_row_tooltip(self, value: Any) -> str:
         return CheckInStatus(int(value)).description
 
+    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
+        if tournaments and tournaments[0].event.is_team_event:
+            return False
+        return True
+
 
 class RatingPlayersTabColumn(PlayersTabColumn):
     @staticmethod
@@ -291,10 +301,15 @@ class RatingPlayersTabColumn(PlayersTabColumn):
 
     @property
     def is_tournament_column(self) -> bool:
-        return True
+        # Not gated on tournament membership: players without a
+        # tournament show their event-default rating (see the cell
+        # template).
+        return False
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return -player.single_tournament_player.rating, -player.title.sort_index
+        tp = player.optional_single_tournament_player
+        rating = tp.rating if tp is not None else (player.event_default_rating or 0)
+        return -rating, -player.title.sort_index
 
     @property
     def swap_asc_desc_icon(self) -> bool:
@@ -657,7 +672,50 @@ class TournamentPlayersTabColumn(FilterPlayersTabColumn):
         return (player.single_tournament.index,)
 
     def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
+        if tournaments and tournaments[0].event.is_team_event:
+            return False
         return len(tournaments) > 1
+
+
+class TeamPlayersTabColumn(FilterPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'team'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Team')
+
+    @property
+    def align_start(self) -> bool:
+        return True
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/team.html'
+
+    def get_filter_key(self, player: Player) -> str:
+        return str(player.team_id) if player.team_id else ''
+
+    def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        if not filter_key:
+            return None
+        return event.teams_by_id.get(int(filter_key))
+
+    def get_filter_row_content(self, value: Any) -> str:
+        return value.name if value is not None else '-'
+
+    def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
+        if filter_value.value is None:
+            return ('', '')
+        return (filter_value.value.name.lower(), str(filter_value.value.id))
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        team = player.team
+        return (team.name.lower() if team is not None else '~~~',)
+
+    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
+        return bool(tournaments and tournaments[0].event.is_team_event)
 
 
 class CommentPlayersTabColumn(PlayersTabColumn):
@@ -717,9 +775,12 @@ class RecordPlayersTabColumn(PlayersTabColumn):
         return 'cells/record.html'
 
     def _get_sort_key(self, player: Player) -> tuple:
+        tp = player.optional_single_tournament_player
+        if tp is None:
+            return 0.0, 0
         played = 0
         points = 0.0
-        for pairing in player.single_tournament_player.pairings.values():
+        for pairing in tp.pairings.values():
             played += pairing.played
             points += pairing.points
         return points, played

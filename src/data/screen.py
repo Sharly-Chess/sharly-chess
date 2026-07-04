@@ -1,4 +1,3 @@
-import fnmatch
 import weakref
 from collections.abc import Iterator, Collection
 from datetime import datetime, timedelta
@@ -12,7 +11,7 @@ from common.i18n.utils import normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
-from data.screen_set import ScreenSet
+from data.screen_set import ScreenSet, format_range
 from data.timer import Timer
 
 from utils.enum import (
@@ -26,6 +25,7 @@ from database.sqlite.event.event_store import StoredScreen
 if TYPE_CHECKING:
     from data.event import Event
     from data.family import Family
+    from data.menu import Menu, MenuNavEntry
 
 
 logger = get_logger()
@@ -137,20 +137,43 @@ class Screen:
 
     @property
     def name(self) -> str:
-        if self.stored_screen:
-            if self.stored_screen.name:
-                return self.stored_screen.name
+        if self.stored_screen and self.stored_screen.name:
+            return self.stored_screen.name
+        if self.type == ScreenType.RESULTS:
+            # The selected tournament name(s), joined by ' / '; 'Last results'
+            # when the screen spans every tournament.
+            names: list[str] = []
+            for tournament_id in self.results_tournament_ids:
+                tournament_name = self.event.tournaments_by_id[tournament_id].name
+                if tournament_name and tournament_name not in names:
+                    names.append(tournament_name)
+            return ' / '.join(names) if names else _('Last results')
+        if self.type == ScreenType.IMAGE:
+            return _('Image')
+        if self.stored_screen is not None:
+            # A basic screen with no explicit name: the tournament name(s) of
+            # its sets, joined by ' / ' (deduplicated).
+            tournament_names: list[str] = []
+            for screen_set in self.sorted_screen_sets:
+                tournament_name = screen_set.tournament.name
+                if tournament_name and tournament_name not in tournament_names:
+                    tournament_names.append(tournament_name)
+            return ' / '.join(tournament_names) if tournament_names else _('Screen')
+        # A family-generated screen keeps its per-screen name (with first/last),
+        # as its family already carries the tournament-and-range default name.
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT:
                 return self.sorted_screen_sets[0].name_for_boards
             case ScreenType.PLAYERS | ScreenType.CHECK_IN:
-                return self.sorted_screen_sets[0].name_for_players
+                first_set = self.sorted_screen_sets[0]
+                if (
+                    self.type == ScreenType.CHECK_IN
+                    and first_set.tournament.is_team_tournament
+                ):
+                    return first_set.name_for_teams
+                return first_set.name_for_players
             case ScreenType.RANKING:
                 return self.sorted_screen_sets[0].name_for_ranking
-            case ScreenType.RESULTS:
-                return _('Last results')
-            case ScreenType.IMAGE:
-                return _('Image')
             case _:
                 raise ValueError(f'type=[{self.type}]')
 
@@ -172,14 +195,6 @@ class Screen:
         return None
 
     @property
-    def menu_link(self) -> bool | None:
-        if self.stored_screen:
-            return self.stored_screen.menu_link
-        if self.family:
-            return self.family.menu_link
-        return None
-
-    @property
     def menu_text(self) -> str | None:
         if self.stored_screen:
             return self.stored_screen.menu_text
@@ -189,8 +204,16 @@ class Screen:
 
     @staticmethod
     def default_boards_screen_menu_text(
-        single_tournament: bool, first_last: bool
+        single_tournament: bool, first_last: bool, team_matches: bool = False
     ) -> str:
+        if team_matches:
+            if single_tournament:
+                if first_last:
+                    return _('Matches %f-%l')
+                return _('By match')
+            if first_last:
+                return _('%t [Matches %f-%l]')
+            return _('%t (by match)')
         if single_tournament:
             if first_last:
                 return _('Boards %f-%l')
@@ -261,183 +284,58 @@ class Screen:
                 else:
                     return _('%t ranking')
 
+    def _resolve_menu_label(self, template: str) -> str:
+        """Substitute %t (tournament), %f/%l (this screen's first/last, with
+        abbreviated player names) and %r (the first–last range) in a menu
+        label template."""
+        if not self.sorted_screen_sets:
+            return template
+        screen_set = self.sorted_screen_sets[0]
+        text = template.replace('%t', screen_set.tournament.name)
+        if '%f' in text or '%l' in text or '%r' in text:
+            first, last = screen_set.range_bounds(abbreviated=True)
+            text = text.replace('%r', format_range(first, last))
+            text = text.replace('%f', first).replace('%l', last)
+        return text
+
     @property
-    def menu_label(self) -> str | None:
-        if not self.menu_link:
-            return None
-        match self.type:
-            case (
-                ScreenType.BOARDS
-                | ScreenType.INPUT
-                | ScreenType.PLAYERS
-                | ScreenType.RANKING
-                | ScreenType.CHECK_IN
-            ):
-                single_tournament = len(self.event.tournaments_by_id) == 1
-                screen_set: ScreenSet = self.sorted_screen_sets[0]
-                first_last = (
-                    bool(screen_set.first or screen_set.last)
-                    and screen_set.first_item is not None
-                )
-                text: str
-                if (
-                    self.type
-                    in [
-                        ScreenType.INPUT,
-                        ScreenType.BOARDS,
-                    ]
-                    and screen_set.tournament.current_round
-                ):
-                    text = self.menu_text or self.default_boards_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item is not None,
-                    )
-                elif self.type in [
-                    ScreenType.PLAYERS,
-                    ScreenType.INPUT,
-                    ScreenType.BOARDS,
-                ]:
-                    text = self.menu_text or self.default_players_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item is not None,
-                    )
-                elif self.type == ScreenType.CHECK_IN:
-                    text = self.menu_text or self.default_check_in_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item is not None,
-                    )
-                elif self.type == ScreenType.RANKING:
-                    text = self.menu_text or self.default_ranking_screen_menu_text(
-                        single_tournament=single_tournament,
-                        first_last=first_last and screen_set.first_item is not None,
-                        crosstable=self.ranking_crosstable,
-                    )
-                else:
-                    text = self.menu_text or ''
-                text = text.replace('%t', screen_set.tournament.name)
-                if self.type == ScreenType.RANKING:
-                    if '%f' in text:
-                        text = text.replace(
-                            '%f',
-                            str(screen_set.first_tournament_player_by_rank.rank)
-                            if screen_set.first_tournament_player_by_rank
-                            else '-',
-                        )
-                    if '%l' in text:
-                        text = text.replace(
-                            '%l',
-                            str(screen_set.last_tournament_player_by_rank.rank)
-                            if screen_set.last_tournament_player_by_rank
-                            else '-',
-                        )
-                elif (
-                    self.type in (ScreenType.PLAYERS, ScreenType.CHECK_IN)
-                    or not screen_set.tournament.current_round
-                ):
-                    text = text.replace(
-                        '%f',
-                        str(
-                            screen_set.first_tournament_player_by_name.last_name[:3]
-                        ).upper()
-                        if screen_set.first_tournament_player_by_name
-                        else '-',
-                    )
-                    text = text.replace(
-                        '%l',
-                        str(
-                            screen_set.last_tournament_player_by_name.last_name[:3]
-                        ).upper()
-                        if screen_set.last_tournament_player_by_name
-                        else '-',
-                    )
-                elif self.type in [
-                    ScreenType.INPUT,
-                    ScreenType.BOARDS,
-                ]:
-                    if '%f' in text:
-                        text = text.replace(
-                            '%f',
-                            str(
-                                screen_set.first_board.id
-                                + screen_set.tournament.first_board_number
-                                - 1
-                            )
-                            if screen_set.first_board
-                            and screen_set.first_board.id is not None
-                            else '-',
-                        )
-                    if '%l' in text:
-                        text = text.replace(
-                            '%l',
-                            str(
-                                screen_set.last_board.id
-                                + screen_set.tournament.first_board_number
-                                - 1
-                            )
-                            if screen_set.last_board
-                            and screen_set.last_board.id is not None
-                            else '-',
-                        )
-                return text
-            case ScreenType.RESULTS:
-                assert self.stored_screen is not None
-                return self.stored_screen.menu_text or _('Last results')
-            case _:
-                raise ValueError(f'type=[{self.type}]')
+    def menu_entry_label(self) -> str:
+        """The label shown for this screen in menus: the custom menu text
+        (tokens resolved) if set; for a family-generated screen its own range
+        with abbreviated player names (compact submenu items); otherwise the
+        screen name (which, when automatic, is the screen's tournament
+        name(s))."""
+        if self.menu_text:
+            return self._resolve_menu_label(self.menu_text)
+        if self.family is not None:
+            return self._resolve_menu_label(self.family.label_template)
+        return self.name
+
+    @property
+    def menu_range_label(self) -> str:
+        """This screen's range alone (``%f - %l`` with abbreviated player
+        names). Used for the items of a family submenu."""
+        if not self.sorted_screen_sets:
+            return ''
+        first, last = self.sorted_screen_sets[0].range_bounds(abbreviated=True)
+        return format_range(first, last)
+
+    def _menu_and_screens(self, admin: bool) -> "tuple['Menu | None', list['Screen']]":
+        """The menu this screen belongs to and the screens it navigates to. A
+        screen belongs to at most one menu; the menu is only displayed when it
+        holds more than one screen visible to the viewer."""
+        for menu in self.event.sorted_menus:
+            resolved = menu.resolved_screens()
+            if not any(screen.uniq_id == self.uniq_id for screen in resolved):
+                continue
+            entries = (
+                resolved if admin else [screen for screen in resolved if screen.public]
+            )
+            return (menu, entries) if len(entries) > 1 else (None, [])
+        return None, []
 
     def _menu_screens(self, admin: bool) -> list['Screen']:
-        menu_screens: list['Screen'] = []
-        if self.menu is not None:
-            for menu_part in map(str.strip, self.menu.split(',')):
-                if not menu_part:
-                    continue
-                is_screen_category = True
-                screen_type_category: ScreenType | None = None
-                match menu_part:
-                    case '@boards':
-                        screen_type_category = ScreenType.BOARDS
-                    case '@input':
-                        screen_type_category = ScreenType.INPUT
-                    case '@check-in':
-                        screen_type_category = ScreenType.CHECK_IN
-                    case '@players':
-                        screen_type_category = ScreenType.PLAYERS
-                    case '@results':
-                        screen_type_category = ScreenType.RESULTS
-                    case '@ranking':
-                        screen_type_category = ScreenType.RANKING
-                    case '@family':
-                        if self.family_id is None:
-                            logger.warning(
-                                'Pattern [@family] can be used by screen families only.'
-                            )
-                        else:
-                            menu_screens += self.event.families_by_id[
-                                self.family_id
-                            ].screens_by_uniq_id.values()
-                    case _:
-                        is_screen_category = False
-                if screen_type_category:
-                    menu_screens += (
-                        self.event.sorted_screens_by_screen_type[screen_type_category]
-                        if admin
-                        else self.event.sorted_public_screens_by_screen_type[
-                            screen_type_category
-                        ]
-                    )
-                if is_screen_category:
-                    continue
-                if '*' in menu_part:
-                    menu_part_screen_uniq_ids: list[str] = fnmatch.filter(
-                        self.event.screens_by_uniq_id.keys(), menu_part
-                    )
-                    menu_screens += [
-                        self.event.screens_by_uniq_id[screen_uniq_id]
-                        for screen_uniq_id in menu_part_screen_uniq_ids
-                    ]
-                elif menu_part in self.event.screens_by_uniq_id:
-                    menu_screens.append(self.event.screens_by_uniq_id[menu_part])
-        return menu_screens
+        return self._menu_and_screens(admin)[1]
 
     @cached_property
     def public_menu_screens(self) -> list['Screen']:
@@ -447,13 +345,19 @@ class Screen:
     def admin_menu_screens(self) -> list['Screen']:
         return self._menu_screens(True)
 
-    @property
-    def menu(self) -> str:
-        if self.stored_screen:
-            return self.stored_screen.menu or ''
-        if self.family is None:
-            raise RuntimeError('Family reference unexpectedly None')
-        return self.family.menu or ''
+    def _menu_nav_entries(self, admin: bool) -> list['MenuNavEntry']:
+        from data.menu import group_menu_nav_entries
+
+        menu, screens = self._menu_and_screens(admin)
+        return group_menu_nav_entries(screens, menu, current_screen=self)
+
+    @cached_property
+    def public_menu_nav_entries(self) -> list['MenuNavEntry']:
+        return self._menu_nav_entries(False)
+
+    @cached_property
+    def admin_menu_nav_entries(self) -> list['MenuNavEntry']:
+        return self._menu_nav_entries(True)
 
     @property
     def timer(self) -> Timer | None:

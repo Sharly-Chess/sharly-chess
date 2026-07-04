@@ -184,7 +184,7 @@ def _scoring_system(tournament: Tournament) -> dict[str, float] | None:
     win = tournament.win_points
     draw = tournament.draw_points
     loss = tournament.loss_points
-    pab = Result.PAIRING_ALLOCATED_BYE.points(tournament.point_values)
+    pab = tournament.pab_points
 
     if win == 1.0 and draw == 0.5 and loss == 0.0 and pab == 1.0:
         return None

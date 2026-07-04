@@ -194,6 +194,14 @@ class PlayerEntry(MultipleLinesEntry):
         return line
 
     def parse(self, data: str) -> Any:
+        # Some exporters / editors trim trailing whitespace on each
+        # line, which truncates the last game's color/result padding
+        # (a NO_RESULT game ends with two spaces). Pad the games
+        # region up to the next 10-char block boundary so the strict
+        # regex still accepts the line.
+        games_part = data[80:] if len(data) > 80 else ''
+        if games_part and len(games_part) % 10 != 0:
+            data = data + ' ' * (10 - len(games_part) % 10)
         match = self.LINE_PATTERN.fullmatch(data)
         if match is None:
             raise self.line_exception(data)
@@ -209,7 +217,13 @@ class PlayerEntry(MultipleLinesEntry):
             birth_date=match.group('birth_date').strip(),
             points=float(match.group('points')),
             rank=int_or_default(match.group('rank')),
-            games=self.parse_games(match.group('games')[2:].rstrip()),
+            # The regex captures each game including its leading
+            # two whitespace separators; the parse loop expects games
+            # to start at offset 0 so we strip the very first pair.
+            # Do NOT ``rstrip`` here — a trailing space is a valid
+            # result character (NO_RESULT), and dropping it would
+            # silently lose the last round's pairing.
+            games=self.parse_games(match.group('games')[2:]),
         )
 
     def parse_games(self, string) -> list[TrfGame]:
@@ -309,7 +323,7 @@ class DeprecatedTeamEntry(MultipleLinesEntry):
 
 class TeamEntry(MultipleLinesEntry):
     LINE_PATTERN = re.compile(
-        r'^(?P<id>[ \d]{3}) (?P<name>.{32}) (?P<nickname>[ \w]{5}) '
+        r'^(?P<id>[ \d]{3}) (?P<name>.{32}) (?P<nickname>.{5}) '
         r'(?P<strength_factor>[ \d]{6}) (?P<match_points>[ \d.]{6}) '
         r'(?P<game_points>[ \d.]{6}) (?P<rank>[ \d]{3}) (?P<player_ids>( [ \d]{4})*)\s*$',
         re.IGNORECASE,
@@ -327,6 +341,7 @@ class TeamEntry(MultipleLinesEntry):
 
     def format(self, value: Any) -> str:
         team: TrfTeam = value
+        rank = '' if team.rank is None else f'{team.rank:>3}'
         line = (
             f'{team.id:>3}'
             f' {team.name[:32]:<32}'
@@ -334,7 +349,7 @@ class TeamEntry(MultipleLinesEntry):
             f' {team.strength_factor:>6}'
             f' {float_display(team.match_points, 6)}'
             f' {float_display(team.game_points, 6)}'
-            f' {team.rank:>3} '
+            f' {rank:>3} '
         )
         for player_id in team.player_ids:
             line += f' {player_id:>4}'
@@ -491,7 +506,8 @@ class TeamPABsEntry(SingleLineEntry):
             f'{float_display(team_pabs.match_points, 4)} '
             f'{float_display(team_pabs.game_points, 4)}'
         )
-        for round_ in range(1, max(team_pabs.team_id_by_round) + 1):
+        last_round = max(team_pabs.team_id_by_round, default=0)
+        for round_ in range(1, last_round + 1):
             team_id = team_pabs.team_id_by_round.get(round_, None)
             line += f' {team_id or "":>3}'
         return line

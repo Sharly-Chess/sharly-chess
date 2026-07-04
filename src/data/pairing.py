@@ -138,6 +138,30 @@ class Pairing:
         return self.result.is_board_bye
 
     @property
+    def opponent_was_hole(self) -> bool:
+        """True iff this pairing is on a board inside a real team
+        match (its ``team_board`` has ``team_b_id`` set) but the
+        opposing side of the board is a lineup hole — the player
+        has no opponent because the other team didn't have a player
+        for this slot. Distinct from a Pairing-Allocated Bye, which
+        is a tournament-level bye, not a per-board missing-opponent."""
+        board = self.board
+        if board is None:
+            return False
+        if board.stored_board.team_board_id is None:
+            return False
+        tournament = self.tournament_player.tournament
+        team_board = tournament.team_boards_by_id.get(board.stored_board.team_board_id)
+        if team_board is None:
+            return False
+        if team_board.stored_team_board.team_b_id is None:
+            return False
+        return (
+            board.stored_board.white_player_id is None
+            or board.stored_board.black_player_id is None
+        )
+
+    @property
     def loss(self) -> bool:
         return self.result.is_loss
 
@@ -205,13 +229,24 @@ class Pairing:
         from data.input_output.trf.trf_data import TrfGame
         from data.input_output.trf.trf_mappers import TrfColor
 
+        opponent_pn = getattr(self.opponent, 'pairing_number', None)
+        if self.result.is_bye:
+            opponent_id: int | None = 0
+        elif opponent_pn is None and self.board is not None:
+            # Hole-opponent (team mode): player has a board but no
+            # opposing player. TRF requires the opponent field to be
+            # present — emit 0000.
+            opponent_id = 0
+        else:
+            opponent_id = opponent_pn
         return TrfGame(
-            opponent_id=(
-                0
-                if self.result.is_bye
-                else getattr(self.opponent, 'pairing_number', None)
+            opponent_id=opponent_id,
+            # TRF forbids a colour without an opponent, so drop it for
+            # byes *and* hole-opponent boards (team mode), both of which
+            # carry opponent ``0000``.
+            color=TrfColor.get_outer_value(
+                self.color, self.result.is_bye or opponent_id == 0
             ),
-            color=TrfColor.get_outer_value(self.color, self.result.is_bye),
             result=self.result.to_trf,
             round=round_number,
         )
@@ -220,22 +255,19 @@ class Pairing:
     def color(self) -> BoardColor | None:
         if not (board := self.board):
             return None
-        return (
-            BoardColor.WHITE
-            if board.white_tournament_player.id == self.tournament_player.id
-            else BoardColor.BLACK
-        )
+        white_tp = board.optional_white_tournament_player
+        if white_tp is not None and white_tp.id == self.tournament_player.id:
+            return BoardColor.WHITE
+        return BoardColor.BLACK
 
     @property
     def opponent(self) -> Optional['TournamentPlayer']:
         board = self.board
-        if not board or not board.black_tournament_player:
+        if not board:
             return None
-        return (
-            board.black_tournament_player
-            if self.color == BoardColor.WHITE
-            else board.white_tournament_player
-        )
+        if self.color == BoardColor.WHITE:
+            return board.black_tournament_player
+        return board.optional_white_tournament_player
 
     def fide_rating_change(self, k_factor: int):
         tournament_player = self.tournament_player
