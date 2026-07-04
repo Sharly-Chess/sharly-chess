@@ -16,7 +16,7 @@ from packaging.version import Version, InvalidVersion
 import plugins.chess_results
 import plugins.ffe
 import plugins.fra_schools
-from common import BASE_DIR, EVENTS_FOLDER
+from common import BASE_DIR
 from common import SHARLY_CHESS_VERSION
 from common.installation_checker import (
     InstallationChecker,
@@ -150,13 +150,6 @@ class ProjectBuilder(ABC):
             'Adding data from folder [%s] to [%s]...', self.project_dir, self.data_dir
         )
         shutil.copytree(self.data_dir, self.project_dir, dirs_exist_ok=True)
-        events_dir: Path = self.project_dir / EVENTS_FOLDER
-        logger.info('Creating events folder [%s]...', events_dir)
-        events_dir.mkdir(exist_ok=True)
-        # just create an empty custom dir (dev custom files are embedded in the exe since 2.4.11)
-        custom_dir: Path = self.project_dir / 'custom'
-        logger.info('Creating custom folder [%s]...', custom_dir)
-        custom_dir.mkdir(exist_ok=True)
         if not self._generate_license_files():
             return False
         if not self.build_control_file():
