@@ -481,21 +481,24 @@ class SharlyChessServerToga(toga.App):
         self.compact_size = self.main_window.size
 
     def update_from_sharly_chess_config(self):
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        assert self.launch_browser_switch is not None
-        self.launch_browser_switch.value = sharly_chess_config.launch_browser
-        assert self.log_level_select is not None and isinstance(
-            self.log_level_select.items, ListSource
-        )
-        self.log_level_select.value = self.log_level_select.items.find(
-            data={'level': sharly_chess_config.console_log_level}
-        )
-        assert self.color_switch is not None
-        self.color_switch.value = sharly_chess_config.console_color
-        assert self.show_level_switch is not None
-        self.show_level_switch.value = sharly_chess_config.console_show_level
-        assert self.show_time_switch is not None
-        self.show_time_switch.value = sharly_chess_config.console_show_date
+        def config_update():
+            config = SharlyChessConfig()
+            assert self.launch_browser_switch is not None
+            self.launch_browser_switch.value = config.launch_browser
+            assert self.log_level_select is not None and isinstance(
+                self.log_level_select.items, ListSource
+            )
+            self.log_level_select.value = self.log_level_select.items.find(
+                data={'level': config.console_log_level}
+            )
+            assert self.color_switch is not None
+            self.color_switch.value = config.console_color
+            assert self.show_level_switch is not None
+            self.show_level_switch.value = config.console_show_level
+            assert self.show_time_switch is not None
+            self.show_time_switch.value = config.console_show_date
+
+        self.gui_loop.call_soon_threadsafe(config_update)
 
     def on_running(self):
         # Logging handler
