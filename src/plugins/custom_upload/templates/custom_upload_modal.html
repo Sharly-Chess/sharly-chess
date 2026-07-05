@@ -8,6 +8,20 @@
             </h2>
         </div>
         <div class="modal-body">
+            <!-- TODO: support multiple connections instead of only a default one -->
+            <h3> {{ _('Connection') }}
+                <span {{ macros.tooltip_attributes('', _('Edit connection')) }}>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm h-100 align-items-center"
+                        hx-get="{{ url_for('custom-upload-event-configuration-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <i class="bi bi-pencil-fill lh-1"></i>
+                    </button>
+                </span>
+            </h3>
             <table
                 class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
             >

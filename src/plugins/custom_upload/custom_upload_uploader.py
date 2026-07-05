@@ -192,6 +192,7 @@ class CustomUploadUploader:
     ):
         failure_status = None
 
+        # TODO: extract FTP credentials from event plugin data instead
         host = tournament_plugin_data.ftp_host
         username = tournament_plugin_data.ftp_username
         password = tournament_plugin_data.ftp_password
@@ -200,6 +201,7 @@ class CustomUploadUploader:
             ftp_client.connect(host, username=username, password=password)
             sftp_client = ftp_client.open_sftp()
 
+            # TODO: build path combining base path from event plugin data and subpath from tournament plugin data
             target_path = Path(tournament_plugin_data.server_path)
             if not CustomUploadUploader._does_remote_path_exist(
                 sftp_client, target_path.as_posix()

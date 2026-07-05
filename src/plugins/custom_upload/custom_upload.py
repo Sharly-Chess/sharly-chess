@@ -11,6 +11,7 @@ from plugins.custom_upload.custom_upload_controller import (
 from plugins.custom_upload.utils import (
     CustomUploadTournamentPluginData,
     CustomUploadUtils,
+    CustomUploadEventPluginData,
 )
 from plugins.hookspec import hookimpl
 from plugins.utils import Plugin, NavDataTransferItem, PluginData
@@ -58,6 +59,14 @@ class CustomUploadPlugin(Plugin):
         return {
             'custom_upload_utils': CustomUploadUtils,
         }
+
+    # ---------------------------------------------------------------------------------
+    # Events
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        return self.id, CustomUploadEventPluginData
 
     # ---------------------------------------------------------------------------------
     # Tournaments

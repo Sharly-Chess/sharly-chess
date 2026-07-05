@@ -18,6 +18,7 @@ from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
 from plugins.custom_upload.utils import (
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
+    CustomUploadEventPluginData,
 )
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -105,6 +106,31 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         return self._render_upload_results(web_context)
 
     @get(
+        path='/custom-upload/configuration-modal/{event_uniq_id:str}',
+        name='custom-upload-event-configuration-modal',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_custom_upload_event_configuration_modal(
+        self, request: HTMXRequest
+    ) -> Template:
+        web_context = BaseEventAdminWebContext(request)
+        custom_upload_data = CustomUploadUtils.get_event_plugin_data(
+            web_context.get_admin_event()
+        )
+        return HTMXTemplate(
+            template_name='custom_upload_event_configuration_modal.html',
+            context=web_context.template_context
+            | {
+                'data': custom_upload_data.to_form_data(),
+                'errors': {},
+            },
+            re_target='#modal-wrapper',
+            re_swap='innerHTML',
+            trigger_event='modal_opened',
+            after='settle',
+        )
+
+    @get(
         path='/custom-upload/configuration-modal/{event_uniq_id:str}/{tournament_id:int}',
         name='custom-upload-tournament-configuration-modal',
         guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
@@ -186,6 +212,46 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             re_swap='innerHTML',
             after='settle',
         )
+
+    def _update_event_configuration(
+        self,
+        web_context: BaseEventAdminWebContext,
+        data: dict[str, str],
+    ) -> Template:
+        request = web_context.request
+        event = web_context.get_admin_event()
+
+        custom_upload_data = CustomUploadEventPluginData.from_form_data(data)
+        event.stored_event.plugin_data[PLUGIN_NAME] = (
+            custom_upload_data.to_stored_value()
+        )
+
+        with EventDatabase(event.uniq_id, True) as event_database:
+            event_database.update_stored_event(event.stored_event)
+
+        web_context = BaseEventAdminWebContext(request, reload_event=True)
+        return HTMXTemplate(
+            template_name='custom_upload_modal.html',
+            context=self._upload_results_context(web_context),
+            re_target='#modal-wrapper',
+            trigger_event='modal_opened',
+            after='settle',
+        )
+
+    @patch(
+        path='/custom-upload/configuration/{event_uniq_id:str}',
+        name='custom-upload-event-configuration-update',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_custom_upload_event_configuration_update(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+    ) -> Template:
+        web_context = BaseEventAdminWebContext(request)
+        return self._update_event_configuration(web_context, data)
 
     def _update_tournament_configuration(
         self,

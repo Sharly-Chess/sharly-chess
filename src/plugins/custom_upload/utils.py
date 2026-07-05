@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Self
 
 from common.i18n import _
+from data.event import Event
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -34,6 +35,12 @@ class CustomUploadUtils:
     ) -> 'CustomUploadTournamentPluginData':
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, CustomUploadTournamentPluginData)
+        return plugin_data
+
+    @staticmethod
+    def get_event_plugin_data(event: Event) -> 'CustomUploadEventPluginData':
+        plugin_data = event.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, CustomUploadEventPluginData)
         return plugin_data
 
     @staticmethod
@@ -209,5 +216,54 @@ class CustomUploadTournamentPluginData(PluginData):
         }
         for index, document_url in enumerate(self.document_urls):
             form_data[f'document_url_{index}'] = document_url
+
+        return WebContext.values_dict_to_form_data(form_data)
+
+
+@dataclass
+class CustomUploadEventPluginData(PluginData):
+    ftp_host: str | None = None
+    server_path: str | None = None
+    ftp_username: str | None = None
+    ftp_password: str | None = None
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            ftp_host=stored_value.get('ftp_host', None),
+            server_path=stored_value.get('server_path', None),
+            ftp_username=stored_value.get('ftp_username', None),
+            ftp_password=stored_value.get('ftp_password', None),
+        )
+
+    @classmethod
+    def from_form_data(
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
+    ) -> Self:
+        return cls(
+            ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
+            server_path=WebContext.form_data_to_str(data, 'server_path'),
+            ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
+            ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'ftp_host': self.ftp_host,
+            'server_path': self.server_path,
+            'ftp_username': self.ftp_username,
+            'ftp_password': self.ftp_password,
+        }
+
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
+        form_data = {
+            'ftp_host': self.ftp_host,
+            'server_path': self.server_path,
+            'ftp_username': self.ftp_username,
+            'ftp_password': self.ftp_password,
+        }
 
         return WebContext.values_dict_to_form_data(form_data)

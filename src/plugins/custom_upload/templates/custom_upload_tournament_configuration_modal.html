@@ -15,6 +15,7 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                <!-- TODO: do not include all auth fields and test button, include only subpath field -->
                 {%  include 'custom_upload_tournament_auth_fields.html' %}
                 {% for document_name, document_url in data.items() if document_name.startswith('document_url_') %}
                     <div class="d-flex gap-2 gy-2 gx-3 mt-2">
@@ -52,6 +53,7 @@
             </form>
         </div>
         <div class="modal-footer">
+            <!-- TODO : Add "Back" button rather than "Cancel" -->
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"
