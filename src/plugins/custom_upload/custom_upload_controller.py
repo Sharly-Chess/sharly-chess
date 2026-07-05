@@ -39,7 +39,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
 
     @staticmethod
     def _extract_document_id(document_url: str) -> str:
-        return re.findall('/([\w-]*)\?', document_url)[0]
+        return re.findall(r'([\w-]*)[^/]*$', document_url)[0]
 
     @staticmethod
     def _upload_results_context(
