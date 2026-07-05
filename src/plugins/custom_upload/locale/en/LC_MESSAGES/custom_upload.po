@@ -4,9 +4,6 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-msgid "Change documents"
-msgstr ""
-
 msgid "Close"
 msgstr ""
 
@@ -25,9 +22,6 @@ msgstr ""
 msgid "Document URL:"
 msgstr ""
 
-msgid "Document list"
-msgstr ""
-
 msgid "Documents"
 msgstr ""
 
@@ -41,6 +35,9 @@ msgid "E.g.: my_password"
 msgstr ""
 
 msgid "E.g.: my_username"
+msgstr ""
+
+msgid "Edit configuration"
 msgstr ""
 
 msgid "FTP credentials are not defined."
@@ -110,6 +107,9 @@ msgid "There should be no more than one unescaped '?' character"
 msgstr ""
 
 msgid "Tournament"
+msgstr ""
+
+msgid "Tournament configuration"
 msgstr ""
 
 msgid "Tournament has been modified since the last upload."

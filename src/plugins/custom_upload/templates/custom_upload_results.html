@@ -46,11 +46,11 @@
                 {{ plugin_data.last_upload_at_str }}
             </td>
             <td class="d-flex gap-2 align-items-center">
-                <span {{ macros.tooltip_attributes('', _('Change documents')) }}>
+                <span {{ macros.tooltip_attributes('', _('Edit configuration')) }}>
                     <button
                         type="button"
                         class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                        hx-get="{{ url_for('change-tournament-documents-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        hx-get="{{ url_for('custom-upload-tournament-configuration-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                     >

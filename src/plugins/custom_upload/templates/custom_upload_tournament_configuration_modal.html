@@ -1,21 +1,22 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
-<div id="change-documents-modal" class="modal-dialog modal-dialog-scrollable">
+<div id="tournament-configuration-modal" class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                    {{ _('Document list') }}
+                    {{ _('Custom location') }} - {{ _('Tournament configuration') }}
             </h2>
         </div>
         <div class="modal-body">
             <form
                 id="modal-form"
-                hx-patch="{{ url_for('change-documents-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                hx-patch="{{ url_for('custom-upload-tournament-configuration-update', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% for document_name, document_url in data.items() %}
+                {%  include 'custom_upload_tournament_auth_fields.html' %}
+                {% for document_name, document_url in data.items() if document_name.startswith('document_url_') %}
                     <div class="d-flex gap-2 gy-2 gx-3 mt-2">
                         <div class="flex-grow-1">
                             {{ admin_macros.text_input(

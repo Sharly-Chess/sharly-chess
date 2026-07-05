@@ -173,22 +173,22 @@ class CustomUploadTournamentPluginData(PluginData):
         last_upload_at: datetime | None = None
         last_upload_attempt_at: datetime | None = None
         upload_failure_id: str | None = None
-        document_urls: list[str] = []
         if previous_object and action != FormAction.CLONE:
             last_upload_at = previous_object.last_upload_at
             last_upload_attempt_at = previous_object.last_upload_attempt_at
             upload_failure_id = previous_object.upload_failure_id
 
+        document_urls = [
+            value.strip()
+            for key, value in data.items()
+            if key.startswith('document_url_')
+        ]
+
         # If action is UPDATE, it means form is for updating FTP configuration only
         # Document URLs should then stay as they are
         if previous_object and action == FormAction.UPDATE:
             document_urls = previous_object.document_urls
-        if action == 'edit_documents':
-            document_urls = [
-                value.strip()
-                for key, value in data.items()
-                if key.startswith('document_url_')
-            ]
+
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
             server_path=WebContext.form_data_to_str(data, 'server_path'),
@@ -201,16 +201,12 @@ class CustomUploadTournamentPluginData(PluginData):
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        form_data = {}
-        if action != 'edit_documents':
-            form_data.update(
-                {
-                    'ftp_host': self.ftp_host,
-                    'server_path': self.server_path,
-                    'ftp_username': self.ftp_username,
-                    'ftp_password': self.ftp_password,
-                }
-            )
+        form_data = {
+            'ftp_host': self.ftp_host,
+            'server_path': self.server_path,
+            'ftp_username': self.ftp_username,
+            'ftp_password': self.ftp_password,
+        }
         for index, document_url in enumerate(self.document_urls):
             form_data[f'document_url_{index}'] = document_url
 

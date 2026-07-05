@@ -4,9 +4,6 @@ msgstr "Ajouter un document"
 msgid "Cancel"
 msgstr "Annuler"
 
-msgid "Change documents"
-msgstr "Changer de documents"
-
 msgid "Close"
 msgstr "Fermer"
 
@@ -25,9 +22,6 @@ msgstr "Serveur personnel"
 msgid "Document URL:"
 msgstr "URL du document :"
 
-msgid "Document list"
-msgstr "Liste des documents"
-
 msgid "Documents"
 msgstr "Documents"
 
@@ -42,6 +36,9 @@ msgstr "Exemple : mon_mot_de_passe"
 
 msgid "E.g.: my_username"
 msgstr "Exemple : mon_identifiant"
+
+msgid "Edit configuration"
+msgstr "Modifier la configuration"
 
 msgid "FTP credentials are not defined."
 msgstr "Les identifiants FTP ne sont pas définis."
@@ -111,6 +108,9 @@ msgstr "Il ne doit pas y avoir plus d'un caractère '?' non échappé"
 
 msgid "Tournament"
 msgstr "Tournoi"
+
+msgid "Tournament configuration"
+msgstr "Configuration de tournoi"
 
 msgid "Tournament has been modified since the last upload."
 msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
