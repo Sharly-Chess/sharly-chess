@@ -271,8 +271,9 @@ class Engine:
         else:
             install_url = _('*** MACOS INSTALL URL')
             instruction += _(
-                'Download the DMG file from the website that just opened, '
-                'then drop it into your Applications folder.'
+                'Download the DMG file from the website that just '
+                'opened, open it, then copy the application to your '
+                'Applications folder and run it from there.'
             )
         from web.server_engine import launch_browser
 

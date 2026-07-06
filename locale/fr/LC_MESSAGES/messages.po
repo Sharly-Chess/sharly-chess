@@ -2136,8 +2136,8 @@ msgstr "Berger aller-retour"
 msgid "Download"
 msgstr "Télécharger"
 
-msgid "Download the DMG file from the website that just opened, then drop it into your Applications folder."
-msgstr "Télécharger le fichier DMG depuis le navigateur qui vient de s'ouvrir, puis déposez le dans le dossier Applications."
+msgid "Download the DMG file from the website that just opened, open it, then copy the application to your Applications folder and run it from there."
+msgstr "Téléchargez le fichier DMG depuis le navigateur qui vient de s'ouvrir, ouvrez-le, puis copiez l'application dans votre dossier Applications puis et exécutez-le."
 
 msgid "Download the installer executable from the page that just opened, then run it."
 msgstr "Télécharger l'exécutable d'installation depuis la page qui vient de s'ouvrir, puis exécutez le."
@@ -5991,8 +5991,8 @@ msgstr "Les fonctionnalités suivant ne seront pas importées :"
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
 
-msgid "The installation and update processes have been reworked in version 5."
-msgstr "Les processus d'installation et de mise à jour ont été retravaillés dans la version 5."
+msgid "The installation and update processes have been reworked."
+msgstr "Les processus d'installation et de mise à jour ont été retravaillés."
 
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."

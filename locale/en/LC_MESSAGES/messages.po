@@ -2136,7 +2136,7 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
-msgid "Download the DMG file from the website that just opened, then drop it into your Applications folder."
+msgid "Download the DMG file from the website that just opened, open it, then copy the application to your Applications folder and run it from there."
 msgstr ""
 
 msgid "Download the installer executable from the page that just opened, then run it."
@@ -5989,7 +5989,7 @@ msgstr ""
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr ""
 
-msgid "The installation and update processes have been reworked in version 5."
+msgid "The installation and update processes have been reworked."
 msgstr ""
 
 msgid "The least and the most significant values are removed."
@@ -7642,5 +7642,11 @@ msgstr ""
 #~ "The installation and update processes have been reworked in version 5.\n"
 #~ "\n"
 #~ "Do you want to install it now"
+#~ msgstr ""
+
+#~ msgid "Download the DMG file from the website that just opened, then drop it into your Applications folder."
+#~ msgstr ""
+
+#~ msgid "The installation and update processes have been reworked in version 5."
 #~ msgstr ""
 
