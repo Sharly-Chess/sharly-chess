@@ -90,9 +90,9 @@ class SparkleUpdater:
                     return ns_string.stringWithUTF8String_(feed_url.encode('utf-8'))
 
             updater_controller = ObjCClass('SPUStandardUpdaterController')
-            _delegate = _SparkleFeedDelegate.alloc().init()
-            _controller = updater_controller.alloc().initWithStartingUpdater_updaterDelegate_userDriverDelegate_(  # noqa: E501
-                True, _delegate, None
+            cls._delegate = _SparkleFeedDelegate.alloc().init()
+            cls._controller = updater_controller.alloc().initWithStartingUpdater_updaterDelegate_userDriverDelegate_(  # noqa: E501
+                True, cls._delegate, None
             )
         except Exception:
             logger.exception('Failed to initialise Sparkle.')
@@ -130,7 +130,7 @@ class SparkleUpdater:
         if not cls.sparkle_available():
             return False
 
-        _feed_url = cls.appcast_url(version)
+        cls._feed_url = cls.appcast_url(version)
         if not cls._ensure_controller():
             return False
 
