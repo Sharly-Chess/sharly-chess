@@ -28,8 +28,7 @@ class WinProjectBuilder(ProjectBuilder):
         # The fingerprint of the certificate used to sign files
         self.signtool_cert_fingerprint: str = ''
         super().__init__(clean_project_on_exit=True)
-        self.exe_filename: str = self.basename + '.exe'
-        self.exe: Path = self.project_dir / self.exe_filename
+        self.exe = self.project_dir / f'{self.project_name}.exe'
         signtool_version: str = f'10.0.{SIGNTOOL_RELEASE}.0'
         self.signtool_dir: Path = Path(
             f'C:/Program Files (x86)/Windows Kits/10/bin/{signtool_version}/x64'
@@ -118,10 +117,7 @@ class WinProjectBuilder(ProjectBuilder):
             json.dump(control_data, file)
 
     def _rename_executable_file(self):
-        shutil.move(
-            self.project_dir / f'{self.basename}.exe',
-            self.project_dir / f'{self.project_name}.exe',
-        )
+        shutil.move(self.project_dir / f'{self.basename}.exe', self.exe)
 
     @staticmethod
     def _compact_command_output(
