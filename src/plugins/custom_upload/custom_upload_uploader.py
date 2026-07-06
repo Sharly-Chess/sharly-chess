@@ -33,6 +33,7 @@ from plugins.custom_upload.custom_upload_status import (
 from plugins.custom_upload.utils import (
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
+    CustomUploadEventPluginData,
 )
 from plugins.utils import PluginUtils
 from utils import Utils
@@ -174,6 +175,7 @@ class CustomUploadUploader:
             ftp_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
             cls._ftp_upload(
+                CustomUploadUtils.get_event_plugin_data(tournament.event),
                 tournament_plugin_data,
                 tournament,
                 result_id,
@@ -184,6 +186,7 @@ class CustomUploadUploader:
     @classmethod
     def _ftp_upload(
         cls,
+        event_plugin_data: CustomUploadEventPluginData,
         tournament_plugin_data: CustomUploadTournamentPluginData,
         tournament: Tournament,
         result_id: str,
@@ -193,23 +196,30 @@ class CustomUploadUploader:
         failure_status = None
 
         # TODO: extract FTP credentials from event plugin data instead
-        host = tournament_plugin_data.ftp_host
-        username = tournament_plugin_data.ftp_username
-        password = tournament_plugin_data.ftp_password
+        host = event_plugin_data.ftp_host
+        username = event_plugin_data.ftp_username
+        password = event_plugin_data.ftp_password
 
         try:
             ftp_client.connect(host, username=username, password=password)
             sftp_client = ftp_client.open_sftp()
 
-            # TODO: build path combining base path from event plugin data and subpath from tournament plugin data
-            target_path = Path(tournament_plugin_data.server_path)
+            base_path = event_plugin_data.server_path
+            if not base_path:
+                base_path = '/'
+
+            relative_path = tournament_plugin_data.relative_server_path
+            if not relative_path:
+                relative_path = ''
+
+            target_path = Path(base_path) / Path(relative_path)
             if not CustomUploadUploader._does_remote_path_exist(
                 sftp_client, target_path.as_posix()
             ):
                 logger.error(
                     'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
                     tournament.name,
-                    tournament_plugin_data.server_path,
+                    target_path,
                 )
                 failure_status = TargetLocationNotFoundCustomUploadStatus()
                 return
