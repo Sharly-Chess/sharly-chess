@@ -47,7 +47,7 @@ class CustomUploadUtils:
     def custom_upload_configuration_verification_message(
         tournament: Tournament,
     ) -> str | None:
-        plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
+        plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
         if not plugin_data.ftp_host:
             return _('FTP host is not defined.')
         if not plugin_data.ftp_username:
@@ -76,26 +76,29 @@ class CustomUploadUtils:
     ) -> list[CustomUploadStatus]:
         from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
 
-        custom_upload_plugin_data = cls.get_tournament_plugin_data(tournament)
+        custom_upload_event_plugin_data = cls.get_event_plugin_data(tournament.event)
 
         if (
-            not custom_upload_plugin_data.ftp_host
-            or not custom_upload_plugin_data.ftp_username
+            not custom_upload_event_plugin_data.ftp_host
+            or not custom_upload_event_plugin_data.ftp_username
         ):
             return [NotConfiguredCustomUploadStatus()]
 
+        custom_upload_tournament_plugin_data = cls.get_tournament_plugin_data(
+            tournament
+        )
         statuses: list[CustomUploadStatus] = []
 
         # Last upload failure
-        if custom_upload_plugin_data.upload_failure_id:
+        if custom_upload_tournament_plugin_data.upload_failure_id:
             status = CustomUploadFailureStatusManager().get_object(
-                custom_upload_plugin_data.upload_failure_id
+                custom_upload_tournament_plugin_data.upload_failure_id
             )
             statuses.append(status)
 
         is_modified = CustomUploadUploader.custom_upload_needed(tournament)
         # Current data status
-        if not custom_upload_plugin_data.last_upload_at:
+        if not custom_upload_tournament_plugin_data.last_upload_at:
             statuses.append(NeverUploadedCustomUploadStatus())
         elif is_modified:
             statuses.append(ModifiedCustomUploadStatus())
@@ -122,10 +125,7 @@ class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus])
 
 @dataclass
 class CustomUploadTournamentPluginData(PluginData):
-    ftp_host: str | None = None
-    server_path: str | None = None
-    ftp_username: str | None = None
-    ftp_password: str | None = None
+    relative_server_path: str | None = None
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
@@ -140,10 +140,7 @@ class CustomUploadTournamentPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            ftp_host=stored_value.get('ftp_host', None),
-            server_path=stored_value.get('server_path', None),
-            ftp_username=stored_value.get('ftp_username', None),
-            ftp_password=stored_value.get('ftp_password', None),
+            relative_server_path=stored_value.get('relative_server_path', None),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload_at')
             ),
@@ -156,10 +153,7 @@ class CustomUploadTournamentPluginData(PluginData):
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
-            'ftp_host': self.ftp_host,
-            'server_path': self.server_path,
-            'ftp_username': self.ftp_username,
-            'ftp_password': self.ftp_password,
+            'relative_server_path': self.relative_server_path,
             'last_upload_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_upload_at
             ),
@@ -191,16 +185,10 @@ class CustomUploadTournamentPluginData(PluginData):
             if key.startswith('document_url_')
         ]
 
-        # If action is UPDATE, it means form is for updating FTP configuration only
-        # Document URLs should then stay as they are
-        if previous_object and action == FormAction.UPDATE:
-            document_urls = previous_object.document_urls
-
         return cls(
-            ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
-            server_path=WebContext.form_data_to_str(data, 'server_path'),
-            ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
-            ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
+            relative_server_path=WebContext.form_data_to_str(
+                data, 'relative_server_path'
+            ),
             last_upload_at=last_upload_at,
             last_upload_attempt_at=last_upload_attempt_at,
             upload_failure_id=upload_failure_id,
@@ -209,10 +197,7 @@ class CustomUploadTournamentPluginData(PluginData):
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         form_data = {
-            'ftp_host': self.ftp_host,
-            'server_path': self.server_path,
-            'ftp_username': self.ftp_username,
-            'ftp_password': self.ftp_password,
+            'relative_server_path': self.relative_server_path,
         }
         for index, document_url in enumerate(self.document_urls):
             form_data[f'document_url_{index}'] = document_url

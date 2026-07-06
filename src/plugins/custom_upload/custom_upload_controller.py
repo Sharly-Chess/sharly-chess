@@ -202,7 +202,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         custom_upload_data = CustomUploadTournamentPluginData.from_form_data(data)
         custom_upload_data.document_urls.pop(document_index)
         return HTMXTemplate(
-            template_name='change_tournament_documents_modal.html',
+            template_name='custom_upload_tournament_configuration_modal.html',
             context=web_context.template_context
             | {
                 'data': custom_upload_data.to_form_data(),
