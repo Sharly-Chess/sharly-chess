@@ -16,7 +16,7 @@ from packaging.version import Version, InvalidVersion
 import plugins.chess_results
 import plugins.ffe
 import plugins.fra_schools
-from common import BASE_DIR
+from common import BASE_DIR, DEFAULT_DATA_DIR
 from common import SHARLY_CHESS_VERSION
 from common.installation_checker import (
     InstallationChecker,
@@ -49,7 +49,6 @@ class ProjectBuilder(ABC):
         self.spec_file: Path = BASE_DIR / f'{self.basename}.spec'
         self.src_dir: Path = BASE_DIR / 'src'
         self.licences_dir = self.project_dir / 'LICENSES'
-        self.control_file: Path = Path('tmp', 'control_file.json')
         self.zip_file: Path = self.export_dir / f'{self.basename}.zip'
         self.test_dir: Path = BASE_DIR / 'export-test' / self.basename
         self.clean_project_on_exit: bool = clean_project_on_exit
@@ -150,10 +149,10 @@ class ProjectBuilder(ABC):
             'Adding data from folder [%s] to [%s]...', self.project_dir, self.data_dir
         )
         shutil.copytree(self.data_dir, self.project_dir, dirs_exist_ok=True)
+        self._rename_executable_file()
         if not self._generate_license_files():
             return False
-        if not self.build_control_file():
-            return False
+        self._generate_control_files()
         if not self.hook_post_build_project():
             return False
         return True
@@ -574,29 +573,25 @@ class ProjectBuilder(ABC):
                 )
 
         files: list[Path] = []
+
+        def add_dir_files(dir_path: Path, pattern: str = '**/*') -> None:
+            for file_ in dir_path.glob(pattern):
+                if file_.is_file():
+                    files.append(file_)
+
         web_dir = self.src_dir / 'web'
-        files += [
-            file for file in (web_dir / 'templates').glob('**/*') if file.is_file()
-        ]
+        add_dir_files(web_dir / 'templates')
         for templates_path in plugin_manager.templates_paths:
-            files += [file for file in templates_path.glob('**/*') if file.is_file()]
+            add_dir_files(templates_path)
         for locale_path in plugin_manager.locale_paths:
-            files += [file for file in locale_path.glob('**/*.mo') if file.is_file()]
+            add_dir_files(locale_path, '**/*.mo')
         for static_path in plugin_manager.static_paths:
-            files += [file for file in static_path.glob('**/*') if file.is_file()]
+            add_dir_files(static_path)
         static_dir = web_dir / 'static'
-        files += [
-            file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()
-        ]
-        files += [
-            file for file in Path(static_dir, 'images').glob('**/*') if file.is_file()
-        ]
-        files += [
-            file for file in Path(static_dir, 'css').glob('**/*') if file.is_file()
-        ]
-        files += [
-            file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()
-        ]
+        add_dir_files(static_dir / 'fonts')
+        add_dir_files(static_dir / 'images')
+        add_dir_files(static_dir / 'css')
+        add_dir_files(static_dir / 'js')
         for installer in InstallationChecker.web_lib_installers:
             files += [
                 installer.version_install_dir / lib_file
@@ -609,18 +604,15 @@ class ProjectBuilder(ABC):
             lib_dir / 'polyglot' / 'polyglot.js',
             lib_dir / 'select2' / 'themes' / 'dark-bootstrap-5.css',
         ]
-        custom_dir: Path = self.src_dir / 'custom'
-        files += [file for file in custom_dir.glob('**/*') if file.is_file()]
-        files += [file for file in self.locale_dir.glob('**/*.mo') if file.is_file()]
-        molter_resource_dir = self.src_dir / 'data' / 'pairings' / 'resources'
-        files += [file for file in molter_resource_dir.glob('**/*') if file.is_file()]
+        add_dir_files(self.locale_dir, '**/*.mo')
+        add_dir_files(self.src_dir / 'data' / 'pairings' / 'resources')
 
         # Add entire executable installer directories
         for executable_installer in InstallationChecker.executable_installers:
             installer_dir = executable_installer.executable_dir
             if installer_dir.exists():
                 # Add all files in the installer directory recursively
-                files += [file for file in installer_dir.glob('**/*') if file.is_file()]
+                add_dir_files(installer_dir)
 
         files += [
             self.src_dir / '.fide-database-enc-credentials',
@@ -631,8 +623,9 @@ class ProjectBuilder(ABC):
         ]
 
         # Add GUI resources
-        gui_dir: Path = self.src_dir / 'gui'
-        files += [file for file in gui_dir.glob('**/*') if file.is_file()]
+        add_dir_files(self.src_dir / 'gui')
+        # Add default data files
+        add_dir_files(DEFAULT_DATA_DIR)
 
         # Use correct path separator for PyInstaller --add-data based on OS
         data_separator = ':' if os.name != 'nt' else ';'
@@ -670,9 +663,11 @@ class ProjectBuilder(ABC):
         """Executed after the project build, return True on success and False on failure."""
         return True
 
-    def build_control_file(self) -> bool:
-        """Build a JSON file with all the needed files for control purposes."""
-        return True
+    def _generate_control_files(self):
+        """Add control files to the project directory."""
+
+    def _rename_executable_file(self):
+        """Rename the executable file."""
 
     def build_zip_file(self) -> bool:
         logger.info('Creating archive [%s]...', self.zip_file)

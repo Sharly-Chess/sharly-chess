@@ -31,6 +31,9 @@ class ProgramVar(StrEnum):
 
     DATA_DIR = 'data_directory'
     PREVIOUS_DATA_DIR = 'previous_data_directory'
+    VERSION = 'version'
+    LEGACY_VERSION = 'legacy_version'
+    LEGACY_VERSION_DIR = 'legacy_version_directory'
 
     @property
     def stored_name(self) -> str:

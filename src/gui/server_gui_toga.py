@@ -21,7 +21,6 @@ import threading
 import webbrowser
 from collections.abc import Callable
 from datetime import datetime
-from functools import partial
 from pathlib import Path
 from typing import Optional, Any
 from PIL import Image as PILImage
@@ -43,11 +42,11 @@ from common import (
     DATA_DIR,
     DEVEL_ENV,
 )
-from common.data_recovery import DataRecovery
 from common.i18n import _, ngettext
 from common.logger import get_logger
-from common.version_updater import VersionUpdater
-from common import sparkle_updater
+from common.updaters.sparkle_updater import SparkleUpdater
+from common.updaters.version_updater import VersionUpdater
+from common.updaters.windows_updater import WindowsUpdater
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
 from utils.program_variables import ProgramVar
@@ -396,8 +395,6 @@ class SharlyChessServerToga(toga.App):
         self.latest_version_label: Optional[toga.Label] = None
         self.latest_version_btn: Optional[toga.Button] = None
         self.version_search_ongoing = False
-        self.recover_button: Optional[toga.Button] = None
-        self.recover_box: Optional[toga.Box] = None
 
     @property
     def menu_buttons(self) -> list:
@@ -613,10 +610,6 @@ class SharlyChessServerToga(toga.App):
             _('Search for updates'), on_press=self._search_for_updates
         )
         changelog_button = toga.Button(_('Changelog'), on_press=self._open_changelog)
-        self.recover_button = toga.Button(
-            _('Recover a previous version'), on_press=self._toggle_recover_box
-        )
-        self.recover_box = toga.Box(direction=COLUMN, gap=7, align_items='center')
         title_style = Pack(font_weight='bold', font_size=10, text_align='center')
         self.settings_view.add(
             toga.Label(_('General'), style=title_style),
@@ -654,28 +647,31 @@ class SharlyChessServerToga(toga.App):
             title='Sharly Chess',
             size=self.compact_size,
             content=self.main_box,
-            resizable=False,
         )
-
         assert isinstance(self.main_window, toga.Window)
         self.main_window.show()
 
     def update_from_sharly_chess_config(self):
-        config = SharlyChessConfig()
-        assert self.launch_browser_switch is not None
-        self.launch_browser_switch.value = config.launch_browser
-        assert self.log_level_select is not None and isinstance(
-            self.log_level_select.items, ListSource
-        )
-        self.log_level_select.value = self.log_level_select.items.find(
-            data={'level': config.console_log_level}
-        )
-        assert self.log_color_switch is not None
-        self.log_color_switch.value = config.console_color
-        assert self.show_log_level_switch is not None
-        self.show_log_level_switch.value = config.console_show_level
-        assert self.show_log_time_switch is not None
-        self.show_log_time_switch.value = config.console_show_date
+        def config_update():
+            config = SharlyChessConfig()
+            assert self.launch_browser_switch is not None
+            self.launch_browser_switch.value = config.launch_browser
+            assert self.log_level_select is not None and isinstance(
+                self.log_level_select.items, ListSource
+            )
+            self.log_level_select.value = self.log_level_select.items.find(
+                data={'level': config.console_log_level}
+            )
+            assert self.log_color_switch is not None
+            self.log_color_switch.value = config.console_color
+            assert self.show_log_level_switch is not None
+            self.show_log_level_switch.value = config.console_show_level
+            assert self.show_log_time_switch is not None
+            self.show_log_time_switch.value = config.console_show_date
+            assert self.check_beta_switch is not None
+            self.check_beta_switch.value = config.check_beta_versions
+
+        self.gui_loop.call_soon_threadsafe(config_update)
 
     def _show_view(self, name: str, is_compact_window: bool = True):
         if self.active_view_name == name:
@@ -722,19 +718,6 @@ class SharlyChessServerToga(toga.App):
         else:
             self.log_settings_container.add(self.log_settings)
             self.log_settings_btn.style = self.active_button_style
-
-    def _toggle_recover_box(self, widget):
-        assert self.settings_view is not None
-        assert self.recover_box is not None
-        assert self.recover_button is not None
-        assert isinstance(self.main_window, toga.Window)
-        if self.recover_box in self.settings_view.children:
-            self.settings_view.remove(self.recover_box)
-            self.recover_button.style = self.button_style
-            self.main_window.size = self.compact_size
-        else:
-            self.settings_view.add(self.recover_box)
-            self.recover_button.style = self.active_button_style
 
     @staticmethod
     def _shorten_path(path: str, max_len: int = 65) -> str:
@@ -901,63 +884,46 @@ class SharlyChessServerToga(toga.App):
             return
         latest = VersionUpdater.LATEST_VERSION
         assert latest is not None
-        # On a macOS build, Sparkle owns the confirm / download / verify /
-        # install / relaunch flow. Elsewhere (and in dev) fall back to the
-        # legacy external updater.
-        if sparkle_updater.check_for_update(latest):
+        if sys.platform == 'darwin':
+            # Sparkle has its own dialog asking the user
+            # if they want to install the new version or not
+            await self._run_sparkle_updater(latest)
             return
+
+        title = _('A new version is available!')
         message = _('Sharly Chess {latest} is available, you have {current}.').format(
             latest=latest, current=SHARLY_CHESS_VERSION
         )
-        message += '\n' + _('Do you want to install it now?')
-        question_dialog = toga.QuestionDialog(
-            title=_('A new version is available!'), message=message
-        )
-        if not await self.main_window.dialog(question_dialog):
+        if sys.platform == 'win32':
+            message += '\n' + _('Do you want to install it now?')
+            question_dialog = toga.QuestionDialog(title, message)
+            if await self.main_window.dialog(question_dialog):
+                self.quit_app(post_exit_task=WindowsUpdater.run)
             return
-        await self._exit_and_run_version_updater(latest)
+        message += '\n' + _('Updates are handled using Flatpak.')
+        await self.main_window.dialog(toga.InfoDialog(title, message))
 
-    async def _show_recovery_dialog(self, widget, version: Version):
+    async def _run_sparkle_updater(self, version: Version):
+        """Runs the Sparkle updater, ask a retry if it fails."""
         assert isinstance(self.main_window, toga.Window)
-        if DEVEL_ENV:
-            error_dialog = toga.ErrorDialog(
-                title='Sharly Chess Error',
-                message=(
-                    'Sharly Chess is currently running in development '
-                    'and does not support version recovery.' + str(version)
-                ),
+        while True:
+            if SparkleUpdater.check_for_update(version):
+                return
+            title = _('Sparkle update error')
+            message = _(
+                'A new version of Sharly Chess is available, '
+                'but the updater tool (Sparkle) failed.'
             )
-            await self.main_window.dialog(error_dialog)
-            return
-        message = _(
-            'Warning: recovering a previous version is irreversible, '
-            'all the data you have modified since then will be lost.'
-        )
-        message += '\n' + _(
-            'Do you confirm wanting to recover version {version}?'
-        ).format(version=version)
-        question_dialog = toga.QuestionDialog(
-            title=_('Recover a previous version'), message=message
-        )
-        if not await self.main_window.dialog(question_dialog):
-            return
-        await self._exit_and_run_version_updater(version)
-
-    async def _exit_and_run_version_updater(self, version: Version):
-        assert isinstance(self.main_window, toga.Window)
-        updater_path = VersionUpdater.version_updater_path()
-        if not updater_path.exists():
-            error_dialog = toga.ErrorDialog(
-                title=_('Sharly Chess Error'),
-                message=_(
-                    'The updater file is missing at [{path}].\n'
-                    'The application needs to be re-installed manually.'
-                ).format(path=updater_path),
+            message += ' ' + _(
+                'Please consider contacting support, '
+                'or installing the new version manually.'
             )
-            await self.main_window.dialog(error_dialog)
-        self.quit_app(
-            post_exit_task=partial(VersionUpdater.run_version_updater, version=version)
-        )
+            if not SparkleUpdater.is_retryable():
+                await self.main_window.dialog(toga.ErrorDialog(title, message))
+                return
+            message += '\n\n' + _('Do you want to try again?')
+            if not (await self.main_window.dialog(toga.QuestionDialog(title, message))):
+                return
 
     def on_running(self):
         # Logging handler
@@ -1003,34 +969,6 @@ class SharlyChessServerToga(toga.App):
                 ],
             )
         )
-        if DataRecovery.RECOVERABLE_VERSIONS:
-            assert self.settings_view is not None
-            assert self.recover_button is not None
-            assert self.recover_box is not None
-            self.settings_view.add(
-                toga.Box(children=[self.recover_button]),
-            )
-            self.recover_box.add(
-                toga.Label(
-                    _('Warning: recovering a version is irreversible!'),
-                    color='red',
-                    text_align='center',
-                    font_weight='bold',
-                ),
-                toga.Box(
-                    children=[
-                        toga.Button(
-                            _('Recover version {version}').format(version=version),
-                            on_press=partial(
-                                self._show_recovery_dialog, version=version
-                            ),
-                        )
-                        for version in DataRecovery.RECOVERABLE_VERSIONS
-                    ],
-                    gap=10,
-                    align_items='center',
-                ),
-            )
 
         for button in self.menu_buttons:
             button.enabled = True
@@ -1305,75 +1243,6 @@ class SharlyChessServerToga(toga.App):
             return bool(fut.result())
         except Exception:
             return yes_is_default
-
-    def handle_interactive_choices(
-        self, title: str, question: str, choices: dict[str, str], default: str
-    ) -> str | None:
-        """
-        Blocking wrapper callable from worker threads.
-        Shows a Toga dialog on the UI loop and returns the selected KEY (or None).
-        """
-
-        async def _ask_on_ui() -> str | None:
-            # Build a transient window as a custom dialog
-            win = toga.Window(title=title, closable=False, size=(100, 100))
-
-            # Map keys <-> display texts
-            keys = list(choices.keys())
-            texts = [choices[k] for k in keys]
-
-            # Selection widget (dropdown)
-            sel = toga.Selection(items=texts, style=Pack(flex=1))
-
-            # Set default if present
-            if default in choices:
-                sel.value = choices[default]
-
-            # Result future to complete when user acts
-            loop = asyncio.get_running_loop()
-            finished: asyncio.Future[str | None] = loop.create_future()
-
-            def do_ok(widget, **kwargs):
-                try:
-                    val_text = sel.value
-                    # Map back to key
-                    selected_key = None
-                    if val_text is not None:
-                        assert isinstance(val_text, str)
-                        try:
-                            idx = texts.index(val_text)
-                            selected_key = keys[idx]
-                        except ValueError:
-                            selected_key = None
-                    if not finished.done():
-                        finished.set_result(selected_key)
-                finally:
-                    win.close()
-
-            # Layout
-            question_lbl = toga.Label(question, style=Pack(margin_bottom=10))
-            btn_ok = toga.Button('OK', on_press=do_ok, style=Pack(margin_top=6))
-
-            btn_row = toga.Box(
-                children=[btn_ok],
-                style=Pack(direction=ROW, width=500, align_items='end'),
-            )
-            content = toga.Box(
-                children=[question_lbl, sel, btn_row],
-                style=Pack(direction=COLUMN, width=400, margin=10),
-            )
-            win.content = content
-
-            # Show and wait
-            win.show()
-            return await finished
-
-        # Schedule on UI loop and block here (worker thread)
-        fut = asyncio.run_coroutine_threadsafe(_ask_on_ui(), self.loop)
-        try:
-            return fut.result()
-        except Exception:
-            return None
 
     def handle_interactive_message(self, message: str) -> bool:
         """Blocking Yes/No prompt callable from background threads."""

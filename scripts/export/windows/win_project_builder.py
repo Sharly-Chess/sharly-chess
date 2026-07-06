@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import sys
 from argparse import ArgumentParser, Namespace
 from logging import Logger
@@ -7,8 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from common import SHARLY_CHESS_VERSION
+from common.installation_checker import InstallationChecker
 from common.logger import get_logger
-from common.tool_installer import BbpPairingsInstaller, PapiConverterInstaller
 from scripts.export.project_builder import ProjectBuilder
 
 logger: Logger = get_logger()
@@ -94,9 +95,14 @@ class WinProjectBuilder(ProjectBuilder):
                 return False
         return True
 
-    def build_control_file(self) -> bool:
-        logger.info('Creating control file [%s]...', self.control_file)
-        self.control_file.parent.mkdir(parents=True, exist_ok=True)
+    def _generate_control_files(self):
+        tmp_dir = self.project_dir / 'tmp'
+        tmp_dir.mkdir(exist_ok=True, parents=True)
+        blocker = tmp_dir / '.direct-download-blocker'
+        logger.info('Adding direct download blocker [%s]...', blocker)
+        blocker.touch()
+        control_file = tmp_dir / 'control_file.json'
+        logger.info('Creating control file [%s]...', control_file)
         control_data: dict[str, Any] = {
             'version': str(SHARLY_CHESS_VERSION),
             'file_paths': [],
@@ -107,14 +113,15 @@ class WinProjectBuilder(ProjectBuilder):
             for filename in file_names:
                 file_path: Path = Path(folder_name, filename)
                 control_data['file_paths'].append(str(file_path))
-        self.control_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.control_file, 'w', encoding='utf-8') as file:
-            json.dump(
-                control_data,
-                file,
-            )
         os.chdir(cwd)
-        return True
+        with open(control_file, 'w', encoding='utf-8') as file:
+            json.dump(control_data, file)
+
+    def _rename_executable_file(self):
+        shutil.move(
+            self.project_dir / f'{self.basename}.exe',
+            self.project_dir / f'{self.project_name}.exe',
+        )
 
     @staticmethod
     def _compact_command_output(
@@ -237,11 +244,7 @@ class WinProjectBuilder(ProjectBuilder):
         return True
 
     def _sign_files(self) -> bool:
-        return all(
-            self._sign_file(file)
-            for file in [
-                self.exe,
-            ]
-            + BbpPairingsInstaller().files_to_sign
-            + PapiConverterInstaller().files_to_sign
-        )
+        files = [self.exe]
+        for exe_installer in InstallationChecker.executable_installers:
+            files += exe_installer.files_to_sign
+        return all(self._sign_file(file) for file in files)

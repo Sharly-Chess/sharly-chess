@@ -136,6 +136,7 @@ EXAMPLE_PLACE_CARDS_DIR = EXAMPLES_DIR / 'place_cards'
 # Embedded paths
 WEB_TEMPLATES_DIR = BASE_DIR / 'src' / 'web'
 EMBEDDED_PLACE_CARDS_DIR = WEB_TEMPLATES_DIR / 'admin' / 'print' / 'place_cards'
+DEFAULT_DATA_DIR = BASE_DIR / 'default-data'
 
 
 # On Flatpak, large downloads must land in TMP_DIR (within the sandbox's writable area)

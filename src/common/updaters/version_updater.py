@@ -134,23 +134,6 @@ class VersionUpdater:
         """Name of the asset to download in order to install a new version."""
         return f'sharly-chess-{version}-{cls._get_asset_suffix()}'
 
-    @classmethod
-    def appcast_url(cls, version: Version) -> str:
-        """URL of the per-release Sparkle appcast asset for *version*.
-
-        Each release attaches its own ``appcast.xml`` (signed in CI); the macOS
-        Sparkle updater is pointed at this at runtime instead of a static feed.
-
-        For local testing, ``SHARLY_CHESS_APPCAST_URL`` overrides the URL (e.g.
-        a ``http://localhost:8000/appcast.xml`` served from a folder), so the
-        full Sparkle flow can be exercised without an online release.
-        """
-        override = os.environ.get('SHARLY_CHESS_APPCAST_URL')
-        if override:
-            return override
-        base_url = 'https://github.com/Sharly-Chess/sharly-chess/releases/download'
-        return f'{base_url}/{version}/appcast.xml'
-
     @staticmethod
     def version_updater_path() -> Path:
         ext = 'exe' if sys.platform == 'win32' else 'app'

@@ -6,7 +6,7 @@ import pytest
 from packaging.version import Version, InvalidVersion
 
 from common.logger import get_logger
-from common.version_updater import VersionUpdater
+from common.updaters.version_updater import VersionUpdater
 from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase

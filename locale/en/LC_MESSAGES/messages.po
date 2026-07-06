@@ -1,6 +1,3 @@
-msgid " [{default_choice}: {default_value}]: "
-msgstr ""
-
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr ""
 
@@ -574,10 +571,13 @@ msgstr ""
 msgid "A minimum and a maximum rating are expected."
 msgstr ""
 
-msgid "A number is expected."
+msgid "A new version is available!"
 msgstr ""
 
-msgid "A new version is available!"
+msgid "A new version of Sharly Chess is available, but the updater tool (Sparkle) failed."
+msgstr ""
+
+msgid "A number is expected."
 msgstr ""
 
 msgid "A player with {column}=[{value}] already exists in the event."
@@ -2050,9 +2050,6 @@ msgstr ""
 msgid "DD/MM/YYYY"
 msgstr ""
 
-msgid "DMG does not contain exactly one folder as expected."
-msgstr ""
-
 msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
 msgstr "DOB"
 
@@ -2305,9 +2302,6 @@ msgstr ""
 msgid "Director:"
 msgstr ""
 
-msgid "Directory [{folder}] already exists."
-msgstr ""
-
 msgid "Disabled"
 msgstr ""
 
@@ -2394,19 +2388,16 @@ msgstr ""
 msgid "Do not pair for round #%(round)d"
 msgstr ""
 
-msgid "Do not recover"
-msgstr ""
-
 msgid "Do not use this order as ranking."
-msgstr ""
-
-msgid "Do you confirm wanting to recover version {version}?"
 msgstr ""
 
 msgid "Do you want to install example event databases"
 msgstr ""
 
 msgid "Do you want to install it now?"
+msgstr ""
+
+msgid "Do you want to try again?"
 msgstr ""
 
 msgid "Document [{document}] has been generated in another tab."
@@ -2443,9 +2434,6 @@ msgid "Download the players matching the search into a file."
 msgstr ""
 
 msgid "Download tournament fees"
-msgstr ""
-
-msgid "Downloading failed with code [{code}]."
 msgstr ""
 
 msgid "Drag players between the board slots and the substitutes bench. Empty slots become holes in the lineup."
@@ -2980,12 +2968,6 @@ msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
 msgid "FORFEIT"
-msgstr ""
-
-msgid "Failed to process DMG file: [{ex}]."
-msgstr ""
-
-msgid "Failed to read [{download_url}]: [{ex}]."
 msgstr ""
 
 msgid "Faroe Islands"
@@ -4633,9 +4615,6 @@ msgstr ""
 msgid "No public screens"
 msgstr ""
 
-msgid "No response from GitHub."
-msgstr ""
-
 msgid "No result"
 msgstr ""
 
@@ -5536,22 +5515,19 @@ msgstr ""
 msgid "Please choose the document."
 msgstr ""
 
-msgid "Please choose the release to recover: "
-msgstr ""
-
 msgid "Please choose the template."
 msgstr ""
 
 msgid "Please choose the tournament."
 msgstr ""
 
+msgid "Please consider contacting support, or installing the new version manually."
+msgstr ""
+
 msgid "Please enter the image URL."
 msgstr ""
 
 msgid "Please enter the name of the event."
-msgstr ""
-
-msgid "Please launch the new version."
 msgstr ""
 
 msgid "Please select a type of criterion."
@@ -5740,9 +5716,6 @@ msgstr ""
 msgid "Puerto Rico"
 msgstr ""
 
-msgid "Q *** THE LETTER TO ANSWER QUIT"
-msgstr "Q"
-
 msgid "QR Code"
 msgstr ""
 
@@ -5876,12 +5849,6 @@ msgstr ""
 msgid "Record"
 msgstr ""
 
-msgid "Recover a previous version"
-msgstr ""
-
-msgid "Recover version {version}"
-msgstr ""
-
 msgid "Reference to unknown board [{board_id}]."
 msgstr ""
 
@@ -5898,9 +5865,6 @@ msgid "Refresh this page."
 msgstr ""
 
 msgid "Regular event"
-msgstr ""
-
-msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
 msgid "Reload the page"
@@ -6342,10 +6306,10 @@ msgstr ""
 msgid "Search for updates"
 msgstr ""
 
-msgid "Searching for updates..."
+msgid "Search players…"
 msgstr ""
 
-msgid "Search players…"
+msgid "Searching for updates..."
 msgstr ""
 
 msgid "Searching…"
@@ -6497,9 +6461,6 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
-msgid "Sharly Chess Error"
-msgstr ""
-
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
@@ -6599,9 +6560,6 @@ msgstr ""
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr ""
 
-msgid "Some files are missing."
-msgstr ""
-
 #, python-format
 msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
 msgstr ""
@@ -6667,6 +6625,9 @@ msgid "Space-separated list of numbers. One prize is created per value in the li
 msgstr ""
 
 msgid "Spain"
+msgstr ""
+
+msgid "Sparkle update error"
 msgstr ""
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
@@ -7335,11 +7296,6 @@ msgstr ""
 msgid "The type of criterion used to filter the players."
 msgstr ""
 
-msgid ""
-"The updater file is missing at [{path}].\n"
-"The application needs to be re-installed manually."
-msgstr ""
-
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
@@ -7902,9 +7858,6 @@ msgstr "Undefined"
 msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
 
-msgid "Unexpected error during installation: [{ex}]."
-msgstr ""
-
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr ""
 
@@ -8059,6 +8012,9 @@ msgid "Update the players' information from an external data source."
 msgstr ""
 
 msgid "Update tournaments"
+msgstr ""
+
+msgid "Updates are handled using Flatpak."
 msgstr ""
 
 msgid "Updating"
@@ -8255,12 +8211,6 @@ msgid "Warning: over half of the players are absent!"
 msgstr ""
 
 msgid "Warning: potential data loss"
-msgstr ""
-
-msgid "Warning: recovering a previous version is irreversible, all the data you have modified since then will be lost."
-msgstr ""
-
-msgid "Warning: recovering a version is irreversible!"
 msgstr ""
 
 #, python-format
@@ -8908,11 +8858,6 @@ msgstr ""
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "{count} event"
-msgid_plural "{count} events"
 msgstr[0] ""
 msgstr[1] ""
 

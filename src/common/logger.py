@@ -220,36 +220,6 @@ def input_interactive(string: str) -> str:
     return result
 
 
-def input_interactive_choices(
-    title: str, question: str, choices: dict[str, str], default: str
-) -> str | None:
-    """Prints the message to stdout with color, and returns the user input.
-    If the message could not be Unicode decoded, raises KeyboardInterrupt."""
-    from common.i18n import _
-
-    __flush_logger()
-
-    if GUILogHandler.instance:
-        return GUILogHandler.instance.gui.handle_interactive_choices(
-            title, question, choices, default
-        )
-
-    question = question + _(' [{default_choice}: {default_value}]: ').format(
-        default_choice=default,
-        default_value=choices[default],
-    )
-
-    print_interactive_input(question)
-    for choice, text in choices.items():
-        print_interactive_input(f'  - [{choice}] {text}')
-
-    try:
-        result = input().strip().upper()
-    except UnicodeDecodeError as exc:
-        raise KeyboardInterrupt() from exc
-    return result
-
-
 def input_interactive_yn(
     title: str, question: str, yes_is_default: bool = False
 ) -> bool:

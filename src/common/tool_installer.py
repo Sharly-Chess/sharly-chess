@@ -258,9 +258,9 @@ class WebLibFileInstaller(WebLibInstaller):
 
 @dataclass
 class SystemHandler:
-    executable_dir: str
     executable_filename: str
-    archive_filename: str
+    archive_filename: str = ''
+    executable_dir: str | None = None
 
 
 class ExecutableInstaller(ToolInstaller, ABC):
@@ -289,13 +289,11 @@ class ExecutableInstaller(ToolInstaller, ABC):
 
     @property
     def executable_dir(self) -> Path:
-        return (
-            BASE_DIR
-            / 'tools'
-            / self.name
-            / f'v{self.version}'
-            / self.system_handler.executable_dir
-        )
+        exe_dir = self.system_handler.executable_dir
+        version_dir = BASE_DIR / 'tools' / self.name / f'v{self.version}'
+        if exe_dir:
+            return version_dir / exe_dir
+        return version_dir
 
     @property
     def install_dir(self) -> Path:
@@ -489,4 +487,31 @@ class PapiConverterInstaller(ExecutableInstaller):
         archive_path: Path = self.install_dir / archive_filename
         self.download_file(build_url, archive_path)
         self.install_archive_and_delete(archive_path, self.install_dir)
+        return self.is_installed
+
+
+class SCWinUpdaterInstaller(ExecutableInstaller):
+    @property
+    def _name(self) -> str:
+        return 'sc-win-updater'
+
+    @property
+    def _version(self) -> Version:
+        return Version('0.1.5')
+
+    @property
+    def system_handler(self) -> SystemHandler:
+        return SystemHandler(f'{self._name}-{self.version}.exe')
+
+    @property
+    def install_dir(self) -> Path:
+        return self.executable_dir
+
+    def install(self) -> bool:
+        build_url: str = (
+            'https://github.com/Sharly-Chess/sc-win-updater/releases/'
+            f'download/v{self.version}/{self.executable_path.name}'
+        )
+        self.install_dir.mkdir(parents=True, exist_ok=True)
+        self.download_file(build_url, self.executable_path)
         return self.is_installed

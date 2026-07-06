@@ -1,6 +1,5 @@
 import re
 import shutil
-from collections.abc import Collection
 from pathlib import Path
 
 from packaging.version import Version, InvalidVersion
@@ -12,13 +11,14 @@ from common import (
     CUSTOM_DIR,
     DEVEL_ENV,
     DATA_DIR,
-    BASE_DIR,
     SHARLY_CHESS_VERSION,
     IS_NEW_INSTALL,
     EXAMPLE_EVENTS_DIR,
+    DEFAULT_DATA_DIR,
+    FLATPAK_ID,
 )
-from common.i18n import _, ngettext
-from common.logger import get_logger, input_interactive_yn, input_interactive_choices
+from common.i18n import _
+from common.logger import get_logger, input_interactive_yn
 from common.sharly_chess_config import SharlyChessConfig
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
@@ -26,6 +26,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from plugins.manager import plugin_manager
 from utils.enum import Extension
+from utils.program_variables import ProgramVar
 
 logger = get_logger()
 
@@ -36,25 +37,59 @@ class DataRecovery:
     @classmethod
     def setup(cls):
         """Setup the Data recovery class. Recovers a version if necessary."""
-        path_by_version = cls._get_installed_versions()
-        versions = path_by_version.keys()
-        is_legacy_install = any(version.major < 5 for version in versions)
         recovered = False
-        if IS_NEW_INSTALL and path_by_version:
-            if is_legacy_install:
-                version = cls._choose_legacy_version_to_recover(path_by_version)
-                if version:
-                    cls._recover_legacy_version(version, path_by_version[version])
-                    recovered = True
-            else:
-                for version in versions:
-                    if version < SHARLY_CHESS_VERSION:
-                        cls._recover_version(version, path_by_version[version])
+
+        stored_version: Version | None = None
+        if stored_val := ProgramVar.VERSION.read_value():
+            stored_version = Version(stored_val)
+        if IS_NEW_INSTALL:
+            if stored_version and stored_version != SHARLY_CHESS_VERSION:
+                # Version has been updated from a previous version --> recover
+                recovered = cls._recover_version(stored_version)
+
+            if not recovered:
+                legacy_version_val = ProgramVar.VERSION.read_value()
+                legacy_dir_val = ProgramVar.LEGACY_VERSION_DIR.read_value()
+                if legacy_dir_val and legacy_version_val:
+                    legacy_dir = Path(legacy_dir_val)
+                    if legacy_dir.exists():
+                        cls._recover_legacy_version(
+                            Version(legacy_version_val), legacy_dir
+                        )
                         recovered = True
-                        break
+                    else:
+                        logger.warning(
+                            'Directory [%s] to recover is not found (canceled)',
+                            legacy_dir.absolute(),
+                        )
+                    ProgramVar.VERSION.clear_value()
+                    ProgramVar.LEGACY_VERSION_DIR.clear_value()
+                elif FLATPAK_ID:
+                    # Flatpak can update directly to version 5 without
+                    # passing by versions setting the legacy variables.
+                    # Identify and recover the latest version in this case.
+                    versions = cls._get_installed_versions()
+                    if versions:
+                        version = versions[0]
+                        cls._recover_legacy_version(
+                            version, cls._get_version_dir(version)
+                        )
+
+            # Copy all the default data files
+            for file in DEFAULT_DATA_DIR.glob('**/*'):
+                if not file.is_file():
+                    continue
+                dst = DATA_DIR / file.relative_to(DEFAULT_DATA_DIR)
+                dst.parent.mkdir(exist_ok=True)
+                shutil.copy(file, dst)
+
+        if stored_version != SHARLY_CHESS_VERSION:
+            ProgramVar.VERSION.write_value(str(SHARLY_CHESS_VERSION))
 
         if DEVEL_ENV and IS_NEW_INSTALL and not recovered:
-            if input_interactive_yn(
+            if (Path() / 'events' / '.scc').exists():
+                cls._recover_legacy_version(Version('4dev1'), Path())
+            elif input_interactive_yn(
                 title=_('Example databases'),
                 question=_('Do you want to install example event databases'),
                 yes_is_default=True,
@@ -63,88 +98,89 @@ class DataRecovery:
                     shutil.copy(file, EVENTS_DIR / file.name)
 
         cls._recover_legacy_event_db()
-        cls.RECOVERABLE_VERSIONS = cls.get_recoverable_versions(versions)
-        if not is_legacy_install:
-            for version in versions:
-                if version not in cls.RECOVERABLE_VERSIONS:
-                    shutil.rmtree(path_by_version[version])
+        cls._clean_unsupported_version()
 
     @staticmethod
-    def _get_installed_versions() -> dict[Version, Path]:
-        path_by_version: dict[Version, Path] = {}
+    def _get_version_dir(version: Version) -> Path:
+        if FLATPAK_ID and version.major < 5:
+            return DATA_DIR / f'sharly-chess-{version}'
+        return DATA_DIR / f'v{version}'
+
+    @staticmethod
+    def _get_installed_versions() -> list[Version]:
+        versions: list[Version] = []
         for version_dir in DATA_DIR.glob('*'):
             if not version_dir.is_dir() or not re.match(
                 r'^v(\d+\.\d+\.\d+).*$', version_dir.name
             ):
                 continue
             try:
-                version = Version(version_dir.name[1:])
+                version_str = version_dir.name[1:]
+                version = Version(version_str)
                 if version.major < 5:
                     logger.warning(
                         'version dir [%s] is a legacy version (ignored)',
                         version_dir.absolute(),
                     )
+                elif version_str != str(version):
+                    # Only reversible version names are taken into account
+                    raise InvalidVersion()
                 elif version != SHARLY_CHESS_VERSION:
-                    path_by_version[version] = version_dir
+                    versions.append(version)
             except InvalidVersion:
                 logger.warning('invalid version dir [%s]', version_dir.absolute())
-        if not path_by_version:
-            # If none-legacy data found, skip the legacy recovery
-            for version_dir in BASE_DIR.parent.glob('*'):
-                if not version_dir.is_dir() or version_dir.samefile(Path('.')):
-                    # Only inspect directories not matching the current directory
-                    continue
+        if FLATPAK_ID:
+            for version_dir in DATA_DIR.glob('*'):
                 if matches := re.match(
-                    r'^(?:papi-web|sharly-chess)-(\d+\.\d+\.\d+(?:a\d+|b\d+|rc\d+)?)(?:-windows)?$',
+                    r'^sharly-chess-(\d+\.\d+\.\d+(?:a\d+|b\d+|rc\d+)?)$',
                     version_dir.name,
                 ):
-                    version = Version(matches.group(1))
-                else:
-                    continue
-                if version < Version('2.4.0'):
-                    logger.debug('Version [%s] : too old, ignored.', version)
-                elif version.major >= 5:
-                    logger.debug('Version [%s] : too recent, ignored.', version)
-                else:
-                    path_by_version[version] = version_dir
-        return {
-            version: path_by_version[version]
-            for version in sorted(path_by_version, reverse=True)
-        }
+                    versions.append(Version(matches.group(1)))
+
+        return sorted(versions, reverse=True)
 
     @classmethod
-    def get_recoverable_versions(cls, versions: Collection[Version]) -> list[Version]:
-        beta: Version | None = None
-        minor: Version | None = None
-        patch: Version | None = None
+    def _clean_unsupported_version(cls):
+        """supported versions are 2 minor releases prior to the current version.
+        All the data of versions prior to that can be deleted.
+        At least one previous version should be kept."""
+        versions = cls._get_installed_versions()
         current = SHARLY_CHESS_VERSION
-        recoverable: list[Version] = []
-        for version in versions:
-            if version >= current:
-                continue
-            if version.is_prerelease:
-                if not beta and not patch:
-                    beta = version
-                    recoverable.append(version)
-                continue
-            matches_minor = (version.major, version.minor) == (
-                current.major,
-                current.minor,
+        max_previous = next(
+            (version for version in versions if version < current),
+            None,
+        )
+        if not max_previous:
+            return
+        min_version = Version(f'{current.major}.{max(current.minor - 2, 0)}.0')
+        if current.minor < 2:
+            last_major_minor = next(
+                (
+                    version.minor
+                    for version in versions
+                    if version.major == current.major - 1
+                ),
+                None,
             )
-            if not patch and matches_minor:
-                patch = version
-                recoverable.append(version)
-            elif not minor and not matches_minor:
-                minor = version
-                recoverable.append(version)
-        return recoverable
+            if last_major_minor is not None:
+                sup_minor_count = max(2 - current.minor, 0)
+                last_sup_minor = min(last_major_minor - sup_minor_count, 0)
+                min_version = Version(f'{current.major - 1}.{last_sup_minor}.0')
+        if max_previous > min_version:
+            min_version = max_previous
+
+        for version in versions:
+            if version >= min_version:
+                continue
+            logger.info('Data of version [%s] removed (no longer supported)', version)
+
+            shutil.rmtree(cls._get_version_dir(version))
 
     @classmethod
-    def _clean_non_recoverable_data(cls, path_by_version: dict[Version, Path]):
-        pass
-
-    @classmethod
-    def _recover_version(cls, version: Version, version_dir: Path):
+    def _recover_version(cls, version: Version) -> bool:
+        version_dir = cls._get_version_dir(version)
+        if not version_dir.exists():
+            return False
         logger.info('Recovering version [%s]...', version)
         cls._recover_config_file(version_dir / CONFIG_FILE.name)
         for file in (version_dir / EVENTS_DIR.name).glob('*'):
@@ -152,6 +188,7 @@ class DataRecovery:
                 continue
             shutil.copy(file, EVENTS_DIR / file.name)
             logger.debug('- Event [%s] recovered', file.stem)
+        return True
 
     @classmethod
     def _recover_config_file(cls, old_config_file: Path):
@@ -159,10 +196,9 @@ class DataRecovery:
 
         if not old_config_file.is_file():
             return
-
+        logger.info('Recovering configuration file...')
         # copy the configuration database to its new destination
         shutil.copy(old_config_file, CONFIG_FILE)
-        logger.debug('Configuration file recovered')
         ConfigDatabase.setup()
         config = SharlyChessConfig()
         config.load_and_set_env()
@@ -183,84 +219,13 @@ class DataRecovery:
         )
 
     @classmethod
-    def _choose_legacy_version_to_recover(
-        cls, path_by_version: dict[Version, Path]
-    ) -> Version | None:
-        event_count_by_version: dict[Version, int] = {}
-        for version, version_dir in path_by_version.items():
-            event_count = len(cls._get_legacy_event_files(version_dir))
-            if event_count:
-                logger.debug('- Version [%s] (%d events)', version, event_count)
-                event_count_by_version[version] = event_count
-            else:
-                logger.debug('- Release [%s]: no events', version)
-
-        if not event_count_by_version:
-            return None
-
-        version_by_id: dict[int, Version] = {
-            id_: version for id_, version in enumerate(event_count_by_version, start=1)
-        }
-        options: dict[str, str] = {}
-        for id_, version in version_by_id.items():
-            event_count = event_count_by_version[version]
-            events_str = ngettext(
-                '{count} event', '{count} events', event_count
-            ).format(count=event_count)
-            options[str(id_)] = f'{version} ({events_str})'
-        quit_answer: str = _('Q *** THE LETTER TO ANSWER QUIT')
-        options[quit_answer] = _('Do not recover')
-
-        version_: Version | None = None
-        default_id = 1
-        while True:
-            choice = input_interactive_choices(
-                title=_('Recover a previous version'),
-                question=_('Please choose the release to recover: '),
-                choices=options,
-                default=str(default_id),
-            )
-            if choice is None:
-                continue
-            if choice == quit_answer:
-                break
-            if choice == '':
-                version_ = version_by_id[default_id]
-                break
-            try:
-                version_ = version_by_id.get(int(choice))
-                if version_:
-                    break
-            except ValueError:
-                pass
-        return version_
-
-    @classmethod
     def _recover_legacy_version(cls, version: Version, version_dir: Path):
         """Recover all the data of a previous version (configuration, events, Papi files and customization files)."""
 
+        logger.info('Recovering version %s at [%s]...', version, version_dir)
         old_events_dir = version_dir / EVENTS_DIR.name
-        old_config_file = old_events_dir / CONFIG_FILE.name
-        if old_config_file.is_file():
-            from gui.server_gui_toga import SharlyChessServerToga
-
-            logger.info('Recovering configuration from release [%s]...', version)
-            # copy the configuration database to its new destination
-            shutil.copy(old_config_file, CONFIG_FILE)
-            ConfigDatabase.setup()
-            config = SharlyChessConfig()
-            config.load_and_set_env()
-            if SharlyChessServerToga.instance is not None:
-                logger.debug('Applying recovered configuration to the Toga app...')
-                SharlyChessServerToga.instance.update_from_sharly_chess_config()
-            plugin_manager.reload_register()
-        else:
-            logger.debug(
-                'Can not recover configuration from version [%s] (file [%s] not found).',
-                version,
-                old_config_file,
-            )
-        logger.info('Recovering events from release [%s]...', version)
+        cls._recover_config_file(old_events_dir / CONFIG_FILE.name)
+        logger.info('Recovering events...')
         for file in cls._get_legacy_event_files(version_dir):
             event_uniq_id: str = file.stem
             event_database = EventDatabase(event_uniq_id)
