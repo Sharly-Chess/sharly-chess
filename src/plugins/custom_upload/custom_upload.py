@@ -19,7 +19,6 @@ from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.tournament import Tournament
 
 
 class CustomUploadPlugin(Plugin):
@@ -75,15 +74,6 @@ class CustomUploadPlugin(Plugin):
     @hookimpl
     def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, CustomUploadTournamentPluginData
-
-    @hookimpl
-    def get_tournament_form_fields_template_and_data(
-        self, event: 'Event', tournament: 'Tournament | None'
-    ) -> tuple[str, dict[str, Any]]:
-        return (
-            '/custom_upload_tournament_form_fields.html',
-            {},
-        )
 
     # ---------------------------------------------------------------------------------
     # Upload

@@ -12,8 +12,8 @@
     </div>
     <div class="col-12 col-md-6">
         {{ admin_macros.text_input(
-            name='server_path',
-            label=_('Path in the server:'),
+            name='base_server_path',
+            label=_('Base path in the server:'),
             placeholder=_('E.g.: /tournaments/my_tournament'),
             hx_indicator="unset",
             data=data, errors=errors

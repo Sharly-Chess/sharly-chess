@@ -208,7 +208,7 @@ class CustomUploadTournamentPluginData(PluginData):
 @dataclass
 class CustomUploadEventPluginData(PluginData):
     ftp_host: str | None = None
-    server_path: str | None = None
+    base_server_path: str | None = None
     ftp_username: str | None = None
     ftp_password: str | None = None
 
@@ -216,7 +216,7 @@ class CustomUploadEventPluginData(PluginData):
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
             ftp_host=stored_value.get('ftp_host', None),
-            server_path=stored_value.get('server_path', None),
+            base_server_path=stored_value.get('base_server_path', None),
             ftp_username=stored_value.get('ftp_username', None),
             ftp_password=stored_value.get('ftp_password', None),
         )
@@ -230,7 +230,7 @@ class CustomUploadEventPluginData(PluginData):
     ) -> Self:
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
-            server_path=WebContext.form_data_to_str(data, 'server_path'),
+            base_server_path=WebContext.form_data_to_str(data, 'base_server_path'),
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
         )
@@ -238,7 +238,7 @@ class CustomUploadEventPluginData(PluginData):
     def to_stored_value(self) -> dict[str, Any]:
         return {
             'ftp_host': self.ftp_host,
-            'server_path': self.server_path,
+            'base_server_path': self.base_server_path,
             'ftp_username': self.ftp_username,
             'ftp_password': self.ftp_password,
         }
@@ -246,7 +246,7 @@ class CustomUploadEventPluginData(PluginData):
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         form_data = {
             'ftp_host': self.ftp_host,
-            'server_path': self.server_path,
+            'base_server_path': self.base_server_path,
             'ftp_username': self.ftp_username,
             'ftp_password': self.ftp_password,
         }

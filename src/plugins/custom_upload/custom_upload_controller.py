@@ -390,7 +390,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             context={
                 'data': {
                     'ftp_host': data['ftp_host'],
-                    'server_path': data['server_path'],
+                    'base_server_path': data['base_server_path'],
                     'ftp_username': data['ftp_username'],
                     'ftp_password': data['ftp_password'],
                 },
