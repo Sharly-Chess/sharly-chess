@@ -22,6 +22,7 @@ class WindowsUpdater:
         if config.check_beta_versions:
             params.append('-b')
         exe = str(cls.executable_path())
-        ctypes.windll.shell32.ShellExecuteW(
+        # Type error when not running on windows
+        ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
             None, 'runas', exe, ' '.join(params), None, 1
         )
