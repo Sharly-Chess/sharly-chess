@@ -296,6 +296,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 after='settle',
             )
 
+        # TODO: don't reset last_update_at, last_upload_attempt_at and upload_failure_id field values which will be absent from form data
         custom_upload_data = CustomUploadTournamentPluginData.from_form_data(data)
         tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
             custom_upload_data.to_stored_value()
