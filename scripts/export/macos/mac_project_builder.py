@@ -12,10 +12,6 @@ logger: Logger = get_logger()
 class MacProjectBuilder(ProjectBuilder):
     """MacOS specific class to export the project."""
 
-    def __init__(self):
-        # Do not clean the project folder to sign files with script build_and_notarize.sh
-        super().__init__(clean_project_on_exit=False)
-
     def hook_pyinstaller_additional_params(self) -> list[str]:
         return [
             '--windowed',  # Create macOS app bundle
