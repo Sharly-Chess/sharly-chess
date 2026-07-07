@@ -19,7 +19,14 @@
             </form>
         </div>
         <div class="modal-footer">
-            <!-- TODO : Add "Back" button rather than "Cancel" -->
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap me-auto"
+                hx-get="{{ url_for('custom-upload-modal', event_uniq_id=admin_event.uniq_id) }}"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"
