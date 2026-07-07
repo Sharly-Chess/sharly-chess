@@ -195,7 +195,6 @@ class CustomUploadUploader:
     ):
         failure_status = None
 
-        # TODO: extract FTP credentials from event plugin data instead
         host = event_plugin_data.ftp_host
         username = event_plugin_data.ftp_username
         password = event_plugin_data.ftp_password
