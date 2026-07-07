@@ -32,7 +32,7 @@
             </td>
             <td>
                 {% for document in documents_by_tournament[tournament.id] %}
-                    <div class="mb-2 text-center">
+                    <div class="text-center">
                         <span
                         class="badge rounded-pill message-debug"
                         style="height: 20px"
@@ -48,11 +48,11 @@
             <td class="text-center">
                 {{ plugin_data.relative_server_path or '-' }}
             </td>
-            <td class="d-flex gap-2 align-items-center">
+            <td class="text-center">
                 <span {{ macros.tooltip_attributes('', _('Edit configuration')) }}>
                     <button
                         type="button"
-                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                        class="btn btn-outline-primary btn-sm"
                         hx-get="{{ url_for('custom-upload-tournament-configuration-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
@@ -63,7 +63,7 @@
                 <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
                     <button
                         type="button"
-                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                        class="btn btn-outline-primary btn-sm"
                         hx-post="{{ url_for('custom-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="#upload-results"
                         hx-swap="outerHTML"
