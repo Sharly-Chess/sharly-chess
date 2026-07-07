@@ -46,7 +46,7 @@
                 {{ plugin_data.last_upload_at_str }}
             </td>
             <td class="text-center">
-                {{ plugin_data.relative_server_path }}
+                {{ plugin_data.relative_server_path or '-' }}
             </td>
             <td class="d-flex gap-2 align-items-center">
                 <span {{ macros.tooltip_attributes('', _('Edit configuration')) }}>
