@@ -94,18 +94,41 @@ jobs:
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
-      - name: Generate ZIP file
+      - name: Build project
         shell: powershell
         env:
           WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
         run: |
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}" --windows-signtool-cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+          python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}" --windows-signtool-cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+      - name: Compile Installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+        with:
+          path: windows-setup.iss
+          options: /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=0
+      - name: Compile Updater
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+        with:
+          path: windows-setup.iss
+          options: /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=1
+      - name: Sign Updater and installer
+        shell: powershell
+        env:
+          WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
+        run: |
+          python scripts/export/windows/signtool.py \
+          "export/Sharly Chess Setup ${{ steps.version.outputs.version }}.exe" \
+          "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe" \
+          --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
-            export/sharly-chess-${{ steps.version.outputs.version }}.zip
+            "export/Sharly Chess Setup ${{ steps.version.outputs.version }}.exe"
+            "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
+
+
 
   export-sharly-chess-linux:
     runs-on: ${{ matrix.runner }}
@@ -456,7 +479,7 @@ jobs:
 
           # Build the application first
           echo "Building application with preserved artifacts..."
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
+          python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}"
 
           # Run the build and notarize script
           echo "Running signing and notarization script..."
@@ -536,7 +559,8 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p release-files
           # Windows
-          cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
+          cp "export-windows/Sharly Chess Setup ${VERSION}.exe" "release-files/Sharly Chess Setup ${VERSION}.exe"
+          cp "export-windows/Sharly Chess Updater ${VERSION}.exe" "release-files/Sharly Chess Updater ${VERSION}.exe"
           # macOS
           cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
           # macOS Sparkle appcast (the app fetches this per-release to self-update)
@@ -552,7 +576,8 @@ jobs:
           draft: true
           prerelease: contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc')
           files: |
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
+            "release-files/Sharly Chess Setup ${{ steps.version.outputs.version }}.exe"
+            "release-files/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
             release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
             release-files/appcast.xml
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.flatpak

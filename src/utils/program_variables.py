@@ -34,6 +34,7 @@ class ProgramVar(StrEnum):
     VERSION = 'version'
     LEGACY_VERSION = 'legacy_version'
     LEGACY_VERSION_DIR = 'legacy_version_directory'
+    LOCALE = 'locale'
 
     @property
     def stored_name(self) -> str:

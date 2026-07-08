@@ -35,6 +35,7 @@ from utils.enum import Result, Extension
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
 from utils.date_time import DateFormatterManager
+from utils.program_variables import ProgramVar
 
 if TYPE_CHECKING:
     from data.player import Federation
@@ -144,6 +145,9 @@ class SharlyChessConfig(metaclass=Singleton):
     @staticmethod
     def _get_user_locale(system_user_locale: str | None) -> str:
         """Returns the locale to set in Sharly Chess."""
+        setup_locale = ProgramVar.LOCALE.read_value()
+        if setup_locale:
+            return setup_locale
         if system_user_locale is not None:
             user_locale: str = system_user_locale[:2]
             if user_locale in locales:

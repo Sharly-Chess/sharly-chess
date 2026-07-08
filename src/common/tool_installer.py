@@ -308,9 +308,7 @@ class ExecutableInstaller(ToolInstaller, ABC):
     @property
     def files_to_sign(self) -> list[Path]:
         """Returns the files that should be signed."""
-        extensions_to_sign: set[str] = {
-            'exe',
-        }
+        extensions_to_sign = {'exe'}
         files: list[Path] = []
         for extension in extensions_to_sign:
             files += [f for f in self.install_dir.glob(f'**/*.{extension}')]
@@ -487,31 +485,4 @@ class PapiConverterInstaller(ExecutableInstaller):
         archive_path: Path = self.install_dir / archive_filename
         self.download_file(build_url, archive_path)
         self.install_archive_and_delete(archive_path, self.install_dir)
-        return self.is_installed
-
-
-class SCWinUpdaterInstaller(ExecutableInstaller):
-    @property
-    def _name(self) -> str:
-        return 'sc-win-updater'
-
-    @property
-    def _version(self) -> Version:
-        return Version('0.1.5')
-
-    @property
-    def system_handler(self) -> SystemHandler:
-        return SystemHandler(f'{self._name}-{self.version}.exe')
-
-    @property
-    def install_dir(self) -> Path:
-        return self.executable_dir
-
-    def install(self) -> bool:
-        build_url: str = (
-            'https://github.com/Sharly-Chess/sc-win-updater/releases/'
-            f'download/v{self.version}/{self.executable_path.name}'
-        )
-        self.install_dir.mkdir(parents=True, exist_ok=True)
-        self.download_file(build_url, self.executable_path)
         return self.is_installed
