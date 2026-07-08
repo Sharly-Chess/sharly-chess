@@ -4,7 +4,6 @@ import sys
 import os
 import platform
 from datetime import datetime
-from json import JSONDecodeError
 from typing import Any
 
 from packaging.version import Version
@@ -44,7 +43,7 @@ class VersionUpdater:
         )
         try:
             return json.loads(data)
-        except JSONDecodeError as ex:
+        except json.JSONDecodeError as ex:
             logger.warning('Invalid response from GitHub: [%s].', ex)
             return None
 
