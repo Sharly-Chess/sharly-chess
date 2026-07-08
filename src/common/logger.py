@@ -255,16 +255,6 @@ def input_interactive_yn(
             return False
 
 
-def print_interactive_message(message: str) -> bool:
-    __flush_logger()
-
-    if GUILogHandler.instance:
-        return GUILogHandler.instance.gui.handle_interactive_message(message)
-
-    print(Fore.CYAN + Style.BRIGHT + message + Style.RESET_ALL, end='')
-    return True
-
-
 def quit_app() -> None:
     if GUILogHandler.instance:
         return GUILogHandler.instance.gui.quit_app()

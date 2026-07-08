@@ -17,7 +17,6 @@ from common import (
     DEFAULT_DATA_DIR,
     FLATPAK_ID,
 )
-from common.i18n import _
 from common.logger import get_logger, input_interactive_yn
 from common.sharly_chess_config import SharlyChessConfig
 from data.loader import EventLoader
@@ -90,8 +89,8 @@ class DataRecovery:
             if (Path() / 'events' / '.scc').exists():
                 cls._recover_legacy_version(Version('4dev1'), Path())
             elif input_interactive_yn(
-                title=_('Example databases'),
-                question=_('Do you want to install example event databases'),
+                title='Setup',
+                question='Do you want to install example event databases',
                 yes_is_default=True,
             ):
                 for file in EXAMPLE_EVENTS_DIR.glob(f'*.{Extension.EVENT_DB}'):

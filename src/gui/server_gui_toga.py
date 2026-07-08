@@ -870,6 +870,9 @@ class SharlyChessServerToga(toga.App):
 
         asyncio.run_coroutine_threadsafe(run_search(), self.gui_loop)
 
+    def _error_dialog_title(self):
+        return f'Sharly Chess - {_("Error")}'
+
     async def _show_update_dialog(self, widget):
         assert isinstance(self.main_window, toga.Window)
         latest = VersionUpdater.LATEST_VERSION
@@ -877,7 +880,7 @@ class SharlyChessServerToga(toga.App):
         if sys.platform == 'darwin':
             if DEVEL_ENV:
                 error_dialog = toga.ErrorDialog(
-                    title='Sharly Chess Error',
+                    title=self._error_dialog_title(),
                     message=(
                         'Sharly Chess is currently running in '
                         'development and does not support updating.'
@@ -902,7 +905,7 @@ class SharlyChessServerToga(toga.App):
             if WindowsUpdater.download():
                 self.quit_app(post_exit_task=WindowsUpdater.run)
                 return
-            title = _('Sharly Chess Error')
+            title = self._error_dialog_title()
             message = _(
                 'The update could not be downloaded. Consult the logs for more details.'
             )
@@ -917,7 +920,7 @@ class SharlyChessServerToga(toga.App):
         while True:
             if SparkleUpdater.check_for_update(version):
                 return
-            title = _('Sparkle update error')
+            title = self._error_dialog_title()
             message = _(
                 'A new version of Sharly Chess is available, '
                 'but the updater tool (Sparkle) failed.'
@@ -1242,7 +1245,7 @@ class SharlyChessServerToga(toga.App):
         async def _ask_on_ui():
             # Show the dialog on the main window; returns True/False
             assert isinstance(self.main_window, toga.Window)
-            dialog = toga.QuestionDialog(title=title, message=text)
+            dialog = toga.QuestionDialog(title=f'Sharly Chess - {title}', message=text)
             return await self.main_window.dialog(dialog)
 
         # Schedule the coroutine on the UI loop and wait for the result
@@ -1251,25 +1254,6 @@ class SharlyChessServerToga(toga.App):
             return bool(fut.result())
         except Exception:
             return yes_is_default
-
-    def handle_interactive_message(self, message: str) -> bool:
-        """Blocking Yes/No prompt callable from background threads."""
-
-        async def _message_on_ui():
-            # Show the dialog on the main window; returns True/False
-            assert isinstance(self.main_window, toga.Window)
-            dialog = toga.InfoDialog(
-                title='Sharly Chess',
-                message=message,
-            )
-            return await self.main_window.dialog(dialog)
-
-        # Schedule the coroutine on the UI loop and wait for the result
-        fut = asyncio.run_coroutine_threadsafe(_message_on_ui(), self.loop)
-        try:
-            return fut.result() is None
-        except Exception:
-            return False
 
     def quit_app(self, post_exit_task: Callable | None = None) -> None:
         loop = self.server_loop

@@ -2391,9 +2391,6 @@ msgstr "Ne pas apparier à la ronde n°%(round)d"
 msgid "Do not use this order as ranking."
 msgstr "Ne pas utiliser cet ordre comme classement."
 
-msgid "Do you want to install example event databases"
-msgstr "Voulez-vous installer des bases d'évènement d'exemple"
-
 msgid "Do you want to install it now?"
 msgstr "Voulez-vous l'installer maintenant ?"
 
@@ -2802,6 +2799,9 @@ msgstr "Guinée équatoriale"
 msgid "Eritrea"
 msgstr "Érythrée"
 
+msgid "Error"
+msgstr "Erreur"
+
 msgid "Error when updating database [{database}]."
 msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 
@@ -2852,9 +2852,6 @@ msgstr "Évènements"
 
 msgid "Events ({num})"
 msgstr "Évènements ({num})"
-
-msgid "Example databases"
-msgstr "Bases de données d'exemple"
 
 msgid "Exclude"
 msgstr "Exclure"
@@ -6629,9 +6626,6 @@ msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeu
 msgid "Spain"
 msgstr "Espagne"
 
-msgid "Sparkle update error"
-msgstr "Échec de mise à jour Sparkle"
-
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
 
@@ -7297,6 +7291,9 @@ msgstr "Les tournois sur lesquels la permission s'applique."
 
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
+
+msgid "The update could not be downloaded. Consult the logs for more details."
+msgstr "La mise à jour n'a pas pu être téléchargée. Consultez les logs pour plus d'informations."
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
@@ -8016,14 +8013,14 @@ msgstr "Mettre à jour les informations des joueur·euses à partir d'une source
 msgid "Update tournaments"
 msgstr "Modifier les tournois"
 
-msgid "Updates are handled using Flatpak."
-msgstr "Les mises à jour sont gérées par Flatpak."
-
 msgid "Updating"
 msgstr "Mise à jour"
 
 msgid "Uruguay"
 msgstr "Uruguay"
+
+msgid "Use Flatpak to handle updates."
+msgstr "Utilisez Flatpak pour gérer les mises à jour."
 
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
@@ -8967,47 +8964,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Invalid federation [{federation}]."
-#~ msgstr "Fédération [{federation}] non valide."
-
-#~ msgid "An update is available!"
-#~ msgstr ""
-
-#~ msgid "Beta version updates"
-#~ msgstr ""
-
-#~ msgid "Check for updates"
-#~ msgstr ""
-
-#~ msgid "Do you want to recover the data of release [{version}]"
-#~ msgstr "Voulez-vous récupérer les données de la version [{version}]"
-
-#~ msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
-#~ msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
-
-#~ msgid "Installation of release [{version}] failed, exiting."
-#~ msgstr "L'nstallation de la version [{version}] a échoué, abandon."
-
-#~ msgid "Latest version never checked"
-#~ msgstr ""
-
-#~ msgid "Server Setup"
-#~ msgstr "Configuration du serveur"
-
-#~ msgid "You have an unreleased version"
-#~ msgstr ""
-
-#~ msgid "last checked a minute ago"
-#~ msgid_plural "last checked {count} minutes ago"
-#~ msgstr[0] ""
-#~ msgstr[1] ""
-
-#~ msgid "last checked an hour ago"
-#~ msgid_plural "last checked {count} hours ago"
-#~ msgstr[0] ""
-#~ msgstr[1] ""
-
-#~ msgid "last checked just now"
-#~ msgstr ""
 
