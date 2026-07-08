@@ -3,17 +3,14 @@ import re
 import sys
 import os
 import platform
-import subprocess
 from datetime import datetime
 from json import JSONDecodeError
-from pathlib import Path
 from typing import Any
 
 from packaging.version import Version
 from requests import get
 from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
-from common import BASE_DIR
 from common.logger import (
     get_logger,
 )
@@ -100,7 +97,7 @@ class VersionUpdater:
 
         for version in sorted(assets_by_version, reverse=True):
             asset_names = [asset.get('name') for asset in assets_by_version[version]]
-            if cls._get_asset_name(version) not in asset_names:
+            if cls.get_asset_name(version) not in asset_names:
                 # Version not supported for direct update (possibly)
                 continue
             logger.info('Most recent release found: [%s].', str(version))
@@ -108,47 +105,32 @@ class VersionUpdater:
             break
         cls.LATEST_VERSION_SEARCHED_AT = datetime.now()
 
-    @staticmethod
-    def _get_asset_suffix() -> str:
-        match sys.platform:
-            case 'win32':
-                return 'windows.zip'
-            case 'darwin':
-                return 'macos.dmg'
-            case 'linux':
-                # Detect architecture for Linux
-                # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
-                build_arch = os.environ.get('BUILD_ARCH')
-                if build_arch:
-                    machine = build_arch.lower()
-                else:
-                    machine = platform.machine().lower()
-                if machine in ('aarch64', 'arm64'):
-                    return 'linux-arm64.flatpak'
-                elif machine in ('x86_64', 'amd64'):
-                    return 'linux-x86_64.flatpak'
-        raise NotImplementedError(f'{sys.platform=}')
-
     @classmethod
-    def _get_asset_name(cls, version: Version) -> str:
+    def get_asset_name(cls, version: Version) -> str:
         """Name of the asset to download in order to install a new version."""
-        return f'sharly-chess-{version}-{cls._get_asset_suffix()}'
 
-    @staticmethod
-    def version_updater_path() -> Path:
-        ext = 'exe' if sys.platform == 'win32' else 'app'
-        return BASE_DIR / 'bin' / f'updater-{UPDATER_VERSION}.{ext}'
+        if sys.platform == 'win32':
+            return f'Sharly Chess Updater {version}.exe'
+        if sys.platform == 'darwin':
+            suffix = 'macos.dmg'
+        else:
+            # Detect architecture for Linux
+            # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
+            build_arch = os.environ.get('BUILD_ARCH')
+            if build_arch:
+                machine = build_arch.lower()
+            else:
+                machine = platform.machine().lower()
+            if machine in ('aarch64', 'arm64'):
+                suffix = 'linux-arm64.flatpak'
+            elif machine in ('x86_64', 'amd64'):
+                suffix = 'linux-x86_64.flatpak'
+            else:
+                raise NotImplementedError(f'{machine=}')
+        return f'sharly-chess-{version}-{suffix}'
 
     @classmethod
-    def run_version_updater(cls, version: Version):
-        kwargs: dict[str, Any] = {}
-        if sys.platform == 'win32':
-            kwargs['creationflags'] = (
-                subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
-            )
-        else:
-            kwargs['start_new_session'] = True
-        exe_path = cls.version_updater_path()
-        args = [str(exe_path), '--version', str(version)]
-        restart_process = subprocess.Popen(args, **kwargs)
-        restart_process.wait()
+    def get_asset_url(cls, version: Version) -> str:
+        base_url = 'https://github.com/Sharly-Chess/sharly-chess/releases/download'
+        name = cls.get_asset_name(version)
+        return f'{base_url}/{name}/{version}'

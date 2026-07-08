@@ -1,5 +1,3 @@
-import sys
-
 from common.i18n import _
 from common.logger import print_interactive_error
 from common.sharly_chess_config import SharlyChessConfig
@@ -10,7 +8,6 @@ from common.tool_installer import (
     BbpPairingsInstaller,
     ExecutableInstaller,
     PapiConverterInstaller,
-    SCWinUpdaterInstaller,
 )
 
 
@@ -186,7 +183,7 @@ class InstallationChecker:
     executable_installers: list[ExecutableInstaller] = [
         BbpPairingsInstaller(),
         PapiConverterInstaller(),
-    ] + ([SCWinUpdaterInstaller()] if sys.platform == 'win32' else [])
+    ]
 
     @classmethod
     def check(cls) -> bool:

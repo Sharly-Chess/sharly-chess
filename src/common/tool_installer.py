@@ -486,30 +486,3 @@ class PapiConverterInstaller(ExecutableInstaller):
         self.download_file(build_url, archive_path)
         self.install_archive_and_delete(archive_path, self.install_dir)
         return self.is_installed
-
-
-class SCWinUpdaterInstaller(ExecutableInstaller):
-    @property
-    def _name(self) -> str:
-        return 'sc-win-updater'
-
-    @property
-    def _version(self) -> Version:
-        return Version('0.1.5')
-
-    @property
-    def system_handler(self) -> SystemHandler:
-        return SystemHandler(f'{self._name}-{self.version}.exe')
-
-    @property
-    def install_dir(self) -> Path:
-        return self.executable_dir
-
-    def install(self) -> bool:
-        build_url: str = (
-            'https://github.com/Sharly-Chess/sc-win-updater/releases/'
-            f'download/v{self.version}/{self.executable_path.name}'
-        )
-        self.install_dir.mkdir(parents=True, exist_ok=True)
-        self.download_file(build_url, self.executable_path)
-        return self.is_installed

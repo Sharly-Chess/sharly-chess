@@ -872,19 +872,19 @@ class SharlyChessServerToga(toga.App):
 
     async def _show_update_dialog(self, widget):
         assert isinstance(self.main_window, toga.Window)
-        if DEVEL_ENV:
-            error_dialog = toga.ErrorDialog(
-                title='Sharly Chess Error',
-                message=(
-                    'Sharly Chess is currently running in '
-                    'development and does not support updating.'
-                ),
-            )
-            await self.main_window.dialog(error_dialog)
-            return
         latest = VersionUpdater.LATEST_VERSION
         assert latest is not None
         if sys.platform == 'darwin':
+            if DEVEL_ENV:
+                error_dialog = toga.ErrorDialog(
+                    title='Sharly Chess Error',
+                    message=(
+                        'Sharly Chess is currently running in '
+                        'development and does not support updating.'
+                    ),
+                )
+                await self.main_window.dialog(error_dialog)
+                return
             # Sparkle has its own dialog asking the user
             # if they want to install the new version or not
             await self._run_sparkle_updater(latest)
@@ -897,11 +897,19 @@ class SharlyChessServerToga(toga.App):
         if sys.platform == 'win32':
             message += '\n' + _('Do you want to install it now?')
             question_dialog = toga.QuestionDialog(title, message)
-            if await self.main_window.dialog(question_dialog):
+            if not await self.main_window.dialog(question_dialog):
+                return
+            if WindowsUpdater.download():
                 self.quit_app(post_exit_task=WindowsUpdater.run)
-            return
-        message += '\n' + _('Updates are handled using Flatpak.')
-        await self.main_window.dialog(toga.InfoDialog(title, message))
+                return
+            title = _('Sharly Chess Error')
+            message = _(
+                'The update could not be downloaded. Consult the logs for more details.'
+            )
+            await self.main_window.dialog(toga.ErrorDialog(title, message))
+        else:
+            message += '\n' + _('Use Flatpak to handle updates.')
+            await self.main_window.dialog(toga.InfoDialog(title, message))
 
     async def _run_sparkle_updater(self, version: Version):
         """Runs the Sparkle updater, ask a retry if it fails."""
