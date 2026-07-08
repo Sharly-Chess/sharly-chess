@@ -19,7 +19,7 @@ import threading
 import webbrowser
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Any
+from typing import Optional, Any, Callable
 from PIL import Image as PILImage
 
 import toga
@@ -916,7 +916,7 @@ class SharlyChessServerToga(toga.App):
         except Exception:
             return False
 
-    def quit_app(self) -> None:
+    def quit_app(self, post_exit_task: Callable | None = None) -> None:
         loop = self.server_loop
         if loop is None or loop.is_closed():
             return
@@ -927,6 +927,9 @@ class SharlyChessServerToga(toga.App):
             if task is not None and not task.done():
                 task.cancel()
             loop.stop()
+            self.exit()
+            if post_exit_task:
+                post_exit_task()
 
         loop.call_soon_threadsafe(_stop)
 

@@ -3,7 +3,7 @@ from logging import Logger, getLogger
 from logging.config import dictConfig
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from colorama import Fore, Style
 
@@ -295,8 +295,9 @@ def print_interactive_message(title: str, message: str) -> bool:
     return True
 
 
-def quit_app() -> None:
+def quit_app(post_exit_task: Callable | None = None) -> None:
     if GUILogHandler.instance:
-        return GUILogHandler.instance.gui.quit_app()
-
+        return GUILogHandler.instance.gui.quit_app(post_exit_task)
+    if post_exit_task:
+        post_exit_task()
     sys.exit(0)

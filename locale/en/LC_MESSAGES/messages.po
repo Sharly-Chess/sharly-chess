@@ -289,9 +289,6 @@ msgstr "SC_T"
 msgid "*** MACOS INSTALL URL"
 msgstr "https://sharly-chess.com/installation-mac/"
 
-msgid "*** WINDOWS INSTALL URL"
-msgstr "https://sharly-chess.com/installation-windows/"
-
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -526,6 +523,9 @@ msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
 msgid "A file is expected."
+msgstr ""
+
+msgid "A new version is available. Do you want to install it now"
 msgstr ""
 
 msgid "A player with {column}=[{value}] already exists in the event."
@@ -803,6 +803,9 @@ msgid "Allows pairing of the players, either using a pairing engine or manually"
 msgstr ""
 
 msgid "An error occurred. Consult the logs for more details."
+msgstr ""
+
+msgid "An installer program will start after closing this message."
 msgstr ""
 
 msgid "An integer greater than 1 is expected."
@@ -2100,10 +2103,10 @@ msgstr ""
 msgid "Do you want to install example event databases"
 msgstr ""
 
-msgid "Do you want to install it now"
+msgid "Do you want to recover the data of release [{version}]"
 msgstr ""
 
-msgid "Do you want to recover the data of release [{version}]"
+msgid "Do you want to try again"
 msgstr ""
 
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
@@ -2137,9 +2140,6 @@ msgid "Download"
 msgstr ""
 
 msgid "Download the DMG file from the website that just opened, open it, then copy the application to your Applications folder and run it from there."
-msgstr ""
-
-msgid "Download the installer executable from the page that just opened, then run it."
 msgstr ""
 
 msgid "Download the players matching the search into a file."
@@ -5589,7 +5589,10 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
-msgid "Sharly Chess 5 is available!"
+msgid "Sharly Chess - Error"
+msgstr ""
+
+msgid "Sharly Chess - Update"
 msgstr ""
 
 msgid "Sharly Chess Server"
@@ -5990,6 +5993,9 @@ msgid "The forecast becomes available once the last round is paired. Once the to
 msgstr ""
 
 msgid "The installation and update processes have been reworked."
+msgstr ""
+
+msgid "The installer program could not be downloaded. Consult the logs for more details."
 msgstr ""
 
 msgid "The least and the most significant values are removed."
