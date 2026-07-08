@@ -11,8 +11,8 @@
 ; SCRIPT PARAMS
 ; These constants are passed as params when compiling the script.
 ; Uncomment in dev to use with Inno Setup Compiler.
-#define AppVersion "5.0.0.dev1" ; must match a version installed in /dist
-#define IsUpdate 1
+; #define AppVersion "5.0.0.dev1" ; must match a version installed in /dist
+; #define IsUpdate "yes" ; yes / no
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -31,7 +31,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
-#if IsUpdate
+#if IsUpdate == "yes"
 OutputBaseFilename=Sharly Chess Updater {#AppVersion}
 #else
 OutputBaseFilename=Sharly Chess Setup {#AppVersion}
@@ -55,7 +55,7 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 
 [Tasks]
-#if IsUpdate == 0
+#if IsUpdate == "no"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
 #endif
 
@@ -63,7 +63,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
 Source: "dist\sharly-chess-{#AppVersion}\*"; DestDir: "{app}"; Excludes: "\tmp\*"; Flags: ignoreversion recursesubdirs
 
 [Icons]
-#if IsUpdate == 0
+#if IsUpdate == "no"
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
 #endif
@@ -72,7 +72,7 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: deskto
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall
 
 [Registry]
-#if IsUpdate == 0
+#if IsUpdate == "no"
 Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "data_directory"; ValueData: "{code:GetSelectedDataDir}"; Check: not DataDirExists()
 Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "locale"; ValueData: "{code:GetActiveLanguage}"
 #endif
@@ -133,7 +133,7 @@ end;
 
 
 [Messages]
-#if IsUpdate
+#if IsUpdate == "yes"
 en.SetupAppTitle=Update
 fr.SetupAppTitle=Mise à jour
 

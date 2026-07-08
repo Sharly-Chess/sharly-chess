@@ -49,14 +49,24 @@ def run_iscc(dst_file: Path, is_update: bool):
         str(ISCC_EXE),
         str(ISS_SCRIPT_FILE),
         f'/DAppVersion={SHARLY_CHESS_VERSION}',
-        f'/DIsUpdate={int(is_update)}',
+        f'/DIsUpdate={"yes" if is_update else "no"}',
     ]
     logger.info('Running command [%s]...', ' '.join(cmd))
-    process = subprocess.run(cmd, capture_output=True, text=True)
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        bufsize=1,
+    )
+    for line in process.stdout:
+        print(line, end='')
+    process.wait()
+
     logger.info('Command returned [%d].', process.returncode)
     logger.debug(process.stdout)
     if process.returncode != 0:
-        logger.warning(process.stderr)
+        logger.warning(process.stderr.read())
         logger.error('Inno Setup Compiler failed.')
         return False
     if not dst_file.exists():
