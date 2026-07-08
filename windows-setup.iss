@@ -60,6 +60,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
 #endif
 
 [Files]
+Source: "dist\sharly-chess-{#AppVersion}\{#AppExeName}"; Flags: signonce dontcopy
+Source: "dist\sharly-chess-{#AppVersion}\_internal\tools\*.exe"; Flags: signonce dontcopy
 Source: "dist\sharly-chess-{#AppVersion}\*"; DestDir: "{app}"; Excludes: "\tmp\*"; Flags: ignoreversion recursesubdirs
 
 [Icons]

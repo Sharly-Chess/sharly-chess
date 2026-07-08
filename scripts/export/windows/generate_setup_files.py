@@ -45,6 +45,7 @@ def check_available() -> bool:
 
 
 def run_iscc(dst_file: Path, is_update: bool):
+    # TODO (Molrn) Add signing options
     cmd = [
         str(ISCC_EXE),
         str(ISS_SCRIPT_FILE),

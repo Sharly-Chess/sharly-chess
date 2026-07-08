@@ -503,7 +503,7 @@ jobs:
           # Isolate the DMG so generate_appcast doesn't also sign the generic
           # export/*.zip; sign with the private key from stdin (no keychain).
           mkdir -p sparkle-feed
-          cp "export/sharly-chess-${VERSION}-macos.dmg" sparkle-feed/
+          cp "export/sharly-chess-${VERSION}-mac.dmg" sparkle-feed/
           echo "$SPARKLE_ED_PRIVATE_KEY" | vendor/sparkle/bin/generate_appcast \
             --ed-key-file - \
             --download-url-prefix "https://github.com/Sharly-Chess/sharly-chess/releases/download/${VERSION}/" \
@@ -514,7 +514,7 @@ jobs:
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: |
-            export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            export/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
             export/appcast.xml
 
   create-release:
@@ -562,7 +562,7 @@ jobs:
           cp "export-windows/Sharly Chess Setup ${VERSION}.exe" "release-files/Sharly Chess Setup ${VERSION}.exe"
           cp "export-windows/Sharly Chess Updater ${VERSION}.exe" "release-files/Sharly Chess Updater ${VERSION}.exe"
           # macOS
-          cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
+          cp export-macos/sharly-chess-${VERSION}-mac.dmg release-files/sharly-chess-${VERSION}-mac.dmg
           # macOS Sparkle appcast (the app fetches this per-release to self-update)
           cp export-macos/appcast.xml release-files/appcast.xml
           # Linux Flatpak bundles
@@ -578,7 +578,7 @@ jobs:
           files: |
             "release-files/Sharly Chess Setup ${{ steps.version.outputs.version }}.exe"
             "release-files/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
             release-files/appcast.xml
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.flatpak
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-arm64.flatpak

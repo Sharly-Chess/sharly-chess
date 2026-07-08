@@ -301,7 +301,7 @@ echo "--- Section 6: Creating DMG Disk Image ---"
 
 VERSION_FOLDER=$(basename "$PROJECT_DIR")
 VERSION=$(echo "$VERSION_FOLDER" | sed 's/sharly-chess-//')
-DMG_NAME="sharly-chess-${VERSION}-macos.dmg"
+DMG_NAME="sharly-chess-${VERSION}-mac.dmg"
 DMG_PATH="dist/$DMG_NAME"
 VOLUME_NAME="Sharly Chess ${VERSION}"
 
