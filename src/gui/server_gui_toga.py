@@ -407,6 +407,16 @@ class SharlyChessServerToga(toga.App):
             self.settings_view,
         ]
 
+    @property
+    def compact_view_style(self) -> Pack:
+        margin = 10
+        return Pack(
+            direction=COLUMN,
+            margin=margin,
+            align_items='center',
+            width=self.compact_size[0] - margin * 2,
+        )
+
     # --- Toga lifecycle ---
     def startup(self):
         SharlyChessConfig().load_and_set_env()
@@ -437,9 +447,7 @@ class SharlyChessServerToga(toga.App):
         )
 
         # Home View
-        self.home_view = toga.Box(
-            style=Pack(direction=COLUMN, margin=10, gap=7, align_items='center'),
-        )
+        self.home_view = toga.Box(style=self.compact_view_style, gap=7)
         self.home_main_label = toga.Label(
             _('Application startup...'), text_align='center'
         )
@@ -471,9 +479,7 @@ class SharlyChessServerToga(toga.App):
         )
 
         # Networks view
-        self.networks_view = toga.Box(
-            style=Pack(direction=COLUMN, margin=10, align_items='center')
-        )
+        self.networks_view = toga.Box(style=self.compact_view_style)
 
         # Log view: WebView with HTML for ANSI color support
         self.html_view = toga.WebView(
@@ -546,12 +552,7 @@ class SharlyChessServerToga(toga.App):
         self.logs_view.add(self.html_view)
 
         # Settings view
-        self.settings_view = toga.Box(
-            direction=COLUMN,
-            margin=10,
-            gap=7,
-            align_items='center',
-        )
+        self.settings_view = toga.Box(style=self.compact_view_style, gap=7)
         self.launch_browser_switch = toga.Switch(
             text=_('Launch a browser on startup'),
             value=config.launch_browser,
@@ -601,7 +602,6 @@ class SharlyChessServerToga(toga.App):
             title='Sharly Chess',
             size=self.compact_size,
             content=self.main_box,
-            resizable=False,
         )
 
         assert isinstance(self.main_window, toga.Window)
