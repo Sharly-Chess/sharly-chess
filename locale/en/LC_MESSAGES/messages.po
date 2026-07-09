@@ -308,12 +308,6 @@ msgstr ""
 msgid "(replace [%(object_uniq_id)s])"
 msgstr ""
 
-msgid "*** Changelog Link"
-msgstr "Changelog Link"
-
-msgid "*** Doc Link"
-msgstr "https://sharly-chess.com/getting-started/"
-
 msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
 msgstr "SC_C"
 
@@ -569,12 +563,6 @@ msgid "A hard constraint is always enforced. A soft constraint is relaxed only a
 msgstr ""
 
 msgid "A minimum and a maximum rating are expected."
-msgstr ""
-
-msgid "A new version is available!"
-msgstr ""
-
-msgid "A new version of Sharly Chess is available, but the updater tool (Sparkle) failed."
 msgstr ""
 
 msgid "A number is expected."
@@ -921,6 +909,9 @@ msgid "An unexpected error occurred while reading the CSV file. Consult the logs
 msgstr ""
 
 msgid "An unexpected error occurred."
+msgstr ""
+
+msgid "An update of Sharly Chess is available, but the updater tool (Sparkle) failed."
 msgstr ""
 
 msgid "Andorra"
@@ -2014,6 +2005,9 @@ msgstr ""
 msgid "Current title:"
 msgstr ""
 
+msgid "Current version: Sharly Chess {version}"
+msgstr ""
+
 msgid "Currently displaying rotator [{name}]"
 msgstr ""
 
@@ -2391,7 +2385,7 @@ msgstr ""
 msgid "Do not use this order as ranking."
 msgstr ""
 
-msgid "Do you want to install it now?"
+msgid "Do you want to install the update now?"
 msgstr ""
 
 msgid "Do you want to try again?"
@@ -3741,9 +3735,6 @@ msgstr ""
 msgid "Last update: {updated_at} (outdated)"
 msgstr ""
 
-msgid "Latest version never searched (no internet)"
-msgstr ""
-
 msgid "Latvia"
 msgstr ""
 
@@ -4442,6 +4433,9 @@ msgid "No alert message"
 msgstr ""
 
 msgid "No archived events."
+msgstr ""
+
+msgid "No available update"
 msgstr ""
 
 msgid "No criteria defined."
@@ -8005,10 +7999,19 @@ msgstr ""
 msgid "Update results"
 msgstr ""
 
+msgid "Update search failed (no internet)"
+msgstr ""
+
 msgid "Update the players' information from an external data source."
 msgstr ""
 
 msgid "Update tournaments"
+msgstr ""
+
+msgid "Updates"
+msgstr ""
+
+msgid "Updates are available!"
 msgstr ""
 
 msgid "Updating"
@@ -8108,9 +8111,6 @@ msgid "Verdict"
 msgstr ""
 
 msgid "Verdict:"
-msgstr ""
-
-msgid "Version"
 msgstr ""
 
 msgid "Vietnam"
@@ -8470,12 +8470,6 @@ msgstr ""
 msgid "You have no permissions"
 msgstr ""
 
-msgid "You have the latest unofficial version"
-msgstr ""
-
-msgid "You have the latest version"
-msgstr ""
-
 msgid "You may also connect to this server from other devices using"
 msgstr ""
 
@@ -8600,6 +8594,12 @@ msgid "from move 1"
 msgstr ""
 
 msgid "game points"
+msgstr ""
+
+msgid "https://sharly-chess.com/changelog/"
+msgstr ""
+
+msgid "https://sharly-chess.com/getting-started/"
 msgstr ""
 
 msgid "incomplete *** INCOMPLETE TEAM"

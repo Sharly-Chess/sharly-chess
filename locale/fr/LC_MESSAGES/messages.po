@@ -308,12 +308,6 @@ msgstr "(aucun écran)"
 msgid "(replace [%(object_uniq_id)s])"
 msgstr "(remplace [%(object_uniq_id)s])"
 
-msgid "*** Changelog Link"
-msgstr "Changelog Link"
-
-msgid "*** Doc Link"
-msgstr "https://sharly-chess.com/fr/bien-demarrer/"
-
 msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
 msgstr "SC_C"
 
@@ -570,12 +564,6 @@ msgstr "Une contrainte stricte est toujours respectée. Une contrainte souple n'
 
 msgid "A minimum and a maximum rating are expected."
 msgstr "Un Elo minimum et maximum sont attendus."
-
-msgid "A new version is available!"
-msgstr "Une nouvelle version est disponible !"
-
-msgid "A new version of Sharly Chess is available, but the updater tool (Sparkle) failed."
-msgstr "Une nouvelle version de Sharly Chess est disponible, mais l'outil de mise à jour (Sparkle) a échoué."
 
 msgid "A number is expected."
 msgstr "Un nombre est attendu."
@@ -922,6 +910,9 @@ msgstr "Une erreur inattendue s'est produite lors de la lecture du fichier CSV. 
 
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
+
+msgid "An update of Sharly Chess is available, but the updater tool (Sparkle) failed."
+msgstr "Une mise à jour de Sharly Chess est disponible, mais l'outil de mise à jour (Sparkle) a échoué."
 
 msgid "Andorra"
 msgstr "Andorre"
@@ -2014,6 +2005,9 @@ msgstr "Ronde courante : %(round)d"
 msgid "Current title:"
 msgstr "Titre actuel :"
 
+msgid "Current version: Sharly Chess {version}"
+msgstr "Version actuelle : Sharly Chess {version}"
+
 msgid "Currently displaying rotator [{name}]"
 msgstr "Affiche actuellement l'écran rotatif [{name}]"
 
@@ -2391,8 +2385,8 @@ msgstr "Ne pas apparier à la ronde n°%(round)d"
 msgid "Do not use this order as ranking."
 msgstr "Ne pas utiliser cet ordre comme classement."
 
-msgid "Do you want to install it now?"
-msgstr "Voulez-vous l'installer maintenant ?"
+msgid "Do you want to install the update now?"
+msgstr "Voulez-vous installer la mise à jour maintenant ?"
 
 msgid "Do you want to try again?"
 msgstr "Voulez-vous réessayer ?"
@@ -3741,9 +3735,6 @@ msgstr "Dernière mise à jour : {updated_at}"
 msgid "Last update: {updated_at} (outdated)"
 msgstr "Dernière mise à jour : {updated_at} (dépassée)"
 
-msgid "Latest version never searched (no internet)"
-msgstr "Dernière version jamais recherchée (pas de connexion Internet)"
-
 msgid "Latvia"
 msgstr "Lettonie"
 
@@ -4443,6 +4434,9 @@ msgstr "Pas de message d'alerte"
 
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
+
+msgid "No available update"
+msgstr "Pas de mise à jour disponible"
 
 msgid "No criteria defined."
 msgstr "Aucun critère défini."
@@ -8007,11 +8001,20 @@ msgstr "Modifier l'historique des joueur·euses"
 msgid "Update results"
 msgstr "Modifier les résultats"
 
+msgid "Update search failed (no internet)"
+msgstr "Recherche de mises à jour échouée (pas de connection internet)"
+
 msgid "Update the players' information from an external data source."
 msgstr "Mettre à jour les informations des joueur·euses à partir d'une source de données extérieure."
 
 msgid "Update tournaments"
 msgstr "Modifier les tournois"
+
+msgid "Updates"
+msgstr "Mises à jour"
+
+msgid "Updates are available!"
+msgstr "Des mises à jour sont disponibles !"
 
 msgid "Updating"
 msgstr "Mise à jour"
@@ -8111,9 +8114,6 @@ msgstr "Verdict"
 
 msgid "Verdict:"
 msgstr "Verdict :"
-
-msgid "Version"
-msgstr "Version"
 
 msgid "Vietnam"
 msgstr "Vietnam"
@@ -8472,12 +8472,6 @@ msgstr "Vous n'avez pas la permission d'écriture sur ce dossier."
 msgid "You have no permissions"
 msgstr "Vous n'avez aucune permission"
 
-msgid "You have the latest unofficial version"
-msgstr "Vous avez la dernière version non officielle"
-
-msgid "You have the latest version"
-msgstr "Vous avez la dernière version"
-
 msgid "You may also connect to this server from other devices using"
 msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres appareils"
 
@@ -8603,6 +8597,12 @@ msgstr "depuis le 1er coup"
 
 msgid "game points"
 msgstr "les points de partie"
+
+msgid "https://sharly-chess.com/changelog/"
+msgstr "https://sharly-chess.com/fr/changelog/"
+
+msgid "https://sharly-chess.com/getting-started/"
+msgstr "https://sharly-chess.com/fr/bien-demarrer/"
 
 msgid "incomplete *** INCOMPLETE TEAM"
 msgstr "incomplète"

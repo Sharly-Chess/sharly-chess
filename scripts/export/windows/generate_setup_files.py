@@ -31,14 +31,17 @@ def check_available() -> bool:
         return False
     if not ISCC_EXE.exists():
         logger.error(
-            f'Inno Setup Compiler [{ISCC_EXE}] not found, please install Inno Setup '
-            f'{IS_VERSION} (see https://jrsoftware.org/isdl.php/Inno-Setup-Downloads).'
+            'Inno Setup Compiler [%s] not found, please install Inno Setup '
+            '%s (see https://jrsoftware.org/isdl.php/Inno-Setup-Downloads).',
+            ISCC_EXE,
+            IS_VERSION,
         )
         return False
     if not PROJECT_DIR.exists():
         logger.error(
-            f'Project has to be built at [{PROJECT_DIR}] before generating the '
-            f'setup files.\nTo do so, you have to run scripts/export/build.py.'
+            'Project has to be built at [%s] before generating the '
+            'setup files.\nTo do so, you have to run scripts/export/build.py.',
+            PROJECT_DIR,
         )
         return False
     return True
@@ -72,9 +75,9 @@ def run_iscc(dst_file: Path, is_update: bool):
         logger.error('Inno Setup Compiler failed.')
         return False
     if not dst_file.exists():
-        logger.error(f'File [{dst_file}] not found.')
+        logger.error('File [%s] not found.', dst_file)
         return False
-    logger.info(f'File [{dst_file}] successfully generated.')
+    logger.info('File [%s] successfully generated.', dst_file)
     return True
 
 

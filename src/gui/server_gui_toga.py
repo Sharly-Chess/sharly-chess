@@ -450,7 +450,7 @@ class SharlyChessServerToga(toga.App):
 
         self.update_available_box = toga.Box(
             children=[
-                toga.Label(_('A new version is available!'), font_weight='bold'),
+                toga.Label(_('Updates are available!'), font_weight='bold'),
                 toga.Button(
                     _('Install'),
                     on_press=self._show_update_dialog,
@@ -598,6 +598,9 @@ class SharlyChessServerToga(toga.App):
                 _('Edit'), on_press=self._handle_data_path_selection
             )
             data_path_buttons.append(self.data_path_edit_button)
+        current_version_message = _('Current version: Sharly Chess {version}').format(
+            version=SHARLY_CHESS_VERSION
+        )
         self.check_beta_switch = toga.Switch(
             text=_('Include beta versions in updates'),
             value=config.check_beta_versions,
@@ -623,8 +626,8 @@ class SharlyChessServerToga(toga.App):
                 gap=10,
             ),
             toga.Divider(margin=(5, 0)),
-            toga.Label(_('Version'), style=title_style),
-            toga.Label(f'Sharly Chess {SHARLY_CHESS_VERSION}', text_align='center'),
+            toga.Label(_('Updates'), style=title_style),
+            toga.Label(current_version_message, text_align='center'),
             self.latest_version_label,
             toga.Box(
                 children=[self.latest_version_btn, changelog_button],
@@ -815,10 +818,10 @@ class SharlyChessServerToga(toga.App):
         if search_ongoing:
             message = _('Searching for updates...')
         elif not latest or not searched_at:
-            message = _('Latest version never searched (no internet)')
+            message = _('Update search failed (no internet)')
         else:
             if latest > SHARLY_CHESS_VERSION:
-                message = _('A new version is available!')
+                message = _('Updates are available!')
                 if self.update_available_box not in self.home_view.children:
                     self.home_view.insert(0, self.update_available_box)
                 if not skip_settings:
@@ -826,11 +829,8 @@ class SharlyChessServerToga(toga.App):
                     self.latest_version_btn.text = _('Install')
                     self.latest_version_btn.on_press = self._show_update_dialog
             else:
-                if latest == SHARLY_CHESS_VERSION:
-                    message = _('You have the latest version')
-                else:
-                    message = _('You have the latest unofficial version')
-                message = f'{message} ({self._last_search_message(searched_at)})'
+                message = _('No available update')
+                message += f' ({self._last_search_message(searched_at)})'
 
         if not skip_settings:
             self.latest_version_label.text = message
@@ -893,12 +893,12 @@ class SharlyChessServerToga(toga.App):
             await self._run_sparkle_updater(latest)
             return
 
-        title = _('A new version is available!')
+        title = f'Sharly Chess - {_("Updates")}'
         message = _('Sharly Chess {latest} is available, you have {current}.').format(
             latest=latest, current=SHARLY_CHESS_VERSION
         )
         if sys.platform == 'win32':
-            message += '\n' + _('Do you want to install it now?')
+            message += '\n' + _('Do you want to install the update now?')
             question_dialog = toga.QuestionDialog(title, message)
             if not await self.main_window.dialog(question_dialog):
                 return
@@ -922,7 +922,7 @@ class SharlyChessServerToga(toga.App):
                 return
             title = self._error_dialog_title()
             message = _(
-                'A new version of Sharly Chess is available, '
+                'An update of Sharly Chess is available, '
                 'but the updater tool (Sparkle) failed.'
             )
             message += ' ' + _(
@@ -1164,11 +1164,11 @@ class SharlyChessServerToga(toga.App):
 
     @staticmethod
     def _open_documentation(widget: Any = None, **kwargs) -> None:
-        webbrowser.open(_('*** Doc Link'))
+        webbrowser.open(_('https://sharly-chess.com/getting-started/'))
 
     @staticmethod
     def _open_changelog(widget: Any = None, **kwargs) -> None:
-        webbrowser.open(_('*** Changelog Link'))
+        webbrowser.open(_('https://sharly-chess.com/changelog/'))
 
     @staticmethod
     def _open_discord(widget):

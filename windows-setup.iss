@@ -33,9 +33,9 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
 #if IsUpdate == "yes"
-OutputBaseFilename=Sharly Chess Updater {#AppVersion}
+  OutputBaseFilename=Sharly Chess Updater {#AppVersion}
 #else
-OutputBaseFilename=Sharly Chess Setup {#AppVersion}
+  OutputBaseFilename=Sharly Chess Setup {#AppVersion}
 #endif
 OutputDir=export
 SetupIconFile={#ImagesDir}\sharly-chess.ico
@@ -57,20 +57,20 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 
 [Tasks]
 #if IsUpdate == "no"
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
+  Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
 #endif
 
 [Files]
 #if UseSignTool == "yes"
-Source: "dist\sharly-chess-{#AppVersion}\{#AppExeName}"; Flags: signonce dontcopy
-Source: "dist\sharly-chess-{#AppVersion}\_internal\tools\*.exe"; Flags: signonce dontcopy recursesubdirs
+  Source: "dist\sharly-chess-{#AppVersion}\{#AppExeName}"; Flags: signonce dontcopy
+  Source: "dist\sharly-chess-{#AppVersion}\_internal\tools\*.exe"; Flags: signonce dontcopy recursesubdirs
 #endif
 Source: "dist\sharly-chess-{#AppVersion}\*"; DestDir: "{app}"; Excludes: "\tmp\*"; Flags: ignoreversion recursesubdirs
 
 [Icons]
 #if IsUpdate == "no"
-Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
+  Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"
+  Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
 #endif
 
 [Run]
@@ -78,8 +78,8 @@ Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; F
 
 [Registry]
 #if IsUpdate == "no"
-Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "data_directory"; ValueData: "{code:GetSelectedDataDir}"; Check: not DataDirExists()
-Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "locale"; ValueData: "{code:GetActiveLanguage}"
+  Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "data_directory"; ValueData: "{code:GetSelectedDataDir}"; Check: not DataDirExists()
+  Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "locale"; ValueData: "{code:GetActiveLanguage}"
 #endif
 
 [Code]
@@ -139,20 +139,26 @@ end;
 
 [Messages]
 #if IsUpdate == "yes"
-en.SetupAppTitle=Update
-fr.SetupAppTitle=Mise à jour
+    en.SetupAppTitle=Update
+    fr.SetupAppTitle=Mise à jour
 
-en.SetupWindowTitle=Update - %1
-fr.SetupWindowTitle=Mise à jour - %1
+    en.SetupWindowTitle=Update - %1
+    fr.SetupWindowTitle=Mise à jour - %1
 
-en.WizardInstalling=Updating
-fr.WizardInstalling=Mise à jour
+    en.WizardInstalling=Updating
+    fr.WizardInstalling=Mise à jour
 
-en.InstallingLabel=Please wait while [name] is updating.
-fr.InstallingLabel=Merci de patienter pendant que [name] se met à jour.
+    en.InstallingLabel=Please wait while [name] is updating.
+    fr.InstallingLabel=Merci de patienter pendant que [name] se met à jour.
+
+    en.WizardPreparing=Preparing to update
+    fr.WizardPreparing=Préparation de la mise à jour
+
+    en.PreparingDesc=The updater is preparing to update [name] on your computer.
+    fr.PreparingDesc=L'assistant de mise à jour se prépare à mettre [name] à jour sur votre ordinateur.
 #else
-en.InstallingLabel=Please wait while [name] is installing.
-fr.InstallingLabel=Merci de patienter pendant que [name] s'installe.
+    en.InstallingLabel=Please wait while [name] is installing.
+    fr.InstallingLabel=Merci de patienter pendant que [name] s'installe.
 #endif
 
 en.ConfirmUninstall=Are you sure you want to uninstall Sharly Chess?
