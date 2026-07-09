@@ -161,6 +161,9 @@ end;
     fr.InstallingLabel=Merci de patienter pendant que [name] s'installe.
 #endif
 
+en.SelectTasksLabel2=Select the additional tasks you would like to perform while installing [name], then click Install.
+fr.SelectTasksLabel2=Sélectionnez les tâches supplémentaires que vous voulez effectuer lors de l'installation de [name], puis cliquez sur Installer.
+
 en.ConfirmUninstall=Are you sure you want to uninstall Sharly Chess?
 fr.ConfirmUninstall=Êtes-vous sûr de vouloir désinstaller Sharly Chess ?
 
