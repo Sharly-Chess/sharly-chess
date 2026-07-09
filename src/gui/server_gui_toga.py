@@ -650,6 +650,7 @@ class SharlyChessServerToga(toga.App):
             title='Sharly Chess',
             size=self.compact_size,
             content=self.main_box,
+            resizable=False,
         )
         assert isinstance(self.main_window, toga.Window)
         self.main_window.show()
