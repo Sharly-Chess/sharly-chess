@@ -792,6 +792,7 @@ class SharlyChessServerToga(toga.App):
             await self._ask_windows_defender_exception(new_data_dir)
 
     async def _ask_windows_defender_exception(self, new_data_dir: Path):
+        assert isinstance(self.main_window, toga.Window)
         await asyncio.sleep(0.1)
         process = Utils.run_process(
             [
