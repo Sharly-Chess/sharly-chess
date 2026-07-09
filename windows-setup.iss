@@ -58,6 +58,8 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 [Tasks]
 #if IsUpdate == "no"
   Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
+  Name: "defenderprogram"; Description: "{cm:DefenderProgram}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
+  Name: "defenderdata"; Description: "{cm:DefenderData}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
 #endif
 
 [Files]
@@ -78,21 +80,57 @@ Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; F
 
 [Registry]
 #if IsUpdate == "no"
-  Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "data_directory"; ValueData: "{code:GetSelectedDataDir}"; Check: not DataDirExists()
+  Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "data_directory"; ValueData: "{code:GetDataDir}"
   Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "locale"; ValueData: "{code:GetActiveLanguage}"
 #endif
 
 [Code]
 var
   DataDirPage: TInputDirWizardPage;
+  DataDir: String;
+  IsDefenderActive: Boolean;
+
 
 function DataDirExists() : Boolean;
 begin
-  Result := RegValueExists(HKEY_CURRENT_USER, ExpandConstant('{#RegKey}'), 'data_directory');
+  Result := DataDir = '';
+end;
+
+procedure InitIsDefenderActive;
+var
+  ResultCode: Integer;
+  Output: TExecOutput;
+begin
+  ExecAndCaptureOutput(
+    'cmd.exe',
+    '/C powershell -Command "Get-MpComputerStatus | Select-Object -ExpandProperty AMServiceEnabled"',
+    '',
+    SW_HIDE,
+    ewWaitUntilTerminated,
+    ResultCode,
+    Output
+  );
+  if GetArrayLength(Output.StdOut) > 0 then
+    IsDefenderActive := Pos('True', Output.StdOut[0]) > 0;
+end;
+
+procedure InitDataDir;
+begin
+  RegQueryStringValue(
+    HKEY_CURRENT_USER,
+    ExpandConstant('{#RegKey}'),
+    'data_directory',
+    DataDir
+  );
 end;
 
 procedure InitializeWizard;
 begin
+  if ExpandConstant('{#IsUpdate}') = 'no' then
+  begin
+    InitIsDefenderActive();
+    InitDataDir();
+  end;
   if not DataDirExists() then
   begin
     DataDirPage := CreateInputDirPage(
@@ -108,8 +146,10 @@ begin
   end;
 end;
 
-function GetSelectedDataDir(Param: string) : string;
+function GetDataDir(Param: string) : string;
 begin
+  if DataDirExists() then
+    Result := DataDir;
   Result := DataDirPage.Values[0];
 end;
 
@@ -118,11 +158,37 @@ begin
   Result := ActiveLanguage();
 end;
 
+function GetIsDefenderActive(): Boolean;
+begin
+  Result := IsDefenderActive;
+end;
+
+procedure AddDefenderPathException(Path: string);
+var
+  ResultCode: Integer;
+begin
+  Exec(
+    'cmd.exe',
+    '/C powershell -Command "Add-MpPreference -ExclusionPath """'+ Path + '""" -Force"',
+    '',
+    SW_HIDE,
+    ewWaitUntilTerminated,
+    ResultCode
+  );
+ end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if (CurStep = ssPostInstall) and WizardSilent() then
   begin
     MsgBox(ExpandConstant('{cm:UpdateSuccessfull}'), mbInformation, MB_OK);
+  end;
+  if CurStep = ssInstall then
+  begin
+    if WizardIsTaskSelected('defenderprogram') then
+      AddDefenderPathException(ExpandConstant('{app}'));
+    if WizardIsTaskSelected('defenderdata') then
+      AddDefenderPathException(GetDataDir(''));
   end;
 end;
 
@@ -135,7 +201,6 @@ begin
   else
     WizardForm.NextButton.Caption := SetupMessage(msgButtonNext);
 end;
-
 
 [Messages]
 #if IsUpdate == "yes"
@@ -183,3 +248,12 @@ fr.UpdateSuccessfull=Sharly Chess a été mis à jour avec succès. L'applicatio
 
 en.ShouldDeleteData=Do you also want to delete the application's data?
 fr.ShouldDeleteData=Voulez-vous également supprimer les données de l'application ?
+
+en.DefenderGroup=Microsoft Defender exception list:
+fr.DefenderGroup=Liste d'exclusions Microsoft Defender :
+
+en.DefenderProgram=Add the program folder
+fr.DefenderProgram=Ajouter le dossier du programme
+
+en.DefenderData=Add the data folder
+fr.DefenderData=Ajouter le dossier des données

@@ -154,9 +154,6 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 if not os.access(DATA_DIR, os.W_OK):
     raise SharlyChessException(f'Data path [{DATA_DIR.absolute()}] is not writable.')
 
-IS_NEW_INSTALL = not VERSION_DATA_DIR.exists()
-
-
 previous_dir_val = ProgramVar.PREVIOUS_DATA_DIR.read_value()
 if previous_dir_val:
     previous_dir = Path(previous_dir_val)
@@ -184,6 +181,9 @@ if previous_dir_val:
                 f'from "{previous_dir}" to "{DATA_DIR}". '
                 f'The move has been canceled.\n\nError: {e}',
             )
+
+IS_NEW_INSTALL = not VERSION_DATA_DIR.exists()
+
 for directory in (
     ARCHIVES_DIR,
     CUSTOM_DIR,

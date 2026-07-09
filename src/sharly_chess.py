@@ -91,9 +91,10 @@ try:
     import argparse
     import asyncio
 
-    from utils.scripts import init_script
+    from utils.scripts import init_script, check_windows_defender_exception
 
     arguments = init_script()
+    arguments = check_windows_defender_exception(arguments)
 
     from common import DEVEL_ENV, TEST_ENV
     from common.logger import (
