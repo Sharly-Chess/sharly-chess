@@ -498,12 +498,6 @@ class SharlyChessServerToga(toga.App):
                 gap=5,
                 align_items='center',
             ),
-            toga.Box(
-                children=[
-                    toga.Label(f'Sharly Chess {SHARLY_CHESS_VERSION}'),
-                ],
-                align_items='center',
-            ),
         )
 
         # Networks view
@@ -664,7 +658,7 @@ class SharlyChessServerToga(toga.App):
         # Window class used instead of MainWindow to avoid having a toolbar
         # See https://github.com/beeware/toga/issues/1870#issuecomment-2272534628
         self.main_window = toga.Window(  # type: ignore
-            title='Sharly Chess',
+            title=f'Sharly Chess {SHARLY_CHESS_VERSION}',
             size=self.compact_size,
             content=self.main_box,
         )
