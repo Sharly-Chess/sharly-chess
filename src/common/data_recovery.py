@@ -87,7 +87,7 @@ class DataRecovery:
 
         if DEVEL_ENV and IS_NEW_INSTALL and not recovered:
             if (Path() / 'events' / '.scc').exists():
-                cls._recover_legacy_version(Version('4dev1'), Path())
+                cls._recover_legacy_version(Version('4'), Path())
             elif input_interactive_yn(
                 title='Setup',
                 question='Do you want to install example event databases',
