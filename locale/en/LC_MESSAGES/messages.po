@@ -2385,6 +2385,9 @@ msgstr ""
 msgid "Do not use this order as ranking."
 msgstr ""
 
+msgid "Do you want to add the new data folder to the Microsoft Defender exception list?"
+msgstr ""
+
 msgid "Do you want to install the update now?"
 msgstr ""
 
@@ -6973,6 +6976,12 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
+msgid "The data folder could not be added to the Microsoft Defender exception list."
+msgstr ""
+
+msgid "The data folder has been successfully added to the Microsoft Defender exception list."
+msgstr ""
+
 msgid "The default federation for your events."
 msgstr ""
 
@@ -7538,6 +7547,9 @@ msgid "This tournament has no norm-eligible titled players."
 msgstr ""
 
 msgid "This unique ID is already used."
+msgstr ""
+
+msgid "This will improve performances. You must have administrator rights."
 msgstr ""
 
 msgid "Threshold"
