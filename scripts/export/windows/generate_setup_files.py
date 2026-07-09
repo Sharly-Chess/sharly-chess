@@ -35,9 +35,9 @@ def check_available() -> bool:
             f'{IS_VERSION} (see https://jrsoftware.org/isdl.php/Inno-Setup-Downloads).'
         )
         return False
-    if not DIST_DIR.exists():
+    if not PROJECT_DIR.exists():
         logger.error(
-            f'Project has to be built at [{DIST_DIR}] before generating the '
+            f'Project has to be built at [{PROJECT_DIR}] before generating the '
             f'setup files.\nTo do so, you have to run scripts/export/build.py.'
         )
         return False
