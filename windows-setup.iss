@@ -13,6 +13,7 @@
 ; Uncomment in dev to use with Inno Setup Compiler.
 ; #define AppVersion "5.0.0.dev1" ; must match a version installed in /dist
 ; #define IsUpdate "yes" ; yes / no
+; #define UseSignTool "no" ; yes / no
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -60,8 +61,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
 #endif
 
 [Files]
+#if UseSignTool == "yes"
 Source: "dist\sharly-chess-{#AppVersion}\{#AppExeName}"; Flags: signonce dontcopy
-Source: "dist\sharly-chess-{#AppVersion}\_internal\tools\*.exe"; Flags: signonce dontcopy
+Source: "dist\sharly-chess-{#AppVersion}\_internal\tools\*.exe"; Flags: signonce dontcopy recursesubdirs
+#endif
 Source: "dist\sharly-chess-{#AppVersion}\*"; DestDir: "{app}"; Excludes: "\tmp\*"; Flags: ignoreversion recursesubdirs
 
 [Icons]

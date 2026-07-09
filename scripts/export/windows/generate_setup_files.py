@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from common import SHARLY_CHESS_VERSION, BASE_DIR
+from common import SHARLY_CHESS_VERSION, BASE_DIR, DIST_DIR, EXPORT_DIR
 from common.logger import get_logger
 
 logger = get_logger()
@@ -14,9 +14,9 @@ logger = get_logger()
 IS_VERSION = 6
 ISCC_EXE = Path(rf'C:\Program Files (x86)\Inno Setup {IS_VERSION}\ISCC.exe')
 ISS_SCRIPT_FILE = BASE_DIR / 'windows-setup.iss'
-UPDATER_EXE = BASE_DIR / 'export' / f'Sharly Chess Updater {SHARLY_CHESS_VERSION}.exe'
-SETUP_EXE = BASE_DIR / 'export' / f'Sharly Chess Setup {SHARLY_CHESS_VERSION}.exe'
-DIST_DIR = BASE_DIR / 'dist' / f'sharly-chess-{SHARLY_CHESS_VERSION}'
+UPDATER_EXE = EXPORT_DIR / f'Sharly Chess Updater {SHARLY_CHESS_VERSION}.exe'
+SETUP_EXE = EXPORT_DIR / f'Sharly Chess Setup {SHARLY_CHESS_VERSION}.exe'
+PROJECT_DIR = DIST_DIR / f'sharly-chess-{SHARLY_CHESS_VERSION}'
 
 
 def _compact_cmd_output(output: str) -> str:
@@ -51,6 +51,7 @@ def run_iscc(dst_file: Path, is_update: bool):
         str(ISS_SCRIPT_FILE),
         f'/DAppVersion={SHARLY_CHESS_VERSION}',
         f'/DIsUpdate={"yes" if is_update else "no"}',
+        '/DUseSignTool=no',
     ]
     logger.info('Running command [%s]...', ' '.join(cmd))
     process = subprocess.Popen(
