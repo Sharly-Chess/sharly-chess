@@ -17,42 +17,35 @@
                 {% set tournament_statuses = custom_upload_utils.resolve_tournament_upload_statuses(tournament) %}
                 {% for status in tournament_statuses %}
                     {% set tooltip_message = status.tooltip_message(tournament) %}
-                    <div>
-                        <span
-                                class="badge rounded-pill {{ status.css_classes }}"
-                                style="height: 20px"
-                                {% if tooltip_message %}
-                                    {{ macros.tooltip_attributes('', tooltip_message) }}
-                                {% endif %}
-                        >
-                            {{ status.name }}
-                        </span>
-                    </div>
+                    <span
+                        class="badge rounded-pill {{ status.css_classes }}"
+                        style="height: 20px"
+                        {% if tooltip_message %}
+                            {{ macros.tooltip_attributes('', tooltip_message) }}
+                        {% endif %}
+                    >
+                        {{ status.name }}
+                    </span>
                 {% endfor %}
             </td>
-            <td>
+            <td class="text-center">
                 {% for document in documents_by_tournament[tournament.id] %}
-                    <div class="text-center">
                         <span
-                        class="badge rounded-pill message-debug"
-                        style="height: 20px"
+                            class="badge rounded-pill message-debug"
+                            style="height: 20px"
                         >
                             {{ document and _(document.static_name()) }}
                         </span>
-                    </div>
                 {% endfor %}
             </td>
             <td class="text-center text-nowrap">
                 {{ plugin_data.last_upload_at_str }}
             </td>
-            <td class="text-center">
-                {{ plugin_data.relative_server_path or '-' }}
-            </td>
-            <td class="text-center">
+            <td class="text-center text-nowrap">
                 <span {{ macros.tooltip_attributes('', _('Edit configuration')) }}>
                     <button
                         type="button"
-                        class="btn btn-outline-primary btn-sm"
+                        class="btn btn-outline-primary btn-sm mx-1"
                         hx-get="{{ url_for('custom-upload-tournament-configuration-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
@@ -63,7 +56,7 @@
                 <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
                     <button
                         type="button"
-                        class="btn btn-outline-primary btn-sm"
+                        class="btn btn-outline-primary btn-sm mx-1"
                         hx-post="{{ url_for('custom-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="#upload-results"
                         hx-swap="outerHTML"
