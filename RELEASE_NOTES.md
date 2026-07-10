@@ -29,6 +29,7 @@
 - Added custom team ranking documents (4.2.0)
 - For norm calculations, 1.4.3 exemption now also waive 1.4.4 as confirmed to us by the FIDE (4.2.1)
 - For norm calculations, players under the FID federation are now disregarded when considering foreign federation counts (4.2.1)
+- Norm reports for WGM title holders now include the IM norm (4.2.5)
 
 ## Screens
 
