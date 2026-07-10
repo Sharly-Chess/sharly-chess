@@ -49,15 +49,17 @@
                         </div>
                     </div>
                 {% endfor %}
-                <button
-                        type="button"
-                        class="btn btn-outline-primary text-nowrap mt-3"
-                        hx-post="{{ url_for('add-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                        hx-target="body"
-                >
-                    <i class="bi-plus-circle pe-1"></i>
-                    {{ _('Add document') }}
-                </button>
+                <div class="text-center mt-4 mb-1">
+                    <button
+                            type="button"
+                            class="btn btn-outline-primary text-nowrap mt-3"
+                            hx-post="{{ url_for('add-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                            hx-target="body"
+                    >
+                        <i class="bi-plus-circle pe-1"></i>
+                        {{ _('Add document') }}
+                    </button>
+                </div>
             </form>
         </div>
         <div class="modal-footer">

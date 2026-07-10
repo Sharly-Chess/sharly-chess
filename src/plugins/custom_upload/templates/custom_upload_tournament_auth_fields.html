@@ -37,16 +37,15 @@
             data=data, errors=errors
         ) }}
     </div>
-    <div class="col-12 col-md-6">
+    <div class="text-center mt-4 mb-1">
         <button
             type="button"
-            class="btn btn-outline-primary btn-sm text-nowrap"
+            class="btn btn-outline-primary text-nowrap"
             hx-post="{{ url_for('custom-upload-test-auth', action='update') }}"
             hx-target="closest .auth-fields"
             hx-swap="morphdom"
-            hx-vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}',
+            hx-vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}'
             hx-indicator="#please-wait"
-            class="text-nowrap white btn btn-secondary"
         >
             <i class="bi bi-wifi pe-1"></i>
             {{ _('Connection test') }}
