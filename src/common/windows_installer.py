@@ -11,18 +11,18 @@ from common.logger import get_logger
 logger = get_logger()
 
 
-class WindowsSetup:
-    """Wrapper for the Windows Setup executable."""
+class WindowsInstaller:
+    """Wrapper for the Windows Installer executable."""
 
     @staticmethod
     def dev_exe_path() -> Path | None:
         """Env variable set in dev to bypass the requirement to download a published setup."""
-        dev_exe = os.getenv('DEV_WINDOWS_SETUP_PATH')
+        dev_exe = os.getenv('DEV_WINDOWS_INSTALLER_PATH')
         if dev_exe:
             exe_path = Path(dev_exe)
             if exe_path.exists():
                 return exe_path
-            logger.error('Dev updater exe path [%s] not found.')
+            logger.error('Dev updater exe path [%s] not found.', dev_exe)
         return None
 
     @classmethod
@@ -30,7 +30,7 @@ class WindowsSetup:
         dev_exe = cls.dev_exe_path()
         if dev_exe:
             return dev_exe
-        return TMP_DIR / f'Sharly Chess Setup {version}.exe'
+        return TMP_DIR / f'Sharly Chess Installer {version}.exe'
 
     @classmethod
     def download(cls, version: Version, url: str | None) -> bool:

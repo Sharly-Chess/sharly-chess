@@ -40,7 +40,7 @@ from common.logger import (
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
-from common.windows_setup import WindowsSetup
+from common.windows_installer import WindowsInstaller
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
@@ -295,8 +295,8 @@ class Engine:
 
     @classmethod
     def _install_windows_v5(cls, version, download_url: str | None):
-        if WindowsSetup.download(version, download_url):
-            quit_app(partial(WindowsSetup.run, version=version))
+        if WindowsInstaller.download(version, download_url):
+            quit_app(partial(WindowsInstaller.run, version=version))
             return
         message = _(
             'The installer program could not be downloaded. '
@@ -470,6 +470,7 @@ class Engine:
             )
             return None, None
         if dev_latest := os.getenv('DEV_LATEST_VERSION'):
+            logger.warning('Using fake latest version [%s]', dev_latest)
             return Version(dev_latest), None
         current_stable: bool = bool(
             re.match(r'^(\d+\.\d+\.\d+)$', str(SHARLY_CHESS_VERSION))
