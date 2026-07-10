@@ -15,7 +15,7 @@ IS_VERSION = 6
 ISCC_EXE = Path(rf'C:\Program Files (x86)\Inno Setup {IS_VERSION}\ISCC.exe')
 ISS_SCRIPT_FILE = BASE_DIR / 'windows-setup.iss'
 UPDATER_EXE = EXPORT_DIR / f'Sharly Chess Updater {SHARLY_CHESS_VERSION}.exe'
-SETUP_EXE = EXPORT_DIR / f'Sharly Chess Setup {SHARLY_CHESS_VERSION}.exe'
+INSTALLER_EXE = EXPORT_DIR / f'Sharly Chess Installer {SHARLY_CHESS_VERSION}.exe'
 PROJECT_DIR = DIST_DIR / f'sharly-chess-{SHARLY_CHESS_VERSION}'
 
 
@@ -84,8 +84,8 @@ def run_iscc(dst_file: Path, is_update: bool):
 if __name__ == '__main__':
     if not check_available():
         sys.exit(1)
-    logger.info('Generating Setup file...')
-    if not run_iscc(SETUP_EXE, is_update=False):
+    logger.info('Generating Installer file...')
+    if not run_iscc(INSTALLER_EXE, is_update=False):
         sys.exit(1)
     logger.info('Generating Updater file...')
     if not run_iscc(UPDATER_EXE, is_update=True):

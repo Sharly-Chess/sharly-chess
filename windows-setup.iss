@@ -35,7 +35,7 @@ DisableReadyPage=yes
 #if IsUpdate == "yes"
   OutputBaseFilename=Sharly Chess Updater {#AppVersion}
 #else
-  OutputBaseFilename=Sharly Chess Setup {#AppVersion}
+  OutputBaseFilename=Sharly Chess Installer {#AppVersion}
 #endif
 OutputDir=export
 SetupIconFile={#ImagesDir}\sharly-chess.ico
@@ -43,10 +43,10 @@ SolidCompression=yes
 
 ; Wizard style
 WizardBackColor="#313334"
-WizardImageFile=""
+WizardImageBackColor="#313334"
+WizardImageFile="{#ImagesDir}\sharly-chess-wizard.png"
 WizardSmallImageBackColor="#313334"
-WizardSmallImageFile="{#ImagesDir}\sharly-chess-logo.png"
-WizardImageBackColor="#E5DBC6"
+WizardSmallImageFile="{#ImagesDir}\sharly-chess-wizard-small.png"
 
 WizardSizePercent=100
 WizardStyle=modern dark

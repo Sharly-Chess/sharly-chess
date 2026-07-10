@@ -116,7 +116,7 @@ jobs:
           WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
         run: |
           python scripts/export/windows/signtool.py \
-          "export/Sharly Chess Setup ${{ steps.version.outputs.version }}.exe" \
+          "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe" \
           "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe" \
           --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
 
@@ -125,7 +125,7 @@ jobs:
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
-            "export/Sharly Chess Setup ${{ steps.version.outputs.version }}.exe"
+            "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe"
             "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
 
 
@@ -559,7 +559,7 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p release-files
           # Windows
-          cp "export-windows/Sharly Chess Setup ${VERSION}.exe" "release-files/Sharly Chess Setup ${VERSION}.exe"
+          cp "export-windows/Sharly Chess Installer ${VERSION}.exe" "release-files/Sharly Chess Installer ${VERSION}.exe"
           cp "export-windows/Sharly Chess Updater ${VERSION}.exe" "release-files/Sharly Chess Updater ${VERSION}.exe"
           # macOS
           cp export-macos/sharly-chess-${VERSION}-mac.dmg release-files/sharly-chess-${VERSION}-mac.dmg
@@ -576,7 +576,7 @@ jobs:
           draft: true
           prerelease: contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc')
           files: |
-            "release-files/Sharly Chess Setup ${{ steps.version.outputs.version }}.exe"
+            "release-files/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe"
             "release-files/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
             release-files/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
             release-files/appcast.xml
