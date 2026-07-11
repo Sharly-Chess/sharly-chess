@@ -81,7 +81,10 @@ class ChessResultsSession(Session):
         """Initializes a session on Chess-Results.com
         Return sid on success, False otherwise."""
         url = CHESS_RESULTS_URL
-        params = {'key1': 'GETSID', 'source': CHESS_RESULTS_SOURCE}
+        params: dict[str, str | int] = {
+            'key1': 'GETSID',
+            'source': CHESS_RESULTS_SOURCE,
+        }
 
         response = requests.get(url, params=params)
         response.raise_for_status()  # Raise an error if the request failed

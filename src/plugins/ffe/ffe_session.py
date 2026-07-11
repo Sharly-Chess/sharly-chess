@@ -201,6 +201,7 @@ class FFESession(Session):
         if not html or (parsed := self._parse_html_content(html))[1]:
             return False
         parser = parsed[0]
+        assert parser is not None
         if result := self.read_ffe_state(parser, url, admin):
             logger.debug('Session initialized.')
         return result
@@ -476,7 +477,7 @@ class FFESession(Session):
                 return UnexpectedFailureFFEUploadStatus()
             __, error = self._parse_html_content(html)
             if error:
-                self.report_error('Upload failed: %s', error)
+                logger.error('Upload failed: %s', error)
                 return UnexpectedFailureFFEUploadStatus()
 
         if not set_visible:
