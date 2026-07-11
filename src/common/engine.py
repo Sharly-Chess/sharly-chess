@@ -548,7 +548,7 @@ class Engine:
                             valid_asset_names: list[str] = [
                                 f'sharly-chess-{version}-windows.zip',
                                 f'sharly-chess-{version}.zip',
-                                f'Sharly Chess Setup {version}.exe',
+                                f'Sharly Chess Installer {version}.exe',
                             ]
                         case 'darwin':
                             valid_asset_names = [
