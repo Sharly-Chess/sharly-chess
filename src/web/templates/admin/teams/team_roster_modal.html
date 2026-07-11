@@ -9,6 +9,12 @@
             <h2 class="modal-title">
                 {{ _('Roster — %(team)s', team=admin_team.name) }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
             <h5 class="mb-2">
@@ -166,16 +172,6 @@
                     {% endfor %}
                 </form>
             {% endif %}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                data-bs-dismiss="modal"
-                class="btn btn-secondary text-nowrap"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

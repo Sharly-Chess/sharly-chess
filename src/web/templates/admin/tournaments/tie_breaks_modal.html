@@ -18,9 +18,31 @@
                     )) }}
                 ></i>
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         {% set has_custom_sets = tie_break_set_custom_names|length > 0 %}
         <div class="modal-body">
+            {% if not rule_set_managed %}
+                <div class="d-flex justify-content-end mb-3">
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        hx-get="{{ url_for(
+                            'admin-tie-break-create-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                        ) }}"
+                        hx-indicator="#please-wait"
+                    >
+                        <i class="bi-plus-square-fill pe-1"></i>
+                        {{ _('Add tie-break') }}
+                    </button>
+                </div>
+            {% endif %}
             {% if success_message %}
                 {% with type='success', message=success_message %}
                     {% include '/common/alert.html' %}
@@ -366,30 +388,6 @@
                         </div>
                     </div>
                 {% endif %}
-            {% endif %}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-            {% if not rule_set_managed %}
-                <button
-                    class="btn btn-primary text-nowrap"
-                    hx-get="{{ url_for(
-                        'admin-tie-break-create-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                    ) }}"
-                    hx-indicator="#please-wait"
-                >
-                    <i class="bi-plus-square-fill pe-1"></i>
-                    {{ _('Add tie-break') }}
-                </button>
             {% endif %}
         </div>
     </div>

@@ -11,7 +11,13 @@
     style="--bs-modal-width: min(95vw, 480px);"
 >
     <div class="modal-content">
-        <div class="modal-header d-flex flex-column">
+        <div class="modal-header d-flex flex-column position-relative">
+            <button
+                type="button"
+                class="btn-close position-absolute top-0 end-0 mt-3 me-3"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
             <h2 class="modal-title fs-5 fw-bold text-center w-100">
                 {{ team_board.team_a.name }}
                 {% if team_board.team_b %}
@@ -89,16 +95,6 @@
             {% else %}
                 </div>
             {% endif %}
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

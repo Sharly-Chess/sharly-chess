@@ -357,10 +357,13 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _admin_validate_screen_set_update_data(
+    def _read_screen_set_form_data(
         web_context: ScreenAdminWebContext,
         data: dict[str, str] | None = None,
-    ) -> StoredScreenSet:
+    ) -> tuple[dict[str, Any] | None, dict[str, str]]:
+        """Validate the screen-set form. Returns a (values, errors) tuple: the
+        values dict (tournament_id/name/first/last/fixed_boards_str) is None
+        when validation failed."""
         errors: dict[str, str] = {}
         if data is None:
             data = {}
@@ -374,7 +377,6 @@ class ScreenAdminController(BaseEventAdminController):
 
         event = web_context.get_admin_event()
         screen = web_context.get_admin_screen()
-        screen_set = web_context.get_admin_screen_set()
         try:
             if len(event.tournaments_by_id) == 1:
                 tournament_id = list(event.tournaments_by_id.keys())[0]
@@ -421,19 +423,17 @@ class ScreenAdminController(BaseEventAdminController):
                             ).format(fixed_board_str=fixed_board_str)
                             break
 
-        assert tournament_id is not None
+        if errors:
+            return None, errors
 
-        return StoredScreenSet(
-            id=screen_set.id,
-            screen_id=screen.id,
-            name=name,
-            tournament_id=tournament_id,
-            order=screen_set.order,
-            fixed_boards_str=fixed_boards_str,
-            first=first,
-            last=last,
-            errors=errors,
-        )
+        assert tournament_id is not None
+        return {
+            'tournament_id': tournament_id,
+            'name': name,
+            'first': first,
+            'last': last,
+            'fixed_boards_str': fixed_boards_str,
+        }, errors
 
     @classmethod
     def _admin_event_screens_render(
@@ -723,8 +723,12 @@ class ScreenAdminController(BaseEventAdminController):
                     'errors': errors,
                 }
             case 'screen_sets':
+                template_context |= {
+                    'modal': modal,
+                }
+            case 'screen_set_form':
                 if data is None:
-                    if web_context.admin_screen_set:
+                    if action == 'update' and web_context.admin_screen_set:
                         stored_screen_set = (
                             web_context.admin_screen_set.stored_screen_set
                         )
@@ -746,18 +750,6 @@ class ScreenAdminController(BaseEventAdminController):
                                 stored_screen_set.last
                             ),
                         }
-                        screen = web_context.get_admin_screen()
-                        if screen.type in [
-                            ScreenType.BOARDS,
-                            ScreenType.INPUT,
-                        ]:
-                            data['fixed_boards_str'] = WebContext.value_to_form_data(
-                                stored_screen_set.fixed_boards_str
-                            )
-                        stored_screen_set = cls._admin_validate_screen_set_update_data(
-                            web_context, data
-                        )
-                        errors = stored_screen_set.errors
                     else:
                         data = {}
                 if errors is None:
@@ -1107,10 +1099,27 @@ class ScreenAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/screen-sets-set-modal/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
-        name='admin-screen-sets-set-modal',
+        path='/screen-set-modal/create/{event_uniq_id:str}/{screen_id:int}',
+        name='admin-screen-set-create-modal',
     )
-    async def htmx_admin_screen_sets_set_modal(
+    async def htmx_admin_screen_set_create_modal(
+        self,
+        request: HTMXRequest,
+        screen_id: int,
+    ) -> Template | Redirect:
+        return self._admin_event_screens_render(
+            request,
+            modal='screen_set_form',
+            action='create',
+            screen_id=screen_id,
+            screen_set_id=None,
+        )
+
+    @get(
+        path='/screen-set-modal/update/{event_uniq_id:str}/{screen_id:int}/{screen_set_id:int}',
+        name='admin-screen-set-update-modal',
+    )
+    async def htmx_admin_screen_set_update_modal(
         self,
         request: HTMXRequest,
         screen_id: int,
@@ -1118,7 +1127,8 @@ class ScreenAdminController(BaseEventAdminController):
     ) -> Template | Redirect:
         return self._admin_event_screens_render(
             request,
-            modal='screen_sets',
+            modal='screen_set_form',
+            action='update',
             screen_id=screen_id,
             screen_set_id=screen_set_id,
         )
@@ -1135,7 +1145,7 @@ class ScreenAdminController(BaseEventAdminController):
         ],
     ) -> Template | Redirect:
         match action:
-            case 'delete' | 'clone' | 'update' | 'add' | 'reorder':
+            case 'delete' | 'clone' | 'create' | 'update' | 'reorder':
                 web_context: ScreenAdminWebContext = ScreenAdminWebContext(
                     request,
                     screen_id=screen_id,
@@ -1145,32 +1155,37 @@ class ScreenAdminController(BaseEventAdminController):
                 raise ValueError(f'action=[{action}]')
         event = web_context.get_admin_event()
         screen = web_context.get_admin_screen()
-        match action:
-            case 'delete':
-                if len(screen.sorted_screen_sets) <= 1:
-                    raise ClientException(
-                        'The last set of a screen can not be deleted.'
-                    )
-            case 'update' | 'clone' | 'add' | 'reorder':
-                pass
-            case _:
-                raise ValueError(f'action=[{action}]')
-        next_screen_set_id: int | None = None
+        if action == 'delete' and len(screen.sorted_screen_sets) <= 1:
+            raise ClientException('The last set of a screen can not be deleted.')
         with EventDatabase(event.uniq_id, write=True) as event_database:
             match action:
-                case 'update':
-                    stored_screen_set: StoredScreenSet = (
-                        self._admin_validate_screen_set_update_data(web_context, data)
-                    )
-                    if stored_screen_set.errors:
+                case 'create' | 'update':
+                    values, errors = self._read_screen_set_form_data(web_context, data)
+                    if values is None:
                         return self._admin_event_screens_render(
                             request,
-                            modal='screen_sets',
+                            modal='screen_set_form',
+                            action=action,
                             screen_id=screen_id,
                             screen_set_id=screen_set_id,
                             data=data,
-                            errors=stored_screen_set.errors,
+                            errors=errors,
                         )
+                    if action == 'create':
+                        stored_screen_set: StoredScreenSet = (
+                            event_database.add_stored_screen_set(
+                                screen.id, values['tournament_id']
+                            )
+                        )
+                    else:
+                        existing = web_context.get_admin_screen_set().stored_screen_set
+                        assert existing is not None
+                        stored_screen_set = existing
+                        stored_screen_set.tournament_id = values['tournament_id']
+                    stored_screen_set.name = values['name']
+                    stored_screen_set.first = values['first']
+                    stored_screen_set.last = values['last']
+                    stored_screen_set.fixed_boards_str = values['fixed_boards_str']
                     event_database.update_stored_screen_set(stored_screen_set)
                 case 'delete':
                     screen_set = web_context.get_admin_screen_set()
@@ -1179,15 +1194,7 @@ class ScreenAdminController(BaseEventAdminController):
                 case 'clone':
                     screen_set = web_context.get_admin_screen_set()
                     assert screen_set.id is not None
-                    stored_screen_set = event_database.clone_stored_screen_set(
-                        screen_set.id, screen.id
-                    )
-                    next_screen_set_id = stored_screen_set.id
-                case 'add':
-                    stored_screen_set = event_database.add_stored_screen_set(
-                        screen.id, list(event.tournaments_by_id.keys())[0]
-                    )
-                    next_screen_set_id = stored_screen_set.id
+                    event_database.clone_stored_screen_set(screen_set.id, screen.id)
                 case 'reorder':
                     event_database.reorder_stored_screen_sets(screen.id, data['item'])
                 case _:
@@ -1197,15 +1204,15 @@ class ScreenAdminController(BaseEventAdminController):
             request,
             modal='screen_sets',
             screen_id=screen_id,
-            screen_set_id=next_screen_set_id,
+            screen_set_id=None,
             reload_event=True,
         )
 
     @post(
-        path='/screen-set-add/{event_uniq_id:str}/{screen_id:int}',
-        name='admin-screen-set-add',
+        path='/screen-set-create/{event_uniq_id:str}/{screen_id:int}',
+        name='admin-screen-set-create',
     )
-    async def htmx_admin_screen_set_add(
+    async def htmx_admin_screen_set_create(
         self,
         request: HTMXRequest,
         screen_id: int,
@@ -1216,7 +1223,7 @@ class ScreenAdminController(BaseEventAdminController):
     ) -> Template | Redirect:
         return self._admin_screen_sets_update(
             request,
-            action='add',
+            action='create',
             screen_id=screen_id,
             screen_set_id=None,
             data=data,

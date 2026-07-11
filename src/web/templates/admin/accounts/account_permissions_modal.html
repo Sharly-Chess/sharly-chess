@@ -7,8 +7,40 @@
             <h2 class="modal-title">
                 {{ _('Permissions list') }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
+            <div class="d-flex justify-content-end mb-3">
+                <span {{ macros.tooltip_attributes(
+                    'info',
+                    _('Add a permission to the account.')
+                    if can_add_permission else
+                    _('You can\'t add any more permission to this account.'),
+                    'top'
+                ) }}>
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        {% if can_add_permission %}
+                            hx-get="{{ url_for(
+                                'admin-account-permission-create-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                account_id=admin_account.id
+                            ) }}"
+                            hx-indicator="#please-wait"
+                        {% else %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi-plus-square-fill pe-1"></i>
+                        {{ _('Add') }}
+                    </button>
+                </span>
+            </div>
             <h4 class="mb-3">
                 {{ _('%(string)s:', string=_('Account')) }}
                 {{ admin_account.full_name }}
@@ -81,41 +113,6 @@
                     </div>
                 {% endfor %}
             </div>
-        </div>
-        <div class="modal-footer">
-            <div class="flex-grow-1"></div>
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-            <span {{ macros.tooltip_attributes(
-                'info',
-                _('Add a permission to the account.')
-                if can_add_permission else
-                _('You can\'t add any more permission to this account.'),
-                'top'
-            ) }}>
-                <button
-                    class="btn btn-primary text-nowrap"
-                    {% if can_add_permission %}
-                        hx-get="{{ url_for(
-                            'admin-account-permission-create-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            account_id=admin_account.id
-                        ) }}"
-                        hx-indicator="#please-wait"
-                    {% else %}
-                        disabled
-                    {% endif %}
-                >
-                    <i class="bi-plus-square-fill pe-1"></i>
-                    {{ _('Add') }}
-                </button>
-            </span>
         </div>
     </div>
 </div>

@@ -789,6 +789,10 @@ table.prominent tr.flat-pair-selected > th {
   background-color: var(--bs-body-bg) !important;
 }
 
+.admin-screen-set-div {
+  background-color: var(--bs-body-bg);
+}
+
 [data-bs-theme=dark] table.prominent tr.separator td {
     border-top: 1px solid rgba(var(--bs-primary-rgb), 0.3);
 }

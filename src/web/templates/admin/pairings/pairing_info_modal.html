@@ -6,6 +6,12 @@
             <h2 class="modal-title">
                 {{ _('Pairing information for round %(round)d', round=admin_round) }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
 
         <div class="modal-body">
@@ -120,16 +126,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>
