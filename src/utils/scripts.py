@@ -43,7 +43,7 @@ def init_script() -> list[str]:
 
     # Has to be executed before plugin_manager to avoid initializing from the wrong path
     path_parser = argparse.ArgumentParser(add_help=False)
-    path_parser.add_argument('--path', '-p', default=str(default_workdir()))
+    path_parser.add_argument('--path', '-p')
     args, remaining_args = path_parser.parse_known_args()
     if args.path:
         path = Path(args.path)

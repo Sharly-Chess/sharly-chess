@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 from packaging.version import Version
 
 from common.exception import SharlyChessException
+from utils.file import shutil_delete_onerror
 from utils.program_variables import MACOS_SUPPORT_DIR, ProgramVar
 
 
@@ -105,8 +106,10 @@ MANUAL_PATH_USED = os.getenv('SC_MANUAL_PATH_USED') == '1'
 
 
 def _app_data_dir() -> Path:
-    if TEST_ENV or MANUAL_PATH_USED:
+    if MANUAL_PATH_USED:
         return Path()
+    if TEST_ENV:
+        return TEST_DATA_DIR / 'base-data'
     data_dir_val = ProgramVar.DATA_DIR.read_value()
     if data_dir_val:
         return Path(data_dir_val)
@@ -115,7 +118,8 @@ def _app_data_dir() -> Path:
     return default
 
 
-BASE_DIR: Path = _app_base_dir()
+BASE_DIR = _app_base_dir()
+TEST_DATA_DIR = BASE_DIR / 'tests' / 'tmp'
 
 # Architecture of the directory containing the app's data.
 DATA_DIR = _app_data_dir()
@@ -152,6 +156,10 @@ EXAMPLE_PLACE_CARDS_DIR = EXAMPLES_DIR / 'place_cards'
 # rather than the system /tmp (a small tmpfs). On other platforms, None lets tempfile
 # use the OS default so behaviour is unchanged.
 TEMPFILE_DIR: Path | None = TMP_DIR if FLATPAK_ID else None
+
+if TEST_ENV and TEST_DATA_DIR.exists() and not MANUAL_PATH_USED:
+    # Clear the test data directory when the test run (not in server mode)
+    shutil.rmtree(TEST_DATA_DIR, onerror=shutil_delete_onerror)
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 if not os.access(DATA_DIR, os.W_OK):
