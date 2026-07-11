@@ -46,7 +46,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     def _upload_results_context(
         web_context: BaseEventAdminWebContext,
     ) -> dict[str, Any]:
-        tournaments = web_context.get_admin_event().tournaments
+        event = web_context.get_admin_event()
+        tournaments = event.tournaments
         document_types_by_tournament = {}
         for tournament in tournaments:
             document_urls = CustomUploadUtils.get_tournament_plugin_data(
@@ -62,7 +63,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 ).get_type(document_id)
                 document_types.append(document_type)
             document_types_by_tournament[tournament.id] = document_types
+        event_plugin_data = CustomUploadUtils.get_event_plugin_data(event)
         return web_context.template_context | {
+            'connection_host': event_plugin_data.ftp_host,
             'allowed_tournaments': CustomUploadAdminEventController._allowed_tournaments(
                 web_context
             ),

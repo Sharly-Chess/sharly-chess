@@ -9,7 +9,7 @@
         </div>
         <div class="modal-body">
             <!-- TODO: support multiple connections instead of only a default one -->
-            <h3> {{ _('Connection') }}
+            <h3> {{ _('Connection:') }} {{ connection_host }}
                 <span {{ macros.tooltip_attributes('', _('Edit connection')) }}>
                     <button
                         type="button"
