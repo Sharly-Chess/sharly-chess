@@ -1,8 +1,4 @@
 #, python-brace-format
-msgid " [{default_choice}: {default_value}]: "
-msgstr " [{default_choice} : {default_value}] : "
-
-#, python-brace-format
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr " [{yes_answer}/{no_answer}] ?"
 
@@ -2350,10 +2346,6 @@ msgstr "Classement par confrontation directe pour les équipes à égalité à l
 msgid "Director:"
 msgstr "Directeur·ice :"
 
-#, python-brace-format
-msgid "Directory [{folder}] already exists."
-msgstr "Le dossier [{folder}] existe déjà."
-
 msgid "Disabled"
 msgstr "Désactivé"
 
@@ -2455,16 +2447,8 @@ msgstr "Voulez-vous ajouter le nouveau dossier des données à la liste d'exclus
 msgid "Do you want to install the update now?"
 msgstr "Voulez-vous installer la mise à jour maintenant ?"
 
-#, python-brace-format
-msgid "Do you want to recover the data of release [{version}]"
-msgstr "Voulez-vous récupérer les données de la version [{version}]"
-
 msgid "Do you want to try again?"
 msgstr "Voulez-vous réessayer ?"
-
-#, python-brace-format
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
-msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
 
 #, python-brace-format
 msgid "Document [{document}] has been generated in another tab."
@@ -2502,10 +2486,6 @@ msgstr "Télécharger un fichier contenant les joueur·euses correspondant à la
 
 msgid "Download tournament fees"
 msgstr "Télécharger les droits d'homologation"
-
-#, python-brace-format
-msgid "Downloading failed with code [{code}]."
-msgstr "Le téléchargement a échoué avec le code [{code}]."
 
 msgid "Drag players between the board slots and the substitutes bench. Empty slots become holes in the lineup."
 msgstr "Faire glisser les joueur·euses entre les places sur les échiquiers et le banc des remplaçant·es. Les places vides seront des trous dans la composition."
@@ -3051,14 +3031,6 @@ msgstr "MF"
 
 msgid "FORFEIT"
 msgstr "FORFAIT"
-
-#, python-brace-format
-msgid "Failed to process DMG file: [{ex}]."
-msgstr "Échec du traitement du fichier DMG : [{ex}]."
-
-#, python-brace-format
-msgid "Failed to read [{download_url}]: [{ex}]."
-msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
 
 msgid "Faroe Islands"
 msgstr "Îles Féroé"
@@ -3632,10 +3604,6 @@ msgid "Installation of [{lib}] failed."
 msgstr "L'installation de la bibliothèque [{lib}] a échoué."
 
 #, python-brace-format
-msgid "Installation of release [{version}] failed, exiting."
-msgstr "L'nstallation de la version [{version}] a échoué, abandon."
-
-#, python-brace-format
 msgid "Installed [{lib}]."
 msgstr "La bibliothèque [{lib}] a été installée."
 
@@ -3692,10 +3660,6 @@ msgstr "Format d'email invalide."
 #, python-brace-format
 msgid "Invalid expression [{expression}]"
 msgstr "Expression non valide [{expression}]"
-
-#, python-brace-format
-msgid "Invalid federation [{federation}]."
-msgstr "Fédération [{federation}] non valide."
 
 #, python-brace-format
 msgid "Invalid file extension [{extension}] (expected: {expected})."
@@ -6073,10 +6037,6 @@ msgstr "Actualiser la page."
 msgid "Regular event"
 msgstr "Évènement régulier"
 
-#, python-brace-format
-msgid "Release {version} has been installed in [{folder}]."
-msgstr "La nouvelle version {version} a été installée dans [{folder}]."
-
 msgid "Reload the page"
 msgstr "Recharger la page"
 
@@ -6719,6 +6679,7 @@ msgstr "La configuration de Sharly Chess a été mise à jour."
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
 
+#, python-brace-format
 msgid "Sharly Chess {latest} is available, you have {current}."
 msgstr "Sharly Chess {latest} est disponible, vous avez la version {current}."
 
@@ -7555,6 +7516,9 @@ msgstr "Les tournois sur lesquels la permission s'applique."
 msgid "The type of criterion used to filter the players."
 msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
 
+msgid "The update could not be downloaded. Consult the logs for more details."
+msgstr "La mise à jour n'a pas pu être téléchargée. Consultez les logs pour plus d'informations."
+
 #, python-brace-format
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
@@ -8159,10 +8123,6 @@ msgstr "Non définis"
 
 msgid "Undefined *** SINGULAR"
 msgstr "Non défini"
-
-#, python-brace-format
-msgid "Unexpected error during installation: [{ex}]."
-msgstr "Erreur inattendue pendant l’installation : [{ex}]."
 
 #, python-brace-format
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
@@ -8949,11 +8909,13 @@ msgstr "incomplète"
 msgid "last"
 msgstr "dernier"
 
+#, python-brace-format
 msgid "last search a minute ago"
 msgid_plural "last search {count} minutes ago"
 msgstr[0] "dernière recherche il y a une minute"
 msgstr[1] "dernière recherche il y a {count} minutes"
 
+#, python-brace-format
 msgid "last search an hour ago"
 msgid_plural "last search {count} hours ago"
 msgstr[0] "dernière recherche il y a une heure"
@@ -9247,12 +9209,6 @@ msgstr[0] "{count} club représenté"
 msgstr[1] "{count} clubs représentés"
 
 #, python-brace-format
-msgid "{count} event"
-msgid_plural "{count} events"
-msgstr[0] "{count} évènement"
-msgstr[1] "{count} évènements"
-
-#, python-brace-format
 msgid "{count} federation represented"
 msgid_plural "{count} federations represented"
 msgstr[0] "{count} fédération représentée"
@@ -9382,22 +9338,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Number of screen types"
-#~ msgstr "Nombre de types d'écran"
-
-#~ msgid "Save the set or cancel."
-#~ msgstr "Enregistrez l'ensemble ou annulez."
-
-#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
-#~ msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé."
-
-#~ msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-#~ msgstr "Le nom de l'écran multiple, facultatif. Les jetons suivants sont automatiquement remplacés par les numéros d'échiquier ou les noms des joueur·euses) :  %%f=premier, %%l=dernier, %%t=tournoi."
-
-#~ msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
-#~ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
-
-#~ msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
-#~ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
 

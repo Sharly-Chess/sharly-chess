@@ -1,8 +1,4 @@
 #, python-brace-format
-msgid " [{default_choice}: {default_value}]: "
-msgstr ""
-
-#, python-brace-format
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr ""
 
@@ -2053,6 +2049,7 @@ msgstr ""
 msgid "Current title:"
 msgstr ""
 
+#, python-brace-format
 msgid "Current version: Sharly Chess {version}"
 msgstr ""
 
@@ -2349,10 +2346,6 @@ msgstr ""
 msgid "Director:"
 msgstr ""
 
-#, python-brace-format
-msgid "Directory [{folder}] already exists."
-msgstr ""
-
 msgid "Disabled"
 msgstr ""
 
@@ -2454,14 +2447,6 @@ msgstr ""
 msgid "Do you want to install the update now?"
 msgstr ""
 
-#, python-brace-format
-msgid "Do you want to recover the data of release [{version}]"
-msgstr ""
-
-#, python-brace-format
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
-msgstr ""
-
 msgid "Do you want to try again?"
 msgstr ""
 
@@ -2500,10 +2485,6 @@ msgid "Download the players matching the search into a file."
 msgstr ""
 
 msgid "Download tournament fees"
-msgstr ""
-
-#, python-brace-format
-msgid "Downloading failed with code [{code}]."
 msgstr ""
 
 msgid "Drag players between the board slots and the substitutes bench. Empty slots become holes in the lineup."
@@ -3049,14 +3030,6 @@ msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
 msgid "FORFEIT"
-msgstr ""
-
-#, python-brace-format
-msgid "Failed to process DMG file: [{ex}]."
-msgstr ""
-
-#, python-brace-format
-msgid "Failed to read [{download_url}]: [{ex}]."
 msgstr ""
 
 msgid "Faroe Islands"
@@ -3631,10 +3604,6 @@ msgid "Installation of [{lib}] failed."
 msgstr ""
 
 #, python-brace-format
-msgid "Installation of release [{version}] failed, exiting."
-msgstr ""
-
-#, python-brace-format
 msgid "Installed [{lib}]."
 msgstr ""
 
@@ -3690,10 +3659,6 @@ msgstr ""
 
 #, python-brace-format
 msgid "Invalid expression [{expression}]"
-msgstr ""
-
-#, python-brace-format
-msgid "Invalid federation [{federation}]."
 msgstr ""
 
 #, python-brace-format
@@ -6070,10 +6035,6 @@ msgstr ""
 msgid "Regular event"
 msgstr ""
 
-#, python-brace-format
-msgid "Release {version} has been installed in [{folder}]."
-msgstr ""
-
 msgid "Reload the page"
 msgstr ""
 
@@ -6716,6 +6677,7 @@ msgstr ""
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
 
+#, python-brace-format
 msgid "Sharly Chess {latest} is available, you have {current}."
 msgstr ""
 
@@ -8161,10 +8123,6 @@ msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
 
 #, python-brace-format
-msgid "Unexpected error during installation: [{ex}]."
-msgstr ""
-
-#, python-brace-format
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr ""
 
@@ -8949,11 +8907,13 @@ msgstr "incomplete"
 msgid "last"
 msgstr ""
 
+#, python-brace-format
 msgid "last search a minute ago"
 msgid_plural "last search {count} minutes ago"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "last search an hour ago"
 msgid_plural "last search {count} hours ago"
 msgstr[0] ""
@@ -9247,12 +9207,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-brace-format
-msgid "{count} event"
-msgid_plural "{count} events"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-brace-format
 msgid "{count} federation represented"
 msgid_plural "{count} federations represented"
 msgstr[0] ""
@@ -9382,16 +9336,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Number of screen types"
-#~ msgstr ""
-
-#~ msgid "Save the set or cancel."
-#~ msgstr ""
-
-#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
-#~ msgstr ""
-
-#~ msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-#~ msgstr ""
 

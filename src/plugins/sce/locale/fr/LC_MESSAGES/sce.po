@@ -1,446 +1,425 @@
-#, python-format
-msgid "%(string)s:"
-msgstr "%(string)s :"
+#~ msgid "%(string)s:"
+#~ msgstr "%(string)s :"
 
-#, python-format
-msgid "%(string)s: %(value)s"
-msgstr "%(string)s : %(value)s"
+#~ msgid "%(string)s: %(value)s"
+#~ msgstr "%(string)s : %(value)s"
 
-msgid "All player conflicts resolved."
-msgstr "Tous les conflits de joueur·euses sont résolus."
+#~ msgid "All player conflicts resolved."
+#~ msgstr "Tous les conflits de joueur·euses sont résolus."
 
-msgid "All player duplicates resolved."
-msgstr "Tous les doublons de joueur·euses sont résolus."
+#~ msgid "All player duplicates resolved."
+#~ msgstr "Tous les doublons de joueur·euses sont résolus."
 
-msgid "All the local tournaments are connected to a Sharly-Chess.com tournament."
-msgstr "Tous les tournois locaux sont connectés à un tournoi Sharly-Chess.com."
+#~ msgid "All the local tournaments are connected to a Sharly-Chess.com tournament."
+#~ msgstr "Tous les tournois locaux sont connectés à un tournoi Sharly-Chess.com."
 
-msgid "All the tournaments of the Sharly-Chess.com event are already imported."
-msgstr "Tous les tournois de l'évènement Sharly-Chess.com ont déjà été importés."
+#~ msgid "All the tournaments of the Sharly-Chess.com event are already imported."
+#~ msgstr "Tous les tournois de l'évènement Sharly-Chess.com ont déjà été importés."
 
-msgid "An error occurred, consult the logs for more details."
-msgstr "Une erreur s'est produite, consultez les logs pour plus de détails."
+#~ msgid "An error occurred, consult the logs for more details."
+#~ msgstr "Une erreur s'est produite, consultez les logs pour plus de détails."
 
-msgid "An unexpected error occurred while trying to reach Sharly-Chess.com. Consult the logs for more details."
-msgstr "Une erreur inattendue s'est produite en essayant de contacter Sharly-Chess.com, consultez les logs pour plus d'informations."
+#~ msgid "An unexpected error occurred while trying to reach Sharly-Chess.com. Consult the logs for more details."
+#~ msgstr "Une erreur inattendue s'est produite en essayant de contacter Sharly-Chess.com, consultez les logs pour plus d'informations."
 
-msgid "Authorisation"
-msgstr "Autorisation"
+#~ msgid "Authorisation"
+#~ msgstr "Autorisation"
 
-msgid "Authorisation failed or expired."
-msgstr "L'autorisation a échoué ou expiré."
+#~ msgid "Authorisation failed or expired."
+#~ msgstr "L'autorisation a échoué ou expiré."
 
-msgid "Authorization expired, please try again."
-msgstr "Autorisation expirée, merci de réessayer."
+#~ msgid "Authorization expired, please try again."
+#~ msgstr "Autorisation expirée, merci de réessayer."
 
-msgid "Authorization failed, consult the logs for more details."
-msgstr "Autorisation échouée, consultez les logs pour plus de détails."
+#~ msgid "Authorization failed, consult the logs for more details."
+#~ msgstr "Autorisation échouée, consultez les logs pour plus de détails."
 
-msgid "Authorization failed, possible CSRF attack!"
-msgstr "Autorisation échouée, possible attaque CSRF !"
+#~ msgid "Authorization failed, possible CSRF attack!"
+#~ msgstr "Autorisation échouée, possible attaque CSRF !"
 
-msgid "Auto-synchronisation"
-msgstr "Synchronisation automatique"
+#~ msgid "Auto-synchronisation"
+#~ msgstr "Synchronisation automatique"
 
-msgid "Auto-upload disabled"
-msgstr "Mise en ligne automatique désactivée"
+#~ msgid "Auto-upload disabled"
+#~ msgstr "Mise en ligne automatique désactivée"
 
-msgid "Auto-upload enabled"
-msgstr "Mise en ligne automatique activée"
+#~ msgid "Auto-upload enabled"
+#~ msgstr "Mise en ligne automatique activée"
 
-msgid "Back"
-msgstr "Retour"
+#~ msgid "Back"
+#~ msgstr "Retour"
 
-msgid "Choose"
-msgstr "Choisir"
+#~ msgid "Choose"
+#~ msgstr "Choisir"
 
-msgid "Close"
-msgstr "Fermer"
+#~ msgid "Close"
+#~ msgstr "Fermer"
 
-msgid "Closing"
-msgstr "Fermeture"
+#~ msgid "Closing"
+#~ msgstr "Fermeture"
 
-msgid "Club"
-msgstr "Club"
+#~ msgid "Club"
+#~ msgstr "Club"
 
-msgid "Comment"
-msgstr "Commentaire"
+#~ msgid "Comment"
+#~ msgstr "Commentaire"
 
-msgid "Configuration page of the event."
-msgstr "Page de configuration de l'évènement."
+#~ msgid "Configuration page of the event."
+#~ msgstr "Page de configuration de l'évènement."
 
-msgid "Configuration page of the tournament."
-msgstr "Page de configuration du tournoi."
+#~ msgid "Configuration page of the tournament."
+#~ msgstr "Page de configuration du tournoi."
 
-msgid "Conflict"
-msgstr "Conflit"
+#~ msgid "Conflict"
+#~ msgstr "Conflit"
 
-msgid "Criteria"
-msgstr "Critères"
+#~ msgid "Criteria"
+#~ msgstr "Critères"
 
-msgid "Data as it currently is on Sharly-Chess.com."
-msgstr "Les données actuelles sur Sharly-Chess.com."
+#~ msgid "Data as it currently is on Sharly-Chess.com."
+#~ msgstr "Les données actuelles sur Sharly-Chess.com."
 
-msgid "Data as it currently is on the local Sharly Chess application."
-msgstr "Les données actuelles sur l'application Sharly Chess locale."
+#~ msgid "Data as it currently is on the local Sharly Chess application."
+#~ msgstr "Les données actuelles sur l'application Sharly Chess locale."
 
-#, python-format
-msgid "Data as it was when it was last synchronized (%(last_sync_str)s)."
-msgstr "Les données telles qu'elle étaient lors de la dernière synchronisation (%(last_sync_str)s)."
+#~ msgid "Data as it was when it was last synchronized (%(last_sync_str)s)."
+#~ msgstr "Les données telles qu'elle étaient lors de la dernière synchronisation (%(last_sync_str)s)."
 
-msgid "Data synchronisation"
-msgstr "Synchronisation des données"
+#~ msgid "Data synchronisation"
+#~ msgstr "Synchronisation des données"
 
-msgid "Delete"
-msgstr "Supprimer"
+#~ msgid "Delete"
+#~ msgstr "Supprimer"
 
-msgid "Distributing the players is allowed only if all the tournaments are synchronized with Sharly-Chess.com."
-msgstr "La distribution des joueur·euses n'est permise que si tous les tournois sont synchronisés avec Sharly-Chess.com."
+#~ msgid "Distributing the players is allowed only if all the tournaments are synchronized with Sharly-Chess.com."
+#~ msgstr "La distribution des joueur·euses n'est permise que si tous les tournois sont synchronisés avec Sharly-Chess.com."
 
-msgid "Edit"
-msgstr "Modifier"
+#~ msgid "Edit"
+#~ msgstr "Modifier"
 
-msgid "Edit the player"
-msgstr "Modifier le·la joueur·euse"
+#~ msgid "Edit the player"
+#~ msgstr "Modifier le·la joueur·euse"
 
-msgid "Edit the tournament"
-msgstr "Modifier le tournoi"
+#~ msgid "Edit the tournament"
+#~ msgstr "Modifier le tournoi"
 
-msgid "Enable player check-in from Sharly-Chess.com."
-msgstr "Activer le pointage des joueur·euses depuis Sharly-Chess.com."
+#~ msgid "Enable player check-in from Sharly-Chess.com."
+#~ msgstr "Activer le pointage des joueur·euses depuis Sharly-Chess.com."
 
-msgid "End"
-msgstr "Fin"
+#~ msgid "End"
+#~ msgstr "Fin"
 
-#, python-brace-format
-msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
-msgstr "Erreur lors de la mise en ligne du tournoi [{tournament}], consultez les logs pour plus de détails."
+#~ msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
+#~ msgstr "Erreur lors de la mise en ligne du tournoi [{tournament}], consultez les logs pour plus de détails."
 
-#, python-brace-format
-msgid "Event [{event}] is not connected to a Sharly-Chess.com event."
-msgstr "L'évènement [{event}] n'est pas connecté à un évènement Sharly-Chess.com."
+#~ msgid "Event [{event}] is not connected to a Sharly-Chess.com event."
+#~ msgstr "L'évènement [{event}] n'est pas connecté à un évènement Sharly-Chess.com."
 
-#, python-brace-format
-msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
-msgstr "L'évènement [{event}] a été connecté avec succès à Sharly-Chess.com !"
+#~ msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
+#~ msgstr "L'évènement [{event}] a été connecté avec succès à Sharly-Chess.com !"
 
-#, python-brace-format
-msgid "Event [{event}] successfully imported!"
-msgstr "L'évènement [{event}] a été importé avec succès !"
+#~ msgid "Event [{event}] successfully imported!"
+#~ msgstr "L'évènement [{event}] a été importé avec succès !"
 
-msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified."
-msgstr "L'évènement a été archivé sur Sharly-Chess.com, il ne peut plus être modifié."
+#~ msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified."
+#~ msgstr "L'évènement a été archivé sur Sharly-Chess.com, il ne peut plus être modifié."
 
-msgid "Event is not connected to a Sharly-Chess.com event."
-msgstr "L'évènement n'est pas connecté à un évènement Sharly-Chess.com."
+#~ msgid "Event is not connected to a Sharly-Chess.com event."
+#~ msgstr "L'évènement n'est pas connecté à un évènement Sharly-Chess.com."
 
-msgid "Event on Sharly-Chess.com"
-msgstr "Évènement sur Sharly-Chess.com"
+#~ msgid "Event on Sharly-Chess.com"
+#~ msgstr "Évènement sur Sharly-Chess.com"
 
-msgid "FIDE ID"
-msgstr "Identifiant FIDE"
+#~ msgid "FIDE ID"
+#~ msgstr "Identifiant FIDE"
 
-msgid "Failure"
-msgstr "Échec"
+#~ msgid "Failure"
+#~ msgstr "Échec"
 
-msgid "Federation"
-msgstr "Fédération"
+#~ msgid "Federation"
+#~ msgstr "Fédération"
 
-msgid "First name"
-msgstr "Prénom"
+#~ msgid "First name"
+#~ msgstr "Prénom"
 
-msgid "Gender"
-msgstr "Genre"
+#~ msgid "Gender"
+#~ msgstr "Genre"
 
-msgid "Import Sharly-Chess.com tournaments that do not exist locally."
-msgstr "Importer les tournois Sharly-Chess.com qui n'existent pas localement."
+#~ msgid "Import Sharly-Chess.com tournaments that do not exist locally."
+#~ msgstr "Importer les tournois Sharly-Chess.com qui n'existent pas localement."
 
-msgid "Import a Sharly-Chess.com tournament"
-msgstr "Importer un tournoi Sharly-Chess.com"
+#~ msgid "Import a Sharly-Chess.com tournament"
+#~ msgstr "Importer un tournoi Sharly-Chess.com"
 
-msgid "Import from Sharly-Chess.com"
-msgstr "Importer depuis Sharly-Chess.com"
+#~ msgid "Import from Sharly-Chess.com"
+#~ msgstr "Importer depuis Sharly-Chess.com"
 
-msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc.)."
-msgstr "Intégration de la plateforme Sharly-Chess.com (pointage en ligne, mise en ligne de résultats, etc.)."
+#~ msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc.)."
+#~ msgstr "Intégration de la plateforme Sharly-Chess.com (pointage en ligne, mise en ligne de résultats, etc.)."
 
-msgid "Last name"
-msgstr "Nom"
+#~ msgid "Last name"
+#~ msgstr "Nom"
 
-msgid "Last synchronisation"
-msgstr "Dernière synchronisation"
+#~ msgid "Last synchronisation"
+#~ msgstr "Dernière synchronisation"
 
-#, python-brace-format
-msgid "Last synchronisation attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
-msgstr "La dernière tentative de synchronisation a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
+#~ msgid "Last synchronisation attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+#~ msgstr "La dernière tentative de synchronisation a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
-msgid "Last synchronisation attempt ran successfully."
-msgstr "La dernière tentative de synchronisation s'est exécutée avec succès."
+#~ msgid "Last synchronisation attempt ran successfully."
+#~ msgstr "La dernière tentative de synchronisation s'est exécutée avec succès."
 
-msgid "Last upload"
-msgstr "Dernière mise en ligne"
+#~ msgid "Last upload"
+#~ msgstr "Dernière mise en ligne"
 
-#, python-brace-format
-msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
-msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
+#~ msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+#~ msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
-msgid "Local"
-msgstr "Local"
+#~ msgid "Local"
+#~ msgstr "Local"
 
-msgid "Local players"
-msgstr "Joueur·euses locaux"
+#~ msgid "Local players"
+#~ msgstr "Joueur·euses locaux"
 
-msgid "Modified"
-msgstr "Modifié"
+#~ msgid "Modified"
+#~ msgstr "Modifié"
 
-msgid "Moving a player from a tournament synchronized with Sharly-Chess.com to non-synchronized tournament is not allowed."
-msgstr "Déplacer un·e joueur·euse d'un tournoi synchronisé avec Sharly-Chess.com à un tournoi non-synchronisé n'est pas autorisé."
+#~ msgid "Moving a player from a tournament synchronized with Sharly-Chess.com to non-synchronized tournament is not allowed."
+#~ msgstr "Déplacer un·e joueur·euse d'un tournoi synchronisé avec Sharly-Chess.com à un tournoi non-synchronisé n'est pas autorisé."
 
-msgid "Name"
-msgstr "Nom"
+#~ msgid "Name"
+#~ msgstr "Nom"
 
-msgid "Never synchronized"
-msgstr "Jamais synchronisé"
+#~ msgid "Never synchronized"
+#~ msgstr "Jamais synchronisé"
 
-msgid "Never uploaded"
-msgstr "Jamais mis en ligne"
+#~ msgid "Never uploaded"
+#~ msgstr "Jamais mis en ligne"
 
-msgid "No changes detected since the last upload."
-msgstr "Aucune modification détectée depuis la dernière mise en ligne."
+#~ msgid "No changes detected since the last upload."
+#~ msgstr "Aucune modification détectée depuis la dernière mise en ligne."
 
-msgid "No internet connection."
-msgstr "Pas de connection à internet."
+#~ msgid "No internet connection."
+#~ msgstr "Pas de connection à internet."
 
-msgid "No player to synchronize yet, import or upload tournaments first."
-msgstr "Aucun·e joueur·euse à synchroniser pour le moment, vous devez d'abord importer ou mettre en ligne un tournoi."
+#~ msgid "No player to synchronize yet, import or upload tournaments first."
+#~ msgstr "Aucun·e joueur·euse à synchroniser pour le moment, vous devez d'abord importer ou mettre en ligne un tournoi."
 
-msgid "Not scheduled"
-msgstr "Non programmé"
+#~ msgid "Not scheduled"
+#~ msgstr "Non programmé"
 
-msgid "Not started"
-msgstr "Non démarré"
+#~ msgid "Not started"
+#~ msgstr "Non démarré"
 
-msgid "Ongoing"
-msgstr "En cours"
+#~ msgid "Ongoing"
+#~ msgstr "En cours"
 
-msgid "Opening"
-msgstr "Ouverture"
+#~ msgid "Opening"
+#~ msgstr "Ouverture"
 
-msgid "Pending"
-msgstr "En attente"
+#~ msgid "Pending"
+#~ msgstr "En attente"
 
-msgid "Phone"
-msgstr "Téléphone"
+#~ msgid "Phone"
+#~ msgstr "Téléphone"
 
-#, python-brace-format
-msgid "Player [{player}] could not be deleted from Sharly-Chess.com."
-msgstr "Le·la joueur·euse [{player}] n'a pas pu être supprimé·e de Sharly-Chess.com."
+#~ msgid "Player [{player}] could not be deleted from Sharly-Chess.com."
+#~ msgstr "Le·la joueur·euse [{player}] n'a pas pu être supprimé·e de Sharly-Chess.com."
 
-#, python-brace-format
-msgid "Player [{player}] deleted."
-msgstr "Joueur·euse [{player}] supprimé·e."
+#~ msgid "Player [{player}] deleted."
+#~ msgstr "Joueur·euse [{player}] supprimé·e."
 
-msgid "Player conflicts detected during the last synchronisation attempt."
-msgstr "Conflits de joueur·euses détectés lors de la dernière synchronisation."
+#~ msgid "Player conflicts detected during the last synchronisation attempt."
+#~ msgstr "Conflits de joueur·euses détectés lors de la dernière synchronisation."
 
-msgid "Player duplicates and conflicts detected during the last synchronisation attempt."
-msgstr "Doublons et conflits de joueur·euses détectés lors de la dernière synchronisation."
+#~ msgid "Player duplicates and conflicts detected during the last synchronisation attempt."
+#~ msgstr "Doublons et conflits de joueur·euses détectés lors de la dernière synchronisation."
 
-msgid "Player duplicates detected during the last synchronisation attempt."
-msgstr "Doublons de joueur·euses détectés lors de la dernière synchronisation."
+#~ msgid "Player duplicates detected during the last synchronisation attempt."
+#~ msgstr "Doublons de joueur·euses détectés lors de la dernière synchronisation."
 
-msgid "Player has already been paired in the tournament, it no longer can be deleted."
-msgstr "Le·la joueur·euse ne peut être supprimé·e car déjà apparié·e dans le tournoi."
+#~ msgid "Player has already been paired in the tournament, it no longer can be deleted."
+#~ msgstr "Le·la joueur·euse ne peut être supprimé·e car déjà apparié·e dans le tournoi."
 
-msgid "Players in Sharly-Chess.com that can't be created in the local Sharly Chess application because they already exist."
-msgstr "Les joueur·euses de Sharly-Chess.com qui ne peuvent être créé·es dans l'application Sharly Chess locale car déjà existant·es."
+#~ msgid "Players in Sharly-Chess.com that can't be created in the local Sharly Chess application because they already exist."
+#~ msgstr "Les joueur·euses de Sharly-Chess.com qui ne peuvent être créé·es dans l'application Sharly Chess locale car déjà existant·es."
 
-msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
-msgstr "Les joueur·euses de l'application Sharly Chess locale qui ne peuvent être créé·es dans Sharly-Chess.com car déjà existant·es."
+#~ msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
+#~ msgstr "Les joueur·euses de l'application Sharly Chess locale qui ne peuvent être créé·es dans Sharly-Chess.com car déjà existant·es."
 
-msgid "Public page of the event."
-msgstr "Page publique de l'évènement."
+#~ msgid "Public page of the event."
+#~ msgstr "Page publique de l'évènement."
 
-msgid "Public page of the tournament."
-msgstr "Page publique du tournoi."
+#~ msgid "Public page of the tournament."
+#~ msgstr "Page publique du tournoi."
 
-msgid "Rating"
-msgstr "Classement"
+#~ msgid "Rating"
+#~ msgstr "Classement"
 
-msgid "Remaining conflicts"
-msgstr "Conflits restants"
+#~ msgid "Remaining conflicts"
+#~ msgstr "Conflits restants"
 
-#, python-format
-msgid "Resolve duplicated players (%(count)d)"
-msgstr "Résoudre les doublons de joueur·euses (%(count)d)"
+#~ msgid "Resolve duplicated players (%(count)d)"
+#~ msgstr "Résoudre les doublons de joueur·euses (%(count)d)"
 
-#, python-format
-msgid "Resolve player conflicts (%(count)d)"
-msgstr "Résoudre les conflits de joueur·euses (%(count)d)"
+#~ msgid "Resolve player conflicts (%(count)d)"
+#~ msgstr "Résoudre les conflits de joueur·euses (%(count)d)"
 
-#, python-format
-msgid "Resolve tournament conflicts (%(count)d)"
-msgstr "Résoudre les conflits de tournois (%(count)d)"
+#~ msgid "Resolve tournament conflicts (%(count)d)"
+#~ msgstr "Résoudre les conflits de tournois (%(count)d)"
 
-msgid "Results upload"
-msgstr "Mise en ligne des résultats"
+#~ msgid "Results upload"
+#~ msgstr "Mise en ligne des résultats"
 
-msgid "Retry"
-msgstr "Ré-essayer"
+#~ msgid "Retry"
+#~ msgstr "Ré-essayer"
 
-#, python-format
-msgid "Round #%(round)d"
-msgstr "Ronde n°%(round)d"
+#~ msgid "Round #%(round)d"
+#~ msgstr "Ronde n°%(round)d"
 
-msgid "Rounds"
-msgstr "Rondes"
+#~ msgid "Rounds"
+#~ msgstr "Rondes"
 
-msgid "Scan to access the event on Sharly-Chess.com."
-msgstr "Scannez pour accéder à l'évènement sur le site Sharly-Chess.com."
+#~ msgid "Scan to access the event on Sharly-Chess.com."
+#~ msgstr "Scannez pour accéder à l'évènement sur le site Sharly-Chess.com."
 
-msgid "Scan to access the tournament on Sharly-Chess.com."
-msgstr "Scannez pour accéder au tournoi sur le site Sharly-Chess.com."
+#~ msgid "Scan to access the tournament on Sharly-Chess.com."
+#~ msgstr "Scannez pour accéder au tournoi sur le site Sharly-Chess.com."
 
-msgid "Schedule"
-msgstr "Horaires"
+#~ msgid "Schedule"
+#~ msgstr "Horaires"
 
-msgid "Sharly-Chess.com authorization canceled."
-msgstr "Authorisation Sharly-Chess.com annulée."
+#~ msgid "Sharly-Chess.com authorization canceled."
+#~ msgstr "Authorisation Sharly-Chess.com annulée."
 
-msgid "Sharly-Chess.com duplicates"
-msgstr "Doublons Sharly-Chess.com"
+#~ msgid "Sharly-Chess.com duplicates"
+#~ msgstr "Doublons Sharly-Chess.com"
 
-msgid "Sharly-Chess.com event not found, it most likely has been deleted."
-msgstr "L'évènement Sharly-Chess.com est introuvable, il a probablement été supprimé."
+#~ msgid "Sharly-Chess.com event not found, it most likely has been deleted."
+#~ msgstr "L'évènement Sharly-Chess.com est introuvable, il a probablement été supprimé."
 
-msgid "Sharly-Chess.com is not reachable at the moment."
-msgstr "Sharly-Chess.com n'est pas accessible pour le moment."
+#~ msgid "Sharly-Chess.com is not reachable at the moment."
+#~ msgstr "Sharly-Chess.com n'est pas accessible pour le moment."
 
-msgid "Sharly-Chess.com player conflicts"
-msgstr "Conflits de joueur·euses Sharly-Chess.com"
+#~ msgid "Sharly-Chess.com player conflicts"
+#~ msgstr "Conflits de joueur·euses Sharly-Chess.com"
 
-msgid "Sharly-Chess.com players"
-msgstr "Joueur·euses Sharly-Chess.com"
+#~ msgid "Sharly-Chess.com players"
+#~ msgstr "Joueur·euses Sharly-Chess.com"
 
-msgid "Sharly-Chess.com tournament"
-msgstr "Tournoi Sharly-Chess.com"
+#~ msgid "Sharly-Chess.com tournament"
+#~ msgstr "Tournoi Sharly-Chess.com"
 
-msgid "Sharly-Chess.com tournament conflicts"
-msgstr "Conflits de tournois Sharly-Chess.com"
+#~ msgid "Sharly-Chess.com tournament conflicts"
+#~ msgstr "Conflits de tournois Sharly-Chess.com"
 
-msgid "Start"
-msgstr "Début"
+#~ msgid "Start"
+#~ msgstr "Début"
 
-msgid "Statuses"
-msgstr "Statuts"
+#~ msgid "Statuses"
+#~ msgstr "Statuts"
 
-msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
-msgstr "Les conflits de synchronisation se produisent lorsque les mêmes données ont été modifiées à la fois dans l'application locale et dans Sharly-Chess.com. Pour les résoudre, vous devez soit mettre à jour les données manuellement, soit choisir une version des données à appliquer partout."
+#~ msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
+#~ msgstr "Les conflits de synchronisation se produisent lorsque les mêmes données ont été modifiées à la fois dans l'application locale et dans Sharly-Chess.com. Pour les résoudre, vous devez soit mettre à jour les données manuellement, soit choisir une version des données à appliquer partout."
 
-#, python-brace-format
-msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
-msgstr "Synchronisation interrompue le {last_attempt_date} à {last_attempt_time}, conflits de tournois détectés."
+#~ msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
+#~ msgstr "Synchronisation interrompue le {last_attempt_date} à {last_attempt_time}, conflits de tournois détectés."
 
-msgid "Synchronisation is unavailable while there are conflicts."
-msgstr "La synchronisation n'est pas disponible lorsqu'il y a des conflits."
+#~ msgid "Synchronisation is unavailable while there are conflicts."
+#~ msgstr "La synchronisation n'est pas disponible lorsqu'il y a des conflits."
 
-msgid "Synchronisation ongoing"
-msgstr "Synchronisation en cours"
+#~ msgid "Synchronisation ongoing"
+#~ msgstr "Synchronisation en cours"
 
-#, python-format
-msgid "Synchronize automatically every %(delay)d minutes."
-msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
+#~ msgid "Synchronize automatically every %(delay)d minutes."
+#~ msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
 
-msgid "Synchronize players"
-msgstr "Synchroniser les joueur·euses"
+#~ msgid "Synchronize players"
+#~ msgstr "Synchroniser les joueur·euses"
 
-msgid "This field is controlled from Sharly-Chess.com."
-msgstr "Ce champ est controllé depuis Sharly-Chess.com."
+#~ msgid "This field is controlled from Sharly-Chess.com."
+#~ msgstr "Ce champ est controllé depuis Sharly-Chess.com."
 
-msgid "Time control"
-msgstr "Cadence"
+#~ msgid "Time control"
+#~ msgstr "Cadence"
 
-msgid "Title"
-msgstr "Titre"
+#~ msgid "Title"
+#~ msgstr "Titre"
 
-msgid "Tournament"
-msgstr "Tournoi"
+#~ msgid "Tournament"
+#~ msgstr "Tournoi"
 
-#, python-brace-format
-msgid "Tournament [{tournament}] is not connected to a Sharly-Chess.com tournament."
-msgstr "Le tournoi [{tournament}] n'est pas connecté à un tournoi Sharly-Chess.com."
+#~ msgid "Tournament [{tournament}] is not connected to a Sharly-Chess.com tournament."
+#~ msgstr "Le tournoi [{tournament}] n'est pas connecté à un tournoi Sharly-Chess.com."
 
-#, python-brace-format
-msgid "Tournament [{tournament}] successfully uploaded."
-msgstr "Le tournoi [{tournament}] a été mis en ligne avec succès."
+#~ msgid "Tournament [{tournament}] successfully uploaded."
+#~ msgstr "Le tournoi [{tournament}] a été mis en ligne avec succès."
 
-msgid "Tournament has been modified since the last upload."
-msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
+#~ msgid "Tournament has been modified since the last upload."
+#~ msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
 
-msgid "Tournament has not started yet, no results to upload."
-msgstr "Le tournoi n'a pas encore démarré, aucun résultat à mettre en ligne."
+#~ msgid "Tournament has not started yet, no results to upload."
+#~ msgstr "Le tournoi n'a pas encore démarré, aucun résultat à mettre en ligne."
 
-msgid "Tournament import failed, consult the logs for more details."
-msgstr "L'import de tournoi a échoué, consultez les logs pour plus de détails."
+#~ msgid "Tournament import failed, consult the logs for more details."
+#~ msgstr "L'import de tournoi a échoué, consultez les logs pour plus de détails."
 
-msgid "Tournament is currently being uploaded."
-msgstr "Le tournoi est en cours de mise en ligne."
+#~ msgid "Tournament is currently being uploaded."
+#~ msgstr "Le tournoi est en cours de mise en ligne."
 
-msgid "Tournament on Sharly-Chess.com"
-msgstr "Tournoi sur Sharly-Chess.com"
+#~ msgid "Tournament on Sharly-Chess.com"
+#~ msgstr "Tournoi sur Sharly-Chess.com"
 
-msgid "Tournament successfully imported."
-msgstr "Le tournoi a été importé avec succès."
+#~ msgid "Tournament successfully imported."
+#~ msgstr "Le tournoi a été importé avec succès."
 
-msgid "Tournament upload has been planned."
-msgstr "La mise en ligne du tournoi a été planifiée."
+#~ msgid "Tournament upload has been planned."
+#~ msgstr "La mise en ligne du tournoi a été planifiée."
 
-msgid "Type"
-msgstr "Type"
+#~ msgid "Type"
+#~ msgstr "Type"
 
-msgid "Undefined"
-msgstr "Non défini"
+#~ msgid "Undefined"
+#~ msgstr "Non défini"
 
-msgid "Up to date"
-msgstr "À jour"
+#~ msgid "Up to date"
+#~ msgstr "À jour"
 
-msgid "Upload"
-msgstr "Mettre en ligne"
+#~ msgid "Upload"
+#~ msgstr "Mettre en ligne"
 
-msgid "Upload a local tournament"
-msgstr "Mettre en ligne un tournoi local"
+#~ msgid "Upload a local tournament"
+#~ msgstr "Mettre en ligne un tournoi local"
 
-msgid "Upload all tournament results"
-msgstr "Mettre en ligne tous les résultats"
+#~ msgid "Upload all tournament results"
+#~ msgstr "Mettre en ligne tous les résultats"
 
-#, python-format
-msgid "Upload automatically every %(delay)d minutes."
-msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
+#~ msgid "Upload automatically every %(delay)d minutes."
+#~ msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
 
-msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
-msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."
+#~ msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
+#~ msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."
 
-msgid "Year of birth"
-msgstr "Année de naissance"
+#~ msgid "Year of birth"
+#~ msgstr "Année de naissance"
 
-msgid "You are not allowed to open or close this check-in."
-msgstr "Vous n'êtes pas autorisé·e à ouvrir ou fermer ce pointage."
+#~ msgid "You are not allowed to open or close this check-in."
+#~ msgstr "Vous n'êtes pas autorisé·e à ouvrir ou fermer ce pointage."
 
-msgid "consult the logs"
-msgstr "consulter les logs"
+#~ msgid "consult the logs"
+#~ msgstr "consulter les logs"
 
-msgid "no internet connection"
-msgstr "aucune connection à internet"
+#~ msgid "no internet connection"
+#~ msgstr "aucune connection à internet"
 
-msgid "re-authorisation required"
-msgstr "ré-autorisation requise"
+#~ msgid "re-authorisation required"
+#~ msgstr "ré-autorisation requise"
 
-msgid "tournament not found, most likely deleted"
-msgstr "tournoi non trouvé, probablement supprimé"
+#~ msgid "tournament not found, most likely deleted"
+#~ msgstr "tournoi non trouvé, probablement supprimé"
 
-#, python-brace-format
-msgid "{count} duplicated player detected."
-msgid_plural "{count} duplicated players detected."
-msgstr[0] "{count} doublon de joueur·euses détecté."
-msgstr[1] "{count} doublons de joueur·euses détectés."
+#~ msgid "{count} duplicated player detected."
+#~ msgid_plural "{count} duplicated players detected."
+#~ msgstr[0] "{count} doublon de joueur·euses détecté."
+#~ msgstr[1] "{count} doublons de joueur·euses détectés."
 
