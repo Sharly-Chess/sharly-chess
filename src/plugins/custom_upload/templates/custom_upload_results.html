@@ -15,12 +15,16 @@
             </td>
             <td class="text-center">
                 {% for document in documents_by_tournament[tournament.id] %}
-                        <span
-                            class="badge rounded-pill message-debug"
-                            style="height: 20px"
-                        >
-                            {{ document and _(document.static_name()) }}
-                        </span>
+                    {% set document_url = document[0] %}
+                    {% set document_type = document[1] %}
+                    <span
+                        class="badge rounded-pill message-debug"
+                        style="height: 20px"
+                    >
+                        <a href="{{ document_url }}" target="_blank">
+                            {{ document_type and _(document_type.static_name()) }}
+                        </a>
+                    </span>
                 {% endfor %}
             </td>
             <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">

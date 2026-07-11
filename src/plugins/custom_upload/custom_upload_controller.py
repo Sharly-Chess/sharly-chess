@@ -10,7 +10,7 @@ from litestar_htmx import HTMXRequest, HTMXTemplate
 from common.i18n import _
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
-from data.print_documents import PrintDocumentManager
+from data.print_documents import PrintDocumentManager, PrintDocument
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.custom_upload import PLUGIN_NAME
@@ -48,12 +48,12 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         tournaments = event.tournaments
-        documents_by_tournament = {}
+        documents_by_tournament: dict[int, list[tuple[str, PrintDocument]]] = {}
         for tournament in tournaments:
             document_urls = CustomUploadUtils.get_tournament_plugin_data(
                 tournament
             ).document_urls
-            document_types = []
+            document_types: list[tuple[str, PrintDocument]] = []
             for document_url in document_urls:
                 document_id = CustomUploadAdminEventController._extract_document_id(
                     document_url
@@ -61,7 +61,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 document_type = PrintDocumentManager(
                     web_context.get_admin_event()
                 ).get_type(document_id)
-                document_types.append(document_type)
+                document_types.append((document_url, document_type))
             documents_by_tournament[tournament.id] = document_types
         event_plugin_data = CustomUploadUtils.get_event_plugin_data(event)
         return web_context.template_context | {
