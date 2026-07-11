@@ -4,7 +4,11 @@ from pathlib import Path
 
 from requests import get, Response, HTTPError
 
-from common.logger import print_interactive_error, print_interactive_warning
+from common.logger import (
+    print_interactive_error,
+    print_interactive_warning,
+    print_interactive_info,
+)
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.fide.fide_database import FideDatabase
 from utils import Utils
@@ -32,7 +36,7 @@ def download_federation_url(federation_id: str, flag_file: Path, flag_url) -> bo
 
 defined_flag_url_by_federation_id = {
     # Not existing
-    'NON': 'https://www.svgrepo.com/download/448108/question.svg',
+    'NON': None,  # keep previous image download ed from https://www.svgrepo.com/download/448108/question.svg
     'FID': 'https://upload.wikimedia.org/wikipedia/de/2/26/Logo_FIDE.svg',
     'TGA': 'https://upload.wikimedia.org/wikipedia/commons/9/9a/Flag_of_Tonga.svg',
     'CAF': 'https://upload.wikimedia.org/wikipedia/commons/6/6f/Flag_of_the_Central_African_Republic.svg',
@@ -45,6 +49,7 @@ defined_flag_url_by_federation_id = {
     'ESP': 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Bandera_de_Espa%C3%B1a_%28sin_escudo%29.svg',
     'GUA': 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Civil_ensign_of_Guatemala.svg',
     'AND': 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Flag_of_Andorra_%28civil%29.svg',
+    'CUR': 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Flag_of_Cura%C3%A7ao.svg',
 }
 
 
@@ -85,7 +90,11 @@ def main():
             flag_url = defined_flag_url_by_federation_id.get(
                 federation_id, f'https://ratings.fide.com/svg/{federation_id}.svg'
             )
-            if not download_federation_url(federation_id, tmp_file, flag_url):
+            if flag_url is None:
+                print_interactive_info(
+                    f'No URL for federation {federation_id}, keeping the previous image.'
+                )
+            elif not download_federation_url(federation_id, tmp_file, flag_url):
                 failed_federation_ids.append(federation_id)
             else:
                 Utils.run_process(
