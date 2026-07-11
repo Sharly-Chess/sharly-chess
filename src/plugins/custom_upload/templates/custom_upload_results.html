@@ -13,6 +13,16 @@
             <td style="width: 0;" class="text-nowrap">
                 {{ tournament.name }}
             </td>
+            <td class="text-center">
+                {% for document in documents_by_tournament[tournament.id] %}
+                        <span
+                            class="badge rounded-pill message-debug"
+                            style="height: 20px"
+                        >
+                            {{ document and _(document.static_name()) }}
+                        </span>
+                {% endfor %}
+            </td>
             <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
                 {% set tournament_statuses = custom_upload_utils.resolve_tournament_upload_statuses(tournament) %}
                 {% for status in tournament_statuses %}
@@ -26,16 +36,6 @@
                     >
                         {{ status.name }}
                     </span>
-                {% endfor %}
-            </td>
-            <td class="text-center">
-                {% for document in documents_by_tournament[tournament.id] %}
-                        <span
-                            class="badge rounded-pill message-debug"
-                            style="height: 20px"
-                        >
-                            {{ document and _(document.static_name()) }}
-                        </span>
                 {% endfor %}
             </td>
             <td class="text-center text-nowrap">
