@@ -92,16 +92,16 @@ def init_script() -> list[str]:
     return remaining_args
 
 
-def check_windows_defender_exception(args: list[str]):
+def check_windows_defender_exception(arguments: list[str]):
     # Intended to be used while the program is already running, so has to run before any log import
     if sys.platform != 'win32':
-        return args
+        return arguments
     defender_parser = argparse.ArgumentParser(add_help=False)
     defender_parser.add_argument(
         '--win-defender-exception-path',
         type=str,
     )
-    args, remaining_args = defender_parser.parse_known_args()
+    args, remaining_args = defender_parser.parse_known_args(arguments)
     def_path = args.win_defender_exception_path
     if not def_path:
         return remaining_args
