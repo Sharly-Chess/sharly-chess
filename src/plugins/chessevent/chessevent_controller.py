@@ -1,4 +1,5 @@
 from litestar import get, patch
+from litestar.params import FromQuery, FromPath
 from litestar.response import Template
 from litestar_htmx import HTMXRequest
 
@@ -73,7 +74,7 @@ class ChessEventController(BaseEventAdminController):
     async def chessevent_sync_modal(
         self,
         request: HTMXRequest,
-        allow_sync: bool = False,
+        allow_sync: FromQuery[bool] = False,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         return self._render_chessevent_sync_modal(web_context, allow_sync)
@@ -114,7 +115,7 @@ class ChessEventController(BaseEventAdminController):
     async def chessevent_sync_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()

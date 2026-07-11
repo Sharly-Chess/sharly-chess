@@ -5,7 +5,7 @@ from argon2 import PasswordHasher
 from litestar import post, get, delete, patch
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
@@ -106,7 +106,7 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_event_accounts_tab(
         self,
         request: HTMXRequest,
-        show_details: bool | None,
+        show_details: FromQuery[bool | None],
     ) -> Template:
         if show_details is not None:
             SessionAccountsShowDetails(request).set(show_details)
@@ -210,8 +210,8 @@ class AccountAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        data_source_id: str,
-        player_source_id: str,
+        data_source_id: FromPath[str],
+        player_source_id: FromPath[str],
     ) -> Template:
         web_context = AccountAdminWebContext(request)
         try:

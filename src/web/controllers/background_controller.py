@@ -1,7 +1,8 @@
 import validators
 from litestar import get
-from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import MediaType
+from litestar.params import FromQuery
+from litestar.plugins.htmx import HTMXRequest
 
 from common.background import inline_image_url
 from web.controllers.base_controller import WebContext, BaseController
@@ -39,7 +40,7 @@ class BackgroundController(BaseController):
     async def background(
         self,
         request: HTMXRequest,
-        color: str,
-        image: str,
+        color: FromQuery[str],
+        image: FromQuery[str],
     ) -> dict[str, str]:
         return BackgroundWebContext(request, color=color, image=image).background

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Annotated, Any, Iterable
 
 import chardet
+from litestar.di import NamedDependency
 from litestar.exceptions import NotFoundException, ClientException
 
 from common.i18n.utils import normalized_key
@@ -17,7 +18,7 @@ from common.i18n.utils import normalized_key
 from litestar import get, patch, delete, post, Response
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -519,7 +520,9 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-columns',
     )
     async def htmx_admin_event_players_columns(
-        self, request: HTMXRequest, column_ids: list[str]
+        self,
+        request: HTMXRequest,
+        column_ids: FromQuery[list[str]],
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -557,8 +560,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_event_players_set_filter(
         self,
         request: HTMXRequest,
-        column_id: str,
-        filters: list[str],
+        column_id: FromPath[str],
+        filters: FromQuery[list[str]],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, column_id=column_id)
         event = web_context.get_admin_event()
@@ -582,7 +585,9 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-sort',
     )
     async def htmx_admin_event_players_sort(
-        self, request: HTMXRequest, column_id: str
+        self,
+        request: HTMXRequest,
+        column_id: FromPath[str],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, column_id=column_id)
         event = web_context.get_admin_event()
@@ -606,7 +611,9 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-search',
     )
     async def htmx_admin_event_players_search(
-        self, request: HTMXRequest, search: str | None = None
+        self,
+        request: HTMXRequest,
+        search: FromPath[str | None] = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -633,7 +640,9 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-page',
     )
     async def htmx_admin_event_players_page(
-        self, request: HTMXRequest, page: int
+        self,
+        request: HTMXRequest,
+        page: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
         template_context = self._player_table_page_context(web_context, page)
@@ -649,8 +658,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_row(
         self,
         request: HTMXRequest,
-        player_id: int,
-        close_modal: int = 1,
+        player_id: FromPath[int],
+        close_modal: FromPath[int] = 1,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         return self._render_player_table_row(web_context, close_modal=bool(close_modal))
@@ -954,8 +963,8 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        data_source_id: str,
-        player_source_id: str,
+        data_source_id: FromPath[str],
+        player_source_id: FromPath[str],
     ) -> Template:
         player_id = WebContext.form_data_to_int(data, 'player_id')
         web_context = PlayerAdminWebContext(
@@ -983,9 +992,9 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_modal(
         self,
         request: HTMXRequest,
-        action: str,
-        player_id: int,
-        redirect_to: str | None = None,
+        action: FromPath[str],
+        player_id: FromPath[int],
+        redirect_to: FromQuery[str | None] = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         return self._render_players_form_modal(
@@ -1000,7 +1009,7 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_delete_modal(
         self,
         request: HTMXRequest,
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         return self._admin_base_event_render(
@@ -1412,7 +1421,7 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template | Redirect:
         return self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
@@ -1433,7 +1442,7 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template | Redirect:
         return self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
@@ -1446,7 +1455,9 @@ class PlayerAdminController(BaseEventAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_player_delete(
-        self, request: HTMXRequest, player_id: int
+        self,
+        request: HTMXRequest,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
@@ -1579,7 +1590,9 @@ class PlayerAdminController(BaseEventAdminController):
         guards=[PlayerTournamentActionGuard(AuthAction.UPDATE_PLAYERS_HISTORY)],
     )
     async def htmx_admin_record_modal(
-        self, request: HTMXRequest, player_id: int
+        self,
+        request: HTMXRequest,
+        player_id: FromPath[int],
     ) -> Template:
         return self._render_player_records_modal(
             PlayerAdminWebContext(request, player_id)
@@ -1593,8 +1606,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_records_check_in_player(
         self,
         request: HTMXRequest,
-        channels: ChannelsPlugin,
-        player_id: int,
+        channels: NamedDependency[ChannelsPlugin],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_tournament_player()
@@ -1611,7 +1624,7 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_withdraw_player(
         self,
         request: HTMXRequest,
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_tournament_player()
@@ -1626,7 +1639,7 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_return_player(
         self,
         request: HTMXRequest,
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_tournament_player()
@@ -1641,9 +1654,9 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_player_set_bye(
         self,
         request: HTMXRequest,
-        player_id: int,
-        round: int,
-        result: int,
+        player_id: FromPath[int],
+        round: FromPath[int],
+        result: FromQuery[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
@@ -1725,8 +1738,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_player_table_check_in_player(
         self,
         request: HTMXRequest,
-        channels: ChannelsPlugin,
-        player_id: int,
+        channels: NamedDependency[ChannelsPlugin],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_tournament_player()
@@ -1750,7 +1763,9 @@ class PlayerAdminController(BaseEventAdminController):
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_check_in_player_modal(
-        self, request: HTMXRequest, player_id: int
+        self,
+        request: HTMXRequest,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id=player_id)
         return self._admin_base_event_render(
@@ -1763,7 +1778,9 @@ class PlayerAdminController(BaseEventAdminController):
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_check_in_tournament_reset_modal(
-        self, request: HTMXRequest, tournament_id: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         return self._admin_base_event_render(
@@ -1781,7 +1798,7 @@ class PlayerAdminController(BaseEventAdminController):
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -1807,7 +1824,7 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -2299,7 +2316,7 @@ class PlayerAdminController(BaseEventAdminController):
         data: Annotated[
             dict[str, str | list[str]], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int | None = None,
+        tournament_id: FromPath[int | None] = None,
     ) -> HTMXTemplate:
         flat_data = WebContext.flatten_list_data(data)
         web_context = PlayerAdminWebContext(
@@ -2350,8 +2367,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_move(
         self,
         request: HTMXRequest,
-        player_id: int,
-        tournament_id: int,
+        player_id: FromPath[int],
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id, tournament_id)
         admin_player = web_context.get_admin_player()
@@ -2424,7 +2441,10 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-player-history-popover',
     )
     async def htmx_admin_history_popover(
-        self, request: HTMXRequest, tournament_id: int, player_id: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request, player_id, tournament_id
@@ -2453,8 +2473,8 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        data_source_id: str,
-        tab: str,
+        data_source_id: FromPath[str],
+        tab: FromPath[str],
     ) -> Template | Redirect:
         web_context = PlayerAdminWebContext(request, data_source_id=data_source_id)
         event = web_context.get_admin_event()
@@ -2514,9 +2534,9 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_event_players_diff_modal(
         self,
         request: HTMXRequest,
-        data_source_id: str,
-        tab: str,
-        tournament_id: int | None = None,
+        data_source_id: FromPath[str],
+        tab: FromPath[str],
+        tournament_id: FromPath[int | None] = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request,
@@ -2563,9 +2583,9 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_players_refresh_message(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        reason: str,
-        ignore: bool = False,
+        event_uniq_id: FromPath[str],
+        reason: FromPath[str],
+        ignore: FromQuery[bool] = False,
     ) -> Template:
         if ignore:
             return HTMXTemplate(template_name='/common/empty.html')
@@ -2590,11 +2610,11 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_search_player(
         self,
         request: HTMXRequest,
-        data_source_id: str,
-        player_id: int | None,
-        search: str,
-        page: int = 0,
-        usage: str = 'player',
+        data_source_id: FromQuery[str],
+        player_id: FromQuery[int | None],
+        search: FromQuery[str],
+        page: FromPath[int] = 0,
+        usage: FromQuery[str] = 'player',
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -2653,8 +2673,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_event_export_players(
         self,
         request: HTMXRequest,
-        tournament_id: int | None,
-        exporter_id: str,
+        tournament_id: FromPath[int | None],
+        exporter_id: FromPath[str],
     ) -> Response[str] | File:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         event = web_context.get_admin_event()

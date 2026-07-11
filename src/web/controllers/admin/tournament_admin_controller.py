@@ -9,7 +9,7 @@ from typing import Annotated, Any
 from litestar import post, get, patch, delete
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException, ClientException, ValidationException
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
@@ -17,6 +17,7 @@ from litestar.status_codes import HTTP_200_OK
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
 from common.i18n import _, ngettext
 from common.logger import get_logger
+from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.board import Board, PlayerRatingType
 from data.criteria.managers import TournamentCriterionManager
@@ -50,10 +51,9 @@ from data.tie_breaks.sets import (
     stored_tie_break_to_dict,
     TieBreakSet,
 )
+from data.tournament import Tournament
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredTieBreakSet
-from common.sharly_chess_config import SharlyChessConfig
-from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTieBreak,
@@ -238,7 +238,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_event_tournaments_tab(
         self,
         request: HTMXRequest,
-        show_details: bool | None,
+        show_details: FromPath[bool | None],
     ) -> Template:
         web_context = TournamentAdminWebContext(request)
         if show_details is not None:
@@ -1021,9 +1021,9 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_modal(
         self,
         request: HTMXRequest,
-        action: FormAction,
-        tournament_id: int,
-        redirect_to: str | None = None,
+        action: FromQuery[FormAction],
+        tournament_id: FromPath[int],
+        redirect_to: FromQuery[str | None] = None,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         template_context = self._prepare_tournament_modal_data(
@@ -1042,9 +1042,9 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_schedule_section(
         self,
         request: HTMXRequest,
-        tournament_id: int | None = None,
-        rounds: str | None = None,
-        date_range: str | None = None,
+        tournament_id: FromQuery[int | None] = None,
+        rounds: FromQuery[str | None] = None,
+        date_range: FromQuery[str | None] = None,
     ) -> Template:
         """Return just the schedule section for an outerHTML swap.
 
@@ -1345,7 +1345,7 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template | Redirect:
         return self._admin_tournament_update(
             request,
@@ -1366,7 +1366,7 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template | Redirect:
         return self._admin_tournament_update(
             request,
@@ -1382,7 +1382,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_delete_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int | None,
+        tournament_id: FromPath[int | None],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         return self._admin_base_event_render(
@@ -1398,8 +1398,8 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_delete(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
+        event_uniq_id: FromPath[str],
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         with EventDatabase(event_uniq_id, True) as database:
@@ -1451,8 +1451,8 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_tournament_export_loss_warning_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        exporter_id: str,
+        tournament_id: FromPath[int],
+        exporter_id: FromPath[str],
     ) -> Template:
         web_context = TournamentAdminWebContext(
             request, tournament_id, exporter_id=exporter_id
@@ -1468,8 +1468,8 @@ class TournamentAdminController(BaseEventAdminController):
     async def admin_tournament_export(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        exporter_id: str,
+        tournament_id: FromPath[int],
+        exporter_id: FromPath[str],
     ) -> File | Template:
         web_context = TournamentAdminWebContext(
             request, tournament_id, exporter_id=exporter_id
@@ -1538,8 +1538,8 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_import_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int | None,
-        importer_id: str,
+        tournament_id: FromPath[int | None],
+        importer_id: FromPath[str],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
@@ -1564,8 +1564,8 @@ class TournamentAdminController(BaseEventAdminController):
         data: Annotated[
             dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
         ],
-        tournament_id: int | None,
-        importer_id: str,
+        tournament_id: FromPath[int | None],
+        importer_id: FromPath[str],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         if web_context.admin_tournament and web_context.admin_tournament.started:
@@ -1630,7 +1630,7 @@ class TournamentAdminController(BaseEventAdminController):
         data: Annotated[
             dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
         ],
-        tournament_id: int | None,
+        tournament_id: FromPath[int | None],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
@@ -1841,7 +1841,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_apply_tie_break_set(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
         data: Annotated[
             dict[str, str | list[str]] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -1887,7 +1887,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_save_tie_break_set(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -1964,7 +1964,7 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
@@ -2004,8 +2004,8 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tie_break_duplicate(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        tie_break_id: int,
+        tournament_id: FromPath[int],
+        tie_break_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(
             request, tournament_id, tie_break_id=tie_break_id
@@ -2036,8 +2036,8 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        tie_break_id: int,
+        tournament_id: FromPath[int],
+        tie_break_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
@@ -2073,8 +2073,8 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tie_break_delete(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        tie_break_id: int,
+        tournament_id: FromPath[int],
+        tie_break_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(
             request,
@@ -2095,7 +2095,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_reorder_tie_breaks(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
         data: Annotated[
             dict[str, list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -2115,7 +2115,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tie_breaks_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -2157,7 +2157,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tie_break_sets_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         return self._admin_base_event_render(
@@ -2176,8 +2176,8 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tie_break_set_delete(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        tie_break_set_id: int,
+        tournament_id: FromPath[int],
+        tie_break_set_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         with ConfigDatabase(True) as database:
@@ -2194,7 +2194,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tie_break_create_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         return self._admin_base_event_render(
@@ -2212,8 +2212,8 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tie_break_update_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        tie_break_id: int,
+        tournament_id: FromPath[int],
+        tie_break_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(
             request, tournament_id, tie_break_id=tie_break_id
@@ -2242,7 +2242,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_random_player(
         self,
         request: HTMXRequest,
-        tournament_id: int | None,
+        tournament_id: FromPath[int | None],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
@@ -2290,7 +2290,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_delete_unpaired_players(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()

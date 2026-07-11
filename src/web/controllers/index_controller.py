@@ -2,11 +2,13 @@ import json
 from typing import AsyncGenerator
 
 from litestar import Response, get, route, HttpMethod, status_codes, websocket_stream
+from litestar.channels import ChannelsPlugin
 from litestar.config.response_cache import CACHE_FOREVER
+from litestar.di import NamedDependency
 from litestar.exceptions import HTTPException
+from litestar.params import FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Redirect, Template
-from litestar.channels import ChannelsPlugin
 from litestar.status_codes import HTTP_204_NO_CONTENT
 
 from common.i18n import _
@@ -35,8 +37,8 @@ class IndexController(BaseController):
     async def index(
         self,
         request: HTMXRequest,
-        locale: str | None,
-        show_details: bool | None,
+        locale: FromQuery[str | None] = None,
+        show_details: FromQuery[bool | None] = None,
     ) -> Template | Redirect:
         web_context = AdminWebContext(request)
         self.set_locale(request, locale)
@@ -159,12 +161,14 @@ class IndexController(BaseController):
         name='http-error',
     )
     async def handle_http_error(
-        self, request: HTMXRequest, status_code: int
+        self, request: HTMXRequest, status_code: FromPath[int]
     ) -> HTMXTemplate:
         return self._error_template(request, status_code)
 
     @websocket_stream('/ws')
-    async def ws_handler(self, channels: ChannelsPlugin) -> AsyncGenerator[dict, None]:
+    async def ws_handler(
+        self, channels: NamedDependency[ChannelsPlugin]
+    ) -> AsyncGenerator[dict, None]:
         async with channels.start_subscription(['ws']) as subscriber:
             async for raw_event in subscriber.iter_events():
                 event = (

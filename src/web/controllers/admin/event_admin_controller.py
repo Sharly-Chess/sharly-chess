@@ -1,6 +1,7 @@
 from typing import Any
 
 from litestar import Response, get
+from litestar.params import FromPath
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
 
@@ -44,7 +45,7 @@ class EventAdminController(BaseEventAdminController):
     async def htmx_admin_event(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
+        event_uniq_id: FromPath[str],
     ) -> Template | Redirect:
         web_context = BaseEventAdminWebContext(request)
         if web_context.admin_event is None:

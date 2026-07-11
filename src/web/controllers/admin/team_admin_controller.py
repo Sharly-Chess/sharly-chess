@@ -3,15 +3,16 @@ from typing import Annotated, Any
 from litestar import delete, get, patch, post
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
+from litestar.params import Body, FromQuery, FromPath
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
-from litestar_htmx import HTMXTemplate
 from litestar.status_codes import HTTP_200_OK
+from litestar_htmx import HTMXTemplate
 
 from common.i18n import _, ngettext
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
+from data.access_levels.client import Client
 from data.board import Board
 from data.event import Event
 from data.player import Player
@@ -20,7 +21,6 @@ from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTeam
 from utils.enum import FormAction, PlayerGender, Result, TeamByeType, TeamSortMode
-from data.access_levels.client import Client
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -201,8 +201,8 @@ class TeamAdminController(BaseEventAdminController):
     async def htmx_admin_event_teams_tab(
         self,
         request: HTMXRequest,
-        show_roster: bool | None,
-        show_lineup: bool | None,
+        show_roster: FromQuery[bool | None],
+        show_lineup: FromQuery[bool | None],
     ) -> Template:
         if show_roster is not None:
             SessionTeamsShowRoster(request).set(show_roster)
@@ -319,7 +319,7 @@ class TeamAdminController(BaseEventAdminController):
         guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_team_group_add_form(
-        self, request: HTMXRequest, group_id: str = ''
+        self, request: HTMXRequest, group_id: FromQuery[str] = ''
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         return self._render_team_group_fields(
@@ -335,7 +335,7 @@ class TeamAdminController(BaseEventAdminController):
         guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_team_group_update_form(
-        self, request: HTMXRequest, group_id: int
+        self, request: HTMXRequest, group_id: FromQuery[int]
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         group = web_context.get_admin_event().team_groups_by_id.get(group_id)
@@ -384,7 +384,7 @@ class TeamAdminController(BaseEventAdminController):
     async def htmx_admin_team_group_update(
         self,
         request: HTMXRequest,
-        group_id: int,
+        group_id: FromPath[int],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -419,7 +419,7 @@ class TeamAdminController(BaseEventAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_team_group_delete(
-        self, request: HTMXRequest, group_id: int
+        self, request: HTMXRequest, group_id: FromPath[int]
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         web_context.get_admin_event().delete_team_group(group_id)
@@ -611,9 +611,8 @@ class TeamAdminController(BaseEventAdminController):
     async def htmx_team_set_bye(
         self,
         request: HTMXRequest,
-        team_id: int,
-        round: int,
-        result: int,
+        round: FromPath[int],
+        result: FromQuery[int],
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         team = web_context.get_admin_team()
@@ -775,7 +774,7 @@ class TeamAdminController(BaseEventAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_team_remove_player(
-        self, request: HTMXRequest, player_id: int
+        self, request: HTMXRequest, player_id: FromPath[int]
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -853,7 +852,7 @@ class TeamAdminController(BaseEventAdminController):
         guards=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_admin_team_check_in_reset(
-        self, request: HTMXRequest, tournament_id: int, present: int
+        self, request: HTMXRequest, tournament_id: FromPath[int], present: FromPath[int]
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -971,7 +970,7 @@ class TeamAdminController(BaseEventAdminController):
         guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_team_lineups_modal(
-        self, request: HTMXRequest, round: int | None = None
+        self, request: HTMXRequest, round: FromQuery[int | None] = None
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         return self._admin_event_teams_render(
@@ -980,14 +979,14 @@ class TeamAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path=('/team-lineup/{event_uniq_id:str}/{team_id:int}/{round_:int}'),
+        path='/team-lineup/{event_uniq_id:str}/{team_id:int}/{round_:int}',
         name='admin-team-lineup-save',
         guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_team_lineup_save(
         self,
         request: HTMXRequest,
-        round_: int,
+        round_: FromPath[int],
         data: Annotated[
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -1353,7 +1352,7 @@ class TeamAdminController(BaseEventAdminController):
     async def htmx_admin_team_sort_mode(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
         data: Annotated[
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),

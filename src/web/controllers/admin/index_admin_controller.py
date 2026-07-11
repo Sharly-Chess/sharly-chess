@@ -1,13 +1,19 @@
+import shutil
 from collections import defaultdict
 from copy import copy
 from datetime import date
 from logging import Logger
 from pathlib import Path
-import shutil
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Literal
 
+from litestar import get, post, patch, delete
+from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException, NotFoundException
+from litestar.params import Body, FromPath, FromQuery
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap
+from litestar.response import Template, Redirect, File
+from litestar.status_codes import HTTP_200_OK
 
 from common import (
     BASE_DIR,
@@ -15,8 +21,14 @@ from common import (
     is_valid_email,
 )
 from common.exception import FormError, SharlyChessException
+from common.i18n import (
+    _,
+    locales,
+)
+from common.i18n.utils import locale_localized_name, by
 from common.logger import get_logger
 from common.network import NetworkMonitor
+from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.board import PlayerRatingType
 from data.event import Event
@@ -27,27 +39,6 @@ from data.player_categories import (
     SELECTABLE_SENIOR_CATEGORIES,
     PlayerCategory,
 )
-from database.sqlite.sqlite_database import SQLiteDatabase
-from utils.date_time import (
-    format_date_range,
-    format_date,
-    DateFormatterManager,
-)
-from utils.types import Federation
-
-from litestar import get, post, patch, delete
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap
-from litestar.enums import RequestEncodingType
-from litestar.params import Body
-from litestar.response import Template, Redirect, File
-from litestar.status_codes import HTTP_200_OK
-
-from common.i18n import (
-    _,
-    locales,
-)
-from common.i18n.utils import locale_localized_name, by
-from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
@@ -70,9 +61,16 @@ from database.sqlite.local_source_database.delays import (
     DisabledOutdatedDelay,
     OutdatedDelay,
 )
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.manager import Plugin, plugin_manager
 from utils import Utils
+from utils.date_time import (
+    format_date_range,
+    format_date,
+    DateFormatterManager,
+)
 from utils.enum import EventType, Extension, FormAction
+from utils.types import Federation
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -307,8 +305,8 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_tab(
         self,
         request: HTMXRequest,
-        admin_tab: str,
-        show_details: bool | None,
+        admin_tab: FromPath[str],
+        show_details: FromQuery[bool | None] = None,
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
 
@@ -670,8 +668,8 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_tab_event_create_modal(
         self,
         request: HTMXRequest,
-        action: FormAction,
-        admin_tab: str | None = None,
+        action: FromPath[FormAction],
+        admin_tab: FromPath[str | None] = None,
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         data = self._prepare_event_modal_data(action, request, web_context.admin_event)
@@ -694,7 +692,7 @@ class IndexAdminController(BaseAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        admin_tab: str,
+        admin_tab: FromPath[str],
     ) -> Template | Redirect:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         flat_data = WebContext.flatten_list_data(data)
@@ -725,7 +723,7 @@ class IndexAdminController(BaseAdminController):
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_admin_event_delete_modal(
-        self, request: HTMXRequest, admin_tab: str
+        self, request: HTMXRequest, admin_tab: FromPath[str]
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         return self._admin_render(web_context, {'modal': 'event-delete'})
@@ -737,7 +735,7 @@ class IndexAdminController(BaseAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_event_delete(
-        self, request: HTMXRequest, admin_tab: str
+        self, request: HTMXRequest, admin_tab: FromPath[str]
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         event = web_context.get_admin_event()
@@ -851,7 +849,7 @@ class IndexAdminController(BaseAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        admin_tab: str | None,
+        admin_tab: FromPath[str | None],
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         flat_data = WebContext.flatten_list_data(data)
@@ -983,8 +981,8 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_delete_player_category_set(
         self,
         request: HTMXRequest,
-        player_category_set_id: int,
-        age_categories: list[str] | None = None,
+        player_category_set_id: FromPath[int],
+        age_categories: FromQuery[list[str] | None] = None,
     ) -> Template:
         web_context = AdminWebContext(request)
         with ConfigDatabase(True) as database:
@@ -1039,7 +1037,7 @@ class IndexAdminController(BaseAdminController):
         data: Annotated[
             dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
         ],
-        admin_tab: str,
+        admin_tab: FromPath[str],
     ) -> Template | ClientRedirect:
         web_context = AdminWebContext(request, admin_tab)
         normalized_data = await WebContext.normalize_multipart_data(data)
@@ -1110,9 +1108,9 @@ class IndexAdminController(BaseAdminController):
     async def admin_event_export(
         self,
         request: HTMXRequest,
-        include_players: str | None = None,
-        include_private_player_data: str | None = None,
-        include_connection_data: str | None = None,
+        include_players: FromQuery[str | None] = None,
+        include_private_player_data: FromQuery[str | None] = None,
+        include_connection_data: FromQuery[str | None] = None,
     ) -> File | Template:
         web_context = AdminWebContext(request)
         event = web_context.get_admin_event()
@@ -1161,7 +1159,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_restore_archive(
         self,
         request: HTMXRequest,
-        archive_name: str,
+        archive_name: FromPath[str],
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab='archives')
         archive = ArchiveLoader.get_archive(archive_name)
@@ -1195,7 +1193,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_delete_archive(
         self,
         request: HTMXRequest,
-        archive_name: str,
+        archive_name: FromPath[str],
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab='archives')
         archive = ArchiveLoader.get_archive(archive_name)
@@ -1213,7 +1211,7 @@ class IndexAdminController(BaseAdminController):
         name='admin-locale-update',
     )
     async def htmx_admin_locale_update(
-        self, request: HTMXRequest, locale: str
+        self, request: HTMXRequest, locale: FromPath[str]
     ) -> Template:
         web_context = AdminWebContext(request)
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
@@ -1419,7 +1417,7 @@ class IndexAdminController(BaseAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        database_id: str,
+        database_id: FromPath[str],
     ) -> Template:
         database = LocalSourceDatabaseManager().get_object(database_id)
         stored_database = database.stored_source_database
@@ -1443,7 +1441,7 @@ class IndexAdminController(BaseAdminController):
         name='admin-database-status',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
-    async def _database_update_status(self, database_id: str) -> Template:
+    async def _database_update_status(self, database_id: FromPath[str]) -> Template:
         database = LocalSourceDatabaseManager().get_object(database_id)
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
@@ -1455,7 +1453,7 @@ class IndexAdminController(BaseAdminController):
         name='admin-database-update',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
     )
-    async def _database_update(self, database_id: str) -> Reswap:
+    async def _database_update(self, database_id: FromPath[str]) -> Reswap:
         database = LocalSourceDatabaseManager().get_object(database_id)
         database.update()
         return Reswap(content=None, method='none', status_code=HTTP_200_OK)
@@ -1466,7 +1464,7 @@ class IndexAdminController(BaseAdminController):
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
         status_code=HTTP_200_OK,
     )
-    async def _database_delete(self, database_id: str) -> Template:
+    async def _database_delete(self, database_id: FromPath[str]) -> Template:
         try:
             database = LocalSourceDatabaseManager().get_object(database_id)
             database.delete()
@@ -1485,7 +1483,7 @@ class IndexAdminController(BaseAdminController):
     async def htmx_admin_data_source_check(
         self,
         request: HTMXRequest,
-        data_source_id: str,
+        data_source_id: FromPath[str],
     ) -> Template:
         web_context = AdminWebContext(request)
         try:

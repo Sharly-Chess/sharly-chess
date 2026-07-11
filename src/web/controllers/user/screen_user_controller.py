@@ -2,6 +2,7 @@ from contextlib import suppress
 from datetime import datetime
 
 from litestar import head, get
+from litestar.params import FromPath
 from litestar.plugins.htmx import HTMXRequest, Reswap
 from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
@@ -131,8 +132,8 @@ class ScreenUserController(BaseScreenUserController):
     async def htmx_user_screen_head(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        screen_uniq_id: str,
+        event_uniq_id: FromPath[str],
+        screen_uniq_id: FromPath[str],
     ) -> None:
         pass
 
@@ -147,7 +148,7 @@ class ScreenUserController(BaseScreenUserController):
     async def htmx_user_rotator(
         self,
         request: HTMXRequest,
-        rotator_screen_index: int = 0,
+        rotator_screen_index: FromPath[int] = 0,
     ) -> Template:
         web_context = RotatorUserWebContext(request, rotator_screen_index)
         return self._user_screen_render(web_context)
@@ -164,9 +165,7 @@ class ScreenUserController(BaseScreenUserController):
     async def htmx_user_rotator_head(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        rotator_id: int,
-        rotator_screen_index: int = 0,
+        rotator_screen_index: FromPath[int] = 0,
     ) -> None:
         pass
 
@@ -181,7 +180,7 @@ class ScreenUserController(BaseScreenUserController):
     async def htmx_user_display_controller(
         self,
         request: HTMXRequest,
-        rotator_screen_index: int = 0,
+        rotator_screen_index: FromPath[int] = 0,
     ) -> Template | Reswap:
         web_context = DisplayControllerUserWebContext(request, rotator_screen_index)
         date: float | None = (
@@ -206,8 +205,8 @@ class ScreenUserController(BaseScreenUserController):
     async def htmx_user_display_controller_head(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        display_controller_id: int,
-        rotator_screen_index: int = 0,
+        event_uniq_id: FromPath[str],
+        display_controller_id: FromPath[int],
+        rotator_screen_index: FromPath[int] = 0,
     ) -> None:
         pass

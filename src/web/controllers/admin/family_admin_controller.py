@@ -4,7 +4,7 @@ from litestar import post, get, patch, delete
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -535,7 +535,7 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_event_families_tab(
         self,
         request: HTMXRequest,
-        show_details: bool | None,
+        show_details: FromPath[bool | None],
     ) -> Template:
         if show_details is not None:
             SessionFamiliesShowDetails(request).set(show_details)
@@ -563,7 +563,7 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_family_create_modal(
         self,
         request: HTMXRequest,
-        family_type: str,
+        family_type: FromPath[str],
     ) -> Template:
         return self._admin_event_families_render(
             request,
@@ -581,8 +581,8 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_family_modal(
         self,
         request: HTMXRequest,
-        action: str,
-        family_id: int | None,
+        action: FromPath[str],
+        family_id: FromPath[int | None],
     ) -> Template:
         return self._admin_event_families_render(
             request,
@@ -665,7 +665,7 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_family_create(
         self,
         request: HTMXRequest,
-        family_type: str,
+        family_type: FromPath[str],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -686,7 +686,7 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_family_clone(
         self,
         request: HTMXRequest,
-        family_id: int | None,
+        family_id: FromPath[int | None],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -707,7 +707,7 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_family_update(
         self,
         request: HTMXRequest,
-        family_id: int | None,
+        family_id: FromPath[int | None],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -732,7 +732,7 @@ class FamilyAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        family_id: int,
+        family_id: FromPath[int],
     ) -> HTMXTemplate:
         web_context = FamilyAdminWebContext(request, family_id)
         event = web_context.get_admin_event()
@@ -772,7 +772,7 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_family_delete(
         self,
         request: HTMXRequest,
-        family_id: int | None,
+        family_id: FromPath[int | None],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),

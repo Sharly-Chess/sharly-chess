@@ -10,7 +10,7 @@ import aiosqlite
 from aiosqlitepool import SQLiteConnectionPool
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
 from litestar import Router
-from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.events import listener
 from litestar.middleware.session import SessionMiddleware

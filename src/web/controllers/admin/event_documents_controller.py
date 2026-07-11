@@ -1,13 +1,12 @@
+import urllib
 from collections import defaultdict
 from typing import Annotated
 
 from litestar import get, post
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
-from web.streaming_template import StreamingHTMXTemplate
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
-import urllib
 
 from common.exception import OptionError
 from common.i18n import _
@@ -24,13 +23,14 @@ from data.print_documents.documents import (
 )
 from data.print_documents.options import TournamentPrintOption
 from data.tournament import Tournament
-from web.controllers.base_controller import WebContext
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, PrintGuard
 from web.session import SessionPrintLastTournaments
+from web.streaming_template import StreamingHTMXTemplate
 
 
 class EventDocumentsController(BaseEventAdminController):
@@ -156,9 +156,9 @@ class EventDocumentsController(BaseEventAdminController):
     async def htmx_documents_modal(
         self,
         request: HTMXRequest,
-        document_id: str | None = None,
-        tournament_id: int | None = None,
-        round: int | None = None,
+        document_id: FromQuery[str | None] = None,
+        tournament_id: FromQuery[int | None] = None,
+        round: FromQuery[int | None] = None,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         tournament_ids = web_context.default_tournament_for_print_modal(tournament_id)
@@ -191,7 +191,7 @@ class EventDocumentsController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
+        event_uniq_id: FromPath[str],
     ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
         web_context = BaseEventAdminWebContext(request)
@@ -262,8 +262,8 @@ class EventDocumentsController(BaseEventAdminController):
     async def htmx_document_view(
         self,
         request: HTMXRequest,
-        document: str,
-        options: str | None = None,
+        document: FromPath[str],
+        options: FromQuery[str | None] = None,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
