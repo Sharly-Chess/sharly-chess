@@ -39,29 +39,7 @@ def _filtered_warn(*args, **kwargs):
 warnings.warn = _filtered_warn
 
 try:
-    if sys.platform == 'win32':
-        # Windows marks the downloaded files as unsure and blocks their usage.
-        # On the first run, all the files of the distribution are unmarked.
-        base_dir: Path = Path(sys.argv[0]).resolve().parent
-        tracer: Path = base_dir / 'tmp' / '.unblock_files'
-        if tracer.exists():
-            print(f'Unblocking files in : {base_dir}')
-            for root_, __, files in os.walk(base_dir):
-                for name in files:
-                    path = os.path.join(root_, name)
-                    # Remove Zone.Identifier ADS if it exists
-                    ads_path = path + ':Zone.Identifier'
-                    try:
-                        os.remove(ads_path)
-                        print(f'Unblocked: {path}')
-                    except FileNotFoundError:
-                        pass  # not blocked or already unblocked
-                    except Exception as e:
-                        print(f'Failed to unblock {path}: {e}')
-            # Remove not to run twice
-            tracer.unlink()
-
-    elif sys.platform == 'darwin':
+    if sys.platform == 'darwin':
         # Prevent MacOS from sleeping the windowed app when it's in the background
         from rubicon.objc import ObjCClass
 
@@ -113,9 +91,10 @@ try:
     import argparse
     import asyncio
 
-    from utils.scripts import init_script
+    from utils.scripts import init_script, check_windows_defender_exception
 
     arguments = init_script()
+    arguments = check_windows_defender_exception(arguments)
 
     from common import DEVEL_ENV, TEST_ENV
     from common.logger import (
@@ -125,7 +104,6 @@ try:
     )
     from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
-    from antivirus.control import search_missing_files
 
     logger = get_logger()
 
@@ -238,15 +216,6 @@ try:
     if debug:
         # set the log level to DEBUG before loading the logging configuration of the application
         set_logging_config(console_log_level=logging.DEBUG)
-    if error_message := search_missing_files(folder=Path(), delete_control_file=True):
-        import tkinter
-        from tkinter import messagebox
-
-        root = tkinter.Tk()
-        root.withdraw()
-        messagebox.showerror('Sharly Chess startup error', error_message)
-        root.destroy()
-        sys.exit(1)
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Pre-check GTK availability on Linux before trying to create the app
