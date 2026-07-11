@@ -128,15 +128,22 @@ TMP_DIR = VERSION_DATA_DIR / 'tmp'
 CONFIG_FILE = VERSION_DATA_DIR / '.scc'
 LOG_FILE = LOG_DIR / f'{APP_NAME}.log'
 
-# Example paths (dev)
-EXAMPLES_DIR = BASE_DIR / 'examples'
-EXAMPLE_EVENTS_DIR = EXAMPLES_DIR / 'events'
-EXAMPLE_PLACE_CARDS_DIR = EXAMPLES_DIR / 'place_cards'
-
 # Embedded paths
 WEB_TEMPLATES_DIR = BASE_DIR / 'src' / 'web'
 EMBEDDED_PLACE_CARDS_DIR = WEB_TEMPLATES_DIR / 'admin' / 'print' / 'place_cards'
+DEFAULT_FILES_DIR = BASE_DIR / 'default-files'
+DEFAULT_PROGRAM_DIR = DEFAULT_FILES_DIR / 'program'
+DEFAULT_DATA_DIR = DEFAULT_FILES_DIR / 'data'
+LOCALE_DIR = BASE_DIR / 'locale'
 
+# Dev paths
+EXPORT_DIR = BASE_DIR / 'export'
+DIST_DIR = BASE_DIR / 'dist'
+BUILD_DIR = BASE_DIR / 'build'
+SRC_DIR = BASE_DIR / 'src'
+EXAMPLES_DIR = BASE_DIR / 'examples'
+EXAMPLE_EVENTS_DIR = EXAMPLES_DIR / 'events'
+EXAMPLE_PLACE_CARDS_DIR = EXAMPLES_DIR / 'place_cards'
 
 # On Flatpak, large downloads must land in TMP_DIR (within the sandbox's writable area)
 # rather than the system /tmp (a small tmpfs). On other platforms, None lets tempfile
@@ -146,7 +153,6 @@ TEMPFILE_DIR: Path | None = TMP_DIR if FLATPAK_ID else None
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 if not os.access(DATA_DIR, os.W_OK):
     raise SharlyChessException(f'Data path [{DATA_DIR.absolute()}] is not writable.')
-
 
 previous_dir_val = ProgramVar.PREVIOUS_DATA_DIR.read_value()
 if previous_dir_val:
@@ -175,6 +181,8 @@ if previous_dir_val:
                 f'from "{previous_dir}" to "{DATA_DIR}". '
                 f'The move has been canceled.\n\nError: {e}',
             )
+
+IS_NEW_INSTALL = not VERSION_DATA_DIR.exists()
 
 for directory in (
     ARCHIVES_DIR,

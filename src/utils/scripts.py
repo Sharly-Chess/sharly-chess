@@ -1,4 +1,5 @@
 import argparse
+import ctypes
 import os
 from pathlib import Path
 import sys
@@ -89,3 +90,28 @@ def init_script() -> list[str]:
     load_dotenv()
 
     return remaining_args
+
+
+def check_windows_defender_exception(args: list[str]):
+    # Intended to be used while the program is already running, so has to run before any log import
+    if sys.platform != 'win32':
+        return args
+    defender_parser = argparse.ArgumentParser(add_help=False)
+    defender_parser.add_argument(
+        '--win-defender-exception-path',
+        type=str,
+    )
+    args, remaining_args = defender_parser.parse_known_args()
+    def_path = args.win_defender_exception_path
+    if not def_path:
+        return remaining_args
+    params = [
+        '/C',
+        'powershell',
+        '-Command',
+        f'"Add-MpPreference -ExclusionPath """{def_path}""" -Force"',
+    ]
+    result = ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
+        None, 'runas', 'cmd.exe', ' '.join(params), None, 0
+    )
+    sys.exit(0 if result > 32 else 1)

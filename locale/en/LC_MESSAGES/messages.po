@@ -1,6 +1,3 @@
-msgid " [{default_choice}: {default_value}]: "
-msgstr ""
-
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr ""
 
@@ -310,9 +307,6 @@ msgstr ""
 #, python-format
 msgid "(replace [%(object_uniq_id)s])"
 msgstr ""
-
-msgid "*** Doc Link"
-msgstr "https://sharly-chess.com/getting-started/"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
 msgstr "SC_C"
@@ -917,6 +911,9 @@ msgstr ""
 msgid "An unexpected error occurred."
 msgstr ""
 
+msgid "An update of Sharly Chess is available, but the updater tool (Sparkle) failed."
+msgstr ""
+
 msgid "Andorra"
 msgstr ""
 
@@ -1495,6 +1492,9 @@ msgstr ""
 msgid "Change the player's tournament."
 msgstr ""
 
+msgid "Changelog"
+msgstr ""
+
 msgid "Check connection"
 msgstr ""
 
@@ -2008,6 +2008,9 @@ msgstr ""
 msgid "Current title:"
 msgstr ""
 
+msgid "Current version: Sharly Chess {version}"
+msgstr ""
+
 msgid "Currently displaying rotator [{name}]"
 msgstr ""
 
@@ -2042,9 +2045,6 @@ msgid "DCA"
 msgstr ""
 
 msgid "DD/MM/YYYY"
-msgstr ""
-
-msgid "DMG does not contain exactly one folder as expected."
 msgstr ""
 
 msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
@@ -2299,9 +2299,6 @@ msgstr ""
 msgid "Director:"
 msgstr ""
 
-msgid "Directory [{folder}] already exists."
-msgstr ""
-
 msgid "Disabled"
 msgstr ""
 
@@ -2388,19 +2385,16 @@ msgstr ""
 msgid "Do not pair for round #%(round)d"
 msgstr ""
 
-msgid "Do not recover"
-msgstr ""
-
 msgid "Do not use this order as ranking."
 msgstr ""
 
-msgid "Do you want to install example event databases"
+msgid "Do you want to add the new data folder to the Microsoft Defender exception list?"
 msgstr ""
 
-msgid "Do you want to recover the data of release [{version}]"
+msgid "Do you want to install the update now?"
 msgstr ""
 
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
+msgid "Do you want to try again?"
 msgstr ""
 
 msgid "Document [{document}] has been generated in another tab."
@@ -2437,9 +2431,6 @@ msgid "Download the players matching the search into a file."
 msgstr ""
 
 msgid "Download tournament fees"
-msgstr ""
-
-msgid "Downloading failed with code [{code}]."
 msgstr ""
 
 msgid "Drag players between the board slots and the substitutes bench. Empty slots become holes in the lineup."
@@ -2811,6 +2802,9 @@ msgstr ""
 msgid "Eritrea"
 msgstr ""
 
+msgid "Error"
+msgstr ""
+
 msgid "Error when updating database [{database}]."
 msgstr ""
 
@@ -2974,12 +2968,6 @@ msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
 msgid "FORFEIT"
-msgstr ""
-
-msgid "Failed to process DMG file: [{ex}]."
-msgstr ""
-
-msgid "Failed to read [{download_url}]: [{ex}]."
 msgstr ""
 
 msgid "Faroe Islands"
@@ -3465,6 +3453,9 @@ msgstr ""
 msgid "Include IDs and passwords for uploading results"
 msgstr ""
 
+msgid "Include beta versions in updates"
+msgstr ""
+
 msgid "Include incomplete teams"
 msgstr ""
 
@@ -3534,9 +3525,6 @@ msgstr ""
 msgid "Installation of [{lib}] failed."
 msgstr ""
 
-msgid "Installation of release [{version}] failed, exiting."
-msgstr ""
-
 msgid "Installed [{lib}]."
 msgstr ""
 
@@ -3583,9 +3571,6 @@ msgid "Invalid email format."
 msgstr ""
 
 msgid "Invalid expression [{expression}]"
-msgstr ""
-
-msgid "Invalid federation [{federation}]."
 msgstr ""
 
 msgid "Invalid file extension [{extension}] (expected: {expected})."
@@ -4459,6 +4444,9 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
+msgid "No available update"
+msgstr ""
+
 msgid "No criteria defined."
 msgstr ""
 
@@ -4625,9 +4613,6 @@ msgid "No public events."
 msgstr ""
 
 msgid "No public screens"
-msgstr ""
-
-msgid "No response from GitHub."
 msgstr ""
 
 msgid "No result"
@@ -5530,22 +5515,19 @@ msgstr ""
 msgid "Please choose the document."
 msgstr ""
 
-msgid "Please choose the release to recover: "
-msgstr ""
-
 msgid "Please choose the template."
 msgstr ""
 
 msgid "Please choose the tournament."
 msgstr ""
 
+msgid "Please consider contacting support, or installing the new version manually."
+msgstr ""
+
 msgid "Please enter the image URL."
 msgstr ""
 
 msgid "Please enter the name of the event."
-msgstr ""
-
-msgid "Please launch the new version."
 msgstr ""
 
 msgid "Please select a type of criterion."
@@ -5734,9 +5716,6 @@ msgstr ""
 msgid "Puerto Rico"
 msgstr ""
 
-msgid "Q *** THE LETTER TO ANSWER QUIT"
-msgstr "Q"
-
 msgid "QR Code"
 msgstr ""
 
@@ -5886,9 +5865,6 @@ msgid "Refresh this page."
 msgstr ""
 
 msgid "Regular event"
-msgstr ""
-
-msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
 msgid "Reload the page"
@@ -6324,7 +6300,13 @@ msgstr ""
 msgid "Search for player"
 msgstr ""
 
+msgid "Search for updates"
+msgstr ""
+
 msgid "Search players…"
+msgstr ""
+
+msgid "Searching for updates..."
 msgstr ""
 
 msgid "Searching…"
@@ -6406,9 +6388,6 @@ msgid "September"
 msgstr ""
 
 msgid "Serbia"
-msgstr ""
-
-msgid "Server Setup"
 msgstr ""
 
 msgid "Server is already running!"
@@ -6506,6 +6485,9 @@ msgstr ""
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
 
+msgid "Sharly Chess {latest} is available, you have {current}."
+msgstr ""
+
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
 
@@ -6573,9 +6555,6 @@ msgid "Somalia"
 msgstr ""
 
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
-msgstr ""
-
-msgid "Some files are missing."
 msgstr ""
 
 #, python-format
@@ -7000,6 +6979,12 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
+msgid "The data folder could not be added to the Microsoft Defender exception list."
+msgstr ""
+
+msgid "The data folder has been successfully added to the Microsoft Defender exception list."
+msgstr ""
+
 msgid "The default federation for your events."
 msgstr ""
 
@@ -7311,6 +7296,9 @@ msgstr ""
 msgid "The type of criterion used to filter the players."
 msgstr ""
 
+msgid "The update could not be downloaded. Consult the logs for more details."
+msgstr ""
+
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
@@ -7562,6 +7550,9 @@ msgid "This tournament has no norm-eligible titled players."
 msgstr ""
 
 msgid "This unique ID is already used."
+msgstr ""
+
+msgid "This will improve performances. You must have administrator rights."
 msgstr ""
 
 msgid "Threshold"
@@ -7873,9 +7864,6 @@ msgstr "Undefined"
 msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
 
-msgid "Unexpected error during installation: [{ex}]."
-msgstr ""
-
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr ""
 
@@ -8026,16 +8014,28 @@ msgstr ""
 msgid "Update results"
 msgstr ""
 
+msgid "Update search failed (no internet)"
+msgstr ""
+
 msgid "Update the players' information from an external data source."
 msgstr ""
 
 msgid "Update tournaments"
 msgstr ""
 
+msgid "Updates"
+msgstr ""
+
+msgid "Updates are available!"
+msgstr ""
+
 msgid "Updating"
 msgstr ""
 
 msgid "Uruguay"
+msgstr ""
+
+msgid "Use Flatpak to handle updates."
 msgstr ""
 
 msgid "Use Fore Buchholz"
@@ -8611,10 +8611,29 @@ msgstr ""
 msgid "game points"
 msgstr ""
 
+msgid "https://sharly-chess.com/changelog/"
+msgstr ""
+
+msgid "https://sharly-chess.com/getting-started/"
+msgstr ""
+
 msgid "incomplete *** INCOMPLETE TEAM"
 msgstr "incomplete"
 
 msgid "last"
+msgstr ""
+
+msgid "last search a minute ago"
+msgid_plural "last search {count} minutes ago"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "last search an hour ago"
+msgid_plural "last search {count} hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "last search just now"
 msgstr ""
 
 msgid "match points"
@@ -8851,11 +8870,6 @@ msgstr ""
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "{count} event"
-msgid_plural "{count} events"
 msgstr[0] ""
 msgstr[1] ""
 
