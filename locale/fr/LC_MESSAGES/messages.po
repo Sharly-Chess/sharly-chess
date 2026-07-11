@@ -1986,6 +1986,9 @@ msgstr "Grille américaine avant la première ronde"
 msgid "Cuba"
 msgstr "Cuba"
 
+msgid "Curacao"
+msgstr "Curacao"
+
 msgid "Current ({num})"
 msgstr "En cours ({num})"
 
@@ -8991,3 +8994,4 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 #~ msgstr "Le nom de l'écran multiple, facultatif. Les jetons suivants sont automatiquement remplacés par les numéros d'échiquier ou les noms des joueur·euses) :  %%f=premier, %%l=dernier, %%t=tournoi."
+
