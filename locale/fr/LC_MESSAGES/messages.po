@@ -316,9 +316,6 @@ msgstr "(aucun écran)"
 msgid "(replace [%(object_uniq_id)s])"
 msgstr "(remplace [%(object_uniq_id)s])"
 
-msgid "*** Doc Link"
-msgstr "https://sharly-chess.com/fr/bien-demarrer/"
-
 msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
 msgstr "SC_C"
 
@@ -936,6 +933,9 @@ msgstr "Une erreur inattendue s'est produite lors de la lecture du fichier CSV. 
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
+msgid "An update of Sharly Chess is available, but the updater tool (Sparkle) failed."
+msgstr "Une mise à jour de Sharly Chess est disponible, mais l'outil de mise à jour (Sparkle) a échoué."
+
 msgid "Andorra"
 msgstr "Andorre"
 
@@ -1525,6 +1525,9 @@ msgstr "Tchad"
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
+msgid "Changelog"
+msgstr "ChangeLog"
+
 msgid "Check connection"
 msgstr "Vérifier la connexion"
 
@@ -2051,6 +2054,10 @@ msgid "Current title:"
 msgstr "Titre actuel :"
 
 #, python-brace-format
+msgid "Current version: Sharly Chess {version}"
+msgstr "Version actuelle : Sharly Chess {version}"
+
+#, python-brace-format
 msgid "Currently displaying rotator [{name}]"
 msgstr "Affiche actuellement l'écran rotatif [{name}]"
 
@@ -2088,9 +2095,6 @@ msgstr "ADJ"
 
 msgid "DD/MM/YYYY"
 msgstr "JJ/MM/AAAA"
-
-msgid "DMG does not contain exactly one folder as expected."
-msgstr "Le DMG ne contient pas un unique dossier comme attendu."
 
 msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
 msgstr "DdN"
@@ -2442,18 +2446,21 @@ msgstr "Ne pas apparier à la ronde %(pairing_round)d (forfait)"
 msgid "Do not pair for round #%(round)d"
 msgstr "Ne pas apparier à la ronde n°%(round)d"
 
-msgid "Do not recover"
-msgstr "Ne pas restaurer"
-
 msgid "Do not use this order as ranking."
 msgstr "Ne pas utiliser cet ordre comme classement."
 
-msgid "Do you want to install example event databases"
-msgstr "Voulez-vous installer des bases d'évènement d'exemple"
+msgid "Do you want to add the new data folder to the Microsoft Defender exception list?"
+msgstr "Voulez-vous ajouter le nouveau dossier des données à la liste d'exclusions de Microsoft Defender ?"
+
+msgid "Do you want to install the update now?"
+msgstr "Voulez-vous installer la mise à jour maintenant ?"
 
 #, python-brace-format
 msgid "Do you want to recover the data of release [{version}]"
 msgstr "Voulez-vous récupérer les données de la version [{version}]"
+
+msgid "Do you want to try again?"
+msgstr "Voulez-vous réessayer ?"
 
 #, python-brace-format
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
@@ -2868,6 +2875,9 @@ msgstr "Guinée équatoriale"
 
 msgid "Eritrea"
 msgstr "Érythrée"
+
+msgid "Error"
+msgstr "Erreur"
 
 #, python-brace-format
 msgid "Error when updating database [{database}]."
@@ -3546,6 +3556,9 @@ msgstr "Dans le tournoi"
 
 msgid "Include IDs and passwords for uploading results"
 msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en ligne des résultats"
+
+msgid "Include beta versions in updates"
+msgstr "Inclure les versions bêta dans les mises à jour"
 
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
@@ -4586,6 +4599,9 @@ msgstr "Pas de message d'alerte"
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
 
+msgid "No available update"
+msgstr "Pas de mise à jour disponible"
+
 msgid "No criteria defined."
 msgstr "Aucun critère défini."
 
@@ -4755,9 +4771,6 @@ msgstr "Aucun événement public."
 
 msgid "No public screens"
 msgstr "Aucun écran public"
-
-msgid "No response from GitHub."
-msgstr "Pas de réponse de GitHub."
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -5696,23 +5709,20 @@ msgstr "Veuillez choisir un·e joueur·euse."
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
-msgid "Please choose the release to recover: "
-msgstr "Veuillez choisir la version à restaurer : "
-
 msgid "Please choose the template."
 msgstr "Veuillez choisir le modèle."
 
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
 
+msgid "Please consider contacting support, or installing the new version manually."
+msgstr "Considérez contacter le support, ou installer la nouvelle version manuellement."
+
 msgid "Please enter the image URL."
 msgstr "Veuillez entrer l'URL de l'image."
 
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
-
-msgid "Please launch the new version."
-msgstr "Veuillez lancer la nouvelle version."
 
 msgid "Please select a type of criterion."
 msgstr "Veuillez choisir un type de critère."
@@ -5905,9 +5915,6 @@ msgstr "Publier les règles"
 
 msgid "Puerto Rico"
 msgstr "Porto Rico"
-
-msgid "Q *** THE LETTER TO ANSWER QUIT"
-msgstr "Q"
 
 msgid "QR Code"
 msgstr "QR Code"
@@ -6523,8 +6530,14 @@ msgstr "Rechercher par : %(fields)s"
 msgid "Search for player"
 msgstr "Rechercher un·e joueur·euse"
 
+msgid "Search for updates"
+msgstr "Rechercher des mises à jour"
+
 msgid "Search players…"
 msgstr "Rechercher des joueur·euses…"
+
+msgid "Searching for updates..."
+msgstr "Recherche de mises à jour…"
 
 msgid "Searching…"
 msgstr "Recherche en cours…"
@@ -6606,9 +6619,6 @@ msgstr "Septembre"
 
 msgid "Serbia"
 msgstr "Serbie"
-
-msgid "Server Setup"
-msgstr "Configuration du serveur"
 
 msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
@@ -6709,6 +6719,9 @@ msgstr "La configuration de Sharly Chess a été mise à jour."
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
 
+msgid "Sharly Chess {latest} is available, you have {current}."
+msgstr "Sharly Chess {latest} est disponible, vous avez la version {current}."
+
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
 
@@ -6779,9 +6792,6 @@ msgstr "Somalie"
 
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
-
-msgid "Some files are missing."
-msgstr "Des fichiers sont manquants."
 
 #, python-format
 msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
@@ -7218,6 +7228,12 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
+
+msgid "The data folder could not be added to the Microsoft Defender exception list."
+msgstr "Le dossier des données n'a pas pu être ajouté à la liste d'exclusions de Microsoft Defender."
+
+msgid "The data folder has been successfully added to the Microsoft Defender exception list."
+msgstr "Le dossier des données a bien été ajouté à la list d'exclusions de Microsoft Defender."
 
 msgid "The default federation for your events."
 msgstr "La fédération par défaut pour vos évènements."
@@ -7809,6 +7825,9 @@ msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
 
+msgid "This will improve performances. You must have administrator rights."
+msgstr "Cela améliorera les performances. Vous devez avoir les droits d'administration."
+
 msgid "Threshold"
 msgstr "Seuil"
 
@@ -8304,17 +8323,29 @@ msgstr "Modifier l'historique des joueur·euses"
 msgid "Update results"
 msgstr "Modifier les résultats"
 
+msgid "Update search failed (no internet)"
+msgstr "Recherche de mises à jour échouée (pas de connection internet)"
+
 msgid "Update the players' information from an external data source."
 msgstr "Mettre à jour les informations des joueur·euses à partir d'une source de données extérieure."
 
 msgid "Update tournaments"
 msgstr "Modifier les tournois"
 
+msgid "Updates"
+msgstr "Mises à jour"
+
+msgid "Updates are available!"
+msgstr "Des mises à jour sont disponibles !"
+
 msgid "Updating"
 msgstr "Mise à jour"
 
 msgid "Uruguay"
 msgstr "Uruguay"
+
+msgid "Use Flatpak to handle updates."
+msgstr "Utilisez Flatpak pour gérer les mises à jour."
 
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
@@ -8906,11 +8937,30 @@ msgstr "depuis le 1er coup"
 msgid "game points"
 msgstr "les points de partie"
 
+msgid "https://sharly-chess.com/changelog/"
+msgstr "https://sharly-chess.com/fr/changelog/"
+
+msgid "https://sharly-chess.com/getting-started/"
+msgstr "https://sharly-chess.com/fr/bien-demarrer/"
+
 msgid "incomplete *** INCOMPLETE TEAM"
 msgstr "incomplète"
 
 msgid "last"
 msgstr "dernier"
+
+msgid "last search a minute ago"
+msgid_plural "last search {count} minutes ago"
+msgstr[0] "dernière recherche il y a une minute"
+msgstr[1] "dernière recherche il y a {count} minutes"
+
+msgid "last search an hour ago"
+msgid_plural "last search {count} hours ago"
+msgstr[0] "dernière recherche il y a une heure"
+msgstr[1] "dernière recherche il y a {count} heures"
+
+msgid "last search just now"
+msgstr "dernière recherche à l'instant"
 
 msgid "match points"
 msgstr "les points de match"

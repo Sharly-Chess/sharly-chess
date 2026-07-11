@@ -7,12 +7,12 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Literal
 
-from litestar import get, post, patch, delete
+from litestar import delete, get, patch, post
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.params import Body, FromPath, FromQuery
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap
-from litestar.response import Template, Redirect, File
+from litestar.plugins.htmx import ClientRedirect, HTMXRequest, HTMXTemplate, Reswap
+from litestar.response import File, Redirect, Template
 from litestar.status_codes import HTTP_200_OK
 
 from common import (
@@ -25,7 +25,7 @@ from common.i18n import (
     _,
     locales,
 )
-from common.i18n.utils import locale_localized_name, by
+from common.i18n.utils import by, locale_localized_name
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -42,8 +42,8 @@ from data.player_categories import (
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
-    StoredPlugin,
     StoredPlayerCategorySet,
+    StoredPlugin,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -65,12 +65,11 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.manager import Plugin, plugin_manager
 from utils import Utils
 from utils.date_time import (
-    format_date_range,
-    format_date,
     DateFormatterManager,
+    format_date,
+    format_date_range,
 )
 from utils.enum import EventType, Extension, FormAction
-from utils.types import Federation
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -94,27 +93,20 @@ class IndexAdminController(BaseAdminController):
         cls,
         data: dict[str, str] | None = None,
     ) -> StoredConfig:
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+        config = SharlyChessConfig()
         if data is None:
             data = {}
         errors: dict[str, str] = {}
-        experimental: bool = WebContext.form_data_to_bool(data, 'experimental')
-        launch_browser: bool = WebContext.form_data_to_bool(data, 'launch_browser')
-        federation_name: str | None = WebContext.form_data_to_str(
-            data, field := 'federation'
-        )
-        federation: Federation | None = None
-        if federation_name:
-            if federation_name not in sharly_chess_config.federations:
-                errors[field] = _('Invalid federation [{federation}].').format(
-                    federation=federation_name
-                )
+        experimental = WebContext.form_data_to_bool(data, 'experimental')
+        federation = WebContext.form_data_to_str(data, field := 'federation')
+        if federation:
+            if federation not in config.federations:
+                errors[field] = f'Invalid federation [{federation}].'
                 data[field] = ''
-            else:
-                federation = Federation(federation_name)
+                federation = None
         else:
             errors[field] = _('Please choose a federation.')
-        locale: str | None = WebContext.form_data_to_str(data, field := 'locale')
+        locale = WebContext.form_data_to_str(data, field := 'locale')
         if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
@@ -125,22 +117,14 @@ class IndexAdminController(BaseAdminController):
             DateFormatterManager().get_object(date_formatter_id)
         except KeyError:
             errors[field] = f'invalid date formatter [{date_formatter_id}].'
-        return StoredConfig(
-            force_edit=False,
-            console_log_level=sharly_chess_config.console_log_level,
-            console_color=sharly_chess_config.console_color,
-            console_show_date=sharly_chess_config.console_show_date,
-            console_show_level=sharly_chess_config.console_show_level,
-            experimental=experimental,
-            launch_browser=launch_browser,
-            federation=federation.name if federation else None,
-            locale=locale,
-            date_formatter=date_formatter_id,
-            stored_player_category_sets=(
-                sharly_chess_config.stored_config.stored_player_category_sets
-            ),
-            errors=errors,
-        )
+        stored_config = copy(config.stored_config)
+        stored_config.force_edit = False
+        stored_config.experimental = experimental
+        stored_config.federation = federation
+        stored_config.locale = locale
+        stored_config.date_formatter = date_formatter_id
+        stored_config.errors = errors
+        return stored_config
 
     @classmethod
     def _admin_validate_plugins_update_data(
@@ -453,7 +437,7 @@ class IndexAdminController(BaseAdminController):
     ) -> tuple[StoredEvent | None, dict[str, str]]:
         if data is None:
             data = {}
-        uniq_id: str | None
+        uniq_id: str
         errors: dict[str, str] = {}
         config = SharlyChessConfig()
 
@@ -692,7 +676,7 @@ class IndexAdminController(BaseAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        admin_tab: FromPath[str],
+        admin_tab: FromQuery[str],
     ) -> Template | Redirect:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         flat_data = WebContext.flatten_list_data(data)

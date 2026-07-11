@@ -258,9 +258,9 @@ class WebLibFileInstaller(WebLibInstaller):
 
 @dataclass
 class SystemHandler:
-    executable_dir: str
     executable_filename: str
-    archive_filename: str
+    archive_filename: str = ''
+    executable_dir: str | None = None
 
 
 class ExecutableInstaller(ToolInstaller, ABC):
@@ -289,13 +289,11 @@ class ExecutableInstaller(ToolInstaller, ABC):
 
     @property
     def executable_dir(self) -> Path:
-        return (
-            BASE_DIR
-            / 'tools'
-            / self.name
-            / f'v{self.version}'
-            / self.system_handler.executable_dir
-        )
+        exe_dir = self.system_handler.executable_dir
+        version_dir = BASE_DIR / 'tools' / self.name / f'v{self.version}'
+        if exe_dir:
+            return version_dir / exe_dir
+        return version_dir
 
     @property
     def install_dir(self) -> Path:
@@ -310,9 +308,7 @@ class ExecutableInstaller(ToolInstaller, ABC):
     @property
     def files_to_sign(self) -> list[Path]:
         """Returns the files that should be signed."""
-        extensions_to_sign: set[str] = {
-            'exe',
-        }
+        extensions_to_sign = {'exe'}
         files: list[Path] = []
         for extension in extensions_to_sign:
             files += [f for f in self.install_dir.glob(f'**/*.{extension}')]

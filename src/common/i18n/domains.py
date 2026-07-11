@@ -2,7 +2,7 @@ from functools import cache
 from pathlib import Path
 from typing import Self
 
-from common import BASE_DIR
+from common import LOCALE_DIR
 from plugins import PLUGINS_DIR
 
 
@@ -10,7 +10,6 @@ class Domain:
     """A class to represent i18n domains (core and plugins with i18n support, name None is for the core of the app)."""
 
     core_name: str = 'messages'
-    core_locale_dir: Path = BASE_DIR / 'locale'
 
     def __init__(
         self,
@@ -31,7 +30,7 @@ class Domain:
         cls,
         name: str | None,
     ) -> Path:
-        return cls.core_locale_dir if name is None else PLUGINS_DIR / name / 'locale'
+        return LOCALE_DIR if name is None else PLUGINS_DIR / name / 'locale'
 
     @classmethod
     @cache

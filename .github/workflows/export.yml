@@ -94,18 +94,41 @@ jobs:
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
-      - name: Generate ZIP file
+      - name: Build project
         shell: powershell
         env:
           WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
         run: |
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}" --windows-signtool-cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+          python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}" --windows-signtool-cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+      - name: Compile Installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+        with:
+          path: windows-setup.iss
+          options: /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=0
+      - name: Compile Updater
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+        with:
+          path: windows-setup.iss
+          options: /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=1
+      - name: Sign Updater and installer
+        shell: powershell
+        env:
+          WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
+        run: |
+          python scripts/export/windows/signtool.py \
+          "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe" \
+          "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe" \
+          --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
-            export/sharly-chess-${{ steps.version.outputs.version }}.zip
+            "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe"
+            "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
+
+
 
   export-sharly-chess-linux:
     runs-on: ${{ matrix.runner }}
@@ -447,10 +470,16 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_DEVELOPER_USERNAME }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Sparkle public key, embedded in the bundle as SUPublicEDKey
+          SPARKLE_ED_PUBLIC_KEY: ${{ secrets.SPARKLE_ED_PUBLIC_KEY }}
         run: |
+          # Vendor Sparkle (framework to embed + tools) before building
+          echo "Vendoring Sparkle..."
+          bash scripts/export/macos/fetch_sparkle.sh
+
           # Build the application first
           echo "Building application with preserved artifacts..."
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
+          python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}"
 
           # Run the build and notarize script
           echo "Running signing and notarization script..."
@@ -465,12 +494,28 @@ jobs:
           rm -rf dist/
           rm -rf build/
           rm -f *.spec
+      - name: Generate Sparkle appcast
+        shell: bash
+        env:
+          SPARKLE_ED_PRIVATE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Isolate the DMG so generate_appcast doesn't also sign the generic
+          # export/*.zip; sign with the private key from stdin (no keychain).
+          mkdir -p sparkle-feed
+          cp "export/sharly-chess-${VERSION}-mac.dmg" sparkle-feed/
+          echo "$SPARKLE_ED_PRIVATE_KEY" | vendor/sparkle/bin/generate_appcast \
+            --ed-key-file - \
+            --download-url-prefix "https://github.com/Sharly-Chess/sharly-chess/releases/download/${VERSION}/" \
+            sparkle-feed/
+          cp sparkle-feed/appcast.xml export/appcast.xml
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: |
-            export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            export/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
+            export/appcast.xml
 
   create-release:
     needs: [tests, export-sharly-chess-windows, export-sharly-chess-macos, export-sharly-chess-linux, publish-linux-flatpak]
@@ -514,9 +559,12 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p release-files
           # Windows
-          cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
+          cp "export-windows/Sharly Chess Installer ${VERSION}.exe" "release-files/Sharly Chess Installer ${VERSION}.exe"
+          cp "export-windows/Sharly Chess Updater ${VERSION}.exe" "release-files/Sharly Chess Updater ${VERSION}.exe"
           # macOS
-          cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
+          cp export-macos/sharly-chess-${VERSION}-mac.dmg release-files/sharly-chess-${VERSION}-mac.dmg
+          # macOS Sparkle appcast (the app fetches this per-release to self-update)
+          cp export-macos/appcast.xml release-files/appcast.xml
           # Linux Flatpak bundles
           cp export-linux/sharly-chess-${VERSION}-linux-x86_64/sharly-chess-${VERSION}-linux-x86_64.flatpak release-files/
           cp export-linux/sharly-chess-${VERSION}-linux-arm64/sharly-chess-${VERSION}-linux-arm64.flatpak release-files/
@@ -528,8 +576,10 @@ jobs:
           draft: true
           prerelease: contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc')
           files: |
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            "release-files/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe"
+            "release-files/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
+            release-files/appcast.xml
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.flatpak
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-arm64.flatpak
           body_path: RELEASE_NOTES.md

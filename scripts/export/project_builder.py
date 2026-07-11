@@ -8,7 +8,6 @@ from logging import Logger
 from pathlib import Path
 from pkgutil import iter_modules
 from types import ModuleType
-from zipfile import ZipFile, ZIP_DEFLATED
 
 from PyInstaller.__main__ import run
 from packaging.version import Version, InvalidVersion
@@ -16,7 +15,14 @@ from packaging.version import Version, InvalidVersion
 import plugins.chess_results
 import plugins.ffe
 import plugins.fra_schools
-from common import BASE_DIR
+from common import (
+    BASE_DIR,
+    DEFAULT_DATA_DIR,
+    BUILD_DIR,
+    DEFAULT_PROGRAM_DIR,
+    LOCALE_DIR,
+    SRC_DIR,
+)
 from common import SHARLY_CHESS_VERSION
 from common.installation_checker import (
     InstallationChecker,
@@ -26,6 +32,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
 from plugins.manager import plugin_manager
+from scripts.export.windows.generate_setup_files import DIST_DIR
 from utils.file import shutil_delete_onerror
 
 logger: Logger = get_logger()
@@ -34,50 +41,34 @@ logger: Logger = get_logger()
 class ProjectBuilder(ABC):
     """OS-agnostic class to export the project."""
 
-    def __init__(
-        self,
-        clean_project_on_exit: bool,
-    ):
+    def __init__(self):
         """Initializes the builder."""
-        self.build_dir: Path = BASE_DIR / 'build'
-        self.data_dir: Path = BASE_DIR / 'export-data'
-        self.locale_dir: Path = BASE_DIR / 'locale'
         self.project_name: str = 'sharly-chess'
         self.basename: str = f'{self.project_name}-{SHARLY_CHESS_VERSION}'
-        self.export_dir: Path = BASE_DIR / 'export'
-        self.project_dir: Path = BASE_DIR / 'dist' / self.basename
+        self.project_dir: Path = DIST_DIR / self.basename
         self.spec_file: Path = BASE_DIR / f'{self.basename}.spec'
-        self.src_dir: Path = BASE_DIR / 'src'
         self.licences_dir = self.project_dir / 'LICENSES'
-        self.control_file: Path = Path('tmp', 'control_file.json')
-        self.zip_file: Path = self.export_dir / f'{self.basename}.zip'
-        self.test_dir: Path = BASE_DIR / 'export-test' / self.basename
-        self.clean_project_on_exit: bool = clean_project_on_exit
-        parser = ArgumentParser(description='Export Sharly Chess.')
+        parser = ArgumentParser(description='Build Sharly Chess.')
         # option --github is used when generating the EXE file from a GITHUB action
         # to verify that the name of the tag matches the Sharly Chess version.
-        parser.add_argument('--github', type=str)
+        parser.add_argument('--github-version', type=str)
         self.hook_add_params(parser)
         args: Namespace = parser.parse_args()
-        if args.github:
-            if SHARLY_CHESS_VERSION != Version(args.github):
+        if args.github_version:
+            gh_version = Version(args.github_version)
+            if SHARLY_CHESS_VERSION != gh_version:
                 raise InvalidVersion(
-                    f'Version [{args.github}] does not match (expected [{SHARLY_CHESS_VERSION}]).'
+                    f'Version [{gh_version}] does not match (expected [{SHARLY_CHESS_VERSION}]).'
                 )
             else:
-                logger.info('Version [%s] is valid.', args.github)
+                logger.info('Version [%s] is valid.', gh_version)
         else:
             logger.info('The version is not verified (not running on GitHub).')
-        self.runs_on_github: bool = bool(args.github)
         self.hook_check_params(args)
 
     def run(self) -> bool:
         self.clean_on_startup()
         if not self.build_project():
-            return False
-        if not self.build_zip_file():
-            return False
-        if not self.build_test():
             return False
         self.clean_on_exit()
         return True
@@ -116,10 +107,9 @@ class ProjectBuilder(ABC):
             file.unlink()
 
     def clean_on_startup(self):
-        self._delete_folder(self.build_dir)
+        self._delete_folder(BUILD_DIR)
         self._delete_file(self.spec_file)
         self._delete_folder(self.project_dir)
-        self._delete_file(self.zip_file)
         self.hook_post_clean_on_startup()
 
     def hook_post_clean_on_startup(self):
@@ -133,10 +123,8 @@ class ProjectBuilder(ABC):
         raise NotImplementedError(f'Class {self.__class__} not implemented yet.')
 
     def clean_on_exit(self):
-        self._delete_folder(self.build_dir)
+        self._delete_folder(BUILD_DIR)
         self._delete_file(self.spec_file)
-        if self.clean_project_on_exit:
-            self._delete_folder(self.project_dir)
 
     def build_project(self) -> bool:
         logger.info('Creating project folder [%s]...', self.project_dir)
@@ -146,13 +134,15 @@ class ProjectBuilder(ABC):
         # PermissionError: [WinError 5] Access refused
         if not self._build_exe():
             return False
+
         logger.info(
-            'Adding data from folder [%s] to [%s]...', self.project_dir, self.data_dir
+            'Adding data from folder [%s] to [%s]...',
+            self.project_dir,
+            DEFAULT_PROGRAM_DIR,
         )
-        shutil.copytree(self.data_dir, self.project_dir, dirs_exist_ok=True)
+        shutil.copytree(DEFAULT_PROGRAM_DIR, self.project_dir, dirs_exist_ok=True)
+        self._rename_executable_file()
         if not self._generate_license_files():
-            return False
-        if not self.build_control_file():
             return False
         if not self.hook_post_build_project():
             return False
@@ -574,29 +564,25 @@ class ProjectBuilder(ABC):
                 )
 
         files: list[Path] = []
-        web_dir = self.src_dir / 'web'
-        files += [
-            file for file in (web_dir / 'templates').glob('**/*') if file.is_file()
-        ]
+
+        def add_dir_files(dir_path: Path, pattern: str = '**/*') -> None:
+            for file_ in dir_path.glob(pattern):
+                if file_.is_file():
+                    files.append(file_)
+
+        web_dir = SRC_DIR / 'web'
+        add_dir_files(web_dir / 'templates')
         for templates_path in plugin_manager.templates_paths:
-            files += [file for file in templates_path.glob('**/*') if file.is_file()]
+            add_dir_files(templates_path)
         for locale_path in plugin_manager.locale_paths:
-            files += [file for file in locale_path.glob('**/*.mo') if file.is_file()]
+            add_dir_files(locale_path, '**/*.mo')
         for static_path in plugin_manager.static_paths:
-            files += [file for file in static_path.glob('**/*') if file.is_file()]
+            add_dir_files(static_path)
         static_dir = web_dir / 'static'
-        files += [
-            file for file in Path(static_dir, 'fonts').glob('**/*') if file.is_file()
-        ]
-        files += [
-            file for file in Path(static_dir, 'images').glob('**/*') if file.is_file()
-        ]
-        files += [
-            file for file in Path(static_dir, 'css').glob('**/*') if file.is_file()
-        ]
-        files += [
-            file for file in Path(static_dir, 'js').glob('**/*') if file.is_file()
-        ]
+        add_dir_files(static_dir / 'fonts')
+        add_dir_files(static_dir / 'images')
+        add_dir_files(static_dir / 'css')
+        add_dir_files(static_dir / 'js')
         for installer in InstallationChecker.web_lib_installers:
             files += [
                 installer.version_install_dir / lib_file
@@ -609,21 +595,18 @@ class ProjectBuilder(ABC):
             lib_dir / 'polyglot' / 'polyglot.js',
             lib_dir / 'select2' / 'themes' / 'dark-bootstrap-5.css',
         ]
-        custom_dir: Path = self.src_dir / 'custom'
-        files += [file for file in custom_dir.glob('**/*') if file.is_file()]
-        files += [file for file in self.locale_dir.glob('**/*.mo') if file.is_file()]
-        molter_resource_dir = self.src_dir / 'data' / 'pairings' / 'resources'
-        files += [file for file in molter_resource_dir.glob('**/*') if file.is_file()]
+        add_dir_files(LOCALE_DIR, '**/*.mo')
+        add_dir_files(SRC_DIR / 'data' / 'pairings' / 'resources')
 
         # Add entire executable installer directories
         for executable_installer in InstallationChecker.executable_installers:
             installer_dir = executable_installer.executable_dir
             if installer_dir.exists():
                 # Add all files in the installer directory recursively
-                files += [file for file in installer_dir.glob('**/*') if file.is_file()]
+                add_dir_files(installer_dir)
 
         files += [
-            self.src_dir / '.fide-database-enc-credentials',
+            SRC_DIR / '.fide-database-enc-credentials',
             plugins.chess_results.PLUGIN_DIR / '.credentials',
             plugins.ffe.PLUGIN_DIR / '.sql-server-credentials',
             plugins.ffe.PLUGIN_DIR / '.database-enc-credentials',
@@ -631,8 +614,9 @@ class ProjectBuilder(ABC):
         ]
 
         # Add GUI resources
-        gui_dir: Path = self.src_dir / 'gui'
-        files += [file for file in gui_dir.glob('**/*') if file.is_file()]
+        add_dir_files(SRC_DIR / 'gui')
+        # Add default data files
+        add_dir_files(DEFAULT_DATA_DIR)
 
         # Use correct path separator for PyInstaller --add-data based on OS
         data_separator = ':' if os.name != 'nt' else ';'
@@ -670,31 +654,5 @@ class ProjectBuilder(ABC):
         """Executed after the project build, return True on success and False on failure."""
         return True
 
-    def build_control_file(self) -> bool:
-        """Build a JSON file with all the needed files for control purposes."""
-        return True
-
-    def build_zip_file(self) -> bool:
-        logger.info('Creating archive [%s]...', self.zip_file)
-        self.zip_file.parent.mkdir(parents=True, exist_ok=True)
-        with ZipFile(self.zip_file, 'w', ZIP_DEFLATED) as zip_file:
-            cwd: str = os.getcwd()
-            os.chdir(self.project_dir)
-            for folder_name, sub_folders, file_names in os.walk('.'):
-                zip_file.write(folder_name, folder_name)
-            for folder_name, sub_folders, file_names in os.walk('.'):
-                for filename in file_names:
-                    file_path: Path = Path(folder_name, filename)
-                    zip_file.write(file_path, file_path)
-            os.chdir(cwd)
-        return True
-
-    def build_test(self) -> bool:
-        if self.test_dir.exists():
-            logger.info('Deleting folder [%s]...', self.test_dir)
-            shutil.rmtree(self.test_dir, onerror=shutil_delete_onerror)
-        logger.info('Creating test environment in [%s]...', self.test_dir)
-        self.test_dir.mkdir(parents=True)
-        with ZipFile(self.zip_file, 'r') as zip_file:
-            zip_file.extractall(self.test_dir)
-        return True
+    def _rename_executable_file(self):
+        """Rename the executable file."""
