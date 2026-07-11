@@ -8,6 +8,7 @@ the server without duplicating server logic.
 from __future__ import annotations
 
 import asyncio
+import ctypes
 import io
 import json
 import locale
@@ -49,6 +50,7 @@ from common.updaters.version_updater import VersionUpdater
 from common.updaters.windows_updater import WindowsUpdater
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
+from utils import Utils
 from utils.program_variables import ProgramVar
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
@@ -786,6 +788,64 @@ class SharlyChessServerToga(toga.App):
                 text_align='center',
             ),
         )
+        if sys.platform == 'win32':
+            await self._ask_windows_defender_exception(new_data_dir)
+
+    async def _ask_windows_defender_exception(self, new_data_dir: Path):
+        assert isinstance(self.main_window, toga.Window)
+        await asyncio.sleep(0.1)
+        process = Utils.run_process(
+            [
+                'powershell',
+                '-Command',
+                'Get-MpComputerStatus | Select-Object -ExpandProperty AMServiceEnabled',
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if 'True' not in process.stdout:
+            return
+        message = _(
+            'Do you want to add the new data folder '
+            'to the Microsoft Defender exception list?'
+        )
+        message += '\n' + _(
+            'This will improve performances. You must have administrator rights.'
+        )
+        question_dialog = toga.QuestionDialog(
+            self._dialog_title('Microsoft Defender'), message
+        )
+        if not await self.main_window.dialog(question_dialog):
+            return
+
+        # Go through sharly-chess.exe instead of directly cmd.exe
+        # For the name requesting the elevation to be "Sharly Chess"
+        # instead of "Command Line Interface"
+        params = ['--win-defender-exception-path', f'"{new_data_dir}"']
+        if DEVEL_ENV:
+            params.insert(0, f'"{sys.argv[0]}"')
+        # Type error when not running on windows
+        result = ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
+            None, 'runas', sys.executable, ' '.join(params), None, 0
+        )
+        if result > 32:
+            info_dialog = toga.InfoDialog(
+                self._dialog_title('Microsoft Defender'),
+                _(
+                    'The data folder has been successfully added '
+                    'to the Microsoft Defender exception list.'
+                ),
+            )
+            await self.main_window.dialog(info_dialog)
+        else:
+            error_dialog = toga.ErrorDialog(
+                self._dialog_title(_('Error')),
+                _(
+                    'The data folder could not be added to '
+                    'the Microsoft Defender exception list.'
+                ),
+            )
+            await self.main_window.dialog(error_dialog)
 
     @staticmethod
     def _last_search_message(last_search_at: datetime) -> str:
@@ -871,8 +931,9 @@ class SharlyChessServerToga(toga.App):
 
         asyncio.run_coroutine_threadsafe(run_search(), self.gui_loop)
 
-    def _error_dialog_title(self):
-        return f'Sharly Chess - {_("Error")}'
+    @staticmethod
+    def _dialog_title(subtitle: str) -> str:
+        return f'Sharly Chess - {subtitle}'
 
     async def _show_update_dialog(self, widget):
         assert isinstance(self.main_window, toga.Window)
@@ -881,7 +942,7 @@ class SharlyChessServerToga(toga.App):
         if sys.platform == 'darwin':
             if DEVEL_ENV:
                 error_dialog = toga.ErrorDialog(
-                    title=self._error_dialog_title(),
+                    title=self._dialog_title(_('Error')),
                     message=(
                         'Sharly Chess is currently running in '
                         'development and does not support updating.'
@@ -894,7 +955,7 @@ class SharlyChessServerToga(toga.App):
             await self._run_sparkle_updater(latest)
             return
 
-        title = f'Sharly Chess - {_("Updates")}'
+        title = self._dialog_title(_('Updates'))
         message = _('Sharly Chess {latest} is available, you have {current}.').format(
             latest=latest, current=SHARLY_CHESS_VERSION
         )
@@ -906,7 +967,7 @@ class SharlyChessServerToga(toga.App):
             if WindowsUpdater.download():
                 self.quit_app(post_exit_task=WindowsUpdater.run)
                 return
-            title = self._error_dialog_title()
+            title = self._dialog_title(_('Error'))
             message = _(
                 'The update could not be downloaded. Consult the logs for more details.'
             )
@@ -921,7 +982,7 @@ class SharlyChessServerToga(toga.App):
         while True:
             if SparkleUpdater.check_for_update(version):
                 return
-            title = self._error_dialog_title()
+            title = self._dialog_title(_('Error'))
             message = _(
                 'An update of Sharly Chess is available, '
                 'but the updater tool (Sparkle) failed.'
@@ -1246,7 +1307,7 @@ class SharlyChessServerToga(toga.App):
         async def _ask_on_ui():
             # Show the dialog on the main window; returns True/False
             assert isinstance(self.main_window, toga.Window)
-            dialog = toga.QuestionDialog(title=f'Sharly Chess - {title}', message=text)
+            dialog = toga.QuestionDialog(title=self._dialog_title(title), message=text)
             return await self.main_window.dialog(dialog)
 
         # Schedule the coroutine on the UI loop and wait for the result
