@@ -101,8 +101,11 @@ def _default_data_dir() -> Path:
             raise NotImplementedError(f'{sys.platform=}')
 
 
+MANUAL_PATH_USED = os.getenv('SC_MANUAL_PATH_USED') == '1'
+
+
 def _app_data_dir() -> Path:
-    if FLATPAK_ID:
+    if TEST_ENV or MANUAL_PATH_USED:
         return Path()
     data_dir_val = ProgramVar.DATA_DIR.read_value()
     if data_dir_val:
@@ -155,7 +158,7 @@ if not os.access(DATA_DIR, os.W_OK):
     raise SharlyChessException(f'Data path [{DATA_DIR.absolute()}] is not writable.')
 
 previous_dir_val = ProgramVar.PREVIOUS_DATA_DIR.read_value()
-if previous_dir_val:
+if previous_dir_val and not MANUAL_PATH_USED:
     previous_dir = Path(previous_dir_val)
     if previous_dir.exists() and not any(DATA_DIR.iterdir()):
         # The data dir changed: move the previous content over
