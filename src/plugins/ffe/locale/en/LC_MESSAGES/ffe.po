@@ -42,9 +42,11 @@ msgstr ""
 msgid "At least one league is expected."
 msgstr ""
 
+#, python-brace-format
 msgid "At most 3 men allowed on the roster ({n} listed)."
 msgstr ""
 
+#, python-brace-format
 msgid "At most 3 women allowed on the roster ({n} listed)."
 msgstr ""
 
@@ -134,6 +136,7 @@ msgstr ""
 msgid "Elite Arbiter (level 2)"
 msgstr ""
 
+#, python-brace-format
 msgid "Exclude: {values}"
 msgstr ""
 
@@ -198,6 +201,7 @@ msgstr ""
 msgid "FFE licence B (leisure)"
 msgstr ""
 
+#, python-brace-format
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr ""
 
@@ -234,11 +238,13 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+#, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least significant value is removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
 msgstr[0] ""
@@ -277,15 +283,19 @@ msgstr ""
 msgid "Invalid FFE certification number or password."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
@@ -301,6 +311,7 @@ msgstr ""
 msgid "Last upload"
 msgstr ""
 
+#, python-brace-format
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
@@ -376,15 +387,18 @@ msgstr "N - Expired"
 msgid "Name"
 msgstr ""
 
+#, python-brace-format
 msgid "Need at least 2 men on the roster ({n} listed)."
 msgstr ""
 
+#, python-brace-format
 msgid "Need at least 2 women on the roster ({n} listed)."
 msgstr ""
 
 msgid "Never uploaded"
 msgstr ""
 
+#, python-brace-format
 msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr ""
 
@@ -397,6 +411,7 @@ msgstr ""
 msgid "No internet connection"
 msgstr ""
 
+#, python-brace-format
 msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
 msgstr ""
 
@@ -427,6 +442,7 @@ msgstr ""
 msgid "Papi export is not available for team events."
 msgstr ""
 
+#, python-brace-format
 msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
 msgstr ""
 
@@ -436,9 +452,11 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+#, python-brace-format
 msgid "Player rating above {cap}: {names}."
 msgstr ""
 
+#, python-brace-format
 msgid "Player without an A (competition) FFE licence: {names}."
 msgstr ""
 
@@ -448,18 +466,21 @@ msgstr ""
 msgid "Please select a file."
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking by league after round #{round}"
 msgstr ""
 
 msgid "Replace the player to update this field."
 msgstr ""
 
+#, python-brace-format
 msgid "Roster must consist of women players only: {names}."
 msgstr ""
 
 msgid "Rules successfully uploaded."
 msgstr ""
 
+#, python-brace-format
 msgid "Rules upload failed for tournament [{tournaments}]."
 msgid_plural "Rules upload failed for tournaments [{tournaments}]."
 msgstr[0] ""
@@ -531,12 +552,15 @@ msgstr ""
 msgid "The FFE always uses the FIDE rating when available."
 msgstr ""
 
+#, python-brace-format
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr ""
 
+#, python-brace-format
 msgid "The Papi format does not support result [{result}]."
 msgstr ""
 
+#, python-brace-format
 msgid "The [{tie_break}] tie-break as implemented in Papi."
 msgstr ""
 
@@ -591,12 +615,15 @@ msgstr ""
 msgid "Unknown league."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown player ID [{player_id}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown value (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown value [{value}]"
 msgstr ""
 
@@ -667,16 +694,19 @@ msgstr ""
 msgid "tournament most likely marked as finished on the FFE website"
 msgstr ""
 
+#, python-brace-format
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{n} forfeited board above a board on which a game was played, counted as -1."
 msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""

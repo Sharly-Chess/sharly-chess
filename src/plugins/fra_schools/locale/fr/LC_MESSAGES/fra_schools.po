@@ -35,6 +35,7 @@ msgstr "Supprimer"
 msgid "Edit the selected French school."
 msgstr "Metre à jour l'établissement scolaire sélectionné."
 
+#, python-brace-format
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
@@ -62,6 +63,7 @@ msgstr "Cacher les codes UAI lors de la mise en ligne FFE"
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
 
+#, python-brace-format
 msgid "Invalid format (expected: {format})."
 msgstr "Format invalide (attendu : {format})."
 
@@ -86,6 +88,7 @@ msgstr "Merci de valider l'établissement scolaire avant de continuer."
 msgid "Postal code"
 msgstr "Code postal"
 
+#, python-brace-format
 msgid "Ranking by school after round #{round}"
 msgstr "Classement par établissement après la ronde n°{round}"
 
@@ -141,6 +144,7 @@ msgstr "Les codes UAI sont nécessaires pour distinguer les établissements avec
 msgid "Update the school [%(school_name)s]"
 msgstr "Mettre à jour l'établissement [%(school_name)s]"
 
+#, python-brace-format
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"
 msgstr[0] "{count} établissement représenté"

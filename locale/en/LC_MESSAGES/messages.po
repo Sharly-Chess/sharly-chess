@@ -1,12 +1,16 @@
+#, python-brace-format
 msgid " [{default_choice}: {default_value}]: "
 msgstr ""
 
+#, python-brace-format
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr ""
 
+#, python-brace-format
 msgid "#{board_number}"
 msgstr ""
 
+#, python-brace-format
 msgid "#{board_number} with {color}"
 msgstr ""
 
@@ -295,6 +299,7 @@ msgstr ""
 msgid "(by default)"
 msgstr ""
 
+#, python-brace-format
 msgid "(inheritance: {inheritance})"
 msgstr ""
 
@@ -455,9 +460,11 @@ msgstr ""
 msgid "162 Point system"
 msgstr ""
 
+#, python-brace-format
 msgid "172 Starting rank method {method}"
 msgstr ""
 
+#, python-brace-format
 msgid "192 Encoded type {type} (default: {default})"
 msgstr ""
 
@@ -515,6 +522,7 @@ msgstr ""
 msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
 msgstr ""
 
+#, python-brace-format
 msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
 msgstr ""
 
@@ -522,9 +530,11 @@ msgstr ""
 msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
 msgstr ""
 
+#, python-brace-format
 msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
 msgstr ""
 
+#, python-brace-format
 msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}."
 msgstr ""
 
@@ -574,9 +584,11 @@ msgstr ""
 msgid "A number is expected."
 msgstr ""
 
+#, python-brace-format
 msgid "A player with {column}=[{value}] already exists in the event."
 msgstr ""
 
+#, python-brace-format
 msgid "A player with {column}=[{value}] already exists in tournament [{tournament}]."
 msgstr ""
 
@@ -598,6 +610,7 @@ msgstr ""
 msgid "A positive value is expected."
 msgstr ""
 
+#, python-brace-format
 msgid "A set named [{name}] already exists. Tick the overwrite option to replace it."
 msgstr ""
 
@@ -660,15 +673,19 @@ msgstr ""
 msgid "Account"
 msgstr ""
 
+#, python-brace-format
 msgid "Account [{account_name}] already exists."
 msgstr ""
 
+#, python-brace-format
 msgid "Account [{account_name}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Account [{account_name}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Account [{account_name}] has been updated."
 msgstr ""
 
@@ -789,6 +806,7 @@ msgstr ""
 msgid "Afghanistan"
 msgstr ""
 
+#, python-brace-format
 msgid "After round #{round}"
 msgstr ""
 
@@ -857,6 +875,7 @@ msgstr ""
 msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr ""
 
+#, python-brace-format
 msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
 msgstr ""
 
@@ -966,12 +985,15 @@ msgstr ""
 msgid "Archive"
 msgstr ""
 
+#, python-brace-format
 msgid "Archive [{archive}] could not be restored, consult the logs for more details."
 msgstr ""
 
+#, python-brace-format
 msgid "Archive [{archive}] successfully deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr ""
 
@@ -981,6 +1003,7 @@ msgstr ""
 msgid "Archive the event."
 msgstr ""
 
+#, python-brace-format
 msgid "Archived ({num})"
 msgstr ""
 
@@ -1020,6 +1043,7 @@ msgstr ""
 msgid "At least one value is expected."
 msgstr ""
 
+#, python-brace-format
 msgid "At least {min} games must be played."
 msgstr ""
 
@@ -1092,6 +1116,7 @@ msgstr ""
 msgid "Average rating: %(rating)d"
 msgstr ""
 
+#, python-brace-format
 msgid "Average rating: {rating}"
 msgstr ""
 
@@ -1217,9 +1242,11 @@ msgstr ""
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
 
+#, python-brace-format
 msgid "Board #{board_number} with {color}"
 msgstr ""
 
+#, python-brace-format
 msgid "Board #{board_number} {color}"
 msgstr ""
 
@@ -1325,6 +1352,7 @@ msgstr ""
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr ""
 
+#, python-brace-format
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
 msgstr ""
 
@@ -1357,6 +1385,7 @@ msgstr ""
 msgid "Byes *** ZPB, HPB or FPB"
 msgstr "Byes"
 
+#, python-brace-format
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
 msgstr[0] ""
@@ -1433,6 +1462,7 @@ msgstr ""
 msgid "Cannot be both chief and deputy on the same tournament."
 msgstr ""
 
+#, python-brace-format
 msgid "Cannot tile {remaining} remaining players into a base table for {t} teams."
 msgstr ""
 
@@ -1643,9 +1673,11 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
+#, python-brace-format
 msgid "Color [{color}] can't be used with an opponent."
 msgstr ""
 
+#, python-brace-format
 msgid "Color [{color}] can't be used without an opponent."
 msgstr ""
 
@@ -1656,12 +1688,15 @@ msgstr ""
 msgid "Colour #%(num)d:"
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr ""
 
@@ -1728,9 +1763,11 @@ msgstr ""
 msgid "Configure the tie-breaks of the tournament."
 msgstr ""
 
+#, python-brace-format
 msgid "Confirm the new data folder \"{folder}\"?"
 msgstr ""
 
+#, python-brace-format
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr ""
 
@@ -1746,6 +1783,7 @@ msgstr ""
 msgid "Connection parameters"
 msgstr ""
 
+#, python-brace-format
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
 msgstr ""
 
@@ -1794,6 +1832,7 @@ msgstr ""
 msgid "Could not add the pairing."
 msgstr ""
 
+#, python-brace-format
 msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
@@ -1947,6 +1986,7 @@ msgstr ""
 msgid "Create with default screens"
 msgstr ""
 
+#, python-brace-format
 msgid "Creator: {template_creator}"
 msgstr ""
 
@@ -1977,6 +2017,7 @@ msgstr ""
 msgid "Crosstable %f-%l"
 msgstr ""
 
+#, python-brace-format
 msgid "Crosstable after round #{round}"
 msgstr ""
 
@@ -1986,6 +2027,7 @@ msgstr ""
 msgid "Cuba"
 msgstr ""
 
+#, python-brace-format
 msgid "Current ({num})"
 msgstr ""
 
@@ -2008,9 +2050,11 @@ msgstr ""
 msgid "Current title:"
 msgstr ""
 
+#, python-brace-format
 msgid "Currently displaying rotator [{name}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Currently displaying screen [{name}]"
 msgstr ""
 
@@ -2026,6 +2070,7 @@ msgstr ""
 msgid "Cut values"
 msgstr ""
 
+#, python-brace-format
 msgid "Cut {value} *** CUT TIE BREAK NAME"
 msgstr "Cut {value}"
 
@@ -2084,6 +2129,7 @@ msgstr ""
 msgid "Database"
 msgstr ""
 
+#, python-brace-format
 msgid "Database [{database}] successfully updated."
 msgstr ""
 
@@ -2170,6 +2216,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+#, python-brace-format
 msgid "Delete <b>{value}</b>"
 msgstr ""
 
@@ -2299,6 +2346,7 @@ msgstr ""
 msgid "Director:"
 msgstr ""
 
+#, python-brace-format
 msgid "Directory [{folder}] already exists."
 msgstr ""
 
@@ -2311,21 +2359,26 @@ msgstr ""
 msgid "Display Controller"
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{display_controller}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{display_controller}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{display_controller}] has been updated."
 msgstr ""
 
 msgid "Display controllers"
 msgstr ""
 
+#, python-brace-format
 msgid "Display controllers ({num})"
 msgstr ""
 
+#, python-brace-format
 msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "D<u>i</u>splay controllers ({num})"
 
@@ -2373,6 +2426,7 @@ msgstr ""
 msgid "Djibouti"
 msgstr ""
 
+#, python-brace-format
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr ""
 
@@ -2397,12 +2451,15 @@ msgstr ""
 msgid "Do you want to install example event databases"
 msgstr ""
 
+#, python-brace-format
 msgid "Do you want to recover the data of release [{version}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Document [{document}] has been generated in another tab."
 msgstr ""
 
@@ -2439,6 +2496,7 @@ msgstr ""
 msgid "Download tournament fees"
 msgstr ""
 
+#, python-brace-format
 msgid "Downloading failed with code [{code}]."
 msgstr ""
 
@@ -2811,6 +2869,7 @@ msgstr ""
 msgid "Eritrea"
 msgstr ""
 
+#, python-brace-format
 msgid "Error when updating database [{database}]."
 msgstr ""
 
@@ -2829,15 +2888,19 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{event}] has been imported."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
@@ -2853,12 +2916,14 @@ msgstr ""
 msgid "Event type:"
 msgstr ""
 
+#, python-brace-format
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Events"
 msgstr ""
 
+#, python-brace-format
 msgid "Events ({num})"
 msgstr ""
 
@@ -2868,6 +2933,7 @@ msgstr ""
 msgid "Exclude the players matching the criterion instead of including them."
 msgstr ""
 
+#, python-brace-format
 msgid "Exclude: {values}"
 msgstr ""
 
@@ -2976,9 +3042,11 @@ msgstr "FM"
 msgid "FORFEIT"
 msgstr ""
 
+#, python-brace-format
 msgid "Failed to process DMG file: [{ex}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Failed to read [{download_url}]: [{ex}]."
 msgstr ""
 
@@ -3015,6 +3083,7 @@ msgstr ""
 msgid "Fetch from a data source"
 msgstr ""
 
+#, python-brace-format
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
 
@@ -3027,6 +3096,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+#, python-brace-format
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
 msgstr ""
 
@@ -3104,6 +3174,7 @@ msgstr ""
 msgid "For each round, sum the opponent score multiplied by the team score obtained in that match across all rounds. The four variants (EMMSB / EMGSB / EGMSB / EGGSB) choose which score type — match points or game points — is used on each side; pick one in the variant option below (FIDE Handbook C.07 §13)."
 msgstr ""
 
+#, python-brace-format
 msgid "For each round, the opponent total {opp} multiplied by the team {own} obtained in that match, summed across all rounds (FIDE Handbook C.07 §13)."
 msgstr ""
 
@@ -3167,6 +3238,7 @@ msgstr ""
 msgid "Full-Point Bye (deprecated)"
 msgstr ""
 
+#, python-brace-format
 msgid "Full-Point Bye attributed to team [{team}]."
 msgstr ""
 
@@ -3206,6 +3278,7 @@ msgstr "Gen."
 msgid "Gender"
 msgstr ""
 
+#, python-brace-format
 msgid "Gender ({gender})"
 msgstr ""
 
@@ -3239,6 +3312,7 @@ msgstr ""
 msgid "Generate rating categories"
 msgstr ""
 
+#, python-brace-format
 msgid "Generated by script {script_name} on {date}"
 msgstr ""
 
@@ -3254,6 +3328,7 @@ msgstr ""
 msgid "Ghana"
 msgstr ""
 
+#, python-brace-format
 msgid "Give/take away access level {access_level_short_name}"
 msgstr ""
 
@@ -3311,9 +3386,11 @@ msgstr ""
 msgid "Half-Point Bye"
 msgstr ""
 
+#, python-brace-format
 msgid "Half-Point Bye attributed to player [{player}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Half-Point Bye attributed to team [{team}]."
 msgstr ""
 
@@ -3350,9 +3427,11 @@ msgstr ""
 msgid "Hort system"
 msgstr ""
 
+#, python-brace-format
 msgid "Hour [{hour}] already exists."
 msgstr ""
 
+#, python-brace-format
 msgid "Hour [{hour}] has been created."
 msgstr ""
 
@@ -3443,6 +3522,7 @@ msgstr ""
 msgid "Imported player"
 msgstr ""
 
+#, python-brace-format
 msgid "Impossible to add players to tournament [{tournament}]."
 msgstr ""
 
@@ -3450,12 +3530,14 @@ msgstr ""
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
 msgstr ""
 
+#, python-brace-format
 msgid "Impossible to set a round number lower than the last round with pairings #{round}."
 msgstr ""
 
 msgid "In play"
 msgstr ""
 
+#, python-brace-format
 msgid "In team events, the tie-break is calculated using {score} as the reference score."
 msgstr ""
 
@@ -3516,6 +3598,7 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
+#, python-brace-format
 msgid "Inherited by permission [{permission}]."
 msgstr ""
 
@@ -3531,12 +3614,15 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
+#, python-brace-format
 msgid "Installation of [{lib}] failed."
 msgstr ""
 
+#, python-brace-format
 msgid "Installation of release [{version}] failed, exiting."
 msgstr ""
 
+#, python-brace-format
 msgid "Installed [{lib}]."
 msgstr ""
 
@@ -3549,60 +3635,75 @@ msgstr ""
 msgid "International Master"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr ""
 
 msgid "Invalid TRF25 string: unexpected characters."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid URL [{background_image}]."
 msgstr ""
 
 msgid "Invalid account."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid amount [{amount}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid date format (expected: {format})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
 msgid "Invalid email format."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid expression [{expression}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid federation [{federation}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr ""
 
 msgid "Invalid folder"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid locale [{locale}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
@@ -3615,18 +3716,23 @@ msgstr ""
 msgid "Invalid rows"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid time control format [{time_control}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_values}])."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid value [{value}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
 
@@ -3753,9 +3859,11 @@ msgstr ""
 msgid "Last update"
 msgstr ""
 
+#, python-brace-format
 msgid "Last update: {updated_at}"
 msgstr ""
 
+#, python-brace-format
 msgid "Last update: {updated_at} (outdated)"
 msgstr ""
 
@@ -3783,6 +3891,7 @@ msgstr ""
 msgid "Legacy tie-breaks can no longer be created or edited."
 msgstr ""
 
+#, python-brace-format
 msgid "Length ({len}) must match players per team match ({count})."
 msgstr ""
 
@@ -3795,6 +3904,7 @@ msgstr ""
 msgid "Liberia"
 msgstr ""
 
+#, python-brace-format
 msgid "Library [{lib}] is missing."
 msgstr ""
 
@@ -3807,11 +3917,13 @@ msgstr ""
 msgid "Limit adjustment"
 msgstr ""
 
+#, python-brace-format
 msgid "Limit {operator} {count} half-point"
 msgid_plural "Limit {operator} {count} half-points"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "Line not recognized: {line}"
 msgstr ""
 
@@ -4010,6 +4122,7 @@ msgstr ""
 msgid "Match sheets"
 msgstr ""
 
+#, python-brace-format
 msgid "Match sheets for round #{round}"
 msgstr ""
 
@@ -4101,18 +4214,22 @@ msgstr ""
 msgid "May be used for per-round prize giveaways etc."
 msgstr ""
 
+#, python-brace-format
 msgid "Median {value}"
 msgstr ""
 
 msgid "Menu"
 msgstr ""
 
+#, python-brace-format
 msgid "Menu [{menu}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Menu [{menu}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Menu [{menu}] has been updated."
 msgstr ""
 
@@ -4129,6 +4246,7 @@ msgstr ""
 msgid "Menus"
 msgstr ""
 
+#, python-brace-format
 msgid "Menus ({num})"
 msgstr ""
 
@@ -4165,15 +4283,18 @@ msgstr ""
 msgid "Minimum score to clear the Rp threshold"
 msgstr ""
 
+#, python-brace-format
 msgid "Missing base table for {t} teams, {p} players."
 msgstr ""
 
 msgid "Missing men"
 msgstr ""
 
+#, python-brace-format
 msgid "Missing required column [{column}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Missing required field [{field}]."
 msgstr ""
 
@@ -4235,18 +4356,22 @@ msgstr ""
 msgid "Multi-Screen"
 msgstr ""
 
+#, python-brace-format
 msgid "Multi-Screen [{family_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Multi-Screen [{family_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Multi-Screen [{family_uniq_id}] has been updated."
 msgstr ""
 
 msgid "Multi-Screens"
 msgstr ""
 
+#, python-brace-format
 msgid "Multi-Screens ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>M</u>ulti-Screens ({num})"
 
@@ -4336,9 +4461,11 @@ msgstr ""
 msgid "National championship final (1.4.3a)"
 msgstr ""
 
+#, python-brace-format
 msgid "National rating support for other federations than the event federation {federation}"
 msgstr ""
 
+#, python-brace-format
 msgid "National rating support for unknown player [{player}]."
 msgstr ""
 
@@ -4537,6 +4664,7 @@ msgstr ""
 msgid "No network detected, use the Refresh button when connected."
 msgstr ""
 
+#, python-brace-format
 msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
 msgstr ""
 
@@ -4579,6 +4707,7 @@ msgstr ""
 msgid "No permissions."
 msgstr ""
 
+#, python-brace-format
 msgid "No player is in contention for a title norm in round {round}."
 msgstr ""
 
@@ -4663,12 +4792,14 @@ msgstr ""
 msgid "No such screens."
 msgstr ""
 
+#, python-brace-format
 msgid "No table available for {n} teams."
 msgstr ""
 
 msgid "No tables available for this pairing system."
 msgstr ""
 
+#, python-brace-format
 msgid "No tables available for {t} teams."
 msgstr ""
 
@@ -4708,6 +4839,7 @@ msgstr ""
 msgid "No updates found."
 msgstr ""
 
+#, python-brace-format
 msgid "No usable table for {t} teams of {p} players."
 msgstr ""
 
@@ -4757,9 +4889,11 @@ msgstr ""
 msgid "Normalisation factor"
 msgstr ""
 
+#, python-brace-format
 msgid "Normalisation factor = {value}"
 msgstr ""
 
+#, python-brace-format
 msgid "Normalisation factor must be between 1 and {max}."
 msgstr ""
 
@@ -4885,6 +5019,7 @@ msgstr ""
 msgid "Numbers or ranges of numbers of the match tables (example: 1-10 20 25). Each table produces one card per board of the match. For fixed-table systems, plain board numbers."
 msgstr ""
 
+#, python-brace-format
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr ""
 
@@ -4945,6 +5080,7 @@ msgstr ""
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
 msgstr ""
 
+#, python-brace-format
 msgid "Only {n} more player(s) can be added ({max} max for this rule set)."
 msgstr ""
 
@@ -4963,6 +5099,7 @@ msgstr ""
 msgid "Opponent"
 msgstr ""
 
+#, python-brace-format
 msgid "Opponent (R{round})"
 msgstr ""
 
@@ -5011,12 +5148,14 @@ msgstr ""
 msgid "Organize your prizes into brackets to manage how they’re awarded. A player can win only one prize per bracket, but can win prizes in multiple brackets."
 msgstr ""
 
+#, python-brace-format
 msgid "Origin: {template_origin}"
 msgstr ""
 
 msgid "Other"
 msgstr ""
 
+#, python-brace-format
 msgid "Other missing players: {count}"
 msgstr ""
 
@@ -5032,6 +5171,7 @@ msgstr ""
 msgid "Override the auto-computed F_N factor. Leave at 0 to use the default (FIDE MTB26 formula based on rounds and team size). Integer 1-99."
 msgstr ""
 
+#, python-brace-format
 msgid "Override the auto-computed normalisation factor with {value}."
 msgstr ""
 
@@ -5155,9 +5295,11 @@ msgstr ""
 msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
 msgstr ""
 
+#, python-brace-format
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Pairing-Allocated Bye assigned to team [{team}]."
 msgstr ""
 
@@ -5173,9 +5315,11 @@ msgstr ""
 msgid "Pairings by player"
 msgstr ""
 
+#, python-brace-format
 msgid "Pairings for round #{round}"
 msgstr ""
 
+#, python-brace-format
 msgid "Pairings generated for all rounds of tournament [{tournament}]."
 msgstr ""
 
@@ -5228,6 +5372,7 @@ msgstr ""
 msgid "Participation Statistics"
 msgstr ""
 
+#, python-brace-format
 msgid "Passed ({num})"
 msgstr ""
 
@@ -5258,6 +5403,7 @@ msgstr ""
 msgid "Performance bonus (dp), from 1.4.9 table"
 msgstr ""
 
+#, python-brace-format
 msgid "Performance indicators for round #{round}"
 msgstr ""
 
@@ -5337,48 +5483,63 @@ msgstr ""
 msgid "Player [%(player)s] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player_id}] - round {round}: "
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] already exists in the event."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] already exists in tournament [{tournament}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has been created, but team [{team}] is full ({max} players max)."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has been paired against [{opponent}] at board #{board}."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has returned for this round."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has returned to the tournament."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] is duplicated."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] marked as \"{status}\"."
 msgstr ""
 
+#, python-brace-format
 msgid "Player does not match tournament criteria: {names}"
 msgstr ""
 
@@ -5404,6 +5565,7 @@ msgstr ""
 msgid "Player sets of screen %(screen_name)s"
 msgstr ""
 
+#, python-brace-format
 msgid "Player with FIDE ID [{fide_id}] is duplicated."
 msgstr ""
 
@@ -5422,9 +5584,11 @@ msgstr ""
 msgid "Players (none now)"
 msgstr ""
 
+#, python-brace-format
 msgid "Players ({num})"
 msgstr ""
 
+#, python-brace-format
 msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>P</u>layers ({num})"
 
@@ -5584,6 +5748,7 @@ msgstr ""
 msgid "Please wait…"
 msgstr ""
 
+#, python-brace-format
 msgid "Plugin [{plugin}] was enabled."
 msgstr ""
 
@@ -5638,15 +5803,19 @@ msgstr ""
 msgid "Prize assignment"
 msgstr ""
 
+#, python-brace-format
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr ""
 
+#, python-brace-format
 msgid "Prize category [{prize_category}] successfully created."
 msgstr ""
 
+#, python-brace-format
 msgid "Prize category [{prize_category}] successfully deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr ""
 
@@ -5656,6 +5825,7 @@ msgstr ""
 msgid "Prize defaults have been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Prize group [{prize_group}] successfully created."
 msgstr ""
 
@@ -5756,6 +5926,7 @@ msgstr ""
 msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
 
+#, python-brace-format
 msgid "R {round} *** ROUND COLUMN HEADER"
 msgstr "R {round}"
 
@@ -5792,15 +5963,18 @@ msgstr ""
 msgid "Ranking after round #%(round)d"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking after round #{round}"
 msgstr ""
 
 msgid "Ranking before the first round"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking by club after round #{round}"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking by federation after round #{round}"
 msgstr ""
 
@@ -5870,9 +6044,11 @@ msgstr ""
 msgid "Record"
 msgstr ""
 
+#, python-brace-format
 msgid "Reference to unknown board [{board_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Reference to unknown player [{player_id}]."
 msgstr ""
 
@@ -5888,6 +6064,7 @@ msgstr ""
 msgid "Regular event"
 msgstr ""
 
+#, python-brace-format
 msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
@@ -5915,6 +6092,7 @@ msgstr ""
 msgid "Replace"
 msgstr ""
 
+#, python-brace-format
 msgid "Replace <b>{old}</b> by <b>{new}</b>"
 msgstr ""
 
@@ -5970,18 +6148,23 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] can't be used with a board."
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] can't be used with an opponent."
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] can't be used without a board."
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] can't be used without an opponent."
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
 msgstr ""
 
@@ -5994,6 +6177,7 @@ msgstr ""
 msgid "Results entry via public screens"
 msgstr ""
 
+#, python-brace-format
 msgid "Results for round #{round}"
 msgstr ""
 
@@ -6040,9 +6224,11 @@ msgstr ""
 msgid "Roster"
 msgstr ""
 
+#, python-brace-format
 msgid "Roster is full ({max} players max for this rule set)."
 msgstr ""
 
+#, python-brace-format
 msgid "Roster is full ({max} players max for this rule set). Remove a player to add another."
 msgstr ""
 
@@ -6063,15 +6249,19 @@ msgstr ""
 msgid "Rotator"
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator}] has been updated."
 msgstr ""
 
@@ -6081,9 +6271,11 @@ msgstr ""
 msgid "Rotators"
 msgstr ""
 
+#, python-brace-format
 msgid "Rotators ({num})"
 msgstr ""
 
+#, python-brace-format
 msgid "Rotators ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>R</u>otators ({num})"
 
@@ -6120,6 +6312,7 @@ msgstr ""
 msgid "Round #0 is forbidden."
 msgstr ""
 
+#, python-brace-format
 msgid "Round #{round}"
 msgstr ""
 
@@ -6136,7 +6329,7 @@ msgstr ""
 msgid "Round performance indicators"
 msgstr ""
 
-#, python-format
+#, python-brace-format, python-format
 msgid "Round {} started for %%s"
 msgstr ""
 
@@ -6265,15 +6458,19 @@ msgstr ""
 msgid "Screen Management"
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr ""
 
@@ -6426,15 +6623,18 @@ msgstr ""
 msgid "Set Zero-Points Byes"
 msgstr ""
 
+#, python-brace-format
 msgid "Set [{name}] has been saved."
 msgstr ""
 
+#, python-brace-format
 msgid "Set [{name}] has been updated."
 msgstr ""
 
 msgid "Set affiliations"
 msgstr ""
 
+#, python-brace-format
 msgid "Set by rule set \"{name}\"."
 msgstr ""
 
@@ -6461,6 +6661,7 @@ msgstr ""
 msgid "Set the current round"
 msgstr ""
 
+#, python-brace-format
 msgid "Set to <b>{value}</b>"
 msgstr ""
 
@@ -6548,9 +6749,11 @@ msgstr ""
 msgid "Single Screens"
 msgstr ""
 
+#, python-brace-format
 msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>S</u>ingle Screens ({num})"
 
+#, python-brace-format
 msgid "Size ({unit}): {width}x{height}"
 msgstr ""
 
@@ -6663,6 +6866,7 @@ msgstr ""
 msgid "Staff"
 msgstr ""
 
+#, python-brace-format
 msgid "Staff ({num})"
 msgstr ""
 
@@ -6705,7 +6909,7 @@ msgstr ""
 msgid "Start date"
 msgstr ""
 
-#, python-format
+#, python-brace-format, python-format
 msgid "Start of round {} in %%s"
 msgstr ""
 
@@ -6733,6 +6937,7 @@ msgstr "Su"
 msgid "Substitutes Bench"
 msgstr ""
 
+#, python-brace-format
 msgid "Successfully logged in as [{account}]."
 msgstr ""
 
@@ -6810,21 +7015,27 @@ msgstr ""
 msgid "Team [%(team)s] successfully created!"
 msgstr ""
 
+#, python-brace-format
 msgid "Team [{team}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Team [{team}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Team [{team}] has been paired against [{opponent}] at board #{board}."
 msgstr ""
 
+#, python-brace-format
 msgid "Team [{team}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Team [{team}] has returned for this round."
 msgstr ""
 
+#, python-brace-format
 msgid "Team [{team}] is full ({max} players max)."
 msgstr ""
 
@@ -6847,6 +7058,7 @@ msgstr ""
 msgid "Team ranking"
 msgstr ""
 
+#, python-brace-format
 msgid "Team ranking after round #{round}"
 msgstr ""
 
@@ -6884,6 +7096,7 @@ msgstr ""
 msgid "Teams (none now)"
 msgstr ""
 
+#, python-brace-format
 msgid "Teams ({num})"
 msgstr ""
 
@@ -6952,12 +7165,15 @@ msgstr ""
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
 
+#, python-brace-format
 msgid "The FIDE will use the opponent's standard rating for this game ({rating})."
 msgstr ""
 
+#, python-brace-format
 msgid "The FIDE will use the player's standard rating for this game ({rating})."
 msgstr ""
 
+#, python-brace-format
 msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
 msgstr ""
 
@@ -6976,6 +7192,7 @@ msgstr ""
 msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
 msgstr ""
 
+#, python-brace-format
 msgid "The average of the [{tie_break}] scores of the opponents played over the board."
 msgstr ""
 
@@ -7012,6 +7229,7 @@ msgstr ""
 msgid "The event type cannot be changed after creation."
 msgstr ""
 
+#, python-brace-format
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] ""
@@ -7035,16 +7253,19 @@ msgstr ""
 msgid "The label used for this screen in menus. If left empty, the tournament name is used."
 msgstr ""
 
+#, python-brace-format
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "The least significant value is removed."
 msgid_plural "The {count} least significant values are removed."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "The limit can only be adjusted by {count} half-points."
 msgstr ""
 
@@ -7118,6 +7339,7 @@ msgstr ""
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr ""
 
+#, python-brace-format
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
 msgstr ""
 
@@ -7239,9 +7461,11 @@ msgstr ""
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
 msgstr ""
 
+#, python-brace-format
 msgid "The round count is incompatible with the number of players (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "The round count is incompatible with the number of teams (expected: {expected})."
 msgstr ""
 
@@ -7251,6 +7475,7 @@ msgstr ""
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr ""
 
+#, python-brace-format
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
 msgstr ""
 
@@ -7275,6 +7500,7 @@ msgstr ""
 msgid "The team sort order is fixed once the first round is paired."
 msgstr ""
 
+#, python-brace-format
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr ""
 
@@ -7311,9 +7537,11 @@ msgstr ""
 msgid "The type of criterion used to filter the players."
 msgstr ""
 
+#, python-brace-format
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
+#, python-brace-format
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
@@ -7329,9 +7557,11 @@ msgstr ""
 msgid "There already is an hour defined at this time."
 msgstr ""
 
+#, python-brace-format
 msgid "There already is an hour for round #{round}."
 msgstr ""
 
+#, python-brace-format
 msgid "There are no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
@@ -7431,6 +7661,7 @@ msgstr ""
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr ""
 
+#, python-brace-format
 msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
 msgstr ""
 
@@ -7455,21 +7686,26 @@ msgstr ""
 msgid "This name is already used."
 msgstr ""
 
+#, python-brace-format
 msgid "This pairing system requires at least {n} teams."
 msgstr ""
 
+#, python-brace-format
 msgid "This pairing system supports up to {n} teams."
 msgstr ""
 
+#, python-brace-format
 msgid "This pairing table covers up to {max_rounds} rounds for {t} teams of {p} players. Reduce the round count."
 msgstr ""
 
+#, python-brace-format
 msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce the round count."
 msgstr ""
 
 msgid "This player already exists in the event."
 msgstr ""
 
+#, python-brace-format
 msgid "This player already exists in tournament [{tournament}]."
 msgstr ""
 
@@ -7488,12 +7724,15 @@ msgstr ""
 msgid "This round cannot be edited."
 msgstr ""
 
+#, python-brace-format
 msgid "This round hasn't started (current round: #{round})."
 msgstr ""
 
+#, python-brace-format
 msgid "This round is not finished (last finished: #{round})."
 msgstr ""
 
+#, python-brace-format
 msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
@@ -7519,6 +7758,7 @@ msgstr ""
 msgid "This screen type already belongs to a menu."
 msgstr ""
 
+#, python-brace-format
 msgid "This set contains [{name}] twice in a row."
 msgstr ""
 
@@ -7540,15 +7780,18 @@ msgstr ""
 msgid "This tie-break is already used."
 msgstr ""
 
+#, python-brace-format
 msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament)."
 msgstr ""
 
+#, python-brace-format
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
 msgstr ""
 
 msgid "This tie-break is not recommended on tournaments lasting over multiple FIDE periods."
 msgstr ""
 
+#, python-brace-format
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr ""
 
@@ -7571,6 +7814,7 @@ msgstr ""
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
 
+#, python-brace-format
 msgid "Tie-break [{name}] is not available in this event."
 msgstr ""
 
@@ -7586,6 +7830,7 @@ msgstr ""
 msgid "Tie-breaks"
 msgstr ""
 
+#, python-brace-format
 msgid "Tie-breaks are managed by rule set \"{name}\". Change the rule set on the tournament to edit them."
 msgstr ""
 
@@ -7598,24 +7843,30 @@ msgstr ""
 msgid "Time control:"
 msgstr ""
 
+#, python-brace-format
 msgid "Time outside of event time range ({range})."
 msgstr ""
 
+#, python-brace-format
 msgid "Time outside of tournament time range ({range})."
 msgstr ""
 
 msgid "Timer"
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer_id}] not found."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer}] has been updated."
 msgstr ""
 
@@ -7635,6 +7886,7 @@ msgstr ""
 msgid "Timers"
 msgstr ""
 
+#, python-brace-format
 msgid "Timers ({num})"
 msgstr "Timers ({num})"
 
@@ -7657,6 +7909,7 @@ msgstr ""
 msgid "Title Norms Achieved"
 msgstr ""
 
+#, python-brace-format
 msgid "Title Norms Forecast — Round {round}"
 msgstr ""
 
@@ -7685,12 +7938,15 @@ msgstr ""
 msgid "Tonga"
 msgstr ""
 
+#, python-brace-format
 msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr ""
 
+#, python-brace-format
 msgid "Too few teams to generate the pairings (minimum: {min})."
 msgstr ""
 
+#, python-brace-format
 msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
@@ -7715,21 +7971,27 @@ msgstr "Tournament"
 msgid "Tournament Norms Summary"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] has been created and default screens have been added."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
@@ -7758,6 +8020,7 @@ msgstr ""
 msgid "Tournament record"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament {tournament} ({numbers_str})"
 msgstr ""
 
@@ -7774,6 +8037,7 @@ msgstr ""
 msgid "Tournaments"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>T</u>ournaments ({num})"
 
@@ -7840,9 +8104,11 @@ msgstr ""
 msgid "U8-U20 / 50+ / 65+"
 msgstr ""
 
+#, python-brace-format
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
+#, python-brace-format
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
@@ -7873,9 +8139,11 @@ msgstr "Undefined"
 msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
 
+#, python-brace-format
 msgid "Unexpected error during installation: [{ex}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr ""
 
@@ -7896,36 +8164,43 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown color [{color}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown federation [{federation}]."
 msgstr ""
 
 msgid "Unknown federation."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown gender [{gender}]."
 msgstr ""
 
 msgid "Unknown group."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown result [{result}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown rule set [{id}]."
 msgstr ""
 
 msgid "Unknown team."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown title [{title}]."
 msgstr ""
 
 msgid "Unknown tournament."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown value (expected: {expected})."
 msgstr ""
 
@@ -8001,6 +8276,7 @@ msgstr ""
 msgid "Unrated players"
 msgstr ""
 
+#, python-brace-format
 msgid "Upcoming ({num})"
 msgstr ""
 
@@ -8047,12 +8323,14 @@ msgstr ""
 msgid "Use default"
 msgstr ""
 
+#, python-brace-format
 msgid "Use default - {option}"
 msgstr ""
 
 msgid "Use dropdowns"
 msgstr ""
 
+#, python-brace-format
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
 msgstr ""
 
@@ -8089,6 +8367,7 @@ msgstr[1] ""
 msgid "Uzbekistan"
 msgstr ""
 
+#, python-brace-format
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
 
@@ -8260,6 +8539,7 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
+#, python-brace-format
 msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."
 msgstr ""
 
@@ -8347,6 +8627,7 @@ msgstr "Y"
 msgid "YY/MM/DD"
 msgstr ""
 
+#, python-brace-format
 msgid "YYYY or {date_format}"
 msgstr ""
 
@@ -8512,9 +8793,11 @@ msgstr ""
 msgid "Zero-Point Bye"
 msgstr ""
 
+#, python-brace-format
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Zero-Point Bye attributed to team [{team}]."
 msgstr ""
 
@@ -8524,9 +8807,11 @@ msgstr ""
 msgid "Zonal or sub-zonal (1.4.3c)"
 msgstr ""
 
+#, python-brace-format
 msgid "[{value}] is not a positive value."
 msgstr ""
 
+#, python-brace-format
 msgid "[{value}] is not a valid value format."
 msgstr ""
 
@@ -8548,27 +8833,35 @@ msgstr ""
 msgid "any OTB result"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to end, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from start to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards {board_numbers}"
 msgstr ""
 
@@ -8620,30 +8913,38 @@ msgstr ""
 msgid "match points"
 msgstr ""
 
+#, python-brace-format
 msgid "matches from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "matches from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "matches from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "matches from #{first} to end, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "matches from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "matches from start to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "matches on {parts} screens"
 msgstr ""
 
 msgid "min *** MINUTES"
 msgstr "min"
 
+#, python-brace-format
 msgid "minimum: {value}"
 msgstr ""
 
@@ -8676,24 +8977,31 @@ msgstr ""
 msgid "players"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to end, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players on {parts} screens"
 msgstr ""
 
@@ -8701,63 +9009,83 @@ msgstr ""
 msgid "raised to %(r)s"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "round_{round}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} matches per column"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} matches per column from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} matches per column from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} matches per column from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} teams"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} teams from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} teams from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} teams from start to #{last}"
 msgstr ""
 
@@ -8773,24 +9101,31 @@ msgstr ""
 msgid "teams"
 msgstr ""
 
+#, python-brace-format
 msgid "teams from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "teams from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "teams from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "teams from #{first} to end, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "teams from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "teams from start to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "teams on {parts} screens"
 msgstr ""
 
@@ -8819,6 +9154,7 @@ msgstr ""
 msgid "unchanged"
 msgstr ""
 
+#, python-brace-format
 msgid "value: {value}"
 msgstr ""
 
@@ -8840,118 +9176,149 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
+#, python-brace-format
 msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
 
+#, python-brace-format
 msgid "{board_number} {color}"
 msgstr ""
 
+#, python-brace-format
 msgid "{code} Unknown tie-breaks: {tie_breaks}"
 msgstr ""
 
+#, python-brace-format
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} event"
 msgid_plural "{count} events"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} federation represented"
 msgid_plural "{count} federations represented"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} half-point"
 msgid_plural "{count} half-points"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} hour created."
 msgid_plural "{count} hours created."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} player deleted."
 msgid_plural "{count} players deleted."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} player successfully imported."
 msgid_plural "{count} players successfully imported."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} prize category successfully generated."
 msgid_plural "{count} prize categories successfully generated."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{date_format} HH:MM"
 msgstr ""
 
+#, python-brace-format
 msgid "{days} days"
 msgstr ""
 
+#, python-brace-format
 msgid "{days} days ago"
 msgstr ""
 
+#, python-brace-format
 msgid "{family_type}-screen"
 msgstr ""
 
+#, python-brace-format
 msgid "{first_name} {last_name}"
 msgstr ""
 
+#, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
 msgstr ""
 
+#, python-brace-format
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr ""
 
+#, python-brace-format
 msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{plugin} (disabled)"
 msgstr ""
 
+#, python-brace-format
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr ""
 
+#, python-brace-format
 msgid "{screen_type}-screen"
 msgstr ""
 
+#, python-brace-format
 msgid "{start} → {end}"
 msgstr ""
 
+#, python-brace-format
 msgid "{status_code} - Unknown error"
 msgstr ""
 
+#, python-brace-format
 msgid "{string}: {value}"
 msgstr ""
 
+#, python-brace-format
 msgid "{title} {full_name}"
 msgstr ""
 
+#, python-brace-format
 msgid "{title} {full_name} {rating}"
 msgstr ""
 
+#, python-brace-format
 msgid "{title} {full_name} {rating}{rating_type}"
 msgstr ""
 
+#, python-brace-format
 msgid "{title} {full_name} {rating}{rating_type} [{points}]"
 msgstr ""
 
