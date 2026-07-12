@@ -151,9 +151,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         tournament_custom_upload_data = CustomUploadUtils.get_tournament_plugin_data(
             tournament
         )
-        if tournament_custom_upload_data.relative_server_path is None:
-            tournament_custom_upload_data.relative_server_path = (
-                event_custom_upload_data.base_server_path
+        if tournament_custom_upload_data.server_path is None:
+            tournament_custom_upload_data.server_path = (
+                event_custom_upload_data.default_server_path
             )
         return HTMXTemplate(
             template_name='custom_upload_tournament_configuration_modal.html',
@@ -407,7 +407,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             context={
                 'data': {
                     'ftp_host': data['ftp_host'],
-                    'base_server_path': data['base_server_path'],
+                    'default_server_path': data['default_server_path'],
                     'ftp_username': data['ftp_username'],
                     'ftp_password': data['ftp_password'],
                 },

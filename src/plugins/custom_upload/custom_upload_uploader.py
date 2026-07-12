@@ -203,7 +203,7 @@ class CustomUploadUploader:
             ftp_client.connect(host, username=username, password=password)
             sftp_client = ftp_client.open_sftp()
 
-            server_path = tournament_plugin_data.relative_server_path
+            server_path = tournament_plugin_data.server_path
             if not server_path:
                 server_path = ''
 

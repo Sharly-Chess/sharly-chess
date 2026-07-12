@@ -125,7 +125,7 @@ class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus])
 
 @dataclass
 class CustomUploadTournamentPluginData(PluginData):
-    relative_server_path: str | None = None
+    server_path: str | None = None
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
@@ -140,7 +140,7 @@ class CustomUploadTournamentPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            relative_server_path=stored_value.get('relative_server_path', None),
+            server_path=stored_value.get('server_path', None),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload_at')
             ),
@@ -153,7 +153,7 @@ class CustomUploadTournamentPluginData(PluginData):
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
-            'relative_server_path': self.relative_server_path,
+            'server_path': self.server_path,
             'last_upload_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_upload_at
             ),
@@ -186,9 +186,7 @@ class CustomUploadTournamentPluginData(PluginData):
         ]
 
         return cls(
-            relative_server_path=WebContext.form_data_to_str(
-                data, 'relative_server_path'
-            ),
+            server_path=WebContext.form_data_to_str(data, 'server_path'),
             last_upload_at=last_upload_at,
             last_upload_attempt_at=last_upload_attempt_at,
             upload_failure_id=upload_failure_id,
@@ -197,7 +195,7 @@ class CustomUploadTournamentPluginData(PluginData):
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         form_data = {
-            'relative_server_path': self.relative_server_path,
+            'server_path': self.server_path,
         }
         for index, document_url in enumerate(self.document_urls):
             form_data[f'document_url_{index}'] = document_url
@@ -208,7 +206,7 @@ class CustomUploadTournamentPluginData(PluginData):
 @dataclass
 class CustomUploadEventPluginData(PluginData):
     ftp_host: str | None = None
-    base_server_path: str | None = None
+    default_server_path: str | None = None
     ftp_username: str | None = None
     ftp_password: str | None = None
 
@@ -216,7 +214,7 @@ class CustomUploadEventPluginData(PluginData):
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
             ftp_host=stored_value.get('ftp_host', None),
-            base_server_path=stored_value.get('base_server_path', None),
+            default_server_path=stored_value.get('default_server_path', None),
             ftp_username=stored_value.get('ftp_username', None),
             ftp_password=stored_value.get('ftp_password', None),
         )
@@ -230,7 +228,9 @@ class CustomUploadEventPluginData(PluginData):
     ) -> Self:
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
-            base_server_path=WebContext.form_data_to_str(data, 'base_server_path'),
+            default_server_path=WebContext.form_data_to_str(
+                data, 'default_server_path'
+            ),
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
         )
@@ -238,7 +238,7 @@ class CustomUploadEventPluginData(PluginData):
     def to_stored_value(self) -> dict[str, Any]:
         return {
             'ftp_host': self.ftp_host,
-            'base_server_path': self.base_server_path,
+            'default_server_path': self.default_server_path,
             'ftp_username': self.ftp_username,
             'ftp_password': self.ftp_password,
         }
@@ -246,7 +246,7 @@ class CustomUploadEventPluginData(PluginData):
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         form_data = {
             'ftp_host': self.ftp_host,
-            'base_server_path': self.base_server_path,
+            'default_server_path': self.default_server_path,
             'ftp_username': self.ftp_username,
             'ftp_password': self.ftp_password,
         }
