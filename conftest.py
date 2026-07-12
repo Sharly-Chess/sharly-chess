@@ -75,7 +75,6 @@ class BackendServer:
             if current_pythonpath
             else src_path
         )
-        data_dir = TEST_DATA_DIR.resolve() / 'server-data'
 
         # Start your backend server process
         # Adjust this command based on how your server is started
@@ -83,7 +82,7 @@ class BackendServer:
             sys.executable,
             str((project_root / 'src/sharly_chess.py').resolve()),
             '--path',
-            str(data_dir),
+            str(TEST_DATA_DIR),
         ]
 
         # Create log file for server output - use unique name to avoid conflicts

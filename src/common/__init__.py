@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import sys
+import time
 from collections import namedtuple
 from pathlib import Path
 from typing import Any
@@ -106,10 +107,10 @@ MANUAL_PATH_USED = os.getenv('SC_MANUAL_PATH_USED') == '1'
 
 
 def _app_data_dir() -> Path:
+    if TEST_ENV:
+        return TEST_DATA_DIR
     if MANUAL_PATH_USED:
         return Path()
-    if TEST_ENV:
-        return TEST_DATA_DIR / 'base-data'
     data_dir_val = ProgramVar.DATA_DIR.read_value()
     if data_dir_val:
         return Path(data_dir_val)
@@ -133,7 +134,9 @@ EVENTS_DIR = VERSION_DATA_DIR / 'events'
 LOG_DIR = VERSION_DATA_DIR / 'logs'
 TMP_DIR = VERSION_DATA_DIR / 'tmp'
 CONFIG_FILE = VERSION_DATA_DIR / '.scc'
-LOG_FILE = LOG_DIR / f'{APP_NAME}.log'
+# Add a log prefix in testing env to avoid concurrency
+_LOG_PREFIX = f'-{time.time()}' if TEST_ENV else ''
+LOG_FILE = LOG_DIR / f'{APP_NAME}{_LOG_PREFIX}.log'
 
 # Embedded paths
 WEB_TEMPLATES_DIR = BASE_DIR / 'src' / 'web'
