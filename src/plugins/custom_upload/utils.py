@@ -47,11 +47,16 @@ class CustomUploadUtils:
     def custom_upload_configuration_verification_message(
         tournament: Tournament,
     ) -> str | None:
-        plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
-        if not plugin_data.ftp_host:
+        event_plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
+        tournament_plugin_data = CustomUploadUtils.get_tournament_plugin_data(
+            tournament
+        )
+        if not event_plugin_data.ftp_host:
             return _('FTP host is not defined.')
-        if not plugin_data.ftp_username:
+        if not event_plugin_data.ftp_username:
             return _('FTP credentials are not defined.')
+        if not tournament_plugin_data.document_urls:
+            return _('No configured documents.')
         return None
 
     @staticmethod
