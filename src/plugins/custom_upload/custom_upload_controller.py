@@ -159,6 +159,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             template_name='custom_upload_tournament_configuration_modal.html',
             context=web_context.template_context
             | {
+                'no_documents': not tournament_custom_upload_data.document_urls,
                 'data': tournament_custom_upload_data.to_form_data(),
                 'errors': {},
             },
@@ -217,6 +218,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             template_name='custom_upload_tournament_configuration_modal.html',
             context=web_context.template_context
             | {
+                'no_documents': not custom_upload_data.document_urls,
                 'data': custom_upload_data.to_form_data(),
                 'errors': {},
             },

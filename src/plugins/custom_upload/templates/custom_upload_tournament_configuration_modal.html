@@ -31,7 +31,9 @@
                 </div>
                 <hr />
                 <h4>{{ _('Documents') }}</h4>
-                <!-- TODO: handle no document view -->
+                {% if no_documents %}
+                    <h5 class="text-center text-nowrap"> {{ _('No configured documents yet.') }} </h5>
+                {% endif %}
                 {% for document_name, document_url in data.items() if document_name.startswith('document_url_') %}
                     <div class="d-flex gap-2 gy-2 gx-3 mt-2">
                         <div class="flex-grow-1">
