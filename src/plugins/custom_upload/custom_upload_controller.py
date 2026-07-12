@@ -145,12 +145,21 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        custom_upload_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
+        event_custom_upload_data = CustomUploadUtils.get_event_plugin_data(
+            tournament.event
+        )
+        tournament_custom_upload_data = CustomUploadUtils.get_tournament_plugin_data(
+            tournament
+        )
+        if tournament_custom_upload_data.relative_server_path is None:
+            tournament_custom_upload_data.relative_server_path = (
+                event_custom_upload_data.base_server_path
+            )
         return HTMXTemplate(
             template_name='custom_upload_tournament_configuration_modal.html',
             context=web_context.template_context
             | {
-                'data': custom_upload_data.to_form_data(),
+                'data': tournament_custom_upload_data.to_form_data(),
                 'errors': {},
             },
             re_target='#modal-wrapper',

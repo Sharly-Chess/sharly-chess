@@ -203,15 +203,11 @@ class CustomUploadUploader:
             ftp_client.connect(host, username=username, password=password)
             sftp_client = ftp_client.open_sftp()
 
-            base_path = event_plugin_data.base_server_path
-            if not base_path:
-                base_path = ''
+            server_path = tournament_plugin_data.relative_server_path
+            if not server_path:
+                server_path = ''
 
-            relative_path = tournament_plugin_data.relative_server_path
-            if not relative_path:
-                relative_path = ''
-
-            target_path = Path('/') / Path(base_path) / Path(relative_path)
+            target_path = Path('/') / Path(server_path)
             if not CustomUploadUploader._does_remote_path_exist(
                 sftp_client, target_path.as_posix()
             ):
