@@ -1,20 +1,18 @@
+import urllib
 from collections import defaultdict
 from typing import Annotated
 
-from httpx import Client
 from litestar import get, post
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
-
-from data.event import Event
-from web.streaming_template import StreamingHTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
-import urllib
 
 from common.exception import OptionError
 from common.i18n import _
 from data.access_levels.actions import AuthAction
+from data.access_levels.client import Client
+from data.event import Event
 from data.print_documents import (
     PrintDocument,
     PrintDocumentManager,
@@ -27,13 +25,14 @@ from data.print_documents.documents import (
 )
 from data.print_documents.options import TournamentPrintOption
 from data.tournament import Tournament
-from web.controllers.base_controller import WebContext
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, PrintGuard
 from web.session import SessionPrintLastTournaments
+from web.streaming_template import StreamingHTMXTemplate
 
 
 class EventDocumentsController(BaseEventAdminController):

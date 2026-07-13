@@ -48,12 +48,13 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         tournaments = event.tournaments
-        documents_by_tournament: dict[int, list[tuple[str, PrintDocument]]] = {}
+        # TODO: fix namings
+        documents_by_tournament: dict[int, list[tuple[str, type[PrintDocument]]]] = {}
         for tournament in tournaments:
             document_urls = CustomUploadUtils.get_tournament_plugin_data(
                 tournament
             ).document_urls
-            document_types: list[tuple[str, PrintDocument]] = []
+            document_types: list[tuple[str, type[PrintDocument]]] = []
             for document_url in document_urls:
                 document_id = CustomUploadAdminEventController._extract_document_id(
                     document_url
@@ -322,10 +323,10 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         with EventDatabase(event.uniq_id, True) as event_database:
             event_database.update_stored_tournament(tournament.stored_tournament)
 
-        web_context = BaseEventAdminWebContext(request, reload_event=True)
+        base_web_context = BaseEventAdminWebContext(request, reload_event=True)
         return HTMXTemplate(
             template_name='custom_upload_modal.html',
-            context=self._upload_results_context(web_context),
+            context=self._upload_results_context(base_web_context),
             re_target='#modal-wrapper',
             trigger_event='modal_opened',
             after='settle',

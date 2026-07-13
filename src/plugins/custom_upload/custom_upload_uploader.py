@@ -6,6 +6,7 @@ from functools import partial
 from io import BytesIO
 from pathlib import Path
 from threading import Thread, Timer
+from typing import Optional
 
 import paramiko.client
 from httpx import Client
@@ -29,6 +30,7 @@ from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_status import (
     UnexpectedFailureCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
+    FailureCustomUploadStatus,
 )
 from plugins.custom_upload.utils import (
     CustomUploadUtils,
@@ -193,7 +195,7 @@ class CustomUploadUploader:
         ftp_client: paramiko.SSHClient,
         temporary_files: list[tuple[BytesIO, str]],
     ):
-        failure_status = None
+        failure_status: Optional[FailureCustomUploadStatus] = None
 
         host = event_plugin_data.ftp_host
         username = event_plugin_data.ftp_username
