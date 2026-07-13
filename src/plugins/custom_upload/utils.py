@@ -52,11 +52,11 @@ class CustomUploadUtils:
             tournament
         )
         if not event_plugin_data.ftp_host:
-            return _('FTP host is not defined.')
+            return _('FTP host is not defined')
         if not event_plugin_data.ftp_username:
-            return _('FTP credentials are not defined.')
+            return _('FTP credentials are not defined')
         if not tournament_plugin_data.document_urls:
-            return _('No configured documents.')
+            return _('No configured documents')
         return None
 
     @staticmethod

@@ -1,16 +1,22 @@
 msgid "Add document"
 msgstr ""
 
+msgid "Back"
+msgstr ""
+
 msgid "Cancel"
 msgstr ""
 
 msgid "Close"
 msgstr ""
 
-msgid "Connection Custom Upload"
+msgid "Connection configuration"
 msgstr ""
 
 msgid "Connection test"
+msgstr ""
+
+msgid "Connection:"
 msgstr ""
 
 msgid "Custom Upload"
@@ -19,10 +25,16 @@ msgstr ""
 msgid "Custom location"
 msgstr ""
 
+msgid "Default server path:"
+msgstr ""
+
 msgid "Document URL:"
 msgstr ""
 
 msgid "Documents"
+msgstr ""
+
+msgid "E.g.: /tournaments"
 msgstr ""
 
 msgid "E.g.: /tournaments/my_tournament"
@@ -40,10 +52,13 @@ msgstr ""
 msgid "Edit configuration"
 msgstr ""
 
-msgid "FTP credentials are not defined."
+msgid "Edit connection"
 msgstr ""
 
-msgid "FTP host is not defined."
+msgid "FTP credentials are not defined"
+msgstr ""
+
+msgid "FTP host is not defined"
 msgstr ""
 
 msgid "FTP password:"
@@ -76,6 +91,12 @@ msgstr ""
 msgid "No changes detected since the last upload."
 msgstr ""
 
+msgid "No configured documents"
+msgstr ""
+
+msgid "No configured documents yet."
+msgstr ""
+
 msgid "No document type is matching input."
 msgstr ""
 
@@ -83,9 +104,6 @@ msgid "Not configured"
 msgstr ""
 
 msgid "Ongoing"
-msgstr ""
-
-msgid "Path in the server:"
 msgstr ""
 
 msgid "Pending"
@@ -97,13 +115,16 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Site"
+msgid "Server path:"
 msgstr ""
 
 msgid "Status"
 msgstr ""
 
 msgid "There should be no more than one unescaped '?' character"
+msgstr ""
+
+msgid "To be configured"
 msgstr ""
 
 msgid "Tournament"
@@ -119,6 +140,9 @@ msgid "Tournament is currently being uploaded."
 msgstr ""
 
 msgid "Tournament upload has been planned."
+msgstr ""
+
+msgid "Tournament:"
 msgstr ""
 
 msgid "Up to date"
@@ -138,4 +162,3 @@ msgstr ""
 
 msgid "target server path not found"
 msgstr ""
-

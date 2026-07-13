@@ -1,7 +1,7 @@
 {% import '/admin/common/macros.j2' as admin_macros %}
 
 <div class="auth-fields row gy-2 gx-3">
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md-12">
         {{ admin_macros.text_input(
             name='ftp_host',
             label=_('Host:'),
@@ -10,11 +10,11 @@
             data=data, errors=errors
         ) }}
     </div>
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md-12">
         {{ admin_macros.text_input(
             name='default_server_path',
             label=_('Default server path:'),
-            placeholder=_('E.g.: /tournaments/my_tournament'),
+            placeholder=_('E.g.: /tournaments'),
             hx_indicator="unset",
             data=data, errors=errors
         ) }}

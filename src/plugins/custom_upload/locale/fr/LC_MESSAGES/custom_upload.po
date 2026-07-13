@@ -1,17 +1,23 @@
 msgid "Add document"
 msgstr "Ajouter un document"
 
+msgid "Back"
+msgstr "Retour"
+
 msgid "Cancel"
 msgstr "Annuler"
 
 msgid "Close"
 msgstr "Fermer"
 
-msgid "Connection Custom Upload"
-msgstr "Connexion au serveur personnel"
+msgid "Connection configuration"
+msgstr "Configuration de la connexion"
 
 msgid "Connection test"
 msgstr "Tester la connexion"
+
+msgid "Connection:"
+msgstr "Connexion :"
 
 msgid "Custom Upload"
 msgstr "Mise en ligne personnalisée"
@@ -19,11 +25,17 @@ msgstr "Mise en ligne personnalisée"
 msgid "Custom location"
 msgstr "Serveur personnel"
 
+msgid "Default server path:"
+msgstr "Chemin sur le serveur par défaut :"
+
 msgid "Document URL:"
 msgstr "URL du document :"
 
 msgid "Documents"
 msgstr "Documents"
+
+msgid "E.g.: /tournaments"
+msgstr "Exemple : /tournois"
 
 msgid "E.g.: /tournaments/my_tournament"
 msgstr "Exemple : /tournois/mon_tournoi"
@@ -40,11 +52,14 @@ msgstr "Exemple : mon_identifiant"
 msgid "Edit configuration"
 msgstr "Modifier la configuration"
 
-msgid "FTP credentials are not defined."
-msgstr "Les identifiants FTP ne sont pas définis."
+msgid "Edit connection"
+msgstr "Modifier la connexion"
 
-msgid "FTP host is not defined."
-msgstr "L'hôte FTP n'est pas défini."
+msgid "FTP credentials are not defined"
+msgstr "Les identifiants FTP ne sont pas définis"
+
+msgid "FTP host is not defined"
+msgstr "L'hôte FTP n'est pas défini"
 
 msgid "FTP password:"
 msgstr "Mot de passe FTP :"
@@ -76,6 +91,12 @@ msgstr "Jamais mis en ligne"
 msgid "No changes detected since the last upload."
 msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 
+msgid "No configured documents"
+msgstr "Aucun document configuré"
+
+msgid "No configured documents yet."
+msgstr "Aucun document encore configuré."
+
 msgid "No document type is matching input."
 msgstr "Aucun type de document ne correspond à la saisie."
 
@@ -84,9 +105,6 @@ msgstr "Non configuré"
 
 msgid "Ongoing"
 msgstr "En cours"
-
-msgid "Path in the server:"
-msgstr "Chemin sur le serveur :"
 
 msgid "Pending"
 msgstr "En attente"
@@ -97,14 +115,17 @@ msgstr "Retirer le document de la liste de mise en ligne."
 msgid "Save"
 msgstr "Enregistrer"
 
-msgid "Site"
-msgstr "Site"
+msgid "Server path:"
+msgstr "Chemin sur le serveur :"
 
 msgid "Status"
 msgstr "Status"
 
 msgid "There should be no more than one unescaped '?' character"
 msgstr "Il ne doit pas y avoir plus d'un caractère '?' non échappé"
+
+msgid "To be configured"
+msgstr "À configurer"
 
 msgid "Tournament"
 msgstr "Tournoi"
@@ -120,6 +141,9 @@ msgstr "Le tournoi est en cours de mise en ligne."
 
 msgid "Tournament upload has been planned."
 msgstr "La mise en ligne du tournoi a été planifiée."
+
+msgid "Tournament:"
+msgstr "Tournoi :"
 
 msgid "Up to date"
 msgstr "À jour"
@@ -138,4 +162,3 @@ msgstr "consulter les logs"
 
 msgid "target server path not found"
 msgstr "le chemin sur le serveur n'a pas pu être trouvé"
-
