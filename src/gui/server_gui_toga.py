@@ -42,6 +42,7 @@ from common import (
     FLATPAK_ID,
     DATA_DIR,
     DEVEL_ENV,
+    MANUAL_PATH_USED,
 )
 from common.i18n import _, ngettext
 from common.logger import get_logger
@@ -601,7 +602,7 @@ class SharlyChessServerToga(toga.App):
         data_path_buttons = [
             toga.Button(_('Open'), on_press=self._open_data_path_explorer)
         ]
-        if FLATPAK_ID:
+        if MANUAL_PATH_USED:
             self.data_path_input.enabled = False
         else:
             self.data_path_edit_button = toga.Button(

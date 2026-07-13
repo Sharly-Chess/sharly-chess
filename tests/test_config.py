@@ -40,9 +40,6 @@ class TestConfig:
     # Hopefully 10s is long enough to ensure all failures are real failure cases.
     expect.set_options(timeout=10_000)
 
-    # Test data configuration
-    TEST_DATA_DIR = Path(__file__).parent / 'tmp'
-
     @classmethod
     def get_test_env_vars(cls) -> Dict[str, str]:
         """Get environment variables for test environment."""

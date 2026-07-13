@@ -10,7 +10,7 @@ from babel.messages.pofile import read_po, write_po
 from transformers import AutoTokenizer, MarianMTModel, MarianTokenizer
 from huggingface_hub import hf_hub_url
 
-
+from common import BASE_DIR
 from common.i18n.babel_wrapper import BabelDomainWrapper
 
 from common.i18n import DEFAULT_LOCALE, Domain
@@ -169,7 +169,7 @@ class I18nTranslator:
         print_interactive_info(
             f'Looking for the translator from [{DEFAULT_LOCALE}] to {self.target_locale} (model: {model_name})...'
         )
-        model_dir: Path = Path() / 'scripts' / 'i18n' / 'models' / model_name
+        model_dir = BASE_DIR / 'scripts' / 'i18n' / 'models' / model_name
         for filename in [
             'pytorch_model.bin',
             'config.json',
