@@ -2,7 +2,7 @@
 {% set tournament_player=admin_player.single_tournament_player %}
 <div id="player-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
     <div class="modal-content" data-player-id="{{ admin_player.id }}">
-        <div class="modal-header d-flex justify-content-between align-items-end">
+        <div class="modal-header d-flex justify-content-between align-items-end position-relative">
             <div class="flex flex-column gap-0 align-items-start">
                 <h2 class="modal-title">
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
@@ -75,8 +75,37 @@
                     {% endif %}
                 {% endif %}
             </div>
+            <button
+                type="button"
+                class="btn-close position-absolute top-0 end-0 mt-3 me-3"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
+            {% if client.can_update_players %}
+                <div class="d-flex justify-content-end mb-3">
+                    <button
+                        class="btn btn-outline-primary"
+                        hx-get="{{ url_for(
+                            'admin-player-modal',
+                            action='update',
+                            event_uniq_id=admin_event.uniq_id,
+                            player_id=admin_player.id
+                        ) }}?redirect_to={{ url_for(
+                            'admin-record-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            player_id=tournament_player.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        tabindex="0"
+                    >
+                        <i class="bi-pencil-fill pe-1"></i>
+                        {{ _('Edit Player') }}
+                    </button>
+                </div>
+            {% endif %}
              <h4>
                 {{ _('Tournament record') }}
             </h4>
@@ -344,38 +373,6 @@
                     {{ _('To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player\'s name.') }}
                 </span>
             {% endif %}
-        </div>
-        <div class="modal-footer">
-            {% if client.can_update_players %}
-                <button
-                    class="btn btn-outline-primary"
-                    hx-get="{{ url_for(
-                        'admin-player-modal',
-                        action='update',
-                        event_uniq_id=admin_event.uniq_id,
-                        player_id=admin_player.id
-                    ) }}?redirect_to={{ url_for(
-                        'admin-record-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        player_id=tournament_player.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    tabindex="0"
-                >
-                    <i class="bi-pencil-fill pe-1"></i>
-                    {{ _('Edit Player') }}
-                </button>
-            {% endif %}
-            <div class="flex-grow-1"></div>
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

@@ -31,15 +31,21 @@ class ProgramVar(StrEnum):
 
     DATA_DIR = 'data_directory'
     PREVIOUS_DATA_DIR = 'previous_data_directory'
+    VERSION = 'version'
+    LEGACY_VERSION = 'legacy_version'
+    LEGACY_VERSION_DIR = 'legacy_version_directory'
+    LOCALE = 'locale'
 
     @property
     def stored_name(self) -> str:
         """Name used to store the variable."""
-        from common import DEVEL_ENV
+        from common import DEVEL_ENV, TEST_ENV
 
         name = self.value
-        if DEVEL_ENV:
-            # Prefix variables in dev to prevent impacting the prod env of the developer
+        # Prefix variables in dev and test to prevent impacting the other envs
+        if TEST_ENV:
+            name = f'test_{name}'
+        elif DEVEL_ENV:
             name = f'dev_{name}'
         if sys.platform == 'linux':
             # As linux uses env variables add an app specific prefix

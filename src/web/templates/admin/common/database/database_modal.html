@@ -5,6 +5,12 @@
                 {{ _('Data sources') }}
                 <span style="font-size: 70%">{{ macros.doc_icon('data-sources', 'ms-2') }}</span>
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
             {% if online_data_sources %}
@@ -95,16 +101,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap d-inline-flex gap-2 align-items-center"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill lh-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "sharly-chess"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.13.0"
-version = "5.0.0dev1"
+version = "5.0.0.dev1"
 
 authors = [
   { name = "Pascal Aubry", email = "support@sharly-chess.com" },
@@ -69,7 +69,7 @@ lint = [
 
 translate = ["transformers", "torch", "sentencepiece", "sacremoses"]
 
-export = ["PyInstaller ~= 6.15.0", "pip-licenses"]
+export = ["PyInstaller ~= 6.15.0", "pip-licenses", "dmgbuild ~= 1.6"]
 
 tests = ["pytest", "pytest-playwright", "pytest-asyncio", "pytest-base-url"]
 
