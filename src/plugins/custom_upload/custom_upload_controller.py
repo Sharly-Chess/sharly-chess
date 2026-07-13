@@ -28,6 +28,8 @@ from web.controllers.admin.tournament_admin_controller import TournamentAdminWeb
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 
+type DocumentMetadata = tuple[str, type[PrintDocument]]
+
 
 class CustomUploadAdminEventController(BaseEventAdminController):
     guards = []
@@ -48,13 +50,12 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         tournaments = event.tournaments
-        # TODO: fix namings
-        documents_by_tournament: dict[int, list[tuple[str, type[PrintDocument]]]] = {}
+        documents_by_tournament: dict[int, list[DocumentMetadata]] = {}
         for tournament in tournaments:
             document_urls = CustomUploadUtils.get_tournament_plugin_data(
                 tournament
             ).document_urls
-            document_types: list[tuple[str, type[PrintDocument]]] = []
+            documents_metadata: list[DocumentMetadata] = []
             for document_url in document_urls:
                 document_id = CustomUploadAdminEventController._extract_document_id(
                     document_url
@@ -62,8 +63,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 document_type = PrintDocumentManager(
                     web_context.get_admin_event()
                 ).get_type(document_id)
-                document_types.append((document_url, document_type))
-            documents_by_tournament[tournament.id] = document_types
+                documents_metadata.append((document_url, document_type))
+            documents_by_tournament[tournament.id] = documents_metadata
         event_plugin_data = CustomUploadUtils.get_event_plugin_data(event)
         return web_context.template_context | {
             'connection_host': event_plugin_data.ftp_host,
