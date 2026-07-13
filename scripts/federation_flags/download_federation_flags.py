@@ -4,6 +4,7 @@ from pathlib import Path
 
 from requests import get, Response, HTTPError
 
+from common import BASE_DIR
 from common.logger import (
     print_interactive_error,
     print_interactive_warning,
@@ -79,7 +80,7 @@ def main():
             + ', '.join(useless_federation_ids)
         )
     print('Downloading federation flags...')
-    flags_dir: Path = Path() / 'src' / 'web' / 'static' / 'images' / 'federations'
+    flags_dir = BASE_DIR / 'src' / 'web' / 'static' / 'images' / 'federations'
     flags_dir.mkdir(exist_ok=True, parents=True)
     with tempfile.TemporaryDirectory() as tmp_dir:
         failed_federation_ids: list[str] = []
