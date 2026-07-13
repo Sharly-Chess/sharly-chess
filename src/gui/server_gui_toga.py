@@ -581,10 +581,23 @@ class SharlyChessServerToga(toga.App):
         )
 
         self.data_path_input = toga.TextInput(
-            value=self._shorten_path(str(DATA_DIR.absolute())),
+            value=str(DATA_DIR.absolute()),
             readonly=True,
-            flex=1,
+            width=self.compact_size[0] - 20,
         )
+        if sys.platform == 'darwin':
+            # toga maps TextInput to an NSTextField that wraps a long value
+            # onto a second line instead of clipping it, and readonly leaves
+            # it unselectable so there's no cursor to scroll with. Force the
+            # cell into single-line + scrollable mode and make the field
+            # selectable (but not editable), so a long path stays on one line
+            # and can be clicked into and scrolled, matching the Windows field.
+            native = self.data_path_input._impl.native
+            cell = native.cell
+            cell.usesSingleLineMode = True
+            cell.scrollable = True
+            cell.wraps = False
+            native.selectable = True
         data_path_buttons = [
             toga.Button(_('Open'), on_press=self._open_data_path_explorer)
         ]
@@ -718,16 +731,6 @@ class SharlyChessServerToga(toga.App):
         else:
             self.log_settings_container.add(self.log_settings)
             self.log_settings_btn.style = self.active_button_style
-
-    @staticmethod
-    def _shorten_path(path: str, max_len: int = 65) -> str:
-        """Middle-ellipsis a path so both the root and the final folder name
-        stay visible when it is too long for the field."""
-        if len(path) <= max_len:
-            return path
-        head = (max_len - 1) // 2
-        tail = max_len - 1 - head
-        return f'{path[:head]}…{path[-tail:]}'
 
     def _open_data_path_explorer(self, widget):
         self._open_dir_in_explorer(DATA_DIR)
