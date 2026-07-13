@@ -23,7 +23,7 @@ from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
 from litestar.types import Scope, HTTPScope
 
-from common import REQUEST_TIMEOUT
+from common import REQUEST_TIMEOUT, TEST_ENV
 from common.installation_checker import InstallationChecker
 from common.data_recovery import DataRecovery
 from common.logger import get_logger, set_logging_config
@@ -100,7 +100,8 @@ class ServerEngine:
         logger.info('Locale: %s', config.locale)
         if not InstallationChecker.check():
             return
-        DataRecovery.setup()
+        if not TEST_ENV:
+            DataRecovery.setup()
 
         self.loop = self._ensure_loop(loop)
 
