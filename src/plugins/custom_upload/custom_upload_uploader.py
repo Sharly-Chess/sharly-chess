@@ -205,7 +205,7 @@ class CustomUploadUploader:
 
             server_path = tournament_plugin_data.server_path
             if not server_path:
-                server_path = ''
+                server_path = event_plugin_data.default_server_path or ''
 
             target_path = Path('/') / Path(server_path)
             if not CustomUploadUploader._does_remote_path_exist(

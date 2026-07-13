@@ -176,6 +176,8 @@ class CustomUploadTournamentPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
+        if action == FormAction.UPDATE and previous_object:
+            return previous_object
         last_upload_at: datetime | None = None
         last_upload_attempt_at: datetime | None = None
         upload_failure_id: str | None = None
@@ -231,6 +233,8 @@ class CustomUploadEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
+        if action == FormAction.UPDATE and previous_object:
+            return previous_object
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
             default_server_path=WebContext.form_data_to_str(
