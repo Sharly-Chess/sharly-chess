@@ -673,17 +673,21 @@ class PlayerRatingType(IntEnum):
 
 
 class PlayerTitle(StrEnum):
-    """The possible FIDE player titles: GM, WGM, IM, WIM, FM, WFM, CM, WCM.
-    Also includes the "no title" case."""
+    """The possible FIDE player titles: GM, IM, WGM, FM, WIM, CM, WFM, WCM.
+    Also includes the "no title" case.
+
+    Declaration order is weakest-to-strongest, so `sort_index` (the list
+    position) ranks titles by strength: GM > IM > WGM > FM > WIM > CM >
+    WFM > WCM."""
 
     NONE = ''
     WOMAN_CANDIDATE_MASTER = 'WCM'
-    CANDIDATE_MASTER = 'CM'
     WOMAN_FIDE_MASTER = 'WFM'
-    FIDE_MASTER = 'FM'
+    CANDIDATE_MASTER = 'CM'
     WOMAN_INTERNATIONAL_MASTER = 'WIM'
-    INTERNATIONAL_MASTER = 'IM'
+    FIDE_MASTER = 'FM'
     WOMAN_GRANDMASTER = 'WGM'
+    INTERNATIONAL_MASTER = 'IM'
     GRANDMASTER = 'GM'
 
     @property

@@ -1986,6 +1986,9 @@ msgstr ""
 msgid "Cuba"
 msgstr ""
 
+msgid "Curacao"
+msgstr ""
+
 msgid "Current ({num})"
 msgstr ""
 
