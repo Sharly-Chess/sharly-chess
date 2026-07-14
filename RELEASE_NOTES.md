@@ -3,6 +3,7 @@
 ## General
 
 - Reorganize the desktop application into tabs (5.0.0)
+- Added fédération CUR (5.0.0)
 
 ## Events
 
