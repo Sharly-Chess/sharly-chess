@@ -9,7 +9,6 @@ from threading import Thread, Timer
 from typing import Optional
 
 import paramiko.client
-from httpx import Client
 from paramiko.sftp_client import SFTPClient
 from paramiko.ssh_exception import (
     BadHostKeyException,
@@ -23,6 +22,7 @@ from common.i18n.utils import parse_jinja_template
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
+from data.access_levels.client import Client
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
