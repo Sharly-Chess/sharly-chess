@@ -167,6 +167,7 @@ class SharlyChessConfig(metaclass=Singleton):
                 config_database.update_stored_config(stored_config)
         if TEST_ENV:
             stored_config.federation = SharlyChessConfig.tests_federation
+        assert stored_config.locale is not None
         set_locale(stored_config.locale)
         set_logging_config(
             console_log_level=stored_config.console_log_level,
@@ -564,6 +565,7 @@ class SharlyChessConfig(metaclass=Singleton):
             'CRC': _('Costa Rica'),
             'CRO': _('Croatia'),
             'CUB': _('Cuba'),
+            'CUR': _('Curacao'),
             'CYP': _('Cyprus'),
             'CZE': _('Czech Republic'),
             'DEN': _('Denmark'),
