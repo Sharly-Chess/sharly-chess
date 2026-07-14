@@ -658,7 +658,7 @@ class SharlyChessServerToga(toga.App):
         # Window class used instead of MainWindow to avoid having a toolbar
         # See https://github.com/beeware/toga/issues/1870#issuecomment-2272534628
         self.main_window = toga.Window(  # type: ignore
-            title=f'Sharly Chess {SHARLY_CHESS_VERSION}',
+            title='Sharly Chess',
             size=self.compact_size,
             content=self.main_box,
         )
