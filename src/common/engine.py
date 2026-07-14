@@ -46,6 +46,7 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from plugins.manager import plugin_manager
+from utils import Utils
 from utils.program_variables import ProgramVar
 
 logger = get_logger()
@@ -262,21 +263,23 @@ class Engine:
             return
         if not latest_version or latest_version.major < 5:
             return
-        if not input_interactive_yn(
-            _('Sharly Chess - Update'),
-            _('A new version is available. Do you want to install it now'),
-        ):
+        title = _('Sharly Chess - Update')
+        message = _('Sharly Chess {latest} is available, you have {current}.').format(
+            latest=latest_version, current=SHARLY_CHESS_VERSION
+        )
+        message += '\n\n' + _('Do you want to install the update now')
+        if not input_interactive_yn(title, message):
             return
         instruction = _('The installation and update processes have been reworked.')
         instruction += '\n\n'
-        if sys.platform == 'win32':
+        if sys.platform != 'win32':
             instruction += _(
                 'An installer program will start after closing this message.'
             )
         else:
             from web.server_engine import launch_browser
 
-            install_url = _('*** MACOS INSTALL URL')
+            install_url = Utils.doc_url('macos-install')
             Thread(target=launch_browser, args=(install_url,)).start()
             instruction += _(
                 'Download the DMG file from the website that just '
@@ -285,9 +288,10 @@ class Engine:
             )
 
         instruction += '\n\n' + _(
-            'The data of this version will be recovered when starting the new version.'
+            'The data of the current version will be '
+            'recovered when starting the new version.'
         )
-        print_interactive_message(_('Install version 5'), instruction)
+        print_interactive_message(title, instruction)
         if sys.platform == 'darwin':
             quit_app()
         else:

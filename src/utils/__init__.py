@@ -363,6 +363,15 @@ class Utils:
                 suffix = f' ≥ {min_rating}'
         return f'{prefix}{_("Rating")}{suffix}'
 
+    @staticmethod
+    def doc_url(resource_id: str) -> str:
+        """Create a localized URL for the documentation site to a resource."""
+        from common.sharly_chess_config import SharlyChessConfig
+
+        locale = SharlyChessConfig().locale
+        locale_url = f'{locale}/' if locale != 'en' else ''
+        return f'https://sharly-chess.com/{locale_url}h/{resource_id}'
+
 
 class SupportsEquals(Protocol):
     def __eq__(self, other: object) -> bool: ...
