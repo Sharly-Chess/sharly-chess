@@ -498,12 +498,6 @@ class SharlyChessServerToga(toga.App):
                 gap=5,
                 align_items='center',
             ),
-            toga.Box(
-                children=[
-                    toga.Label(f'Sharly Chess {SHARLY_CHESS_VERSION}'),
-                ],
-                align_items='center',
-            ),
         )
 
         # Networks view

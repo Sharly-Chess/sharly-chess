@@ -2026,6 +2026,9 @@ msgstr "Grille américaine avant la première ronde"
 msgid "Cuba"
 msgstr "Cuba"
 
+msgid "Curacao"
+msgstr "Curacao"
+
 #, python-brace-format
 msgid "Current ({num})"
 msgstr "En cours ({num})"
@@ -9338,4 +9341,5 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
 

@@ -2026,6 +2026,9 @@ msgstr ""
 msgid "Cuba"
 msgstr ""
 
+msgid "Curacao"
+msgstr ""
+
 #, python-brace-format
 msgid "Current ({num})"
 msgstr ""
