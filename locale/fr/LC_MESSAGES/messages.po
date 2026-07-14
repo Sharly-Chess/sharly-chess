@@ -799,6 +799,9 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
+msgid "An installer program will start after closing this message."
+msgstr "Un programme d'installation va démarrer après la fermeture de ce message."
+
 msgid "An integer greater than 1 is expected."
 msgstr "Un entier supérieur à 1 est attendu."
 
@@ -1793,6 +1796,9 @@ msgstr "Bordure pointillée"
 msgid "Data loss at tournaments, players and pairings level."
 msgstr "Perte de données au niveau du tournoi, des joueur·euses et des appariements."
 
+msgid "Data recovery"
+msgstr "Récupération de données"
+
 msgid "Data source"
 msgstr "Source de données"
 
@@ -2091,8 +2097,14 @@ msgstr "Ne pas utiliser cet ordre comme classement."
 msgid "Do you want to install example event databases"
 msgstr "Voulez-vous installer des bases d'évènement d'exemple"
 
+msgid "Do you want to install the update now"
+msgstr "Voulez-vous installer la mise à jour maintenant "
+
 msgid "Do you want to recover the data of release [{version}]"
 msgstr "Voulez-vous récupérer les données de la version [{version}]"
+
+msgid "Do you want to try again"
+msgstr "Voulez-vous réessayer"
 
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
 msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
@@ -2123,6 +2135,9 @@ msgstr "Berger aller-retour"
 
 msgid "Download"
 msgstr "Télécharger"
+
+msgid "Download the DMG file from the website that just opened, open it, then copy the application to your Applications folder and run it from there."
+msgstr "Téléchargez le fichier DMG depuis le navigateur qui vient de s'ouvrir, ouvrez-le, puis copiez l'application dans votre dossier Applications puis et exécutez-le."
 
 msgid "Download the players matching the search into a file."
 msgstr "Télécharger un fichier contenant les joueur·euses correspondant à la recherche."
@@ -2495,6 +2510,9 @@ msgstr "Évènements"
 
 msgid "Events ({num})"
 msgstr "Évènements ({num})"
+
+msgid "Example databases"
+msgstr "Bases d'exemple"
 
 msgid "Exclude"
 msgstr "Exclure"
@@ -3103,11 +3121,17 @@ msgstr "Les écrans de saisie des résultats présentent les appariements des jo
 msgid "Install"
 msgstr "Installer"
 
+msgid "Installation error"
+msgstr "Erreur d'installation"
+
 msgid "Installation of [{lib}] failed."
 msgstr "L'installation de la bibliothèque [{lib}] a échoué."
 
 msgid "Installation of release [{version}] failed, exiting."
 msgstr "L'nstallation de la version [{version}] a échoué, abandon."
+
+msgid "Installation succeeded"
+msgstr "L'installation a réussi"
 
 msgid "Installed [{lib}]."
 msgstr "La bibliothèque [{lib}] a été installée."
@@ -5561,6 +5585,12 @@ msgstr "Prix partagés"
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
+msgid "Sharly Chess - Error"
+msgstr "Sharly Chess - Erreur"
+
+msgid "Sharly Chess - Update"
+msgstr "Sharly Chess - Mise à jour"
+
 msgid "Sharly Chess Server"
 msgstr "Serveur Sharly Chess"
 
@@ -5588,8 +5618,14 @@ msgstr "Configuration de Sharly Chess"
 msgid "Sharly Chess settings have been updated."
 msgstr "La configuration de Sharly Chess a été mise à jour."
 
+msgid "Sharly Chess upgrade"
+msgstr "Mise à jour Sharly Chess"
+
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
+
+msgid "Sharly Chess {latest} is available, you have {current}."
+msgstr "Sharly Chess {latest} est disponible, vous avez la version {current}."
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
@@ -5926,6 +5962,9 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
 
+msgid "The data of the current version will be recovered when starting the new version."
+msgstr "Les données de la version actuelle seront récupérées au démarrage de la nouvelle version."
+
 msgid "The default federation for your events."
 msgstr "La fédération par défaut pour vos évènements."
 
@@ -5951,6 +5990,12 @@ msgstr "Les fonctionnalités suivant ne seront pas importées :"
 
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
+
+msgid "The installation and update processes have been reworked."
+msgstr "Les processus d'installation et de mise à jour ont été retravaillés."
+
+msgid "The installer program could not be downloaded. Consult the logs for more details."
+msgstr "Le programme d'installation n'a pas pu être téléchargé. Consultez les logs pour plus d'informations."
 
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."

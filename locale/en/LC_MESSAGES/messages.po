@@ -799,6 +799,9 @@ msgstr ""
 msgid "An error occurred. Consult the logs for more details."
 msgstr ""
 
+msgid "An installer program will start after closing this message."
+msgstr ""
+
 msgid "An integer greater than 1 is expected."
 msgstr ""
 
@@ -1793,6 +1796,9 @@ msgstr ""
 msgid "Data loss at tournaments, players and pairings level."
 msgstr ""
 
+msgid "Data recovery"
+msgstr ""
+
 msgid "Data source"
 msgstr ""
 
@@ -2091,7 +2097,13 @@ msgstr ""
 msgid "Do you want to install example event databases"
 msgstr ""
 
+msgid "Do you want to install the update now"
+msgstr ""
+
 msgid "Do you want to recover the data of release [{version}]"
+msgstr ""
+
+msgid "Do you want to try again"
 msgstr ""
 
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
@@ -2122,6 +2134,9 @@ msgid "Double-round Berger"
 msgstr ""
 
 msgid "Download"
+msgstr ""
+
+msgid "Download the DMG file from the website that just opened, open it, then copy the application to your Applications folder and run it from there."
 msgstr ""
 
 msgid "Download the players matching the search into a file."
@@ -2494,6 +2509,9 @@ msgid "Events"
 msgstr ""
 
 msgid "Events ({num})"
+msgstr ""
+
+msgid "Example databases"
 msgstr ""
 
 msgid "Exclude"
@@ -3103,10 +3121,16 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
+msgid "Installation error"
+msgstr ""
+
 msgid "Installation of [{lib}] failed."
 msgstr ""
 
 msgid "Installation of release [{version}] failed, exiting."
+msgstr ""
+
+msgid "Installation succeeded"
 msgstr ""
 
 msgid "Installed [{lib}]."
@@ -5559,6 +5583,12 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
+msgid "Sharly Chess - Error"
+msgstr ""
+
+msgid "Sharly Chess - Update"
+msgstr ""
+
 msgid "Sharly Chess Server"
 msgstr ""
 
@@ -5586,7 +5616,13 @@ msgstr ""
 msgid "Sharly Chess settings have been updated."
 msgstr ""
 
+msgid "Sharly Chess upgrade"
+msgstr ""
+
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
+msgstr ""
+
+msgid "Sharly Chess {latest} is available, you have {current}."
 msgstr ""
 
 msgid "Should only be used when the wrong player has been added by mistake."
@@ -5924,6 +5960,9 @@ msgstr ""
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr ""
 
+msgid "The data of the current version will be recovered when starting the new version."
+msgstr ""
+
 msgid "The default federation for your events."
 msgstr ""
 
@@ -5948,6 +5987,12 @@ msgid "The following features won't be imported:"
 msgstr ""
 
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
+msgstr ""
+
+msgid "The installation and update processes have been reworked."
+msgstr ""
+
+msgid "The installer program could not be downloaded. Consult the logs for more details."
 msgstr ""
 
 msgid "The least and the most significant values are removed."
@@ -7595,4 +7640,16 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid ""
+#~ "The installation and update processes have been reworked in version 5.\n"
+#~ "\n"
+#~ "Do you want to install it now"
+#~ msgstr ""
+
+#~ msgid "Download the DMG file from the website that just opened, then drop it into your Applications folder."
+#~ msgstr ""
+
+#~ msgid "The installation and update processes have been reworked in version 5."
+#~ msgstr ""
 

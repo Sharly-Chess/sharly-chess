@@ -19,7 +19,7 @@ import threading
 import webbrowser
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Any
+from typing import Optional, Any, Callable
 from PIL import Image as PILImage
 
 import toga
@@ -810,7 +810,9 @@ class SharlyChessServerToga(toga.App):
         self._update_config('launch_browser', widget.value)
 
     # --- Interactive prompts ---
-    def handle_interactive_yn(self, question: str, yes_is_default: bool) -> bool:
+    def handle_interactive_yn(
+        self, title: str, question: str, yes_is_default: bool
+    ) -> bool:
         """Blocking Yes/No prompt callable from background threads."""
         text = question + '?'
 
@@ -818,7 +820,7 @@ class SharlyChessServerToga(toga.App):
             # Show the dialog on the main window; returns True/False
             assert isinstance(self.main_window, toga.MainWindow)
             dialog = toga.QuestionDialog(
-                title=_('Server Setup'),
+                title=title,
                 message=text,
             )
             return await self.main_window.dialog(dialog)
@@ -899,16 +901,12 @@ class SharlyChessServerToga(toga.App):
         except Exception:
             return None
 
-    def handle_interactive_message(self, message: str) -> bool:
+    def handle_interactive_message(self, title: str, message: str) -> bool:
         """Blocking Yes/No prompt callable from background threads."""
 
         async def _message_on_ui():
-            # Show the dialog on the main window; returns True/False
             assert isinstance(self.main_window, toga.MainWindow)
-            dialog = toga.InfoDialog(
-                title='Sharly Chess',
-                message=message,
-            )
+            dialog = toga.InfoDialog(title=title, message=message)
             return await self.main_window.dialog(dialog)
 
         # Schedule the coroutine on the UI loop and wait for the result
@@ -918,7 +916,7 @@ class SharlyChessServerToga(toga.App):
         except Exception:
             return False
 
-    def quit_app(self) -> None:
+    def quit_app(self, post_exit_task: Callable | None = None) -> None:
         loop = self.server_loop
         if loop is None or loop.is_closed():
             return
@@ -929,6 +927,9 @@ class SharlyChessServerToga(toga.App):
             if task is not None and not task.done():
                 task.cancel()
             loop.stop()
+            self.exit()
+            if post_exit_task:
+                post_exit_task()
 
         loop.call_soon_threadsafe(_stop)
 

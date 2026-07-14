@@ -8,8 +8,10 @@ import zipfile
 import os
 import platform
 import subprocess
+from functools import partial
 from json import JSONDecodeError
 from pathlib import Path
+from threading import Thread
 from time import time
 from typing import Any
 
@@ -25,6 +27,7 @@ from common import (
     DEVEL_ENV,
     EVENTS_DIR,
     TMP_DIR,
+    BASE_DIR,
 )
 from common.i18n import _
 from common.installation_checker import InstallationChecker
@@ -37,11 +40,14 @@ from common.logger import (
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
+from common.windows_installer import WindowsInstaller
 from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
 from plugins.manager import plugin_manager
+from utils import Utils
+from utils.program_variables import ProgramVar
 
 logger = get_logger()
 
@@ -75,8 +81,10 @@ class Engine:
         if TEST_ENV:
             # skip all the upgrade stuff on TEST_ENV (recovering tests run the migrations explicitly)
             return
-        if more_recent_version and download_url:
+        # Maintain the legacy upgrade behavior while v5 has not been released
+        if more_recent_version and download_url and more_recent_version.major < 5:
             if input_interactive_yn(
+                _('Sharly Chess upgrade'),
                 _(
                     'Do you want to upgrade from [{old_version}] to [{new_version}]'
                 ).format(
@@ -86,17 +94,18 @@ class Engine:
                 yes_is_default=False,
             ):
                 self.error = True
-                if error_message := self._install_new_version(
+                if error_message := self._legacy_install_new_version(
                     more_recent_version, download_url
                 ):
                     if print_interactive_message(
+                        _('Installation error'),
                         error_message
                         + '\n\n'
                         + _(
                             'Installation of release [{version}] failed, exiting.'
                         ).format(
                             version=more_recent_version,
-                        )
+                        ),
                     ):
                         quit_app()
                 return
@@ -177,6 +186,7 @@ class Engine:
                 version_num: int | None = None
                 if len(previous_databases) == 1:
                     if input_interactive_yn(
+                        _('Data recovery'),
                         _(
                             'Do you want to recover the data of release [{version}]'
                         ).format(version=previous_versions[0][0]),
@@ -228,6 +238,7 @@ class Engine:
                     )
             if DEVEL_ENV and not recovered_version:
                 if input_interactive_yn(
+                    _('Example databases'),
                     _('Do you want to install example event databases'),
                     yes_is_default=True,
                 ):
@@ -235,6 +246,69 @@ class Engine:
                         f'*.{SharlyChessConfig.event_database_ext}'
                     ):
                         shutil.copy(file, EVENTS_DIR / file.name)
+
+        self._prepare_for_version_5(more_recent_version, download_url)
+
+    @classmethod
+    def _prepare_for_version_5(
+        cls,
+        latest_version: Version | None,
+        download_url: str | None,
+    ):
+        # Save the current version for recovery
+        ProgramVar.LEGACY_VERSION.write_value(str(SHARLY_CHESS_VERSION))
+        ProgramVar.LEGACY_VERSION_DIR.write_value(str(BASE_DIR))
+        if sys.platform == 'linux':
+            # Flatpak upgrades to V5 automatically
+            return
+        if not latest_version or latest_version.major < 5:
+            return
+        title = _('Sharly Chess - Update')
+        message = _('Sharly Chess {latest} is available, you have {current}.').format(
+            latest=latest_version, current=SHARLY_CHESS_VERSION
+        )
+        message += '\n\n' + _('Do you want to install the update now')
+        if not input_interactive_yn(title, message):
+            return
+        instruction = _('The installation and update processes have been reworked.')
+        instruction += '\n\n'
+        if sys.platform != 'win32':
+            instruction += _(
+                'An installer program will start after closing this message.'
+            )
+        else:
+            from web.server_engine import launch_browser
+
+            install_url = Utils.doc_url('macos-install')
+            Thread(target=launch_browser, args=(install_url,)).start()
+            instruction += _(
+                'Download the DMG file from the website that just '
+                'opened, open it, then copy the application to your '
+                'Applications folder and run it from there.'
+            )
+
+        instruction += '\n\n' + _(
+            'The data of the current version will be '
+            'recovered when starting the new version.'
+        )
+        print_interactive_message(title, instruction)
+        if sys.platform == 'darwin':
+            quit_app()
+        else:
+            cls._install_windows_v5(latest_version, download_url)
+
+    @classmethod
+    def _install_windows_v5(cls, version, download_url: str | None):
+        if WindowsInstaller.download(version, download_url):
+            quit_app(partial(WindowsInstaller.run, version=version))
+            return
+        message = _(
+            'The installer program could not be downloaded. '
+            'Consult the logs for more details.'
+        )
+        message += '\n\n' + _('Do you want to try again')
+        if input_interactive_yn(_('Sharly Chess - Error'), message):
+            cls._install_windows_v5(version, download_url)
 
     @classmethod
     def _recover_previous_version(
@@ -399,6 +473,9 @@ class Engine:
                 'Already looked for a more recent version less than one hour ago, skipping.'
             )
             return None, None
+        if dev_latest := os.getenv('DEV_LATEST_VERSION'):
+            logger.warning('Using fake latest version [%s]', dev_latest)
+            return Version(dev_latest), None
         current_stable: bool = bool(
             re.match(r'^(\d+\.\d+\.\d+)$', str(SHARLY_CHESS_VERSION))
         )
@@ -475,9 +552,13 @@ class Engine:
                             valid_asset_names: list[str] = [
                                 f'sharly-chess-{version}-windows.zip',
                                 f'sharly-chess-{version}.zip',
+                                f'Sharly Chess Installer {version}.exe',
                             ]
                         case 'darwin':
-                            valid_asset_names = [f'sharly-chess-{version}-macos.dmg']
+                            valid_asset_names = [
+                                f'sharly-chess-{version}-macos.dmg',
+                                f'sharly-chess-{version}-mac.dmg',
+                            ]
                         case 'linux':
                             # Detect architecture for Linux
                             # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
@@ -561,7 +642,7 @@ class Engine:
             return None, None
 
     @staticmethod
-    def _install_new_version(version: Version, download_url: str) -> str | None:
+    def _legacy_install_new_version(version: Version, download_url: str) -> str | None:
         """Install the new stable version at the same directory level.
         Returns an error message on failure, None on success."""
         new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
@@ -712,6 +793,7 @@ class Engine:
                 return _('Unexpected error during installation: [{ex}].').format(ex=ex)
 
         if print_interactive_message(
+            _('Installation succeeded'),
             _('Release {version} has been installed in [{folder}].').format(
                 version=version,
                 folder=new_version_dir.absolute(),
