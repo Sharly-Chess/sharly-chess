@@ -307,10 +307,6 @@ class SharlyChessServerToga(toga.App):
         # Use FLATPAK_ID if available to match the sandbox ID
         app_id = FLATPAK_ID or 'com.sharlychess.app'
 
-        # Explicitly request .NET Framework 4.x by setting this variable
-        # (see https://github.com/Sharly-Chess/sharly-chess/pull/2098)
-        os.environ['TOGA_WINFORMS_USE_NETFX'] = '1'
-
         super().__init__(
             formal_name='Sharly Chess',
             app_id=app_id,
