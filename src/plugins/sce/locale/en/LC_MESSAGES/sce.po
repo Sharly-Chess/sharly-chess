@@ -1,6 +1,8 @@
+#, python-format
 msgid "%(string)s:"
 msgstr ""
 
+#, python-format
 msgid "%(string)s: %(value)s"
 msgstr ""
 
@@ -82,6 +84,7 @@ msgstr ""
 msgid "Data as it currently is on the local Sharly Chess application."
 msgstr ""
 
+#, python-format
 msgid "Data as it was when it was last synchronized (%(last_sync_str)s)."
 msgstr ""
 
@@ -109,15 +112,19 @@ msgstr ""
 msgid "End"
 msgstr ""
 
+#, python-brace-format
 msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{event}] is not connected to a Sharly-Chess.com event."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{event}] successfully imported!"
 msgstr ""
 
@@ -163,6 +170,7 @@ msgstr ""
 msgid "Last synchronisation"
 msgstr ""
 
+#, python-brace-format
 msgid "Last synchronisation attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
@@ -172,6 +180,7 @@ msgstr ""
 msgid "Last upload"
 msgstr ""
 
+#, python-brace-format
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
@@ -223,9 +232,11 @@ msgstr ""
 msgid "Phone"
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] could not be deleted from Sharly-Chess.com."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] deleted."
 msgstr ""
 
@@ -259,12 +270,15 @@ msgstr ""
 msgid "Remaining conflicts"
 msgstr ""
 
+#, python-format
 msgid "Resolve duplicated players (%(count)d)"
 msgstr ""
 
+#, python-format
 msgid "Resolve player conflicts (%(count)d)"
 msgstr ""
 
+#, python-format
 msgid "Resolve tournament conflicts (%(count)d)"
 msgstr ""
 
@@ -274,6 +288,7 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
+#, python-format
 msgid "Round #%(round)d"
 msgstr ""
 
@@ -322,6 +337,7 @@ msgstr ""
 msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
 msgstr ""
 
+#, python-brace-format
 msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
 msgstr ""
 
@@ -331,6 +347,7 @@ msgstr ""
 msgid "Synchronisation ongoing"
 msgstr ""
 
+#, python-format
 msgid "Synchronize automatically every %(delay)d minutes."
 msgstr ""
 
@@ -349,9 +366,11 @@ msgstr ""
 msgid "Tournament"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] is not connected to a Sharly-Chess.com tournament."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] successfully uploaded."
 msgstr ""
 
@@ -394,6 +413,7 @@ msgstr ""
 msgid "Upload all tournament results"
 msgstr ""
 
+#, python-format
 msgid "Upload automatically every %(delay)d minutes."
 msgstr ""
 
@@ -418,6 +438,7 @@ msgstr ""
 msgid "tournament not found, most likely deleted"
 msgstr ""
 
+#, python-brace-format
 msgid "{count} duplicated player detected."
 msgid_plural "{count} duplicated players detected."
 msgstr[0] ""
