@@ -245,7 +245,7 @@
                             {% set show_real_points = admin_tournament.print_real_points(admin_round) %}
                             {% set show_illegal = admin_tournament.record_illegal_moves %}
                             <colgroup>
-                                <col style="width: 6rem;">
+                                <col style="width: {% if admin_boards_sortable %}7rem{% else %}6rem{% endif %};">
                                 {% if not hide_player_points %}
                                     <col style="width: 4rem;">
                                     {% if show_real_points %}<col style="width: 4rem;">{% endif %}

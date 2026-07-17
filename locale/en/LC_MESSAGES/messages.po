@@ -1244,6 +1244,9 @@ msgstr ""
 msgid "Board is not the same as the opponent's."
 msgstr ""
 
+msgid "Board number"
+msgstr ""
+
 msgid "Board numbers:"
 msgstr ""
 
@@ -3073,10 +3076,16 @@ msgstr ""
 msgid "Fixed board"
 msgstr ""
 
+msgid "Fixed board ordering:"
+msgstr ""
+
 msgid "Fixed board:"
 msgstr ""
 
 msgid "Fixed boards:"
+msgstr ""
+
+msgid "Fixed table"
 msgstr ""
 
 msgid "Floats"
@@ -4331,6 +4340,9 @@ msgid "National rating support for unknown player [{player}]."
 msgstr ""
 
 msgid "National team championship (1.4.3b)"
+msgstr ""
+
+msgid "Natural (pairing order)"
 msgstr ""
 
 msgid "Nauru"
@@ -6583,6 +6595,12 @@ msgid "Sorry, the page you are looking for does not exist."
 msgstr ""
 
 msgid "Sorry, you are not allowed to access this page."
+msgstr ""
+
+msgid "Sort by board number"
+msgstr ""
+
+msgid "Sort by pairing order"
 msgstr ""
 
 msgid "Sort by:"
