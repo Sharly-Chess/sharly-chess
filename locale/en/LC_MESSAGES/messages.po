@@ -8998,16 +8998,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Number of screen types"
-#~ msgstr ""
-
-#~ msgid "Save the set or cancel."
-#~ msgstr ""
-
-#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
-#~ msgstr ""
-
-#~ msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-#~ msgstr ""
-
