@@ -66,6 +66,7 @@ from data.print_documents.options import (
     IndividualTeamMinGenderCountPrintOption,
     IndividualTeamMaxPerEntityPrintOption,
     IndividualTeamDisplayIncompletePrintOption,
+    FixedBoardOrderPrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
@@ -614,7 +615,12 @@ class PairingPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, PairingStylePrintOption, RoundPrintOption]
+        return [
+            TournamentPrintOption,
+            PairingStylePrintOption,
+            RoundPrintOption,
+            FixedBoardOrderPrintOption,
+        ]
 
     @cached_property
     def sub_document(self) -> PrintDocument:
@@ -644,9 +650,25 @@ class BoardPairingPrintDocument(BoardPrintDocument):
     def static_name() -> str:
         return _('Board Pairings')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return BoardPrintDocument.available_options() + [FixedBoardOrderPrintOption]
+
     @property
     def title(self) -> str:
         return _('Pairings for round #{round}').format(round=self.at_round)
+
+    @property
+    def boards(self) -> list[Board]:
+        boards = super().boards
+        if self.tournament.leave_fixed_board_holes:
+            return boards
+        if (
+            self._get_option(FixedBoardOrderPrintOption).value
+            == FixedBoardOrderPrintOption.NATURAL
+        ):
+            return boards
+        return sorted(boards, key=lambda board: board.number)
 
 
 class PlayerPairingPrintDocument(PlayerPrintDocument):

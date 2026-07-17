@@ -338,7 +338,7 @@ class FfeEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        if 'ffe_leave_fixed_board_holes' in data:
+        if 'ffe_event_fields' in data:
             leave_fixed_board_holes = WebContext.form_data_to_bool(
                 data, 'ffe_leave_fixed_board_holes'
             )
