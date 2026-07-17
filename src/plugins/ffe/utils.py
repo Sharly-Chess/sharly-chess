@@ -316,16 +316,19 @@ class FFEArbiterTitle(StrEnum):
 @dataclass
 class FfeEventPluginData(PluginData):
     auto_upload: bool = True
+    leave_fixed_board_holes: bool = True
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
             auto_upload=stored_value.get('auto_upload', False),
+            leave_fixed_board_holes=stored_value.get('leave_fixed_board_holes', True),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
             'auto_upload': self.auto_upload,
+            'leave_fixed_board_holes': self.leave_fixed_board_holes,
         }
 
     @classmethod
@@ -335,12 +338,25 @@ class FfeEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
+        if 'ffe_leave_fixed_board_holes' in data:
+            leave_fixed_board_holes = WebContext.form_data_to_bool(
+                data, 'ffe_leave_fixed_board_holes'
+            )
+        elif previous_object is not None:
+            leave_fixed_board_holes = previous_object.leave_fixed_board_holes
+        else:
+            leave_fixed_board_holes = True
+        plugin_data = cls(leave_fixed_board_holes=leave_fixed_board_holes)
         if previous_object:
-            return previous_object
-        return cls()
+            plugin_data.auto_upload = previous_object.auto_upload
+        return plugin_data
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        return {}
+        return WebContext.values_dict_to_form_data(
+            {
+                'ffe_leave_fixed_board_holes': self.leave_fixed_board_holes,
+            }
+        )
 
 
 @dataclass

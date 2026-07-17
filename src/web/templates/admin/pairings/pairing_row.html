@@ -16,7 +16,7 @@
        forfeit shows which player is missing. #}
     {% set _white_molter_code = wtp.team.player_round_label(wtp, admin_round) if (wtp and wtp.team) else (molter_code[0] if molter_code is defined and molter_code else none) %}
     {% set _black_molter_code = btp.team.player_round_label(btp, admin_round) if (btp and btp.team) else (molter_code[1] if molter_code is defined and molter_code else none) %}
-    <td class="text-center text-nowrap">{{ board.number }}{% if board.number != board.id %} ({{ board.id }}){% endif %}</td>
+    <td class="text-center text-nowrap">{% if board.fixed_number %}<span class="text-decoration-underline" data-bs-toggle="tooltip" data-bs-title="{{ _('Fixed table') }}">{{ board.number_str }}</span>{% else %}{{ board.number_str }}{% endif %}</td>
     <td class="text-center">{% if wtp %}{{ wtp.vpoints_str }}{% endif %}</td>
     {% if admin_tournament.print_real_points(admin_round) %}
         <td class="text-start">{% if wtp %}[{{ wtp.points_str }}]{% endif %}</td>

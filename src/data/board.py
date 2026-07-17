@@ -16,6 +16,42 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+def compute_round_board_numbers(
+    entries: list[tuple[int, int | None, int]],
+    first_board_number: int,
+    leave_holes: bool,
+) -> dict[int, int]:
+    """Assign a display number to every board of a round.
+
+    ``entries`` are ``(identifier, fixed_number, standard_number)`` tuples in
+    board index (pairing) order. When ``leave_holes`` is true a fixed number
+    overrides the standard number of its own board, leaving that board's
+    standard number unused and duplicating the number it lands on. Otherwise
+    the round is numbered compactly: each fixed number is honoured once (the
+    earliest board in index order wins a clash) and every remaining board
+    takes the next free number, so the round has neither gaps nor duplicates.
+    """
+    if leave_holes:
+        return {
+            identifier: fixed or standard for identifier, fixed, standard in entries
+        }
+    numbers: dict[int, int] = {}
+    used: set[int] = set()
+    for identifier, fixed, _standard in entries:
+        if fixed is not None and fixed not in used:
+            numbers[identifier] = fixed
+            used.add(fixed)
+    counter = first_board_number
+    for identifier, _fixed, _standard in entries:
+        if identifier in numbers:
+            continue
+        while counter in used:
+            counter += 1
+        numbers[identifier] = counter
+        used.add(counter)
+    return numbers
+
+
 @total_ordering
 class Board:
     """The Board class, represented by its index in the board order and its
@@ -133,15 +169,17 @@ class Board:
 
     @property
     def number(self) -> int:
-        return self.fixed_number or self.standard_number
+        return self.tournament.board_number(self)
 
     @property
     def number_str(self) -> str:
-        fixed = self.fixed_number
-        standard = self.standard_number
-        if fixed:
-            return f'{fixed} ({standard})'
-        return str(standard)
+        if self.tournament.leave_fixed_board_holes:
+            fixed = self.fixed_number
+            standard = self.standard_number
+            if fixed:
+                return f'{fixed} ({standard})'
+            return str(standard)
+        return str(self.number)
 
     @property
     def team_board(self) -> 'TeamBoard | None':
