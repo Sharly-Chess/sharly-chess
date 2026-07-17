@@ -72,6 +72,14 @@ def test_fixed_number_out_of_range_is_honoured():
     assert numbers(entries) == [1, 2, 100]
 
 
+def test_zero_fixed_number_is_treated_as_unfixed():
+    # A fixed value of 0 (e.g. "no fixed board" from an import) must not claim
+    # table 0 — it falls through to the normal sequence.
+    entries = entries_from([0, None, 0])
+    assert numbers(entries) == [1, 2, 3]
+    assert numbers(entries, leave_holes=True) == [1, 2, 3]
+
+
 def test_clashing_fixed_numbers_first_index_wins():
     # Two boards fixed to table 2: the earlier index keeps it, the later one
     # falls back to the next free number.

@@ -38,7 +38,7 @@ def compute_round_board_numbers(
     numbers: dict[int, int] = {}
     used: set[int] = set()
     for identifier, fixed, _standard in entries:
-        if fixed is not None and fixed not in used:
+        if fixed and fixed not in used:
             numbers[identifier] = fixed
             used.add(fixed)
     counter = first_board_number
