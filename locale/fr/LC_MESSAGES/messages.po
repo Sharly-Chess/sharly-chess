@@ -1244,6 +1244,9 @@ msgstr "Échiquier et couleur"
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
 
+msgid "Board number"
+msgstr "Numéro d'échiquier"
+
 msgid "Board numbers:"
 msgstr "Numéros des échiquiers :"
 
@@ -3073,11 +3076,17 @@ msgstr "Première équipe :"
 msgid "Fixed board"
 msgstr "Échiquier fixe"
 
+msgid "Fixed board ordering:"
+msgstr "Ordre des échiquiers fixes :"
+
 msgid "Fixed board:"
 msgstr "Échiquier fixe :"
 
 msgid "Fixed boards:"
 msgstr "Échiquiers fixes :"
+
+msgid "Fixed table"
+msgstr "Table fixe"
 
 msgid "Floats"
 msgstr "Flotteurs"
@@ -4332,6 +4341,9 @@ msgstr "Support du classement national pour le·la joueur·euse inconnu·e [{pla
 
 msgid "National team championship (1.4.3b)"
 msgstr "Championnat national par équipes (1.4.3b)"
+
+msgid "Natural (pairing order)"
+msgstr "Naturel (ordre d'appariement)"
 
 msgid "Nauru"
 msgstr "Nauru"
@@ -6586,6 +6598,12 @@ msgstr "Désolé, la page que vous recherchez n’existe pas."
 
 msgid "Sorry, you are not allowed to access this page."
 msgstr "Désolé, vous n'êtes pas autorisé·e à accéder à cette page."
+
+msgid "Sort by board number"
+msgstr "Trier par numéro d'échiquier"
+
+msgid "Sort by pairing order"
+msgstr "Trier par ordre d'appariement"
 
 msgid "Sort by:"
 msgstr "Trier par :"
@@ -8982,16 +9000,3 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Number of screen types"
-#~ msgstr "Nombre de types d'écran"
-
-#~ msgid "Save the set or cancel."
-#~ msgstr "Enregistrez l'ensemble ou annulez."
-
-#~ msgid "The label used for this multi-screen in menus. If left empty, the multi-screen name is used."
-#~ msgstr "Le libellé utilisé pour cet écran multiple dans les menus. S'il est vide, le nom de l'écran multiple est utilisé."
-
-#~ msgid "The name of the multi-screen, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-#~ msgstr "Le nom de l'écran multiple, facultatif. Les jetons suivants sont automatiquement remplacés par les numéros d'échiquier ou les noms des joueur·euses) :  %%f=premier, %%l=dernier, %%t=tournoi."
-

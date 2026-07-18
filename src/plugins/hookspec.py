@@ -332,6 +332,13 @@ class AppHookSpecs:
     ) -> str | None:
         """Warning message for the pairing settings of a tournament."""
 
+    @hookspec(firstresult=True)
+    def leave_fixed_board_holes(self, tournament: 'Tournament') -> bool | None:
+        """Whether a fixed board number should leave the table it displaces
+        empty (and duplicate the number it lands on) instead of numbering the
+        round compactly, to stay compatible with the reference file format.
+        ``None`` when the plugin has no opinion."""
+
     @hookspec
     def get_prohibited_pairing_dimensions(
         self,
