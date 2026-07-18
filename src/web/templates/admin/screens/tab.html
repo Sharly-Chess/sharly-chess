@@ -62,7 +62,7 @@
             </button>
             <ul class="dropdown-menu">
                 {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
-                    {% set screen_type_create_enabled=admin_event.tournaments_by_id or screen_type.value in ['image', 'results'] %}
+                    {% set screen_type_create_enabled=admin_event.tournaments_by_id or not screen_type.has_screen_sets %}
                     <span
                         {% if not screen_type_create_enabled %}
                             {{ macros.tooltip_attributes('info', _('You must create a tournament before creating these screens.'), 'left') }}
@@ -120,10 +120,10 @@
                 </div>
             {% else %}
                 {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
-                    {% set expanded=screen_type in admin_screens_screen_types %}
+                    {% set expanded=screen_type.value in admin_screens_screen_types %}
                     <div class="row gy-2 gx-3">
-                        <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
-                            {% with id='admin-screens-show-'~screen_type, name='admin_screens_show_'~screen_type %}
+                        <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if screen_type.value not in admin_screens_screen_types %}text-secondary{% endif %}">
+                            {% with id='admin-screens-show-'~screen_type.value, name='admin_screens_show_'~screen_type.value %}
                                 <button
                                     type="button"
                                     data-testid="accordion-screen-type-{{ screen_type.value }}"
@@ -153,7 +153,8 @@
                             {% if screen_type_data.screens %}
                                 {% for screen in screen_type_data.screens %}
                                     {% with
-                                        card_class='' if not screen.family else 'bg-secondary-subtle text-secondary'
+                                        card_class='' if not screen.family else 'bg-secondary-subtle text-secondary',
+                                        card_id='screen-card-' ~ screen.id
                                     %}
                                         {% include 'screen_card.html' %}
                                     {% endwith %}
@@ -168,5 +169,32 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+    {% endif %}
+    {% if scroll_to_screen_id %}
+        <script>
+            (function () {
+                function reveal() {
+                    const card = document.getElementById('screen-card-{{ scroll_to_screen_id }}');
+                    if (!card) {
+                        return;
+                    }
+                    const section = card.closest('.collapse');
+                    if (section) {
+                        if (window.bootstrap && window.bootstrap.Collapse) {
+                            window.bootstrap.Collapse.getOrCreateInstance(section, { toggle: false }).show();
+                        } else {
+                            section.classList.add('show');
+                        }
+                        const button = document.querySelector('[data-bs-target="#' + section.id + '"]');
+                        if (button) {
+                            button.classList.remove('collapsed');
+                            button.setAttribute('aria-expanded', 'true');
+                        }
+                    }
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                requestAnimationFrame(reveal);
+            })();
+        </script>
     {% endif %}
 {% endblock %}

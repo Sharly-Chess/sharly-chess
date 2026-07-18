@@ -6,7 +6,8 @@ from litestar.plugins.htmx import HTMXRequest
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
-from utils.enum import TournamentRating, ScreenType
+from utils.enum import TournamentRating
+from data.screen_types import ScreenTypeManager
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
 from web.utils import RequestUtils
@@ -127,8 +128,8 @@ class BaseAdminController(BaseController):
         family_screens_only: bool, event: Event
     ) -> dict[str, str]:
         return {'': '-'} | {
-            screen_type.value: screen_type.name
-            for screen_type in ScreenType
+            screen_type.id: screen_type.name
+            for screen_type in ScreenTypeManager(event).objects()
             if (not family_screens_only or screen_type.families_allowed)
             and screen_type.supports_event_type(event.event_type)
         }

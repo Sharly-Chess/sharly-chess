@@ -10,18 +10,13 @@ from common.i18n import _
 from data.screen import Screen
 from data.screen_set import format_range
 
-from utils.enum import (
-    ScreenType,
-    PlayersScreenPlayerFormat,
-    PlayersScreenBoardFormat,
-    PlayersScreenOpponentFormat,
-)
 from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
     from data.timer import Timer
+    from data.screen_types import ScreenType as ScreenTypeEntity
 
 
 class Family:
@@ -58,8 +53,18 @@ class Family:
         return self.stored_family.id
 
     @property
-    def type(self) -> ScreenType:
-        return ScreenType(self.stored_family.type)
+    def type(self) -> str:
+        """The family's type id (a built-in id or a plugin-defined one), kept
+        as a plain string (see ``Screen.type``)."""
+        return self.stored_family.type
+
+    @property
+    def screen_type(self) -> 'ScreenTypeEntity':
+        """The screen-type entity for this family, resolved through the
+        manager (so a plugin-defined type is honoured)."""
+        from data.screen_types import ScreenTypeManager
+
+        return ScreenTypeManager(self.event).get_object(self.type)
 
     @property
     def public(self) -> bool:
@@ -203,65 +208,12 @@ class Family:
         return show_unpaired
 
     @property
-    def players_player_format(self) -> PlayersScreenPlayerFormat:
-        player_format = self.stored_family.players_player_format
-        assert player_format is not None
-        return PlayersScreenPlayerFormat(player_format)
-
-    @property
-    def players_board_format(self) -> PlayersScreenBoardFormat:
-        board_format = self.stored_family.players_board_format
-        assert board_format is not None
-        return PlayersScreenBoardFormat(board_format)
-
-    @property
-    def players_opponent_format(self) -> PlayersScreenOpponentFormat:
-        opponent_format = self.stored_family.players_opponent_format
-        assert opponent_format is not None
-        return PlayersScreenOpponentFormat(opponent_format)
-
-    @property
-    def ranking_crosstable(self) -> bool:
-        match self.type:
-            case ScreenType.RANKING:
-                return self.stored_family.ranking_crosstable
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @property
-    def ranking_round(self) -> int | None:
-        match self.type:
-            case ScreenType.RANKING:
-                return self.stored_family.ranking_round
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @property
-    def ranking_min_points(self) -> float | None:
-        match self.type:
-            case ScreenType.RANKING:
-                return self.stored_family.ranking_min_points
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @property
-    def ranking_max_points(self) -> float | None:
-        match self.type:
-            case ScreenType.RANKING:
-                return self.stored_family.ranking_max_points
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @property
     def icon_str(self) -> str:
-        return self.type.icon_str
+        return self.screen_type.icon_str
 
     @property
     def type_str(self) -> str:
-        return Screen.screen_type_str(
-            self.type,
-            self.ranking_crosstable if self.type == ScreenType.RANKING else None,
-        )
+        return self.screen_type.family_type_str(self)
 
     @property
     def first(self) -> int | None:
@@ -296,128 +248,17 @@ class Family:
         return self.stored_family.last_update
 
     def _calculate_screens(self) -> bool:
-        players_instead_of_boards: bool
-        cut_items_number: int = 0
-        match ScreenType(self.type):
-            case ScreenType.BOARDS | ScreenType.INPUT:
-                if self.tournament.current_round:
-                    players_instead_of_boards = False
-                    if self.shows_team_matches:
-                        # Team screens list matches (a match spans several
-                        # rows); hidden byes carry no table number.
-                        total_items_number: int = len(
-                            [
-                                team_board
-                                for team_board in self.tournament.get_round_team_boards(
-                                    self.tournament.current_round
-                                )
-                                if team_board.display_number is not None
-                            ]
-                        )
-                    else:
-                        total_items_number = len(self.tournament.boards or [])
-                    if total_items_number:
-                        if self.first:
-                            self._calculated_first = max(
-                                1, min(self.first, total_items_number)
-                            )
-                        else:
-                            self._calculated_first = 1
-                        if self.last:
-                            self._calculated_last = max(
-                                self._calculated_first,
-                                min(self.last, total_items_number),
-                            )
-                        else:
-                            self._calculated_last = total_items_number
-                        cut_items_number = (
-                            self._calculated_last - self._calculated_first + 1
-                        )
-                else:
-                    players_instead_of_boards = True
-                    cut_items_number = len(self.tournament.sorted_tournament_players)
-                    if cut_items_number:
-                        self._calculated_first = 1
-                        self._calculated_last = cut_items_number
-            case ScreenType.CHECK_IN:
-                players_instead_of_boards = True
-                if self.tournament.is_team_tournament:
-                    cut_items_number = len(
-                        [
-                            team
-                            for team in self.event.teams_by_id.values()
-                            if team.tournament_id == self.tournament.id
-                        ]
-                    )
-                else:
-                    cut_items_number = len(self.tournament.sorted_tournament_players)
-                if cut_items_number:
-                    self._calculated_first = 1
-                    self._calculated_last = cut_items_number
-            case ScreenType.PLAYERS | ScreenType.RANKING:
-                players_instead_of_boards = False
-                if ScreenType(self.type) == ScreenType.PLAYERS:
-                    if self.tournament.current_round:
-                        if self.players_show_unpaired:
-                            total_items_number = len(
-                                self.tournament.sorted_tournament_players
-                            )
-                        else:
-                            total_items_number = len(
-                                self.tournament.sorted_tournament_players_without_unpaired
-                            )
-                    else:
-                        total_items_number = len(
-                            self.tournament.sorted_tournament_players
-                        )
-                else:
-                    self.tournament.compute_tournament_player_ranks(
-                        after_round=self.tournament.correct_ranking_round(
-                            self.ranking_round
-                        )
-                    )
-                    total_items_number = len(
-                        [
-                            player
-                            for player in self.tournament.tournament_players_by_rank.values()
-                            if (
-                                self.ranking_min_points is None
-                                or (player.points or 0) >= self.ranking_min_points
-                            )
-                            and (
-                                self.ranking_max_points is None
-                                or (player.points or 0) <= self.ranking_max_points
-                            )
-                        ]
-                    )
-                if total_items_number:
-                    if self.first:
-                        self._calculated_first = max(
-                            1, min(self.first, total_items_number)
-                        )
-                    else:
-                        self._calculated_first = 1
-                    if self.last:
-                        self._calculated_last = max(
-                            self._calculated_first, min(self.last, total_items_number)
-                        )
-                    else:
-                        self._calculated_last = total_items_number
-                    cut_items_number = (
-                        self._calculated_last - self._calculated_first + 1
-                    )
-            case _:
-                raise ValueError(f'type={self.type}')
+        item_range = self.screen_type.family_item_range(self)
+        self._calculated_first = item_range.first
+        self._calculated_last = item_range.last
+        cut_items_number: int = item_range.item_count
         if cut_items_number:
             # OK now we know the number of items and the number of the first item to take
             # Let's go for the number of items by part and the number of parts
             if self.number:
-                if players_instead_of_boards:
+                if item_range.players_instead_of_boards:
                     self._calculated_number = self.number * 2
-                elif (
-                    self.type in (ScreenType.BOARDS, ScreenType.INPUT)
-                    and self.shows_team_matches
-                ):
+                elif item_range.number_per_column:
                     # In team mode ``number`` counts matches per COLUMN
                     # (easier to reason about than display rows, since a
                     # match spans several rows) — scale to a per-screen
@@ -430,7 +271,9 @@ class Family:
             else:
                 self._calculated_number = cut_items_number
             divisor: int = (
-                self.columns * 2 if players_instead_of_boards else self.columns
+                self.columns * 2
+                if item_range.players_instead_of_boards
+                else self.columns
             )
             # ensure that the number of items is divisible by the number of columns
             if self._calculated_number % divisor != 0:
@@ -479,86 +322,7 @@ class Family:
 
     @property
     def numbers_str(self) -> str:
-        is_team = self.tournament.is_team_tournament
-        offset = 0
-        if self.type in (ScreenType.BOARDS, ScreenType.INPUT):
-            if self.shows_team_matches:
-                strings = {
-                    'all': _('all the matches'),
-                    'from': _('matches from #{first} to end'),
-                    'to': _('matches from start to #{last}'),
-                    'range': _('matches from #{first} to #{last}'),
-                    'number': _('screens of {number} matches per column'),
-                    'number_from': _(
-                        'screens of {number} matches per column from #{first} to end'
-                    ),
-                    'number_to': _(
-                        'screens of {number} matches per column from start to #{last}'
-                    ),
-                    'number_range': _(
-                        'screens of {number} matches per column from #{first} to #{last}'
-                    ),
-                    'parts': _('matches on {parts} screens'),
-                    'parts_from': _('matches from #{first} to end, on {parts} screens'),
-                    'parts_to': _('matches from start to #{last}, on {parts} screens'),
-                    'parts_range': _(
-                        'matches from #{first} to #{last}, on {parts} screens'
-                    ),
-                }
-            else:
-                offset = self.tournament.first_board_number - 1
-                strings = {
-                    'all': _('all the boards'),
-                    'from': _('boards from #{first} to end'),
-                    'to': _('boards from start to #{last}'),
-                    'range': _('boards from #{first} to #{last}'),
-                    'number': _('screens of {number} boards'),
-                    'number_from': _('screens of {number} boards from #{first} to end'),
-                    'number_to': _('screens of {number} boards from start to #{last}'),
-                    'number_range': _(
-                        'screens of {number} boards from #{first} to #{last}'
-                    ),
-                    'parts': _('boards on {parts} screens'),
-                    'parts_from': _('boards from #{first} to end, on {parts} screens'),
-                    'parts_to': _('boards from start to #{last}, on {parts} screens'),
-                    'parts_range': _(
-                        'boards from #{first} to #{last}, on {parts} screens'
-                    ),
-                }
-        elif is_team:
-            strings = {
-                'all': _('all the teams'),
-                'from': _('teams from #{first} to end'),
-                'to': _('teams from start to #{last}'),
-                'range': _('teams from #{first} to #{last}'),
-                'number': _('screens of {number} teams'),
-                'number_from': _('screens of {number} teams from #{first} to end'),
-                'number_to': _('screens of {number} teams from start to #{last}'),
-                'number_range': _('screens of {number} teams from #{first} to #{last}'),
-                'parts': _('teams on {parts} screens'),
-                'parts_from': _('teams from #{first} to end, on {parts} screens'),
-                'parts_to': _('teams from start to #{last}, on {parts} screens'),
-                'parts_range': _('teams from #{first} to #{last}, on {parts} screens'),
-            }
-        else:
-            strings = {
-                'all': _('all the players'),
-                'from': _('players from #{first} to end'),
-                'to': _('players from start to #{last}'),
-                'range': _('players from #{first} to #{last}'),
-                'number': _('screens of {number} players'),
-                'number_from': _('screens of {number} players from #{first} to end'),
-                'number_to': _('screens of {number} players from start to #{last}'),
-                'number_range': _(
-                    'screens of {number} players from #{first} to #{last}'
-                ),
-                'parts': _('players on {parts} screens'),
-                'parts_from': _('players from #{first} to end, on {parts} screens'),
-                'parts_to': _('players from start to #{last}, on {parts} screens'),
-                'parts_range': _(
-                    'players from #{first} to #{last}, on {parts} screens'
-                ),
-            }
+        strings, offset = self.screen_type.family_number_strings(self)
         first = self.first + offset if self.first is not None else None
         last = self.last + offset if self.last is not None else None
         match (self.first, self.last, self.number, self.parts):

@@ -74,10 +74,10 @@ from utils.enum import (
     FormAction,
     Result,
     ScoreType,
-    ScreenType,
     TeamColourType,
     TournamentRating,
 )
+from data.screen_types import ScreenTypeManager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -1241,13 +1241,15 @@ class TournamentAdminController(BaseEventAdminController):
                     timer_id: int | None = None
                     if len(event.timers_by_id) == 1:
                         timer_id = list(event.timers_by_id.keys())[0]
-                    for screen_type in [
-                        ScreenType.CHECK_IN,
-                        ScreenType.INPUT,
-                        ScreenType.BOARDS,
-                        ScreenType.PLAYERS,
-                        ScreenType.RANKING,
-                    ]:
+                    for screen_type in ScreenTypeManager(event).objects():
+                        # Default screens are the per-tournament (set-based)
+                        # types available for the event.
+                        if not screen_type.has_screen_sets:
+                            continue
+                        if not screen_type.supports_event_type(event.event_type):
+                            continue
+                        type_fields = screen_type.create_form_data(event)
+                        columns = type_fields.pop('columns', 1)
                         stored_screen: StoredScreen = database.add_stored_screen(
                             StoredScreen(
                                 id=None,
@@ -1259,28 +1261,13 @@ class TournamentAdminController(BaseEventAdminController):
                                 type=screen_type.value,
                                 public=True,
                                 name=f'{screen_type.name} ({tournament.name})',
-                                columns=1,
+                                columns=columns,
                                 font_size=None,
                                 menu_text=None,
                                 timer_id=timer_id,
-                                input_exit_button=False,
-                                players_show_unpaired=False,
-                                players_player_format=self.get_default_players_screen_player_format(
-                                    event
-                                ).value,
-                                players_board_format=self.get_default_players_screen_board_format(
-                                    event
-                                ).value,
-                                players_opponent_format=self.get_default_players_screen_opponent_format(
-                                    event
-                                ).value,
-                                results_limit=None,
-                                results_max_age=None,
-                                results_tournament_ids=[],
-                                background_image=None,
-                                background_color=None,
                                 message_default=True,
                                 message_text=None,
+                                **type_fields,
                             )
                         )
                         assert stored_screen.id is not None

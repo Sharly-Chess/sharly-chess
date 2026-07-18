@@ -6383,9 +6383,6 @@ msgstr ""
 msgid "Select to pair (White, then pick the opponent)"
 msgstr ""
 
-msgid "Selection"
-msgstr ""
-
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr ""

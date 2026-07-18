@@ -1,4 +1,12 @@
 {% set tournament = screen_set.tournament %}
+{% if not tournament.started %}
+    <div
+        class="boards-set not-started-message d-flex flex-column align-items-center justify-content-center text-center"
+        style="min-height: 70vh;"
+    >
+        <h2>{{ _('The tournament has not yet started.') }}</h2>
+    </div>
+{% else %}
 <div class="boards-set">
     <h2 class="set-title text-center">
         {% if tournament.current_round %}
@@ -47,7 +55,7 @@
                     {% for board in boards %}
                         {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
                         {% set editable =
-                            screen.type == 'input'
+                            screen.screen_type.allows_result_input
                             and board.black_tournament_player
                             and (
                                 client.can_update_results(tournament.id)
@@ -104,3 +112,4 @@
     </div>
     {% endif %}
 </div>
+{% endif %}

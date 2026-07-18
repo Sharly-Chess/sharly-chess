@@ -47,7 +47,7 @@
                                 <div class="text-center fw-bold">{{ '%g'|format(row.gp) }}</div>
                             {% endif %}
                             {% for tie_break in team_tie_breaks %}
-                                {% set value = row.tie_break_values[loop.index0] %}
+                                {% set value = row.tie_break_values[loop.index0].value | float %}
                                 <div class="text-center">
                                     {% if tie_break.display_rank_delta %}
                                         {{ ('+%d'|format(value|int)) if value else '—' }}

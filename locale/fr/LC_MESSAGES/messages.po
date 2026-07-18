@@ -6385,9 +6385,6 @@ msgstr "Sélectionner cette table vide (forfait pour le·la joueur·euse appari�
 msgid "Select to pair (White, then pick the opponent)"
 msgstr "Sélectionner pour apparier (Blanc, puis choisir l'adversaire)"
 
-msgid "Selection"
-msgstr "Sélection"
-
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"

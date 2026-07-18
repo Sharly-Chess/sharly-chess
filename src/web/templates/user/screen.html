@@ -5,12 +5,12 @@
 
 {% block header %}
     <div id="user-screen-header" class="header user-header user-screen-header">
-        {% if screen.type not in ('input', 'check-in') or screen.input_exit_button %}
+        {% if not screen.screen_type.has_exit_button or screen.input_exit_button %}
             <button
                 id="screen-exit-button"
                 class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-2"
                 hx-get="{{ url_for(
-                    'admin-event-screens-tab' if client.can_manage_screens else 'admin-event-' ~ screen.type.value ~ '-screens-tab',
+                    'admin-event-screens-tab' if client.can_manage_screens else 'admin-event-' ~ screen.type ~ '-screens-tab',
                     event_uniq_id=user_event.uniq_id
                 ) }}"
                 hx-push-url="true"
@@ -82,7 +82,7 @@
         {% if timer %}
             <script>{% include 'screen/timer.js' %}</script>
         {% endif %}
-        {{ macros.copyright_script(show=screen.type.value != 'image') }}
+        {{ macros.copyright_script(show=screen.screen_type.shows_copyright) }}
     </div>
 {% endblock %}
 
@@ -153,30 +153,18 @@
         class="content user-content user-screen-content"
         style="--font-size: {{ screen.font_size or 100 }};"
     >
-        {% if screen.type in ('boards', 'input', 'check-in', 'players', 'ranking') %}
-            <div class="screen {{ screen.type.value }}-screen">
+        {% set screen_type = screen.screen_type %}
+        {% if screen_type.set_template %}
+            <div class="screen {{ screen_type.value }}-screen">
                 {% for screen_set in screen.sorted_screen_sets %}
                     {% set tournament = screen_set.tournament %}
-                    {% if screen.type == 'players' %}
-                        {% include 'screen/sets/players_set.html' %}
-                    {% elif screen.type == 'ranking' %}
-                        {% include 'screen/sets/ranking_set.html' %}
-                    {% elif screen.type == 'check-in' or not screen_set.tournament.started %}
-                        {% include 'screen/sets/check_in_set.html' %}
-                    {% else %}
-                        {% include 'screen/sets/boards_set.html' %}
-                    {% endif %}
+                    {% set data = screen_type.set_context(screen_set) %}
+                    {% include screen_type.set_template %}
                 {% endfor %}
             </div>
-        {% elif screen.type == 'results' %}
-            <div class="screen results-screen">
-                {% include 'screen/results.html' %}
-            </div>
-        {% elif screen.type == 'image' %}
-            <div
-                class="screen image-screen position-absolute top-0 bottom-0 start-0 end-0"
-                style="background-image: url('{{ screen.image }}');"
-            ></div>
+        {% elif screen_type.content_template %}
+            {% set data = screen_type.content_context(screen) %}
+            {% include screen_type.content_template %}
         {% endif %}
     </div>
 {% endblock content %}

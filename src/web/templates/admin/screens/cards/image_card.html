@@ -1,0 +1,14 @@
+<i class="bi-image pe-1"></i>
+<div>
+    {% if data.image %}
+        {{ _('Image: %(image)s', image=data.image) }}
+    {% endif %}
+</div>
+<div>
+    {{ _('Background colour: %(color)s', color=data.background_color) }}
+    {% if data.background_color_default %}
+        <span class="fst-italic">
+            {{ _('(by default)') }}
+        </span>
+    {% endif %}
+</div>

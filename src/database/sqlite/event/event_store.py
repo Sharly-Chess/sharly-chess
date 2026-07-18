@@ -340,15 +340,15 @@ class StoredScreen:
     font_size: int | None
     menu_text: str | None
     timer_id: int | None
-    input_exit_button: bool | None
-    players_show_unpaired: bool | None
-    players_player_format: int | None
-    players_board_format: int | None
-    players_opponent_format: int | None
-    results_limit: int | None
-    results_max_age: int | None
-    background_image: str | None
-    background_color: str | None
+    input_exit_button: bool | None = None
+    players_show_unpaired: bool | None = None
+    players_player_format: int | None = None
+    players_board_format: int | None = None
+    players_opponent_format: int | None = None
+    results_limit: int | None = None
+    results_max_age: int | None = None
+    background_image: str | None = None
+    background_color: str | None = None
     results_tournament_ids: list[int] = field(default_factory=list[int])
     ranking_crosstable: bool = False
     ranking_round: int | None = None
@@ -376,19 +376,19 @@ class StoredFamily:
     font_size: int | None
     menu_text: str
     timer_id: int | None
-    input_exit_button: bool | None
-    players_show_unpaired: bool | None
-    players_player_format: int | None
-    players_board_format: int | None
-    players_opponent_format: int | None
-    ranking_crosstable: bool
-    ranking_round: int | None
-    ranking_min_points: float | None
-    ranking_max_points: float | None
-    first: int | None
-    last: int | None
-    parts: int | None
-    number: int | None
+    input_exit_button: bool | None = None
+    players_show_unpaired: bool | None = None
+    players_player_format: int | None = None
+    players_board_format: int | None = None
+    players_opponent_format: int | None = None
+    ranking_crosstable: bool = False
+    ranking_round: int | None = None
+    ranking_min_points: float | None = None
+    ranking_max_points: float | None = None
+    first: int | None = None
+    last: int | None = None
+    parts: int | None = None
+    number: int | None = None
     public: bool = True
     message_default: bool = True
     message_text: str | None = None

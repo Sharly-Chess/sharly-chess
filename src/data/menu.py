@@ -8,7 +8,7 @@ from data.family import Family
 from data.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredMenu, StoredMenuItem
-from utils.enum import MenuSubmenuMode, ScreenType
+from utils.enum import MenuSubmenuMode
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -177,10 +177,8 @@ class MenuItem:
         return None
 
     @property
-    def screen_type(self) -> ScreenType | None:
-        if self.stored_menu_item.screen_type:
-            return ScreenType(self.stored_menu_item.screen_type)
-        return None
+    def screen_type(self) -> str | None:
+        return self.stored_menu_item.screen_type or None
 
     @property
     def index(self) -> int:
@@ -235,10 +233,8 @@ class Menu:
         return self.stored_menu.id
 
     @property
-    def default_type(self) -> ScreenType | None:
-        if self.stored_menu.default_type:
-            return ScreenType(self.stored_menu.default_type)
-        return None
+    def default_type(self) -> str | None:
+        return self.stored_menu.default_type or None
 
     @property
     def submenu_mode(self) -> MenuSubmenuMode:
@@ -266,14 +262,17 @@ class Menu:
         types the menu covers, joined by ' / '."""
         if self.stored_menu.name:
             return self.stored_menu.name
-        if default_type := self.default_type:
-            return default_type.name
-        screen_types: list[ScreenType] = []
+        from data.screen_types import ScreenTypeManager
+
+        manager = ScreenTypeManager(self.event)
+        if self.stored_menu.default_type:
+            return manager.get_object(self.stored_menu.default_type).name
+        type_ids: list[str] = []
         for screen in self.resolved_screens():
-            if screen.type not in screen_types:
-                screen_types.append(screen.type)
-        if screen_types:
-            return ' / '.join(screen_type.name for screen_type in screen_types)
+            if screen.type not in type_ids:
+                type_ids.append(screen.type)
+        if type_ids:
+            return ' / '.join(manager.get_object(type_id).name for type_id in type_ids)
         return _('Menu')
 
     @property
@@ -293,7 +292,7 @@ class Menu:
         return [item.family for item in self.sorted_menu_items if item.family]
 
     @property
-    def screen_types(self) -> list[ScreenType]:
+    def screen_types(self) -> list[str]:
         return [item.screen_type for item in self.sorted_menu_items if item.screen_type]
 
     @property
@@ -374,14 +373,14 @@ class Menu:
         self,
         screen_id: int | None = None,
         family_id: int | None = None,
-        screen_type: ScreenType | None = None,
+        screen_type: str | None = None,
     ):
         stored_menu_item = StoredMenuItem(
             id=None,
             menu_id=self.id,
             screen_id=screen_id,
             family_id=family_id,
-            screen_type=screen_type.value if screen_type else None,
+            screen_type=screen_type or None,
             index=len(self.stored_menu_items),
         )
         with EventDatabase(self.event.uniq_id, True) as database:
