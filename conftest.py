@@ -8,6 +8,7 @@ from io import TextIOWrapper
 from pathlib import Path
 from typing import Generator
 
+import psutil
 import pytest
 import requests
 from playwright.sync_api import Browser, Playwright, APIRequestContext
@@ -63,8 +64,49 @@ class BackendServer:
             self.base_url = f'http://{self.host}:{self.port}'
         self.test_db_dir = None
 
+    @staticmethod
+    def _kill_process_tree(pid: int):
+        """Terminate a process and all of its children, cross-platform."""
+        try:
+            parent = psutil.Process(pid)
+        except psutil.NoSuchProcess:
+            return
+        procs = parent.children(recursive=True) + [parent]
+        for proc in procs:
+            try:
+                proc.terminate()
+            except psutil.NoSuchProcess:
+                continue
+        _, alive = psutil.wait_procs(procs, timeout=10)
+        for proc in alive:
+            try:
+                proc.kill()
+            except psutil.NoSuchProcess:
+                continue
+
+    @classmethod
+    def _kill_stale_test_servers(cls):
+        """Kill leftover test-server processes from earlier runs that were
+        interrupted before teardown. They keep holding the test port and the
+        tests/tmp SQLite databases, so the next run's requests hit a stale
+        server and flake with database/500 errors."""
+        test_path = str(TEST_DATA_DIR.resolve())
+        server_script = str((Path(__file__).parent / 'src/sharly_chess.py').resolve())
+        for proc in psutil.process_iter(['pid', 'cmdline']):
+            if proc.pid == os.getpid():
+                continue
+            try:
+                cmdline = proc.info['cmdline'] or []
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+            if any(server_script in part for part in cmdline) and any(
+                test_path in part for part in cmdline
+            ):
+                cls._kill_process_tree(proc.pid)
+
     def start(self):
         """Start the backend server."""
+        self._kill_stale_test_servers()
 
         # Add src directory to PYTHONPATH for server to find modules
         current_pythonpath = env.get('PYTHONPATH', '')

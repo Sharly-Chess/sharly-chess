@@ -98,8 +98,6 @@ def _board_numbers_str(screen_set: 'ScreenSet') -> str:
                 return _('matches from #{first} to #{last}').format(
                     first=first, last=last
                 )
-            case _:
-                raise ValueError(f'first={first}, last={last}')
     offset = screen_set.tournament.first_board_number - 1
     match (first, last):
         case (0, 0):
@@ -112,8 +110,6 @@ def _board_numbers_str(screen_set: 'ScreenSet') -> str:
             return _('boards from #{first} to #{last}').format(
                 first=first + offset, last=last + offset
             )
-        case _:
-            raise ValueError(f'first={first}, last={last}')
 
 
 def _players_numbers_str(screen_set: 'ScreenSet') -> str:
@@ -128,12 +124,10 @@ def _players_numbers_str(screen_set: 'ScreenSet') -> str:
                 return _('teams from #{first} to end').format(first=first)
             case (0, last) if last:
                 return _('teams from start to #{last}').format(last=last)
-            case (first, last) if first and last:
+            case (first, last):
                 return _('teams from #{first} to #{last}').format(
                     first=first, last=last
                 )
-            case _:
-                raise ValueError(f'first={first}, last={last}')
     match (first, last):
         case (0, 0):
             return _('all the players')
@@ -141,10 +135,8 @@ def _players_numbers_str(screen_set: 'ScreenSet') -> str:
             return _('players from #{first} to end').format(first=first)
         case (0, last) if last:
             return _('players from start to #{last}').format(last=last)
-        case (first, last) if first and last:
+        case (first, last):
             return _('players from #{first} to #{last}').format(first=first, last=last)
-        case _:
-            raise ValueError(f'first={first}, last={last}')
 
 
 class FamilyItemRange(NamedTuple):
@@ -537,12 +529,10 @@ class ScreenType(IdentifiableEntity, ABC):
                 return _('ranking from #{first} to end').format(first=first)
             case (0, last) if last:
                 return _('ranking from start to #{last}').format(last=last)
-            case (first, last) if first and last:
+            case (first, last):
                 return _('ranking from #{first} to #{last}').format(
                     first=first, last=last
                 )
-            case _:
-                raise ValueError(f'first={screen_set.first}, last={screen_set.last}')
 
     def build_columns(
         self, screen: 'Screen', tournament: 'Tournament', event: 'Event'

@@ -13,8 +13,7 @@ from tests.e2e.access_levels.conftest import (
     TOURNAMENT_ID,
     TOURNAMENT_UNPAIRED_ID,
 )
-from tests.test_config import TestUtils
-from utils.enum import ScreenType
+from tests.test_config import ScreenType, TestUtils
 
 
 class DisplayMode(IntEnum):

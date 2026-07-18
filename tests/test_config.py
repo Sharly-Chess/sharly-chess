@@ -2,6 +2,7 @@
 
 import re
 import time
+from enum import StrEnum
 from pathlib import Path
 from typing import Callable, Dict, Optional, Any
 from urllib import parse
@@ -19,12 +20,32 @@ from database.sqlite.event.event_store import (
     StoredTournament,
 )
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
+from data.screen_types import (
+    CheckInScreenType,
+    InputScreenType,
+    BoardsScreenType,
+    PlayersScreenType,
+    ResultsScreenType,
+    RankingScreenType,
+    ImageScreenType,
+)
 from utils.enum import (
-    ScreenType,
     PlayersScreenPlayerFormat,
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
 )
+
+
+class ScreenType(StrEnum):
+    """Screen-type ids used by the tests to create screens and families."""
+
+    CHECK_IN = CheckInScreenType.static_id()
+    INPUT = InputScreenType.static_id()
+    BOARDS = BoardsScreenType.static_id()
+    PLAYERS = PlayersScreenType.static_id()
+    RESULTS = ResultsScreenType.static_id()
+    RANKING = RankingScreenType.static_id()
+    IMAGE = ImageScreenType.static_id()
 
 
 class TestConfig:

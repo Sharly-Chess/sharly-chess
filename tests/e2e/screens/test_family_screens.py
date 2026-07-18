@@ -1,8 +1,8 @@
 from database.sqlite.event.event_store import StoredTournament
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
-from tests.test_config import TestUtils
-from utils.enum import Result, ScreenType
+from tests.test_config import ScreenType, TestUtils
+from utils.enum import Result
 
 
 EVENT_ID = 'event-test-family-screen'
