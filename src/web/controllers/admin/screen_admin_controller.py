@@ -157,6 +157,8 @@ class ScreenAdminController(BaseEventAdminController):
         message_text: str | None = None
         # Type-specific StoredScreen fields, extracted by the screen type.
         type_values: dict[str, Any] = {}
+        # Plugin-provided screen data, persisted into StoredScreen.plugin_data.
+        plugin_data: dict[str, dict[str, Any]] = {}
         match action:
             case 'create' | 'clone' | 'update':
                 name = WebContext.form_data_to_str(data, 'name') or ''
@@ -184,6 +186,18 @@ class ScreenAdminController(BaseEventAdminController):
                 screen_type = web_context.screen_type_entity
                 assert screen_type is not None
                 type_values = screen_type.read_form_data(data, errors, event)
+                for (
+                    plugin_id,
+                    plugin_data_class,
+                ) in Screen.plugin_data_class_by_plugin_id().items():
+                    previous_object = (
+                        web_context.admin_screen.plugin_data.get(plugin_id)
+                        if web_context.admin_screen
+                        else None
+                    )
+                    plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                        data, action=action, previous_object=previous_object
+                    ).to_stored_value()
                 # The background image URL's format and reachability are checked
                 # here since that is network I/O (kept out of the data layer).
                 if 'background_image' in type_values:
@@ -255,6 +269,7 @@ class ScreenAdminController(BaseEventAdminController):
             timer_id=timer_id,
             message_default=message_default,
             message_text=message_text,
+            plugin_data=plugin_data,
             errors=errors,
             init_set_tournament_id=init_set_tournament_id,
             **type_values,
@@ -736,6 +751,8 @@ class ScreenAdminController(BaseEventAdminController):
                     )
                 case 'update':
                     stored_screen = event_database.update_stored_screen(stored_screen)
+                    assert stored_screen.id is not None
+                    scroll_to_screen_id = stored_screen.id
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been updated.').format(

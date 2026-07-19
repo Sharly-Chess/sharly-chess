@@ -419,6 +419,11 @@ class AppHookSpecs:
     def insert_screen_types(self, screen_types: list[type['ScreenType']]):
         """Provide extra screen types."""
 
+    @hookspec
+    def get_screen_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin screen values.
+        Also provide the ID of the plugin."""
+
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------
