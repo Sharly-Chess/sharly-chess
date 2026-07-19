@@ -528,26 +528,35 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
+        caching = tournament._compute_caching_enabled
+        cache_key = ('ffe_papi_adjusted_score', after_round)
+        if caching:
+            cached = player._compute_cache.get(cache_key)
+            if cached is not None:
+                return cached
         if tournament.pairing_system == RoundRobinPairingSystem():
-            return player.points_after(after_round)
-        score = 0.0
-        for round_index, pairing in player.pairings.items():
-            if round_index > after_round:
-                continue
-            if pairing.unplayed:
-                score += tournament.draw_points
-                continue
-            if pairing.requested_bye:
-                if all(
-                    p.voluntary_unplayed
-                    for index, p in player.pairings.items()
-                    if round_index < index <= after_round
-                ):
+            score = player.points_after(after_round)
+        else:
+            score = 0.0
+            for round_index, pairing in player.pairings.items():
+                if round_index > after_round:
+                    continue
+                if pairing.unplayed:
                     score += tournament.draw_points
+                    continue
+                if pairing.requested_bye:
+                    if all(
+                        p.voluntary_unplayed
+                        for index, p in player.pairings.items()
+                        if round_index < index <= after_round
+                    ):
+                        score += tournament.draw_points
+                    else:
+                        score += pairing.result.points(tournament.point_values)
                 else:
                     score += pairing.result.points(tournament.point_values)
-            else:
-                score += pairing.result.points(tournament.point_values)
+        if caching:
+            player._compute_cache[cache_key] = score
         return score
 
     @staticmethod

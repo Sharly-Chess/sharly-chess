@@ -11,6 +11,19 @@ from common.sharly_chess_config import SharlyChessConfig
 from utils.enum import EventType
 
 
+def set_stored_fields(obj: Any, **fields: Any) -> None:
+    """Deliberately mutate a frozen ``Stored*`` record in place.
+
+    Frozen records make accidental field writes a type error. The few places
+    that legitimately mutate one — persistence assigning the DB id, importers
+    building rows, the wrapper setters — go through this helper, so every real
+    mutation is explicit and greppable. It writes in place (via
+    ``object.__setattr__``), so a record shared between the wrapper graph and
+    the stored lists stays a single, consistent object."""
+    for name, value in fields.items():
+        object.__setattr__(obj, name, value)
+
+
 @dataclass
 class StoredTimerHour:
     id: int | None
@@ -96,7 +109,7 @@ class StoredPairing:
     effective_points: float | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class StoredBoard:
     id: int | None
     white_player_id: int | None

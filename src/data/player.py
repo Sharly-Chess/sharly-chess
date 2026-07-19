@@ -414,6 +414,17 @@ class TournamentPlayer(Player):
         self.time_control_modified: bool | None = None
         self.tie_break_variables: dict[str, Any] = {}
         self.transient_plugin_data: dict[str, object] = {}
+        # Within-pass memoization of pure per-round sums (points, and each
+        # tie-break's opponent-score scans). Keys are namespaced tuples so
+        # core and plugin tie-breaks can share it. Only valid while the
+        # pairings are stable, so it is consulted ONLY while
+        # tournament._compute_caching_enabled is set (during set_for_round /
+        # compute_tournament_player_ranks) and reset there via
+        # clear_compute_caches().
+        self._compute_cache: dict[Any, float] = {}
+
+    def clear_compute_caches(self) -> None:
+        self._compute_cache.clear()
 
     @property
     def tournament(self) -> 'Tournament':
@@ -646,11 +657,20 @@ class TournamentPlayer(Player):
         # NOTE(Amaras) if you were to include the current round
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
-        return sum(
+        caching = self.tournament._compute_caching_enabled
+        key = ('points_before', before_round, only_played)
+        if caching:
+            cached = self._compute_cache.get(key)
+            if cached is not None:
+                return cached
+        value = sum(
             pairing.result.points(self.point_values)
             for round_, pairing in self.pairings.items()
             if round_ < before_round and (pairing.played or not only_played)
         )
+        if caching:
+            self._compute_cache[key] = value
+        return value
 
     def points_after(self, after_round: int) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
@@ -659,11 +679,20 @@ class TournamentPlayer(Player):
         # NOTE(Amaras) if you were to include the current round
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
-        return sum(
+        caching = self.tournament._compute_caching_enabled
+        key = ('points_after', after_round)
+        if caching:
+            cached = self._compute_cache.get(key)
+            if cached is not None:
+                return cached
+        value = sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index <= after_round
         )
+        if caching:
+            self._compute_cache[key] = value
+        return value
 
     # Standard W/D/L values for the TRF26 team-mode "standard score".
     # Tournament-level ``game_points`` overrides intentionally don't apply

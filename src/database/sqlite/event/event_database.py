@@ -1055,15 +1055,16 @@ class EventDatabase(MigrationDatabase):
             ),
             (tournament_id,),
         )
+        tournament_player_rows = list(self.fetchall())
+        pairings_by_player = self.load_tournament_stored_pairings_by_player(
+            tournament_id
+        )
         stored_tournament_players: list[StoredTournamentPlayer] = []
         seen_player_ids: set[int] = set()
-        for row in self.fetchall():
+        for row in tournament_player_rows:
             stored_tournament_player = self._row_to_stored_tournament_player(row)
-            stored_tournament_player.stored_pairings = (
-                self.load_tournament_player_stored_pairings(
-                    stored_tournament_player.tournament_id,
-                    stored_tournament_player.player_id,
-                )
+            stored_tournament_player.stored_pairings = pairings_by_player.get(
+                stored_tournament_player.player_id, []
             )
 
             assert stored_tournament_player.player_id is not None
@@ -1088,9 +1089,7 @@ class EventDatabase(MigrationDatabase):
                 player_id=player_id,
                 pairing_number=None,
                 manual_tiebreak=None,
-                stored_pairings=self.load_tournament_player_stored_pairings(
-                    tournament_id, player_id
-                ),
+                stored_pairings=pairings_by_player.get(player_id, []),
             )
             seen_player_ids.add(player_id)
             stored_tournament_players.append(synthetic)
@@ -1207,6 +1206,28 @@ class EventDatabase(MigrationDatabase):
             (tournament_id, player_id),
         )
         return [self._row_to_stored_pairing(row) for row in self.fetchall()]
+
+    def load_tournament_stored_pairings_by_player(
+        self, tournament_id: int
+    ) -> dict[int, list[StoredPairing]]:
+        """Load every pairing of a tournament in one query, grouped by
+        player id (rounds ordered). Avoids the per-player N+1 that dominated
+        loading large events."""
+        self.execute(
+            (
+                'SELECT * FROM `pairing` '
+                'WHERE `tournament_id` = ? '
+                'ORDER BY `player_id`, `round`'
+            ),
+            (tournament_id,),
+        )
+        pairings_by_player: dict[int, list[StoredPairing]] = {}
+        for row in self.fetchall():
+            stored_pairing = self._row_to_stored_pairing(row)
+            pairings_by_player.setdefault(stored_pairing.player_id, []).append(
+                stored_pairing
+            )
+        return pairings_by_player
 
     def add_stored_pairing(
         self,

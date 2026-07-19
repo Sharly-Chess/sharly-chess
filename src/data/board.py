@@ -3,7 +3,7 @@ from datetime import datetime
 from functools import total_ordering
 from typing import TYPE_CHECKING, Optional, Literal
 
-from database.sqlite.event.event_store import StoredBoard
+from database.sqlite.event.event_store import StoredBoard, set_stored_fields
 from database.sqlite.event.event_database import EventDatabase
 from utils.date_time import format_datetime
 from utils.enum import Result, PlayerRatingType, PlayerTitle
@@ -85,6 +85,14 @@ class Board:
             weakref.ref(black) if black is not None else None
         )
 
+    def _player_ref(
+        self, player_id: int | None
+    ) -> Optional['ReferenceType[TournamentPlayer]']:
+        if not player_id:
+            return None
+        player = self.tournament.tournament_players_by_id.get(player_id)
+        return weakref.ref(player) if player is not None else None
+
     @property
     def tournament(self) -> 'Tournament':
         if (tournament := self._tournament_ref()) is None:
@@ -150,6 +158,35 @@ class Board:
     @property
     def index(self) -> int:
         return self.stored_board.index
+
+    @index.setter
+    def index(self, value: int) -> None:
+        # The board's position drives its display number, so an index change
+        # must invalidate the tournament's cached board-number maps.
+        set_stored_fields(self.stored_board, index=value)
+        self.tournament.invalidate_board_layout()
+
+    @property
+    def white_player_id(self) -> int | None:
+        return self.stored_board.white_player_id
+
+    @white_player_id.setter
+    def white_player_id(self, value: int | None) -> None:
+        # Keeps the raw field, the cached player weakref and the board-number
+        # maps (fixed numbers depend on who sits here) in sync.
+        set_stored_fields(self.stored_board, white_player_id=value)
+        self._white_player_ref = self._player_ref(value)
+        self.tournament.invalidate_board_layout()
+
+    @property
+    def black_player_id(self) -> int | None:
+        return self.stored_board.black_player_id
+
+    @black_player_id.setter
+    def black_player_id(self, value: int | None) -> None:
+        set_stored_fields(self.stored_board, black_player_id=value)
+        self._black_player_ref = self._player_ref(value)
+        self.tournament.invalidate_board_layout()
 
     @property
     def standard_number(self) -> int:
@@ -264,11 +301,9 @@ class Board:
         self, new_player: 'TournamentPlayer', player_color: Literal['white', 'black']
     ):
         if player_color == 'white':
-            self._white_player_ref = weakref.ref(new_player)
-            self.stored_board.white_player_id = new_player.id
+            self.white_player_id = new_player.id
         else:
-            self._black_player_ref = weakref.ref(new_player)
-            self.stored_board.black_player_id = new_player.id
+            self.black_player_id = new_player.id
 
     def permute_colors(self):
         if self.optional_white_tournament_player is None:
@@ -286,8 +321,11 @@ class Board:
 
     def set_last_result_update(self, new_result: Result, database: EventDatabase):
         """Updates board timestamp. Clears board timestamp if result is NO_RESULT."""
-        self.stored_board.last_result_update = database.update_board_last_result_update(
-            self.identifier, clear=new_result == Result.NO_RESULT
+        set_stored_fields(
+            self.stored_board,
+            last_result_update=database.update_board_last_result_update(
+                self.identifier, clear=new_result == Result.NO_RESULT
+            ),
         )
 
     def to_pgn(

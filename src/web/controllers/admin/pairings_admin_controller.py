@@ -894,14 +894,16 @@ class PairingsAdminController(BaseEventAdminController):
         # In a team match the row shows team_a on the left, team_b on the
         # right, regardless of colour — so keys 1/2 mean "left wins" /
         # "right wins". Results are stored white-relative, so flip them
-        # when team_a is the black side on this board.
-        web_context = PairingsAdminWebContext(
-            request, tournament_id=tournament_id, round_=round, board_id=board_id
-        )
-        event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
+        # when team_a is the black side on this board. This only matters for
+        # team events; individual events pair white on the left, so avoid the
+        # (expensive) tournament round computation there.
+        event = BaseEventAdminWebContext(request).get_admin_event()
         left_is_white = True
         if event.is_team_event:
+            web_context = PairingsAdminWebContext(
+                request, tournament_id=tournament_id, round_=round, board_id=board_id
+            )
+            tournament = web_context.get_admin_tournament()
             board = tournament.boards_by_id.get(board_id)
             team_board_id = (
                 board.stored_board.team_board_id if board is not None else None
@@ -1128,11 +1130,9 @@ class PairingsAdminController(BaseEventAdminController):
             side_pairing.stored_pairing.illegal_moves = 0
             side_pairing.update(database)
             if physical_side == 'white':
-                this_board.stored_board.white_player_id = None
-                this_board._white_player_ref = None
+                this_board.white_player_id = None
             else:
-                this_board.stored_board.black_player_id = None
-                this_board._black_player_ref = None
+                this_board.black_player_id = None
             # Keep the board even when both sides become empty so the
             # slot remains visible in the team block and can be
             # re-filled from either team.
