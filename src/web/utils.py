@@ -65,7 +65,9 @@ class RequestUtils:
             return request.state[cls.REQUEST_EVENT_ATTR]
         event_uniq_id = cls._get_request_param(request, cls.EVENT_UNIQ_ID_PARAM)
         try:
-            event = EventLoader.get(request).load_event(event_uniq_id)
+            event = EventLoader.get(request).load_event(
+                event_uniq_id, force_reload=reload
+            )
         except SharlyChessException as sce:
             raise NotFoundException(f'Event [{event_uniq_id}] not found.') from sce
         for plugin_id in event.stored_event.enabled_plugins:

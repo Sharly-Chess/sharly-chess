@@ -24,6 +24,7 @@ from common.logger import get_logger
 from data.event import Event
 from data.event_metadata import EventMetadata
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredEvent
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.date_time import get_date_timestamp, format_datetime
@@ -35,6 +36,14 @@ logger: Logger = get_logger()
 class EventLoader:
     _valid_event_ids: set[str] = set()
     _invalid_uniq_ids: set[str] = set()
+    # Cache of the raw StoredEvent read from disk, keyed by uniq_id, with the
+    # event file's nanosecond mtime for invalidation. Caching the StoredEvent
+    # (not the Event wrapper) is safe across requests: each request builds its
+    # own wrapper graph on top, so per-request mutations (e.g. set_for_round,
+    # which sets transient state on the wrapper objects) never leak. Any write
+    # reopens the file and bumps its mtime, so the next load rebuilds.
+    _stored_event_cache: dict[str, tuple[int, StoredEvent]] = {}
+    _STORED_EVENT_CACHE_MAX: int = 32
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
@@ -46,8 +55,14 @@ class EventLoader:
         return request.state['event_loader']
 
     @classmethod
+    def invalidate_cache(cls, uniq_id: str):
+        """Drop the cached StoredEvent for *uniq_id* (called after a write)."""
+        cls._stored_event_cache.pop(uniq_id, None)
+
+    @classmethod
     def unload_event(cls, uniq_id: str):
         cls._valid_event_ids.remove(uniq_id)
+        cls.invalidate_cache(uniq_id)
         cls.load_event_ids()
 
     @classmethod
@@ -146,11 +161,23 @@ class EventLoader:
             base_name, [event.name for event in self.get_events_metadata()]
         )
 
-    def load_event(self, uniq_id: str) -> Event:
+    def load_event(self, uniq_id: str, force_reload: bool = False) -> Event:
         self.load_event_ids(uniq_id)
+        return Event(self._load_stored_event(uniq_id, force_reload))
+
+    @classmethod
+    def _load_stored_event(cls, uniq_id: str, force_reload: bool) -> StoredEvent:
+        mtime_ns: int = EventDatabase.event_database_path(uniq_id).lstat().st_mtime_ns
+        if not force_reload:
+            cached = cls._stored_event_cache.get(uniq_id)
+            if cached is not None and cached[0] == mtime_ns:
+                return cached[1]
         with EventDatabase(uniq_id) as event_database:
-            event = Event(event_database.load_stored_event())
-        return event
+            stored_event = event_database.load_stored_event()
+        cls._stored_event_cache[uniq_id] = (mtime_ns, stored_event)
+        while len(cls._stored_event_cache) > cls._STORED_EVENT_CACHE_MAX:
+            cls._stored_event_cache.pop(next(iter(cls._stored_event_cache)))
+        return stored_event
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:

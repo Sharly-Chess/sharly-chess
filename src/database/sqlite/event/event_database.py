@@ -125,6 +125,17 @@ class EventDatabase(MigrationDatabase):
             # Always release DB
             super().__exit__(exc_type, exc_value, tb)
 
+        # After a successful write to the real event file, drop the cached
+        # StoredEvent so the next load rebuilds from disk.
+        if (
+            self.write
+            and exc_type is None
+            and self.event_database_path(self.uniq_id).resolve() == self.file.resolve()
+        ):
+            from data.loader import EventLoader
+
+            EventLoader.invalidate_cache(self.uniq_id)
+
         # We need to call the hook on all dirty tournaments after committing the changes above
         for stored_tournament in dirty_tournaments:
             plugin_manager.hook.on_tournament_data_updated(
