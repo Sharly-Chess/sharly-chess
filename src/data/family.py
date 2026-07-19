@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
     from data.timer import Timer
-    from data.screen_types import ScreenType as ScreenTypeEntity
+    from data.screen_types import ScreenType
 
 
 class Family:
@@ -59,7 +59,7 @@ class Family:
         return self.stored_family.type
 
     @property
-    def screen_type(self) -> 'ScreenTypeEntity':
+    def screen_type(self) -> 'ScreenType':
         """The screen-type entity for this family, resolved through the
         manager (so a plugin-defined type is honoured)."""
         from data.screen_types import ScreenTypeManager

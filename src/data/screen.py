@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from data.event import Event
     from data.family import Family
     from data.menu import Menu, MenuNavEntry
-    from data.screen_types import ScreenType as ScreenTypeEntity
+    from data.screen_types import ScreenType
 
 
 logger = get_logger()
@@ -105,7 +105,7 @@ class Screen:
         return self.family.type
 
     @property
-    def screen_type(self) -> 'ScreenTypeEntity':
+    def screen_type(self) -> 'ScreenType':
         """The screen-type entity for this screen, resolved through the
         manager (so a plugin-defined type is honoured)."""
         from data.screen_types import ScreenTypeManager

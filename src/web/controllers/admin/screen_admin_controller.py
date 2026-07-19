@@ -19,7 +19,7 @@ from data.screen import Screen
 from data.screen_set import ScreenSet
 from data.screen_types import (
     ScreenTypeManager,
-    ScreenType as ScreenTypeEntity,
+    ScreenType,
 )
 from utils import Utils
 from database.sqlite.event.event_database import EventDatabase
@@ -45,7 +45,7 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         screen_id: int | None = None,
-        screen_type: str | None = None,
+        screen_type_id: str | None = None,
         screen_set_id: int | None = None,
         reload_event: bool = False,
     ):
@@ -74,10 +74,10 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
         self.screen_type_id: str | None = None
         if self.admin_screen:
             self.screen_type_id = self.admin_screen.type
-        elif screen_type:
-            if screen_type not in ScreenTypeManager(self.get_admin_event()).ids():
-                raise NotFoundException(f'Unknown screen type [{screen_type}].')
-            self.screen_type_id = screen_type
+        elif screen_type_id:
+            if screen_type_id not in ScreenTypeManager(self.get_admin_event()).ids():
+                raise NotFoundException(f'Unknown screen type [{screen_type_id}].')
+            self.screen_type_id = screen_type_id
 
     def get_admin_screen(self) -> Screen:
         assert self.admin_screen is not None
@@ -88,7 +88,7 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
         return self.admin_screen_set
 
     @property
-    def screen_type_entity(self) -> ScreenTypeEntity | None:
+    def screen_type(self) -> ScreenType | None:
         if self.screen_type_id is None:
             return None
         return ScreenTypeManager(self.get_admin_event()).get_object(self.screen_type_id)
@@ -97,7 +97,7 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_screen': self.admin_screen,
-            'screen_type': self.screen_type_entity,
+            'screen_type': self.screen_type,
             'admin_screen_set': self.admin_screen_set,
         }
 
@@ -125,7 +125,7 @@ class ScreenAdminController(BaseEventAdminController):
         init_set_tournament_id: int | None = None
         match action:
             case 'create':
-                screen_type = web_context.screen_type_entity
+                screen_type = web_context.screen_type
                 assert screen_type is not None
                 assert web_context.screen_type_id is not None
                 type_ = web_context.screen_type_id
@@ -183,7 +183,7 @@ class ScreenAdminController(BaseEventAdminController):
                         )
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                screen_type = web_context.screen_type_entity
+                screen_type = web_context.screen_type
                 assert screen_type is not None
                 type_values = screen_type.read_form_data(data, errors, event)
                 for (
@@ -242,7 +242,7 @@ class ScreenAdminController(BaseEventAdminController):
                     uniq_id = web_context.get_admin_screen().uniq_id
                 else:
                     uniq_id = event.get_unused_screen_uniq_id(
-                        web_context.screen_type_entity,
+                        web_context.screen_type,
                         Utils.name_to_uniq_id(name) if name else None,
                     )
             case 'delete':
@@ -371,12 +371,12 @@ class ScreenAdminController(BaseEventAdminController):
         web_context = ScreenAdminWebContext(
             request,
             screen_id=screen_id,
-            screen_type=screen_type,
+            screen_type_id=screen_type,
             screen_set_id=screen_set_id,
             reload_event=reload_event,
         )
         event = web_context.get_admin_event()
-        admin_screen_types_data: dict[ScreenTypeEntity, dict[str, Any]] = {
+        admin_screen_types_data: dict[ScreenType, dict[str, Any]] = {
             screen_type: {}
             for screen_type in ScreenTypeManager(event).objects()
             if screen_type.supports_event_type(event.event_type)
@@ -410,7 +410,7 @@ class ScreenAdminController(BaseEventAdminController):
             }
         else:
             # 'user' view
-            screen_type_obj = web_context.screen_type_entity
+            screen_type_obj = web_context.screen_type
             assert screen_type_obj is not None
             if web_context.client.can_view_private_screens:
                 sorted_screens = event.sorted_screens_by_screen_type[screen_type_obj.id]
@@ -459,7 +459,7 @@ class ScreenAdminController(BaseEventAdminController):
                             assert stored_screen is not None
                             name = stored_screen.name
                         case 'create':
-                            screen_type_obj = web_context.screen_type_entity
+                            screen_type_obj = web_context.screen_type
                             assert screen_type_obj is not None
                             # Set-based screens open on a first tournament.
                             if screen_type_obj.has_screen_sets:
@@ -494,7 +494,7 @@ class ScreenAdminController(BaseEventAdminController):
                         case 'create':
                             public = True
                             message_default = True
-                            create_type = web_context.screen_type_entity
+                            create_type = web_context.screen_type
                             assert create_type is not None
                             type_values = create_type.create_form_data(event)
                             columns = type_values.pop('columns', None)
@@ -674,7 +674,7 @@ class ScreenAdminController(BaseEventAdminController):
                 web_context = ScreenAdminWebContext(
                     request,
                     screen_id=screen_id,
-                    screen_type=screen_type,
+                    screen_type_id=screen_type,
                 )
             case _:
                 raise ValueError(f'action=[{action}]')

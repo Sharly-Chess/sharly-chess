@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from data.family import Family
     from data.team_board import TeamBoard
     from data.tournament import Tournament
-    from data.screen_types import ScreenType as ScreenTypeEntity
+    from data.screen_types import ScreenType
     from database.sqlite.event.event_store import StoredScreen, StoredFamily
 
 
@@ -143,7 +143,7 @@ class ScreenSet:
         return self.screen.type
 
     @property
-    def screen_type(self) -> 'ScreenTypeEntity':
+    def screen_type(self) -> 'ScreenType':
         return self.screen.screen_type
 
     @property

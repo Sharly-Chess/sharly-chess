@@ -55,7 +55,7 @@ from database.sqlite.event.event_store import (
 
 if TYPE_CHECKING:
     from data.team_affiliation import TeamAffiliationSource
-    from data.screen_types import ScreenType as ScreenTypeEntity
+    from data.screen_types import ScreenType
 
 logger: Logger = get_logger()
 
@@ -751,7 +751,7 @@ class Event:
 
     def get_unused_screen_uniq_id(
         self,
-        screen_type: 'ScreenTypeEntity | None' = None,
+        screen_type: 'ScreenType | None' = None,
         base_uniq_id: str | None = None,
     ) -> str:
         """Returns the first unused screen uniq_id looking like base_uniq_id:
@@ -772,7 +772,7 @@ class Event:
 
     def get_unused_screen_name(
         self,
-        screen_type: 'ScreenTypeEntity',
+        screen_type: 'ScreenType',
         base_name: str | None = None,
     ) -> str:
         """Returns the first unused screen name looking like base_name:
@@ -843,7 +843,7 @@ class Event:
 
     def get_unused_family_uniq_id(
         self,
-        family_type: 'ScreenTypeEntity | None' = None,
+        family_type: 'ScreenType | None' = None,
         base_uniq_id: str | None = None,
     ) -> str:
         """Returns the first unused family uniq_id looking like base_uniq_id:
@@ -863,7 +863,7 @@ class Event:
 
     def get_unused_family_name(
         self,
-        family_type: 'ScreenTypeEntity',
+        family_type: 'ScreenType',
         base_name: str | None = None,
     ) -> str:
         """Returns the first unused family name looking like base_name:

@@ -16,7 +16,7 @@ from data.family import Family
 from utils import Utils
 from data.screen_types import (
     ScreenTypeManager,
-    ScreenType as ScreenTypeEntity,
+    ScreenType,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
@@ -35,7 +35,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         family_id: int | None = None,
-        family_type: str | None = None,
+        family_type_id: str | None = None,
         reload_event: bool = False,
     ):
         super().__init__(request, reload_event)
@@ -51,17 +51,17 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
         self.family_type_id: str | None = None
         if self.admin_family:
             self.family_type_id = self.admin_family.type
-        elif family_type:
-            if family_type not in ScreenTypeManager(self.get_admin_event()).ids():
-                raise NotFoundException(f'Unknown screen type [{family_type}].')
-            self.family_type_id = family_type
+        elif family_type_id:
+            if family_type_id not in ScreenTypeManager(self.get_admin_event()).ids():
+                raise NotFoundException(f'Unknown screen type [{family_type_id}].')
+            self.family_type_id = family_type_id
 
     def get_admin_family(self) -> Family:
         assert self.admin_family is not None
         return self.admin_family
 
     @property
-    def family_type_entity(self) -> 'ScreenTypeEntity | None':
+    def family_type(self) -> 'ScreenType | None':
         if self.family_type_id is None:
             return None
         return ScreenTypeManager(self.get_admin_event()).get_object(self.family_type_id)
@@ -70,8 +70,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_family': self.admin_family,
-            'family_type': self.family_type_id,
-            'family_type_entity': self.family_type_entity,
+            'family_type': self.family_type,
             'family_screen_types': [
                 type_
                 for type_ in ScreenTypeManager(self.get_admin_event()).objects()
@@ -101,7 +100,7 @@ class FamilyAdminController(BaseEventAdminController):
         type_: str
         match action:
             case 'create':
-                family_type = web_context.family_type_entity
+                family_type = web_context.family_type
                 assert family_type is not None
                 assert web_context.family_type_id is not None
                 type_ = web_context.family_type_id
@@ -182,7 +181,7 @@ class FamilyAdminController(BaseEventAdminController):
                     ).format(first=first, last=last)
                     errors['first'] = error
                     errors['last'] = error
-                family_type = web_context.family_type_entity
+                family_type = web_context.family_type
                 assert family_type is not None
                 type_values = family_type.read_form_data(data, errors, event)
                 field = 'parts'
@@ -215,7 +214,7 @@ class FamilyAdminController(BaseEventAdminController):
                     uniq_id = web_context.get_admin_family().uniq_id
                 else:
                     uniq_id = event.get_unused_family_uniq_id(
-                        web_context.family_type_entity,
+                        web_context.family_type,
                         Utils.name_to_uniq_id(name) if name else None,
                     )
             case 'delete':
@@ -272,7 +271,7 @@ class FamilyAdminController(BaseEventAdminController):
         web_context = FamilyAdminWebContext(
             request,
             family_id=family_id,
-            family_type=family_type,
+            family_type_id=family_type,
             reload_event=reload_event,
         )
         event = web_context.get_admin_event()
@@ -341,7 +340,7 @@ class FamilyAdminController(BaseEventAdminController):
                             public = True
                             message_default = True
                             tournament_id = list(event.tournaments_by_id.keys())[0]
-                            create_type = web_context.family_type_entity
+                            create_type = web_context.family_type
                             assert create_type is not None
                             type_values = create_type.create_form_data(event)
                             columns = type_values.pop('columns', None)
@@ -473,7 +472,7 @@ class FamilyAdminController(BaseEventAdminController):
         web_context = FamilyAdminWebContext(
             request,
             family_id=family_id,
-            family_type=family_type,
+            family_type_id=family_type,
         )
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')

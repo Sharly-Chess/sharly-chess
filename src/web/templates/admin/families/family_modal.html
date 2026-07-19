@@ -14,7 +14,7 @@
                         {{ _('Create multi-screen') }}
                     </h2>
                     <div class="form-text pt-0 mt-0">
-                        {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type_entity.name) }}
+                        {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type.name) }}
                     </div>
                 </div>
             {% elif action == 'delete' %}
@@ -28,7 +28,7 @@
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
                 {% if action == 'create' %}
-                    hx-post="{{ url_for('admin-family-' ~ action, event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
+                    hx-post="{{ url_for('admin-family-' ~ action, event_uniq_id=admin_event.uniq_id, family_type=family_type.value) }}"
                 {% elif action == 'clone' %}
                     hx-post="{{ url_for('admin-family-' ~ action, event_uniq_id=admin_event.uniq_id, family_id=admin_family.id) }}"
                 {% elif action == 'update' %}
@@ -88,8 +88,8 @@
                         </div>
                     </div>
 
-                    {% if family_type_entity and family_type_entity.form_template %}
-                        {% include family_type_entity.form_template %}
+                    {% if family_type and family_type.form_template %}
+                        {% include family_type.form_template %}
                     {% endif %}
 
                     {% set is_team = admin_event.is_team_event %}
@@ -103,7 +103,7 @@
                     {% else %}
                         {% set is_team_matches = is_team %}
                     {% endif %}
-                    {% set sel = family_type_entity.selection_labels(is_team, is_team_matches) %}
+                    {% set sel = family_type.selection_labels(is_team, is_team_matches) %}
                     <h4 class="mt-4">
                         {{ sel.header }}
                     </h4>
@@ -191,7 +191,7 @@
                    pairing system (matches vs boards) — reload the modal
                    with the current form values when it changes. #}
                 {% if action == 'create' %}
-                    {% set _reload_url = url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) %}
+                    {% set _reload_url = url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type.value) %}
                 {% else %}
                     {% set _reload_url = url_for('admin-family-modal', action=action, event_uniq_id=admin_event.uniq_id, family_id=admin_family.id) %}
                 {% endif %}
