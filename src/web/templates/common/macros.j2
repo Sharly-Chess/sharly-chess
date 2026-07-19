@@ -178,22 +178,30 @@
         var background_fingerprint = btoa(JSON.stringify(background_info));
         var body_background_fingerprint = $('body').attr('background-fingerprint');
         if (body_background_fingerprint != background_fingerprint) {
-            $.ajax({
-                url: '/background?color={{ background_info.color | urlencode }}&image={{ (background_info.image | replace("/", "%2f")) if background_info.image else '' }}',
-                type: 'GET',
-                success: function (data) {
-                    $('body').css('background-image', data['url']);
-                    $('body').css('background-color', data['color']);
-                    $('body').attr('background-fingerprint', background_fingerprint);
-                },
-                error: function (jqXHR, exception) {
-                    console.log('Changing background failed:'
-                        + ' status_code=' + jqXHR.status +
-                        ', exception=' + exception,
-                        ', response=' + jqXHR.responseText
-                    );
-                },
-            });
+            if (background_info.image && background_info.image.startsWith('data:')) {
+                // An uploaded image is already inline; apply it directly rather
+                // than round-tripping the (huge) data URI through /background.
+                $('body').css('background-image', 'url(' + background_info.image + ')');
+                $('body').css('background-color', background_info.color);
+                $('body').attr('background-fingerprint', background_fingerprint);
+            } else {
+                $.ajax({
+                    url: '/background?color={{ background_info.color | urlencode }}&image={{ (background_info.image | replace("/", "%2f")) if background_info.image else '' }}',
+                    type: 'GET',
+                    success: function (data) {
+                        $('body').css('background-image', data['url']);
+                        $('body').css('background-color', data['color']);
+                        $('body').attr('background-fingerprint', background_fingerprint);
+                    },
+                    error: function (jqXHR, exception) {
+                        console.log('Changing background failed:'
+                            + ' status_code=' + jqXHR.status +
+                            ', exception=' + exception,
+                            ', response=' + jqXHR.responseText
+                        );
+                    },
+                });
+            }
         }
     </script>
     <!-- end background_script() -->

@@ -39,6 +39,9 @@ from web.session import (
 )
 from web.urls import admin_event_url
 
+# A 2 MB image is ~2.8 MB once base64-encoded into a data: URI.
+MAX_UPLOADED_IMAGE_CHARS = 2_800_000
+
 
 class ScreenAdminWebContext(BaseEventAdminWebContext):
     def __init__(
@@ -204,7 +207,13 @@ class ScreenAdminController(BaseEventAdminController):
                     field = 'background_image'
                     background_image = type_values[field]
                     if not background_image:
-                        errors[field] = _('Please enter the image URL.')
+                        errors[field] = _('Please enter an image URL or upload a file.')
+                    elif background_image.startswith('data:'):
+                        # An uploaded image, stored inline in the event database.
+                        if len(background_image) > MAX_UPLOADED_IMAGE_CHARS:
+                            errors[field] = _(
+                                'The uploaded image is too large (max 2 MB).'
+                            )
                     elif not validators.url(background_image):
                         errors[field] = _('Invalid URL [{background_image}].').format(
                             background_image=background_image
@@ -518,11 +527,8 @@ class ScreenAdminController(BaseEventAdminController):
                         form_values.get('background_color') is None
                     )
                     data = WebContext.values_dict_to_form_data(form_values)
-                stored_screen = cls._admin_validate_screen_update_data(
-                    action, web_context, data
-                )
-                assert stored_screen is not None
-                errors = stored_screen.errors
+                # Errors are only surfaced when passed in from a failed submit;
+                # a freshly opened form must not show validation errors.
                 if errors is None:
                     errors = {}
                 template_context |= {

@@ -1,14 +1,42 @@
 <div class="row gy-2 gx-3">
-    <div class="col-12 col-md-6">
+    <div class="col-12">
         {{ admin_macros.text_input(
             name='background_image',
-            label=_('Background image:'),
+            label=_('Background image URL:'),
             placeholder=_('E.g.: https://my.club.us/tournament.jpg'),
             tooltip_text=_('The URL of the image to display.'),
             data=data, errors=errors
         ) }}
+        <label class="form-label mt-2" for="background-image-file">
+            {{ _('Or upload an image (stored with the event, max 2 MB):') }}
+        </label>
+        <input
+            type="file"
+            class="form-control"
+            id="background-image-file"
+            accept="image/*"
+        />
+        <input
+            type="hidden"
+            name="background_image_upload"
+            id="background-image-upload"
+            value="{{ data.get('background_image_upload', '') }}"
+        />
+        {% set _current = data.get('background_image_upload') or data.get('background_image') %}
+        <div class="mt-2">
+            <img
+                id="background-image-preview"
+                class="img-thumbnail{% if not _current %} d-none{% endif %}"
+                style="max-height: 120px;"
+                src="{{ _current or '' }}"
+                alt=""
+            />
+        </div>
+        {% if errors.get('background_image') %}
+            <div class="invalid-feedback d-block">{{ errors.get('background_image') }}</div>
+        {% endif %}
     </div>
-    <div class="col-12 col-md-6">
+    <div class="col-12">
         {{ admin_macros.color_input(
             name='background_color',
             label=_('Background colour:'),
@@ -18,3 +46,35 @@
         ) }}
     </div>
 </div>
+<script>
+    (function () {
+        const fileInput = document.getElementById('background-image-file');
+        const hidden = document.getElementById('background-image-upload');
+        const preview = document.getElementById('background-image-preview');
+        const urlInput = document.getElementsByName('background_image')[0];
+        if (!fileInput) {
+            return;
+        }
+        fileInput.addEventListener('change', function () {
+            const file = fileInput.files && fileInput.files[0];
+            if (!file) {
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                alert({{ _('The image is too large (max 2 MB).') | tojson }});
+                fileInput.value = '';
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                hidden.value = event.target.result;
+                if (urlInput) {
+                    urlInput.value = '';
+                }
+                preview.src = event.target.result;
+                preview.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        });
+    })();
+</script>

@@ -1766,13 +1766,12 @@ class ImageScreenType(ScreenType):
     ) -> dict:
         from web.controllers.base_controller import WebContext
 
-        # The URL's format and reachability are validated web-side (network
-        # I/O) once the controller sees a background_image value.
-        values: dict = {
-            'background_image': WebContext.form_data_to_str(
-                data, 'background_image', ''
-            )
-        }
+        # An uploaded image (base64 data URI in ``background_image_upload``)
+        # takes precedence over a typed URL. The value's format/size is
+        # validated web-side (network I/O for URLs) once the controller sees it.
+        uploaded = WebContext.form_data_to_str(data, 'background_image_upload', '')
+        url = WebContext.form_data_to_str(data, 'background_image', '')
+        values: dict = {'background_image': uploaded or url}
         if not WebContext.form_data_to_bool(data, 'background_color_checkbox'):
             field = 'background_color'
             try:
@@ -1786,8 +1785,13 @@ class ImageScreenType(ScreenType):
     @override
     def default_form_data(self, screen: 'Screen') -> dict:
         assert screen.stored_screen is not None
+        stored_image = screen.stored_screen.background_image or ''
+        is_upload = stored_image.startswith('data:')
         return {
-            'background_image': screen.stored_screen.background_image,
+            # Keep an uploaded image in the hidden upload field so the URL box
+            # stays clean; a plain URL stays in the URL box.
+            'background_image': '' if is_upload else stored_image,
+            'background_image_upload': stored_image if is_upload else '',
             'background_color': screen.background_color,
         }
 
@@ -1835,6 +1839,7 @@ class ImageScreenType(ScreenType):
         assert screen.stored_screen is not None
         return {
             'image': screen.stored_screen.background_image,
+            'image_url': screen.background_url,
             'background_color': screen.background_color,
             'background_color_default': not screen.stored_screen.background_color,
         }
