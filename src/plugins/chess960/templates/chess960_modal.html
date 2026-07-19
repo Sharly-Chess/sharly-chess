@@ -1,0 +1,166 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{% set modal_url = url_for('chess960-modal', event_uniq_id=admin_event.uniq_id) %}
+{% set list_url = modal_url ~ '?screen_uniq_id=' ~ chess960_screen_uniq_id %}
+
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 720px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <i class="bi bi-grid-3x3 pe-1"></i>
+                {{ _('Chess960 start positions') }}
+                &middot;
+                {{ chess960_screen.name }}
+            </h2>
+            {% if chess960_mode != 'form' %}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="{{ _('Close') }}"
+                ></button>
+            {% endif %}
+        </div>
+        <div class="modal-body">
+            {% if chess960_message %}
+                {% with type='success', message=chess960_message %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+
+            {% if chess960_mode == 'form' %}
+                <p class="small text-muted">
+                    {{ _('Leave a round empty to reuse the last position entered for an earlier round.') }}
+                </p>
+                <form id="chess960-set-form">
+                    <div class="mb-3">
+                        <label class="form-label" for="chess960-tournament">
+                            {{ _('Tournament') }}
+                        </label>
+                        <select
+                            id="chess960-tournament"
+                            class="form-select{% if errors.get('tournament_id') %} is-invalid{% endif %}"
+                            name="tournament_id"
+                            hx-get="{{ list_url }}&mode=form{% if chess960_set_index is not none %}&set_index={{ chess960_set_index }}{% endif %}"
+                            hx-include="#chess960-set-form"
+                            hx-target="#modal-wrapper"
+                            hx-swap="innerHTML"
+                            hx-trigger="change"
+                        >
+                            {% for t in chess960_tournaments %}
+                                <option value="{{ t.id }}" {% if t.id == chess960_tournament_id %}selected{% endif %}>{{ t.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if errors.get('tournament_id') %}
+                            <div class="invalid-feedback d-block">{{ errors.get('tournament_id') }}</div>
+                        {% endif %}
+                    </div>
+                    {% for round_ in chess960_rounds %}
+                        {% set field = 'pos_' ~ round_ %}
+                        <div class="mb-2">
+                            <label class="form-label" for="chess960-{{ field }}">
+                                {{ _('Round %(round)d', round=round_) }}
+                            </label>
+                            <div class="input-group">
+                                <input
+                                    id="chess960-{{ field }}"
+                                    type="number"
+                                    min="0"
+                                    max="959"
+                                    name="{{ field }}"
+                                    class="form-control{% if errors.get(field) %} is-invalid{% endif %}"
+                                    placeholder="{% if loop.first %}{{ _('Position number 0-959') }}{% else %}{{ _('Position number 0-959 (empty = reuse the previous round)') }}{% endif %}"
+                                    value="{{ data.get(field, '') }}"
+                                />
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary text-nowrap"
+                                    hx-post="{{ url_for('chess960-randomize', event_uniq_id=admin_event.uniq_id) }}?screen_uniq_id={{ chess960_screen_uniq_id }}&round_={{ round_ }}{% if chess960_set_index is not none %}&set_index={{ chess960_set_index }}{% endif %}"
+                                    hx-include="#chess960-set-form"
+                                    hx-target="#modal-wrapper"
+                                    hx-swap="innerHTML"
+                                >
+                                    <i class="bi bi-dice-3-fill pe-1"></i>
+                                    {{ _('Randomize') }}
+                                </button>
+                            </div>
+                            {% if errors.get(field) %}
+                                <div class="invalid-feedback d-block">{{ errors.get(field) }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </form>
+            {% else %}
+                <div class="d-flex justify-content-end mb-3">
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        hx-get="{{ list_url }}&mode=form"
+                        hx-target="#modal-wrapper"
+                        hx-swap="innerHTML"
+                    >
+                        <i class="bi-plus-square-fill pe-1"></i>
+                        {{ _('Add a set') }}
+                    </button>
+                </div>
+                {% if not chess960_sets %}
+                    <p class="fst-italic text-muted">{{ _('No sets yet. Add a set to choose a tournament and its positions.') }}</p>
+                {% else %}
+                    <div class="list-group mb-3">
+                        {% for set in chess960_sets %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center gap-3">
+                                <div>
+                                    <div class="fw-bold">{{ set.tournament_name }}</div>
+                                    <div class="small text-muted">{{ set.summary }}</div>
+                                </div>
+                                <div class="text-nowrap">
+                                    <button
+                                        class="btn btn-sm btn-outline-primary"
+                                        hx-get="{{ list_url }}&mode=form&set_index={{ set.index }}"
+                                        hx-target="#modal-wrapper"
+                                        hx-swap="innerHTML"
+                                    >
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-outline-danger"
+                                        hx-post="{{ url_for('chess960-set-delete', event_uniq_id=admin_event.uniq_id) }}?screen_uniq_id={{ chess960_screen_uniq_id }}&set_index={{ set.index }}"
+                                        hx-target="#modal-wrapper"
+                                        hx-swap="innerHTML"
+                                    >
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        {% if chess960_mode == 'form' %}
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-secondary text-nowrap"
+                    hx-get="{{ list_url }}"
+                    hx-target="#modal-wrapper"
+                    hx-swap="innerHTML"
+                >
+                    <i class="bi bi-arrow-left-circle-fill pe-1"></i>
+                    {{ _('Back') }}
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-primary text-nowrap"
+                    hx-post="{{ url_for('chess960-set-save', event_uniq_id=admin_event.uniq_id) }}?screen_uniq_id={{ chess960_screen_uniq_id }}{% if chess960_set_index is not none %}&set_index={{ chess960_set_index }}{% endif %}"
+                    hx-include="#chess960-set-form"
+                    hx-target="#modal-wrapper"
+                    hx-swap="innerHTML"
+                >
+                    <i class="bi bi-check-circle-fill pe-1"></i>
+                    {{ _('Save') }}
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</div>

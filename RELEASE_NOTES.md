@@ -27,3 +27,4 @@
 - **Menu** support has been completely redesigned for a better experience (5.0.0)
 - **Families** have been renamed **Multi-Screens** (5.0.0)
 - **Check-in screens column display**: Check-in screens now correctly use the configure column count (5.0.0)
+- A new **Chess 960** plugin allows you to display start positions for each round of a tournament (5.0.0)

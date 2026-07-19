@@ -34,6 +34,7 @@ class AppPluginManager(PluginManager):
         )
         from plugins.fra_schools.fra_schools import FRASchoolsPlugin
         from plugins.sce.sce import SCEPlugin
+        from plugins.chess960.chess960 import Chess960Plugin
 
         plugins = [
             SCEPlugin(),
@@ -43,6 +44,7 @@ class AppPluginManager(PluginManager):
             ChessEventPlugin(),
             FRASchoolsPlugin(),
             HandicapGamesPlugin(),
+            Chess960Plugin(),
         ]
         return {plugin.id: plugin for plugin in plugins}
 

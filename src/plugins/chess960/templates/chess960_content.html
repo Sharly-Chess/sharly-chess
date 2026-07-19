@@ -1,0 +1,89 @@
+<style>
+    .chess960-screen {
+        padding: 2vmin;
+    }
+    .chess960-grid {
+        display: grid;
+        grid-template-columns: repeat(var(--chess960-cols), minmax(0, 1fr));
+        gap: 3vmin;
+    }
+    .chess960-cell {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .chess960-board-area {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .chess960-board-area svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    /* Fit mode: fill the viewport, boards scale down so everything fits. */
+    .chess960-fit {
+        position: absolute;
+        inset: 0;
+    }
+    .chess960-fit .chess960-grid {
+        flex: 1 1 auto;
+        min-height: 0;
+        grid-auto-rows: 1fr;
+    }
+    .chess960-fit .chess960-cell {
+        min-height: 0;
+    }
+    .chess960-fit .chess960-board-area {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+    /* Scroll mode: boards keep a natural square size, the view scrolls. */
+    .chess960-scroll {
+        position: absolute;
+        inset: 0;
+        overflow-y: auto;
+    }
+    .chess960-scroll .chess960-board-area {
+        aspect-ratio: 1 / 1;
+        /* Keep a whole board within the viewport height, even when a column is
+           wider than the screen is tall; the square letterboxes and centres. */
+        max-height: 80vh;
+    }
+</style>
+<div class="screen chess960-screen d-flex flex-column {% if data.fit_to_screen %}chess960-fit{% else %}chess960-scroll{% endif %}">
+    <h2 class="set-title text-center">{{ data.title }}</h2>
+    {% if not data.cells %}
+        <div class="flex-grow-1 d-flex align-items-center justify-content-center fst-italic text-muted">
+            {{ _('No start positions have been set for this screen.') }}
+        </div>
+    {% else %}
+        <div class="chess960-grid" style="--chess960-cols: {{ [data.columns, data.cells | length] | min }};">
+            {% for cell in data.cells %}
+                <div class="chess960-cell">
+                    <h3 class="h5">
+                        {{ cell.tournament_name }}
+                        &middot;
+                        {{ _('Round %(round)d', round=cell.round) }}
+                    </h3>
+                    {% if cell.board_svg %}
+                        <div class="chess960-board-area">
+                            {{ cell.board_svg | safe }}
+                        </div>
+                        <div class="small text-muted mt-2">
+                            {{ _('Position %(number)d', number=cell.number) }}
+                        </div>
+                    {% else %}
+                        <div class="chess960-board-area fst-italic text-muted">
+                            {{ _('No position set.') }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
