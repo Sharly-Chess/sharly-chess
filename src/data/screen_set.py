@@ -407,6 +407,26 @@ class ScreenSet:
             selected_items = [
                 board for board in items if board.number in self.fixed_board_numbers
             ]
+        elif extract_boards:
+            # ``first``/``last`` are board (table) *numbers*, not positions in
+            # the list. Compact numbering for fixed tables means a board's
+            # number no longer matches its position, so the range must be
+            # applied to ``board.number`` rather than by slicing the list.
+            if TYPE_CHECKING:
+                assert all(isinstance(item, Board) for item in items)
+            selected_items = [
+                board
+                for board in items
+                if (not self.first or board.number >= self.first)
+                and (not self.last or board.number <= self.last)
+            ]
+            if not selected_items:
+                self.items_lists = [
+                    [],
+                ] * self.columns
+                return
+            self.first_item = selected_items[0]
+            self.last_item = selected_items[-1]
         else:
             if self.first:
                 first = max(1, min(self.first, len(items))) - 1
