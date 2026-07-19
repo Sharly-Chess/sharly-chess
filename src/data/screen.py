@@ -352,7 +352,7 @@ class Screen:
 
     @property
     def players_show_unpaired(self) -> bool:
-        return self.screen_type.players_show_unpaired(self)
+        return self.screen_type.shows_unpaired_players(self)
 
     @property
     def icon_str(self) -> str:

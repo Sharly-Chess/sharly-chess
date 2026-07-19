@@ -453,7 +453,7 @@ class ScreenType(IdentifiableEntity, ABC):
         """The automatic name for a family-generated screen of this type."""
         return self.name
 
-    def players_show_unpaired(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: 'Screen') -> bool:
         """Whether unpaired players are shown for a screen of this type."""
         return False
 
@@ -743,7 +743,7 @@ class CheckInScreenType(ScreenType):
         return first_set.name_for_players
 
     @override
-    def players_show_unpaired(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: 'Screen') -> bool:
         return True
 
     @property
@@ -867,7 +867,7 @@ class InputScreenType(ScreenType):
         return screen.sorted_screen_sets[0].name_for_boards
 
     @override
-    def players_show_unpaired(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: 'Screen') -> bool:
         return True
 
     @property
@@ -964,7 +964,7 @@ class BoardsScreenType(ScreenType):
         return screen.sorted_screen_sets[0].name_for_boards
 
     @override
-    def players_show_unpaired(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: 'Screen') -> bool:
         # Shown so players appear before the first round is paired.
         return True
 
@@ -1146,7 +1146,7 @@ class PlayersScreenType(ScreenType):
         return screen.sorted_screen_sets[0].name_for_players
 
     @override
-    def players_show_unpaired(self, screen: 'Screen') -> bool:
+    def shows_unpaired_players(self, screen: 'Screen') -> bool:
         value = _config_record(screen).players_show_unpaired
         assert value is not None
         return value
@@ -1203,7 +1203,7 @@ class PlayersScreenType(ScreenType):
     @override
     def card_context(self, screen: 'Screen') -> dict:
         return {
-            'show_unpaired': self.players_show_unpaired(screen),
+            'show_unpaired': self.shows_unpaired_players(screen),
             'player_format': self.player_format(screen),
             'board_format': self.board_format(screen),
             'opponent_format': self.opponent_format(screen),
