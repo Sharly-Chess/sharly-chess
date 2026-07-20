@@ -47,11 +47,11 @@ class Migration(BaseMigration):
                 f'UPDATE `{table}` SET `players_show_opponent` = 0 WHERE `players_opponent_format` = 1',
             )
             self.database.execute(
-                f'ALTER TABLE `{table}` DROP COLUMN `players_opponent_format` INT'
+                f'ALTER TABLE `{table}` DROP COLUMN `players_opponent_format`'
             )
             self.database.execute(
-                f'ALTER TABLE `{table}` DROP COLUMN `players_board_format` INT'
+                f'ALTER TABLE `{table}` DROP COLUMN `players_board_format`'
             )
             self.database.execute(
-                f'ALTER TABLE `{table}` DROP COLUMN `players_player_format` INT'
+                f'ALTER TABLE `{table}` DROP COLUMN `players_player_format`'
             )
