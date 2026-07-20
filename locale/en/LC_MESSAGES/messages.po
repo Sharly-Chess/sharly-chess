@@ -5954,7 +5954,7 @@ msgstr ""
 msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
-msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
 msgstr ""
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
@@ -7640,16 +7640,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid ""
-#~ "The installation and update processes have been reworked in version 5.\n"
-#~ "\n"
-#~ "Do you want to install it now"
-#~ msgstr ""
-
-#~ msgid "Download the DMG file from the website that just opened, then drop it into your Applications folder."
-#~ msgstr ""
-
-#~ msgid "The installation and update processes have been reworked in version 5."
-#~ msgstr ""
 
