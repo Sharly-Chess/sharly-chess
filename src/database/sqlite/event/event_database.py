@@ -2132,11 +2132,25 @@ class EventDatabase(MigrationDatabase):
             'SELECT * FROM `screen` ORDER BY `uniq_id`',
             (),
         )
+        stored_screens = [self._row_to_stored_screen(row) for row in self.fetchall()]
+        if not stored_screens:
+            return
+
+        # Attach screen sets from one ordered scan shared by every screen.
+        self.execute('SELECT * FROM `screen_set` ORDER BY `screen_id`, `order`')
+        stored_screen_sets_by_screen_id: dict[int, list[StoredScreenSet]] = defaultdict(
+            list
+        )
         for row in self.fetchall():
-            stored_screen: StoredScreen = self._row_to_stored_screen(row)
+            stored_screen_set = self._row_to_stored_screen_set(row)
+            stored_screen_sets_by_screen_id[stored_screen_set.screen_id].append(
+                stored_screen_set
+            )
+
+        for stored_screen in stored_screens:
             assert stored_screen.id is not None
-            stored_screen.stored_screen_sets = list(
-                self.load_stored_screen_sets(stored_screen.id)
+            stored_screen.stored_screen_sets = stored_screen_sets_by_screen_id.get(
+                stored_screen.id, []
             )
             yield stored_screen
 
@@ -3118,18 +3132,52 @@ class EventDatabase(MigrationDatabase):
         return None
 
     def load_stored_accounts(self) -> list[StoredAccount]:
-        stored_accounts: list[StoredAccount] = []
         self.execute('SELECT * FROM `account`')
+        stored_accounts = [self._row_to_stored_account(row) for row in self.fetchall()]
+        if not stored_accounts:
+            return []
+
+        # Bucket permissions and roles by account from one ordered scan per table.
+        self.execute(
+            'SELECT * FROM `account_permission` '
+            'ORDER BY `account_id`, `access_level`, `tournament_id`'
+        )
+        permission_ids: dict[tuple[int, str], list[int] | None] = {}
         for row in self.fetchall():
-            stored_account = self._row_to_stored_account(row)
+            key = (row['account_id'], row['access_level'])
+            if row['tournament_id'] is None:
+                permission_ids[key] = None
+            elif (tournament_ids := permission_ids.setdefault(key, [])) is not None:
+                tournament_ids.append(row['tournament_id'])
+        permissions_by_account: dict[int, list[StoredPermission]] = defaultdict(list)
+        for (account_id, access_level), tournament_ids in permission_ids.items():
+            permissions_by_account[account_id].append(
+                StoredPermission(account_id, access_level, tournament_ids)
+            )
+
+        self.execute(
+            'SELECT * FROM `account_role` '
+            'ORDER BY `account_id`, `role`, `tournament_id`'
+        )
+        role_ids: dict[tuple[int, str], list[int] | None] = {}
+        for row in self.fetchall():
+            key = (row['account_id'], row['role'])
+            if row['tournament_id'] is None:
+                role_ids[key] = None
+            elif (tournament_ids := role_ids.setdefault(key, [])) is not None:
+                tournament_ids.append(row['tournament_id'])
+        roles_by_account: dict[int, list[StoredRole]] = defaultdict(list)
+        for (account_id, role), tournament_ids in role_ids.items():
+            roles_by_account[account_id].append(
+                StoredRole(account_id, role, tournament_ids)
+            )
+
+        for stored_account in stored_accounts:
             assert stored_account.id is not None
-            stored_account.stored_permissions = self.load_account_stored_permissions(
-                stored_account.id
+            stored_account.stored_permissions = permissions_by_account.get(
+                stored_account.id, []
             )
-            stored_account.stored_roles = self.load_account_stored_roles(
-                stored_account.id
-            )
-            stored_accounts.append(stored_account)
+            stored_account.stored_roles = roles_by_account.get(stored_account.id, [])
         return stored_accounts
 
     def add_stored_account(self, stored_account: StoredAccount) -> int:

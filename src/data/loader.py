@@ -1,5 +1,6 @@
 import re
 import shutil
+from time import perf_counter
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -51,23 +52,25 @@ class EventLoader:
         cls.load_event_ids()
 
     @classmethod
-    def load_event_ids(cls, uniq_id: str | None = None):
+    def load_event_ids(cls, uniq_id: str | None = None) -> dict[str, EventMetadata]:
         event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         cls._clean_not_existing_event_database_files(cls._valid_event_ids)
         cls._clean_not_existing_event_database_files(cls._invalid_uniq_ids)
         known_event_ids = cls._valid_event_ids | cls._invalid_uniq_ids
+        metadata_by_event_id: dict[str, EventMetadata] = {}
         for event_id in event_ids:
             if event_id in known_event_ids:
                 continue
             try:
-                cls.check_event_database(event_id)
+                metadata_by_event_id[event_id] = cls.check_event_database(event_id)
                 cls._valid_event_ids.add(event_id)
             except SharlyChessException as e:
                 logger.exception(e)
                 cls._invalid_uniq_ids.add(event_id)
+        return metadata_by_event_id
 
     @classmethod
-    def check_event_database(cls, event_uniq_id: str):
+    def check_event_database(cls, event_uniq_id: str) -> EventMetadata:
         """Check the validity of an event database, raises a SharlyChessError if it is not."""
         database = EventDatabase(event_uniq_id)
         if not database.is_sqlite_file():
@@ -83,6 +86,7 @@ class EventLoader:
                 raise SharlyChessException(
                     f'Event [{event_uniq_id}] - Unknown plugin [{plugin_id}]'
                 )
+        return stored_event
 
     def import_event(self, file_path: Path) -> str:
         """Import an event. Raise a SharlyChessException if it fails,
@@ -147,10 +151,20 @@ class EventLoader:
         )
 
     def load_event(self, uniq_id: str) -> Event:
-        self.load_event_ids(uniq_id)
-        with EventDatabase(uniq_id) as event_database:
-            event = Event(event_database.load_stored_event())
-        return event
+        from web.performance import current_request_performance, record_event_load
+
+        if current_request_performance() is None:
+            self.load_event_ids(uniq_id)
+            with EventDatabase(uniq_id) as event_database:
+                return Event(event_database.load_stored_event())
+        start = perf_counter()
+        try:
+            self.load_event_ids(uniq_id)
+            with EventDatabase(uniq_id) as event_database:
+                event = Event(event_database.load_stored_event())
+            return event
+        finally:
+            record_event_load(perf_counter() - start)
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
@@ -164,6 +178,18 @@ class EventLoader:
         status: Literal['passed', 'current', 'coming'] | None = None,
         public_only: bool = False,
     ) -> list[EventMetadata]:
+        return cls.select_events_metadata(
+            cls._filter_events_metadata([]), status, public_only=public_only
+        )
+
+    @staticmethod
+    def select_events_metadata(
+        events_metadata: list[EventMetadata],
+        status: Literal['passed', 'current', 'coming'] | None = None,
+        *,
+        public_only: bool = False,
+    ) -> list[EventMetadata]:
+        """Filter and sort already-loaded metadata without reopening databases."""
         conditions: list[Callable[[EventMetadata], bool]] = []
         if public_only:
             conditions.append(lambda event: event.public)
@@ -180,7 +206,11 @@ class EventLoader:
             case 'coming':
                 conditions.append(lambda event: today < event.start_date)
         return sorted(
-            cls._filter_events_metadata(conditions),
+            (
+                event_metadata
+                for event_metadata in events_metadata
+                if all(condition(event_metadata) for condition in conditions)
+            ),
             key=lambda event: (
                 get_date_timestamp(event.stop_date) * sort_order,
                 get_date_timestamp(event.start_date) * sort_order,
@@ -192,9 +222,10 @@ class EventLoader:
     def _filter_events_metadata(
         cls, conditions: list[Callable[[EventMetadata], bool]]
     ) -> list[EventMetadata]:
-        cls.load_event_ids()
+        metadata_by_event_id = cls.load_event_ids()
         events_metadata = [
-            cls.load_event_metadata(uniq_id) for uniq_id in cls._valid_event_ids
+            metadata_by_event_id.get(uniq_id) or cls.load_event_metadata(uniq_id)
+            for uniq_id in cls._valid_event_ids
         ]
         return [
             event_metadata

@@ -545,14 +545,72 @@ class Event:
             None,
         )
 
-    @cached_property
+    @property
     def has_multi_tournament_players(self) -> bool:
-        for ref_player in self.players:
-            if any(
-                self._are_player_duplicates(ref_player.stored_player, player)
-                for player in self.players
-            ):
-                return True
+        # Equality-based duplicate rules can be indexed in linear time.
+        duplicate_key_hook = plugin_manager.hook_for_event(
+            self, 'get_player_duplicate_key'
+        )
+        duplicate_hook = plugin_manager.hook_for_event(self, 'are_players_duplicates')
+        indexed_hook_impls = duplicate_key_hook.get_hookimpls()
+        indexed_plugins = {hook_impl.plugin for hook_impl in indexed_hook_impls}
+
+        # Player.first_name normalizes None to ''. Track the raw null state so
+        # nullable stored names retain _are_player_duplicates semantics.
+        seen_birth_identities: dict[tuple[str, str, date], bool] = {}
+        seen_fide_ids: set[int] = set()
+        seen_plugin_keys: set[object] = set()
+
+        players = list(self.players)
+        for player in players:
+            stored_player = player.stored_player
+            if stored_player.date_of_birth:
+                birth_identity = (
+                    stored_player.last_name,
+                    stored_player.first_name or '',
+                    stored_player.date_of_birth,
+                )
+                if seen_non_null_name := seen_birth_identities.get(birth_identity):
+                    return True
+                if (
+                    birth_identity in seen_birth_identities
+                    and stored_player.first_name is not None
+                ):
+                    return True
+                seen_birth_identities[birth_identity] = (
+                    seen_non_null_name or stored_player.first_name is not None
+                )
+            if stored_player.fide_id:
+                if stored_player.fide_id in seen_fide_ids:
+                    return True
+                seen_fide_ids.add(stored_player.fide_id)
+            for key in duplicate_key_hook(stored_player=stored_player):
+                if key in seen_plugin_keys:
+                    return True
+                seen_plugin_keys.add(key)
+
+        # Pair-based plugin rules that cannot provide a key require comparison.
+        fallback_plugins = [
+            hook_impl.plugin
+            for hook_impl in duplicate_hook.get_hookimpls()
+            if hook_impl.plugin not in indexed_plugins
+        ]
+        if fallback_plugins:
+            fallback_hook = plugin_manager.hook_for_plugins(
+                'are_players_duplicates', fallback_plugins
+            )
+            for index, ref_player in enumerate(players):
+                for player in players[index + 1 :]:
+                    if any(
+                        fallback_hook(
+                            stored_player=ref_player.stored_player, player=player
+                        )
+                    ) or any(
+                        fallback_hook(
+                            stored_player=player.stored_player, player=ref_player
+                        )
+                    ):
+                        return True
         return False
 
     @property

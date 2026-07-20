@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, Hashable, TYPE_CHECKING, Optional
 
 import apluggy as pluggy  # type: ignore
 
@@ -158,6 +158,18 @@ class AppHookSpecs:
         self, stored_player: 'StoredPlayer', player: 'Player'
     ) -> bool:
         """Check if the stored player is a duplicate of the other."""
+
+    @hookspec
+    def get_player_duplicate_key(
+        self, stored_player: 'StoredPlayer'
+    ) -> tuple[str, Hashable] | None:
+        """Return a stable key for indexed duplicate detection.
+
+        Plugins implementing ``are_players_duplicates`` should also implement this
+        hook when their rule is an equality check. The first tuple item must be the
+        plugin ID, which keeps keys from different plugins in separate namespaces.
+        Returning ``None`` means that the player has no key for the plugin rule.
+        """
 
     @hookspec
     async def augment_player_after_search(

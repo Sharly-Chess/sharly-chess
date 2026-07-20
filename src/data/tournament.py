@@ -360,15 +360,23 @@ class Tournament:
     def rounds(self) -> int:
         return self.stored_tournament.rounds
 
-    @property
+    @cached_property
     def pairing_variation(self) -> 'PairingVariation':
+        """The configured variation, resolved once for this event snapshot.
+
+        A :class:`Tournament` belongs to a single request's freshly loaded event.
+        Resolving the variation walks the event-aware plugin manager, and hot paths
+        such as point computation and pairing-row rendering consult it once per
+        player.  The stored variation cannot change during the lifetime of this
+        snapshot, so repeating that lookup only adds work.
+        """
         from data.pairings import PairingVariationManager
 
         return PairingVariationManager(self.event).get_object(
             self.stored_tournament.pairing
         )
 
-    @property
+    @cached_property
     def pairing_system(self) -> 'PairingSystem':
         return self.pairing_variation.system()
 
@@ -2563,7 +2571,7 @@ class Tournament:
             key=lambda board: board.index,
         )
 
-    @property
+    @cached_property
     def leave_fixed_board_holes(self) -> bool:
         """Whether a fixed board number leaves the table it displaces empty
         and duplicates the number it lands on, reproducing the numbering of

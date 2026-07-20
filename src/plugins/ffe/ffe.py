@@ -425,6 +425,16 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
+    def get_player_duplicate_key(
+        self, stored_player: StoredPlayer
+    ) -> tuple[str, str] | None:
+        if licence_number := self.get_data(
+            stored_player.plugin_data, 'ffe_licence_number'
+        ):
+            return self.id, licence_number
+        return None
+
+    @hookimpl
     async def augment_player_after_search(
         self,
         stored_player: StoredPlayer,

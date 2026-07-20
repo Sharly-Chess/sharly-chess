@@ -1,5 +1,6 @@
 import json
 import sqlite3
+from time import perf_counter
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
@@ -108,11 +109,31 @@ class SQLiteDatabase:
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         assert self.cursor is not None
-        self.cursor.execute(query, params)
+        # Profiling is opt-in. Keep the normal database path free of clocks and
+        # query normalization when no profiled HTTP request is active.
+        from web.performance import current_request_performance, record_sql
+
+        if current_request_performance() is None:
+            self.cursor.execute(query, params)
+            return
+        start = perf_counter()
+        try:
+            self.cursor.execute(query, params)
+        finally:
+            record_sql(query, perf_counter() - start)
 
     def executemany(self, query: str, params: Iterable[tuple | dict[str, Any]] = ()):
         assert self.cursor is not None
-        self.cursor.executemany(query, params)
+        from web.performance import current_request_performance, record_sql
+
+        if current_request_performance() is None:
+            self.cursor.executemany(query, params)
+            return
+        start = perf_counter()
+        try:
+            self.cursor.executemany(query, params)
+        finally:
+            record_sql(query, perf_counter() - start)
 
     def executescript(self, sql: str):
         assert self.cursor is not None

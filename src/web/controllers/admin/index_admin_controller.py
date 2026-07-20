@@ -160,15 +160,11 @@ class IndexAdminController(BaseAdminController):
     ) -> Template:
         sorted_archives = ArchiveLoader.get_sorted_archives()
         public_only: bool = not web_context.client.can_view_private_events
-        passed_events = EventLoader.get_events_metadata(
-            'passed', public_only=public_only
-        )
-        current_events = EventLoader.get_events_metadata(
-            'current', public_only=public_only
-        )
-        coming_events = EventLoader.get_events_metadata(
-            'coming', public_only=public_only
-        )
+        # Share one metadata snapshot across all three status partitions.
+        events_metadata = EventLoader.get_events_metadata(public_only=public_only)
+        passed_events = EventLoader.select_events_metadata(events_metadata, 'passed')
+        current_events = EventLoader.select_events_metadata(events_metadata, 'current')
+        coming_events = EventLoader.select_events_metadata(events_metadata, 'coming')
         lan_events = [
             event
             for event in current_events + coming_events
@@ -605,7 +601,7 @@ class IndexAdminController(BaseAdminController):
             'federation_options': self._get_federation_options(),
             'months_options': self._months_options(),
             'modal': 'event',
-            'event_uniq_ids': list(EventLoader().event_uniq_ids),
+            'event_uniq_ids': EventLoader.all_event_ids(),
             'plugins': plugin_manager.enabled_plugins,
             'federation_plugin_used': federation_plugin_used,
             'event_type_options': {

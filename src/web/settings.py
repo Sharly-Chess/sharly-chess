@@ -8,7 +8,12 @@ from typing import Sequence
 
 import aiosqlite
 from aiosqlitepool import SQLiteConnectionPool
-from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+    Template as JinjaTemplate,
+    TemplateNotFound,
+)
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
@@ -64,6 +69,7 @@ from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.input_user_controller import InputUserController
 from web.sqlite_store import SQLiteStore
 from web.session_backend import SkipUnchangedSessionBackend
+from web.performance import current_request_performance, record_template
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
 
@@ -172,6 +178,21 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
+class ProfiledJinjaTemplate(JinjaTemplate):
+    """Jinja template that contributes its top-level render time to a request."""
+
+    def render(self, *args: t.Any, **kwargs: t.Any) -> str:
+        if current_request_performance() is None:
+            return super().render(*args, **kwargs)
+        from time import perf_counter
+
+        start = perf_counter()
+        try:
+            return super().render(*args, **kwargs)
+        finally:
+            record_template(self.name, perf_counter() - start)
+
+
 class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
@@ -191,6 +212,7 @@ class SharlyChessEnvironment(Environment):
             trim_blocks=True,
             auto_reload=DEVEL_ENV,
         )
+        self.template_class = ProfiledJinjaTemplate
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore
             gettext=gettext, ngettext=ngettext, newstyle=True
