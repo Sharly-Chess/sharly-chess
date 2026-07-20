@@ -14,7 +14,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
 from data.account import Account
-from data.board import Board
+from data.board import Board, compute_round_board_numbers
 from data.criteria.managers import TournamentCriterionManager
 from data.family import Family
 from data.pairings.settings import ColorSeedSetting
@@ -2505,6 +2505,33 @@ class Tournament:
             (board for board in self.boards_by_id.values() if board.round == round_),
             key=lambda board: board.index,
         )
+
+    @property
+    def leave_fixed_board_holes(self) -> bool:
+        """Whether a fixed board number leaves the table it displaces empty
+        and duplicates the number it lands on, reproducing the numbering of
+        the reference file format. When false the round is numbered compactly:
+        fixed players keep their number and every other board fills the
+        remaining numbers in order."""
+        return bool(
+            plugin_manager.hook_for_event(self.event, 'leave_fixed_board_holes')(
+                tournament=self
+            )
+        )
+
+    def _round_board_numbers(self, round_: int) -> dict[int, int]:
+        entries = [
+            (board.identifier, board.fixed_number, board.standard_number)
+            for board in self.get_round_boards(round_)
+        ]
+        return compute_round_board_numbers(
+            entries, self.first_board_number, self.leave_fixed_board_holes
+        )
+
+    def board_number(self, board: Board) -> int:
+        if board.stored_board.id is None:
+            return board.fixed_number or board.standard_number
+        return self._round_board_numbers(board.round)[board.identifier]
 
     def get_round_pab_board(self, round_: int) -> Board | None:
         """The round's pairing-allocated-bye board — a player seated alone,

@@ -322,6 +322,9 @@ msgstr "Ligues"
 msgid "Leagues (FFE)"
 msgstr "Ligues (FFE)"
 
+msgid "Leave empty tables for fixed boards:"
+msgstr "Laisser des tables vides pour les échiquiers fixes :"
+
 msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."
 
@@ -633,6 +636,9 @@ msgstr "Variante"
 
 msgid "Warning"
 msgstr "Avertissement"
+
+msgid "When enabled, a fixed board number leaves its natural table empty and keeps the same board numbering as the FFE website. When disabled, tables are renumbered so that no table is left empty."
+msgstr "Lorsque cette option est activée, un échiquier fixe laisse sa table naturelle vide et conserve la même numérotation des échiquiers que le site web de la FFE. Lorsqu'elle est désactivée, les tables sont renumérotées afin qu'aucune table ne reste vide."
 
 msgid "Won both of the first two matches"
 msgstr "A gagné ses deux premiers matchs"

@@ -36,6 +36,11 @@ class NumberColumn(BoardColumn):
     def get_cell_content(self, board: Board) -> Any:
         return board.number_str
 
+    def get_cell_classes(self, board: Board) -> str:
+        if board.fixed_number:
+            return f'{self.shared_classes} text-decoration-underline'
+        return self.shared_classes
+
     @property
     def shared_classes(self) -> str:
         return 'text-end'

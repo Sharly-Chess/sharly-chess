@@ -516,6 +516,64 @@ class ListPlayerSortPrintOption(PrintOption):
             raise OptionError(f'Unknown list player sorter: {self.value}', self)
 
 
+class FixedBoardOrderPrintOption(PrintOption):
+    """Ordering of the board pairings when the round is numbered compactly
+    around fixed boards: by displayed board number (default) or in the natural
+    pairing order. Only relevant when a tournament has fixed boards and isn't
+    numbered with gaps."""
+
+    BY_BOARD_NUMBER = 'board'
+    NATURAL = 'natural'
+
+    @staticmethod
+    def static_id() -> str:
+        return 'fixed-board-order'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return self.BY_BOARD_NUMBER
+
+    @property
+    def order_options(self) -> dict[str, str]:
+        return {
+            self.BY_BOARD_NUMBER: _('Board number'),
+            self.NATURAL: _('Natural (pairing order)'),
+        }
+
+    @property
+    def pairing_document_id(self) -> str:
+        from data.print_documents.documents import PairingPrintDocument
+
+        return PairingPrintDocument.static_id()
+
+    @property
+    def boards_pairing_style_id(self) -> str:
+        return BoardsPairingStyle.static_id()
+
+    @property
+    def applies(self) -> bool:
+        """Whether the option is relevant for the current event: at least one
+        tournament is numbered compactly and has a player on a fixed board."""
+        if self.event is None:
+            return False
+        return any(
+            not tournament.leave_fixed_board_holes
+            and any(player.fixed for player in tournament.tournament_players)
+            for tournament in self.event.tournaments
+        )
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value not in self.order_options:
+            # Untranslated; should not happen via UI
+            raise OptionError(f'Unknown fixed board order: {self.value}', self)
+
+
 class PairingStylePrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:

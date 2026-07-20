@@ -322,6 +322,9 @@ msgstr ""
 msgid "Leagues (FFE)"
 msgstr ""
 
+msgid "Leave empty tables for fixed boards:"
+msgstr ""
+
 msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."
 
@@ -632,6 +635,9 @@ msgid "Variation"
 msgstr ""
 
 msgid "Warning"
+msgstr ""
+
+msgid "When enabled, a fixed board number leaves its natural table empty and keeps the same board numbering as the FFE website. When disabled, tables are renumbered so that no table is left empty."
 msgstr ""
 
 msgid "Won both of the first two matches"

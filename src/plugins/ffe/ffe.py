@@ -222,6 +222,10 @@ class FfePlugin(Plugin):
     def event_form_script_template(self) -> str:
         return '/ffe_event_form_script.js'
 
+    @property
+    def event_form_fields_template(self) -> str:
+        return '/ffe_event_form_fields.html'
+
     def used_by_stored_tournament(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> bool:
@@ -671,6 +675,10 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, FfeEventPluginData
+
+    @hookimpl
+    def leave_fixed_board_holes(self, tournament: 'Tournament') -> bool:
+        return FFEUtils.get_event_plugin_data(tournament.event).leave_fixed_board_holes
 
     @hookimpl
     def get_default_prize_currency(self) -> str:

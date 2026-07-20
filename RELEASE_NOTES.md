@@ -8,6 +8,8 @@
 ## Events
 
 - Allow event creation as an organiser (5.0.0)
+- A player with a fixed table number no longer results in empty table at the place they would have been assigned to (5.0.0)
+- Added an FFE plugin option to specifically leave empty tables for fixed boards for compatibility with the FFE website (5.0.0)
 
 ## Teams
 

@@ -312,6 +312,20 @@ class SessionPairingsShowWithoutResults(BoolSessionVariable):
         return 'pairings_show_without_results'
 
 
+class SessionPairingsBoardSort(SessionVariable[str]):
+    """Board column ordering on the pairings tab when a tournament has fixed
+    boards and is numbered compactly: ``'board'`` (by display number, default)
+    or ``'natural'`` (pairing order)."""
+
+    @property
+    def key(self) -> str:
+        return 'pairings_board_sort'
+
+    @property
+    def default_value(self) -> str:
+        return 'board'
+
+
 class SessionScreensScreenTypes(SessionVariable[set[str]]):
     @property
     def key(self) -> str:
