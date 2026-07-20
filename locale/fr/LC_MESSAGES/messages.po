@@ -8347,16 +8347,16 @@ msgid "Woman *** NAME FOR GENDER WOMAN"
 msgstr "Femme"
 
 msgid "Woman Candidate Master"
-msgstr "Candidat Maître Femme"
+msgstr "Candidat Maître Féminin"
 
 msgid "Woman Fide Master"
-msgstr "Maître Fide Femme"
+msgstr "Maître Fide Féminin"
 
 msgid "Woman Grand Master"
-msgstr "Grand Maître Internationale Femme"
+msgstr "Grand Maître Internationale Féminin"
 
 msgid "Woman International Master"
-msgstr "Maître Internationale Femme"
+msgstr "Maître Internationale Féminin"
 
 msgid "XLSX format"
 msgstr "Format XLSX"
@@ -9000,4 +9000,3 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
