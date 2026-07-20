@@ -1,6 +1,6 @@
 import weakref
 from datetime import date
-from functools import total_ordering, cached_property
+from functools import total_ordering, cached_property, cache
 from typing import TYPE_CHECKING, Any
 
 from babel.lists import format_list
@@ -61,7 +61,12 @@ class Player:
         self.ratings = self._get_ratings()
         self.plugin_data = self._get_plugin_data()
 
+    # Cached: the registered plugin data classes are fixed for the process, but
+    # this was being rebuilt (via a pluggy hook dispatch) once per player on
+    # every event load. Callers only read the result. NOTE for tests that
+    # register a different plugin set: call `.cache_clear()` between them.
     @staticmethod
+    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class

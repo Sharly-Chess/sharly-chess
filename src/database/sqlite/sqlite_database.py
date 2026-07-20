@@ -161,7 +161,13 @@ class SQLiteDatabase:
 
     @staticmethod
     def load_date_from_database_field(data: str) -> date:
-        return datetime.strptime(data, '%Y-%m-%d').date()
+        # fromisoformat is ~50x faster than strptime and the stored format
+        # (dump_date_to_database_field writes zero-padded '%Y-%m-%d') is ISO.
+        # Fall back to strptime for any legacy non-ISO value.
+        try:
+            return date.fromisoformat(data)
+        except ValueError:
+            return datetime.strptime(data, '%Y-%m-%d').date()
 
     @staticmethod
     def dump_date_to_database_field(date_: date | None) -> str | None:

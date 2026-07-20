@@ -2,7 +2,7 @@ from datetime import date, datetime
 import weakref
 from collections import Counter, defaultdict
 from collections.abc import Collection
-from functools import cached_property
+from functools import cached_property, cache
 from logging import Logger
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any
@@ -157,7 +157,11 @@ class Tournament:
     # Plugin
     # -------------------------------------------------------------------------
 
+    # Cached: registered plugin data classes are fixed for the process; callers
+    # only read the result. See Player.plugin_data_class_by_plugin_id for the
+    # test note about .cache_clear().
     @staticmethod
+    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class
@@ -2691,15 +2695,32 @@ class Tournament:
     def has_never_paired_players(self) -> bool:
         return any(not player.has_real_pairings for player in self.tournament_players)
 
-    def set_for_round(self, round_: int | None = None):
-        """Set the tournament for the given round (defaults to the current round)"""
+    def set_for_round(
+        self,
+        round_: int | None = None,
+        *,
+        only_players: 'list[TournamentPlayer] | None' = None,
+    ):
+        """Set the tournament for the given round (defaults to the current round).
+
+        When *only_players* is given, points and virtual points are computed
+        only for those players instead of the whole field. The field-wide
+        pairing-number pass, board numbering and the ``set_for_round`` plugin
+        hook still run in full — a player's own points/vpoints depend only on
+        the field's pairing numbers and their own prior results, never on other
+        players' computed points. This is therefore safe only when the caller
+        renders scores for *only_players* alone (a single pairing-row refresh);
+        any full-page render must recompute the whole field first."""
         if round_ is None:
             round_ = self.current_round
         self._compute_caching_enabled = True
         try:
             for player in self.tournament_players:
                 player.clear_compute_caches()
-            for player in self.tournament_players:
+            players_to_compute = (
+                self.tournament_players if only_players is None else only_players
+            )
+            for player in players_to_compute:
                 self.set_tournament_player_points(player, before_round=round_)
             board_numbers = self._round_board_numbers(round_)
             for board in self.get_round_boards(round_):

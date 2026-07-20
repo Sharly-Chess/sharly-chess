@@ -1,5 +1,6 @@
 from copy import copy
 from dataclasses import dataclass
+from functools import cache
 from typing import TYPE_CHECKING
 
 from common.i18n import _
@@ -107,7 +108,11 @@ class Account:
     # Plugin
     # -------------------------------------------------------------------------
 
+    # Cached: registered plugin data classes are fixed for the process; callers
+    # only read the result. See Player.plugin_data_class_by_plugin_id for the
+    # test note about .cache_clear().
     @staticmethod
+    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[AccountPluginData]]:
         return {
             plugin_id: plugin_data_class

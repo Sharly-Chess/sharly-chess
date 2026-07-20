@@ -699,16 +699,38 @@ class FfePlugin(Plugin):
         # The FFE upload pipeline is Papi-based — individual events only.
         if stored_event.event_type == EventType.TEAM:
             return
-        # This hook being called in most database writes, it needs to be optimized
+        # This hook is called on most database writes (every result entry), so
+        # keep the request thread's share cheap: the gate below reads only
+        # stored plugin data. The expensive part — reloading the whole event to
+        # hand a live Tournament to schedule_upload — is deferred to a
+        # background thread. The write has already been committed here (the hook
+        # fires after EventDatabase releases the connection) and the upload
+        # itself is a delayed Timer, so this changes no behaviour beyond taking
+        # the reload off keystroke latency.
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
         ):
             return
-        event = EventLoader().load_event(stored_event.uniq_id)
+
+        from threading import Thread
+
+        from common.logger import get_logger
+
+        uniq_id = stored_event.uniq_id
         tournament_id = stored_tournament.id
         assert tournament_id is not None
-        tournament = event.tournaments_by_id[tournament_id]
-        FfeBackgroundUploader.schedule_upload(tournament)
+
+        def _reload_and_schedule() -> None:
+            try:
+                event = EventLoader().load_event(uniq_id)
+                tournament = event.tournaments_by_id[tournament_id]
+                FfeBackgroundUploader.schedule_upload(tournament)
+            except Exception:
+                get_logger().exception(
+                    'FFE auto-upload scheduling failed for event [%s]', uniq_id
+                )
+
+        Thread(target=_reload_and_schedule, daemon=True).start()
 
     @hookimpl
     def get_tournament_form_fields_template_and_data(

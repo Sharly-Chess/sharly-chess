@@ -2780,18 +2780,78 @@ class EventDatabase(MigrationDatabase):
     def load_tournament_stored_prize_groups(
         self, tournament_id: int
     ) -> list[StoredPrizeGroup]:
+        # Bulk-loaded to avoid an N+1+1+1 cascade (one query per prize group,
+        # then per category for its criteria and its prizes). Four joined
+        # queries filtered by tournament replace ~1 + groups + 2*categories
+        # queries. Rows are ordered by id so the per-parent lists keep the same
+        # order the per-id loaders produced (rowid order). Same shape as
+        # load_tournament_stored_pairings_by_player.
         self.execute(
-            'SELECT * FROM `prize_group` WHERE `tournament_id` = ?',
+            'SELECT * FROM `prize_group` WHERE `tournament_id` = ? ORDER BY `id`',
             (tournament_id,),
         )
-        stored_prize_groups: list[StoredPrizeGroup] = []
+        stored_prize_groups = [
+            self._row_to_stored_prize_group(row) for row in self.fetchall()
+        ]
+        if not stored_prize_groups:
+            return []
+
+        self.execute(
+            'SELECT `prize_category`.* FROM `prize_category` '
+            'JOIN `prize_group` '
+            'ON `prize_category`.`prize_group_id` = `prize_group`.`id` '
+            'WHERE `prize_group`.`tournament_id` = ? '
+            'ORDER BY `prize_category`.`id`',
+            (tournament_id,),
+        )
+        stored_prize_categories = [
+            self._row_to_stored_prize_category(row) for row in self.fetchall()
+        ]
+
+        self.execute(
+            'SELECT `prize_criterion`.* FROM `prize_criterion` '
+            'JOIN `prize_category` '
+            'ON `prize_criterion`.`prize_category_id` = `prize_category`.`id` '
+            'JOIN `prize_group` '
+            'ON `prize_category`.`prize_group_id` = `prize_group`.`id` '
+            'WHERE `prize_group`.`tournament_id` = ? '
+            'ORDER BY `prize_criterion`.`id`',
+            (tournament_id,),
+        )
+        criteria_by_category: dict[int, list[StoredPrizeCriterion]] = {}
         for row in self.fetchall():
-            prize_group = self._row_to_stored_prize_group(row)
-            assert prize_group.id is not None
-            prize_group.stored_prize_categories = (
-                self.load_prize_group_stored_prize_categories(prize_group.id)
+            criterion = self._row_to_stored_prize_criterion(row)
+            criteria_by_category.setdefault(criterion.prize_category_id, []).append(
+                criterion
             )
-            stored_prize_groups.append(prize_group)
+
+        self.execute(
+            'SELECT `prize`.* FROM `prize` '
+            'JOIN `prize_category` '
+            'ON `prize`.`prize_category_id` = `prize_category`.`id` '
+            'JOIN `prize_group` '
+            'ON `prize_category`.`prize_group_id` = `prize_group`.`id` '
+            'WHERE `prize_group`.`tournament_id` = ? '
+            'ORDER BY `prize`.`id`',
+            (tournament_id,),
+        )
+        prizes_by_category: dict[int, list[StoredPrize]] = {}
+        for row in self.fetchall():
+            prize = self._row_to_stored_prize(row)
+            prizes_by_category.setdefault(prize.prize_category_id, []).append(prize)
+
+        categories_by_group: dict[int, list[StoredPrizeCategory]] = {}
+        for category in stored_prize_categories:
+            assert category.id is not None
+            category.stored_prize_criteria = criteria_by_category.get(category.id, [])
+            category.stored_prizes = prizes_by_category.get(category.id, [])
+            categories_by_group.setdefault(category.prize_group_id, []).append(category)
+
+        for prize_group in stored_prize_groups:
+            assert prize_group.id is not None
+            prize_group.stored_prize_categories = categories_by_group.get(
+                prize_group.id, []
+            )
         return stored_prize_groups
 
     def add_stored_prize_group(self, stored_prize_group: StoredPrizeGroup) -> int:
