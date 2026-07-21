@@ -2,6 +2,7 @@
 
 ## General
 
+- Significantly improved speed of the application (5.0.0)
 - Reorganize the desktop application into tabs (5.0.0)
 - Added fédération CUR (5.0.0)
 

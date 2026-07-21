@@ -63,8 +63,7 @@ class Player:
 
     # Cached: the registered plugin data classes are fixed for the process, but
     # this was being rebuilt (via a pluggy hook dispatch) once per player on
-    # every event load. Callers only read the result. NOTE for tests that
-    # register a different plugin set: call `.cache_clear()` between them.
+    # every event load. Callers only read the result.
     @staticmethod
     @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
