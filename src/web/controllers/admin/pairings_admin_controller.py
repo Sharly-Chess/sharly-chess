@@ -139,26 +139,34 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         # full-page render (see _points_recompute_scope).
         self.scoped_recompute = False
         if self.admin_tournament is not None:
-            only_players = self._points_recompute_scope(event, board_id, action)
-            self.scoped_recompute = only_players is not None
-            self.admin_tournament.set_for_round(
-                self.admin_round, only_players=only_players
-            )
-            self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
-            self.admin_boards_sortable = (
-                not event.is_team_event
-                and not self.admin_tournament.leave_fixed_board_holes
-                and any(
-                    player.fixed for player in self.admin_tournament.tournament_players
+            if self.display_rankings:
+                # Ranking computation sets the points and tie-break values used
+                # by the ranking table. The round setup, board lists and
+                # unpaired sidebars are not rendered on this branch, and used
+                # to duplicate a full-field points pass for large finished
+                # tournaments.
+                self.admin_tournament.compute_tournament_player_ranks()
+            else:
+                only_players = self._points_recompute_scope(event, board_id, action)
+                self.scoped_recompute = only_players is not None
+                self.admin_tournament.set_for_round(
+                    self.admin_round, only_players=only_players
                 )
-            )
-            if self.admin_boards_sortable and self.admin_board_sort != 'natural':
-                self.admin_boards = sorted(
-                    self.admin_boards, key=lambda board: board.number
+                self.admin_boards = self.admin_tournament.get_round_boards(
+                    self.admin_round
                 )
-
-        if self.admin_tournament and self.display_rankings:
-            self.admin_tournament.compute_tournament_player_ranks()
+                self.admin_boards_sortable = (
+                    not event.is_team_event
+                    and not self.admin_tournament.leave_fixed_board_holes
+                    and any(
+                        player.fixed
+                        for player in self.admin_tournament.tournament_players
+                    )
+                )
+                if self.admin_boards_sortable and self.admin_board_sort != 'natural':
+                    self.admin_boards = sorted(
+                        self.admin_boards, key=lambda board: board.number
+                    )
 
         if SessionPairingsShowWithoutResults(request).get():
             self.admin_filtered_boards = [
@@ -174,8 +182,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_team_bye: list[Team] = []
         self.admin_team_unpaired: list[Team] = []
         self.admin_team_absent: list[Team] = []
-        self.reload_unpaired_player_lists()
-        self.reload_unpaired_team_lists()
+        if not self.display_rankings:
+            self.reload_unpaired_player_lists()
+            self.reload_unpaired_team_lists()
 
         self.admin_board: Board | None = None
         if board_id is not None:
@@ -455,7 +464,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                         and all(board.result != Result.NO_RESULT for board in tb.boards)
                     )
                 ]
-                if self.admin_tournament
+                if self.admin_tournament and not self.display_rankings
                 else []
             ),
             'admin_unpaired': self.admin_unpaired,
@@ -466,6 +475,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'admin_team_unpaired': self.admin_team_unpaired,
             'admin_team_absent': self.admin_team_absent,
             'pairings_generation_disabled_message': self.admin_tournament
+            and not self.display_rankings
             and self.admin_tournament.pairings_generation_disabled_message(
                 self.admin_round
             ),

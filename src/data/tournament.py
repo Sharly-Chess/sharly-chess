@@ -3867,7 +3867,11 @@ class Tournament:
         for player in self.tournament_players:
             player.clear_compute_caches()
         self.set_tournament_players_pairing_numbers()
-        for tie_break in self.tie_breaks:
+        # Validity depends on tournament state, but is invariant throughout a
+        # single ranking pass. Reusing this list avoids validating every
+        # configured tie-break again for every player.
+        tie_breaks = self.tie_breaks
+        for tie_break in tie_breaks:
             for player_id, variable in tie_break.get_player_variables(
                 self, after_round
             ).items():
@@ -3875,9 +3879,11 @@ class Tournament:
                 player.tie_break_variables[tie_break.id] = variable
         for player in self.tournament_players:
             player.points = player.points_after(after_round)
-            player.compute_tie_break_values(after_round=after_round)
+            player.compute_tie_break_values(
+                after_round=after_round, tie_breaks=tie_breaks
+            )
 
-        for index, tie_break in enumerate(self.tie_breaks):
+        for index, tie_break in enumerate(tie_breaks):
             if tie_break.is_computed_per_player:
                 continue
             value_by_player_id = tie_break.compute_all_player_values(
@@ -3898,7 +3904,7 @@ class Tournament:
         }
         for rank, player in self._tournament_players_by_rank.items():
             player.rank = rank
-        for tie_break_index, tie_break in enumerate(self.tie_breaks):
+        for tie_break_index, tie_break in enumerate(tie_breaks):
             if not tie_break.display_rank_delta:
                 continue
             players_ranked_without_tie_break = sorted(

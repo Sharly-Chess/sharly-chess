@@ -161,15 +161,19 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         max_possible_points = tournament.win_points * after_round
 
         # Only points from played games should be counted
+        points_by_player_id = {
+            player.id: self._points_after(player, after_round)
+            for player in tournament.players
+        }
         players = sorted(
             tournament.players,
-            key=lambda player: self._points_after(player, after_round),
+            key=lambda player: points_by_player_id[player.id],
         )
         players_by_points: dict[float, list[TournamentPlayer]] = {
             points: list(group)
             for points, group in groupby(
                 players,
-                key=lambda player: self._points_after(player, after_round),
+                key=lambda player: points_by_player_id[player.id],
             )
         }
 

@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
     from data.team import Team
+    from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.input_output.trf.trf_data import TrfPlayer
 
@@ -970,7 +971,14 @@ class TournamentPlayer(Player):
             if self.tournament.tie_breaks[tie_break_index].is_used_for_team_ranking
         ]
 
-    def compute_tie_break_values(self, *, after_round: int):
+    def compute_tie_break_values(
+        self,
+        *,
+        after_round: int,
+        tie_breaks: list['TieBreak'] | None = None,
+    ):
+        if tie_breaks is None:
+            tie_breaks = self.tournament.tie_breaks
         self._tie_break_values = [
             TieBreakValue(
                 tie_break,
@@ -978,7 +986,7 @@ class TournamentPlayer(Player):
                 if tie_break.is_computed_per_player
                 else 0,
             )
-            for tie_break in self.tournament.tie_breaks
+            for tie_break in tie_breaks
         ]
 
     @property

@@ -207,7 +207,9 @@ class ServerEngine:
             route_handlers=route_handlers,
             exception_handlers=exception_handlers,  # type: ignore
             template_config=template_config,
-            compression_config=CompressionConfig(backend='gzip', gzip_compress_level=6),
+            # Level 3 keeps most of gzip's size reduction while spending much
+            # less CPU before large ranking and player pages can be sent.
+            compression_config=CompressionConfig(backend='gzip', gzip_compress_level=3),
             logging_config=LoggingConfig(
                 **logging_config,
                 disable_stack_trace={

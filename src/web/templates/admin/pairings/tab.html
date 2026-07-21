@@ -38,7 +38,11 @@
     </div>
     {% set is_team_paired_mode = admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
     {% set is_flat_team_mode = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
-    {% if is_team_paired_mode %}
+    {% if display_rankings %}
+        {# Rankings never render an unpaired sidebar, so their controls should
+           use the full width and no sidebar data needs to be prepared. #}
+        {% set has_unpaired = false %}
+    {% elif is_team_paired_mode %}
         {% set has_unpaired = admin_team_bye|length > 0 or admin_team_unpaired|length > 0 or admin_team_absent|length > 0 %}
         {# Before a round is paired, show the team column so lineups can be set
            — round-robin has no "to pair" list, so it would otherwise stay

@@ -907,44 +907,66 @@ class EventDatabase(MigrationDatabase):
     # StoredPlayer
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _row_to_stored_player(cls, row: dict[str, Any]) -> StoredPlayer:
-        return StoredPlayer(
-            id=row['id'],
-            last_name=row['last_name'],
-            first_name=row['first_name'],
-            date_of_birth=cls.load_optional_date_from_database_field(
-                row['date_of_birth']
-            ),
-            year_of_birth=row['year_of_birth'],
-            gender=row['gender'],
-            mail=row['mail'],
-            phone=row['phone'],
-            comment=row['comment'],
-            owed=row['owed'],
-            paid=row['paid'],
-            title=row['title'],
-            ratings=cls.set_dict_int_keys(
-                cls.load_json_from_database_field(row['ratings'])
-            ),
-            fide_id=row['fide_id'],
-            federation=row['federation'],
-            club=row['club'],
-            fixed=row['fixed'],
-            check_in=cls.load_bool_from_database_field(row['check_in']),
-            team_id=row['team_id'],
-            team_index=row['team_index'],
-            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
-        )
-
     def load_stored_players(self) -> list[StoredPlayer]:
-        self.execute('SELECT `player`.* FROM `player`')
-        stored_players: list[StoredPlayer] = []
-        for row in self.fetchall():
-            player = self._row_to_stored_player(row)
-            assert player.id is not None
-            stored_players.append(player)
-        return stored_players
+        # Keep this order aligned with StoredPlayer's constructor. Players are
+        # another high-volume event-load row, so parse the few encoded fields
+        # in place and avoid an intermediate dict for each one.
+        self.execute(
+            'SELECT `id`, `last_name`, `ratings`, `first_name`, '
+            '`date_of_birth`, `year_of_birth`, `gender`, `mail`, `phone`, '
+            '`comment`, `owed`, `paid`, `title`, `fide_id`, `federation`, '
+            '`club`, `fixed`, `check_in`, `team_id`, `team_index`, '
+            '`plugin_data` FROM `player`'
+        )
+        assert self.cursor is not None
+        return [
+            StoredPlayer(
+                player_id,
+                last_name,
+                self.set_dict_int_keys(self.load_json_from_database_field(ratings)),
+                first_name,
+                self.load_optional_date_from_database_field(date_of_birth),
+                year_of_birth,
+                gender,
+                mail,
+                phone,
+                comment,
+                owed,
+                paid,
+                title,
+                fide_id,
+                federation,
+                club,
+                fixed,
+                self.load_bool_from_database_field(check_in),
+                team_id,
+                team_index,
+                self.load_json_from_database_field(plugin_data, {}),
+            )
+            for (
+                player_id,
+                last_name,
+                ratings,
+                first_name,
+                date_of_birth,
+                year_of_birth,
+                gender,
+                mail,
+                phone,
+                comment,
+                owed,
+                paid,
+                title,
+                fide_id,
+                federation,
+                club,
+                fixed,
+                check_in,
+                team_id,
+                team_index,
+                plugin_data,
+            ) in self.cursor.fetchall()
+        ]
 
     @classmethod
     def _get_player_fields_dict(cls, stored_player: StoredPlayer) -> dict[str, Any]:
@@ -1034,35 +1056,30 @@ class EventDatabase(MigrationDatabase):
     # StoredTournamentPlayer
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _row_to_stored_tournament_player(
-        cls, row: dict[str, Any]
-    ) -> StoredTournamentPlayer:
-        return StoredTournamentPlayer(
-            tournament_id=row['tournament_id'],
-            player_id=row['player_id'],
-            pairing_number=row['pairing_number'],
-            manual_tiebreak=row['manual_tiebreak'],
-        )
-
     def load_stored_tournament_players(
         self, tournament_id: int
     ) -> list[StoredTournamentPlayer]:
         self.execute(
             (
-                'SELECT `tournament_player`.* FROM `tournament_player` '
+                # Keep this order aligned with StoredTournamentPlayer's
+                # persisted constructor fields. These rows are loaded for
+                # every tournament on every request, so avoid allocating an
+                # intermediate dict for each one.
+                'SELECT `tournament_id`, `player_id`, `pairing_number`, '
+                '`manual_tiebreak` FROM `tournament_player` '
                 'WHERE `tournament_id` = ?'
             ),
             (tournament_id,),
         )
-        tournament_player_rows = list(self.fetchall())
+        assert self.cursor is not None
+        tournament_player_rows = self.cursor.fetchall()
         pairings_by_player = self.load_tournament_stored_pairings_by_player(
             tournament_id
         )
         stored_tournament_players: list[StoredTournamentPlayer] = []
         seen_player_ids: set[int] = set()
         for row in tournament_player_rows:
-            stored_tournament_player = self._row_to_stored_tournament_player(row)
+            stored_tournament_player = StoredTournamentPlayer(*row)
             stored_tournament_player.stored_pairings = pairings_by_player.get(
                 stored_tournament_player.player_id, []
             )
@@ -1075,13 +1092,13 @@ class EventDatabase(MigrationDatabase):
         # do not get a tournament_player row; synthesize one in-memory so the
         # rest of the codebase sees them.
         self.execute(
-            'SELECT `player`.`id` AS player_id FROM `player` '
+            'SELECT `player`.`id` FROM `player` '
             'JOIN `team` ON `player`.`team_id` = `team`.`id` '
             'WHERE `team`.`tournament_id` = ?',
             (tournament_id,),
         )
-        for row in self.fetchall():
-            player_id = row['player_id']
+        assert self.cursor is not None
+        for (player_id,) in self.cursor.fetchall():
             if player_id in seen_player_ids:
                 continue
             synthetic = StoredTournamentPlayer(
@@ -1182,31 +1199,6 @@ class EventDatabase(MigrationDatabase):
     # StoredPairings
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _row_to_stored_pairing(cls, row: dict[str, Any]) -> StoredPairing:
-        return StoredPairing(
-            tournament_id=row['tournament_id'],
-            player_id=row['player_id'],
-            round_=row['round'],
-            result=row['result'],
-            board_id=row['board_id'],
-            illegal_moves=row['illegal_moves'],
-            effective_points=row['effective_points'],
-        )
-
-    def load_tournament_player_stored_pairings(
-        self, tournament_id: int, player_id: int
-    ) -> list[StoredPairing]:
-        self.execute(
-            (
-                'SELECT * FROM `pairing` '
-                'WHERE `tournament_id` = ? AND `player_id` = ? '
-                'ORDER BY `round`'
-            ),
-            (tournament_id, player_id),
-        )
-        return [self._row_to_stored_pairing(row) for row in self.fetchall()]
-
     def load_tournament_stored_pairings_by_player(
         self, tournament_id: int
     ) -> dict[int, list[StoredPairing]]:
@@ -1215,15 +1207,21 @@ class EventDatabase(MigrationDatabase):
         loading large events."""
         self.execute(
             (
-                'SELECT * FROM `pairing` '
+                # Keep this order aligned with StoredPairing's constructor.
+                # This is the hottest event-load row type, so constructing it
+                # directly from SQLite tuples avoids allocating an intermediate
+                # dict for every player/round on every request.
+                'SELECT `tournament_id`, `player_id`, `round`, `result`, '
+                '`board_id`, `illegal_moves`, `effective_points` FROM `pairing` '
                 'WHERE `tournament_id` = ? '
                 'ORDER BY `player_id`, `round`'
             ),
             (tournament_id,),
         )
         pairings_by_player: dict[int, list[StoredPairing]] = {}
-        for row in self.fetchall():
-            stored_pairing = self._row_to_stored_pairing(row)
+        assert self.cursor is not None
+        for row in self.cursor.fetchall():
+            stored_pairing = StoredPairing(*row)
             pairings_by_player.setdefault(stored_pairing.player_id, []).append(
                 stored_pairing
             )
@@ -1296,19 +1294,6 @@ class EventDatabase(MigrationDatabase):
     # StoredBoard
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _row_to_stored_board(cls, row: dict[str, Any]) -> StoredBoard:
-        return StoredBoard(
-            id=row['id'],
-            white_player_id=row['white_player_id'],
-            black_player_id=row['black_player_id'],
-            index=row['index'],
-            last_result_update=cls.load_optional_timestamp_from_database_field(
-                row['last_result_update']
-            ),
-            team_board_id=row['team_board_id'],
-        )
-
     def load_tournament_stored_boards_by_round(
         self, tournament_id: int
     ) -> dict[int, list[StoredBoard]]:
@@ -1316,7 +1301,12 @@ class EventDatabase(MigrationDatabase):
         # is recovered from its parent ``team_board`` instead.
         self.execute(
             (
-                'SELECT DISTINCT `board`.*, '
+                # The first six columns match StoredBoard; round is used only
+                # to bucket the resulting record. As with pairings above,
+                # reading tuples directly avoids a dict per historical board.
+                'SELECT DISTINCT `board`.`id`, `board`.`white_player_id`, '
+                '`board`.`black_player_id`, `board`.`index`, '
+                '`board`.`last_result_update`, `board`.`team_board_id`, '
                 'COALESCE(`pairing`.`round`, `team_board`.`round`) AS `round` '
                 'FROM `board` '
                 'LEFT JOIN `pairing` ON `board`.`id` = `pairing`.`board_id` '
@@ -1331,12 +1321,29 @@ class EventDatabase(MigrationDatabase):
         )
         stored_boards_by_round: dict[int, list[StoredBoard]] = {}
         seen_ids: set[int] = set()
-        for row in self.fetchall():
-            if row['id'] in seen_ids:
+        assert self.cursor is not None
+        for (
+            board_id,
+            white_player_id,
+            black_player_id,
+            index,
+            last_result_update,
+            team_board_id,
+            round_,
+        ) in self.cursor.fetchall():
+            if board_id in seen_ids:
                 continue
-            seen_ids.add(row['id'])
-            board = self._row_to_stored_board(row)
-            round_ = row['round']
+            seen_ids.add(board_id)
+            board = StoredBoard(
+                id=board_id,
+                white_player_id=white_player_id,
+                black_player_id=black_player_id,
+                index=index,
+                last_result_update=self.load_optional_timestamp_from_database_field(
+                    last_result_update
+                ),
+                team_board_id=team_board_id,
+            )
             if round_ in stored_boards_by_round:
                 stored_boards_by_round[round_].append(board)
             else:
