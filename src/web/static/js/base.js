@@ -67,10 +67,16 @@ window.addEventListener("htmx:wsBeforeMessage", function(evt) {
     }
 });
 
+const tooltipSelector = '[data-bs-toggle="tooltip"]';
+
 function closeTooltips () {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        document.querySelectorAll(tooltipSelector).forEach((element) => {
+            bootstrap.Tooltip.getInstance(element)?.hide();
+        });
+    }
+    // Also remove any orphan left behind when its trigger was swapped out.
     $('body .tooltip').remove();
-    $('body .tooltip-inner').remove();
-    $('body .tooltip-arrow').remove();
 }
 
 function closeAirPickers () {
@@ -85,11 +91,19 @@ function closeAirPickers () {
 }
 
 // Enable Bootstrap tooltips cf https://getbootstrap.com/docs/5.3/components/tooltips/
-function activateTooltips () {
-    if (typeof bootstrap !== 'undefined') {
-        tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+function activateTooltips (root = document) {
+    if (typeof bootstrap === 'undefined' || !bootstrap.Tooltip) return;
+
+    const tooltipTriggers = [];
+    if (root instanceof Element && root.matches(tooltipSelector)) {
+        tooltipTriggers.push(root);
     }
+    if (root.querySelectorAll) {
+        tooltipTriggers.push(...root.querySelectorAll(tooltipSelector));
+    }
+    tooltipTriggers.forEach((element) => {
+        bootstrap.Tooltip.getOrCreateInstance(element);
+    });
 }
 
 function scrollToFirstError() {
@@ -189,8 +203,23 @@ const restoreState = () => {
 
 $(document).ready(restoreState);
 
-window.addEventListener('htmx:afterSwap', function(event) {
-    // Activate the tooltips after a swap
+window.addEventListener('htmx:beforeCleanupElement', function(event) {
+    // Bootstrap keeps an element-to-instance registry. Dispose a trigger
+    // before HTMX removes it so swapped rows cannot accumulate listeners.
+    const element = event.target;
+    if (
+        typeof bootstrap !== 'undefined'
+        && bootstrap.Tooltip
+        && element instanceof Element
+        && element.matches(tooltipSelector)
+    ) {
+        bootstrap.Tooltip.getInstance(element)?.dispose();
+    }
+});
+
+window.addEventListener('htmx:afterRequest', function() {
+    // One response can perform several out-of-band swaps. Refresh once after
+    // all of them rather than rebuilding every tooltip after every swap.
     activateTooltips();
     closeTooltips();
     closeAirPickers();

@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 from functools import partial
 import os
 import posixpath
@@ -14,6 +15,7 @@ from jinja2 import (
     Template as JinjaTemplate,
     TemplateNotFound,
 )
+from jinja2.runtime import Context as JinjaContext
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
@@ -178,19 +180,77 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
+_render_contexts: ContextVar[list[JinjaContext] | None] = ContextVar(
+    'sharly_chess_jinja_render_contexts', default=None
+)
+
+
+class ReleasableJinjaContext(JinjaContext):
+    """A Jinja context whose request-owned references can be released.
+
+    Jinja macros create a reference cycle: the context stores the macro in
+    ``vars``, while the macro's generated function closes over that context.
+    The context's ``parent`` mapping also contains the complete template
+    context, including the event and other request objects. Reference counting
+    therefore cannot release the event when rendering ends; it remains alive
+    until Python's cyclic garbage collector eventually scans the whole graph.
+
+    Contexts created for imports without ``with context`` are different. Jinja
+    caches those macro modules between renders, and their contexts contain only
+    environment globals. They are application-owned and must remain intact.
+    """
+
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
+        super().__init__(*args, **kwargs)
+        contexts = _render_contexts.get()
+        if contexts is not None and set(self.parent).difference(self.globals_keys):
+            # A non-global value means this context received data for the
+            # current render. Record it so that data can be detached once the
+            # rendered HTML has been produced. A globals-only context belongs
+            # to a cached macro module and is deliberately not recorded.
+            contexts.append(self)
+
+    def release(self) -> None:
+        """Detach request data and break macro cycles after rendering."""
+        # Nothing can use this per-render context after Template.render()
+        # returns. Clearing both sides owned by the context lets normal
+        # reference counting release the event immediately, instead of leaving
+        # thousands of objects for a later cyclic-GC pause.
+        self.parent.clear()
+        self.vars.clear()
+        self.exported_vars.clear()
+        self.blocks.clear()
+
+
 class ProfiledJinjaTemplate(JinjaTemplate):
-    """Jinja template that contributes its top-level render time to a request."""
+    """Release request-owned contexts and optionally profile the render."""
 
     def render(self, *args: t.Any, **kwargs: t.Any) -> str:
-        if current_request_performance() is None:
-            return super().render(*args, **kwargs)
-        from time import perf_counter
+        profile = current_request_performance()
+        start: float | None = None
+        if profile is not None:
+            from time import perf_counter
 
-        start = perf_counter()
+            start = perf_counter()
+        contexts: list[JinjaContext] = []
+        # ContextVar keeps concurrent request renders isolated while allowing
+        # every context created by includes, imports, and inheritance during
+        # this render to register itself above.
+        token = _render_contexts.set(contexts)
         try:
             return super().render(*args, **kwargs)
         finally:
-            record_template(self.name, perf_counter() - start)
+            # Run on successful and failed renders. At this point no generated
+            # macro can be called again, so every recorded context is safe to
+            # detach before control returns to the response layer.
+            for context in contexts:
+                assert isinstance(context, ReleasableJinjaContext)
+                context.release()
+            _render_contexts.reset(token)
+            if start is not None:
+                from time import perf_counter
+
+                record_template(self.name, perf_counter() - start)
 
 
 class SharlyChessEnvironment(Environment):
@@ -212,6 +272,7 @@ class SharlyChessEnvironment(Environment):
             trim_blocks=True,
             auto_reload=DEVEL_ENV,
         )
+        self.context_class = ReleasableJinjaContext
         self.template_class = ProfiledJinjaTemplate
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore

@@ -38,6 +38,7 @@ class RequestPerformance:
     gc_seconds: float = 0.0
     gc_collected: int = 0
     response_bytes: int = 0
+    response_seconds: float | None = None
     queries: dict[str, QueryPerformance] = field(default_factory=dict)
     templates: dict[str, float] = field(default_factory=dict)
 
@@ -115,6 +116,14 @@ class PerformanceMiddleware:
             elif message['type'] == 'http.response.body':
                 profile.response_bytes += len(message.get('body', b''))
             await send(message)
+            if (
+                message['type'] == 'http.response.body'
+                and not message.get('more_body', False)
+                and profile.response_seconds is None
+            ):
+                # The client has received the complete response. Middleware
+                # cleanup (notably request GC) can continue after this point.
+                profile.response_seconds = perf_counter() - start_wall
 
         try:
             await self.app(scope, receive, send_with_measurement)
@@ -134,17 +143,19 @@ class PerformanceMiddleware:
     ) -> None:
         route_handler: Any = scope.get('route_handler')
         route_name = getattr(route_handler, 'name', None) or '<unmatched>'
+        response_seconds = profile.response_seconds or wall_seconds
+        post_response_seconds = max(0.0, wall_seconds - response_seconds)
         # Event loading contains its SQLite time; the other categories are separate.
-        # The remainder covers guards, controller/context work, sessions and ASGI.
+        # The remainder covers guards, controller/context work, sessions and ASGI
+        # until the final response body is sent. Post-response work is shown
+        # separately so deferred GC is not mistaken for client-visible latency.
         other_seconds = max(
             0.0,
-            wall_seconds
-            - profile.event_load_seconds
-            - profile.template_seconds
-            - profile.gc_seconds,
+            response_seconds - profile.event_load_seconds - profile.template_seconds,
         )
         logger.info(
-            'PERF route=%s method=%s path=%s status=%d total=%.1fms cpu=%.1fms '
+            'PERF route=%s method=%s path=%s status=%d total=%.1fms '
+            'response=%.1fms post_response=%.1fms cpu=%.1fms '
             'event_load=%d/%.1fms sql=%d/%.1fms template=%d/%.1fms '
             'gc=%d/%.1fms/%dobj other=%.1fms bytes=%d%s',
             route_name,
@@ -152,6 +163,8 @@ class PerformanceMiddleware:
             scope.get('path', '?'),
             status_code,
             wall_seconds * 1000,
+            response_seconds * 1000,
+            post_response_seconds * 1000,
             cpu_seconds * 1000,
             profile.event_load_count,
             profile.event_load_seconds * 1000,

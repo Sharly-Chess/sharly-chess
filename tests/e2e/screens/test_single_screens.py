@@ -156,6 +156,8 @@ class TestSingleScreensFunctionality:
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(8)
+        unchanged_row = rows.filter(has_text='IRINA')
+        unchanged_row.evaluate('element => window.__unchangedResultEntryRow = element')
 
         another_lan_page = lan_context.new_page()
         another_lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
@@ -181,6 +183,9 @@ class TestSingleScreensFunctionality:
 
             # Test that the page is updated
             expect(row.locator('div.score')).to_contain_text(str(player['result']))
+            assert unchanged_row.evaluate(
+                'element => element === window.__unchangedResultEntryRow'
+            )
 
             # That the other page is refreshed
             another_lan_page.bring_to_front()
