@@ -13,6 +13,7 @@ from webbrowser import open
 import requests
 import uvicorn
 from litestar import Litestar
+from litestar.config.compression import CompressionConfig
 from litestar.exceptions import (
     PermissionDeniedException,
     NotFoundException,
@@ -206,6 +207,7 @@ class ServerEngine:
             route_handlers=route_handlers,
             exception_handlers=exception_handlers,  # type: ignore
             template_config=template_config,
+            compression_config=CompressionConfig(backend='gzip', gzip_compress_level=6),
             logging_config=LoggingConfig(
                 **logging_config,
                 disable_stack_trace={

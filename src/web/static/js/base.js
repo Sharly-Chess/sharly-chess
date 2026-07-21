@@ -427,7 +427,7 @@ function setPrintTournamentPlayerSelectOptions(
             playerSelect.append(
                 $('<option>', {
                     value: '',
-                    text: '-- {{ _("Select player") }} --',
+                    text: '-- ' + window.SC_I18N.selectPlayer + ' --',
                 })
             );
         }

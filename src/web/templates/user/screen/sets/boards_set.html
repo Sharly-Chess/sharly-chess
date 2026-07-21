@@ -55,6 +55,22 @@
                                 (not board.result_str and client.can_enter_results(tournament.id))
                             )
                         %}
+                        {% if editable %}
+                            {% set result_url = url_for(
+                                'user-result-modal',
+                                event_uniq_id=user_event.uniq_id,
+                                display_controller_id=display_controller.id,
+                                tournament_id=tournament.id,
+                                board_id=board.id
+                            ) if display_controller else url_for(
+                                'user-result-modal',
+                                is_screen=1,
+                                event_uniq_id=user_event.uniq_id,
+                                screen_uniq_id=screen.uniq_id,
+                                tournament_id=tournament.id,
+                                board_id=board.identifier
+                            ) %}
+                        {% endif %}
                         <div
                             id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
                             class="
@@ -63,31 +79,16 @@
                                 {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
                                 {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
                                 {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.identifier %}last_result_updated{% endif %}"
+                            {% if editable %}
+                                hx-get="{{ result_url }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                            {% endif %}
                         >
                             {% for column in board_columns %}
-                                <div
-                                    class="{{ column.get_cell_classes(board) }}"
-                                    {% if editable and column.edit_result_on_click %}
-                                        hx-get="{{ url_for(
-                                            'user-result-modal',
-                                            event_uniq_id=user_event.uniq_id,
-                                            display_controller_id=display_controller.id,
-                                            tournament_id=tournament.id,
-                                            board_id=board.id
-                                        ) if display_controller else url_for(
-                                            'user-result-modal',
-                                            is_screen=1,
-                                            event_uniq_id=user_event.uniq_id,
-                                            screen_uniq_id=screen.uniq_id,
-                                            tournament_id=tournament.id,
-                                            board_id=board.identifier
-                                        ) }}"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-wrapper"
-                                    {% endif %}
-                                >
+                                <div class="{{ column.get_cell_classes(board) }}">
                                     {% if column.cell_template %}
                                         {% include column.cell_template %}
                                     {% else %}
