@@ -1297,30 +1297,46 @@ class EventDatabase(MigrationDatabase):
     def load_tournament_stored_boards_by_round(
         self, tournament_id: int
     ) -> dict[int, list[StoredBoard]]:
-        # A double-hole team-match board has no pairings — its round
-        # is recovered from its parent ``team_board`` instead.
+        # Drive the common branch from pairing's tournament index. Starting
+        # from board would scan every board in the event once per tournament,
+        # which becomes expensive for large multi-tournament events. A board
+        # normally has two pairing rows, so reduce those to one before joining.
+        # The second branch recovers double-hole team-match boards, which have
+        # no pairings and get their round from their parent ``team_board``.
         self.execute(
             (
                 # The first six columns match StoredBoard; round is used only
-                # to bucket the resulting record. As with pairings above,
-                # reading tuples directly avoids a dict per historical board.
-                'SELECT DISTINCT `board`.`id`, `board`.`white_player_id`, '
+                # to bucket the resulting record. Reading tuples directly
+                # avoids a dict per historical board.
+                'SELECT `board`.`id`, `board`.`white_player_id`, '
                 '`board`.`black_player_id`, `board`.`index`, '
                 '`board`.`last_result_update`, `board`.`team_board_id`, '
-                'COALESCE(`pairing`.`round`, `team_board`.`round`) AS `round` '
-                'FROM `board` '
-                'LEFT JOIN `pairing` ON `board`.`id` = `pairing`.`board_id` '
-                'AND `pairing`.`tournament_id` = ? '
-                'LEFT JOIN `team_board` ON `board`.`team_board_id` = `team_board`.`id` '
-                'AND `team_board`.`tournament_id` = ? '
-                'WHERE `pairing`.`tournament_id` = ? '
-                'OR `team_board`.`tournament_id` = ? '
-                'ORDER BY `round`, `board`.`index`'
+                '`paired_board`.`round` '
+                'FROM ('
+                '  SELECT `board_id`, MIN(`round`) AS `round` '
+                '  FROM `pairing` '
+                '  WHERE `tournament_id` = ? AND `board_id` IS NOT NULL '
+                '  GROUP BY `board_id`'
+                ') AS `paired_board` '
+                'JOIN `board` ON `board`.`id` = `paired_board`.`board_id` '
+                'UNION ALL '
+                'SELECT `board`.`id`, `board`.`white_player_id`, '
+                '`board`.`black_player_id`, `board`.`index`, '
+                '`board`.`last_result_update`, `board`.`team_board_id`, '
+                '`team_board`.`round` '
+                'FROM `team_board` '
+                'JOIN `board` ON `board`.`team_board_id` = `team_board`.`id` '
+                'WHERE `team_board`.`tournament_id` = ? '
+                'AND NOT EXISTS ('
+                '  SELECT 1 FROM `pairing` '
+                '  WHERE `pairing`.`tournament_id` = ? '
+                '  AND `pairing`.`board_id` = `board`.`id`'
+                ') '
+                'ORDER BY `round`, `index`'
             ),
-            (tournament_id, tournament_id, tournament_id, tournament_id),
+            (tournament_id, tournament_id, tournament_id),
         )
         stored_boards_by_round: dict[int, list[StoredBoard]] = {}
-        seen_ids: set[int] = set()
         assert self.cursor is not None
         for (
             board_id,
@@ -1331,9 +1347,6 @@ class EventDatabase(MigrationDatabase):
             team_board_id,
             round_,
         ) in self.cursor.fetchall():
-            if board_id in seen_ids:
-                continue
-            seen_ids.add(board_id)
             board = StoredBoard(
                 id=board_id,
                 white_player_id=white_player_id,

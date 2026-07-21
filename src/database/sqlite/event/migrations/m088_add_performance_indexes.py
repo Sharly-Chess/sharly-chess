@@ -5,10 +5,9 @@ class Migration(BaseMigration):
     """Index the pairing / board hot paths.
 
     Loading a large event was dominated by ``load_tournament_stored_boards_by_round``
-    (a ``board``/``pairing`` join) and the per-round pairing scans, all against a
-    ``pairing`` table with no indexes. The same composite index also covers the
-    ``WHERE tournament_id = ? AND player_id = ? AND round = ?`` used when a result
-    is entered."""
+    (a ``board``/``pairing`` join) and the per-round pairing scans. The player/round
+    index also covers result entry, while the tournament/board/round index covers
+    and pre-groups the board rows loaded for one tournament."""
 
     def forward(self):
         self.database.execute(
@@ -17,6 +16,11 @@ class Migration(BaseMigration):
         self.database.execute(
             'CREATE INDEX IF NOT EXISTS `ix_pairing_tournament_player_round` '
             'ON `pairing`(`tournament_id`, `player_id`, `round`)'
+        )
+        self.database.execute(
+            'CREATE INDEX IF NOT EXISTS `ix_pairing_tournament_board_round` '
+            'ON `pairing`(`tournament_id`, `board_id`, `round`) '
+            'WHERE `board_id` IS NOT NULL'
         )
         self.database.execute(
             'CREATE INDEX IF NOT EXISTS `ix_board_team_board_id` '
@@ -31,6 +35,9 @@ class Migration(BaseMigration):
         self.database.execute('DROP INDEX IF EXISTS `ix_pairing_board_id`')
         self.database.execute(
             'DROP INDEX IF EXISTS `ix_pairing_tournament_player_round`'
+        )
+        self.database.execute(
+            'DROP INDEX IF EXISTS `ix_pairing_tournament_board_round`'
         )
         self.database.execute('DROP INDEX IF EXISTS `ix_board_team_board_id`')
         self.database.execute('DROP INDEX IF EXISTS `ix_team_board_tournament_id`')
