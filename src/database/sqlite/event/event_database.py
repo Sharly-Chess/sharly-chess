@@ -908,9 +908,8 @@ class EventDatabase(MigrationDatabase):
     # ---------------------------------------------------------------------------------
 
     def load_stored_players(self) -> list[StoredPlayer]:
-        # Keep this order aligned with StoredPlayer's constructor. Players are
-        # another high-volume event-load row, so parse the few encoded fields
-        # in place and avoid an intermediate dict for each one.
+        # Players are a high-volume event-load row, so parse the few encoded
+        # fields in place and avoid an intermediate dict for each one.
         self.execute(
             'SELECT `id`, `last_name`, `ratings`, `first_name`, '
             '`date_of_birth`, `year_of_birth`, `gender`, `mail`, `phone`, '
@@ -919,54 +918,60 @@ class EventDatabase(MigrationDatabase):
             '`plugin_data` FROM `player`'
         )
         assert self.cursor is not None
-        return [
-            StoredPlayer(
-                player_id,
-                last_name,
-                self.set_dict_int_keys(self.load_json_from_database_field(ratings)),
-                first_name,
-                self.load_optional_date_from_database_field(date_of_birth),
-                year_of_birth,
-                gender,
-                mail,
-                phone,
-                comment,
-                owed,
-                paid,
-                title,
-                fide_id,
-                federation,
-                club,
-                fixed,
-                self.load_bool_from_database_field(check_in),
-                team_id,
-                team_index,
-                self.load_json_from_database_field(plugin_data, {}),
+        stored_players: list[StoredPlayer] = []
+        for (
+            player_id,
+            last_name,
+            ratings,
+            first_name,
+            date_of_birth,
+            year_of_birth,
+            gender,
+            mail,
+            phone,
+            comment,
+            owed,
+            paid,
+            title,
+            fide_id,
+            federation,
+            club,
+            fixed,
+            check_in,
+            team_id,
+            team_index,
+            plugin_data,
+        ) in self.cursor.fetchall():
+            stored_players.append(
+                StoredPlayer(
+                    id=player_id,
+                    last_name=last_name,
+                    ratings=self.set_dict_int_keys(
+                        self.load_json_from_database_field(ratings)
+                    ),
+                    first_name=first_name,
+                    date_of_birth=self.load_optional_date_from_database_field(
+                        date_of_birth
+                    ),
+                    year_of_birth=year_of_birth,
+                    gender=gender,
+                    mail=mail,
+                    phone=phone,
+                    comment=comment,
+                    owed=owed,
+                    paid=paid,
+                    title=title,
+                    fide_id=fide_id,
+                    federation=federation,
+                    club=club,
+                    fixed=fixed,
+                    check_in=self.load_bool_from_database_field(check_in),
+                    team_id=team_id,
+                    team_index=team_index,
+                    plugin_data=self.load_json_from_database_field(plugin_data, {}),
+                )
             )
-            for (
-                player_id,
-                last_name,
-                ratings,
-                first_name,
-                date_of_birth,
-                year_of_birth,
-                gender,
-                mail,
-                phone,
-                comment,
-                owed,
-                paid,
-                title,
-                fide_id,
-                federation,
-                club,
-                fixed,
-                check_in,
-                team_id,
-                team_index,
-                plugin_data,
-            ) in self.cursor.fetchall()
-        ]
+        return stored_players
 
     @classmethod
     def _get_player_fields_dict(cls, stored_player: StoredPlayer) -> dict[str, Any]:
@@ -1061,10 +1066,10 @@ class EventDatabase(MigrationDatabase):
     ) -> list[StoredTournamentPlayer]:
         self.execute(
             (
-                # Keep this order aligned with StoredTournamentPlayer's
-                # persisted constructor fields. These rows are loaded for
-                # every tournament on every request, so avoid allocating an
-                # intermediate dict for each one.
+                # These rows are loaded for every tournament on every request,
+                # so avoid allocating an intermediate dict for each one. The
+                # tuple is unpacked beside its query below and passed by name,
+                # keeping the SQL-to-object mapping local and explicit.
                 'SELECT `tournament_id`, `player_id`, `pairing_number`, '
                 '`manual_tiebreak` FROM `tournament_player` '
                 'WHERE `tournament_id` = ?'
@@ -1078,10 +1083,18 @@ class EventDatabase(MigrationDatabase):
         )
         stored_tournament_players: list[StoredTournamentPlayer] = []
         seen_player_ids: set[int] = set()
-        for row in tournament_player_rows:
-            stored_tournament_player = StoredTournamentPlayer(*row)
-            stored_tournament_player.stored_pairings = pairings_by_player.get(
-                stored_tournament_player.player_id, []
+        for (
+            stored_tournament_id,
+            player_id,
+            pairing_number,
+            manual_tiebreak,
+        ) in tournament_player_rows:
+            stored_tournament_player = StoredTournamentPlayer(
+                tournament_id=stored_tournament_id,
+                player_id=player_id,
+                pairing_number=pairing_number,
+                manual_tiebreak=manual_tiebreak,
+                stored_pairings=pairings_by_player.get(player_id, []),
             )
 
             assert stored_tournament_player.player_id is not None
@@ -1207,10 +1220,10 @@ class EventDatabase(MigrationDatabase):
         loading large events."""
         self.execute(
             (
-                # Keep this order aligned with StoredPairing's constructor.
-                # This is the hottest event-load row type, so constructing it
-                # directly from SQLite tuples avoids allocating an intermediate
-                # dict for every player/round on every request.
+                # This is the hottest event-load row type, so avoid allocating
+                # an intermediate dict for every player/round on every request.
+                # The tuple is unpacked beside its query below and passed by
+                # name, keeping the SQL-to-object mapping local and explicit.
                 'SELECT `tournament_id`, `player_id`, `round`, `result`, '
                 '`board_id`, `illegal_moves`, `effective_points` FROM `pairing` '
                 'WHERE `tournament_id` = ? '
@@ -1220,8 +1233,24 @@ class EventDatabase(MigrationDatabase):
         )
         pairings_by_player: dict[int, list[StoredPairing]] = {}
         assert self.cursor is not None
-        for row in self.cursor.fetchall():
-            stored_pairing = StoredPairing(*row)
+        for (
+            stored_tournament_id,
+            player_id,
+            round_,
+            result,
+            board_id,
+            illegal_moves,
+            effective_points,
+        ) in self.cursor.fetchall():
+            stored_pairing = StoredPairing(
+                tournament_id=stored_tournament_id,
+                player_id=player_id,
+                round_=round_,
+                result=result,
+                board_id=board_id,
+                illegal_moves=illegal_moves,
+                effective_points=effective_points,
+            )
             pairings_by_player.setdefault(stored_pairing.player_id, []).append(
                 stored_pairing
             )
