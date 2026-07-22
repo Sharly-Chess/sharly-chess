@@ -1,0 +1,30 @@
+<div class="row gy-2 gx-3">
+    <div class="col-12 col-md-6">
+        {{ admin_macros.number_input(
+            name='results_limit',
+            label=_('Maximum number of results displayed:'),
+            placeholder=_('E.g.: %(num)d', num=30),
+            tooltip_text=_('The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).'),
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.number_input(
+            name='results_max_age',
+            label=_('Maximum age of the results:'),
+            placeholder=_('E.g.: %(minutes)d (minutes)', minutes=45),
+            tooltip_text=_('The maximum age of the results, in minutes (by default %(minutes)d minutes).', minutes=sharly_chess_config.default_results_screen_max_age),
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.select_input(
+            name='results_tournament_ids',
+            label=_('Tournaments displayed:'),
+            placeholder=_('All the tournaments'),
+            multiple_select=true,
+            select_options=tournament_options,
+            data=data, errors=errors
+        ) }}
+    </div>
+</div>

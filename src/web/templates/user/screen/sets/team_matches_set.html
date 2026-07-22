@@ -61,7 +61,7 @@
                                 {# A forfeit hole has no editable result —
                                    both players must be present. #}
                                 {% set editable =
-                                    screen.type == 'input'
+                                    screen.screen_type.allows_result_input
                                     and wtp and btp
                                     and (
                                         client.can_update_results(tournament.id)

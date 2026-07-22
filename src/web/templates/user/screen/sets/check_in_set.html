@@ -1,6 +1,5 @@
 {% set tournament = screen_set.tournament %}
-{% set is_input = screen.type in ('check-in', 'input') %}
-{% set check_in_enabled = is_input and tournament.check_in_open and client.can_check_in_players(tournament.id) %}
+{% set check_in_enabled = screen.screen_type.allows_check_in and tournament.check_in_open and client.can_check_in_players(tournament.id) %}
 {% if tournament.is_team_tournament %}
     {% include '/user/screen/sets/team_check_in_set.html' %}
 {% else %}

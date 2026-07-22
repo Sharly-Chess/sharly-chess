@@ -1129,7 +1129,7 @@ msgstr ""
 msgid "Background colour: %(color)s"
 msgstr ""
 
-msgid "Background image:"
+msgid "Background image URL:"
 msgstr ""
 
 msgid "Bahamas"
@@ -3414,6 +3414,9 @@ msgstr ""
 msgid "Image: %(image)s"
 msgstr ""
 
+msgid "Image: uploaded"
+msgstr ""
+
 msgid "Import"
 msgstr ""
 
@@ -4999,6 +5002,9 @@ msgstr ""
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr ""
 
+msgid "Or upload an image (stored with the event, max 2 MB):"
+msgstr ""
+
 msgid "Organiser"
 msgstr ""
 
@@ -5539,7 +5545,7 @@ msgstr ""
 msgid "Please consider contacting support, or installing the new version manually."
 msgstr ""
 
-msgid "Please enter the image URL."
+msgid "Please enter an image URL or upload a file."
 msgstr ""
 
 msgid "Please enter the name of the event."
@@ -6383,9 +6389,6 @@ msgstr ""
 msgid "Select to pair (White, then pick the opponent)"
 msgstr ""
 
-msgid "Selection"
-msgstr ""
-
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr ""
@@ -7035,6 +7038,9 @@ msgstr ""
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr ""
 
+msgid "The image is too large (max 2 MB)."
+msgstr ""
+
 msgid "The label used for this multi-screen in menus. Its range is appended automatically."
 msgstr ""
 
@@ -7318,6 +7324,9 @@ msgid "The type of criterion used to filter the players."
 msgstr ""
 
 msgid "The update could not be downloaded. Consult the logs for more details."
+msgstr ""
+
+msgid "The uploaded image is too large (max 2 MB)."
 msgstr ""
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."

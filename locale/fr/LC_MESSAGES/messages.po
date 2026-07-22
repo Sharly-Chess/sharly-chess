@@ -1129,8 +1129,8 @@ msgstr "Couleur de fond :"
 msgid "Background colour: %(color)s"
 msgstr "Couleur de fond : %(color)s"
 
-msgid "Background image:"
-msgstr "Image de fond :"
+msgid "Background image URL:"
+msgstr "URL de l'image de fond :"
 
 msgid "Bahamas"
 msgstr "Bahamas"
@@ -3414,6 +3414,9 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
 
+msgid "Image: uploaded"
+msgstr "Image : téléversée"
+
 msgid "Import"
 msgstr "Importer"
 
@@ -5001,6 +5004,9 @@ msgstr "Historique des adversaires"
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officielles (coupe de la fédération...)."
 
+msgid "Or upload an image (stored with the event, max 2 MB):"
+msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
+
 msgid "Organiser"
 msgstr "Organisateur·ice"
 
@@ -5541,8 +5547,8 @@ msgstr "Veuillez choisir le tournoi."
 msgid "Please consider contacting support, or installing the new version manually."
 msgstr "Considérez contacter le support, ou installer la nouvelle version manuellement."
 
-msgid "Please enter the image URL."
-msgstr "Veuillez entrer l'URL de l'image."
+msgid "Please enter an image URL or upload a file."
+msgstr "Veuillez saisir l'URL d'une image ou téléverser un fichier."
 
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
@@ -6385,9 +6391,6 @@ msgstr "Sélectionner cette table vide (forfait pour le·la joueur·euse appari�
 msgid "Select to pair (White, then pick the opponent)"
 msgstr "Sélectionner pour apparier (Blanc, puis choisir l'adversaire)"
 
-msgid "Selection"
-msgstr "Sélection"
-
 #, python-format
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
@@ -7037,6 +7040,9 @@ msgstr "Les fonctionnalités suivant ne seront pas importées :"
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
 
+msgid "The image is too large (max 2 MB)."
+msgstr "L'image est trop volumineuse (max 2 Mo)."
+
 msgid "The label used for this multi-screen in menus. Its range is appended automatically."
 msgstr "Le libellé utilisé pour cet écran multiple dans les menus. Sa plage est ajoutée automatiquement."
 
@@ -7321,6 +7327,9 @@ msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
 
 msgid "The update could not be downloaded. Consult the logs for more details."
 msgstr "La mise à jour n'a pas pu être téléchargée. Consultez les logs pour plus d'informations."
+
+msgid "The uploaded image is too large (max 2 MB)."
+msgstr "L'image téléversée est trop volumineuse (max 2 Mo)."
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."
@@ -9000,10 +9009,3 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Do you want to install example event databases"
-#~ msgstr "Voulez-vous installer des bases d'évènement d'exemple"
-
-#~ msgid "Do you want to install the update now"
-#~ msgstr "Voulez-vous installer la mise à jour maintenant"
-

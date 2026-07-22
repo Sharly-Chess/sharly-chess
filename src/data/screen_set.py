@@ -10,12 +10,6 @@ from data.board import Board
 from data.player import TournamentPlayer
 from datetime import datetime
 
-from utils.enum import (
-    ScreenType,
-    PlayersScreenPlayerFormat,
-    PlayersScreenBoardFormat,
-    PlayersScreenOpponentFormat,
-)
 from database.sqlite.event.event_store import StoredScreenSet
 
 if TYPE_CHECKING:
@@ -24,6 +18,8 @@ if TYPE_CHECKING:
     from data.family import Family
     from data.team_board import TeamBoard
     from data.tournament import Tournament
+    from data.screen_types import ScreenType
+    from database.sqlite.event.event_store import StoredScreen, StoredFamily
 
 
 def format_range(first: str, last: str) -> str:
@@ -63,8 +59,7 @@ class ScreenSet:
             self.uniq_id = f'{self.screen.uniq_id}_{self.family_part:03}'
         fixed_boards_str: str | None = (
             self.stored_screen_set.fixed_boards_str
-            if self.screen.type in [ScreenType.BOARDS, ScreenType.INPUT]
-            and self.stored_screen_set
+            if self.screen.screen_type.supports_fixed_boards and self.stored_screen_set
             else None
         )
         self.fixed_board_numbers: list[int] | None = None
@@ -144,8 +139,21 @@ class ScreenSet:
         return self.stored_screen_set.id if self.stored_screen_set else None
 
     @property
-    def type(self) -> ScreenType:
+    def type(self) -> str:
         return self.screen.type
+
+    @property
+    def screen_type(self) -> 'ScreenType':
+        return self.screen.screen_type
+
+    @property
+    def _config(self) -> 'StoredScreen | StoredFamily':
+        """The stored record carrying this set's screen configuration (the
+        screen's own record, or its family's for a family-generated screen)."""
+        if self.screen.stored_screen is not None:
+            return self.screen.stored_screen
+        assert self.screen.family is not None
+        return self.screen.family.stored_family
 
     @property
     def order(self) -> int | None:
@@ -185,18 +193,6 @@ class ScreenSet:
     @property
     def players_show_unpaired(self) -> bool:
         return self.screen.players_show_unpaired
-
-    @property
-    def players_player_format(self) -> PlayersScreenPlayerFormat:
-        return self.screen.players_player_format
-
-    @property
-    def players_board_format(self) -> PlayersScreenBoardFormat:
-        return self.screen.players_board_format
-
-    @property
-    def players_opponent_format(self) -> PlayersScreenOpponentFormat:
-        return self.screen.players_opponent_format
 
     @property
     def name_for_boards(self) -> str:
@@ -291,22 +287,6 @@ class ScreenSet:
         return name
 
     @property
-    def ranking_round(self) -> int:
-        return self.tournament.correct_ranking_round(self.screen.ranking_round)
-
-    @property
-    def ranking_crosstable(self) -> bool:
-        return self.screen.ranking_crosstable
-
-    @property
-    def ranking_min_points(self) -> float | None:
-        return self.screen.ranking_min_points
-
-    @property
-    def ranking_max_points(self) -> float | None:
-        return self.screen.ranking_max_points
-
-    @property
     def name_for_ranking(self) -> str:
         if self.tournament.is_team_tournament:
             return self._name_for_team_standings()
@@ -318,12 +298,12 @@ class ScreenSet:
             name = self.family.name
         if name is None:
             if self.first or self.last:
-                if self.screen.ranking_crosstable:
+                if self._config.ranking_crosstable:
                     name = _('Crosstable %f to %l')
                 else:
                     name = _('Ranking %f to %l')
             else:
-                if self.screen.ranking_crosstable:
+                if self._config.ranking_crosstable:
                     name = _('%t crosstable')
                 else:
                     name = _('%t ranking')
@@ -508,67 +488,7 @@ class ScreenSet:
         screens. When ``abbreviated`` (menu navigation), player names are cut
         to their first 3 characters in upper case; otherwise (admin display)
         the fuller ``name_for_*`` forms are used."""
-        dash = '-'
-        screen_type = self.type
-        tournament = self.tournament
-        if (
-            screen_type in (ScreenType.BOARDS, ScreenType.INPUT)
-            and tournament.current_round
-        ):
-            if self.shows_team_matches:
-                self._extract_team_matches()
-                first, last = self._team_first_item, self._team_last_item
-                return (
-                    str(first.display_number)
-                    if first is not None and first.display_number is not None
-                    else dash,
-                    str(last.display_number)
-                    if last is not None and last.display_number is not None
-                    else dash,
-                )
-            first_board, last_board = self.first_board, self.last_board
-            offset = tournament.first_board_number - 1
-            return (
-                str(first_board.id + offset)
-                if first_board and first_board.id is not None
-                else dash,
-                str(last_board.id + offset)
-                if last_board and last_board.id is not None
-                else dash,
-            )
-        if screen_type == ScreenType.RANKING:
-            if tournament.is_team_tournament:
-                self._extract_team_standings()
-                first, last = self._team_first_item, self._team_last_item
-                return (
-                    str(first['rank']) if first is not None else dash,
-                    str(last['rank']) if last is not None else dash,
-                )
-            first = self.first_tournament_player_by_rank
-            last = self.last_tournament_player_by_rank
-            return (
-                str(first.rank) if first else dash,
-                str(last.rank) if last else dash,
-            )
-        if screen_type == ScreenType.CHECK_IN and tournament.is_team_tournament:
-            self._extract_teams_by_name()
-            first, last = self._team_first_item, self._team_last_item
-            return (
-                first.name[:12] if first is not None else dash,
-                last.name[:12] if last is not None else dash,
-            )
-        first = self.first_tournament_player_by_name
-        last = self.last_tournament_player_by_name
-
-        def player_label(player: Any) -> str:
-            if player is None:
-                return dash
-            return player.last_name[:3].upper() if abbreviated else player.last_name[:8]
-
-        return (
-            player_label(first),
-            player_label(last),
-        )
+        return self.screen_type.range_bounds(self, abbreviated)
 
     def _extract_players_by_name(self):
         if self.items_lists is None:
@@ -725,6 +645,11 @@ class ScreenSet:
         if self._team_items_lists is None:
             from utils.enum import ScoreType
 
+            ranking_round = self.tournament.correct_ranking_round(
+                self._config.ranking_round
+            )
+            min_points = self._config.ranking_min_points
+            max_points = self._config.ranking_max_points
             primary_is_mp = (
                 self.tournament.pairing_system.paired_by_team
                 and self.tournament.primary_score == ScoreType.MATCH_POINTS
@@ -733,17 +658,9 @@ class ScreenSet:
             self._extract_team_data(
                 items=[
                     row
-                    for row in self.tournament.team_standings(
-                        after_round=self.ranking_round
-                    )
-                    if (
-                        self.ranking_min_points is None
-                        or row[score_key] >= self.ranking_min_points
-                    )
-                    and (
-                        self.ranking_max_points is None
-                        or row[score_key] <= self.ranking_max_points
-                    )
+                    for row in self.tournament.team_standings(after_round=ranking_round)
+                    if (min_points is None or row[score_key] >= min_points)
+                    and (max_points is None or row[score_key] <= max_points)
                 ]
             )
 
@@ -757,18 +674,14 @@ class ScreenSet:
     def _extract_players_by_rank(self):
         if self.items_lists is None:
             self.tournament.ensure_tournament_player_ranks_computed()
+            min_points = self._config.ranking_min_points
+            max_points = self._config.ranking_max_points
             self._extract_data(
                 items=[
                     player
                     for player in self.tournament.tournament_players_by_rank.values()
-                    if (
-                        self.ranking_min_points is None
-                        or (player.points or 0) >= self.ranking_min_points
-                    )
-                    and (
-                        self.ranking_max_points is None
-                        or (player.points or 0) <= self.ranking_max_points
-                    )
+                    if (min_points is None or (player.points or 0) >= min_points)
+                    and (max_points is None or (player.points or 0) <= max_points)
                 ],
                 extract_boards=False,
             )
@@ -815,85 +728,7 @@ class ScreenSet:
 
     @property
     def numbers_str(self) -> str:
-        if self.fixed_board_numbers:
-            return _('boards {board_numbers}').format(
-                board_numbers=', '.join(map(str, self.fixed_board_numbers))
-            )
-        if self.type in [ScreenType.BOARDS, ScreenType.INPUT]:
-            if self.shows_team_matches:
-                match (self.first, self.last):
-                    case (0, 0):
-                        return _('all the matches')
-                    case (first, 0) if first:
-                        return _('matches from #{first} to end').format(first=first)
-                    case (0, last) if last:
-                        return _('matches from start to #{last}').format(last=last)
-                    case (first, last):
-                        return _('matches from #{first} to #{last}').format(
-                            first=first, last=last
-                        )
-                    case _:
-                        raise ValueError(f'first={self.first}, last={self.last}')
-            match (self.first, self.last):
-                case (0, 0):
-                    return _('all the boards')
-                case (first, 0) if first:
-                    return _('boards from #{first} to end').format(
-                        first=first + self.tournament.first_board_number - 1,
-                    )
-                case (0, last) if last:
-                    return _('boards from start to #{last}').format(
-                        last=last + self.tournament.first_board_number - 1,
-                    )
-                case (first, last):
-                    return _('boards from #{first} to #{last}').format(
-                        first=first + self.tournament.first_board_number - 1,
-                        last=last + self.tournament.first_board_number - 1,
-                    )
-                case _:
-                    raise ValueError(f'first={self.first}, last={self.last}')
-        elif self.type in [ScreenType.PLAYERS, ScreenType.CHECK_IN]:
-            if self.tournament.is_team_tournament:
-                match (self.first, self.last):
-                    case (0, 0):
-                        return _('all the teams')
-                    case (first, 0) if first:
-                        return _('teams from #{first} to end').format(first=first)
-                    case (0, last) if last:
-                        return _('teams from start to #{last}').format(last=last)
-                    case (first, last) if first and last:
-                        return _('teams from #{first} to #{last}').format(
-                            first=first, last=last
-                        )
-                    case _:
-                        raise ValueError(f'first={self.first}, last={self.last}')
-            match (self.first, self.last):
-                case (0, 0):
-                    return _('all the players')
-                case (first, 0) if first:
-                    return _('players from #{first} to end').format(first=first)
-                case (0, last) if last:
-                    return _('players from start to #{last}').format(last=last)
-                case (first, last) if first and last:
-                    return _('players from #{first} to #{last}').format(
-                        first=first, last=last
-                    )
-                case _:
-                    raise ValueError(f'first={self.first}, last={self.last}')
-        else:
-            match (self.first, self.last):
-                case (0, 0):
-                    return _('the whole ranking')
-                case (first, 0) if first:
-                    return _('ranking from #{first} to end').format(first=first)
-                case (0, last) if last:
-                    return _('ranking from start to #{last}').format(last=last)
-                case (first, last) if first and last:
-                    return _('ranking from #{first} to #{last}').format(
-                        first=first, last=last
-                    )
-                case _:
-                    raise ValueError(f'first={self.first}, last={self.last}')
+        return self.screen_type.numbers_str(self)
 
     def __str__(self):
         return _('Tournament {tournament} ({numbers_str})').format(

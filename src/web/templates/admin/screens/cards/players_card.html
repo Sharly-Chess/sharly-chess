@@ -1,5 +1,5 @@
 <div>
-    {% if entity.players_show_unpaired %}
+    {% if data.show_unpaired %}
         {{ _('Unpaired: displayed') }}
     {% else %}
         {{ _('Unpaired: hidden') }}
@@ -10,27 +10,27 @@
     <table class="screen-card-table">
         <tr>
             <th class="overflow-hidden text-nowrap">
-                {{ entity.players_player_format.header(tournament) }}
+                {{ data.player_format.header(data.tournament) }}
             </th>
             <th class="overflow-hidden text-nowrap">
-                {{ entity.players_board_format.header(tournament) }}
+                {{ data.board_format.header(data.tournament) }}
             </th>
-            {% if entity.players_opponent_format.value != 1 %}
+            {% if data.opponent_format.value != 1 %}
                 <th class="overflow-hidden text-nowrap">
-                    {{ entity.players_opponent_format.header(tournament) }}
+                    {{ data.opponent_format.header(data.tournament) }}
                 </th>
             {% endif %}
         </tr>
         <tr>
             <td class="overflow-hidden text-nowrap">
-                {{ entity.players_player_format.example }}
+                {{ data.player_format.example }}
             </td>
             <td class="overflow-hidden text-nowrap">
-                {{ entity.players_board_format.example }}
+                {{ data.board_format.example }}
             </td>
-            {% if entity.players_opponent_format.value != 1 %}
+            {% if data.opponent_format.value != 1 %}
                 <td class="overflow-hidden text-nowrap">
-                    {{ entity.players_opponent_format.example }}
+                    {{ data.opponent_format.example }}
                 </td>
             {% endif %}
         </tr>

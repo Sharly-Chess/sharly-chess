@@ -59,7 +59,6 @@ from utils.enum import (
     TeamSortMode,
     TournamentRating,
     PlayerRatingType,
-    ScreenType,
     RoleType,
     PlayerTitle,
     CheckInStatus,
@@ -2240,26 +2239,8 @@ class Tournament:
     def dependent_screens(self) -> list[Screen]:
         dependent_screens = []
         for screen in self.event.basic_screens_by_id.values():
-            match screen.type:
-                case (
-                    ScreenType.INPUT
-                    | ScreenType.BOARDS
-                    | ScreenType.PLAYERS
-                    | ScreenType.RANKING
-                    | ScreenType.CHECK_IN
-                ):
-                    if all(
-                        screen_set.tournament.id == self.id
-                        for screen_set in screen.screen_sets
-                    ):
-                        dependent_screens.append(screen)
-                case ScreenType.RESULTS:
-                    if screen.results_tournament_ids == [self.id]:
-                        dependent_screens.append(screen)
-                case ScreenType.IMAGE:
-                    pass
-                case _:
-                    raise ValueError(f'{screen.type=}')
+            if screen.screen_type.depends_on_tournament(screen, self):
+                dependent_screens.append(screen)
 
         return dependent_screens
 
@@ -2267,27 +2248,8 @@ class Tournament:
     def related_screens(self) -> list[Screen]:
         related_screens = []
         for screen in self.event.basic_screens_by_id.values():
-            match screen.type:
-                case (
-                    ScreenType.INPUT
-                    | ScreenType.BOARDS
-                    | ScreenType.PLAYERS
-                    | ScreenType.RANKING
-                    | ScreenType.CHECK_IN
-                ):
-                    for screen_set in screen.sorted_screen_sets:
-                        if screen_set.tournament.id == self.id:
-                            related_screens.append(screen)
-                case ScreenType.RESULTS:
-                    if (
-                        not screen.results_tournament_ids
-                        or self.id in screen.results_tournament_ids
-                    ):
-                        related_screens.append(screen)
-                case ScreenType.IMAGE:
-                    pass
-                case _:
-                    raise ValueError(f'{screen.type=}')
+            if screen.screen_type.relates_to_tournament(screen, self):
+                related_screens.append(screen)
 
         return related_screens
 

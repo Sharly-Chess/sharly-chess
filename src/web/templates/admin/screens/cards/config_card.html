@@ -1,0 +1,28 @@
+{% if show_details and client.can_manage_screens %}
+    <div>
+        <span class="pe-1">{{ macros.screen_type_icon(screen.screen_type, true) }}</span>
+        {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
+    </div>
+{% endif %}
+<div>
+    {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+</div>
+<div>
+    <i class="bi-hand-index pe-1"></i>
+    {{ _('Menu label: %(menu_label)s', menu_label=screen.menu_entry_label) }}
+</div>
+<div class="{% if not screen.timer %}text-secondary{% endif %}">
+    <i class="bi-clock-fill pe-1"></i>
+    {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
+</div>
+{% if show_details and client.can_manage_screens and screen.screen_type.has_exit_button %}
+    <div>
+        <i class="bi-x-circle pe-1"></i>
+        {{ _('Exit button:') }}
+        {% if screen.input_exit_button %}
+            {{ _('yes') }}
+        {% else %}
+            {{ _('no') }}
+        {% endif %}
+    </div>
+{% endif %}
