@@ -46,6 +46,7 @@ if TYPE_CHECKING:
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
+    from data.criteria.tournament_criteria import TournamentCriterion
     from data.tie_breaks import TieBreak, TieBreakOption
     from data.tie_breaks.system_sets import SystemTieBreakSet
     from data.tournament import Tournament
@@ -340,6 +341,12 @@ class AppHookSpecs:
     @hookspec
     def load_tournament_check_in_data(self, tournament: 'Tournament'):
         """Load the check-in data of a tournament."""
+
+    @hookspec
+    def insert_tournament_criteria_types(
+        self, criteria_types: list[type['TournamentCriterion']]
+    ):
+        """Provide additional tournament criteria types."""
 
     # ---------------------------------------------------------------------------------
     # Upload
