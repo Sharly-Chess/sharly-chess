@@ -352,13 +352,10 @@ class BaseAccessLevelTest:
         row = rows.filter(has_text='ALYX')
         result_cell = row.locator('div.score')
         if not can_enter:
-            expect(result_cell).not_to_have_attribute(
-                'hx-get', re.compile(r'.*result-modal.*')
-            )
+            expect(row).not_to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
             return
 
-        # Try to open the modal
-        expect(result_cell).to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
+        expect(row).to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
         row.click()
         modal = self.auth_page.locator('.modal-dialog')
 
@@ -395,9 +392,7 @@ class BaseAccessLevelTest:
             clear_button.click()
             expect(result_cell).to_have_text('#1')
         else:
-            expect(result_cell).not_to_have_attribute(
-                'hx-get', re.compile(r'.*result-modal.*')
-            )
+            expect(row).not_to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
 
     def assert_can_set_illegal_moves_via_screen(
         self,

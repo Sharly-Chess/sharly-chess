@@ -194,6 +194,7 @@ class TestSingleScreensFunctionality:
                 str(player['result'])
             )
 
+        another_lan_page.close()
         TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
 
     def test_boards_screen(
