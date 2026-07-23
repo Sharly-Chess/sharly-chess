@@ -3,7 +3,7 @@ import itertools
 from collections import defaultdict
 from contextlib import suppress
 from datetime import date, datetime
-from functools import total_ordering, cached_property
+from functools import total_ordering, cached_property, cache
 from logging import Logger
 from operator import attrgetter
 from types import NotImplementedType
@@ -68,6 +68,7 @@ class Event:
         self.stored_event: StoredEvent = stored_event
 
     @staticmethod
+    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class
@@ -512,13 +513,13 @@ class Event:
             return True
         if stored_player.fide_id and stored_player.fide_id == player.fide_id:
             return True
-        if any(
-            plugin_manager.hook_for_event(self, 'are_players_duplicates')(
-                stored_player=stored_player, player=player
-            )
-        ):
-            return True
-        return False
+        duplicate_key_hook = plugin_manager.hook_for_event(
+            self, 'get_player_duplicate_key'
+        )
+        stored_player_keys = set(duplicate_key_hook(stored_player=stored_player))
+        return not stored_player_keys.isdisjoint(
+            duplicate_key_hook(stored_player=player.stored_player)
+        )
 
     def get_player_duplicate(
         self,
@@ -541,14 +542,43 @@ class Event:
             None,
         )
 
-    @cached_property
+    @property
     def has_multi_tournament_players(self) -> bool:
-        for ref_player in self.players:
-            if any(
-                self._are_player_duplicates(ref_player.stored_player, player)
-                for player in self.players
-            ):
-                return True
+        duplicate_key_hook = plugin_manager.hook_for_event(
+            self, 'get_player_duplicate_key'
+        )
+
+        # None and '' remain distinct despite Player normalizing both to ''.
+        seen_birth_identities: dict[tuple[str, str, date], bool] = {}
+        seen_fide_ids: set[int] = set()
+        seen_plugin_keys: set[object] = set()
+
+        for player in self.players:
+            stored_player = player.stored_player
+            if stored_player.date_of_birth:
+                birth_identity = (
+                    stored_player.last_name,
+                    stored_player.first_name or '',
+                    stored_player.date_of_birth,
+                )
+                if seen_non_null_name := seen_birth_identities.get(birth_identity):
+                    return True
+                if (
+                    birth_identity in seen_birth_identities
+                    and stored_player.first_name is not None
+                ):
+                    return True
+                seen_birth_identities[birth_identity] = (
+                    seen_non_null_name or stored_player.first_name is not None
+                )
+            if stored_player.fide_id:
+                if stored_player.fide_id in seen_fide_ids:
+                    return True
+                seen_fide_ids.add(stored_player.fide_id)
+            for key in duplicate_key_hook(stored_player=stored_player):
+                if key in seen_plugin_keys:
+                    return True
+                seen_plugin_keys.add(key)
         return False
 
     @property

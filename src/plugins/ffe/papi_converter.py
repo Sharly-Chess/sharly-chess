@@ -32,6 +32,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
+    set_stored_fields,
 )
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_mappers import (
@@ -338,7 +339,7 @@ class PapiConverter:
                     else:
                         board_id = next_board_id
                         next_board_id += 1
-                        stored_board.id = board_id
+                        set_stored_fields(stored_board, id=board_id)
                         stored_boards_by_round[round_nb].append(stored_board)
                         if papi_round and papi_round.opponent is not None:
                             board_id_by_player_id_by_round[round_nb][

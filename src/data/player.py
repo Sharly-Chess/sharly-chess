@@ -1,6 +1,6 @@
 import weakref
 from datetime import date
-from functools import total_ordering, cached_property
+from functools import total_ordering, cached_property, cache
 from typing import TYPE_CHECKING, Any
 
 from babel.lists import format_list
@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
     from data.team import Team
+    from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.input_output.trf.trf_data import TrfPlayer
 
@@ -62,6 +63,7 @@ class Player:
         self.plugin_data = self._get_plugin_data()
 
     @staticmethod
+    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class
@@ -414,6 +416,11 @@ class TournamentPlayer(Player):
         self.time_control_modified: bool | None = None
         self.tie_break_variables: dict[str, Any] = {}
         self.transient_plugin_data: dict[str, object] = {}
+        # Per-round sums cached only during a guarded computation pass.
+        self._compute_cache: dict[Any, float] = {}
+
+    def clear_compute_caches(self) -> None:
+        self._compute_cache.clear()
 
     @property
     def tournament(self) -> 'Tournament':
@@ -646,11 +653,20 @@ class TournamentPlayer(Player):
         # NOTE(Amaras) if you were to include the current round
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
-        return sum(
+        caching = self.tournament._compute_caching_enabled
+        key = ('points_before', before_round, only_played)
+        if caching:
+            cached = self._compute_cache.get(key)
+            if cached is not None:
+                return cached
+        value = sum(
             pairing.result.points(self.point_values)
             for round_, pairing in self.pairings.items()
             if round_ < before_round and (pairing.played or not only_played)
         )
+        if caching:
+            self._compute_cache[key] = value
+        return value
 
     def points_after(self, after_round: int) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
@@ -659,11 +675,20 @@ class TournamentPlayer(Player):
         # NOTE(Amaras) if you were to include the current round
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
-        return sum(
+        caching = self.tournament._compute_caching_enabled
+        key = ('points_after', after_round)
+        if caching:
+            cached = self._compute_cache.get(key)
+            if cached is not None:
+                return cached
+        value = sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index <= after_round
         )
+        if caching:
+            self._compute_cache[key] = value
+        return value
 
     # Standard W/D/L values for the TRF26 team-mode "standard score".
     # Tournament-level ``game_points`` overrides intentionally don't apply
@@ -937,7 +962,14 @@ class TournamentPlayer(Player):
             if self.tournament.tie_breaks[tie_break_index].is_used_for_team_ranking
         ]
 
-    def compute_tie_break_values(self, *, after_round: int):
+    def compute_tie_break_values(
+        self,
+        *,
+        after_round: int,
+        tie_breaks: list['TieBreak'] | None = None,
+    ):
+        if tie_breaks is None:
+            tie_breaks = self.tournament.tie_breaks
         self._tie_break_values = [
             TieBreakValue(
                 tie_break,
@@ -945,7 +977,7 @@ class TournamentPlayer(Player):
                 if tie_break.is_computed_per_player
                 else 0,
             )
-            for tie_break in self.tournament.tie_breaks
+            for tie_break in tie_breaks
         ]
 
     @property

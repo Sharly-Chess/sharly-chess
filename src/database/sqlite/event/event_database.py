@@ -907,43 +907,68 @@ class EventDatabase(MigrationDatabase):
     # StoredPlayer
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _row_to_stored_player(cls, row: dict[str, Any]) -> StoredPlayer:
-        return StoredPlayer(
-            id=row['id'],
-            last_name=row['last_name'],
-            first_name=row['first_name'],
-            date_of_birth=cls.load_optional_date_from_database_field(
-                row['date_of_birth']
-            ),
-            year_of_birth=row['year_of_birth'],
-            gender=row['gender'],
-            mail=row['mail'],
-            phone=row['phone'],
-            comment=row['comment'],
-            owed=row['owed'],
-            paid=row['paid'],
-            title=row['title'],
-            ratings=cls.set_dict_int_keys(
-                cls.load_json_from_database_field(row['ratings'])
-            ),
-            fide_id=row['fide_id'],
-            federation=row['federation'],
-            club=row['club'],
-            fixed=row['fixed'],
-            check_in=cls.load_bool_from_database_field(row['check_in']),
-            team_id=row['team_id'],
-            team_index=row['team_index'],
-            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
-        )
-
     def load_stored_players(self) -> list[StoredPlayer]:
-        self.execute('SELECT `player`.* FROM `player`')
+        self.execute(
+            'SELECT `id`, `last_name`, `ratings`, `first_name`, '
+            '`date_of_birth`, `year_of_birth`, `gender`, `mail`, `phone`, '
+            '`comment`, `owed`, `paid`, `title`, `fide_id`, `federation`, '
+            '`club`, `fixed`, `check_in`, `team_id`, `team_index`, '
+            '`plugin_data` FROM `player`'
+        )
+        assert self.cursor is not None
         stored_players: list[StoredPlayer] = []
-        for row in self.fetchall():
-            player = self._row_to_stored_player(row)
-            assert player.id is not None
-            stored_players.append(player)
+        for (
+            player_id,
+            last_name,
+            ratings,
+            first_name,
+            date_of_birth,
+            year_of_birth,
+            gender,
+            mail,
+            phone,
+            comment,
+            owed,
+            paid,
+            title,
+            fide_id,
+            federation,
+            club,
+            fixed,
+            check_in,
+            team_id,
+            team_index,
+            plugin_data,
+        ) in self.cursor.fetchall():
+            stored_players.append(
+                StoredPlayer(
+                    id=player_id,
+                    last_name=last_name,
+                    ratings=self.set_dict_int_keys(
+                        self.load_json_from_database_field(ratings)
+                    ),
+                    first_name=first_name,
+                    date_of_birth=self.load_optional_date_from_database_field(
+                        date_of_birth
+                    ),
+                    year_of_birth=year_of_birth,
+                    gender=gender,
+                    mail=mail,
+                    phone=phone,
+                    comment=comment,
+                    owed=owed,
+                    paid=paid,
+                    title=title,
+                    fide_id=fide_id,
+                    federation=federation,
+                    club=club,
+                    fixed=fixed,
+                    check_in=self.load_bool_from_database_field(check_in),
+                    team_id=team_id,
+                    team_index=team_index,
+                    plugin_data=self.load_json_from_database_field(plugin_data, {}),
+                )
+            )
         return stored_players
 
     @classmethod
@@ -1034,36 +1059,36 @@ class EventDatabase(MigrationDatabase):
     # StoredTournamentPlayer
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _row_to_stored_tournament_player(
-        cls, row: dict[str, Any]
-    ) -> StoredTournamentPlayer:
-        return StoredTournamentPlayer(
-            tournament_id=row['tournament_id'],
-            player_id=row['player_id'],
-            pairing_number=row['pairing_number'],
-            manual_tiebreak=row['manual_tiebreak'],
-        )
-
     def load_stored_tournament_players(
         self, tournament_id: int
     ) -> list[StoredTournamentPlayer]:
         self.execute(
             (
-                'SELECT `tournament_player`.* FROM `tournament_player` '
+                'SELECT `tournament_id`, `player_id`, `pairing_number`, '
+                '`manual_tiebreak` FROM `tournament_player` '
                 'WHERE `tournament_id` = ?'
             ),
             (tournament_id,),
         )
+        assert self.cursor is not None
+        tournament_player_rows = self.cursor.fetchall()
+        pairings_by_player = self.load_tournament_stored_pairings_by_player(
+            tournament_id
+        )
         stored_tournament_players: list[StoredTournamentPlayer] = []
         seen_player_ids: set[int] = set()
-        for row in self.fetchall():
-            stored_tournament_player = self._row_to_stored_tournament_player(row)
-            stored_tournament_player.stored_pairings = (
-                self.load_tournament_player_stored_pairings(
-                    stored_tournament_player.tournament_id,
-                    stored_tournament_player.player_id,
-                )
+        for (
+            stored_tournament_id,
+            player_id,
+            pairing_number,
+            manual_tiebreak,
+        ) in tournament_player_rows:
+            stored_tournament_player = StoredTournamentPlayer(
+                tournament_id=stored_tournament_id,
+                player_id=player_id,
+                pairing_number=pairing_number,
+                manual_tiebreak=manual_tiebreak,
+                stored_pairings=pairings_by_player.get(player_id, []),
             )
 
             assert stored_tournament_player.player_id is not None
@@ -1074,13 +1099,13 @@ class EventDatabase(MigrationDatabase):
         # do not get a tournament_player row; synthesize one in-memory so the
         # rest of the codebase sees them.
         self.execute(
-            'SELECT `player`.`id` AS player_id FROM `player` '
+            'SELECT `player`.`id` FROM `player` '
             'JOIN `team` ON `player`.`team_id` = `team`.`id` '
             'WHERE `team`.`tournament_id` = ?',
             (tournament_id,),
         )
-        for row in self.fetchall():
-            player_id = row['player_id']
+        assert self.cursor is not None
+        for (player_id,) in self.cursor.fetchall():
             if player_id in seen_player_ids:
                 continue
             synthetic = StoredTournamentPlayer(
@@ -1088,9 +1113,7 @@ class EventDatabase(MigrationDatabase):
                 player_id=player_id,
                 pairing_number=None,
                 manual_tiebreak=None,
-                stored_pairings=self.load_tournament_player_stored_pairings(
-                    tournament_id, player_id
-                ),
+                stored_pairings=pairings_by_player.get(player_id, []),
             )
             seen_player_ids.add(player_id)
             stored_tournament_players.append(synthetic)
@@ -1183,30 +1206,43 @@ class EventDatabase(MigrationDatabase):
     # StoredPairings
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _row_to_stored_pairing(cls, row: dict[str, Any]) -> StoredPairing:
-        return StoredPairing(
-            tournament_id=row['tournament_id'],
-            player_id=row['player_id'],
-            round_=row['round'],
-            result=row['result'],
-            board_id=row['board_id'],
-            illegal_moves=row['illegal_moves'],
-            effective_points=row['effective_points'],
-        )
-
-    def load_tournament_player_stored_pairings(
-        self, tournament_id: int, player_id: int
-    ) -> list[StoredPairing]:
+    def load_tournament_stored_pairings_by_player(
+        self, tournament_id: int
+    ) -> dict[int, list[StoredPairing]]:
+        """Load and group every pairing of a tournament."""
         self.execute(
             (
-                'SELECT * FROM `pairing` '
-                'WHERE `tournament_id` = ? AND `player_id` = ? '
-                'ORDER BY `round`'
+                'SELECT `tournament_id`, `player_id`, `round`, `result`, '
+                '`board_id`, `illegal_moves`, `effective_points` FROM `pairing` '
+                'WHERE `tournament_id` = ? '
+                'ORDER BY `player_id`, `round`'
             ),
-            (tournament_id, player_id),
+            (tournament_id,),
         )
-        return [self._row_to_stored_pairing(row) for row in self.fetchall()]
+        pairings_by_player: dict[int, list[StoredPairing]] = {}
+        assert self.cursor is not None
+        for (
+            stored_tournament_id,
+            player_id,
+            round_,
+            result,
+            board_id,
+            illegal_moves,
+            effective_points,
+        ) in self.cursor.fetchall():
+            stored_pairing = StoredPairing(
+                tournament_id=stored_tournament_id,
+                player_id=player_id,
+                round_=round_,
+                result=result,
+                board_id=board_id,
+                illegal_moves=illegal_moves,
+                effective_points=effective_points,
+            )
+            pairings_by_player.setdefault(stored_pairing.player_id, []).append(
+                stored_pairing
+            )
+        return pairings_by_player
 
     def add_stored_pairing(
         self,
@@ -1275,47 +1311,61 @@ class EventDatabase(MigrationDatabase):
     # StoredBoard
     # ---------------------------------------------------------------------------------
 
-    @classmethod
-    def _row_to_stored_board(cls, row: dict[str, Any]) -> StoredBoard:
-        return StoredBoard(
-            id=row['id'],
-            white_player_id=row['white_player_id'],
-            black_player_id=row['black_player_id'],
-            index=row['index'],
-            last_result_update=cls.load_optional_timestamp_from_database_field(
-                row['last_result_update']
-            ),
-            team_board_id=row['team_board_id'],
-        )
-
     def load_tournament_stored_boards_by_round(
         self, tournament_id: int
     ) -> dict[int, list[StoredBoard]]:
-        # A double-hole team-match board has no pairings — its round
-        # is recovered from its parent ``team_board`` instead.
+        # Start from pairing's tournament index; the UNION adds unpaired team boards.
         self.execute(
             (
-                'SELECT DISTINCT `board`.*, '
-                'COALESCE(`pairing`.`round`, `team_board`.`round`) AS `round` '
-                'FROM `board` '
-                'LEFT JOIN `pairing` ON `board`.`id` = `pairing`.`board_id` '
-                'AND `pairing`.`tournament_id` = ? '
-                'LEFT JOIN `team_board` ON `board`.`team_board_id` = `team_board`.`id` '
-                'AND `team_board`.`tournament_id` = ? '
-                'WHERE `pairing`.`tournament_id` = ? '
-                'OR `team_board`.`tournament_id` = ? '
-                'ORDER BY `round`, `board`.`index`'
+                'SELECT `board`.`id`, `board`.`white_player_id`, '
+                '`board`.`black_player_id`, `board`.`index`, '
+                '`board`.`last_result_update`, `board`.`team_board_id`, '
+                '`paired_board`.`round` '
+                'FROM ('
+                '  SELECT `board_id`, MIN(`round`) AS `round` '
+                '  FROM `pairing` '
+                '  WHERE `tournament_id` = ? AND `board_id` IS NOT NULL '
+                '  GROUP BY `board_id`'
+                ') AS `paired_board` '
+                'JOIN `board` ON `board`.`id` = `paired_board`.`board_id` '
+                'UNION ALL '
+                'SELECT `board`.`id`, `board`.`white_player_id`, '
+                '`board`.`black_player_id`, `board`.`index`, '
+                '`board`.`last_result_update`, `board`.`team_board_id`, '
+                '`team_board`.`round` '
+                'FROM `team_board` '
+                'JOIN `board` ON `board`.`team_board_id` = `team_board`.`id` '
+                'WHERE `team_board`.`tournament_id` = ? '
+                'AND NOT EXISTS ('
+                '  SELECT 1 FROM `pairing` '
+                '  WHERE `pairing`.`tournament_id` = ? '
+                '  AND `pairing`.`board_id` = `board`.`id`'
+                ') '
+                'ORDER BY `round`, `index`'
             ),
-            (tournament_id, tournament_id, tournament_id, tournament_id),
+            (tournament_id, tournament_id, tournament_id),
         )
         stored_boards_by_round: dict[int, list[StoredBoard]] = {}
-        seen_ids: set[int] = set()
-        for row in self.fetchall():
-            if row['id'] in seen_ids:
-                continue
-            seen_ids.add(row['id'])
-            board = self._row_to_stored_board(row)
-            round_ = row['round']
+        assert self.cursor is not None
+        for (
+            board_id,
+            white_player_id,
+            black_player_id,
+            index,
+            last_result_update,
+            team_board_id,
+            round_,
+        ) in self.cursor.fetchall():
+            board = StoredBoard(
+                id=board_id,
+                white_player_id=white_player_id,
+                black_player_id=black_player_id,
+                index=index,
+                last_result_update=self.load_optional_timestamp_from_database_field(
+                    last_result_update
+                ),
+                team_board_id=team_board_id,
+            )
             if round_ in stored_boards_by_round:
                 stored_boards_by_round[round_].append(board)
             else:
@@ -2111,11 +2161,24 @@ class EventDatabase(MigrationDatabase):
             'SELECT * FROM `screen` ORDER BY `uniq_id`',
             (),
         )
+        stored_screens = [self._row_to_stored_screen(row) for row in self.fetchall()]
+        if not stored_screens:
+            return
+
+        self.execute('SELECT * FROM `screen_set` ORDER BY `screen_id`, `order`')
+        stored_screen_sets_by_screen_id: dict[int, list[StoredScreenSet]] = defaultdict(
+            list
+        )
         for row in self.fetchall():
-            stored_screen: StoredScreen = self._row_to_stored_screen(row)
+            stored_screen_set = self._row_to_stored_screen_set(row)
+            stored_screen_sets_by_screen_id[stored_screen_set.screen_id].append(
+                stored_screen_set
+            )
+
+        for stored_screen in stored_screens:
             assert stored_screen.id is not None
-            stored_screen.stored_screen_sets = list(
-                self.load_stored_screen_sets(stored_screen.id)
+            stored_screen.stored_screen_sets = stored_screen_sets_by_screen_id.get(
+                stored_screen.id, []
             )
             yield stored_screen
 
@@ -2760,17 +2823,71 @@ class EventDatabase(MigrationDatabase):
         self, tournament_id: int
     ) -> list[StoredPrizeGroup]:
         self.execute(
-            'SELECT * FROM `prize_group` WHERE `tournament_id` = ?',
+            'SELECT * FROM `prize_group` WHERE `tournament_id` = ? ORDER BY `id`',
             (tournament_id,),
         )
-        stored_prize_groups: list[StoredPrizeGroup] = []
+        stored_prize_groups = [
+            self._row_to_stored_prize_group(row) for row in self.fetchall()
+        ]
+        if not stored_prize_groups:
+            return []
+
+        self.execute(
+            'SELECT `prize_category`.* FROM `prize_category` '
+            'JOIN `prize_group` '
+            'ON `prize_category`.`prize_group_id` = `prize_group`.`id` '
+            'WHERE `prize_group`.`tournament_id` = ? '
+            'ORDER BY `prize_category`.`id`',
+            (tournament_id,),
+        )
+        stored_prize_categories = [
+            self._row_to_stored_prize_category(row) for row in self.fetchall()
+        ]
+
+        self.execute(
+            'SELECT `prize_criterion`.* FROM `prize_criterion` '
+            'JOIN `prize_category` '
+            'ON `prize_criterion`.`prize_category_id` = `prize_category`.`id` '
+            'JOIN `prize_group` '
+            'ON `prize_category`.`prize_group_id` = `prize_group`.`id` '
+            'WHERE `prize_group`.`tournament_id` = ? '
+            'ORDER BY `prize_criterion`.`id`',
+            (tournament_id,),
+        )
+        criteria_by_category: dict[int, list[StoredPrizeCriterion]] = {}
         for row in self.fetchall():
-            prize_group = self._row_to_stored_prize_group(row)
-            assert prize_group.id is not None
-            prize_group.stored_prize_categories = (
-                self.load_prize_group_stored_prize_categories(prize_group.id)
+            criterion = self._row_to_stored_prize_criterion(row)
+            criteria_by_category.setdefault(criterion.prize_category_id, []).append(
+                criterion
             )
-            stored_prize_groups.append(prize_group)
+
+        self.execute(
+            'SELECT `prize`.* FROM `prize` '
+            'JOIN `prize_category` '
+            'ON `prize`.`prize_category_id` = `prize_category`.`id` '
+            'JOIN `prize_group` '
+            'ON `prize_category`.`prize_group_id` = `prize_group`.`id` '
+            'WHERE `prize_group`.`tournament_id` = ? '
+            'ORDER BY `prize`.`id`',
+            (tournament_id,),
+        )
+        prizes_by_category: dict[int, list[StoredPrize]] = {}
+        for row in self.fetchall():
+            prize = self._row_to_stored_prize(row)
+            prizes_by_category.setdefault(prize.prize_category_id, []).append(prize)
+
+        categories_by_group: dict[int, list[StoredPrizeCategory]] = {}
+        for category in stored_prize_categories:
+            assert category.id is not None
+            category.stored_prize_criteria = criteria_by_category.get(category.id, [])
+            category.stored_prizes = prizes_by_category.get(category.id, [])
+            categories_by_group.setdefault(category.prize_group_id, []).append(category)
+
+        for prize_group in stored_prize_groups:
+            assert prize_group.id is not None
+            prize_group.stored_prize_categories = categories_by_group.get(
+                prize_group.id, []
+            )
         return stored_prize_groups
 
     def add_stored_prize_group(self, stored_prize_group: StoredPrizeGroup) -> int:
@@ -3037,18 +3154,51 @@ class EventDatabase(MigrationDatabase):
         return None
 
     def load_stored_accounts(self) -> list[StoredAccount]:
-        stored_accounts: list[StoredAccount] = []
         self.execute('SELECT * FROM `account`')
+        stored_accounts = [self._row_to_stored_account(row) for row in self.fetchall()]
+        if not stored_accounts:
+            return []
+
+        self.execute(
+            'SELECT * FROM `account_permission` '
+            'ORDER BY `account_id`, `access_level`, `tournament_id`'
+        )
+        permission_ids: dict[tuple[int, str], list[int] | None] = {}
         for row in self.fetchall():
-            stored_account = self._row_to_stored_account(row)
+            key = (row['account_id'], row['access_level'])
+            if row['tournament_id'] is None:
+                permission_ids[key] = None
+            elif (tournament_ids := permission_ids.setdefault(key, [])) is not None:
+                tournament_ids.append(row['tournament_id'])
+        permissions_by_account: dict[int, list[StoredPermission]] = defaultdict(list)
+        for (account_id, access_level), tournament_ids in permission_ids.items():
+            permissions_by_account[account_id].append(
+                StoredPermission(account_id, access_level, tournament_ids)
+            )
+
+        self.execute(
+            'SELECT * FROM `account_role` '
+            'ORDER BY `account_id`, `role`, `tournament_id`'
+        )
+        role_ids: dict[tuple[int, str], list[int] | None] = {}
+        for row in self.fetchall():
+            key = (row['account_id'], row['role'])
+            if row['tournament_id'] is None:
+                role_ids[key] = None
+            elif (tournament_ids := role_ids.setdefault(key, [])) is not None:
+                tournament_ids.append(row['tournament_id'])
+        roles_by_account: dict[int, list[StoredRole]] = defaultdict(list)
+        for (account_id, role), tournament_ids in role_ids.items():
+            roles_by_account[account_id].append(
+                StoredRole(account_id, role, tournament_ids)
+            )
+
+        for stored_account in stored_accounts:
             assert stored_account.id is not None
-            stored_account.stored_permissions = self.load_account_stored_permissions(
-                stored_account.id
+            stored_account.stored_permissions = permissions_by_account.get(
+                stored_account.id, []
             )
-            stored_account.stored_roles = self.load_account_stored_roles(
-                stored_account.id
-            )
-            stored_accounts.append(stored_account)
+            stored_account.stored_roles = roles_by_account.get(stored_account.id, [])
         return stored_accounts
 
     def add_stored_account(self, stored_account: StoredAccount) -> int:

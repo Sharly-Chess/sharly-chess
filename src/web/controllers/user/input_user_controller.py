@@ -305,4 +305,8 @@ class InputUserController(BaseScreenUserController):
                 expiration=time.time() + 20,
             )
         )
-        return self._user_screen_render(web_context)
+        return self._user_screen_render(
+            web_context,
+            template_name='user/screen/content.html',
+            trigger_event='close_modal',
+        )

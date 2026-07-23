@@ -115,6 +115,14 @@ try:
         type=int,
         help='force the web port tu use',
     )
+    parser.add_argument(
+        '--profile',
+        action='store_true',
+        help=(
+            'log per-route performance, database, template and '
+            'garbage-collection timings'
+        ),
+    )
     if DEVEL_ENV:
         parser.add_argument(
             '-d',
@@ -293,7 +301,9 @@ try:
         if gtk_available:
             logger.info('Creating Toga application...')
             try:
-                app = SharlyChessServerToga(debug=debug, port=port)
+                app = SharlyChessServerToga(
+                    debug=debug, profile=args.profile, port=port
+                )
                 logger.info(
                     'Toga application created successfully, starting main loop...'
                 )
@@ -341,7 +351,7 @@ try:
 
     # Original console mode
     try:
-        se: ServerEngine = ServerEngine(debug=debug, port=port)
+        se: ServerEngine = ServerEngine(debug=debug, profile=args.profile, port=port)
         asyncio.run(se.serve())
     except KeyboardInterrupt:
         pass

@@ -414,15 +414,14 @@ class FfePlugin(Plugin):
             ).format(ffe_licence_number=ffe_licence_number)
 
     @hookimpl
-    def are_players_duplicates(
-        self, stored_player: StoredPlayer, player: Player
-    ) -> bool:
-        licence_number = self.get_data(stored_player.plugin_data, 'ffe_licence_number')
-        return (
-            licence_number
-            and FFEUtils.get_player_plugin_data(player).ffe_licence_number
-            == licence_number
-        )
+    def get_player_duplicate_key(
+        self, stored_player: StoredPlayer
+    ) -> tuple[str, str] | None:
+        if licence_number := self.get_data(
+            stored_player.plugin_data, 'ffe_licence_number'
+        ):
+            return self.id, licence_number
+        return None
 
     @hookimpl
     async def augment_player_after_search(
@@ -699,16 +698,31 @@ class FfePlugin(Plugin):
         # The FFE upload pipeline is Papi-based — individual events only.
         if stored_event.event_type == EventType.TEAM:
             return
-        # This hook being called in most database writes, it needs to be optimized
+        # Defer the event reload so result entry does not wait for it.
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
         ):
             return
-        event = EventLoader().load_event(stored_event.uniq_id)
+
+        from threading import Thread
+
+        from common.logger import get_logger
+
+        uniq_id = stored_event.uniq_id
         tournament_id = stored_tournament.id
         assert tournament_id is not None
-        tournament = event.tournaments_by_id[tournament_id]
-        FfeBackgroundUploader.schedule_upload(tournament)
+
+        def _reload_and_schedule() -> None:
+            try:
+                event = EventLoader().load_event(uniq_id)
+                tournament = event.tournaments_by_id[tournament_id]
+                FfeBackgroundUploader.schedule_upload(tournament)
+            except Exception:
+                get_logger().exception(
+                    'FFE auto-upload scheduling failed for event [%s]', uniq_id
+                )
+
+        Thread(target=_reload_and_schedule, daemon=True).start()
 
     @hookimpl
     def get_tournament_form_fields_template_and_data(

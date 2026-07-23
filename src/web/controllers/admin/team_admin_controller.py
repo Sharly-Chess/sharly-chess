@@ -1328,11 +1328,9 @@ class TeamAdminController(BaseEventAdminController):
                         opp_pairing.update(database)
                 else:
                     if side == 'white':
-                        board.stored_board.white_player_id = None
-                        board._white_player_ref = None
+                        board.white_player_id = None
                     else:
-                        board.stored_board.black_player_id = None
-                        board._black_player_ref = None
+                        board.black_player_id = None
                     # The opposing player loses their opponent — score
                     # the hole as a forfeit win, like lineup holes
                     # punched at pairing time.

@@ -1,6 +1,7 @@
 import tempfile
 from collections.abc import Callable, Mapping
 from itertools import cycle
+from math import isfinite
 import re
 import time
 from datetime import datetime, date
@@ -477,6 +478,7 @@ class BaseController(Controller):
         )
 
     IF_MODIFIED_SINCE_HEADER: str = 'If-Modified-Since'
+    PRECISE_IF_MODIFIED_SINCE_HEADER: str = 'X-Sharly-Chess-If-Modified-Since'
 
     def get_if_modified_since(self, request: HTMXRequest) -> float | None:
         """
@@ -490,6 +492,21 @@ class BaseController(Controller):
         else:
             return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
         """
+        precise_modified_since = request.headers.get(
+            self.PRECISE_IF_MODIFIED_SINCE_HEADER
+        )
+        if precise_modified_since is not None:
+            try:
+                precise_timestamp = float(precise_modified_since)
+                if isfinite(precise_timestamp):
+                    return precise_timestamp
+            except ValueError:
+                pass
+            logger.warning(
+                'Invalid [%s] header [%s]',
+                self.PRECISE_IF_MODIFIED_SINCE_HEADER,
+                precise_modified_since,
+            )
         try:
             http_modified_since = request.headers[self.IF_MODIFIED_SINCE_HEADER]
             logger.debug('%s=%s', self.IF_MODIFIED_SINCE_HEADER, http_modified_since)

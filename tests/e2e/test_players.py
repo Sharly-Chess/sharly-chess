@@ -28,7 +28,7 @@ class TestPlayersFunctionality:
     def test_create_update_delete_player(self, page: Page):
         page.goto(f'/event/{EVENT_ID}/players')
         page.get_by_test_id('add-player-button').click()
-        modal = page.locator('.modal-dialog')
+        modal = page.locator('#player-modal:not(.htmx-added)')
         expect(modal).to_be_visible()
         modal.get_by_test_id('last-name').fill('doe')
         modal.get_by_test_id('first-name').fill('john')
@@ -90,7 +90,7 @@ class TestPlayersFunctionality:
         menu_button.click()
         edit_link = row.get_by_text('Edit')
         edit_link.click()
-        modal = page.locator('.modal-dialog')
+        modal = page.locator('#player-modal:not(.htmx-added)')
         expect(modal).to_be_visible()
         modal.get_by_test_id('last-name').fill('hoe')
         modal.locator('button[type=submit]').click()
