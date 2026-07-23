@@ -134,23 +134,32 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_boards: list[Board] = []
         self.admin_boards_sortable = False
         self.admin_board_sort = SessionPairingsBoardSort(request).get()
+        # Set after a board-only points update and cleared by full-page rendering.
+        self.scoped_recompute = False
         if self.admin_tournament is not None:
-            self.admin_tournament.set_for_round(self.admin_round)
-            self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
-            self.admin_boards_sortable = (
-                not event.is_team_event
-                and not self.admin_tournament.leave_fixed_board_holes
-                and any(
-                    player.fixed for player in self.admin_tournament.tournament_players
+            if self.display_rankings:
+                self.admin_tournament.compute_tournament_player_ranks()
+            else:
+                only_players = self._points_recompute_scope(event, board_id, action)
+                self.scoped_recompute = only_players is not None
+                self.admin_tournament.set_for_round(
+                    self.admin_round, only_players=only_players
                 )
-            )
-            if self.admin_boards_sortable and self.admin_board_sort != 'natural':
-                self.admin_boards = sorted(
-                    self.admin_boards, key=lambda board: board.number
+                self.admin_boards = self.admin_tournament.get_round_boards(
+                    self.admin_round
                 )
-
-        if self.admin_tournament and self.display_rankings:
-            self.admin_tournament.compute_tournament_player_ranks()
+                self.admin_boards_sortable = (
+                    not event.is_team_event
+                    and not self.admin_tournament.leave_fixed_board_holes
+                    and any(
+                        player.fixed
+                        for player in self.admin_tournament.tournament_players
+                    )
+                )
+                if self.admin_boards_sortable and self.admin_board_sort != 'natural':
+                    self.admin_boards = sorted(
+                        self.admin_boards, key=lambda board: board.number
+                    )
 
         if SessionPairingsShowWithoutResults(request).get():
             self.admin_filtered_boards = [
@@ -166,8 +175,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_team_bye: list[Team] = []
         self.admin_team_unpaired: list[Team] = []
         self.admin_team_absent: list[Team] = []
-        self.reload_unpaired_player_lists()
-        self.reload_unpaired_team_lists()
+        if not self.display_rankings:
+            self.reload_unpaired_player_lists()
+            self.reload_unpaired_team_lists()
 
         self.admin_board: Board | None = None
         if board_id is not None:
@@ -226,6 +236,38 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                     f'Action [{action}] does not exist for '
                     f'round with status [{self.round_status}].'
                 )
+
+    def _points_recompute_scope(
+        self,
+        event: Event,
+        board_id: int | None,
+        action: 'PairingAction | None',
+    ) -> 'list[TournamentPlayer] | None':
+        """Return the affected board's players, or ``None`` for the full field."""
+        if action != PairingAction.RESULT_UPDATE or board_id is None:
+            return None
+        if event.is_team_event or self.display_rankings:
+            return None
+        assert self.admin_tournament is not None
+        board = next(
+            (
+                b
+                for b in self.admin_tournament.get_round_boards(self.admin_round)
+                if b.identifier == board_id or b.board_id == board_id
+            ),
+            None,
+        )
+        if board is None:
+            return None
+        players = [
+            player
+            for player in (
+                board.optional_white_tournament_player,
+                board.black_tournament_player,
+            )
+            if player is not None
+        ]
+        return players or None
 
     def reload_unpaired_player_lists(self):
         self.admin_absent_players = []
@@ -407,7 +449,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                         and all(board.result != Result.NO_RESULT for board in tb.boards)
                     )
                 ]
-                if self.admin_tournament
+                if self.admin_tournament and not self.display_rankings
                 else []
             ),
             'admin_unpaired': self.admin_unpaired,
@@ -418,6 +460,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'admin_team_unpaired': self.admin_team_unpaired,
             'admin_team_absent': self.admin_team_absent,
             'pairings_generation_disabled_message': self.admin_tournament
+            and not self.display_rankings
             and self.admin_tournament.pairings_generation_disabled_message(
                 self.admin_round
             ),
@@ -460,6 +503,10 @@ class PairingsAdminController(BaseEventAdminController):
         web_context: PairingsAdminWebContext,
         template_context: dict[str, Any] | None = None,
     ) -> Template:
+        # Replace any board-only calculation before rendering the full table.
+        if web_context.scoped_recompute and web_context.admin_tournament is not None:
+            web_context.admin_tournament.set_for_round(web_context.admin_round)
+            web_context.scoped_recompute = False
         return cls._admin_base_event_render(
             web_context.template_context | (template_context or {}),
         )
@@ -891,17 +938,14 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         board_id: int = int(data['board_id'])
         key: str = data['key']
-        # In a team match the row shows team_a on the left, team_b on the
-        # right, regardless of colour — so keys 1/2 mean "left wins" /
-        # "right wins". Results are stored white-relative, so flip them
-        # when team_a is the black side on this board.
-        web_context = PairingsAdminWebContext(
-            request, tournament_id=tournament_id, round_=round, board_id=board_id
-        )
-        event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
+        # Team rows use team_a/team_b order; stored results are white-relative.
+        event = BaseEventAdminWebContext(request).get_admin_event()
         left_is_white = True
         if event.is_team_event:
+            web_context = PairingsAdminWebContext(
+                request, tournament_id=tournament_id, round_=round, board_id=board_id
+            )
+            tournament = web_context.get_admin_tournament()
             board = tournament.boards_by_id.get(board_id)
             team_board_id = (
                 board.stored_board.team_board_id if board is not None else None
@@ -1128,11 +1172,9 @@ class PairingsAdminController(BaseEventAdminController):
             side_pairing.stored_pairing.illegal_moves = 0
             side_pairing.update(database)
             if physical_side == 'white':
-                this_board.stored_board.white_player_id = None
-                this_board._white_player_ref = None
+                this_board.white_player_id = None
             else:
-                this_board.stored_board.black_player_id = None
-                this_board._black_player_ref = None
+                this_board.black_player_id = None
             # Keep the board even when both sides become empty so the
             # slot remains visible in the team block and can be
             # re-filled from either team.

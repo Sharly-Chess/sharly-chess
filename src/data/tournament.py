@@ -2,7 +2,7 @@ from datetime import date, datetime
 import weakref
 from collections import Counter, defaultdict
 from collections.abc import Collection
-from functools import cached_property
+from functools import cached_property, cache
 from logging import Logger
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any
@@ -43,6 +43,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
+    set_stored_fields,
 )
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
@@ -99,6 +100,31 @@ if TYPE_CHECKING:
 logger: Logger = get_logger()
 
 
+class BoardsById(dict[int, Board]):
+    """Board mapping with a version counter for numbering caches."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.version: int = 0
+
+    def __setitem__(self, key: int, value: Board) -> None:
+        super().__setitem__(key, value)
+        self.version += 1
+
+    def __delitem__(self, key: int) -> None:
+        super().__delitem__(key)
+        self.version += 1
+
+    def pop(self, *args: Any) -> Any:
+        result = super().pop(*args)
+        self.version += 1
+        return result
+
+    def clear(self) -> None:
+        super().clear()
+        self.version += 1
+
+
 class Tournament:
     """A data wrapper around a stored tournament."""
 
@@ -110,12 +136,16 @@ class Tournament:
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
         self._tournament_players_by_rank: dict[int, TournamentPlayer] | None = None
+        # Per-player caches are valid only while pairings are stable.
+        self._compute_caching_enabled: bool = False
+        self._round_board_numbers_cache: dict[tuple[int, int], dict[int, int]] = {}
 
     # -------------------------------------------------------------------------
     # Plugin
     # -------------------------------------------------------------------------
 
     @staticmethod
+    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class
@@ -314,7 +344,7 @@ class Tournament:
     def rounds(self) -> int:
         return self.stored_tournament.rounds
 
-    @property
+    @cached_property
     def pairing_variation(self) -> 'PairingVariation':
         from data.pairings import PairingVariationManager
 
@@ -322,7 +352,7 @@ class Tournament:
             self.stored_tournament.pairing
         )
 
-    @property
+    @cached_property
     def pairing_system(self) -> 'PairingSystem':
         return self.pairing_variation.system()
 
@@ -2489,8 +2519,8 @@ class Tournament:
         return self.tournament_players
 
     @cached_property
-    def boards_by_id(self) -> dict[int, Board]:
-        boards_by_id: dict[int, Board] = {}
+    def boards_by_id(self) -> BoardsById:
+        boards_by_id: BoardsById = BoardsById()
         for (
             round_,
             stored_boards,
@@ -2500,13 +2530,18 @@ class Tournament:
                 boards_by_id[board.identifier] = board
         return boards_by_id
 
+    def invalidate_board_layout(self) -> None:
+        """Invalidate board-number caches after an in-place board change."""
+        if 'boards_by_id' in self.__dict__:
+            self.boards_by_id.version += 1
+
     def get_round_boards(self, round_: int) -> list[Board]:
         return sorted(
             (board for board in self.boards_by_id.values() if board.round == round_),
             key=lambda board: board.index,
         )
 
-    @property
+    @cached_property
     def leave_fixed_board_holes(self) -> bool:
         """Whether a fixed board number leaves the table it displaces empty
         and duplicates the number it lands on, reproducing the numbering of
@@ -2520,13 +2555,19 @@ class Tournament:
         )
 
     def _round_board_numbers(self, round_: int) -> dict[int, int]:
+        cache_key = (round_, self.boards_by_id.version)
+        cached = self._round_board_numbers_cache.get(cache_key)
+        if cached is not None:
+            return cached
         entries = [
             (board.identifier, board.fixed_number, board.standard_number)
             for board in self.get_round_boards(round_)
         ]
-        return compute_round_board_numbers(
+        board_numbers = compute_round_board_numbers(
             entries, self.first_board_number, self.leave_fixed_board_holes
         )
+        self._round_board_numbers_cache[cache_key] = board_numbers
+        return board_numbers
 
     def board_number(self, board: Board) -> int:
         if board.stored_board.id is None:
@@ -2632,23 +2673,45 @@ class Tournament:
     def has_never_paired_players(self) -> bool:
         return any(not player.has_real_pairings for player in self.tournament_players)
 
-    def set_for_round(self, round_: int | None = None):
-        """Set the tournament for the given round (defaults to the current round)"""
+    def set_for_round(
+        self,
+        round_: int | None = None,
+        *,
+        only_players: 'list[TournamentPlayer] | None' = None,
+    ):
+        """Prepare a round, optionally limiting point calculation to *only_players*.
+
+        A full-page render must recompute the full field after a limited pass.
+        """
         if round_ is None:
             round_ = self.current_round
-        for player in self.tournament_players:
-            self.set_tournament_player_points(player, before_round=round_)
-        for board in self.get_round_boards(round_):
-            white_tp = board.optional_white_tournament_player
-            if white_tp is not None:
-                white_tp.set_board(board.index, board.number, BoardColor.WHITE)
-            if board.black_tournament_player:
-                board.black_tournament_player.set_board(
-                    board.index, board.number, BoardColor.BLACK
-                )
-        plugin_manager.hook_for_event(self.event, 'set_for_round')(
-            tournament=self, round_=round_
-        )
+        self._compute_caching_enabled = True
+        try:
+            for player in self.tournament_players:
+                player.clear_compute_caches()
+            players_to_compute = (
+                self.tournament_players if only_players is None else only_players
+            )
+            for player in players_to_compute:
+                self.set_tournament_player_points(player, before_round=round_)
+            board_numbers = self._round_board_numbers(round_)
+            for board in self.get_round_boards(round_):
+                if board.stored_board.id is not None:
+                    number = board_numbers[board.identifier]
+                else:
+                    number = board.fixed_number or board.standard_number
+                white_tp = board.optional_white_tournament_player
+                if white_tp is not None:
+                    white_tp.set_board(board.index, number, BoardColor.WHITE)
+                if board.black_tournament_player:
+                    board.black_tournament_player.set_board(
+                        board.index, number, BoardColor.BLACK
+                    )
+            plugin_manager.hook_for_event(self.event, 'set_for_round')(
+                tournament=self, round_=round_
+            )
+        finally:
+            self._compute_caching_enabled = False
 
     def generate_round_pairings(
         self, at_round: int, partial_pairings: bool = False
@@ -3756,8 +3819,20 @@ class Tournament:
         if after_round is None:
             after_round = self.max_ranking_round
 
+        self._compute_caching_enabled = True
+        try:
+            self._compute_tournament_player_ranks(after_round)
+        finally:
+            self._compute_caching_enabled = False
+        assert self._tournament_players_by_rank is not None
+        return self._tournament_players_by_rank
+
+    def _compute_tournament_player_ranks(self, after_round: int) -> None:
+        for player in self.tournament_players:
+            player.clear_compute_caches()
         self.set_tournament_players_pairing_numbers()
-        for tie_break in self.tie_breaks:
+        tie_breaks = self.tie_breaks
+        for tie_break in tie_breaks:
             for player_id, variable in tie_break.get_player_variables(
                 self, after_round
             ).items():
@@ -3765,9 +3840,11 @@ class Tournament:
                 player.tie_break_variables[tie_break.id] = variable
         for player in self.tournament_players:
             player.points = player.points_after(after_round)
-            player.compute_tie_break_values(after_round=after_round)
+            player.compute_tie_break_values(
+                after_round=after_round, tie_breaks=tie_breaks
+            )
 
-        for index, tie_break in enumerate(self.tie_breaks):
+        for index, tie_break in enumerate(tie_breaks):
             if tie_break.is_computed_per_player:
                 continue
             value_by_player_id = tie_break.compute_all_player_values(
@@ -3788,7 +3865,7 @@ class Tournament:
         }
         for rank, player in self._tournament_players_by_rank.items():
             player.rank = rank
-        for tie_break_index, tie_break in enumerate(self.tie_breaks):
+        for tie_break_index, tie_break in enumerate(tie_breaks):
             if not tie_break.display_rank_delta:
                 continue
             players_ranked_without_tie_break = sorted(
@@ -3801,8 +3878,6 @@ class Tournament:
                 player.tie_break_values[tie_break_index].rank_progress = (
                     rank_without_tie_break - player.rank
                 )
-
-        return self._tournament_players_by_rank
 
     @property
     def tournament_players_by_rank(self) -> dict[int, TournamentPlayer]:
@@ -4102,7 +4177,7 @@ class Tournament:
                 board = self.get_round_pab_board(round_nb)
                 assert board is not None
                 board_id = board.identifier
-                board.stored_board.index = self.get_available_board_indexes(round_nb)[0]
+                board.index = self.get_available_board_indexes(round_nb)[0]
                 board.replace_player(black_tournament_player, 'black')
                 black_pairing.stored_pairing.result = result.value
                 black_pairing.stored_pairing.board_id = board_id
@@ -4121,7 +4196,7 @@ class Tournament:
                     index=available_indexes[0] if available_indexes else 0,
                 )
                 board_id = database.add_stored_board(stored_board)
-                stored_board.id = board_id
+                set_stored_fields(stored_board, id=board_id)
                 board = Board(self, round_nb, stored_board)
                 self.boards_by_id[board_id] = board
             white_pairing.stored_pairing.result = result.value
@@ -4290,7 +4365,7 @@ class Tournament:
                     del self.boards_by_id[board.identifier]
             for round_ in rounds:
                 if pab_board := self.get_round_pab_board(round_):
-                    pab_board.stored_board.index = self.get_pab_board_index(round_)
+                    pab_board.index = self.get_pab_board_index(round_)
                     database.update_stored_board(pab_board.stored_board)
             if self.event.is_team_event:
                 manual_bye_types = TeamByeType.manual_bye_types()
@@ -4323,13 +4398,13 @@ class Tournament:
     ):
         with EventDatabase(self.event.uniq_id, True) as database:
             if pab_board := self.get_round_pab_board(round_):
-                pab_board.stored_board.index = self.get_pab_board_index(
+                pab_board.index = self.get_pab_board_index(
                     round_, [board.index for board in stored_boards]
                 )
                 database.update_stored_board(pab_board.stored_board)
             for stored_board in stored_boards:
                 id_ = database.add_stored_board(stored_board)
-                stored_board.id = id_
+                set_stored_fields(stored_board, id=id_)
                 board = Board(self, round_, stored_board)
                 self.boards_by_id[id_] = board
                 white_pairing = board.optional_white_pairing

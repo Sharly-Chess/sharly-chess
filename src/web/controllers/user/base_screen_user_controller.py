@@ -142,7 +142,11 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
 class BaseScreenUserController(BaseUserController):
     @classmethod
     def _user_screen_render(
-        cls, web_context: ScreenEntityUserWebContext
+        cls,
+        web_context: ScreenEntityUserWebContext,
+        *,
+        template_name: str = 'user/screen.html',
+        trigger_event: str | None = None,
     ) -> HTMXTemplate:
         columns_by_tournament_id: dict[
             int, list[TournamentPlayerTableColumn] | list[BoardColumn]
@@ -186,7 +190,7 @@ class BaseScreenUserController(BaseUserController):
                     )
         request = web_context.request
         return HTMXTemplate(
-            template_name='user/screen.html',
+            template_name=template_name,
             context=web_context.template_context
             | {
                 'last_result_updated': SessionLastResultUpdated(request).get(),
@@ -197,4 +201,6 @@ class BaseScreenUserController(BaseUserController):
                 'messages': Message.messages(request),
                 'columns_by_tournament_id': columns_by_tournament_id,
             },
+            trigger_event=trigger_event,
+            after='settle' if trigger_event else None,
         )

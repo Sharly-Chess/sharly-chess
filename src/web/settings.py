@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 from functools import partial
 import os
 import posixpath
@@ -8,7 +9,13 @@ from typing import Sequence
 
 import aiosqlite
 from aiosqlitepool import SQLiteConnectionPool
-from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from jinja2 import (
+    Environment,
+    FileSystemLoader,
+    Template as JinjaTemplate,
+    TemplateNotFound,
+)
+from jinja2.runtime import Context as JinjaContext
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
@@ -64,6 +71,7 @@ from web.controllers.user.screen_user_controller import ScreenUserController
 from web.controllers.user.input_user_controller import InputUserController
 from web.sqlite_store import SQLiteStore
 from web.session_backend import SkipUnchangedSessionBackend
+from web.performance import current_request_performance, record_template
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
 
@@ -172,6 +180,60 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
+_render_contexts: ContextVar[list[JinjaContext] | None] = ContextVar(
+    'sharly_chess_jinja_render_contexts', default=None
+)
+
+
+class ReleasableJinjaContext(JinjaContext):
+    """A Jinja context that releases request data after rendering.
+
+    Macros form cycles with their context. Only per-render contexts may be
+    cleared; cached global-only macro contexts must remain intact.
+    """
+
+    def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
+        super().__init__(*args, **kwargs)
+        contexts = _render_contexts.get()
+        if contexts is not None and set(self.parent).difference(self.globals_keys):
+            # Global-only contexts belong to cached macro modules.
+            contexts.append(self)
+
+    def release(self) -> None:
+        """Detach request data and break macro cycles after rendering."""
+        self.parent.clear()
+        self.vars.clear()
+        self.exported_vars.clear()
+        self.blocks.clear()
+
+
+class ProfiledJinjaTemplate(JinjaTemplate):
+    """Profile rendering and release its request-owned Jinja contexts."""
+
+    def render(self, *args: t.Any, **kwargs: t.Any) -> str:
+        profile = current_request_performance()
+        start: float | None = None
+        if profile is not None:
+            from time import perf_counter
+
+            start = perf_counter()
+        contexts: list[JinjaContext] = []
+        # Collect contexts created by nested templates during this render.
+        token = _render_contexts.set(contexts)
+        try:
+            return super().render(*args, **kwargs)
+        finally:
+            # Release contexts after successful and failed renders.
+            for context in contexts:
+                assert isinstance(context, ReleasableJinjaContext)
+                context.release()
+            _render_contexts.reset(token)
+            if start is not None:
+                from time import perf_counter
+
+                record_template(self.name, perf_counter() - start)
+
+
 class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
@@ -191,6 +253,8 @@ class SharlyChessEnvironment(Environment):
             trim_blocks=True,
             auto_reload=DEVEL_ENV,
         )
+        self.context_class = ReleasableJinjaContext
+        self.template_class = ProfiledJinjaTemplate
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore
             gettext=gettext, ngettext=ngettext, newstyle=True

@@ -13,6 +13,7 @@ from webbrowser import open
 import requests
 import uvicorn
 from litestar import Litestar
+from litestar.config.compression import CompressionConfig
 from litestar.exceptions import (
     PermissionDeniedException,
     NotFoundException,
@@ -21,7 +22,7 @@ from litestar.exceptions import (
 )
 from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
-from litestar.types import Scope, HTTPScope
+from litestar.types import ASGIApp, Scope, HTTPScope
 
 from common import REQUEST_TIMEOUT, TEST_ENV
 from common.installation_checker import InstallationChecker
@@ -31,6 +32,8 @@ from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import DataSourceManager
 from web.channels import channels_plugin
+from web.garbage_collection import RequestGarbageCollectionMiddleware
+from web.performance import PerformanceMiddleware
 from web.settings import (
     route_handlers,
     template_config,
@@ -78,12 +81,14 @@ class ServerEngine:
     def __init__(
         self,
         debug: bool = False,
+        profile: bool = False,
         port: int | None = None,
         loop: asyncio.AbstractEventLoop | None = None,
         handle_signals: bool = True,
         on_port_chosen: Callable[[], None] | None = None,
     ):
         self.debug = debug
+        self.profile = profile
         self.handle_signals = handle_signals
         self.port = port
         self.on_port_chosen = on_port_chosen
@@ -195,11 +200,13 @@ class ServerEngine:
             )
 
         app: Litestar = Litestar(
-            debug=True,
+            debug=self.debug,
             request_class=HTMXRequest,
             route_handlers=route_handlers,
             exception_handlers=exception_handlers,  # type: ignore
             template_config=template_config,
+            # Favor response latency over maximum compression.
+            compression_config=CompressionConfig(backend='gzip', gzip_compress_level=3),
             logging_config=LoggingConfig(
                 **logging_config,
                 disable_stack_trace={
@@ -220,9 +227,12 @@ class ServerEngine:
             listeners=listeners,
         )
         self.__class__.app = app
+        asgi_app: ASGIApp = RequestGarbageCollectionMiddleware(app)
+        if self.profile:
+            asgi_app = PerformanceMiddleware(asgi_app)
 
         config = uvicorn.Config(
-            app=app,
+            app=asgi_app,
             host=sc_config.web_host,
             port=sc_config.web_port,
             log_config=logging_config,

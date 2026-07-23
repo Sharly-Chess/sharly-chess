@@ -67,10 +67,16 @@ window.addEventListener("htmx:wsBeforeMessage", function(evt) {
     }
 });
 
+const tooltipSelector = '[data-bs-toggle="tooltip"]';
+
 function closeTooltips () {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+        document.querySelectorAll(tooltipSelector).forEach((element) => {
+            bootstrap.Tooltip.getInstance(element)?.hide();
+        });
+    }
+    // Remove tooltip elements orphaned by HTMX swaps.
     $('body .tooltip').remove();
-    $('body .tooltip-inner').remove();
-    $('body .tooltip-arrow').remove();
 }
 
 function closeAirPickers () {
@@ -85,11 +91,19 @@ function closeAirPickers () {
 }
 
 // Enable Bootstrap tooltips cf https://getbootstrap.com/docs/5.3/components/tooltips/
-function activateTooltips () {
-    if (typeof bootstrap !== 'undefined') {
-        tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+function activateTooltips (root = document) {
+    if (typeof bootstrap === 'undefined' || !bootstrap.Tooltip) return;
+
+    const tooltipTriggers = [];
+    if (root instanceof Element && root.matches(tooltipSelector)) {
+        tooltipTriggers.push(root);
     }
+    if (root.querySelectorAll) {
+        tooltipTriggers.push(...root.querySelectorAll(tooltipSelector));
+    }
+    tooltipTriggers.forEach((element) => {
+        bootstrap.Tooltip.getOrCreateInstance(element);
+    });
 }
 
 function scrollToFirstError() {
@@ -189,8 +203,21 @@ const restoreState = () => {
 
 $(document).ready(restoreState);
 
-window.addEventListener('htmx:afterSwap', function(event) {
-    // Activate the tooltips after a swap
+window.addEventListener('htmx:beforeCleanupElement', function(event) {
+    // Dispose Bootstrap state before HTMX removes a tooltip trigger.
+    const element = event.target;
+    if (
+        typeof bootstrap !== 'undefined'
+        && bootstrap.Tooltip
+        && element instanceof Element
+        && element.matches(tooltipSelector)
+    ) {
+        bootstrap.Tooltip.getInstance(element)?.dispose();
+    }
+});
+
+window.addEventListener('htmx:afterRequest', function() {
+    // Refresh once after all out-of-band swaps.
     activateTooltips();
     closeTooltips();
     closeAirPickers();
@@ -427,7 +454,7 @@ function setPrintTournamentPlayerSelectOptions(
             playerSelect.append(
                 $('<option>', {
                     value: '',
-                    text: '-- {{ _("Select player") }} --',
+                    text: '-- ' + window.SC_I18N.selectPlayer + ' --',
                 })
             );
         }

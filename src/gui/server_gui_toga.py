@@ -286,7 +286,9 @@ class SharlyChessServerToga(toga.App):
 
     instance: Optional['SharlyChessServerToga'] = None
 
-    def __init__(self, *, debug: bool = False, port: int | None = None):
+    def __init__(
+        self, *, debug: bool = False, profile: bool = False, port: int | None = None
+    ):
         SharlyChessServerToga.instance = self
         icon_file_name: str | None = None
         web_dir = BASE_DIR / 'src' / 'web'
@@ -315,6 +317,7 @@ class SharlyChessServerToga(toga.App):
             version=str(SHARLY_CHESS_VERSION),
         )
         self.debug = debug
+        self.profile = profile
         self.port = port
 
         self.gui_loop = asyncio.get_event_loop()
@@ -1188,6 +1191,7 @@ class SharlyChessServerToga(toga.App):
 
         engine = ServerEngine(
             debug=self.debug,
+            profile=self.profile,
             port=self.port,
             loop=loop,
             handle_signals=False,

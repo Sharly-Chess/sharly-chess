@@ -56,7 +56,8 @@
             disabled
         {% else %}
             hx-put="{{ result_update_url(3 if side == 'white' else 1) }}"
-            hx-target="body"
+            hx-target="#user-screen-content"
+            hx-swap="morphdom"
             hx-indicator="#please-wait"
         {% endif %}
     ><span class="result-color-chip {{ side }}"></span>{{ _('WHITE WINS') if side == 'white' else _('BLACK WINS') }}<br/>{{ '1 - 0' if side == 'white' else '0 - 1' }}<br/><br/>{% if tp %}{{ tp.last_name }}<br/>{{ tp.first_name }}<br/>{{ tp.rating_str }}{% else %}<span class="fst-italic">{{ _('Forfeit') }}</span><br/><br/>{% endif %}{% if team %}<br/><span class="fs-6 fw-normal {% if side == 'white' %}text-muted{% else %}text-white-50{% endif %}">{{ team.name }}</span>{% endif %}</button>
@@ -78,7 +79,8 @@
         data-testid="{{ side }}-wins-by-forfeit-button"
         class="admin-result-button {{ side }} {% if side == 'white' %}text-black bg-white{% else %}text-white bg-black{% endif %} col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
         hx-put="{{ result_update_url(6 if side == 'white' else 4) }}"
-        hx-target="body"
+        hx-target="#user-screen-content"
+        hx-swap="morphdom"
         hx-indicator="#please-wait"
     >{{ _('WHITE WINS') if side == 'white' else _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>{{ '1 - F' if side == 'white' else 'F - 1' }}</button>
 {% endmacro %}
@@ -97,7 +99,8 @@
                         disabled
                     {% else %}
                         hx-put="{{ result_update_url(2) }}"
-                        hx-target="body"
+                        hx-target="#user-screen-content"
+                        hx-swap="morphdom"
                         hx-indicator="#please-wait"
                     {% endif %}
                 >{{ _('DRAW') }}<br/>½ - ½<br/><br/><br/><br/><br/></button>
@@ -110,7 +113,8 @@
                         data-testid="double-forfeit-button"
                         class="admin-result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
                         hx-put="{{ result_update_url(5) }}"
-                        hx-target="body"
+                        hx-target="#user-screen-content"
+                        hx-swap="morphdom"
                         hx-indicator="#please-wait"
                     >{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</button>
                     {{ forfeit_button('black' if white_on_left else 'white') }}
@@ -127,7 +131,8 @@
                     {% else %}
                         hx-trigger="click"
                         hx-put="{{ result_update_url(0) }}"
-                        hx-target="body"
+                        hx-target="#user-screen-content"
+                        hx-swap="morphdom"
                         hx-indicator="#please-wait"
                     {% endif %}
                 >{{ _('CLEAR THE RESULT') }}</button>

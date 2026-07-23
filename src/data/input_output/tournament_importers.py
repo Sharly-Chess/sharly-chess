@@ -17,6 +17,7 @@ from database.sqlite.event.event_store import (
     StoredTournament,
     StoredPlayer,
     StoredBoard,
+    set_stored_fields,
 )
 from typing import ClassVar
 
@@ -87,7 +88,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 else:
                     boards = tournament.get_round_boards(round_)
                     for index, board in enumerate(sorted(boards, reverse=True)):
-                        board.stored_board.index = index
+                        board.index = index
                         database.update_stored_board(board.stored_board)
 
     @staticmethod
@@ -262,19 +263,22 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         for stored_boards in stored_tournament.stored_boards_by_round.values():
             for stored_board in stored_boards:
                 external_id = stored_board.id
-                stored_board.id = None
-                if stored_board.white_player_id is not None:
-                    stored_board.white_player_id = player_id_by_external_id[
-                        stored_board.white_player_id
-                    ]
-                if stored_board.black_player_id is not None:
-                    stored_board.black_player_id = player_id_by_external_id[
-                        stored_board.black_player_id
-                    ]
+                white = stored_board.white_player_id
+                black = stored_board.black_player_id
+                set_stored_fields(
+                    stored_board,
+                    id=None,
+                    white_player_id=(
+                        player_id_by_external_id[white] if white is not None else None
+                    ),
+                    black_player_id=(
+                        player_id_by_external_id[black] if black is not None else None
+                    ),
+                )
                 board_id = database.add_stored_board(stored_board)
                 assert external_id is not None
                 board_id_by_external_id[external_id] = board_id
-                stored_board.id = board_id
+                set_stored_fields(stored_board, id=board_id)
 
         # Tournament players. Team tournaments don't persist
         # ``tournament_player`` rows for rostered players (they're
