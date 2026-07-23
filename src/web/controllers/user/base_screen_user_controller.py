@@ -57,12 +57,6 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
         return None
 
     @property
-    def background_image(self) -> str | None:
-        if self.screen:
-            return self.screen.background_image
-        return None
-
-    @property
     def background_color(self) -> str:
         if self.screen:
             return self.screen.background_color
