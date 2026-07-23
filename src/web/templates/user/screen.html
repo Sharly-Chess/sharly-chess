@@ -38,7 +38,7 @@
                         event_uniq_id=user_event.uniq_id,
                         display_controller_id=display_controller.id,
                     ) }}"
-                    hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
+                    hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}"}'
                 {% endif %}
                 hx-trigger="{{ becomes_visible }} every {{ display_controller.delay }}s[{{ refresh_conditions }}]"
                 hx-target="body"
@@ -55,7 +55,7 @@
         {% else %}
             <div
                 class="refresher screen-refresher"
-                hx-headers='{"If-Modified-Since": "{{ now_http_date }}"}'
+                hx-headers='{"If-Modified-Since": "{{ now_http_date }}", "X-Sharly-Chess-If-Modified-Since": "{{ now }}"}'
                 hx-get="{{ url_for('user-screen', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
                 hx-target="body"
                 hx-trigger="{{ becomes_visible }} every {{ sharly_chess_config.user_screen_update_delay }}s[{{ refresh_conditions }}] queue:none"
@@ -148,37 +148,7 @@
             {% endif %}
         </div>
     </div>
-    <div
-        id="user-screen-content"
-        class="content user-content user-screen-content"
-        style="--font-size: {{ screen.font_size or 100 }};"
-    >
-        {% if screen.type in ('boards', 'input', 'check-in', 'players', 'ranking') %}
-            <div class="screen {{ screen.type.value }}-screen">
-                {% for screen_set in screen.sorted_screen_sets %}
-                    {% set tournament = screen_set.tournament %}
-                    {% if screen.type == 'players' %}
-                        {% include 'screen/sets/players_set.html' %}
-                    {% elif screen.type == 'ranking' %}
-                        {% include 'screen/sets/ranking_set.html' %}
-                    {% elif screen.type == 'check-in' or not screen_set.tournament.started %}
-                        {% include 'screen/sets/check_in_set.html' %}
-                    {% else %}
-                        {% include 'screen/sets/boards_set.html' %}
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% elif screen.type == 'results' %}
-            <div class="screen results-screen">
-                {% include 'screen/results.html' %}
-            </div>
-        {% elif screen.type == 'image' %}
-            <div
-                class="screen image-screen position-absolute top-0 bottom-0 start-0 end-0"
-                style="background-image: url('{{ screen.image }}');"
-            ></div>
-        {% endif %}
-    </div>
+    {% include '/user/screen/content.html' %}
 {% endblock content %}
 
 {% block footer %}

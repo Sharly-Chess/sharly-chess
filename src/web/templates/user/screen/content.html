@@ -1,0 +1,46 @@
+{% import '/common/macros.j2' as macros with context %}
+<div
+    id="user-screen-content"
+    class="content user-content user-screen-content"
+    style="--font-size: {{ screen.font_size or 100 }};"
+>
+    {% if screen.type in ('boards', 'input', 'check-in', 'players', 'ranking') %}
+        <div class="screen {{ screen.type.value }}-screen">
+            {% for screen_set in screen.sorted_screen_sets %}
+                {% set tournament = screen_set.tournament %}
+                {% if screen.type == 'players' %}
+                    {% include '/user/screen/sets/players_set.html' %}
+                {% elif screen.type == 'ranking' %}
+                    {% include '/user/screen/sets/ranking_set.html' %}
+                {% elif screen.type == 'check-in' or not screen_set.tournament.started %}
+                    {% include '/user/screen/sets/check_in_set.html' %}
+                {% else %}
+                    {% include '/user/screen/sets/boards_set.html' %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% elif screen.type == 'results' %}
+        <div class="screen results-screen">
+            {% include '/user/screen/results.html' %}
+        </div>
+    {% elif screen.type == 'image' %}
+        <div
+            class="screen image-screen position-absolute top-0 bottom-0 start-0 end-0"
+            style="background-image: url('{{ screen.image }}');"
+        ></div>
+    {% endif %}
+    {% if request.htmx %}
+        <script>
+            (() => {
+                const refresher = document.querySelector(
+                    '.screen-refresher, .display-controller-refresher'
+                );
+                if (!refresher) return;
+                const headers = JSON.parse(refresher.getAttribute('hx-headers') || '{}');
+                headers['If-Modified-Since'] = '{{ now_http_date }}';
+                headers['X-Sharly-Chess-If-Modified-Since'] = '{{ now }}';
+                refresher.setAttribute('hx-headers', JSON.stringify(headers));
+            })();
+        </script>
+    {% endif %}
+</div>

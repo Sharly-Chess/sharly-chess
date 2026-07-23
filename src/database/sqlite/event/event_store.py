@@ -11,6 +11,12 @@ from common.sharly_chess_config import SharlyChessConfig
 from utils.enum import EventType
 
 
+def set_stored_fields(obj: Any, **fields: Any) -> None:
+    """Mutate a frozen stored record while preserving its identity."""
+    for name, value in fields.items():
+        object.__setattr__(obj, name, value)
+
+
 @dataclass
 class StoredTimerHour:
     id: int | None
@@ -96,7 +102,7 @@ class StoredPairing:
     effective_points: float | None = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class StoredBoard:
     id: int | None
     white_player_id: int | None

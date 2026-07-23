@@ -261,8 +261,17 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
         games for the last round not determined over the board are considered as draws."""
         tournament: 'Tournament' = player.tournament
+        caching = tournament._compute_caching_enabled
+        cache_key = ('adjusted_score', after_round, adjust_fore)
+        if caching:
+            cached = player._compute_cache.get(cache_key)
+            if cached is not None:
+                return cached
         if tournament.pairing_system == RoundRobinPairingSystem():
-            return player.points_after(after_round)
+            score = player.points_after(after_round)
+            if caching:
+                player._compute_cache[cache_key] = score
+            return score
         score = 0.0
         for round_index, pairing in player.pairings.items():
             if round_index > after_round:
@@ -287,6 +296,8 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
                     score += pairing.result.points(tournament.point_values)
             else:
                 score += pairing.result.points(tournament.point_values)
+        if caching:
+            player._compute_cache[cache_key] = score
         return score
 
     @classmethod

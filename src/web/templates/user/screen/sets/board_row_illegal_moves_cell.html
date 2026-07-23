@@ -1,5 +1,5 @@
 {% set tournament_player = board.black_tournament_player if column.is_black else board.white_tournament_player %}
-<div class="
+<div onclick="event.stopPropagation()" class="
     {% if (
         screen.type == 'input' and
         last_illegal_move_updated and

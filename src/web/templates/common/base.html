@@ -39,12 +39,13 @@
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/css/bootstrap5-toggle.min.css') }}" type="text/css" />
             <script src="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/js/bootstrap5-toggle.jquery.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/progressbar.js/progressbar.js-' ~ sharly_chess_config.progressbar_js_version ~ '/dist/progressbar.min.js') }}"></script>
+            <script>window.SC_I18N = { selectPlayer: "{{ _('Select player') }}" };</script>
+            <script src="{{ url_for('static', file_path='/js/base.js') }}?version={{ sharly_chess_config.version }}"></script>
+            <script src="{{ url_for('static', file_path='/js/modals.js') }}?version={{ sharly_chess_config.version }}"></script>
             <script>
-                {% include 'js/base.js' %}
-                {% include 'js/modals.js' %}
                 {% include 'js/time_control.js' %}
-                {% include 'js/keyboardShortcutManager.js' %}
             </script>
+            <script src="{{ url_for('static', file_path='/js/keyboardShortcutManager.js') }}?version={{ sharly_chess_config.version }}"></script>
         {% endif %}
     </head>
     <body

@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, Hashable, TYPE_CHECKING, Optional
 
 import apluggy as pluggy  # type: ignore
 
@@ -154,10 +154,13 @@ class AppHookSpecs:
         """Validate the additional player form fields. Add the errors to the *errors* dict."""
 
     @hookspec
-    def are_players_duplicates(
-        self, stored_player: 'StoredPlayer', player: 'Player'
-    ) -> bool:
-        """Check if the stored player is a duplicate of the other."""
+    def get_player_duplicate_key(
+        self, stored_player: 'StoredPlayer'
+    ) -> tuple[str, Hashable] | None:
+        """Return a namespaced key used to detect plugin-specific duplicates.
+
+        The first item is the plugin ID. Return ``None`` when no key applies.
+        """
 
     @hookspec
     async def augment_player_after_search(
