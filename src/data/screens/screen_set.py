@@ -14,11 +14,11 @@ from database.sqlite.event.event_store import StoredScreenSet
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.screen import Screen
-    from data.family import Family
+    from data.screens.screen import Screen
+    from data.screens.family import Family
     from data.team_board import TeamBoard
     from data.tournament import Tournament
-    from data.screen_types import ScreenType
+    from data.screens.screen_types import ScreenType
     from database.sqlite.event.event_store import StoredScreen, StoredFamily
 
 

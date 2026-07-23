@@ -9,8 +9,8 @@ from _weakref import ReferenceType
 from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
-from data.screen_set import ScreenSet, format_range
-from data.timer import Timer
+from data.screens.screen_set import ScreenSet, format_range
+from data.screens.timer import Timer
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 
@@ -18,9 +18,9 @@ from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.family import Family
+    from data.screens.family import Family
     from data.menu import Menu, MenuNavEntry
-    from data.screen_types import ScreenType
+    from data.screens.screen_types import ScreenType
 
 
 logger = get_logger()
@@ -108,7 +108,7 @@ class Screen:
     def screen_type(self) -> 'ScreenType':
         """The screen-type entity for this screen, resolved through the
         manager (so a plugin-defined type is honoured)."""
-        from data.screen_types import ScreenTypeManager
+        from data.screens.manager import ScreenTypeManager
 
         return ScreenTypeManager(self.event).get_object(self.type)
 

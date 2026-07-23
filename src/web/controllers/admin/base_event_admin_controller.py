@@ -6,13 +6,13 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.access_levels.client_tracker import ClientTracker
-from data.display_controller import DisplayController
+from data.screens.display_controller import DisplayController
 from data.event import Event
 from data.pairings.managers import plugin_manager
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from data.tournament import Tournament
-from data.screen_types import ScreenTypeManager
+from data.screens.manager import ScreenTypeManager
 from plugins.utils import NavDataTransferItem
 from utils.enum import (
     FormAction,

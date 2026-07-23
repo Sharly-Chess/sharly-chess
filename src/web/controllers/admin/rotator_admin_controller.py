@@ -14,10 +14,10 @@ from litestar_htmx import HTMXTemplate
 from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.event import Event
-from data.family import Family
-from data.screen_types import ScreenTypeManager
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.family import Family
+from data.screens.manager import ScreenTypeManager
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from database.sqlite.event.event_store import StoredRotator
 from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (

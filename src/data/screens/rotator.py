@@ -4,9 +4,9 @@ import weakref
 from _weakref import ReferenceType
 
 from common.sharly_chess_config import SharlyChessConfig
-from data.family import Family
-from data.screen import Screen
-from data.timer import Timer
+from data.screens.family import Family
+from data.screens.screen import Screen
+from data.screens.timer import Timer
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredRotator, StoredRotatingScreen
 

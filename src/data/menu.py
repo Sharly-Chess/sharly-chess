@@ -4,8 +4,8 @@ import weakref
 from _weakref import ReferenceType
 
 from common.i18n import _
-from data.family import Family
-from data.screen import Screen
+from data.screens.family import Family
+from data.screens.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredMenu, StoredMenuItem
 from utils.enum import MenuSubmenuMode
@@ -262,7 +262,7 @@ class Menu:
         types the menu covers, joined by ' / '."""
         if self.stored_menu.name:
             return self.stored_menu.name
-        from data.screen_types import ScreenTypeManager
+        from data.screens.manager import ScreenTypeManager
 
         manager = ScreenTypeManager(self.event)
         if self.stored_menu.default_type:

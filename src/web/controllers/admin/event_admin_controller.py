@@ -5,12 +5,12 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
 
 from data.access_levels.actions import AuthAction
-from data.display_controller import DisplayController
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.display_controller import DisplayController
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from data.tournament import Tournament
 from plugins.ffe.ffe_upload_controller import HTMXTemplate
-from data.screen_types import ScreenTypeManager
+from data.screens.manager import ScreenTypeManager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,

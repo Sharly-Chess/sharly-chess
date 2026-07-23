@@ -7,7 +7,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from plugins.manager import plugin_manager
-from utils.entity import EventBoundEntityManager, IdentifiableEntity
+from utils.entity import IdentifiableEntity
 from utils.enum import (
     EventType,
     PlayersScreenBoardFormat,
@@ -22,10 +22,10 @@ if TYPE_CHECKING:
     from data.columns.board_table import BoardColumn
     from data.columns.player_table import TournamentPlayerTableColumn
     from data.event import Event
-    from data.family import Family
+    from data.screens.family import Family
     from data.player import TournamentPlayer
-    from data.screen import Screen
-    from data.screen_set import ScreenSet
+    from data.screens.screen import Screen
+    from data.screens.screen_set import ScreenSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredFamily, StoredScreen
 
@@ -1871,21 +1871,3 @@ class ImageScreenType(ScreenType):
     @override
     def relates_to_tournament(self, screen: 'Screen', tournament: 'Tournament') -> bool:
         return False
-
-
-class ScreenTypeManager(EventBoundEntityManager[ScreenType]):
-    @override
-    def entity_types(self) -> list[type[ScreenType]]:
-        screen_types: list[type[ScreenType]] = [
-            CheckInScreenType,
-            InputScreenType,
-            BoardsScreenType,
-            PlayersScreenType,
-            ResultsScreenType,
-            RankingScreenType,
-            ImageScreenType,
-        ]
-        plugin_manager.hook_for_event(self.event, 'insert_screen_types')(
-            screen_types=screen_types
-        )
-        return screen_types

@@ -77,7 +77,7 @@ from utils.enum import (
     TeamColourType,
     TournamentRating,
 )
-from data.screen_types import ScreenTypeManager
+from data.screens.manager import ScreenTypeManager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,

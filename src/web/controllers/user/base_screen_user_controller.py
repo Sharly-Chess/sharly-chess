@@ -10,10 +10,10 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.columns.board_table import BoardColumn
 from data.columns.player_table import TournamentPlayerTableColumn
-from data.display_controller import DisplayController
-from data.family import Family
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.display_controller import DisplayController
+from data.screens.family import Family
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.event_user_controller import (
     EventUserWebContext,

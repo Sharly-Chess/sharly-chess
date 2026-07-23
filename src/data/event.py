@@ -15,8 +15,8 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
 from data.board import PlayerRatingType
-from data.display_controller import DisplayController
-from data.family import Family
+from data.screens.display_controller import DisplayController
+from data.screens.family import Family
 from data.player import Player, TournamentPlayer
 from data.player_categories import (
     PlayerCategory,
@@ -24,11 +24,11 @@ from data.player_categories import (
     JuniorCategory,
     SeniorCategory,
 )
-from data.rotator import Rotator
+from data.screens.rotator import Rotator
 from data.menu import Menu
-from data.screen import Screen
+from data.screens.screen import Screen
 from data.team import Team, TeamGroup
-from data.timer import Timer
+from data.screens.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
@@ -55,7 +55,7 @@ from database.sqlite.event.event_store import (
 
 if TYPE_CHECKING:
     from data.team_affiliation import TeamAffiliationSource
-    from data.screen_types import ScreenType
+    from data.screens.screen_types import ScreenType
 
 logger: Logger = get_logger()
 

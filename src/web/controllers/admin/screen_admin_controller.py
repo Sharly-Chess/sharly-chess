@@ -15,12 +15,10 @@ from common import REQUEST_TIMEOUT
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from data.screen import Screen
-from data.screen_set import ScreenSet
-from data.screen_types import (
-    ScreenTypeManager,
-    ScreenType,
-)
+from data.screens.screen import Screen
+from data.screens.screen_set import ScreenSet
+from data.screens.manager import ScreenTypeManager
+from data.screens.screen_types import ScreenType
 from utils import Utils
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen, StoredScreenSet

@@ -12,12 +12,10 @@ from litestar_htmx import HTMXTemplate
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from data.family import Family
+from data.screens.family import Family
 from utils import Utils
-from data.screen_types import (
-    ScreenTypeManager,
-    ScreenType,
-)
+from data.screens.manager import ScreenTypeManager
+from data.screens.screen_types import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
 from web.controllers.admin.base_event_admin_controller import (

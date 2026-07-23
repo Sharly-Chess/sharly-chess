@@ -7,16 +7,16 @@ from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common.i18n import _
-from data.screen import Screen
-from data.screen_set import format_range
+from data.screens.screen import Screen
+from data.screens.screen_set import format_range
 
 from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
-    from data.timer import Timer
-    from data.screen_types import ScreenType
+    from data.screens.timer import Timer
+    from data.screens.screen_types import ScreenType
 
 
 class Family:
@@ -62,7 +62,7 @@ class Family:
     def screen_type(self) -> 'ScreenType':
         """The screen-type entity for this family, resolved through the
         manager (so a plugin-defined type is honoured)."""
-        from data.screen_types import ScreenTypeManager
+        from data.screens.manager import ScreenTypeManager
 
         return ScreenTypeManager(self.event).get_object(self.type)
 

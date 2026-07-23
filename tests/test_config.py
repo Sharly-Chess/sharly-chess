@@ -20,7 +20,7 @@ from database.sqlite.event.event_store import (
     StoredTournament,
 )
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
-from data.screen_types import (
+from data.screens.screen_types import (
     CheckInScreenType,
     InputScreenType,
     BoardsScreenType,

@@ -16,14 +16,14 @@ from common.logger import get_logger
 from data.account import Account
 from data.board import Board, compute_round_board_numbers
 from data.criteria.managers import TournamentCriterionManager
-from data.family import Family
+from data.screens.family import Family
 from data.pairings.settings import ColorSeedSetting
 from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
-from data.screen import Screen
+from data.screens.screen import Screen
 from data.team_board import TeamBoard
 from data.team_pairing_block import TeamPairingBlock
 from data.tie_breaks import (

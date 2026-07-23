@@ -7,7 +7,7 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from utils.enum import TournamentRating
-from data.screen_types import ScreenTypeManager
+from data.screens.manager import ScreenTypeManager
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
 from web.utils import RequestUtils

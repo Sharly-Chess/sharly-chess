@@ -51,7 +51,7 @@ if TYPE_CHECKING:
     )
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
-    from data.screen_types import ScreenType
+    from data.screens.screen_types import ScreenType
     from data.criteria.player_filters import PlayerFilter
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.rule_sets import RuleSet
