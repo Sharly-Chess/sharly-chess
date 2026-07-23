@@ -90,11 +90,11 @@ def _board_numbers_str(screen_set: 'ScreenSet') -> str:
         match (first, last):
             case (0, 0):
                 return _('all the matches')
-            case (first, 0) if first:
+            case (first, 0):
                 return _('matches from #{first} to end').format(first=first)
-            case (0, last) if last:
+            case (0, last):
                 return _('matches from start to #{last}').format(last=last)
-            case (first, last):
+            case _:
                 return _('matches from #{first} to #{last}').format(
                     first=first, last=last
                 )
@@ -102,11 +102,11 @@ def _board_numbers_str(screen_set: 'ScreenSet') -> str:
     match (first, last):
         case (0, 0):
             return _('all the boards')
-        case (first, 0) if first:
+        case (first, 0):
             return _('boards from #{first} to end').format(first=first + offset)
-        case (0, last) if last:
+        case (0, last):
             return _('boards from start to #{last}').format(last=last + offset)
-        case (first, last):
+        case _:
             return _('boards from #{first} to #{last}').format(
                 first=first + offset, last=last + offset
             )
@@ -120,22 +120,22 @@ def _players_numbers_str(screen_set: 'ScreenSet') -> str:
         match (first, last):
             case (0, 0):
                 return _('all the teams')
-            case (first, 0) if first:
+            case (first, 0):
                 return _('teams from #{first} to end').format(first=first)
-            case (0, last) if last:
+            case (0, last):
                 return _('teams from start to #{last}').format(last=last)
-            case (first, last):
+            case _:
                 return _('teams from #{first} to #{last}').format(
                     first=first, last=last
                 )
     match (first, last):
         case (0, 0):
             return _('all the players')
-        case (first, 0) if first:
+        case (first, 0):
             return _('players from #{first} to end').format(first=first)
-        case (0, last) if last:
+        case (0, last):
             return _('players from start to #{last}').format(last=last)
-        case (first, last):
+        case _:
             return _('players from #{first} to #{last}').format(first=first, last=last)
 
 
@@ -478,6 +478,12 @@ class ScreenType(IdentifiableEntity, ABC):
         return self.allows_result_input or self.allows_check_in
 
     @property
+    def allowed_in_rotators(self) -> bool:
+        """Whether screens/families of this type can be picked for a rotator.
+        Interactive types (result entry, check-in) opt out."""
+        return True
+
+    @property
     def has_config_fields(self) -> bool:
         """Whether the create/edit form shows the general configuration fields
         (menu label, timer, columns, font size, alert message). ``False`` for
@@ -525,13 +531,13 @@ class ScreenType(IdentifiableEntity, ABC):
         match (screen_set.first, screen_set.last):
             case (0, 0):
                 return _('the whole ranking')
-            case (first, 0) if first:
+            case (first, 0):
                 return _('ranking from #{first} to end').format(first=first)
-            case (0, last) if last:
+            case (0, last):
                 return _('ranking from start to #{last}').format(last=last)
-            case (first, last):
+            case _:
                 return _('ranking from #{first} to #{last}').format(
-                    first=first, last=last
+                    first=screen_set.first, last=screen_set.last
                 )
 
     def build_columns(
@@ -758,6 +764,11 @@ class CheckInScreenType(ScreenType):
 
     @property
     @override
+    def allowed_in_rotators(self) -> bool:
+        return False
+
+    @property
+    @override
     def form_template(self) -> str | None:
         return '/admin/screens/forms/exit_button_form.html'
 
@@ -884,6 +895,11 @@ class InputScreenType(ScreenType):
     @override
     def allows_result_input(self) -> bool:
         return True
+
+    @property
+    @override
+    def allowed_in_rotators(self) -> bool:
+        return False
 
     @property
     @override
@@ -1233,7 +1249,7 @@ class PlayersScreenType(ScreenType):
     def family_item_range(self, family: 'Family') -> FamilyItemRange:
         tournament = family.tournament
         if tournament.current_round:
-            if family.players_show_unpaired:
+            if family.stored_family.players_show_unpaired:
                 total = len(tournament.sorted_tournament_players)
             else:
                 total = len(tournament.sorted_tournament_players_without_unpaired)

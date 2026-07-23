@@ -7041,7 +7041,7 @@ msgid "The forecast becomes available once the last round is paired. Once the to
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
 
 msgid "The image is too large (max 2 MB)."
-msgstr "L'image est trop volumineuse (max 2 Mo)."
+msgstr "L'image est trop volumineuse (max. 2 Mo)."
 
 msgid "The label used for this multi-screen in menus. Its range is appended automatically."
 msgstr "Le libellé utilisé pour cet écran multiple dans les menus. Sa plage est ajoutée automatiquement."
@@ -7329,7 +7329,7 @@ msgid "The update could not be downloaded. Consult the logs for more details."
 msgstr "La mise à jour n'a pas pu être téléchargée. Consultez les logs pour plus d'informations."
 
 msgid "The uploaded image is too large (max 2 MB)."
-msgstr "L'image téléversée est trop volumineuse (max 2 Mo)."
+msgstr "L'image téléversée est trop volumineuse (max. 2 Mo)."
 
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr "La valeur doit être supérieure au seuil de partage de la catégorie ({threshold})."

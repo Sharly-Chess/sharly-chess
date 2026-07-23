@@ -163,16 +163,13 @@ class RotatorAdminController(BaseEventAdminController):
         entities_by_screen_type: dict[str, list[T]],
         rotator_entities: list[T],
     ) -> dict[str, dict[str, str]]:
-        # Results-entry and check-in screens aren't rotated (they're
-        # interactive), so they're excluded from the rotator picker.
-        excluded_ids = {'input', 'check-in'}
         screen_types = ScreenTypeManager(event).objects()
         options: dict[str, dict[str, str]] = {
             screen_type.name: {} for screen_type in screen_types
         }
         rotator_ids = [entity.id for entity in rotator_entities]
         for screen_type in screen_types:
-            if screen_type.id in excluded_ids:
+            if not screen_type.allowed_in_rotators:
                 continue
             for entity in sorted(
                 entities_by_screen_type[screen_type.id], key=attrgetter('name')

@@ -191,10 +191,6 @@ class ScreenSet:
         return self.screen.columns
 
     @property
-    def players_show_unpaired(self) -> bool:
-        return self.screen.players_show_unpaired
-
-    @property
     def name_for_boards(self) -> str:
         if self.tournament.current_round:
             if self.shows_team_matches:
@@ -492,7 +488,7 @@ class ScreenSet:
 
     def _extract_players_by_name(self):
         if self.items_lists is None:
-            if self.players_show_unpaired:
+            if self.screen.screen_type.shows_unpaired_players(self.screen):
                 self._extract_data(
                     items=self.tournament.sorted_tournament_players,
                     extract_boards=False,

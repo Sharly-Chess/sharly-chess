@@ -351,10 +351,6 @@ class Screen:
             return self.family.input_exit_button
 
     @property
-    def players_show_unpaired(self) -> bool:
-        return self.screen_type.shows_unpaired_players(self)
-
-    @property
     def icon_str(self) -> str:
         return self.screen_type.icon_str
 

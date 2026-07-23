@@ -202,12 +202,6 @@ class Family:
         return exit_button
 
     @property
-    def players_show_unpaired(self) -> bool:
-        show_unpaired = self.stored_family.players_show_unpaired
-        assert show_unpaired is not None
-        return show_unpaired
-
-    @property
     def icon_str(self) -> str:
         return self.screen_type.icon_str
 
