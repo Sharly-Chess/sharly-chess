@@ -514,13 +514,13 @@ class Event:
             return True
         if stored_player.fide_id and stored_player.fide_id == player.fide_id:
             return True
-        if any(
-            plugin_manager.hook_for_event(self, 'are_players_duplicates')(
-                stored_player=stored_player, player=player
-            )
-        ):
-            return True
-        return False
+        duplicate_key_hook = plugin_manager.hook_for_event(
+            self, 'get_player_duplicate_key'
+        )
+        stored_player_keys = set(duplicate_key_hook(stored_player=stored_player))
+        return not stored_player_keys.isdisjoint(
+            duplicate_key_hook(stored_player=player.stored_player)
+        )
 
     def get_player_duplicate(
         self,
@@ -545,13 +545,9 @@ class Event:
 
     @property
     def has_multi_tournament_players(self) -> bool:
-        # Equality-based duplicate rules can be indexed in linear time.
         duplicate_key_hook = plugin_manager.hook_for_event(
             self, 'get_player_duplicate_key'
         )
-        duplicate_hook = plugin_manager.hook_for_event(self, 'are_players_duplicates')
-        indexed_hook_impls = duplicate_key_hook.get_hookimpls()
-        indexed_plugins = {hook_impl.plugin for hook_impl in indexed_hook_impls}
 
         # Player.first_name normalizes None to ''. Track the raw null state so
         # nullable stored names retain _are_player_duplicates semantics.
@@ -559,8 +555,7 @@ class Event:
         seen_fide_ids: set[int] = set()
         seen_plugin_keys: set[object] = set()
 
-        players = list(self.players)
-        for player in players:
+        for player in self.players:
             stored_player = player.stored_player
             if stored_player.date_of_birth:
                 birth_identity = (
@@ -586,29 +581,6 @@ class Event:
                 if key in seen_plugin_keys:
                     return True
                 seen_plugin_keys.add(key)
-
-        # Pair-based plugin rules that cannot provide a key require comparison.
-        fallback_plugins = [
-            hook_impl.plugin
-            for hook_impl in duplicate_hook.get_hookimpls()
-            if hook_impl.plugin not in indexed_plugins
-        ]
-        if fallback_plugins:
-            fallback_hook = plugin_manager.hook_for_plugins(
-                'are_players_duplicates', fallback_plugins
-            )
-            for index, ref_player in enumerate(players):
-                for player in players[index + 1 :]:
-                    if any(
-                        fallback_hook(
-                            stored_player=ref_player.stored_player, player=player
-                        )
-                    ) or any(
-                        fallback_hook(
-                            stored_player=player.stored_player, player=ref_player
-                        )
-                    ):
-                        return True
         return False
 
     @property

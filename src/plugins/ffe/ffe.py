@@ -414,17 +414,6 @@ class FfePlugin(Plugin):
             ).format(ffe_licence_number=ffe_licence_number)
 
     @hookimpl
-    def are_players_duplicates(
-        self, stored_player: StoredPlayer, player: Player
-    ) -> bool:
-        licence_number = self.get_data(stored_player.plugin_data, 'ffe_licence_number')
-        return (
-            licence_number
-            and FFEUtils.get_player_plugin_data(player).ffe_licence_number
-            == licence_number
-        )
-
-    @hookimpl
     def get_player_duplicate_key(
         self, stored_player: StoredPlayer
     ) -> tuple[str, str] | None:

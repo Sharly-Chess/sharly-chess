@@ -80,3 +80,12 @@ def test_has_multi_tournament_players_ignores_distinct_players():
     )
 
     assert not event.has_multi_tournament_players
+
+
+@pytest.mark.unit
+def test_duplicate_key_is_used_when_checking_one_player():
+    event = make_event(player(1, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}}))
+    existing_player = next(iter(event.players))
+    stored_player = player(2, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}})
+
+    assert event._are_player_duplicates(stored_player, existing_player)

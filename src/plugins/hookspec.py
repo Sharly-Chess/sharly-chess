@@ -154,21 +154,14 @@ class AppHookSpecs:
         """Validate the additional player form fields. Add the errors to the *errors* dict."""
 
     @hookspec
-    def are_players_duplicates(
-        self, stored_player: 'StoredPlayer', player: 'Player'
-    ) -> bool:
-        """Check if the stored player is a duplicate of the other."""
-
-    @hookspec
     def get_player_duplicate_key(
         self, stored_player: 'StoredPlayer'
     ) -> tuple[str, Hashable] | None:
-        """Return a stable key for indexed duplicate detection.
+        """Return the player's plugin-specific duplicate identity.
 
-        Plugins implementing ``are_players_duplicates`` should also implement this
-        hook when their rule is an equality check. The first tuple item must be the
-        plugin ID, which keeps keys from different plugins in separate namespaces.
-        Returning ``None`` means that the player has no key for the plugin rule.
+        Two players are duplicates when their keys compare equal. The first tuple
+        item must be the plugin ID, which keeps keys from different plugins in
+        separate namespaces. Return ``None`` when the player has no plugin identity.
         """
 
     @hookspec
