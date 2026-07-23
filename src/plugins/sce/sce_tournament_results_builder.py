@@ -254,7 +254,14 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
 
             entry: dict[str, Any] = {
                 'round': round_,
-                'table': board.standard_number,
+                # Compact numbering carries the fixed table in the display
+                # number; hole mode keeps the positional table (fixedTable
+                # below still conveys the fixed board).
+                'table': (
+                    board.number
+                    if not tournament.leave_fixed_board_holes
+                    else board.standard_number
+                ),
                 'board': board.id,
                 'whitePairingNumber': board.white_tournament_player.pairing_number,
                 'blackPairingNumber': black.pairing_number if black else -1,

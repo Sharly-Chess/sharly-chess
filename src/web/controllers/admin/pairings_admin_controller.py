@@ -57,6 +57,7 @@ from web.session import (
     SessionPairingsPageIdentifier,
     SessionPairingsSelectedTournament,
     SessionPairingsSelectedRound,
+    SessionPairingsBoardSort,
 )
 
 logger = get_logger()
@@ -132,9 +133,22 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         )
 
         self.admin_boards: list[Board] = []
+        self.admin_boards_sortable = False
+        self.admin_board_sort = SessionPairingsBoardSort(request).get()
         if self.admin_tournament is not None:
             self.admin_tournament.set_for_round(self.admin_round)
             self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
+            self.admin_boards_sortable = (
+                not event.is_team_event
+                and not self.admin_tournament.leave_fixed_board_holes
+                and any(
+                    player.fixed for player in self.admin_tournament.tournament_players
+                )
+            )
+            if self.admin_boards_sortable and self.admin_board_sort != 'natural':
+                self.admin_boards = sorted(
+                    self.admin_boards, key=lambda board: board.number
+                )
 
         if self.admin_tournament and self.display_rankings:
             self.admin_tournament.compute_tournament_player_ranks()
@@ -366,6 +380,8 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'next_tournament_id': next_tournament_id,
             'admin_round': self.admin_round,
             'admin_boards': self.admin_boards,
+            'admin_boards_sortable': self.admin_boards_sortable,
+            'admin_board_sort': self.admin_board_sort,
             'round_status': self.round_status,
             'display_rankings': self.display_rankings,
             'safety_mode': self.safety_mode,
@@ -463,10 +479,13 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: FromPath[int | None],
         round: FromPath[int | None],
         show_without_results: FromQuery[bool | None] = None,
+        board_sort: FromQuery[str | None] = None,
         skip_ratings_warning: FromQuery[bool] = False,
     ) -> Template:
         if show_without_results is not None:
             SessionPairingsShowWithoutResults(request).set(show_without_results)
+        if board_sort in ('board', 'natural'):
+            SessionPairingsBoardSort(request).set(board_sort)
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         event = web_context.get_admin_event()
         if tournament := web_context.admin_tournament:

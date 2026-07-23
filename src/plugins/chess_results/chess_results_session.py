@@ -329,13 +329,18 @@ class ChessResultsSession(Session):
             tournament.compute_tournament_player_ranks(after_round=round_)
             last_board_id = 0
             boards = tournament.get_round_boards(round_)
+            # In compact numbering the display number carries the fixed table
+            # (and is a clean bijection); in hole mode it can duplicate, so keep
+            # the positional id there.
+            compact_numbering = not tournament.leave_fixed_board_holes
             for board in boards:
+                table_number = board.number if compact_numbering else board.board_id
                 ET.SubElement(
                     ppair,
                     'playerpairing',
                     {
                         'round': str(round_),
-                        'pairing': str(board.board_id),
+                        'pairing': str(table_number),
                         'board': '1',
                         'whiteno': str(board.white_tournament_player.pairing_number),
                         'blackno': str(
@@ -354,7 +359,7 @@ class ChessResultsSession(Session):
                         'forfeit': _forfeit_code(board.result),
                     },
                 )
-                last_board_id = board.board_id
+                last_board_id = max(last_board_id, table_number)
 
             for player in tournament.get_unpaired_tournament_players(boards):
                 last_board_id += 1
