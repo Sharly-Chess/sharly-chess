@@ -7205,7 +7205,7 @@ msgstr "La catégorie contient des prix non-monétaires qui ne peuvent être par
 msgid "The color attributed to the highest ranked player at the first round."
 msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
 
-msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
 msgstr "La grille américaine montre tous les résultats des joueur·euses, tandis que c'est le club qui est affiché lors qu'on ne montre que le classement."
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
@@ -8618,16 +8618,16 @@ msgid "Woman *** NAME FOR GENDER WOMAN"
 msgstr "Femme"
 
 msgid "Woman Candidate Master"
-msgstr "Candidat Maître Femme"
+msgstr "Candidat Maître Féminin"
 
 msgid "Woman Fide Master"
-msgstr "Maître Fide Femme"
+msgstr "Maître Fide Féminin"
 
 msgid "Woman Grand Master"
-msgstr "Grand Maître Internationale Femme"
+msgstr "Grand Maître Internationale Féminin"
 
 msgid "Woman International Master"
-msgstr "Maître Internationale Femme"
+msgstr "Maître Internationale Féminin"
 
 msgid "XLSX format"
 msgstr "Format XLSX"

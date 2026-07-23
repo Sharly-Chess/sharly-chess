@@ -1751,12 +1751,6 @@ class KoyaTieBreak(OpponentRecordTieBreak):
 
 class OpponentRatingTieBreak(TieBreak, ABC):
     @property
-    def forbidden_pairing_systems(self) -> list[PairingSystem]:
-        """In a round-robin every player has met every other, so
-        opponent-rating tie-breaks all collapse to the same value."""
-        return [RoundRobinPairingSystem()]
-
-    @property
     def category(self) -> TieBreakCategory:
         return RatingCategory()
 

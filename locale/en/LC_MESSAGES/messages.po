@@ -7203,7 +7203,7 @@ msgstr ""
 msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
-msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
 msgstr ""
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
