@@ -4,8 +4,8 @@ from _weakref import ReferenceType
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from database.sqlite.event.event_store import StoredDisplayController
 
 if TYPE_CHECKING:

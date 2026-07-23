@@ -62,14 +62,6 @@ class WebContext:
             logger.warning('Request with no client!')
 
     @property
-    def background_image(self) -> str | None:
-        """
-        Override this method to make the background image different from the default.
-        :return:
-        """
-        return None
-
-    @property
     def background_color(self) -> str:
         """
         Override this method to make the background colour different from the default.
@@ -78,16 +70,14 @@ class WebContext:
         return SharlyChessConfig.default_background_color
 
     @property
-    def background_info(self) -> dict[str, str | None]:
+    def background_info(self) -> dict[str, str]:
         """
-        The information return by this method is passed to the template engine to make the client call the /background
-        URL if the image and colours are not already loaded on the page.
-        This way image URLs are computed only when needed.
-        This method should not be overridden (instead override background_image() and background_color()).
-        :return: a dict with an image (a relative or absolute URL, or a path of a file located in /custom) and a color.
+        The information returned by this method is passed to the template engine so the client applies the page
+        background colour.
+        This method should not be overridden (instead override background_color()).
+        :return: a dict with a color.
         """
         return {
-            'image': self.background_image,
             'color': self.background_color,
         }
 

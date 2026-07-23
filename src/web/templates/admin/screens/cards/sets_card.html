@@ -1,0 +1,6 @@
+{% for screen_set in screen.sorted_screen_sets %}
+    <div>
+        {{ screen_set.tournament.name }}
+        ({{ screen_set.numbers_str }})
+    </div>
+{% endfor %}

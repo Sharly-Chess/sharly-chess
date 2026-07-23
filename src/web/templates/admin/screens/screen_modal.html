@@ -68,18 +68,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if screen_type.value != 'image' %}
-                            <div class="col-12 col-md-6">
-                                {{ admin_macros.text_input(
-                                    name='menu_text',
-                                    label=_('Menu label:'),
-                                    placeholder=_('Automatic'),
-                                    tooltip_text=_('The label used for this screen in menus. If left empty, the tournament name is used.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        {% endif %}
-                        {% if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', 'check-in'] %}
+                        {% if action == 'create' and screen_type.has_screen_sets %}
                             <div class="col-12 col-md-6">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
@@ -90,92 +79,24 @@
                                 ) }}
                             </div>
                         {% endif %}
-                        {% if screen_type.value == 'ranking' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_crosstable.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_round.html' %}
-                            </div>
-                        {% endif %}
-                        {% if screen_type.value == 'image' %}
-                            <div class="col-12 col-md-6">
-                                {{ admin_macros.text_input(
-                                    name='background_image',
-                                    label=_('Background image:'),
-                                    placeholder=_('E.g.: https://my.club.us/tournament.jpg'),
-                                    tooltip_text=_('The URL of the image to display.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {{ admin_macros.color_input(
-                                    name='background_color',
-                                    label=_('Background colour:'),
-                                    default_checkbox=true,
-                                    default_color=admin_event.background_color,
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        {% endif %}
                     </div>
 
-                    {% if screen_type.value in ['players', 'ranking', 'results', ] %}
-                        <h4>
-                            {{ _('Selection') }}
-                        </h4>
-                        <div class="row gy-2 gx-3">
-                            {% if screen_type.value == 'players' %}
-                                <div class="col-12 col-md-6">
-                                    {% include '../common/modal/players_show_unpaired.html' %}
-                                </div>
-                            {% endif %}
-                            {% if screen_type.value == 'ranking' %}
-                                <div class="col-12 col-md-6">
-                                    {% include '../common/modal/ranking_min_points.html' %}
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    {% include '../common/modal/ranking_max_points.html' %}
-                                </div>
-                            {% endif %}
-                            {% if screen_type.value == 'results' %}
-                                <div class="col-12 col-md-6">
-                                    {{ admin_macros.number_input(
-                                        name='results_limit',
-                                        label=_('Maximum number of results displayed:'),
-                                        placeholder=_('E.g.: %(num)d', num=30),
-                                        tooltip_text=_('The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed).'),
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    {{ admin_macros.number_input(
-                                        name='results_max_age',
-                                        label=_('Maximum age of the results:'),
-                                        placeholder=_('E.g.: %(minutes)d (minutes)', minutes=45),
-                                        tooltip_text=_('The maximum age of the results, in minutes (by default %(minutes)d minutes).', minutes=sharly_chess_config.default_results_screen_max_age),
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    {{ admin_macros.select_input(
-                                        name='results_tournament_ids',
-                                        label=_('Tournaments displayed:'),
-                                        placeholder=_('All the tournaments'),
-                                        multiple_select=true,
-                                        select_options=tournament_options,
-                                        data=data, errors=errors
-                                    ) }}
-                                </div>
-                            {% endif %}
-                        </div>
+                    {% if screen_type.form_template %}
+                        {% include screen_type.form_template %}
                     {% endif %}
 
-                    {% if screen_type.value in ['input', 'boards', 'players', 'results', 'ranking', 'check-in'] %}
-                        <h4>
-                            {{ _('Layout') }}
-                        </h4>
+                    {% if screen_type.has_config_fields %}
+                        <h4>{{ _('Layout') }}</h4>
                         <div class="row gy-2 gx-3">
+                            <div class="col-12 col-md-6">
+                                {{ admin_macros.text_input(
+                                    name='menu_text',
+                                    label=_('Menu label:'),
+                                    placeholder=_('Automatic'),
+                                    tooltip_text=_('The label used for this screen in menus. If left empty, the tournament name is used.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
                             {% if admin_event.timers_by_id %}
                                 <div class="col-12 col-md-6">
                                     {{ admin_macros.select_input(
@@ -204,22 +125,6 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            {% if screen_type.value in ('input', 'check-in') %}
-                                <div class="col-12 col-md-6">
-                                    {% include '../common/modal/exit_button.html' %}
-                                </div>
-                            {% endif %}
-                            {% if screen_type.value == 'players' %}
-                                <div class="col-12 col-md-6">
-                                    {% include '../common/modal/players_player_format.html' %}
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    {% include '../common/modal/players_board_format.html' %}
-                                </div>
-                                <div class="col-12 col-md-6">
-                                    {% include '../common/modal/players_opponent_format.html' %}
-                                </div>
-                            {% endif %}
                             <div class="col-12">
                                 {% include '../common/modal/alert_message.html' %}
                             </div>

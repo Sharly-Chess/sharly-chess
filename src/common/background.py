@@ -20,7 +20,8 @@ def inline_image_url(image: str | None) -> str:
     """
     if not image:
         return ''
-    if image.startswith('/') or validators.url(image):
+    # A data: URI (an uploaded image stored inline) or a true URL is used as-is.
+    if image.startswith(('/', 'data:')) or validators.url(image):
         return image
     file: Path = CUSTOM_DIR / image
     if not file.exists():

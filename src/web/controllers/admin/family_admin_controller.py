@@ -12,9 +12,10 @@ from litestar_htmx import HTMXTemplate
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from data.family import Family
+from data.screens.family import Family
 from utils import Utils
-from utils.enum import ScreenType
+from data.screens.manager import ScreenTypeManager
+from data.screens.screen_types import ScreenType
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredFamily
 from web.controllers.admin.base_event_admin_controller import (
@@ -32,7 +33,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         family_id: int | None = None,
-        family_type: str | None = None,
+        family_type_id: str | None = None,
         reload_event: bool = False,
     ):
         super().__init__(request, reload_event)
@@ -45,18 +46,23 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 raise NotFoundException(f'Family [{family_id}] not found.')
 
-        self.family_type: ScreenType | None = None
+        self.family_type_id: str | None = None
         if self.admin_family:
-            self.family_type = self.admin_family.type
-        elif family_type:
-            try:
-                self.family_type = ScreenType(family_type)
-            except ValueError:
-                raise NotFoundException(f'Unknown screen type [{family_type}].')
+            self.family_type_id = self.admin_family.type
+        elif family_type_id:
+            if family_type_id not in ScreenTypeManager(self.get_admin_event()).ids():
+                raise NotFoundException(f'Unknown screen type [{family_type_id}].')
+            self.family_type_id = family_type_id
 
     def get_admin_family(self) -> Family:
         assert self.admin_family is not None
         return self.admin_family
+
+    @property
+    def family_type(self) -> 'ScreenType | None':
+        if self.family_type_id is None:
+            return None
+        return ScreenTypeManager(self.get_admin_event()).get_object(self.family_type_id)
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -65,7 +71,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             'family_type': self.family_type,
             'family_screen_types': [
                 type_
-                for type_ in ScreenType
+                for type_ in ScreenTypeManager(self.get_admin_event()).objects()
                 if type_.families_allowed
                 and type_.supports_event_type(self.get_admin_event().event_type)
             ],
@@ -92,9 +98,11 @@ class FamilyAdminController(BaseEventAdminController):
         type_: str
         match action:
             case 'create':
-                assert web_context.family_type is not None
-                type_ = web_context.family_type
-                if not ScreenType(type_).supports_event_type(event.event_type):
+                family_type = web_context.family_type
+                assert family_type is not None
+                assert web_context.family_type_id is not None
+                type_ = web_context.family_type_id
+                if not family_type.supports_event_type(event.event_type):
                     raise ValueError(
                         f'Screen type [{type_}] is not available for '
                         f'[{event.event_type}] events.'
@@ -107,15 +115,6 @@ class FamilyAdminController(BaseEventAdminController):
         columns: int | None = None
         font_size: int | None = None
         timer_id: int | None = None
-        input_exit_button: bool | None = None
-        players_show_unpaired: bool | None = None
-        players_player_format: int | None = None
-        players_board_format: int | None = None
-        players_opponent_format: int | None = None
-        ranking_crosstable: bool = False
-        ranking_round: int | None = None
-        ranking_min_points: float | None = None
-        ranking_max_points: float | None = None
         tournament_id: int | None = None
         first: int | None = None
         last: int | None = None
@@ -123,6 +122,8 @@ class FamilyAdminController(BaseEventAdminController):
         number: int | None = None
         message_default: bool = True
         message_text: str | None = None
+        # Type-specific StoredFamily fields, extracted by the screen type.
+        type_values: dict[str, Any] = {}
         name = WebContext.form_data_to_str(data, 'name')
         public = WebContext.form_data_to_bool(data, 'public')
         match action:
@@ -178,50 +179,9 @@ class FamilyAdminController(BaseEventAdminController):
                     ).format(first=first, last=last)
                     errors['first'] = error
                     errors['last'] = error
-                match ScreenType(type_):
-                    case ScreenType.BOARDS:
-                        pass
-                    case ScreenType.INPUT | ScreenType.CHECK_IN:
-                        input_exit_button = WebContext.form_data_to_bool(
-                            data, 'input_exit_button'
-                        )
-                    case ScreenType.PLAYERS:
-                        players_show_unpaired = WebContext.form_data_to_bool(
-                            data, 'players_show_unpaired'
-                        )
-                        players_player_format = WebContext.form_data_to_int(
-                            data, 'players_player_format'
-                        )
-                        players_board_format = WebContext.form_data_to_int(
-                            data, 'players_board_format'
-                        )
-                        players_opponent_format = WebContext.form_data_to_int(
-                            data, 'players_opponent_format'
-                        )
-                    case ScreenType.RANKING:
-                        ranking_crosstable = WebContext.form_data_to_bool(
-                            data, field := 'ranking_crosstable'
-                        )
-                        try:
-                            ranking_round = WebContext.form_data_to_int(
-                                data, field := 'ranking_round'
-                            )
-                        except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                        try:
-                            ranking_min_points = WebContext.form_data_to_float(
-                                data, field := 'ranking_min_points'
-                            )
-                        except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                        try:
-                            ranking_max_points = WebContext.form_data_to_float(
-                                data, field := 'ranking_max_points'
-                            )
-                        except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                    case _:
-                        raise ValueError(f'type=[{type_}]')
+                family_type = web_context.family_type
+                assert family_type is not None
+                type_values = family_type.read_form_data(data, errors, event)
                 field = 'parts'
                 try:
                     parts = WebContext.form_data_to_int(data, field, minimum=1)
@@ -252,7 +212,7 @@ class FamilyAdminController(BaseEventAdminController):
                     uniq_id = web_context.get_admin_family().uniq_id
                 else:
                     uniq_id = event.get_unused_family_uniq_id(
-                        ScreenType(type_),
+                        web_context.family_type,
                         Utils.name_to_uniq_id(name) if name else None,
                     )
             case 'delete':
@@ -284,15 +244,6 @@ class FamilyAdminController(BaseEventAdminController):
             font_size=font_size,
             menu_text=menu_text or '',
             timer_id=timer_id,
-            input_exit_button=input_exit_button,
-            players_show_unpaired=players_show_unpaired,
-            players_player_format=players_player_format,
-            players_board_format=players_board_format,
-            players_opponent_format=players_opponent_format,
-            ranking_crosstable=ranking_crosstable,
-            ranking_round=ranking_round,
-            ranking_min_points=ranking_min_points,
-            ranking_max_points=ranking_max_points,
             first=first,
             last=last,
             parts=parts,
@@ -300,6 +251,7 @@ class FamilyAdminController(BaseEventAdminController):
             message_default=message_default,
             message_text=message_text,
             errors=errors,
+            **type_values,
         )
 
     @classmethod
@@ -317,7 +269,7 @@ class FamilyAdminController(BaseEventAdminController):
         web_context = FamilyAdminWebContext(
             request,
             family_id=family_id,
-            family_type=family_type,
+            family_type_id=family_type,
             reload_event=reload_event,
         )
         event = web_context.get_admin_event()
@@ -337,15 +289,6 @@ class FamilyAdminController(BaseEventAdminController):
                     columns: int | None = None
                     font_size: int | None = None
                     timer_id: int | None = None
-                    input_exit_button: bool | None = None
-                    players_show_unpaired: bool = True
-                    players_player_format: int | None = None
-                    players_board_format: int | None = None
-                    players_opponent_format: int | None = None
-                    ranking_crosstable: bool = False
-                    ranking_round: int | None = None
-                    ranking_min_points: float | None = None
-                    ranking_max_points: float | None = None
                     tournament_id: int | None = None
                     first: int | None = None
                     last: int | None = None
@@ -353,18 +296,19 @@ class FamilyAdminController(BaseEventAdminController):
                     number: int | None = None
                     message_default: bool = True
                     message_text: str | None = None
+                    # Type-specific form values, provided by the screen type.
+                    type_values: dict[str, Any] = {}
                     match action:
                         case 'update':
                             name = web_context.get_admin_family().stored_family.name
                         case 'create':
-                            assert family_type is not None
-                            name = event.get_unused_family_name(
-                                family_type=ScreenType(family_type)
-                            )
+                            # No default name: an unnamed multi-screen is named
+                            # automatically (as for single screens).
+                            pass
                         case 'clone':
                             family = web_context.get_admin_family()
                             name = event.get_unused_family_name(
-                                family_type=ScreenType(family.type),
+                                family_type=family.screen_type,
                                 base_name=family.stored_family.name,
                             )
                         case 'delete':
@@ -383,39 +327,9 @@ class FamilyAdminController(BaseEventAdminController):
                             timer_id = stored_family.timer_id
                             first = stored_family.first
                             last = stored_family.last
-                            match family.type:
-                                case ScreenType.BOARDS:
-                                    pass
-                                case ScreenType.INPUT:
-                                    input_exit_button = stored_family.input_exit_button
-                                case ScreenType.CHECK_IN:
-                                    input_exit_button = stored_family.input_exit_button
-                                case ScreenType.PLAYERS:
-                                    players_show_unpaired = (
-                                        stored_family.players_show_unpaired or False
-                                    )
-                                    players_player_format = (
-                                        stored_family.players_player_format
-                                    )
-                                    players_board_format = (
-                                        stored_family.players_board_format
-                                    )
-                                    players_opponent_format = (
-                                        stored_family.players_opponent_format
-                                    )
-                                case ScreenType.RANKING:
-                                    ranking_crosstable = (
-                                        stored_family.ranking_crosstable
-                                    )
-                                    ranking_round = stored_family.ranking_round
-                                    ranking_min_points = (
-                                        stored_family.ranking_min_points
-                                    )
-                                    ranking_max_points = (
-                                        stored_family.ranking_max_points
-                                    )
-                                case _:
-                                    raise ValueError(f'type=[{family.type}]')
+                            type_values = family.screen_type.default_family_form_data(
+                                family
+                            )
                             parts = stored_family.parts
                             number = stored_family.number
                             message_default = stored_family.message_default
@@ -424,81 +338,31 @@ class FamilyAdminController(BaseEventAdminController):
                             public = True
                             message_default = True
                             tournament_id = list(event.tournaments_by_id.keys())[0]
-                            match family_type:
-                                case (
-                                    ScreenType.BOARDS
-                                    | ScreenType.INPUT
-                                    | ScreenType.CHECK_IN
-                                    | ScreenType.RANKING
-                                ):
-                                    pass
-                                case ScreenType.PLAYERS:
-                                    columns = cls.get_default_players_screen_columns(
-                                        event
-                                    )
-                                    players_player_format = (
-                                        cls.get_default_players_screen_player_format(
-                                            event
-                                        ).value
-                                    )
-                                    players_board_format = (
-                                        cls.get_default_players_screen_board_format(
-                                            event
-                                        ).value
-                                    )
-                                    players_opponent_format = (
-                                        cls.get_default_players_screen_opponent_format(
-                                            event
-                                        ).value
-                                    )
-                                case _:
-                                    raise ValueError(f'family_type={family_type}')
+                            create_type = web_context.family_type
+                            assert create_type is not None
+                            type_values = create_type.create_form_data(event)
+                            columns = type_values.pop('columns', None)
                         case 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    data = {
-                        'public': WebContext.value_to_form_data(public),
-                        'name': WebContext.value_to_form_data(name),
-                        'tournament_id': WebContext.value_to_form_data(tournament_id),
-                        'columns': WebContext.value_to_form_data(columns),
-                        'font_size': WebContext.value_to_form_data(font_size),
-                        'menu_text': WebContext.value_to_form_data(menu_text),
-                        'timer_id': WebContext.value_to_form_data(timer_id),
-                        'first': WebContext.value_to_form_data(first),
-                        'last': WebContext.value_to_form_data(last),
-                        'parts': WebContext.value_to_form_data(parts),
-                        'number': WebContext.value_to_form_data(number),
-                        'message_text_checkbox': WebContext.value_to_form_data(
-                            message_default
-                        ),
-                        'message_text': WebContext.value_to_form_data(message_text),
-                        'input_exit_button': WebContext.value_to_form_data(
-                            input_exit_button
-                        ),
-                        'players_show_unpaired': WebContext.value_to_form_data(
-                            players_show_unpaired
-                        ),
-                        'players_player_format': WebContext.value_to_form_data(
-                            players_player_format
-                        ),
-                        'players_board_format': WebContext.value_to_form_data(
-                            players_board_format
-                        ),
-                        'players_opponent_format': WebContext.value_to_form_data(
-                            players_opponent_format
-                        ),
-                        'ranking_crosstable': WebContext.value_to_form_data(
-                            ranking_crosstable
-                        ),
-                        'ranking_round': WebContext.value_to_form_data(ranking_round),
-                        'ranking_min_points': WebContext.value_to_form_data(
-                            ranking_min_points
-                        ),
-                        'ranking_max_points': WebContext.value_to_form_data(
-                            ranking_max_points
-                        ),
+                    form_values: dict[str, Any] = {
+                        'public': public,
+                        'name': name,
+                        'tournament_id': tournament_id,
+                        'columns': columns,
+                        'font_size': font_size,
+                        'menu_text': menu_text,
+                        'timer_id': timer_id,
+                        'first': first,
+                        'last': last,
+                        'parts': parts,
+                        'number': number,
+                        'message_text_checkbox': message_default,
+                        'message_text': message_text,
                     }
+                    form_values.update(type_values)
+                    data = WebContext.values_dict_to_form_data(form_values)
                     stored_family: StoredFamily = (
                         cls._admin_validate_family_update_data(
                             action, web_context, data
@@ -606,7 +470,7 @@ class FamilyAdminController(BaseEventAdminController):
         web_context = FamilyAdminWebContext(
             request,
             family_id=family_id,
-            family_type=family_type,
+            family_type_id=family_type,
         )
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')

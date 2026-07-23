@@ -1,0 +1,21 @@
+<i class="bi-image pe-1"></i>
+<div>
+    {% if data.image %}
+        {% if data.image.startswith('data:') %}
+            {{ _('Image: uploaded') }}
+        {% else %}
+            {{ _('Image: %(image)s', image=data.image) }}
+        {% endif %}
+        <div>
+            <img src="{{ data.image_url }}" alt="" class="img-thumbnail mt-1" style="max-height: 60px;" />
+        </div>
+    {% endif %}
+</div>
+<div>
+    {{ _('Background colour: %(color)s', color=data.background_color) }}
+    {% if data.background_color_default %}
+        <span class="fst-italic">
+            {{ _('(by default)') }}
+        </span>
+    {% endif %}
+</div>

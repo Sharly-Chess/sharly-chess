@@ -13,8 +13,9 @@ from litestar.status_codes import HTTP_200_OK
 from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.menu import Menu
+from data.screens.manager import ScreenTypeManager
 from database.sqlite.event.event_store import StoredMenu
-from utils.enum import FormAction, MenuSubmenuMode, ScreenType
+from utils.enum import FormAction, MenuSubmenuMode
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -136,8 +137,10 @@ class MenuAdminController(BaseEventAdminController):
     def _screen_options(event: Any) -> dict[str, dict[str, Any]]:
         claimed_ids = event.menu_claimed_screen_ids
         claimed_types = event.menu_claimed_screen_types
+        manager = ScreenTypeManager(event)
         options: dict[str, dict[str, Any]] = {}
         for screen_type, screens in event.sorted_basic_screens_by_screen_type.items():
+            type_name = manager.get_object(screen_type).name
             group: dict[str, Any] = {}
             for screen in sorted(screens, key=attrgetter('name')):
                 if screen.type in claimed_types:
@@ -147,7 +150,7 @@ class MenuAdminController(BaseEventAdminController):
                         tooltip=_(
                             'All "%(screen_type)s" screens already belong to a menu.'
                         )
-                        % {'screen_type': screen_type.name},
+                        % {'screen_type': type_name},
                     )
                 elif screen.id in claimed_ids:
                     group[str(screen.id)] = SelectOption(
@@ -158,15 +161,17 @@ class MenuAdminController(BaseEventAdminController):
                 else:
                     group[str(screen.id)] = screen.name
             if group:
-                options[screen_type.name] = group
+                options[type_name] = group
         return options
 
     @staticmethod
     def _family_options(event: Any) -> dict[str, dict[str, Any]]:
         claimed_family_ids = event.menu_claimed_family_ids
         claimed_types = event.menu_claimed_screen_types
+        manager = ScreenTypeManager(event)
         options: dict[str, dict[str, Any]] = {}
         for screen_type, families in event.families_by_screen_type.items():
+            type_name = manager.get_object(screen_type).name
             group: dict[str, Any] = {}
             for family in sorted(families, key=attrgetter('name')):
                 if family.type in claimed_types:
@@ -176,7 +181,7 @@ class MenuAdminController(BaseEventAdminController):
                         tooltip=_(
                             'All "%(screen_type)s" screens already belong to a menu.'
                         )
-                        % {'screen_type': screen_type.name},
+                        % {'screen_type': type_name},
                     )
                 elif family.id in claimed_family_ids:
                     group[str(family.id)] = SelectOption(
@@ -187,7 +192,7 @@ class MenuAdminController(BaseEventAdminController):
                 else:
                     group[str(family.id)] = family.display_name
             if group:
-                options[screen_type.name] = group
+                options[type_name] = group
         return options
 
     @staticmethod
@@ -196,30 +201,30 @@ class MenuAdminController(BaseEventAdminController):
         claimed_ids = event.menu_claimed_screen_ids
         claimed_family_ids = event.menu_claimed_family_ids
         options: dict[str, Any] = {}
-        for screen_type in ScreenType:
+        for screen_type in ScreenTypeManager(event).objects():
             label = _('All "%(screen_type)s" screens') % {
                 'screen_type': screen_type.name
             }
-            if screen_type in claimed_types:
-                options[screen_type.value] = SelectOption(
+            if screen_type.id in claimed_types:
+                options[screen_type.id] = SelectOption(
                     name=label,
                     disabled=True,
                     tooltip=_('This screen type already belongs to a menu.'),
                 )
             elif any(
                 screen.id in claimed_ids
-                for screen in event.sorted_basic_screens_by_screen_type[screen_type]
+                for screen in event.sorted_basic_screens_by_screen_type[screen_type.id]
             ) or any(
                 family.id in claimed_family_ids
-                for family in event.families_by_screen_type[screen_type]
+                for family in event.families_by_screen_type[screen_type.id]
             ):
-                options[screen_type.value] = SelectOption(
+                options[screen_type.id] = SelectOption(
                     name=label,
                     disabled=True,
                     tooltip=_('Some screens of this type already belong to a menu.'),
                 )
             else:
-                options[screen_type.value] = label
+                options[screen_type.id] = label
         return {_('Screen types'): options}
 
     @get(
@@ -534,4 +539,4 @@ class MenuAdminController(BaseEventAdminController):
         raw = WebContext.form_data_to_str(data, 'screen_type')
         if not raw:
             raise ClientException('Missing screen type.')
-        return self._create_menu_item(request, screen_type=ScreenType(raw))
+        return self._create_menu_item(request, screen_type=raw)

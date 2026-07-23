@@ -51,6 +51,7 @@ if TYPE_CHECKING:
     )
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
+    from data.screens.screen_types import ScreenType
     from data.criteria.player_filters import PlayerFilter
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.rule_sets import RuleSet
@@ -423,6 +424,15 @@ class AppHookSpecs:
     @hookspec(firstresult=True)
     def get_default_players_screen_columns(self) -> int | None:
         """Return default number of columns of the Players Screens."""
+
+    @hookspec
+    def insert_screen_types(self, screen_types: list[type['ScreenType']]):
+        """Provide extra screen types."""
+
+    @hookspec
+    def get_screen_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin screen values.
+        Also provide the ID of the plugin."""
 
     # ---------------------------------------------------------------------------------
     # Printing
