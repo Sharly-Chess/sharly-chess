@@ -6,16 +6,16 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.access_levels.client_tracker import ClientTracker
-from data.display_controller import DisplayController
+from data.screens.display_controller import DisplayController
 from data.event import Event
 from data.pairings.managers import plugin_manager
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from data.tournament import Tournament
+from data.screens.manager import ScreenTypeManager
 from plugins.utils import NavDataTransferItem
 from utils.enum import (
     FormAction,
-    ScreenType,
     PlayersScreenPlayerFormat,
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
@@ -211,7 +211,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                 },
             }
         elif self.client.can_view_public_screens:
-            sorted_screens_by_screen_type: dict[ScreenType, list[Screen]]
+            sorted_screens_by_screen_type: dict[str, list[Screen]]
             rotators: list[Rotator]
             display_controllers: list[DisplayController]
             if self.client.can_view_private_screens:
@@ -224,9 +224,9 @@ class BaseEventAdminWebContext(AdminWebContext):
                 )
                 rotators = event.public_sorted_rotators
                 display_controllers = event.sorted_public_display_controllers
-            for screen_type in ScreenType:
-                screens = sorted_screens_by_screen_type[screen_type]
-                nav_tabs[f'admin-event-{screen_type.value}-screens-tab'] = {
+            for screen_type in ScreenTypeManager(event).objects():
+                screens = sorted_screens_by_screen_type[screen_type.id]
+                nav_tabs[f'admin-event-{screen_type.id}-screens-tab'] = {
                     'title': f'{screen_type.name} ({len(screens) or "-"})',
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
@@ -367,44 +367,3 @@ class BaseEventAdminController(BaseAdminController):
             template_name='admin/event_layout.html',
             context=template_context,
         )
-
-    @staticmethod
-    def get_default_players_screen_player_format(
-        event: Event,
-    ) -> PlayersScreenPlayerFormat:
-        return (
-            plugin_manager.hook_for_event(
-                event, 'get_default_players_screen_player_format'
-            )()
-            or PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
-        )
-
-    @staticmethod
-    def get_default_players_screen_board_format(
-        event: Event,
-    ) -> PlayersScreenBoardFormat:
-        return (
-            plugin_manager.hook_for_event(
-                event, 'get_default_players_screen_board_format'
-            )()
-            or PlayersScreenBoardFormat.FULL
-        )
-
-    @staticmethod
-    def get_default_players_screen_opponent_format(
-        event: Event,
-    ) -> PlayersScreenOpponentFormat:
-        return (
-            plugin_manager.hook_for_event(
-                event, 'get_default_players_screen_opponent_format'
-            )()
-            or PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS
-        )
-
-    @staticmethod
-    def get_default_players_screen_columns(
-        event: Event,
-    ) -> int | None:
-        return plugin_manager.hook_for_event(
-            event, 'get_default_players_screen_columns'
-        )()

@@ -209,6 +209,8 @@ class ServerEngine:
             compression_config=CompressionConfig(backend='gzip', gzip_compress_level=3),
             logging_config=LoggingConfig(
                 **logging_config,
+                # Litestar's default only logs exceptions when debug=True.
+                log_exceptions='always',
                 disable_stack_trace={
                     400,
                     403,

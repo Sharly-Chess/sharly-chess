@@ -15,8 +15,8 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
 from data.board import PlayerRatingType
-from data.display_controller import DisplayController
-from data.family import Family
+from data.screens.display_controller import DisplayController
+from data.screens.family import Family
 from data.player import Player, TournamentPlayer
 from data.player_categories import (
     PlayerCategory,
@@ -24,11 +24,11 @@ from data.player_categories import (
     JuniorCategory,
     SeniorCategory,
 )
-from data.rotator import Rotator
+from data.screens.rotator import Rotator
 from data.menu import Menu
-from data.screen import Screen
+from data.screens.screen import Screen
 from data.team import Team, TeamGroup
-from data.timer import Timer
+from data.screens.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
@@ -38,7 +38,6 @@ from utils.date_time import format_date, format_date_range
 from utils.enum import (
     EventType,
     RoleType,
-    ScreenType,
     TournamentRating,
 )
 from database.sqlite.event.event_store import (
@@ -56,6 +55,7 @@ from database.sqlite.event.event_store import (
 
 if TYPE_CHECKING:
     from data.team_affiliation import TeamAffiliationSource
+    from data.screens.screen_types import ScreenType
 
 logger: Logger = get_logger()
 
@@ -307,9 +307,9 @@ class Event:
     @property
     def sorted_screens_by_screen_type(
         self,
-    ) -> defaultdict[ScreenType, list[Screen]]:
-        sorted_screens_by_screen_type: defaultdict[ScreenType, list[Screen]] = (
-            defaultdict(list[Screen])
+    ) -> defaultdict[str, list[Screen]]:
+        sorted_screens_by_screen_type: defaultdict[str, list[Screen]] = defaultdict(
+            list[Screen]
         )
         for screen in self.sorted_screens:
             sorted_screens_by_screen_type[screen.type].append(screen)
@@ -322,8 +322,8 @@ class Event:
     @property
     def sorted_public_screens_by_screen_type(
         self,
-    ) -> defaultdict[ScreenType, list[Screen]]:
-        sorted_public_screens_by_screen_type: defaultdict[ScreenType, list[Screen]] = (
+    ) -> defaultdict[str, list[Screen]]:
+        sorted_public_screens_by_screen_type: defaultdict[str, list[Screen]] = (
             defaultdict(list[Screen])
         )
         for screen in self.sorted_public_screens:
@@ -781,7 +781,7 @@ class Event:
 
     def get_unused_screen_uniq_id(
         self,
-        screen_type: ScreenType | None = None,
+        screen_type: 'ScreenType | None' = None,
         base_uniq_id: str | None = None,
     ) -> str:
         """Returns the first unused screen uniq_id looking like base_uniq_id:
@@ -802,7 +802,7 @@ class Event:
 
     def get_unused_screen_name(
         self,
-        screen_type: ScreenType,
+        screen_type: 'ScreenType',
         base_name: str | None = None,
     ) -> str:
         """Returns the first unused screen name looking like base_name:
@@ -820,10 +820,10 @@ class Event:
     @property
     def basic_screens_by_screen_type_by_id(
         self,
-    ) -> defaultdict[ScreenType, dict[int, Screen]]:
-        basic_screens_by_screen_type_by_id: defaultdict[
-            ScreenType, dict[int, Screen]
-        ] = defaultdict(dict[int, Screen])
+    ) -> defaultdict[str, dict[int, Screen]]:
+        basic_screens_by_screen_type_by_id: defaultdict[str, dict[int, Screen]] = (
+            defaultdict(dict[int, Screen])
+        )
         for screen in self.basic_screens:
             basic_screens_by_screen_type_by_id[screen.type][screen.id] = screen
         return basic_screens_by_screen_type_by_id
@@ -831,8 +831,8 @@ class Event:
     @property
     def sorted_basic_screens_by_screen_type(
         self,
-    ) -> defaultdict[ScreenType, list[Screen]]:
-        sorted_basic_screens_by_screen_type: defaultdict[ScreenType, list[Screen]] = (
+    ) -> defaultdict[str, list[Screen]]:
+        sorted_basic_screens_by_screen_type: defaultdict[str, list[Screen]] = (
             defaultdict(list[Screen])
         )
 
@@ -865,15 +865,15 @@ class Event:
         return {family.uniq_id: family for family in self.families}
 
     @property
-    def families_by_screen_type(self) -> dict[ScreenType, list[Family]]:
-        families_by_screen_type: dict[ScreenType, list[Family]] = defaultdict(list)
+    def families_by_screen_type(self) -> dict[str, list[Family]]:
+        families_by_screen_type: dict[str, list[Family]] = defaultdict(list)
         for family in self.sorted_families:
             families_by_screen_type[family.type].append(family)
         return families_by_screen_type
 
     def get_unused_family_uniq_id(
         self,
-        family_type: ScreenType | None = None,
+        family_type: 'ScreenType | None' = None,
         base_uniq_id: str | None = None,
     ) -> str:
         """Returns the first unused family uniq_id looking like base_uniq_id:
@@ -893,7 +893,7 @@ class Event:
 
     def get_unused_family_name(
         self,
-        family_type: ScreenType,
+        family_type: 'ScreenType',
         base_name: str | None = None,
     ) -> str:
         """Returns the first unused family name looking like base_name:
@@ -1012,7 +1012,7 @@ class Event:
             del self.menus_by_id[menu.id]
 
     @property
-    def menu_claimed_screen_types(self) -> set[ScreenType]:
+    def menu_claimed_screen_types(self) -> set[str]:
         """Screen types already used as an 'all screens of this type' item
         in some menu. A screen may only belong to a single menu."""
         return {

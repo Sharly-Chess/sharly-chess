@@ -13,11 +13,13 @@ from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
-from data.family import Family
-from data.rotator import Rotator
-from data.screen import Screen
+from data.event import Event
+from data.screens.family import Family
+from data.screens.manager import ScreenTypeManager
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from database.sqlite.event.event_store import StoredRotator
-from utils.enum import FormAction, ScreenType
+from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -145,28 +147,33 @@ class RotatorAdminController(BaseEventAdminController):
         return {
             'modal': 'rotator_screens',
             'screen_options': cls._screen_or_family_options(
+                event,
                 event.sorted_basic_screens_by_screen_type,
                 rotator.screens,
             ),
             'family_options': cls._screen_or_family_options(
-                event.families_by_screen_type, rotator.families
+                event, event.families_by_screen_type, rotator.families
             ),
             'success_message': success_message,
         }
 
     @staticmethod
     def _screen_or_family_options[T: Screen | Family](
-        entities_by_screen_type: dict[ScreenType, list[T]],
+        event: Event,
+        entities_by_screen_type: dict[str, list[T]],
         rotator_entities: list[T],
     ) -> dict[str, dict[str, str]]:
+        screen_types = ScreenTypeManager(event).objects()
         options: dict[str, dict[str, str]] = {
-            screen_type.name: {} for screen_type in ScreenType
+            screen_type.name: {} for screen_type in screen_types
         }
         rotator_ids = [entity.id for entity in rotator_entities]
-        for screen_type, entities in entities_by_screen_type.items():
-            if screen_type in (ScreenType.INPUT, ScreenType.CHECK_IN):
+        for screen_type in screen_types:
+            if not screen_type.allowed_in_rotators:
                 continue
-            for entity in sorted(entities, key=attrgetter('name')):
+            for entity in sorted(
+                entities_by_screen_type[screen_type.id], key=attrgetter('name')
+            ):
                 suffix = ''
                 if rotator_count := rotator_ids.count(getattr(entity, 'id')):
                     suffix = f' (x{rotator_count})'
@@ -174,7 +181,7 @@ class RotatorAdminController(BaseEventAdminController):
                 # fall back to their name.
                 label = getattr(entity, 'display_name', None) or entity.name
                 options[screen_type.name][str(entity.id)] = label + suffix
-        for screen_type in ScreenType:
+        for screen_type in screen_types:
             if not options[screen_type.name]:
                 del options[screen_type.name]
         return options

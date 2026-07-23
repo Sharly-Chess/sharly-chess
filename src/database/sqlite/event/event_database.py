@@ -2143,6 +2143,7 @@ class EventDatabase(MigrationDatabase):
             background_color=row['background_color'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
+            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
             last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
@@ -2220,6 +2221,7 @@ class EventDatabase(MigrationDatabase):
             'background_color',
             'message_default',
             'message_text',
+            'plugin_data',
             'last_update',
         ]
         params: list = [
@@ -2265,6 +2267,7 @@ class EventDatabase(MigrationDatabase):
             stored_screen.background_color if stored_screen.type == 'image' else None,
             stored_screen.message_default,
             stored_screen.message_text,
+            self.dump_to_json_database_field(stored_screen.plugin_data, {}),
             self.now_as_database_timestamp(),
         ]
         if stored_screen.id is None:

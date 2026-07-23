@@ -5,7 +5,7 @@
    The column split counts matches (a match spans several rows). #}
 <div class="row gy-2 gx-3 screen-set-row mx-0 px-3 py-2">
     {% for matches in screen_set.team_matches_lists %}
-        <div class="col screen-set-col {% if not loop.first %}border-start border-2{% endif %}">
+        <div class="col screen-set-col {% if not loop.first %}border-start border-2 border-dark{% endif %}">
             {% for team_board in matches %}
                 <div class="team-match-block mb-3">
                     <div class="d-flex align-items-center justify-content-between fw-bold text-bg-dark rounded-top px-2 py-1 mb-1">
@@ -61,7 +61,7 @@
                                 {# A forfeit hole has no editable result —
                                    both players must be present. #}
                                 {% set editable =
-                                    screen.type == 'input'
+                                    screen.screen_type.allows_result_input
                                     and wtp and btp
                                     and (
                                         client.can_update_results(tournament.id)

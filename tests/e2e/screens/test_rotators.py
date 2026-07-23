@@ -6,8 +6,7 @@ from database.sqlite.event.event_store import (
     StoredScreen,
     StoredFamily,
 )
-from tests.test_config import TestUtils
-from utils.enum import ScreenType
+from tests.test_config import ScreenType, TestUtils
 
 EVENT_ID = 'rotator-test-event'
 TOURNAMENT_ID = 'rotator-test-tournament'
@@ -174,4 +173,4 @@ class TestRotator:
         )
         page.goto(f'/view/rotator/{EVENT_ID}/{rotator_id}')
         expect(page.get_by_text(SCREEN_ID)).to_be_visible()
-        expect(page.get_by_text(f'{FAMILY_ID} (registered players)')).to_be_visible()
+        expect(page.get_by_text('The tournament has not yet started.')).to_be_visible()

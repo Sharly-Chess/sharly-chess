@@ -5,12 +5,12 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
 
 from data.access_levels.actions import AuthAction
-from data.display_controller import DisplayController
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.display_controller import DisplayController
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from data.tournament import Tournament
 from plugins.ffe.ffe_upload_controller import HTMXTemplate
-from utils.enum import ScreenType
+from data.screens.manager import ScreenTypeManager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -79,7 +79,7 @@ class EventAdminController(BaseEventAdminController):
 
         # Search for screens
         if web_context.client.can_view_public_screens:
-            sorted_screens_by_screen_type: dict[ScreenType, list[Screen]]
+            sorted_screens_by_screen_type: dict[str, list[Screen]]
             if web_context.client.can_view_private_screens:
                 sorted_screens_by_screen_type = (
                     web_context.admin_event.sorted_screens_by_screen_type
@@ -88,11 +88,11 @@ class EventAdminController(BaseEventAdminController):
                 sorted_screens_by_screen_type = (
                     web_context.admin_event.sorted_public_screens_by_screen_type
                 )
-            for screen_type in ScreenType.screen_types():
-                if sorted_screens_by_screen_type[screen_type]:
+            for screen_type in ScreenTypeManager(web_context.admin_event).objects():
+                if sorted_screens_by_screen_type[screen_type.id]:
                     return Redirect(
                         path=request.app.route_reverse(
-                            f'admin-event-{screen_type.value}-screens-tab',
+                            f'admin-event-{screen_type.id}-screens-tab',
                             event_uniq_id=event_uniq_id,
                         )
                     )

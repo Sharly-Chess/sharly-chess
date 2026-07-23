@@ -86,15 +86,11 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if family_type == 'ranking' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_crosstable.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_round.html' %}
-                            </div>
-                        {% endif %}
                     </div>
+
+                    {% if family_type and family_type.form_template %}
+                        {% include family_type.form_template %}
+                    {% endif %}
 
                     {% set is_team = admin_event.is_team_event %}
                     {# Match wording only for team-vs-team systems — flat
@@ -107,38 +103,17 @@
                     {% else %}
                         {% set is_team_matches = is_team %}
                     {% endif %}
-                    {% if family_type in ['boards', 'input'] %}
-                        {% set first_label = _('First match:') if is_team_matches else _('First board:') %}
-                        {% set last_label = _('Last match:') if is_team_matches else _('Last board:') %}
-                        {% set first_tooltip = _('The table number of the first match to select.') if is_team_matches else _('The number of the first board to select.') %}
-                        {% set last_tooltip = _('The table number of the last match to select.') if is_team_matches else _('The number of the last board to select.') %}
-                    {% elif family_type in ('players', 'check-in') %}
-                        {% set first_label = _('First team:') if is_team else _('First player:') %}
-                        {% set last_label = _('Last team:') if is_team else _('Last player:') %}
-                        {% set first_tooltip = _('The number of the first team to select.') if is_team else _('The number of the first player to select.') %}
-                        {% set last_tooltip = _('The number of the last team to select.') if is_team else _('The number of the last player to select.') %}
-                    {% else %}
-                        {% set first_label = _('First team:') if is_team else _('First player:') %}
-                        {% set last_label = _('Last team:') if is_team else _('Last player:') %}
-                        {% set first_tooltip = _('The rank of the first team to select.') if is_team else _('The rank of the first player to select.') %}
-                        {% set last_tooltip = _('The rank of the last team to select.') if is_team else _('The rank of the last player to select.') %}
-                    {% endif %}
+                    {% set sel = family_type.selection_labels(is_team, is_team_matches) %}
                     <h4 class="mt-4">
-                        {% if family_type in ['boards', 'input'] %}
-                            {{ _('Match selection (by table number)') if is_team_matches else _('Board selection (by number)') }}
-                        {% elif family_type in ('players', 'check-in') %}
-                            {{ _('Team selection (by alphabetical order)') if is_team else _('Player selection (by alphabetical order)') }}
-                        {% else %} {# family_type == 'ranking' #}
-                            {{ _('Team selection (by rank)') if is_team else _('Player selection (by rank)') }}
-                        {% endif %}
+                        {{ sel.header }}
                     </h4>
                     <div class="row gy-2 gx-3">
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='first',
-                                label=first_label,
+                                label=sel.first_label,
                                 placeholder=1,
-                                tooltip_text=first_tooltip,
+                                tooltip_text=sel.first_tooltip,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
@@ -146,26 +121,13 @@
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='last',
-                                label=last_label,
+                                label=sel.last_label,
                                 placeholder=_('last'),
-                                tooltip_text=last_tooltip,
+                                tooltip_text=sel.last_tooltip,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
-                        {% if family_type == 'ranking' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_min_points.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_max_points.html' %}
-                            </div>
-                        {% endif %}
-                        {% if family_type == 'players' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/players_show_unpaired.html' %}
-                            </div>
-                        {% endif %}
                     </div>
 
                     <h4 class="mt-4">
@@ -173,48 +135,22 @@
                     </h4>
                     <div class="row gy-2 gx-3">
                         <div class="col-12 col-md-6">
-                            {% if family_type in ['boards', 'input'] and is_team_matches %}
-                                {% set parts_placeholder = _('E.g.: 4 (split matches over 4 screens)') %}
-                                {% set parts_tooltip = _('The number of screens on which the matches will be distributed, optional (the number of screens is always the same and the number of matches per screen adapts to the number of matches).') %}
-                            {% elif family_type not in ['boards', 'input'] and is_team %}
-                                {% set parts_placeholder = _('E.g.: 4 (split teams over 4 screens)') %}
-                                {% set parts_tooltip = _('The number of screens on which the teams will be distributed, optional (the number of screens is always the same and the number of teams per screen adapts to the number of teams).') %}
-                            {% else %}
-                                {% set parts_placeholder = _('E.g.: 4 (split boards over 4 screens)') if family_type in ['boards', 'input'] else _('E.g.: 4 (split players over 4 screens)') %}
-                                {% set parts_tooltip = _('The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards).') if family_type in ['boards', 'input'] else _('The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.') %}
-                            {% endif %}
                             {{ admin_macros.number_input(
                                 name='parts',
                                 label=_('Number of screens:'),
-                                placeholder=parts_placeholder,
-                                tooltip_text=parts_tooltip,
+                                placeholder=sel.parts_placeholder,
+                                tooltip_text=sel.parts_tooltip,
                                 data=data, errors=errors
                             ) }}
                         </div>
                         <div class="col-12 col-md-6">
-                            {% if is_team_matches and family_type in ['boards', 'input'] %}
-                                {{ admin_macros.number_input(
-                                    name='number',
-                                    label=_('Matches per column:'),
-                                    placeholder=_('E.g.: 4 (matches per column)'),
-                                    tooltip_text=_('The number of team matches per column, optional (the number of screens adapts to the number of matches; a match spans one row per board).'),
-                                    data=data, errors=errors
-                                ) }}
-                            {% else %}
-                                {{ admin_macros.number_input(
-                                    name='number',
-                                    label=_('Rows per screen:'),
-                                    placeholder=
-                                        _('E.g.: 20 (boards per screen)')
-                                        if family_type in ['boards', 'input'] else
-                                        _('E.g.: 20 (players per screen)'),
-                                    tooltip_text=
-                                        _('The number of boards per screen, optional (the number of screens adapts to the number of boards).')
-                                        if family_type in ['boards', 'input'] else
-                                        _('The number of players per screen, optional (the number of screens adapts to the number of players).'),
-                                    data=data, errors=errors
-                                ) }}
-                            {% endif %}
+                            {{ admin_macros.number_input(
+                                name='number',
+                                label=sel.number_label,
+                                placeholder=sel.number_placeholder,
+                                tooltip_text=sel.number_tooltip,
+                                data=data, errors=errors
+                            ) }}
                         </div>
                         {% if admin_event.timers_by_id %}
                             <div class="col-12 col-md-6">
@@ -244,22 +180,6 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if family_type in ('input', 'check-in') %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/exit_button.html' %}
-                            </div>
-                        {% endif %}
-                        {% if family_type == 'players' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/players_player_format.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/players_board_format.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/players_opponent_format.html' %}
-                            </div>
-                        {% endif %}
                         <div class="col-12">
                             {% include '../common/modal/alert_message.html' %}
                         </div>

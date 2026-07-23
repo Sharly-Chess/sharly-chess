@@ -19,13 +19,13 @@ from data.access_levels.client import Client
 from data.access_levels.manager import AccessLevelManager
 from data.account import Account
 from data.board import Board
-from data.display_controller import DisplayController
+from data.screens.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
 from data.player import TournamentPlayer, Player
-from data.rotator import Rotator
+from data.screens.rotator import Rotator
 from data.menu import Menu
-from data.screen import Screen
+from data.screens.screen import Screen
 from data.team import Team
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
