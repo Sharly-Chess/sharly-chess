@@ -109,8 +109,6 @@ class SQLiteDatabase:
 
     def execute(self, query: str, params: tuple | dict[str, Any] = ()):
         assert self.cursor is not None
-        # Profiling is opt-in. Keep the normal database path free of clocks and
-        # query normalization when no profiled HTTP request is active.
         from web.performance import current_request_performance, record_sql
 
         if current_request_performance() is None:
@@ -182,9 +180,7 @@ class SQLiteDatabase:
 
     @staticmethod
     def load_date_from_database_field(data: str) -> date:
-        # fromisoformat is ~50x faster than strptime and the stored format
-        # (dump_date_to_database_field writes zero-padded '%Y-%m-%d') is ISO.
-        # Fall back to strptime for any legacy non-ISO value.
+        # Stored dates are ISO; retain strptime for legacy values.
         try:
             return date.fromisoformat(data)
         except ValueError:

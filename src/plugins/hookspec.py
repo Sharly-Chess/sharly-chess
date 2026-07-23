@@ -157,11 +157,9 @@ class AppHookSpecs:
     def get_player_duplicate_key(
         self, stored_player: 'StoredPlayer'
     ) -> tuple[str, Hashable] | None:
-        """Return the player's plugin-specific duplicate identity.
+        """Return a namespaced key used to detect plugin-specific duplicates.
 
-        Two players are duplicates when their keys compare equal. The first tuple
-        item must be the plugin ID, which keeps keys from different plugins in
-        separate namespaces. Return ``None`` when the player has no plugin identity.
+        The first item is the plugin ID. Return ``None`` when no key applies.
         """
 
     @hookspec

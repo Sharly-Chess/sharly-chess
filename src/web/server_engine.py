@@ -200,15 +200,12 @@ class ServerEngine:
             )
 
         app: Litestar = Litestar(
-            # Debug response generation is useful when explicitly requested in
-            # development, but it adds framework work to every packaged request.
             debug=self.debug,
             request_class=HTMXRequest,
             route_handlers=route_handlers,
             exception_handlers=exception_handlers,  # type: ignore
             template_config=template_config,
-            # Level 3 keeps most of gzip's size reduction while spending much
-            # less CPU before large ranking and player pages can be sent.
+            # Favor response latency over maximum compression.
             compression_config=CompressionConfig(backend='gzip', gzip_compress_level=3),
             logging_config=LoggingConfig(
                 **logging_config,

@@ -698,14 +698,7 @@ class FfePlugin(Plugin):
         # The FFE upload pipeline is Papi-based — individual events only.
         if stored_event.event_type == EventType.TEAM:
             return
-        # This hook is called on most database writes (every result entry), so
-        # keep the request thread's share cheap: the gate below reads only
-        # stored plugin data. The expensive part — reloading the whole event to
-        # hand a live Tournament to schedule_upload — is deferred to a
-        # background thread. The write has already been committed here (the hook
-        # fires after EventDatabase releases the connection) and the upload
-        # itself is a delayed Timer, so this changes no behaviour beyond taking
-        # the reload off keystroke latency.
+        # Defer the event reload so result entry does not wait for it.
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
         ):

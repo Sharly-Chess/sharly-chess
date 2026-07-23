@@ -47,6 +47,5 @@ class RequestGarbageCollectionMiddleware:
         state = scope.get('state')
         if state is None:
             return
-        # The response is complete, so the per-request framework and domain
-        # objects can be released before collecting their reference cycles.
+        # Drop request references before collecting their cycles.
         state.clear()

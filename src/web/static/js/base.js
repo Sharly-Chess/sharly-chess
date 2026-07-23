@@ -75,7 +75,7 @@ function closeTooltips () {
             bootstrap.Tooltip.getInstance(element)?.hide();
         });
     }
-    // Also remove any orphan left behind when its trigger was swapped out.
+    // Remove tooltip elements orphaned by HTMX swaps.
     $('body .tooltip').remove();
 }
 
@@ -204,8 +204,7 @@ const restoreState = () => {
 $(document).ready(restoreState);
 
 window.addEventListener('htmx:beforeCleanupElement', function(event) {
-    // Bootstrap keeps an element-to-instance registry. Dispose a trigger
-    // before HTMX removes it so swapped rows cannot accumulate listeners.
+    // Dispose Bootstrap state before HTMX removes a tooltip trigger.
     const element = event.target;
     if (
         typeof bootstrap !== 'undefined'
@@ -218,8 +217,7 @@ window.addEventListener('htmx:beforeCleanupElement', function(event) {
 });
 
 window.addEventListener('htmx:afterRequest', function() {
-    // One response can perform several out-of-band swaps. Refresh once after
-    // all of them rather than rebuilding every tooltip after every swap.
+    // Refresh once after all out-of-band swaps.
     activateTooltips();
     closeTooltips();
     closeAirPickers();

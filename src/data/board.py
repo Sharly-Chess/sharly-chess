@@ -161,8 +161,6 @@ class Board:
 
     @index.setter
     def index(self, value: int) -> None:
-        # The board's position drives its display number, so an index change
-        # must invalidate the tournament's cached board-number maps.
         set_stored_fields(self.stored_board, index=value)
         self.tournament.invalidate_board_layout()
 
@@ -172,8 +170,6 @@ class Board:
 
     @white_player_id.setter
     def white_player_id(self, value: int | None) -> None:
-        # Keeps the raw field, the cached player weakref and the board-number
-        # maps (fixed numbers depend on who sits here) in sync.
         set_stored_fields(self.stored_board, white_player_id=value)
         self._white_player_ref = self._player_ref(value)
         self.tournament.invalidate_board_layout()

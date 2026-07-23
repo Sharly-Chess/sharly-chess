@@ -186,36 +186,21 @@ _render_contexts: ContextVar[list[JinjaContext] | None] = ContextVar(
 
 
 class ReleasableJinjaContext(JinjaContext):
-    """A Jinja context whose request-owned references can be released.
+    """A Jinja context that releases request data after rendering.
 
-    Jinja macros create a reference cycle: the context stores the macro in
-    ``vars``, while the macro's generated function closes over that context.
-    The context's ``parent`` mapping also contains the complete template
-    context, including the event and other request objects. Reference counting
-    therefore cannot release the event when rendering ends; it remains alive
-    until Python's cyclic garbage collector eventually scans the whole graph.
-
-    Contexts created for imports without ``with context`` are different. Jinja
-    caches those macro modules between renders, and their contexts contain only
-    environment globals. They are application-owned and must remain intact.
+    Macros form cycles with their context. Only per-render contexts may be
+    cleared; cached global-only macro contexts must remain intact.
     """
 
     def __init__(self, *args: t.Any, **kwargs: t.Any) -> None:
         super().__init__(*args, **kwargs)
         contexts = _render_contexts.get()
         if contexts is not None and set(self.parent).difference(self.globals_keys):
-            # A non-global value means this context received data for the
-            # current render. Record it so that data can be detached once the
-            # rendered HTML has been produced. A globals-only context belongs
-            # to a cached macro module and is deliberately not recorded.
+            # Global-only contexts belong to cached macro modules.
             contexts.append(self)
 
     def release(self) -> None:
         """Detach request data and break macro cycles after rendering."""
-        # Nothing can use this per-render context after Template.render()
-        # returns. Clearing both sides owned by the context lets normal
-        # reference counting release the event immediately, instead of leaving
-        # thousands of objects for a later cyclic-GC pause.
         self.parent.clear()
         self.vars.clear()
         self.exported_vars.clear()
@@ -223,7 +208,7 @@ class ReleasableJinjaContext(JinjaContext):
 
 
 class ProfiledJinjaTemplate(JinjaTemplate):
-    """Release request-owned contexts and optionally profile the render."""
+    """Profile rendering and release its request-owned Jinja contexts."""
 
     def render(self, *args: t.Any, **kwargs: t.Any) -> str:
         profile = current_request_performance()
@@ -233,16 +218,12 @@ class ProfiledJinjaTemplate(JinjaTemplate):
 
             start = perf_counter()
         contexts: list[JinjaContext] = []
-        # ContextVar keeps concurrent request renders isolated while allowing
-        # every context created by includes, imports, and inheritance during
-        # this render to register itself above.
+        # Collect contexts created by nested templates during this render.
         token = _render_contexts.set(contexts)
         try:
             return super().render(*args, **kwargs)
         finally:
-            # Run on successful and failed renders. At this point no generated
-            # macro can be called again, so every recorded context is safe to
-            # detach before control returns to the response layer.
+            # Release contexts after successful and failed renders.
             for context in contexts:
                 assert isinstance(context, ReleasableJinjaContext)
                 context.release()

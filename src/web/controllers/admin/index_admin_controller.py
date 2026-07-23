@@ -160,7 +160,6 @@ class IndexAdminController(BaseAdminController):
     ) -> Template:
         sorted_archives = ArchiveLoader.get_sorted_archives()
         public_only: bool = not web_context.client.can_view_private_events
-        # Share one metadata snapshot across all three status partitions.
         events_metadata = EventLoader.get_events_metadata(public_only=public_only)
         passed_events = EventLoader.select_events_metadata(events_metadata, 'passed')
         current_events = EventLoader.select_events_metadata(events_metadata, 'current')

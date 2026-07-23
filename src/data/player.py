@@ -62,9 +62,6 @@ class Player:
         self.ratings = self._get_ratings()
         self.plugin_data = self._get_plugin_data()
 
-    # Cached: the registered plugin data classes are fixed for the process, but
-    # this was being rebuilt (via a pluggy hook dispatch) once per player on
-    # every event load. Callers only read the result.
     @staticmethod
     @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
@@ -419,13 +416,7 @@ class TournamentPlayer(Player):
         self.time_control_modified: bool | None = None
         self.tie_break_variables: dict[str, Any] = {}
         self.transient_plugin_data: dict[str, object] = {}
-        # Within-pass memoization of pure per-round sums (points, and each
-        # tie-break's opponent-score scans). Keys are namespaced tuples so
-        # core and plugin tie-breaks can share it. Only valid while the
-        # pairings are stable, so it is consulted ONLY while
-        # tournament._compute_caching_enabled is set (during set_for_round /
-        # compute_tournament_player_ranks) and reset there via
-        # clear_compute_caches().
+        # Per-round sums cached only during a guarded computation pass.
         self._compute_cache: dict[Any, float] = {}
 
     def clear_compute_caches(self) -> None:

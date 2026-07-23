@@ -2,12 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    """Index the pairing / board hot paths.
-
-    Loading a large event was dominated by ``load_tournament_stored_boards_by_round``
-    (a ``board``/``pairing`` join) and the per-round pairing scans. The player/round
-    index also covers result entry, while the tournament/board/round index covers
-    and pre-groups the board rows loaded for one tournament."""
+    """Add indexes used by tournament pairing and board queries."""
 
     def forward(self):
         self.database.execute(

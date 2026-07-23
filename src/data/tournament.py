@@ -101,11 +101,7 @@ logger: Logger = get_logger()
 
 
 class BoardsById(dict[int, Board]):
-    """``boards_by_id`` mapping that bumps ``version`` on every mutation.
-
-    Board-number memoisation keys off ``version``, so any change to the board
-    layout invalidates those caches automatically — there is no per-site bump
-    to remember (and therefore none to forget)."""
+    """Board mapping with a version counter for numbering caches."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -140,24 +136,14 @@ class Tournament:
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
         self._tournament_players_by_rank: dict[int, TournamentPlayer] | None = None
-        # True only while a compute pass (set_for_round /
-        # compute_tournament_player_ranks) runs. The players' per-round sum
-        # memos are consulted ONLY when this is set, so no caller outside those
-        # passes — including the result-mutating pairing generation — can ever
-        # read a stale memoized value.
+        # Per-player caches are valid only while pairings are stable.
         self._compute_caching_enabled: bool = False
-        # Per-round board-number maps, keyed by (round, boards_by_id version).
-        # Computing a map rebuilds the whole round and fires a plugin hook, so
-        # it is memoized. ``boards_by_id`` bumps its own version on every
-        # mutation, so the key changes automatically when the board layout
-        # changes — a stale number can never be read, with nothing to remember.
         self._round_board_numbers_cache: dict[tuple[int, int], dict[int, int]] = {}
 
     # -------------------------------------------------------------------------
     # Plugin
     # -------------------------------------------------------------------------
 
-    # Cached: registered plugin data classes are fixed for the process.
     @staticmethod
     @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
@@ -360,14 +346,6 @@ class Tournament:
 
     @cached_property
     def pairing_variation(self) -> 'PairingVariation':
-        """The configured variation, resolved once for this event snapshot.
-
-        A :class:`Tournament` belongs to a single request's freshly loaded event.
-        Resolving the variation walks the event-aware plugin manager, and hot paths
-        such as point computation and pairing-row rendering consult it once per
-        player.  The stored variation cannot change during the lifetime of this
-        snapshot, so repeating that lookup only adds work.
-        """
         from data.pairings import PairingVariationManager
 
         return PairingVariationManager(self.event).get_object(
@@ -2553,13 +2531,7 @@ class Tournament:
         return boards_by_id
 
     def invalidate_board_layout(self) -> None:
-        """Bump the board-layout version so cached board-number maps recompute.
-
-        Board add / remove is tracked automatically by :class:`BoardsById`;
-        this covers the other numbering input, a board's ``index`` (see
-        ``Board.index``'s setter). No-op until ``boards_by_id`` has been built:
-        with no map there is nothing cached to invalidate, and forcing the
-        build here could snapshot a still-incomplete layout (e.g. mid-import)."""
+        """Invalidate board-number caches after an in-place board change."""
         if 'boards_by_id' in self.__dict__:
             self.boards_by_id.version += 1
 
@@ -2707,16 +2679,10 @@ class Tournament:
         *,
         only_players: 'list[TournamentPlayer] | None' = None,
     ):
-        """Set the tournament for the given round (defaults to the current round).
+        """Prepare a round, optionally limiting point calculation to *only_players*.
 
-        When *only_players* is given, points and virtual points are computed
-        only for those players instead of the whole field. The field-wide
-        pairing-number pass, board numbering and the ``set_for_round`` plugin
-        hook still run in full — a player's own points/vpoints depend only on
-        the field's pairing numbers and their own prior results, never on other
-        players' computed points. This is therefore safe only when the caller
-        renders scores for *only_players* alone (a single pairing-row refresh);
-        any full-page render must recompute the whole field first."""
+        A full-page render must recompute the full field after a limited pass.
+        """
         if round_ is None:
             round_ = self.current_round
         self._compute_caching_enabled = True
@@ -3862,14 +3828,9 @@ class Tournament:
         return self._tournament_players_by_rank
 
     def _compute_tournament_player_ranks(self, after_round: int) -> None:
-        """Body of compute_tournament_player_ranks. Runs while
-        ``_compute_caching_enabled`` is set, so the per-round memos apply."""
         for player in self.tournament_players:
             player.clear_compute_caches()
         self.set_tournament_players_pairing_numbers()
-        # Validity depends on tournament state, but is invariant throughout a
-        # single ranking pass. Reusing this list avoids validating every
-        # configured tie-break again for every player.
         tie_breaks = self.tie_breaks
         for tie_break in tie_breaks:
             for player_id, variable in tie_break.get_player_variables(

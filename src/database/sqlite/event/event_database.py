@@ -908,8 +908,6 @@ class EventDatabase(MigrationDatabase):
     # ---------------------------------------------------------------------------------
 
     def load_stored_players(self) -> list[StoredPlayer]:
-        # Players are a high-volume event-load row, so parse the few encoded
-        # fields in place and avoid an intermediate dict for each one.
         self.execute(
             'SELECT `id`, `last_name`, `ratings`, `first_name`, '
             '`date_of_birth`, `year_of_birth`, `gender`, `mail`, `phone`, '
@@ -1066,10 +1064,6 @@ class EventDatabase(MigrationDatabase):
     ) -> list[StoredTournamentPlayer]:
         self.execute(
             (
-                # These rows are loaded for every tournament on every request,
-                # so avoid allocating an intermediate dict for each one. The
-                # tuple is unpacked beside its query below and passed by name,
-                # keeping the SQL-to-object mapping local and explicit.
                 'SELECT `tournament_id`, `player_id`, `pairing_number`, '
                 '`manual_tiebreak` FROM `tournament_player` '
                 'WHERE `tournament_id` = ?'
@@ -1215,15 +1209,9 @@ class EventDatabase(MigrationDatabase):
     def load_tournament_stored_pairings_by_player(
         self, tournament_id: int
     ) -> dict[int, list[StoredPairing]]:
-        """Load every pairing of a tournament in one query, grouped by
-        player id (rounds ordered). Avoids the per-player N+1 that dominated
-        loading large events."""
+        """Load and group every pairing of a tournament."""
         self.execute(
             (
-                # This is the hottest event-load row type, so avoid allocating
-                # an intermediate dict for every player/round on every request.
-                # The tuple is unpacked beside its query below and passed by
-                # name, keeping the SQL-to-object mapping local and explicit.
                 'SELECT `tournament_id`, `player_id`, `round`, `result`, '
                 '`board_id`, `illegal_moves`, `effective_points` FROM `pairing` '
                 'WHERE `tournament_id` = ? '
@@ -1326,17 +1314,9 @@ class EventDatabase(MigrationDatabase):
     def load_tournament_stored_boards_by_round(
         self, tournament_id: int
     ) -> dict[int, list[StoredBoard]]:
-        # Drive the common branch from pairing's tournament index. Starting
-        # from board would scan every board in the event once per tournament,
-        # which becomes expensive for large multi-tournament events. A board
-        # normally has two pairing rows, so reduce those to one before joining.
-        # The second branch recovers double-hole team-match boards, which have
-        # no pairings and get their round from their parent ``team_board``.
+        # Start from pairing's tournament index; the UNION adds unpaired team boards.
         self.execute(
             (
-                # The first six columns match StoredBoard; round is used only
-                # to bucket the resulting record. Reading tuples directly
-                # avoids a dict per historical board.
                 'SELECT `board`.`id`, `board`.`white_player_id`, '
                 '`board`.`black_player_id`, `board`.`index`, '
                 '`board`.`last_result_update`, `board`.`team_board_id`, '
@@ -2185,7 +2165,6 @@ class EventDatabase(MigrationDatabase):
         if not stored_screens:
             return
 
-        # Attach screen sets from one ordered scan shared by every screen.
         self.execute('SELECT * FROM `screen_set` ORDER BY `screen_id`, `order`')
         stored_screen_sets_by_screen_id: dict[int, list[StoredScreenSet]] = defaultdict(
             list
@@ -2843,12 +2822,6 @@ class EventDatabase(MigrationDatabase):
     def load_tournament_stored_prize_groups(
         self, tournament_id: int
     ) -> list[StoredPrizeGroup]:
-        # Bulk-loaded to avoid an N+1+1+1 cascade (one query per prize group,
-        # then per category for its criteria and its prizes). Four joined
-        # queries filtered by tournament replace ~1 + groups + 2*categories
-        # queries. Rows are ordered by id so the per-parent lists keep the same
-        # order the per-id loaders produced (rowid order). Same shape as
-        # load_tournament_stored_pairings_by_player.
         self.execute(
             'SELECT * FROM `prize_group` WHERE `tournament_id` = ? ORDER BY `id`',
             (tournament_id,),
@@ -3186,7 +3159,6 @@ class EventDatabase(MigrationDatabase):
         if not stored_accounts:
             return []
 
-        # Bucket permissions and roles by account from one ordered scan per table.
         self.execute(
             'SELECT * FROM `account_permission` '
             'ORDER BY `account_id`, `access_level`, `tournament_id`'

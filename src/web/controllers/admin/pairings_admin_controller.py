@@ -134,17 +134,10 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_boards: list[Board] = []
         self.admin_boards_sortable = False
         self.admin_board_sort = SessionPairingsBoardSort(request).get()
-        # Set when set_for_round only recomputed the affected board's players;
-        # _admin_event_pairings_render restores the full field before any
-        # full-page render (see _points_recompute_scope).
+        # Set after a board-only points update and cleared by full-page rendering.
         self.scoped_recompute = False
         if self.admin_tournament is not None:
             if self.display_rankings:
-                # Ranking computation sets the points and tie-break values used
-                # by the ranking table. The round setup, board lists and
-                # unpaired sidebars are not rendered on this branch, and used
-                # to duplicate a full-field points pass for large finished
-                # tournaments.
                 self.admin_tournament.compute_tournament_player_ranks()
             else:
                 only_players = self._points_recompute_scope(event, board_id, action)
@@ -250,15 +243,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         board_id: int | None,
         action: 'PairingAction | None',
     ) -> 'list[TournamentPlayer] | None':
-        """Players whose points must be recomputed, or None for the whole field.
-
-        Entering a single result only re-renders that board's row, which shows
-        scores for its two players alone, so only those need recomputing. This
-        applies solely to individual (non-team), non-ranking result entry with a
-        known board. Every other case — and every full-page render, which goes
-        through `_admin_event_pairings_render` and restores the full field —
-        recomputes everything, so a scoped render can never leak a stale score.
-        """
+        """Return the affected board's players, or ``None`` for the full field."""
         if action != PairingAction.RESULT_UPDATE or board_id is None:
             return None
         if event.is_team_event or self.display_rankings:
@@ -518,10 +503,7 @@ class PairingsAdminController(BaseEventAdminController):
         web_context: PairingsAdminWebContext,
         template_context: dict[str, Any] | None = None,
     ) -> Template:
-        # A full-page render shows every board's scores, but the context may have
-        # recomputed only the affected board's players (single-result entry).
-        # Restore the whole field before rendering so no other row shows a stale
-        # score. Must run before web_context.template_context is evaluated.
+        # Replace any board-only calculation before rendering the full table.
         if web_context.scoped_recompute and web_context.admin_tournament is not None:
             web_context.admin_tournament.set_for_round(web_context.admin_round)
             web_context.scoped_recompute = False
@@ -956,12 +938,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         board_id: int = int(data['board_id'])
         key: str = data['key']
-        # In a team match the row shows team_a on the left, team_b on the
-        # right, regardless of colour — so keys 1/2 mean "left wins" /
-        # "right wins". Results are stored white-relative, so flip them
-        # when team_a is the black side on this board. This only matters for
-        # team events; individual events pair white on the left, so avoid the
-        # (expensive) tournament round computation there.
+        # Team rows use team_a/team_b order; stored results are white-relative.
         event = BaseEventAdminWebContext(request).get_admin_event()
         left_is_white = True
         if event.is_team_event:

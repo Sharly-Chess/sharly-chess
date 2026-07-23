@@ -1,9 +1,4 @@
-"""Low-overhead, request-scoped performance instrumentation.
-
-The counters live in a :class:`contextvars.ContextVar`, so concurrent requests
-and background tasks cannot mix their measurements.  Database and template
-code record data only while an HTTP request profile is active.
-"""
+"""Request-scoped performance instrumentation."""
 
 from contextvars import ContextVar
 from dataclasses import dataclass, field
@@ -121,8 +116,7 @@ class PerformanceMiddleware:
                 and not message.get('more_body', False)
                 and profile.response_seconds is None
             ):
-                # The client has received the complete response. Middleware
-                # cleanup (notably request GC) can continue after this point.
+                # Cleanup may continue after the response is sent.
                 profile.response_seconds = perf_counter() - start_wall
 
         try:
@@ -145,10 +139,7 @@ class PerformanceMiddleware:
         route_name = getattr(route_handler, 'name', None) or '<unmatched>'
         response_seconds = profile.response_seconds or wall_seconds
         post_response_seconds = max(0.0, wall_seconds - response_seconds)
-        # Event loading contains its SQLite time; the other categories are separate.
-        # The remainder covers guards, controller/context work, sessions and ASGI
-        # until the final response body is sent. Post-response work is shown
-        # separately so deferred GC is not mistaken for client-visible latency.
+        # SQL is diagnostic because its time overlaps event loading and other work.
         other_seconds = max(
             0.0,
             response_seconds - profile.event_load_seconds - profile.template_seconds,

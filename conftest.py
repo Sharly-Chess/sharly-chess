@@ -189,10 +189,7 @@ def lan_page(lan_context):
     page.set_default_timeout(15000)
     page.set_default_navigation_timeout(10000)
     yield page
-    # Close this page and any tabs it spawned (e.g. target="_blank" screen
-    # views). The context is session-scoped, so a page left open keeps
-    # auto-refreshing its screen and hits the event the next test tears down,
-    # causing flaky 500 / SQLite errors.
+    # Spawned tabs must not keep polling after the test.
     for open_page in list(lan_context.pages):
         if not open_page.is_closed():
             open_page.close()

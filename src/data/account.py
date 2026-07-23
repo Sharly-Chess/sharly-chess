@@ -108,7 +108,6 @@ class Account:
     # Plugin
     # -------------------------------------------------------------------------
 
-    # Cached: registered plugin data classes are fixed for the process.
     @staticmethod
     @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[AccountPluginData]]:

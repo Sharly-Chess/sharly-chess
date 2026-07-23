@@ -67,7 +67,6 @@ class Event:
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
 
-    # Cached: registered plugin data classes are fixed for the process.
     @staticmethod
     @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
@@ -549,8 +548,7 @@ class Event:
             self, 'get_player_duplicate_key'
         )
 
-        # Player.first_name normalizes None to ''. Track the raw null state so
-        # nullable stored names retain _are_player_duplicates semantics.
+        # None and '' remain distinct despite Player normalizing both to ''.
         seen_birth_identities: dict[tuple[str, str, date], bool] = {}
         seen_fide_ids: set[int] = set()
         seen_plugin_keys: set[object] = set()
