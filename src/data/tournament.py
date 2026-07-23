@@ -4141,6 +4141,10 @@ class Tournament:
                 board_id = board.identifier
                 board.index = self.get_available_board_indexes(round_nb)[0]
                 board.replace_player(black_tournament_player, 'black')
+                # Re-freeze the fixed number now the second seat is filled.
+                set_stored_fields(
+                    board.stored_board, fixed_number=board.live_fixed_number or 0
+                )
                 black_pairing.stored_pairing.result = result.value
                 black_pairing.stored_pairing.board_id = board_id
                 black_pairing.update(database)
@@ -4157,9 +4161,12 @@ class Tournament:
                     black_player_id=None,
                     index=available_indexes[0] if available_indexes else 0,
                 )
+                board = Board(self, round_nb, stored_board)
+                set_stored_fields(
+                    stored_board, fixed_number=board.live_fixed_number or 0
+                )
                 board_id = database.add_stored_board(stored_board)
                 set_stored_fields(stored_board, id=board_id)
-                board = Board(self, round_nb, stored_board)
                 self.boards_by_id[board_id] = board
             white_pairing.stored_pairing.result = result.value
             white_pairing.stored_pairing.board_id = board_id
@@ -4365,9 +4372,15 @@ class Tournament:
                 )
                 database.update_stored_board(pab_board.stored_board)
             for stored_board in stored_boards:
+                board = Board(self, round_, stored_board)
+                if stored_board.fixed_number is None:
+                    # Freeze the fixed table number now so a later edit to a
+                    # player's fixed table can't renumber this round.
+                    set_stored_fields(
+                        stored_board, fixed_number=board.live_fixed_number or 0
+                    )
                 id_ = database.add_stored_board(stored_board)
                 set_stored_fields(stored_board, id=id_)
-                board = Board(self, round_, stored_board)
                 self.boards_by_id[id_] = board
                 white_pairing = board.optional_white_pairing
                 black_pairing = board.optional_black_pairing

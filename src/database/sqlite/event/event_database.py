@@ -1320,7 +1320,7 @@ class EventDatabase(MigrationDatabase):
                 'SELECT `board`.`id`, `board`.`white_player_id`, '
                 '`board`.`black_player_id`, `board`.`index`, '
                 '`board`.`last_result_update`, `board`.`team_board_id`, '
-                '`paired_board`.`round` '
+                '`board`.`fixed_number`, `paired_board`.`round` '
                 'FROM ('
                 '  SELECT `board_id`, MIN(`round`) AS `round` '
                 '  FROM `pairing` '
@@ -1332,7 +1332,7 @@ class EventDatabase(MigrationDatabase):
                 'SELECT `board`.`id`, `board`.`white_player_id`, '
                 '`board`.`black_player_id`, `board`.`index`, '
                 '`board`.`last_result_update`, `board`.`team_board_id`, '
-                '`team_board`.`round` '
+                '`board`.`fixed_number`, `team_board`.`round` '
                 'FROM `team_board` '
                 'JOIN `board` ON `board`.`team_board_id` = `team_board`.`id` '
                 'WHERE `team_board`.`tournament_id` = ? '
@@ -1354,6 +1354,7 @@ class EventDatabase(MigrationDatabase):
             index,
             last_result_update,
             team_board_id,
+            fixed_number,
             round_,
         ) in self.cursor.fetchall():
             board = StoredBoard(
@@ -1365,6 +1366,7 @@ class EventDatabase(MigrationDatabase):
                     last_result_update
                 ),
                 team_board_id=team_board_id,
+                fixed_number=fixed_number,
             )
             if round_ in stored_boards_by_round:
                 stored_boards_by_round[round_].append(board)
@@ -1375,7 +1377,13 @@ class EventDatabase(MigrationDatabase):
     def add_stored_board(self, stored_board: StoredBoard) -> int:
         fields = self._get_fields_dict(
             stored_board,
-            ['white_player_id', 'black_player_id', 'index', 'team_board_id'],
+            [
+                'white_player_id',
+                'black_player_id',
+                'index',
+                'team_board_id',
+                'fixed_number',
+            ],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1390,7 +1398,13 @@ class EventDatabase(MigrationDatabase):
     def update_stored_board(self, stored_board: StoredBoard):
         fields = self._get_fields_dict(
             stored_board,
-            ['white_player_id', 'black_player_id', 'index', 'team_board_id'],
+            [
+                'white_player_id',
+                'black_player_id',
+                'index',
+                'team_board_id',
+                'fixed_number',
+            ],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_board.id is not None

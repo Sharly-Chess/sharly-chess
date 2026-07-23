@@ -254,9 +254,6 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
 
             entry: dict[str, Any] = {
                 'round': round_,
-                # Compact numbering carries the fixed table in the display
-                # number; hole mode keeps the positional table (fixedTable
-                # below still conveys the fixed board).
                 'table': (
                     board.number
                     if not tournament.leave_fixed_board_holes
@@ -272,7 +269,7 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
                     else Result.NO_RESULT.value
                 ),
             }
-            if board.fixed_number:
+            if tournament.leave_fixed_board_holes and board.fixed_number:
                 entry['fixedTable'] = board.fixed_number
 
             # TODO (Molrn) Add pairing custom fields to support Handicap games

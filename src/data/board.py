@@ -190,6 +190,19 @@ class Board:
 
     @property
     def fixed_number(self) -> int | None:
+        # A snapshot taken when the board was paired (``0`` = no fixed player)
+        # freezes the number so editing a player's fixed table can't renumber
+        # the rounds they have already played. Legacy boards stored no
+        # snapshot (``None``) and keep deriving from the seated players.
+        snapshot = self.stored_board.fixed_number
+        if snapshot is not None:
+            return snapshot or None
+        return self.live_fixed_number
+
+    @property
+    def live_fixed_number(self) -> int | None:
+        """Fixed table number derived from the currently seated players —
+        the value snapshotted onto a board when it is paired."""
         white_tp = self.optional_white_tournament_player
         fixed_white: int | None = white_tp.fixed if white_tp else None
         fixed_black: int | None = getattr(self.black_tournament_player, 'fixed', None)
