@@ -36,7 +36,6 @@ dependencies = [
   "litestar ~= 2.24.0",
   "packaging ~= 26.2",
   "pathvalidate ~= 3.3.1",
-    # downgrading pefile from 2024.8.26 to 2023.2.7, cf https://github.com/pyinstaller/pyinstaller/issues/8762
   "pefile == 2024.8.26",
   "pluggy ~= 1.6.0",
   "psutil ~= 7.2.2",
