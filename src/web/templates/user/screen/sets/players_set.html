@@ -10,7 +10,7 @@
     </h2>
     <div class="row gy-2 gx-3 screen-set-row mx-0 w-100">
         {% for tournament_players in screen_set.tournament_players_by_name_lists %}
-            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
+            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
                 <div
                     class="d-grid grid-striped"
                     style="

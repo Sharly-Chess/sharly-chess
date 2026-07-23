@@ -12,7 +12,7 @@
 {% set numeric_count = (4 if primary_is_mp else 1) + 1 + team_tie_breaks | length %}
 <div class="row gy-2 gx-3 screen-set-row mx-0 w-100 px-3 py-2">
     {% for standings in screen_set.team_standings_lists %}
-        <div class="col screen-set-col {% if not loop.first %}border-start border-2{% endif %}">
+        <div class="col screen-set-col {% if not loop.first %}border-start border-2 border-dark{% endif %}">
             <div
                 class="d-grid grid-striped"
                 style="grid-template-columns: max-content 1fr repeat({{ numeric_count }}, minmax(3em, max-content));"

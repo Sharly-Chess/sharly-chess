@@ -13,7 +13,7 @@
     </h2>
     <div class="row gy-2 gx-3 screen-set-row mx-0">
         {% for players_by_name in screen_set.tournament_players_by_name_lists %}
-            <div class="col screen-set-col">
+            <div class="col screen-set-col {% if not loop.first %}border-start border-2 border-dark{% endif %}">
                 <div
                     class="d-grid grid-striped"
                     style="

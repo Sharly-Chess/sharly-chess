@@ -41,7 +41,7 @@
     {% else %}
     <div class="row gy-2 gx-3 screen-set-row mx-0">
         {% for boards in screen_set.boards_lists %}
-            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2{% endif %}">
+            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
                 <div
                     class="d-grid grid-striped"
                     style="grid-template-columns: {% for column in board_columns %}{{ column.grid_column_template }} {% endfor %};"
