@@ -8,6 +8,7 @@ from _weakref import ReferenceType
 from common.i18n import _
 from data.board import Board
 from data.player import TournamentPlayer
+from utils.enum import BoardSelectionMode
 from datetime import datetime
 
 from database.sqlite.event.event_store import StoredScreenSet
@@ -57,16 +58,36 @@ class ScreenSet:
             self.uniq_id = f'{self.screen.uniq_id}_{self.stored_screen_set.order:03}'
         else:
             self.uniq_id = f'{self.screen.uniq_id}_{self.family_part:03}'
-        fixed_boards_str: str | None = (
+        raw_mode: str | None = (
+            self.stored_screen_set.fixed_board_order
+            if self.stored_screen_set
+            else self.family.fixed_board_order
+            if self.family
+            else None
+        )
+        stored_fixed_boards_str: str | None = (
             self.stored_screen_set.fixed_boards_str
             if self.screen.screen_type.supports_fixed_boards and self.stored_screen_set
             else None
         )
+        self.board_selection_mode: BoardSelectionMode
+        if raw_mode:
+            try:
+                self.board_selection_mode = BoardSelectionMode(raw_mode)
+            except ValueError:
+                self.board_selection_mode = BoardSelectionMode.PAIRING
+        elif stored_fixed_boards_str is not None:
+            # Legacy row saved before the mode existed: an explicit board list
+            # means "specific board numbers".
+            self.board_selection_mode = BoardSelectionMode.SPECIFIC
+        else:
+            self.board_selection_mode = BoardSelectionMode.PAIRING
         self.fixed_board_numbers: list[int] | None = None
         self.first: int = 0
         self.last: int = 0
         if self.stored_screen_set:
-            if fixed_boards_str is not None:
+            if self.board_selection_mode == BoardSelectionMode.SPECIFIC:
+                fixed_boards_str = stored_fixed_boards_str or ''
                 if fixed_boards_str:
                     self.fixed_board_numbers = []
                     for fixed_board_str in list(
@@ -204,7 +225,10 @@ class ScreenSet:
                 name = self.family.name
             if name is None:
                 if self.first or self.last:
-                    name = _('Boards %f-%l')
+                    if self.board_selection_mode == BoardSelectionMode.PAIRING:
+                        name = _('Pairings %f-%l')
+                    else:
+                        name = _('Boards %f-%l')
                 else:
                     name = '%t'
             name = name.replace('%t', str(self.tournament.name))
@@ -368,6 +392,19 @@ class ScreenSet:
             self._team_items_lists.append(selected_items[first_index:last_index])
             first_index = last_index
 
+    def _slice_items_by_position(self, items: list[Any]) -> list[Any]:
+        """Select a contiguous slice of ``items``, treating ``first``/``last``
+        as 1-based positions in the list."""
+        if self.first:
+            first = max(1, min(self.first, len(items))) - 1
+        else:
+            first = 0
+        if self.last:
+            last = max(first, min(self.last, len(items)) - 1)
+        else:
+            last = len(items) - 1
+        return items[first : last + 1]
+
     def _extract_data(self, items: list[Any], extract_boards: bool):
         if not items:
             self.items_lists = [
@@ -377,28 +414,41 @@ class ScreenSet:
         # at first select the desired items
         first_index: int
         last_index: int
-        if extract_boards and self.fixed_board_numbers:
+        if extract_boards and self.board_selection_mode == BoardSelectionMode.SPECIFIC:
             if TYPE_CHECKING:
                 assert all(isinstance(item, Board) for item in items)
+            numbers = self.fixed_board_numbers or []
+            selected_items = sorted(
+                (board for board in items if board.number in numbers),
+                key=lambda board: board.number,
+            )
+        elif (
+            extract_boards
+            and self.board_selection_mode == BoardSelectionMode.BOARD_NUMBER
+        ):
+            if TYPE_CHECKING:
+                assert all(isinstance(item, Board) for item in items)
+            # Order and range-filter by displayed board (table) number, so a
+            # fixed board sits at its table-number slot.
+            boards = sorted(items, key=lambda board: board.number)
             selected_items = [
-                board for board in items if board.number in self.fixed_board_numbers
+                board
+                for board in boards
+                if (not self.first or board.number >= self.first)
+                and (not self.last or board.number <= self.last)
             ]
         else:
-            if self.first:
-                first = max(1, min(self.first, len(items))) - 1
-            else:
-                first = 0
-            if self.last:
-                last = max(first, min(self.last, len(items)) - 1)
-            else:
-                last = len(items) - 1
-            selected_slice = slice(first, last + 1)
-            selected_items = items[selected_slice]
-            if not selected_items:
-                self.items_lists = [
-                    [],
-                ] * self.columns
-                return
+            # PAIRING boards (fixed boards keep their pairing slot), or
+            # players/rankings: ``first``/``last`` are positions in the list.
+            selected_items = self._slice_items_by_position(items)
+        if not selected_items:
+            self.items_lists = [
+                [],
+            ] * self.columns
+            return
+        if not (
+            extract_boards and self.board_selection_mode == BoardSelectionMode.SPECIFIC
+        ):
             self.first_item = selected_items[0]
             self.last_item = selected_items[-1]
         # now split in columns

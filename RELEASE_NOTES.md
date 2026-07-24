@@ -22,8 +22,28 @@
 - Duplication prize categories are now added immediately after the original (5.0.0)
 - Duplicate prizes when duplicating a tournament (5.0.0)
 
+## Fixed tables
+
+The handling of fixed tables has been improved in several ways:
+
+- The tables that the players would have been assigned to are no longer left empty (5.0.0)
+- You can now assign any table number as a fixed table without having a duplicate table appearing (5.0.0)
+- Changing fixed table assignment mid tournament is now correctly handled (previous round table assignments are kept) (5.0.0)
+- In the admin pairings view you can choose to sort by pairing order or board number (5.0.0)
+- In the associated document view you can choose if fixed tables are ordered by pairing order or board number (5.0.0)
+- Pairing screens now have option to order by pairing order or board number (5.0.0)
+
+### Special considerations when using the FFE (French federation) plugin
+
+In order to maintain compatibility with the dispaly of table numbers on the FFE website:
+
+- By default we still leave the orignal table empty when the players are moved to a fixed table number
+- In this compatibility mode, duplicate tables still occur when fixed table numbers are inside the normal table range
+- This behaviour can be changed in the FFE plugin section of event's configuration
+
 ## Screens
 
-- **Menu** support has been completely redesigned for a better experience (5.0.0)
-- **Families** have been renamed **Multi-Screens** (5.0.0)
-- **Check-in screens column display**: Check-in screens now correctly use the configure column count (5.0.0)
+- Menu support has been completely redesigned for a better experience (5.0.0)
+- Families have been renamed **Multi-Screens** (5.0.0)
+- Check-in screens now correctly use the configure column count (5.0.0)
+- Vertical lines are now displayed between columns (5.0.0)

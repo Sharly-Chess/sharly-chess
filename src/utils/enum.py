@@ -21,6 +21,30 @@ class Extension(StrEnum):
     TEMPLATE = 'template'
 
 
+class BoardSelectionMode(StrEnum):
+    """How a board screen selects and orders its boards: by first/last pairing
+    position (fixed boards keep their pairing slot), by first/last board
+    number, or by an explicit list of board numbers."""
+
+    PAIRING = 'pairing'
+    BOARD_NUMBER = 'board'
+    SPECIFIC = 'specific'
+
+    @classmethod
+    def options(cls, *, include_specific: bool = True) -> dict[str, str]:
+        """Value → translated label, for form selects (default first).
+        ``include_specific`` is False for families (no board-numbers field)."""
+        options: dict[str, str] = {
+            cls.PAIRING: _(
+                'By first / last pairing (fixed boards keep their pairing position)'
+            ),
+            cls.BOARD_NUMBER: _('By first / last board number'),
+        }
+        if include_specific:
+            options[cls.SPECIFIC] = _('By specific board numbers')
+        return options
+
+
 class Result(IntEnum):
     """An enum representing the results in the database. Should be subclassed if the point value is not the default."""
 

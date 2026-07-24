@@ -110,6 +110,19 @@ class StoredBoard:
     index: int
     last_result_update: datetime | None = None
     team_board_id: int | None = None
+    # Fixed table number in force when the board was paired. ``None`` on
+    # legacy boards (derive live from the seated players), ``0`` when the
+    # board was snapshotted with no fixed player, a positive value for a
+    # snapshotted fixed board.
+    #
+    # We snapshot the fixed *input*, not the resolved display number, because
+    # the display number is a whole-round computation (compact fill / clash
+    # resolution across sibling boards) and hole mode renders "fixed
+    # (standard)" from the fixed and index-derived values separately. Freezing
+    # only the fixed input stops a later edit to a player's fixed table from
+    # renumbering rounds they have already played, while first_board_number,
+    # board index and the numbering mode stay live.
+    fixed_number: int | None = None
 
 
 @dataclass
@@ -332,6 +345,7 @@ class StoredScreenSet:
     fixed_boards_str: str | None
     first: int | None
     last: int | None
+    fixed_board_order: str | None = None
     last_update: datetime = field(default_factory=datetime.now)
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
@@ -398,6 +412,7 @@ class StoredFamily:
     last: int | None = None
     parts: int | None = None
     number: int | None = None
+    fixed_board_order: str | None = None
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
