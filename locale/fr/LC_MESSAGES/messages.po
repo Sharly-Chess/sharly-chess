@@ -5214,7 +5214,7 @@ msgstr "Appariements de la ronde {round}"
 
 #, python-format
 msgid "Pairings from #%(first)d to #%(last)d"
-msgstr "appariements du n°%(first)d au n°%(last)d"
+msgstr "Appariements du n°%(first)d au n°%(last)d"
 
 msgid "Pairings generated for all rounds of tournament [{tournament}]."
 msgstr "Les appariements ont été générés pour toutes les rondes du tournoi [{tournament}]."
