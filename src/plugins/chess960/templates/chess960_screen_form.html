@@ -19,10 +19,18 @@
         <button
             type="button"
             id="chess960-random"
-            class="btn btn-outline-secondary text-nowrap"
+            class="btn btn-outline-secondary text-nowrap my-1"
         >
-            <i class="bi bi-dice-3-fill pe-1"></i>
+            <i class="bi bi-dice-3-fill"></i>
             {{ _('Randomize') }}
+        </button>
+        <button
+            type="button"
+            id="chess960-print"
+            class="btn btn-outline-secondary text-nowrap my-1"
+        >
+            <i class="bi bi-search"></i>
+            {{ _('See all Chess960 positions') }}
         </button>
     </div>
     <div class="col-6 d-flex align-items-center">
@@ -32,7 +40,7 @@
     </div>
     <script>
         $(document).ready(function() {
-            $("#chess960-random").click(function(event) {
+            $("#chess960-random").click(function() {
                 min = 1;
                 max = 960;
                 $("#chess960-number").val(
@@ -40,6 +48,9 @@
                 );
                 $('#chess960-svg').load("{{ url_for('chess960-svg') }}?chess960_number=" + $("#chess960-number").val());
             });
-        })
+            $("#chess960-print").click(function() {
+                window.open("{{ url_for('document-view', event_uniq_id=admin_event.uniq_id, document='chess960-positions') }}").focus();
+            });
+        });
     </script>
 </div>

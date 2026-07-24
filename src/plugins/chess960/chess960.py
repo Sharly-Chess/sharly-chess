@@ -3,11 +3,15 @@ from typing import TYPE_CHECKING
 from packaging.version import Version
 
 from common.i18n import _
+from data.print_documents import (
+    PrintDocument,
+)
 from plugins.chess960 import PLUGIN_NAME
 from plugins.chess960.chess960_controller import (
     Chess960Controller,
     Chess960SvgController,
 )
+from plugins.chess960.chess960_document import Chess960PrintDocument
 from plugins.chess960.screen_type import Chess960ScreenType
 from plugins.chess960.utils import Chess960ScreenPluginData
 from plugins.hookspec import hookimpl
@@ -51,12 +55,20 @@ class Chess960Plugin(Plugin):
     ) -> bool:
         return False
 
+    # ---------------------------------------------------------------------------------
+    # Initialisation and configuration
+    # ---------------------------------------------------------------------------------
+
     @property
     def controllers(self) -> list[type[BaseController]]:
         return [
             Chess960Controller,
             Chess960SvgController,
         ]
+
+    # ---------------------------------------------------------------------------------
+    # Screens
+    # ---------------------------------------------------------------------------------
 
     @hookimpl
     def get_screen_plugin_data_class(self) -> tuple[str, type[PluginData]]:
@@ -65,3 +77,11 @@ class Chess960Plugin(Plugin):
     @hookimpl
     def insert_screen_types(self, screen_types: list[type['ScreenType']]):
         screen_types.append(Chess960ScreenType)
+
+    # ---------------------------------------------------------------------------------
+    # Printing
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+        print_documents.append(Chess960PrintDocument)
