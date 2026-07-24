@@ -4,7 +4,10 @@ from packaging.version import Version
 
 from common.i18n import _
 from plugins.chess960 import PLUGIN_NAME
-from plugins.chess960.chess960_controller import Chess960Controller
+from plugins.chess960.chess960_controller import (
+    Chess960Controller,
+    Chess960SvgController,
+)
 from plugins.chess960.screen_type import Chess960ScreenType
 from plugins.chess960.utils import Chess960ScreenPluginData
 from plugins.hookspec import hookimpl
@@ -50,7 +53,10 @@ class Chess960Plugin(Plugin):
 
     @property
     def controllers(self) -> list[type[BaseController]]:
-        return [Chess960Controller]
+        return [
+            Chess960Controller,
+            Chess960SvgController,
+        ]
 
     @hookimpl
     def get_screen_plugin_data_class(self) -> tuple[str, type[PluginData]]:

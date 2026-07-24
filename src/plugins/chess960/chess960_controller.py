@@ -1,6 +1,7 @@
+from contextlib import suppress
 from typing import Any
 
-from litestar import get
+from litestar import get, Response
 from litestar.exceptions import NotFoundException
 from litestar.response import Redirect, Template
 from litestar_htmx import HTMXRequest
@@ -10,11 +11,13 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.chess960 import PLUGIN_NAME
 from plugins.chess960.utils import (
     Chess960ScreenPluginData,
+    board_svg,
 )
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.screen_admin_controller import (
     ScreenAdminRenderer,
 )
+from web.controllers.base_controller import BaseController
 
 
 class Chess960WebContext(AdminWebContext):
@@ -53,49 +56,23 @@ class Chess960Controller(ScreenAdminRenderer):
         path='/event/{event_uniq_id:str}/chess960-screens',
         name='admin-event-chess960-screens-tab',
     )
-    async def htmx_admin_event_chess960_screens_tab(
-        self, request: HTMXRequest
+    async def admin_event_chess960_screens_tab(
+        self,
+        request: HTMXRequest,
     ) -> Template | Redirect:
         return self._admin_event_screens_render(request, screen_type='chess960')
 
 
-"""
-class Chess960Controller(BaseEventAdminController):
-    guards = [EventGuard(), ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS)]
-
-    @classmethod
-    def _render_form(
-        cls,
-        web_context: Chess960WebContext,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> HTMXTemplate:
-        template_context = web_context.template_context | {
-            'data': data,
-            'errors': errors or {},
-        }
-        return cls._render_modal('/chess960_modal.html', template_context)
-
-    @get(path='/chess960/modal/{event_uniq_id:str}', name='chess960-modal')
-    async def htmx_chess960_modal(
+class Chess960SvgController(BaseController):
+    @get(
+        path='/chess960-svg',
+        name='chess960-svg',
+    )
+    async def chess960_svg(
         self,
-        request: HTMXRequest,
-        screen_uniq_id: str,
-    ) -> Template:
-        web_context = Chess960WebContext(request, screen_uniq_id)
-        return self._render_form(web_context)
-
-    @post(path='/chess960/randomize/{event_uniq_id:str}', name='chess960-randomize')
-    async def htmx_chess960_randomize(
-        self,
-        request: HTMXRequest,
-        screen_uniq_id: str,
-        data: Annotated[
-            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
-        ],
-    ) -> Template:
-        web_context = Chess960WebContext(request, screen_uniq_id)
-        data = dict(data)
-        data['chess960_number'] = str(random_position_number())
-        return self._render_form(web_context, data=data)
-"""
+        chess960_number: Any = 0,
+    ) -> Response[str]:
+        number: int = 0
+        with suppress(ValueError):
+            number = int(chess960_number)
+        return Response(content=board_svg(number), media_type='image/svg+xml')

@@ -1,13 +1,45 @@
-<h4>{{ _('Chess960 start position') }}</h4>
+<h4>{{ _('Chess960') }}</h4>
 <div class="row gy-2 gx-3">
-    <div class="col-12">
+    <div class="col-6">
         {{ admin_macros.number_input(
             name='chess960_number',
             label=_('Start position number:'),
             min=1, max=960, step=1,
             placeholder='',
             tooltip_text=_('The number of the Chess960 start position to display (1-960).'),
-            data=data, errors=errors
+            data=data, errors=errors,
+            hx_trigger="load, keyup, changed, click",
+            hx_target="#chess960-svg",
+            hx_get=url_for('chess960-svg'),
+            hx_on_before_request="$('#chess960-svg').show();",
+            hx_on_after_request="$('#chess960-svg').show();",
+            hx_sync="this:replace",
+            hx_indicator="#please-wait"
         ) }}
+        <button
+            type="button"
+            id="chess960-random"
+            class="btn btn-outline-secondary text-nowrap"
+        >
+            <i class="bi bi-dice-3-fill pe-1"></i>
+            {{ _('Randomize') }}
+        </button>
     </div>
+    <div class="col-6 d-flex align-items-center">
+        <div id="chess960-svg" class="mx-auto" style="height: 240px; width: 240px;" >
+            {{ data.board_svg | safe }}
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $("#chess960-random").click(function(event) {
+                min = 1;
+                max = 960;
+                $("#chess960-number").val(
+                    Math.floor(Math.random() * (max - min + 1) + min)
+                );
+                $('#chess960-svg').load("{{ url_for('chess960-svg') }}?chess960_number=" + $("#chess960-number").val());
+            });
+        })
+    </script>
 </div>
