@@ -6060,7 +6060,7 @@ msgstr "Rk."
 msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
 msgstr "Rk. O."
 
-msgid "Rnd.Boa"
+msgid "Rnd.Brd"
 msgstr ""
 
 msgid "Romania"
@@ -7645,6 +7645,9 @@ msgstr ""
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
 msgstr ""
 
+msgid "Time"
+msgstr ""
+
 msgid "Time control"
 msgstr ""
 
@@ -9081,4 +9084,3 @@ msgstr ""
 
 #~ msgid "Fixed boards:"
 #~ msgstr ""
-

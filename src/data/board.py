@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional, Literal
 
 from database.sqlite.event.event_store import StoredBoard, set_stored_fields
 from database.sqlite.event.event_database import EventDatabase
-from utils.date_time import format_datetime
+from utils.date_time import format_time
 from utils.enum import Result, PlayerRatingType, PlayerTitle
 
 if TYPE_CHECKING:
@@ -296,9 +296,7 @@ class Board:
 
     @property
     def last_result_update_str(self) -> str:
-        return (
-            format_datetime(self.last_result_update) if self.last_result_update else ''
-        )
+        return format_time(self.last_result_update) if self.last_result_update else ''
 
     def replace_player(
         self, new_player: 'TournamentPlayer', player_color: Literal['white', 'black']

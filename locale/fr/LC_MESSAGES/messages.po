@@ -6062,7 +6062,7 @@ msgstr "Pl."
 msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
 msgstr "Pl. Gén."
 
-msgid "Rnd.Boa"
+msgid "Rnd.Brd"
 msgstr "Rde.Ech"
 
 msgid "Romania"
@@ -7647,6 +7647,9 @@ msgstr "Les départages sont gérés par le jeu de règles « {name} ». Chang
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
 msgstr "Les départages déterminent le classement des joueur·euses ayant le même nombre de points."
 
+msgid "Time"
+msgstr "Heure"
+
 msgid "Time control"
 msgstr "Cadence"
 
@@ -9083,4 +9086,3 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Fixed boards:"
 #~ msgstr "Échiquiers fixes :"
-
