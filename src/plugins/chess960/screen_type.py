@@ -17,7 +17,7 @@ class Chess960ScreenType(ScreenType):
 
     @staticmethod
     def static_name() -> str:
-        return _('Chess960 start position')
+        return _('Chess960')
 
     @property
     def icon_str(self) -> str:
