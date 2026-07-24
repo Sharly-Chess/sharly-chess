@@ -83,7 +83,7 @@ static_files_router: Router = create_static_files_router(
     path='/static',
     directories=list(static_files_folders),
     name='static',
-    cache_control=CacheControlHeader(max_age=3600),
+    cache_control=CacheControlHeader(max_age=0 if DEVEL_ENV else 3600),
 )
 
 _route_handlers: Sequence[ControllerRouterHandler] = [

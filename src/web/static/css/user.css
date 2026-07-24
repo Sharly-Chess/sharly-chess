@@ -12,6 +12,12 @@
 
 .screen-set-row {
     flex-wrap: nowrap;
+    /* Centre the whole group of columns so the inter-column divider falls in
+       the gutter between the tables (screen middle for two columns), rather
+       than being pushed against the next table by per-column auto margins.
+       No effect on full-width (equal ``col``) layouts, which have no free
+       space to distribute. */
+    justify-content: center;
 }
 
 .user-screen-content {
@@ -84,16 +90,25 @@
     font-weight: bold;
 }
 .grid-striped .board-row,
-.grid-striped .player-row {
+.grid-striped .player-row,
+.grid-striped .result-row {
     display: contents;
 }
 .grid-striped .board-row > div,
-.grid-striped .player-row > div {
+.grid-striped .player-row > div,
+.grid-striped .result-row > div {
     padding: 0.25rem 0.25rem;
     border-bottom: 1px solid var(--bs-border-color);
 }
+/* Only the truncating (text-truncate) player/tournament cells may shrink below
+   their content, so their names ellipsize; the fixed columns (time, board,
+   score) keep their content width and never overlap the next column. */
+.grid-striped .result-row > .text-truncate {
+    min-width: 0;
+}
 .grid-striped > .board-row:nth-of-type(odd) > *,
-.grid-striped > .player-row:nth-of-type(odd) > * {
+.grid-striped > .player-row:nth-of-type(odd) > *,
+.grid-striped > .result-row:nth-of-type(odd) > * {
     color: var(--bs-table-striped-color);
     background-color: rgba(0, 0, 0, 0.05);
 }

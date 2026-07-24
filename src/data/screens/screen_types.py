@@ -9,6 +9,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from plugins.manager import plugin_manager
 from utils.entity import IdentifiableEntity
 from utils.enum import (
+    BoardSelectionMode,
     EventType,
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
@@ -96,6 +97,19 @@ def _board_numbers_str(screen_set: 'ScreenSet') -> str:
                 return _('matches from start to #{last}').format(last=last)
             case _:
                 return _('matches from #{first} to #{last}').format(
+                    first=first, last=last
+                )
+    if screen_set.board_selection_mode == BoardSelectionMode.PAIRING:
+        # ``first``/``last`` are pairing positions, shown as-is.
+        match (first, last):
+            case (0, 0):
+                return _('all the pairings')
+            case (first, 0):
+                return _('pairings from #{first} to end').format(first=first)
+            case (0, last):
+                return _('pairings from start to #{last}').format(last=last)
+            case _:
+                return _('pairings from #{first} to #{last}').format(
                     first=first, last=last
                 )
     offset = screen_set.tournament.first_board_number - 1
@@ -203,6 +217,12 @@ def _board_family_screen_label(screen_set: 'ScreenSet') -> str:
         last_board = screen_set.last_board
         assert first_board is not None and last_board is not None
         assert first_board.id is not None and last_board.id is not None
+        if screen_set.board_selection_mode == BoardSelectionMode.PAIRING:
+            # Pairing positions, shown without the board-number offset.
+            return _('Pairings from #%(first)d to #%(last)d') % {
+                'first': first_board.id,
+                'last': last_board.id,
+            }
         offset = tournament.first_board_number - 1
         return _('Boards from #%(first)d to #%(last)d') % {
             'first': first_board.id + offset,
@@ -300,6 +320,29 @@ def _board_family_number_strings(family: 'Family') -> tuple[dict[str, str], int]
                 'parts_to': _('matches from start to #{last}, on {parts} screens'),
                 'parts_range': _(
                     'matches from #{first} to #{last}, on {parts} screens'
+                ),
+            },
+            0,
+        )
+    if family.fixed_board_order != BoardSelectionMode.BOARD_NUMBER:
+        # PAIRING (default): first/last are pairing positions, no offset.
+        return (
+            {
+                'all': _('all the pairings'),
+                'from': _('pairings from #{first} to end'),
+                'to': _('pairings from start to #{last}'),
+                'range': _('pairings from #{first} to #{last}'),
+                'number': _('screens of {number} pairings'),
+                'number_from': _('screens of {number} pairings from #{first} to end'),
+                'number_to': _('screens of {number} pairings from start to #{last}'),
+                'number_range': _(
+                    'screens of {number} pairings from #{first} to #{last}'
+                ),
+                'parts': _('pairings on {parts} screens'),
+                'parts_from': _('pairings from #{first} to end, on {parts} screens'),
+                'parts_to': _('pairings from start to #{last}, on {parts} screens'),
+                'parts_range': _(
+                    'pairings from #{first} to #{last}, on {parts} screens'
                 ),
             },
             0,
@@ -466,6 +509,12 @@ class ScreenType(IdentifiableEntity, ABC):
     def supports_fixed_boards(self) -> bool:
         """Whether a set of this type can pin specific board (table) numbers."""
         return False
+
+    def board_selection_options(self, include_specific: bool) -> dict[str, str]:
+        """Labels for the board-selection mode select. ``include_specific`` is
+        True for screen sets (which have a board-numbers field) and False for
+        families."""
+        return BoardSelectionMode.options(include_specific=include_specific)
 
     @property
     def allows_result_input(self) -> bool:

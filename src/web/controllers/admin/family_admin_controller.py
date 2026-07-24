@@ -14,6 +14,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.screens.family import Family
 from utils import Utils
+from utils.enum import BoardSelectionMode
 from data.screens.manager import ScreenTypeManager
 from data.screens.screen_types import ScreenType
 from database.sqlite.event.event_database import EventDatabase
@@ -120,6 +121,7 @@ class FamilyAdminController(BaseEventAdminController):
         last: int | None = None
         parts: int | None = None
         number: int | None = None
+        fixed_board_order: str | None = None
         message_default: bool = True
         message_text: str | None = None
         # Type-specific StoredFamily fields, extracted by the screen type.
@@ -198,6 +200,18 @@ class FamilyAdminController(BaseEventAdminController):
                     )
                     errors['parts'] = error
                     errors['number'] = error
+                if family_type.supports_fixed_boards:
+                    fixed_board_order = (
+                        WebContext.form_data_to_str(data, 'fixed_board_order') or None
+                    )
+                    # Families have no board-numbers field, so the "specific"
+                    # mode is not offered.
+                    allowed = {
+                        BoardSelectionMode.PAIRING.value,
+                        BoardSelectionMode.BOARD_NUMBER.value,
+                    }
+                    if fixed_board_order and fixed_board_order not in allowed:
+                        errors['fixed_board_order'] = _('Invalid value.')
                 field = 'message_text'
                 message_default = WebContext.form_data_to_bool(
                     data, field + '_checkbox'
@@ -248,6 +262,7 @@ class FamilyAdminController(BaseEventAdminController):
             last=last,
             parts=parts,
             number=number,
+            fixed_board_order=fixed_board_order,
             message_default=message_default,
             message_text=message_text,
             errors=errors,
@@ -294,6 +309,7 @@ class FamilyAdminController(BaseEventAdminController):
                     last: int | None = None
                     parts: int | None = None
                     number: int | None = None
+                    fixed_board_order: str | None = None
                     message_default: bool = True
                     message_text: str | None = None
                     # Type-specific form values, provided by the screen type.
@@ -332,6 +348,7 @@ class FamilyAdminController(BaseEventAdminController):
                             )
                             parts = stored_family.parts
                             number = stored_family.number
+                            fixed_board_order = stored_family.fixed_board_order
                             message_default = stored_family.message_default
                             message_text = stored_family.message_text
                         case 'create':
@@ -358,6 +375,7 @@ class FamilyAdminController(BaseEventAdminController):
                         'last': last,
                         'parts': parts,
                         'number': number,
+                        'fixed_board_order': fixed_board_order,
                         'message_text_checkbox': message_default,
                         'message_text': message_text,
                     }

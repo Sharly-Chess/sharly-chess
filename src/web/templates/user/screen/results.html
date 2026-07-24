@@ -1,57 +1,54 @@
 {% with print_tournament=data.print_tournament %}
 <h2 class="set-title text-center">{{ data.title }}</h2>
-<div class="row gy-2 gx-3 screen-set-row mx-0 w-100">
+<div class="row gy-2 gx-3 screen-set-row mx-0">
     {% for result_boards in data.results_lists %}
-        <div class="col-auto mx-auto screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
-            <table class="table table-striped table-sm bg-light">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col" class="time">Heure</th>
-                        {% if print_tournament %}<th scope="col" class="tournament">{{ _('Tournament') }}</th>{% endif %}
-                        <th scope="col" class="board-number">{{ _('Rnd.Boa') }}</th>
-                        <th scope="col" class="player">{{ _('White') }}</th>
-                        <th scope="col" class="score">{{ _('Score') }}</th>
-                        <th scope="col" class="player">{{ _('Black') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
+            <div
+                class="d-grid grid-striped"
+                style="grid-template-columns: auto {% if print_tournament %}minmax(0, 1fr) {% endif %}auto minmax(0, 2fr) auto minmax(0, 2fr);"
+            >
+                <div class="grid-header text-center text-nowrap">{{ _('Time') }}</div>
+                {% if print_tournament %}<div class="grid-header text-nowrap">{{ _('Tournament') }}</div>{% endif %}
+                <div class="grid-header text-center text-nowrap">{{ _('Rnd.Brd') }}</div>
+                <div class="grid-header text-nowrap">{{ _('White') }}</div>
+                <div class="grid-header text-center text-nowrap">{{ _('Score') }}</div>
+                <div class="grid-header text-nowrap">{{ _('Black') }}</div>
                 {% for board in result_boards %}
-                    <tr class="result-row">
-                        <td scope="row gy-2 gx-3" class="time bg-transparent text-center">{{ board.last_result_update_str }}</td>
+                    <div class="result-row">
                         {% with tournament=board.tournament %}
                         {% with wtp=board.optional_white_tournament_player %}
                         {% with btp=board.black_tournament_player %}
                         {% with team_board=board.team_board %}
-                        {% if print_tournament %}<td scope="row gy-2 gx-3" class="tournament bg-transparent">{{ tournament.name }}</td>{% endif %}
-                        <td scope="row gy-2 gx-3" class="board-number bg-transparent text-center">{{ board.round }}.{{ board.team_match_number_str or board.number }}</td>
+                        <div class="text-center text-nowrap">{{ board.last_result_update_str }}</div>
+                        {% if print_tournament %}<div class="text-truncate">{{ tournament.name }}</div>{% endif %}
+                        <div class="text-center text-nowrap">{{ board.round }}.{{ board.team_match_number_str or board.number }}</div>
                         {% if team_board %}
                             {% set white_team_id, black_team_id = team_board.board_team_ids(board) %}
-                            <td scope="row gy-2 gx-3" class="player bg-transparent">
+                            <div class="text-truncate">
                                 {% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
                                 {% with team=user_event.teams_by_id.get(white_team_id) %}
-                                    {% if team %}<div class="small text-muted">{{ team.name }}</div>{% endif %}
+                                    {% if team %}<div class="small text-muted text-truncate">{{ team.name }}</div>{% endif %}
                                 {% endwith %}
-                            </td>
-                            <td scope="row gy-2 gx-3" class="score bg-transparent text-center">{{ board.result_str }}</td>
-                            <td scope="row gy-2 gx-3" class="player bg-transparent">
+                            </div>
+                            <div class="text-center text-nowrap">{{ board.result_str }}</div>
+                            <div class="text-truncate">
                                 {% if btp %}{{ btp.full_name }} {{ btp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}
                                 {% with team=user_event.teams_by_id.get(black_team_id) %}
-                                    {% if team %}<div class="small text-muted">{{ team.name }}</div>{% endif %}
+                                    {% if team %}<div class="small text-muted text-truncate">{{ team.name }}</div>{% endif %}
                                 {% endwith %}
-                            </td>
+                            </div>
                         {% else %}
-                            <td scope="row gy-2 gx-3" class="player bg-transparent">{% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</td>
-                            <td scope="row gy-2 gx-3" class="score bg-transparent text-center">{{ board.result_str }}</td>
-                            <td scope="row gy-2 gx-3" class="player bg-transparent">{% if btp %}{{ btp.full_name }} {{ btp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</td>
+                            <div class="text-truncate">{% if wtp %}{{ wtp.full_name }} {{ wtp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</div>
+                            <div class="text-center text-nowrap">{{ board.result_str }}</div>
+                            <div class="text-truncate">{% if btp %}{{ btp.full_name }} {{ btp.rating_str }}{% else %}<span class="fst-italic text-muted">{{ _('Forfeit') }}</span>{% endif %}</div>
                         {% endif %}
                         {% endwith %}
                         {% endwith %}
                         {% endwith %}
                         {% endwith %}
-                    </tr>
+                    </div>
                 {% endfor %}
-                </tbody>
-            </table>
+            </div>
         </div>
     {% endfor %}
 </div>

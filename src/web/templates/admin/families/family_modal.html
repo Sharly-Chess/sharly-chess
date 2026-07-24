@@ -104,10 +104,22 @@
                         {% set is_team_matches = is_team %}
                     {% endif %}
                     {% set sel = family_type.selection_labels(is_team, is_team_matches) %}
+                    {% set show_board_selection = family_type.supports_fixed_boards and not is_team_matches %}
                     <h4 class="mt-4">
                         {{ sel.header }}
                     </h4>
                     <div class="row gy-2 gx-3">
+                        {% if show_board_selection %}
+                            <div class="col-12">
+                                {{ admin_macros.select_input(
+                                    name='fixed_board_order',
+                                    label=_('Board selection:'),
+                                    select_options=family_type.board_selection_options(false),
+                                    tooltip_text=_('How the boards shown by these screens are chosen and ordered.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='first',
@@ -129,6 +141,31 @@
                             ) }}
                         </div>
                     </div>
+                    {% if show_board_selection %}
+                        <script>
+                            (() => {
+                                const $modal = $('.modal');
+                                const $select = $modal.find('#fixed-board-order');
+                                const labels = {
+                                    pairing: {
+                                        first: "{{ _('First pairing:') }}",
+                                        last: "{{ _('Last pairing:') }}",
+                                    },
+                                    board: {
+                                        first: "{{ _('First board:') }}",
+                                        last: "{{ _('Last board:') }}",
+                                    },
+                                };
+                                function apply() {
+                                    const label = labels[$select.val()] || labels.board;
+                                    $modal.find('#first-label-text').text(label.first);
+                                    $modal.find('#last-label-text').text(label.last);
+                                }
+                                $select.on('change', apply);
+                                apply();
+                            })();
+                        </script>
+                    {% endif %}
 
                     <h4 class="mt-4">
                         {{ _('Layout') }}
