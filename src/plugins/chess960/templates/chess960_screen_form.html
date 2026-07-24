@@ -1,33 +1,13 @@
-<h4>{{ _('Chess960') }}</h4>
+<h4>{{ _('Chess960 start position') }}</h4>
 <div class="row gy-2 gx-3">
     <div class="col-12">
-        <div class="form-check form-switch">
-            <input
-                type="checkbox"
-                class="form-check-input"
-                id="chess960-show-all-rounds"
-                name="show_all_rounds"
-                value="true"
-                {% if data.get('show_all_rounds') %}checked{% endif %}
-            />
-            <label class="form-check-label" for="chess960-show-all-rounds">
-                {{ _('Show every round (instead of only the current round)') }}
-            </label>
-        </div>
-    </div>
-    <div class="col-12">
-        <div class="form-check form-switch">
-            <input
-                type="checkbox"
-                class="form-check-input"
-                id="chess960-fit-to-screen"
-                name="fit_to_screen"
-                value="true"
-                {% if data.get('fit_to_screen') %}checked{% endif %}
-            />
-            <label class="form-check-label" for="chess960-fit-to-screen">
-                {{ _('Fit all boards on the screen (otherwise scroll)') }}
-            </label>
-        </div>
+        {{ admin_macros.number_input(
+            name='chess960_number',
+            label=_('Start position number:'),
+            min=1, max=960, step=1,
+            placeholder='',
+            tooltip_text=_('The number of the Chess960 start position to display (1-960).'),
+            data=data, errors=errors
+        ) }}
     </div>
 </div>

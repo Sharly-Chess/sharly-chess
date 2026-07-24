@@ -29,10 +29,7 @@ class Chess960Plugin(Plugin):
 
     @property
     def description(self) -> str:
-        return _(
-            'Adds a screen showing the Chess960 start position of the current '
-            'round for the tournaments it displays.'
-        )
+        return _('Adds a screen showing the Chess960 start position.')
 
     @property
     def version(self) -> Version:

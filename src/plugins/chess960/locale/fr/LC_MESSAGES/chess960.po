@@ -1,92 +1,25 @@
-msgid "(unknown tournament)"
-msgstr "(tournoi inconnu)"
-
-msgid "Add a set"
-msgstr "Ajouter un ensemble"
-
-msgid "Adds a screen showing the Chess960 start position of the current round for the tournaments it displays."
-msgstr "Ajoute un écran affichant la position de départ Chess960 de la ronde courante pour les tournois qu’il affiche."
-
-msgid "Back"
-msgstr "Retour"
+msgid "Adds a screen showing the Chess960 start position."
+msgstr "Ajoute un écran d'affichage de la position Chess960 de départ."
 
 msgid "Chess960"
 msgstr "Chess960"
 
-msgid "Chess960 screens show the start position of the current round for each tournament."
-msgstr "Les écrans Chess960 affichent la position de départ de la ronde courante pour chaque tournoi."
+msgid "Chess960 screens hold a Chess960 start position that can be displayed to the players."
+msgstr "Les écrans Chess960 contiennent une une position Chess960 de départ qui peut être affichée aux joueur·euses."
 
 msgid "Chess960 start position"
 msgstr "Position de départ Chess960"
 
-msgid "Chess960 start positions"
-msgstr "Positions de départ Chess960"
-
-msgid "Close"
-msgstr "Fermer"
-
-msgid "Enter a position number from 0 to 959."
-msgstr "Saisissez un numéro de position de 0 à 959."
-
-msgid "Fit all boards on the screen (otherwise scroll)"
-msgstr "Adapter tous les échiquiers à l’écran (sinon défilement)"
-
-msgid "Leave a round empty to reuse the last position entered for an earlier round."
-msgstr "Laissez une ronde vide pour réutiliser la dernière position saisie pour une ronde précédente."
-
-msgid "No position set."
-msgstr "Aucune position définie."
-
-msgid "No positions set."
-msgstr "Aucune position définie."
-
-msgid "No sets yet. Add a set to choose a tournament and its positions."
-msgstr "Aucun ensemble pour l’instant. Ajoutez un ensemble pour choisir un tournoi et ses positions."
-
-msgid "No start positions have been set for this screen."
-msgstr "Aucune position de départ n’a été définie pour cet écran."
-
-msgid "Please choose a tournament."
-msgstr "Veuillez choisir un tournoi."
-
 #, python-format
-msgid "Position %(number)d"
-msgstr "Position %(number)d"
+msgid "Position #%(number)s"
+msgstr "Position n°%(number)s"
 
-msgid "Position number 0-959"
-msgstr "Numéro de position 0-959"
+msgid "Position not set yet, please wait…"
+msgstr "Position non définie, veuillez patienter…"
 
-msgid "Position number 0-959 (empty = reuse the previous round)"
-msgstr "Numéro de position 0-959 (vide = réutiliser la ronde précédente)"
+msgid "Start position number:"
+msgstr "Numéro de la position de départ :"
 
-msgid "Positions"
-msgstr "Positions"
-
-msgid "Randomize"
-msgstr "Aléatoire"
-
-#, python-format
-msgid "Round %(round)d"
-msgstr "Ronde %(round)d"
-
-msgid "Round {round}: {number}"
-msgstr "Ronde {round} : {number}"
-
-msgid "Save"
-msgstr "Enregistrer"
-
-msgid "Set removed."
-msgstr "Ensemble supprimé."
-
-msgid "Set saved."
-msgstr "Ensemble enregistré."
-
-msgid "Set the start positions shown on this screen."
-msgstr "Définir les positions de départ affichées sur cet écran."
-
-msgid "Show every round (instead of only the current round)"
-msgstr "Afficher toutes les rondes (au lieu de la ronde courante uniquement)"
-
-msgid "Tournament"
-msgstr "Tournoi"
+msgid "The number of the Chess960 start position to display (1-960)."
+msgstr "Le numéro de la position Chess960 de départ à afficher (1-960)."
 
