@@ -26,7 +26,7 @@ def board_svg(number: int) -> str:
     if not is_valid_position_number(number):
         board = chess.Board(fen=None)
     else:
-        board = chess.Board.from_chess960_pos(number)
+        board = chess.Board.from_chess960_pos(number - 1)
     # No size: the SVG keeps only its viewBox, so it scales to its container.
     return chess.svg.board(board)
 
