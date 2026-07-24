@@ -12,7 +12,7 @@ from plugins.utils import Plugin, PluginData
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
-    from data.screen_types import ScreenType
+    from data.screens.screen_types import ScreenType
     from database.sqlite.event.event_store import StoredEvent, StoredTournament
 
 

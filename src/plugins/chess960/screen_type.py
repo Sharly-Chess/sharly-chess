@@ -2,12 +2,12 @@ from datetime import datetime
 from typing import TYPE_CHECKING, override
 
 from common.i18n import _
-from data.screen_types import ScreenType
+from data.screens.screen_types import ScreenType
 from plugins.chess960 import PLUGIN_NAME
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.screen import Screen
+    from data.screens.screen import Screen
 
 
 class Chess960ScreenType(ScreenType):

@@ -9,7 +9,7 @@ from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
-from data.screen import Screen
+from data.screens.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chess960 import PLUGIN_NAME
 from plugins.chess960.utils import (
