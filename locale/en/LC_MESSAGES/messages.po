@@ -1253,6 +1253,9 @@ msgstr ""
 msgid "Board selection (by number)"
 msgstr ""
 
+msgid "Board selection:"
+msgstr ""
+
 #, python-format
 msgid "Board sets of screen %(screen_name)s"
 msgstr ""
@@ -1335,6 +1338,12 @@ msgstr ""
 msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
 msgstr ""
 
+msgid "By first / last board number"
+msgstr ""
+
+msgid "By first / last pairing (fixed boards keep their pairing position)"
+msgstr ""
+
 msgid "By match"
 msgstr ""
 
@@ -1345,6 +1354,9 @@ msgid "By player"
 msgstr ""
 
 msgid "By rating step"
+msgstr ""
+
+msgid "By specific board numbers"
 msgstr ""
 
 msgid "Bye"
@@ -1686,7 +1698,7 @@ msgstr ""
 msgid "Columns:"
 msgstr ""
 
-msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
+msgid "Comma-separated board numbers to show."
 msgstr ""
 
 msgid "Comment"
@@ -3064,6 +3076,9 @@ msgstr ""
 msgid "First name:"
 msgstr ""
 
+msgid "First pairing:"
+msgstr ""
+
 msgid "First player:"
 msgstr ""
 
@@ -3080,9 +3095,6 @@ msgid "Fixed board ordering:"
 msgstr ""
 
 msgid "Fixed board:"
-msgstr ""
-
-msgid "Fixed boards:"
 msgstr ""
 
 msgid "Fixed table"
@@ -3359,6 +3371,12 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
+msgid "How the boards shown by these screens are chosen and ordered."
+msgstr ""
+
+msgid "How the boards shown by this set are chosen and ordered."
+msgstr ""
+
 msgid "Hungary"
 msgstr ""
 
@@ -3627,6 +3645,9 @@ msgstr ""
 msgid "Invalid value [{value}]."
 msgstr ""
 
+msgid "Invalid value."
+msgstr ""
+
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
 
@@ -3736,6 +3757,9 @@ msgid "Last match:"
 msgstr ""
 
 msgid "Last name:"
+msgstr ""
+
+msgid "Last pairing:"
 msgstr ""
 
 msgid "Last player:"
@@ -5170,6 +5194,10 @@ msgstr ""
 msgid "Pairings"
 msgstr ""
 
+#, python-format
+msgid "Pairings %f-%l"
+msgstr ""
+
 msgid "Pairings *** WITH_SHORTCUT_INDICATION"
 msgstr "P<u>a</u>irings"
 
@@ -5180,6 +5208,10 @@ msgid "Pairings by player"
 msgstr ""
 
 msgid "Pairings for round #{round}"
+msgstr ""
+
+#, python-format
+msgid "Pairings from #%(first)d to #%(last)d"
 msgstr ""
 
 msgid "Pairings generated for all rounds of tournament [{tournament}]."
@@ -8566,6 +8598,9 @@ msgstr ""
 msgid "all the matches"
 msgstr ""
 
+msgid "all the pairings"
+msgstr ""
+
 msgid "all the players"
 msgstr ""
 
@@ -8719,6 +8754,27 @@ msgstr ""
 msgid "of %(n)s played games"
 msgstr ""
 
+msgid "pairings from #{first} to #{last}"
+msgstr ""
+
+msgid "pairings from #{first} to #{last}, on {parts} screens"
+msgstr ""
+
+msgid "pairings from #{first} to end"
+msgstr ""
+
+msgid "pairings from #{first} to end, on {parts} screens"
+msgstr ""
+
+msgid "pairings from start to #{last}"
+msgstr ""
+
+msgid "pairings from start to #{last}, on {parts} screens"
+msgstr ""
+
+msgid "pairings on {parts} screens"
+msgstr ""
+
 msgid "player already received a PAB in a previous round"
 msgstr ""
 
@@ -8784,6 +8840,18 @@ msgid "screens of {number} matches per column from #{first} to end"
 msgstr ""
 
 msgid "screens of {number} matches per column from start to #{last}"
+msgstr ""
+
+msgid "screens of {number} pairings"
+msgstr ""
+
+msgid "screens of {number} pairings from #{first} to #{last}"
+msgstr ""
+
+msgid "screens of {number} pairings from #{first} to end"
+msgstr ""
+
+msgid "screens of {number} pairings from start to #{last}"
 msgstr ""
 
 msgid "screens of {number} players"
@@ -9007,4 +9075,10 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
+#~ msgstr ""
+
+#~ msgid "Fixed boards:"
+#~ msgstr ""
 

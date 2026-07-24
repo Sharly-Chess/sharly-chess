@@ -68,12 +68,23 @@
                     {% set is_team = admin_event.is_team_event %}
                     {% set is_team_matches = is_team and admin_screen.screen_type.board_based %}
                     {% set sel = admin_screen.screen_type.selection_labels(is_team, is_team_matches) %}
-                    {% set show_fixed_boards = admin_screen.screen_type.supports_fixed_boards and not is_team_matches %}
+                    {% set show_board_selection = admin_screen.screen_type.supports_fixed_boards and not is_team_matches %}
                     <h4 class="mt-4">
                         {{ sel.header }}
                     </h4>
                     <div class="row gy-2 gx-3">
-                        <div class="{% if show_fixed_boards %}col-3{% else %}col-6{% endif %}">
+                        {% if show_board_selection %}
+                            <div class="col-12">
+                                {{ admin_macros.select_input(
+                                    name='fixed_board_order',
+                                    label=_('Board selection:'),
+                                    select_options=admin_screen.screen_type.board_selection_options(true),
+                                    tooltip_text=_('How the boards shown by this set are chosen and ordered.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
+                        <div class="col-6 board-range-field">
                             {{ admin_macros.number_input(
                                 name='first',
                                 label=sel.first_label,
@@ -83,7 +94,7 @@
                                 min=1
                             ) }}
                         </div>
-                        <div class="{% if show_fixed_boards %}col-3{% else %}col-6{% endif %}">
+                        <div class="col-6 board-range-field">
                             {{ admin_macros.number_input(
                                 name='last',
                                 label=sel.last_label,
@@ -93,18 +104,47 @@
                                 min=1
                             ) }}
                         </div>
-                        {% if show_fixed_boards %}
-                            <div class="col-6">
+                        {% if show_board_selection %}
+                            <div class="col-12 board-specific-field">
                                 {{ admin_macros.text_input(
                                     name='fixed_boards_str',
-                                    label=_('Fixed boards:'),
+                                    label=_('Board numbers:'),
                                     placeholder=_('E.g.: %(string)s', string='501, 502'),
-                                    tooltip_text=_('Comma-separated board numbers; if this field is set, other fields are omitted.'),
+                                    tooltip_text=_('Comma-separated board numbers to show.'),
                                     data=data, errors=errors
                                 ) }}
                             </div>
                         {% endif %}
                     </div>
+                    {% if show_board_selection %}
+                        <script>
+                            (() => {
+                                const $modal = $('.modal');
+                                const $select = $modal.find('#fixed-board-order');
+                                const labels = {
+                                    pairing: {
+                                        first: "{{ _('First pairing:') }}",
+                                        last: "{{ _('Last pairing:') }}",
+                                    },
+                                    board: {
+                                        first: "{{ _('First board:') }}",
+                                        last: "{{ _('Last board:') }}",
+                                    },
+                                };
+                                function apply() {
+                                    const mode = $select.val();
+                                    const specific = mode === 'specific';
+                                    $modal.find('.board-range-field').toggle(!specific);
+                                    $modal.find('.board-specific-field').toggle(specific);
+                                    const label = labels[mode] || labels.board;
+                                    $modal.find('#first-label-text').text(label.first);
+                                    $modal.find('#last-label-text').text(label.last);
+                                }
+                                $select.on('change', apply);
+                                apply();
+                            })();
+                        </script>
+                    {% endif %}
                 {% endif %}
             </form>
         </div>

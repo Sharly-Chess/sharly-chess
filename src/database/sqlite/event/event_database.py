@@ -1998,6 +1998,7 @@ class EventDatabase(MigrationDatabase):
             last=row['last'],
             parts=row['parts'],
             number=row['number'],
+            fixed_board_order=row.get('fixed_board_order'),
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
             last_update=cls.load_datetime_from_database_field(row['last_update']),
@@ -2047,6 +2048,7 @@ class EventDatabase(MigrationDatabase):
             'last',
             'parts',
             'number',
+            'fixed_board_order',
             'message_default',
             'message_text',
             'last_update',
@@ -2074,6 +2076,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.last,
             stored_family.parts,
             stored_family.number,
+            stored_family.fixed_board_order,
             stored_family.message_default,
             stored_family.message_text,
             self.now_as_database_timestamp(),
@@ -2338,6 +2341,7 @@ class EventDatabase(MigrationDatabase):
             fixed_boards_str=row['fixed_boards_str'],
             first=row['first'],
             last=row['last'],
+            fixed_board_order=row.get('fixed_board_order'),
             last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
@@ -2396,6 +2400,7 @@ class EventDatabase(MigrationDatabase):
             'fixed_boards_str',
             'first',
             'last',
+            'fixed_board_order',
             'last_update',
         ]
         params: list = [
@@ -2406,6 +2411,7 @@ class EventDatabase(MigrationDatabase):
             stored_screen_set.fixed_boards_str,
             stored_screen_set.first,
             stored_screen_set.last,
+            stored_screen_set.fixed_board_order,
             self.now_as_database_timestamp(),
         ]
         if stored_screen_set.id is None:

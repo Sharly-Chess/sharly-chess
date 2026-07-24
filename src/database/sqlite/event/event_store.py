@@ -345,6 +345,7 @@ class StoredScreenSet:
     fixed_boards_str: str | None
     first: int | None
     last: int | None
+    fixed_board_order: str | None = None
     last_update: datetime = field(default_factory=datetime.now)
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
@@ -411,6 +412,7 @@ class StoredFamily:
     last: int | None = None
     parts: int | None = None
     number: int | None = None
+    fixed_board_order: str | None = None
     public: bool = True
     message_default: bool = True
     message_text: str | None = None

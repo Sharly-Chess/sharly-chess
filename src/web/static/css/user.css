@@ -12,6 +12,12 @@
 
 .screen-set-row {
     flex-wrap: nowrap;
+    /* Centre the whole group of columns so the inter-column divider falls in
+       the gutter between the tables (screen middle for two columns), rather
+       than being pushed against the next table by per-column auto margins.
+       No effect on full-width (equal ``col``) layouts, which have no free
+       space to distribute. */
+    justify-content: center;
 }
 
 .user-screen-content {

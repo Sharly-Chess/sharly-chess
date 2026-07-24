@@ -20,6 +20,7 @@ from data.screens.screen_set import ScreenSet
 from data.screens.manager import ScreenTypeManager
 from data.screens.screen_types import ScreenType
 from utils import Utils
+from utils.enum import BoardSelectionMode
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen, StoredScreenSet
 from web.controllers.admin.base_event_admin_controller import (
@@ -317,29 +318,23 @@ class ScreenAdminController(BaseEventAdminController):
                     )
         except ValueError:
             errors[field] = _('A positive integer is expected.')
-        field = 'first'
-        try:
-            first = WebContext.form_data_to_int(data, field, minimum=1)
-        except ValueError:
-            errors[field] = _('A positive integer is expected.')
-        field = 'last'
-        try:
-            last = WebContext.form_data_to_int(data, field, minimum=1)
-        except ValueError:
-            errors[field] = _('A positive integer is expected.')
-        if first and last and first > last:
-            error: str = _(
-                'Numbers {first} and {last} are not compatible ({first} > {last}).'
-            ).format(first=first, last=last)
-            errors['first'] = error
-            errors['last'] = error
-        fixed_boards_str: str | None = None
+        mode: BoardSelectionMode | None = None
         if screen.screen_type.supports_fixed_boards:
+            mode_value = WebContext.form_data_to_str(data, 'fixed_board_order') or ''
+            if mode_value and mode_value not in {m.value for m in BoardSelectionMode}:
+                errors['fixed_board_order'] = _('Invalid value.')
+            else:
+                mode = (
+                    BoardSelectionMode(mode_value)
+                    if mode_value
+                    else BoardSelectionMode.PAIRING
+                )
+        fixed_boards_str: str | None = None
+        if mode == BoardSelectionMode.SPECIFIC:
+            # Explicit board numbers; first/last are not used.
             fixed_boards_str = WebContext.form_data_to_str(data, 'fixed_boards_str')
             if fixed_boards_str:
-                for fixed_board_str in list(
-                    map(str.strip, fixed_boards_str.split(','))
-                ):
+                for fixed_board_str in map(str.strip, fixed_boards_str.split(',')):
                     if fixed_board_str:
                         try:
                             int(fixed_board_str)
@@ -348,6 +343,25 @@ class ScreenAdminController(BaseEventAdminController):
                                 'Invalid board number [{fixed_board_str}].'
                             ).format(fixed_board_str=fixed_board_str)
                             break
+        else:
+            # Range by first/last (pairing position or board number); any
+            # explicit board list is cleared.
+            field = 'first'
+            try:
+                first = WebContext.form_data_to_int(data, field, minimum=1)
+            except ValueError:
+                errors[field] = _('A positive integer is expected.')
+            field = 'last'
+            try:
+                last = WebContext.form_data_to_int(data, field, minimum=1)
+            except ValueError:
+                errors[field] = _('A positive integer is expected.')
+            if first and last and first > last:
+                error: str = _(
+                    'Numbers {first} and {last} are not compatible ({first} > {last}).'
+                ).format(first=first, last=last)
+                errors['first'] = error
+                errors['last'] = error
 
         if errors:
             return None, errors
@@ -359,6 +373,7 @@ class ScreenAdminController(BaseEventAdminController):
             'first': first,
             'last': last,
             'fixed_boards_str': fixed_boards_str,
+            'fixed_board_order': mode.value if mode else None,
         }, errors
 
     @classmethod
@@ -571,6 +586,14 @@ class ScreenAdminController(BaseEventAdminController):
                             ),
                             'last': WebContext.value_to_form_data(
                                 stored_screen_set.last
+                            ),
+                            'fixed_board_order': WebContext.value_to_form_data(
+                                stored_screen_set.fixed_board_order
+                                or (
+                                    BoardSelectionMode.SPECIFIC.value
+                                    if stored_screen_set.fixed_boards_str is not None
+                                    else BoardSelectionMode.PAIRING.value
+                                )
                             ),
                         }
                     else:
@@ -1012,6 +1035,7 @@ class ScreenAdminController(BaseEventAdminController):
                     stored_screen_set.first = values['first']
                     stored_screen_set.last = values['last']
                     stored_screen_set.fixed_boards_str = values['fixed_boards_str']
+                    stored_screen_set.fixed_board_order = values['fixed_board_order']
                     event_database.update_stored_screen_set(stored_screen_set)
                 case 'delete':
                     screen_set = web_context.get_admin_screen_set()

@@ -269,9 +269,6 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
                     else Result.NO_RESULT.value
                 ),
             }
-            if tournament.leave_fixed_board_holes and board.fixed_number:
-                entry['fixedTable'] = board.fixed_number
-
             # TODO (Molrn) Add pairing custom fields to support Handicap games
             pairings.append(entry)
     return pairings

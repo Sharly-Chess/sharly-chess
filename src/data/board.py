@@ -219,12 +219,6 @@ class Board:
 
     @property
     def number_str(self) -> str:
-        if self.tournament.leave_fixed_board_holes:
-            fixed = self.fixed_number
-            standard = self.standard_number
-            if fixed:
-                return f'{fixed} ({standard})'
-            return str(standard)
         return str(self.number)
 
     @property

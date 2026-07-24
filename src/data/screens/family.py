@@ -226,6 +226,10 @@ class Family:
         return self.stored_family.number
 
     @property
+    def fixed_board_order(self) -> str | None:
+        return self.stored_family.fixed_board_order
+
+    @property
     def message_default(self) -> bool:
         return self.stored_family.message_default
 
