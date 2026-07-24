@@ -35,6 +35,3 @@ msgstr ""
 msgid "The number of the Chess960 start position to display (1-960)."
 msgstr ""
 
-#~ msgid "Chess960 start position"
-#~ msgstr ""
-
