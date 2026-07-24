@@ -79,6 +79,28 @@ function closeTooltips () {
     $('body .tooltip').remove();
 }
 
+window.addEventListener('click', function(event) {
+    const trigger = event.target instanceof Element
+        ? event.target.closest(tooltipSelector)
+        : null;
+    const tooltip = trigger
+        && typeof bootstrap !== 'undefined'
+        && bootstrap.Tooltip
+        ? bootstrap.Tooltip.getInstance(trigger)
+        : null;
+    tooltip?.dispose();
+    closeTooltips();
+    if (trigger && tooltip) {
+        const reactivateTooltip = () => {
+            if (trigger.isConnected) {
+                bootstrap.Tooltip.getOrCreateInstance(trigger);
+            }
+        };
+        trigger.addEventListener('mouseleave', reactivateTooltip, { once: true });
+        trigger.addEventListener('focusout', reactivateTooltip, { once: true });
+    }
+}, true);
+
 function closeAirPickers () {
     if (!datePickers) return;
     Object.values(datePickers).forEach((picker) => {
