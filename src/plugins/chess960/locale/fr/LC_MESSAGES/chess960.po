@@ -11,8 +11,11 @@ msgid "Chess960 start position"
 msgstr "Position de départ Chess960"
 
 #, python-format
-msgid "Position #%(number)s"
-msgstr "Position n°%(number)s"
+msgid "Position #%(number)d"
+msgstr "Position n°%(number)d"
+
+msgid "Position not set"
+msgstr "Position non définie"
 
 msgid "Position not set yet, please wait…"
 msgstr "Position non définie, veuillez patienter…"

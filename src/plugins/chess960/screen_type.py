@@ -34,9 +34,14 @@ class Chess960ScreenType(ScreenType):
     def families_allowed(self) -> bool:
         return False
 
+    @property
+    @override
+    def multi_column_allowed(self) -> bool:
+        return False
+
     @override
     def default_screen_name(self, screen: 'Screen') -> str:
-        return _('Chess960 start position')
+        return _('Chess960')
 
     @property
     @override
@@ -81,6 +86,15 @@ class Chess960ScreenType(ScreenType):
             'chess960_number': plugin_data.chess960_number,
             'board_svg': board_svg(plugin_data.chess960_number),
         }
+
+    @property
+    @override
+    def card_detail_template(self) -> str | None:
+        return '/chess960_screen_card.html'
+
+    @override
+    def card_context(self, screen: 'Screen') -> dict:
+        return self.content_context(screen)
 
     @override
     def refresh_needed(self, screen: 'Screen', since: datetime) -> bool:

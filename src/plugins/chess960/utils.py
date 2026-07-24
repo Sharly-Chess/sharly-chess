@@ -20,12 +20,13 @@ def is_valid_position_number(number: int) -> bool:
     return MIN_POSITION <= number <= MAX_POSITION
 
 
-def board_svg(number: int) -> str | None:
+def board_svg(number: int) -> str:
     """An inline SVG rendering of the Chess960 start position *number*, or
-    ``None`` when the number is missing or out of range."""
+    of an empty board when the number is missing or out of range."""
     if not is_valid_position_number(number):
-        return None
-    board = chess.Board.from_chess960_pos(number)
+        board = chess.Board(fen=None)
+    else:
+        board = chess.Board.from_chess960_pos(number)
     # No size: the SVG keeps only its viewBox, so it scales to its container.
     return chess.svg.board(board)
 

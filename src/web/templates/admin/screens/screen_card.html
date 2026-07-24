@@ -14,6 +14,16 @@
 {% block card_text %}
     {% set screen_type = screen.screen_type %}
     <div class="d-flex flex-column gap-1">
+        {# --- always-shown summary, provided by the screen type --- #}
+        {% if screen_type.card_template %}
+            {% include screen_type.card_template %}
+        {% endif %}
+
+        {# --- general configuration, provided by the screen type --- #}
+        {% if screen_type.card_config_template %}
+            {% include screen_type.card_config_template %}
+        {% endif %}
+
         {# --- expanded details, provided by the screen type --- #}
         {% if show_details and client.can_view_public_screens %}
             {% if screen_type.card_detail_template %}
@@ -32,24 +42,13 @@
                         </span>
                     {% endif %}
                 </div>
+            {% else %}
+                <div class="fst-italic">
+                    {{ _('No alert message') }}
+                    {% if screen.message_default %}{{ _('(by default)') }}{% endif %}
+                </div>
+                <hr/>
             {% endif %}
-        {% endif %}
-
-        {# --- general configuration, provided by the screen type --- #}
-        {% if screen_type.card_config_template %}
-            {% include screen_type.card_config_template %}
-        {% endif %}
-        {% if show_details and client.can_manage_screens %}
-            <div class="fst-italic">
-                {{ _('No alert message') }}
-                {% if screen.message_default %}{{ _('(by default)') }}{% endif %}
-            </div>
-            <hr/>
-        {% endif %}
-
-        {# --- always-shown summary, provided by the screen type --- #}
-        {% if screen_type.card_template %}
-            {% include screen_type.card_template %}
         {% endif %}
     </div>
 {% endblock %}

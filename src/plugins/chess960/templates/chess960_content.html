@@ -27,7 +27,7 @@
 <div class="screen chess960-screen d-flex flex-column">
     <h2 class="set-title text-center">
         {% if data.chess960_number %}
-            {{ _('Position #%(number)s', number=data.chess960_number) }}
+            {{ _('Position #%(number)d', number=data.chess960_number) }}
         {% else %}
             {{ _('Position not set yet, please wait…') }}
         {% endif %}
