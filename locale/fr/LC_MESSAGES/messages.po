@@ -9080,9 +9080,3 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
-#~ msgstr "Les numéros des tables fixes, séparés par des virgules ; si ce champ est utilisé, les autres champs ne sont pas pris en compte."
-
-#~ msgid "Fixed boards:"
-#~ msgstr "Échiquiers fixes :"
