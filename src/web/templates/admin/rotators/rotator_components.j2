@@ -1,0 +1,199 @@
+{% macro item_class(item, view) -%}
+    collection-status-{{ 'success' if item.rotating_screens_by_id else 'danger' }}
+{%- endmacro %}
+
+{% macro identity(item, view, placement) %}
+    <span class="d-inline-flex align-items-center gap-2 min-width-0">
+        {% if client.can_manage_screens %}{{ macros.rotator_visibility_icon(item, '') }}{% endif %}
+        <span class="fw-bold text-truncate">{{ item.name }}</span>
+    </span>
+{% endmacro %}
+
+{% macro screens_count(item, view, placement) %}
+    <span class="text-nowrap" data-testid="screens-count">
+        <i class="bi-window pe-1 text-secondary"></i>{{ item.screens|length }}
+    </span>
+{% endmacro %}
+
+{% macro families_count(item, view, placement) %}
+    <span class="text-nowrap" data-testid="families-count">
+        <i class="bi-window-split pe-1 text-secondary"></i>{{ item.families|length }}
+    </span>
+{% endmacro %}
+
+{% macro screens_button(item, show_label=false) %}
+    <button
+        class="btn btn-sm btn-outline-primary"
+        hx-get="{{ url_for(
+            'admin-rotator-screens-modal',
+            event_uniq_id=admin_event.uniq_id,
+            rotator_id=item.id,
+        ) }}"
+        {{ macros.tooltip_attributes(
+            'info', _('Define the screens and multi-screens to display.'), 'top'
+        ) }}
+    >
+        <i class="bi-window-stack{% if show_label %} pe-1{% endif %}"></i>
+        {% if show_label %}{{ _('Screens') }}{% endif %}
+    </button>
+{% endmacro %}
+
+{% macro coverage(item, view, placement) %}
+    {% if view == 'card' %}
+        <span class="d-inline-flex align-items-center gap-3">
+            {{ screens_count(item, view, placement) }}
+            {{ families_count(item, view, placement) }}
+            {{ health(item, view, placement) }}
+        </span>
+    {% else %}
+        {% call collection_macros.column_edit_button(
+            not client.can_manage_screens,
+            url_for(
+                'admin-rotator-screens-modal',
+                event_uniq_id=admin_event.uniq_id,
+                rotator_id=item.id,
+            ),
+            'info' if client.can_manage_screens else 'warning',
+            _('Define the screens and multi-screens to display.')
+            if client.can_manage_screens else
+            _('You are not allowed to manage screens.'),
+            'collection-inline-edit-label-group',
+            false,
+        ) %}
+            <span class="d-inline-flex align-items-center gap-3">
+                {{ screens_count(item, view, placement) }}
+                {{ families_count(item, view, placement) }}
+                {{ health(item, view, placement) }}
+            </span>
+        {% endcall %}
+    {% endif %}
+{% endmacro %}
+
+{% macro health(item, view, placement) %}
+    {% if not item.rotating_screens_by_id %}
+        <span
+            class="text-danger text-nowrap"
+            {{ macros.tooltip_attributes(
+                'warning',
+                _('There needs to be at least one screen or multi-screen defined for the rotator to be accessible.'),
+                'top',
+            ) }}
+        ><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('Empty') }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro delay(item, view, placement) %}
+    <span class="text-nowrap"><i class="bi-hourglass-split pe-1 text-secondary"></i>{{ _('%(seconds)d sec.', seconds=item.delay) }}</span>
+{% endmacro %}
+
+{% macro timer(item, view, placement) %}
+    {% if item.timer %}
+        <span class="text-truncate"><i class="bi-clock-fill pe-1 text-secondary"></i>{{ item.timer.name }}</span>
+    {% else %}
+        <span class="text-secondary fst-italic">{{ _('Default timers') }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro details(item, view, placement) %}
+    {% set rotator = item %}
+    <div class="collection-details-grid {% if view == 'card' %}collection-details-grid-single{% endif %}">
+        <section class="collection-detail-section">
+            <h6>{{ _('Screens') }}</h6>
+            {% for screen in rotator.screens %}
+                <div>
+                    {% if client.can_manage_screens %}{{ macros.screen_visibility_icon(screen, 'pe-1') }}{% endif %}
+                    {{ macros.screen_type_icon(screen.screen_type, true) }} {{ screen.name }}
+                </div>
+            {% else %}
+                <span class="text-secondary">{{ _('None') }}</span>
+            {% endfor %}
+        </section>
+        <section class="collection-detail-section">
+            <h6>{{ _('Multi-Screens') }}</h6>
+            {% for family in rotator.families %}
+                <div>
+                    {% if client.can_manage_screens %}{{ admin_macros.family_visibility_icon(family, 'pe-1') }}{% endif %}
+                    {{ macros.screen_type_icon(family.screen_type, true) }} {{ family.display_name }}
+                    {{ ngettext('(%(num)d screen)', '(%(num)d screens)', family.screens_by_uniq_id|length) }}
+                </div>
+            {% else %}
+                <span class="text-secondary">{{ _('None') }}</span>
+            {% endfor %}
+        </section>
+        {% if client.can_manage_screens %}
+            <section class="collection-detail-section collection-detail-wide">
+                <h6>{{ _('Alert message') }}</h6>
+                {% if rotator.message_text %}
+                    <div
+                        class="px-2 alert-message rotator-alert-message"
+                        style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+                    >{{ rotator.message_text }}</div>
+                {% else %}
+                    <span class="text-secondary fst-italic">
+                        {{ _('Default alert messages') if rotator.message_default else _('No alert message') }}
+                    </span>
+                {% endif %}
+            </section>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro actions(item, view, placement) %}
+    {% set rotator = item %}
+    <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-1">
+            {% if client.can_manage_screens %}
+                {% if view == 'card' %}{{ screens_button(rotator, true) }}{% endif %}
+                {% if rotator.rotating_screens_by_id %}
+                    <a
+                        class="btn btn-sm btn-outline-primary"
+                        href="{{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
+                        target="_blank"
+                        {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}
+                    ><i class="bi-eye"></i></a>
+                    {{ admin_macros.display_controller_assign_dropdown(
+                        admin_event.sorted_display_controllers,
+                        'rotator',
+                        rotator.name,
+                    ) }}
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if client.can_manage_screens %}
+            <div class="d-flex align-items-center gap-1">
+                <button
+                    class="btn btn-sm btn-outline-primary"
+                    hx-get="{{ url_for('admin-rotator-update-modal', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                    {{ macros.tooltip_attributes('info', _('Edit the properties of the rotator.'), 'top') }}
+                ><i class="bi-pencil-fill"></i></button>
+                <button
+                    class="btn btn-sm btn-outline-primary"
+                    hx-get="{{ url_for('admin-rotator-clone-modal', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                    {{ macros.tooltip_attributes('info', _('Duplicate the rotator.'), 'top') }}
+                ><i class="bi-copy"></i></button>
+                <button
+                    class="btn btn-sm btn-outline-danger"
+                    hx-get="{{ url_for(
+                        'admin-rotator-delete-modal',
+                        action='delete',
+                        event_uniq_id=admin_event.uniq_id,
+                        rotator_id=rotator.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                    {{ macros.tooltip_attributes('info', _('Delete the rotator.'), 'top') }}
+                ><i class="bi-trash-fill"></i></button>
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}

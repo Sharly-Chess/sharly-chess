@@ -54,6 +54,57 @@ setSize();
 window.addEventListener('resize', setSize);
 window.addEventListener('htmx:afterSettle', function () { setSize(); closeTooltips(); });
 
+const collectionInteractiveSelector = [
+    'a',
+    'button',
+    'input',
+    'select',
+    'textarea',
+    'label',
+    '[role="button"]',
+    '[contenteditable="true"]',
+    '[hx-get]',
+    '[hx-post]',
+    '[hx-put]',
+    '[hx-patch]',
+    '[hx-delete]',
+    '[data-bs-toggle]',
+    '.handle',
+].join(',');
+
+window.addEventListener('click', function (event) {
+    const item = event.target.closest(
+        '[data-collection-row-href], [data-collection-card-href]'
+    );
+    if (
+        !item
+        || event.target.closest(collectionInteractiveSelector)
+        || !window.getSelection()?.isCollapsed
+    ) {
+        return;
+    }
+    window.location.assign(
+        item.dataset.collectionRowHref || item.dataset.collectionCardHref
+    );
+});
+
+window.addEventListener('keydown', function (event) {
+    const item = event.target.closest(
+        '[data-collection-row-href], [data-collection-card-href]'
+    );
+    if (
+        !item
+        || event.target !== item
+        || !['Enter', ' '].includes(event.key)
+    ) {
+        return;
+    }
+    event.preventDefault();
+    window.location.assign(
+        item.dataset.collectionRowHref || item.dataset.collectionCardHref
+    );
+});
+
 window.addEventListener("htmx:wsBeforeMessage", function(evt) {
     try {
         const msg = JSON.parse(evt.detail.message);
@@ -209,7 +260,7 @@ const restoreState = () => {
   const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
   Object.entries(states).forEach(([id, isOpen]) => {
     const el = document.getElementById(id);
-    if (!el) return;
+    if (!el || el.classList.contains('collapse-state-not-saved')) return;
     if (isOpen) {
         // Immediately show, bypassing Bootstrap animation
         el.classList.add('show');
@@ -241,6 +292,7 @@ window.addEventListener('htmx:beforeCleanupElement', function(event) {
 window.addEventListener('htmx:afterRequest', function() {
     // Refresh once after all out-of-band swaps.
     activateTooltips();
+    renderHumanizedTimeControls();
     closeTooltips();
     closeAirPickers();
 });

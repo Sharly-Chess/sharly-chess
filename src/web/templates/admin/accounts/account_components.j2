@@ -1,0 +1,362 @@
+{% macro item_class(item, view) -%}
+    {%- if item.administrator -%}
+        collection-status-primary
+    {%- elif item.anonymous -%}
+        collection-status-secondary
+    {%- elif item.active -%}
+        collection-status-success
+    {%- else -%}
+        collection-status-danger
+    {%- endif -%}
+{%- endmacro %}
+
+{% macro identity(item, view, placement) %}
+    {% if item.administrator %}
+        <span class="d-inline-flex align-items-center gap-2 fw-bold">
+            <i class="bi-person-fill-gear"></i>{{ _('Administrator') }}
+        </span>
+    {% elif item.anonymous %}
+        <span class="d-inline-flex align-items-center gap-2 fst-italic">
+            <i class="bi-incognito"></i>{{ _('Anonymous') }}
+        </span>
+    {% else %}
+        <span class="fw-bold text-truncate d-block">{{ item.get_card_title(admin_event) }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro card_identity(item, view, placement) %}
+    {% if item.administrator %}
+        <i
+            class="bi-person-fill-gear pe-1"
+            {{ macros.tooltip_attributes(
+                'info', _('The account of the user accessing Sharly Chess directly from the server.'), 'top'
+            ) }}
+        ></i>
+        <b>{{ _('Administrator') }}</b>
+    {% elif item.anonymous %}
+        <i
+            class="bi-incognito pe-1"
+            {{ macros.tooltip_attributes(
+                'info', _('The account matching all the users not logged in to any account.'), 'top'
+            ) }}
+        ></i>
+        <i>{{ _('Anonymous') }}</i>
+    {% else %}
+        {% if item.active %}
+            <i
+                class="bi-person-fill-check text-success pe-1"
+                {{ macros.tooltip_attributes(
+                    'info', _('This account is active, anonymous users can log in to it.'), 'right'
+                ) }}
+            ></i>
+        {% else %}
+            <i
+                class="bi-person-fill-x text-danger pe-1"
+                {{ macros.tooltip_attributes(
+                    'info', _('This account is not active, anonymous users can not log in to it.'), 'right'
+                ) }}
+            ></i>
+        {% endif %}
+        {{ item.get_card_title(admin_event) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro status(item, view, placement) %}
+    {% if item.administrator %}
+        <span class="text-primary text-nowrap"><i class="bi-shield-fill-check pe-1"></i>{{ _('System') }}</span>
+    {% elif item.anonymous %}
+        <span class="text-secondary text-nowrap"><i class="bi-incognito pe-1"></i>{{ _('Anonymous') }}</span>
+    {% elif item.active %}
+        <span
+            class="text-success text-nowrap"
+            {{ macros.tooltip_attributes('info', _('This account is active, anonymous users can log in to it.'), 'top') }}
+        ><i class="bi-person-fill-check pe-1"></i>{{ _('Active') }}</span>
+    {% else %}
+        <span
+            class="text-danger text-nowrap"
+            {{ macros.tooltip_attributes('info', _('This account is not active, anonymous users can not log in to it.'), 'top') }}
+        ><i class="bi-person-fill-x pe-1"></i>{{ _('Inactive') }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro roles_summary(item, view, placement) %}
+    {% if item.roles %}
+        <span class="{% if view == 'list' %}text-truncate{% endif %}">
+            {{ item.roles|map(attribute='role_type')|join(', ') }}
+        </span>
+    {% elif item.user_account %}
+        <span class="text-warning"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No roles defined.') }}</span>
+    {% else %}
+        <span class="text-secondary">{{ _('No role required') }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro permissions_button(account, show_label=false) %}
+    {% set client_can_manage_account = client.can_manage_account(account.id) %}
+    <button
+        class="btn btn-sm btn-outline-primary"
+        {% if account.edit_permissions and client_can_manage_account %}
+            hx-get="{{ url_for(
+                'admin-account-permissions-modal'
+                if account.permissions
+                else 'admin-account-permission-create-modal',
+                event_uniq_id=admin_event.uniq_id,
+                account_id=account.id,
+            ) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        {% else %}
+            disabled
+        {% endif %}
+        {{ macros.tooltip_attributes(
+            'info' if account.edit_permissions and client_can_manage_account else 'warning',
+            _('Edit the permissions of the account.')
+            if account.edit_permissions and client_can_manage_account
+            else _('The permissions of this account can not be updated.'),
+            'top',
+        ) }}
+    >
+        <i class="bi-shield-check"></i>
+        {% if show_label %}<span class="ms-1">{{ _('Permissions') }}</span>{% endif %}
+    </button>
+{% endmacro %}
+
+{% macro permissions_tooltip(account) %}
+    {% if account.administrator %}
+        {{ _('The administrator has all the permissions.') }}
+    {% elif account.sorted_permissions %}
+        {% for permission in account.sorted_permissions %}
+            {% set access_level = permission.access_level %}
+            <div class='text-start{% if not loop.first %} mt-2{% endif %}'>
+                <strong>{{ access_level.card_name }}</strong>
+                {% if access_level.has_tournament_scope and admin_event.tournaments|length > 1 %}
+                    {% if permission.tournament_ids %}
+                        <div class='ps-2'>{{ permission.tournaments_tooltip_message(admin_event) }}</div>
+                    {% else %}
+                        <div class='ps-2 text-secondary'>{{ _('all the tournaments') }}</div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        {{ _('No permissions defined.') }}
+    {% endif %}
+{% endmacro %}
+
+{% macro permissions_summary(item, view, placement) %}
+    <span class="account-permissions-summary">
+        {% if item.administrator %}
+            <span
+                class="text-success text-nowrap"
+                {{ macros.tooltip_attributes('', permissions_tooltip(item), 'top') }}
+            ><i class="bi-shield-fill-check pe-1"></i>{{ _('All') }}</span>
+        {% elif item.permissions %}
+            <span
+                class="text-nowrap"
+                {{ macros.tooltip_attributes('', permissions_tooltip(item), 'top') }}
+            >
+                <i class="bi-shield-check pe-1 text-secondary"></i>
+                {{ item.permissions|length }}
+            </span>
+        {% else %}
+            <span
+                class="text-warning text-nowrap"
+                {{ macros.tooltip_attributes('', permissions_tooltip(item), 'top') }}
+            ><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('None') }}</span>
+        {% endif %}
+        {% if view == 'list' %}{{ permissions_button(item) }}{% endif %}
+    </span>
+{% endmacro %}
+
+{% macro card_body(item, view, placement) %}
+    {% if not show_details %}
+        {% set account = item %}
+        {% set tournament_count = admin_event.tournaments|length %}
+        <div class="d-flex flex-column gap-1">
+            {% if not account.roles and account.user_account %}
+                <div class="text-warning">
+                    {{ _('No roles defined.') }}
+                </div>
+            {% else %}
+                {% for role in account.roles %}
+                    <div>
+                        {{ role.role_type }}
+                        {% if role.role_type.is_tournament_bound and tournament_count > 1 %}
+                            {% set tournament_names = role.tournament_names(admin_event) %}
+                            {% if tournament_count == tournament_names|length %}
+                                <i class="text-secondary">
+                                    ({{ _('all the tournaments') }})
+                                </i>
+                            {% else %}
+                                <i class="text-secondary">
+                                    ({{ ngettext(
+                                        '%(num)d tournament',
+                                        '%(num)d tournaments',
+                                        tournament_names|length
+                                    ) }})
+                                </i>
+                                <i
+                                    class="bi-info-circle-fill ps-1"
+                                    {{ macros.tooltip_attributes(
+                                        '', role.tournaments_tooltip_message(admin_event), 'right'
+                                    ) }}
+                                ></i>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if account.administrator %}
+                {{ _('The administrator has all the permissions.') }}
+            {% elif not account.permissions %}
+                <div class="text-warning">
+                    {{ _('No permissions defined.') }}
+                </div>
+            {% else %}
+                {{ _('%(string)s:', string=_('Permissions')) }}
+                <ul class="mb-0">
+                    {% for permission in account.sorted_permissions %}
+                        {% set access_level = permission.access_level %}
+                        <li>
+                            <span {{ macros.tooltip_attributes('info', access_level.help_text, 'left') }}>
+                                {{ access_level.card_name }}
+                            </span>
+                            {% if access_level.has_tournament_scope and tournament_count > 1 %}
+                                {% if permission.tournament_ids %}
+                                    <i class="text-secondary">
+                                        ({{ ngettext(
+                                            '%(num)d tournament',
+                                            '%(num)d tournaments',
+                                            permission.tournament_ids|length
+                                        ) }})
+                                    </i>
+                                    <i
+                                        class="bi-info-circle-fill ps-1"
+                                        {{ macros.tooltip_attributes(
+                                            '', permission.tournaments_tooltip_message(admin_event), 'right'
+                                        ) }}
+                                    ></i>
+                                {% else %}
+                                    <i class="text-secondary">
+                                        ({{ _('all the tournaments') }})
+                                    </i>
+                                {% endif %}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro details(item, view, placement) %}
+    {% set account = item %}
+    {% set tournament_count = admin_event.tournaments|length %}
+    <div class="collection-details-grid">
+        <section class="collection-detail-section">
+            <h6>{{ _('Roles') }}</h6>
+            {% if account.roles %}
+                {% for role in account.roles %}
+                    <div>
+                        <strong>{{ role.role_type }}</strong>
+                        {% if role.role_type.is_tournament_bound and tournament_count > 1 %}
+                            {% set tournament_names = role.tournament_names(admin_event) %}
+                            {% if tournament_count == tournament_names|length %}
+                                <span class="text-secondary">({{ _('all the tournaments') }})</span>
+                            {% elif tournament_names %}
+                                <ul class="mb-1">
+                                    {% for tournament_name in tournament_names %}<li>{{ tournament_name }}</li>{% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% elif account.user_account %}
+                <span class="text-warning">{{ _('No roles defined.') }}</span>
+            {% else %}
+                <span class="text-secondary">{{ _('No role required') }}</span>
+            {% endif %}
+        </section>
+        <section class="collection-detail-section">
+            <h6>{{ _('Permissions') }}</h6>
+            {% if account.administrator %}
+                <span class="text-success">{{ _('The administrator has all the permissions.') }}</span>
+            {% elif account.sorted_permissions %}
+                {% for permission in account.sorted_permissions %}
+                    {% set access_level = permission.access_level %}
+                    <div>
+                        <strong {{ macros.tooltip_attributes('info', access_level.help_text, 'left') }}>
+                            {{ access_level.card_name }}
+                        </strong>
+                        {% if access_level.has_tournament_scope and tournament_count > 1 %}
+                            {% if permission.tournament_ids %}
+                                <ul>
+                                    {% for tournament_name in permission.tournament_names(admin_event) %}
+                                        <li>{{ tournament_name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <span class="text-secondary">({{ _('all the tournaments') }})</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <span class="text-warning">{{ _('No permissions defined.') }}</span>
+            {% endif %}
+        </section>
+    </div>
+{% endmacro %}
+
+{% macro actions(item, view, placement) %}
+    {% set account = item %}
+    {% set client_can_manage_account = client.can_manage_account(account.id) %}
+    <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
+        {% if view == 'card' %}{{ permissions_button(account, true) }}{% endif %}
+        <div class="d-flex align-items-center gap-1">
+            <button
+                class="btn btn-sm btn-outline-primary"
+                {% if account.edit_properties and client_can_manage_account %}
+                    hx-get="{{ url_for('admin-account-update-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% else %}
+                    disabled
+                {% endif %}
+                {{ macros.tooltip_attributes('info', _('Edit the properties of the account.'), 'top') }}
+            ><i class="bi-pencil-fill"></i></button>
+            <button
+                class="btn btn-sm btn-outline-primary"
+                {% if account.edit_properties and client_can_manage_account %}
+                    hx-get="{{ url_for('admin-account-clone-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% else %}
+                    disabled
+                {% endif %}
+                {{ macros.tooltip_attributes('info', _('Duplicate the account.'), 'top') }}
+            ><i class="bi-copy"></i></button>
+            <button
+                class="btn btn-sm btn-outline-danger"
+                {% if account.edit_properties and client_can_manage_account %}
+                    hx-get="{{ url_for('admin-account-delete-modal', event_uniq_id=admin_event.uniq_id, account_id=account.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% else %}
+                    disabled
+                {% endif %}
+                {{ macros.tooltip_attributes('info', _('Delete the account.'), 'top') }}
+            ><i class="bi-trash-fill"></i></button>
+        </div>
+    </div>
+{% endmacro %}

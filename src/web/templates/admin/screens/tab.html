@@ -1,5 +1,10 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('screens') %}
+{% set collection_view_mode = get_admin_collection_view_mode('screens') %}
+{% set collection_show_details = get_admin_collection_show_details('screens') %}
+{% set collection_url = url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) %}
+
 {% block top_left_nav %}
     {% if client.can_manage_screens %}
         {{ admin_macros.admin_title(_('Single Screens'), 'screens-single') }}
@@ -29,24 +34,7 @@
                 <label for="{{ id }}" class="form-check-label"> {{ _('Multi-Screens') }}</label>
             </div>
         {% endwith %}
-        {% with id='show-details', name='show_details', show=show_details %}
-            <div
-                class="form-check form-switch d-inline-block pe-2"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
-            >
-                <input
-                    hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %}
-                />
-                <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-            </div>
-        {% endwith %}
+        {% include '/admin/common/collection_controls.html' %}
         {% include '/admin/common/screens_config_button.html' %}
         <span
             class="dropdown-end"
@@ -149,21 +137,16 @@
                     </div>
 
                     <div class="collapse {% if expanded %}show{% endif %}" id="admin-screens-show-{{ screen_type.value }}">
-                        <div class="row gy-2 gx-3 mb-4">
-                            {% if screen_type_data.screens %}
-                                {% for screen in screen_type_data.screens %}
-                                    {% with
-                                        card_class='' if not screen.family else 'bg-secondary-subtle text-secondary',
-                                        card_id='screen-card-' ~ screen.id
-                                    %}
-                                        {% include 'screen_card.html' %}
-                                    {% endwith %}
-                                {% endfor %}
-                            {% else %}
-                                <div class="col-12 my-3 mb-0">
-                                    {{ _('No such screens.') }}
-                                </div>
-                            {% endif %}
+                        <div class="mb-4">
+                            {% with
+                                items=screen_type_data.screens,
+                                empty_message=_('No such screens.'),
+                                sortable=false,
+                                show_details=collection_show_details,
+                                hidden_list_columns=[] if show_family_screens else ['source']
+                            %}
+                                {% include '/admin/common/collection.html' %}
+                            {% endwith %}
                         </div>
                     </div>
                 {% endfor %}
@@ -174,7 +157,7 @@
         <script>
             (function () {
                 function reveal() {
-                    const card = document.getElementById('screen-card-{{ scroll_to_screen_id }}');
+                    const card = document.getElementById('collection-screens-item-{{ scroll_to_screen_id }}');
                     if (!card) {
                         return;
                     }

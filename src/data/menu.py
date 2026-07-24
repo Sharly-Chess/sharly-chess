@@ -5,6 +5,7 @@ from _weakref import ReferenceType
 
 from common.i18n import _
 from data.screens.family import Family
+from data.screens.manager import ScreenTypeManager
 from data.screens.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredMenu, StoredMenuItem
@@ -12,6 +13,7 @@ from utils.enum import MenuSubmenuMode
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.screens.screen_types import ScreenType
 
 
 class MenuNavEntry:
@@ -181,6 +183,12 @@ class MenuItem:
         return self.stored_menu_item.screen_type or None
 
     @property
+    def screen_type_object(self) -> 'ScreenType | None':
+        if not self.screen_type:
+            return None
+        return ScreenTypeManager(self.event).get_object(self.screen_type)
+
+    @property
     def index(self) -> int:
         return self.stored_menu_item.index
 
@@ -262,8 +270,6 @@ class Menu:
         types the menu covers, joined by ' / '."""
         if self.stored_menu.name:
             return self.stored_menu.name
-        from data.screens.manager import ScreenTypeManager
-
         manager = ScreenTypeManager(self.event)
         if self.stored_menu.default_type:
             return manager.get_object(self.stored_menu.default_type).name
@@ -294,6 +300,11 @@ class Menu:
     @property
     def screen_types(self) -> list[str]:
         return [item.screen_type for item in self.sorted_menu_items if item.screen_type]
+
+    @property
+    def screen_type_objects(self) -> list['ScreenType']:
+        manager = ScreenTypeManager(self.event)
+        return [manager.get_object(screen_type) for screen_type in self.screen_types]
 
     @property
     def covered_basic_screens(self) -> list[Screen]:

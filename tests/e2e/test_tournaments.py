@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
 from tests.test_config import TestUtils
@@ -32,10 +34,26 @@ class TestTournamentFunctionality:
         expect(modal.locator('.tie-break-row')).to_have_count(5)
         page.wait_for_timeout(500)
         TestUtils.button_by_text(modal, 'Close').click()
-        card = page.locator(f"div.card:has-text('{name}')")
-        expect(card).to_be_visible()
+        expect(page.get_by_role('button', name='List view')).to_have_attribute(
+            'aria-pressed', 'true'
+        )
+        item = page.get_by_test_id('tournaments-item').filter(has_text=name)
+        expect(item).to_be_visible()
 
-        button = card.locator('button[hx-get*="delete"]')
+        details = page.get_by_role('checkbox', name='Details')
+        details.check()
+        expect(item.locator('.collection-list-details')).to_have_class(
+            re.compile(r'\bshow\b')
+        )
+
+        page.get_by_role('button', name='Card view').click()
+        expect(page.get_by_role('button', name='Card view')).to_have_attribute(
+            'aria-pressed', 'true'
+        )
+        item = page.get_by_test_id('tournaments-item').filter(has_text=name)
+        expect(item.locator('.collection-card-details')).to_be_visible()
+
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
 
         modal = page.locator('.modal-dialog')
@@ -44,4 +62,4 @@ class TestTournamentFunctionality:
         delete_button = TestUtils.button_by_text(modal, 'Delete')
         expect(delete_button).to_be_enabled()
         delete_button.click()
-        expect(page.locator('.card')).to_have_count(0)
+        expect(page.get_by_test_id('tournaments-item')).to_have_count(0)

@@ -1,0 +1,247 @@
+{% import '/admin/common/collection_macros.j2' as collection_macros with context %}
+{% import collection.components_template as item_components with context %}
+{% set collection_items_class = collection_items_class|default('') %}
+{% set collection_items_data = collection_items_data|default({}) %}
+
+{% if items %}
+    {% if collection_view_mode.value == 'cards' %}
+        <div
+            class="row gy-3 gx-3 admin-collection admin-collection-cards {{ collection_items_class }} {% if sortable %}sortable with-handles{% endif %}"
+            {% for name, value in collection_items_data.items() %}data-{{ name }}="{{ value }}"{% endfor %}
+        >
+            {% for item in items %}
+                {% set item_class_renderer = item_components|attr('item_class') %}
+                {% if collection.card_href_component %}
+                    {% set card_href_renderer = item_components|attr(collection.card_href_component) %}
+                    {% set card_href = card_href_renderer(item, 'card', none)|trim %}
+                {% else %}
+                    {% set card_href = '' %}
+                {% endif %}
+                <div
+                    id="collection-{{ collection.key }}-item-{{ collection.item_id(item) }}"
+                    class="d-flex align-items-stretch collection-item {% if item_class_renderer %}{{ item_class_renderer(item, 'card')|trim }}{% endif %}"
+                    data-collection-item-id="{{ collection.item_id(item) }}"
+                >
+                    <div
+                        class="card collection-card w-100 {% if card_href %}collection-card-actionable{% endif %}"
+                        data-testid="{{ collection.key }}-item"
+                        {% if card_href %}
+                            data-collection-card-href="{{ card_href }}"
+                            role="link"
+                            tabindex="0"
+                        {% endif %}
+                    >
+                        {% if collection.reorder_input_name %}
+                            <input
+                                type="hidden"
+                                name="{{ collection.reorder_input_name }}"
+                                value="{{ collection.item_id(item) }}"
+                            />
+                        {% endif %}
+                        <header class="card-header collection-card-header d-flex align-items-center gap-2">
+                            {% for placement in collection.card.header %}
+                                {{ collection_macros.component(item_components, placement, item, 'card') }}
+                            {% endfor %}
+                        </header>
+                        {% if collection.card.summary %}
+                            {% set summary_content %}
+                                {% for placement in collection.card.summary %}
+                                    {{ collection_macros.component(item_components, placement, item, 'card') }}
+                                {% endfor %}
+                            {% endset %}
+                            {% if summary_content|trim %}
+                                <div class="collection-card-summary d-flex flex-wrap align-items-center gap-3">
+                                    {{ summary_content }}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        {% if collection.card.body or (show_details and collection.card.details) %}
+                            {% set card_body_content %}
+                                {% for placement in collection.card.body %}
+                                    {{ collection_macros.component(item_components, placement, item, 'card') }}
+                                {% endfor %}
+                                {% if show_details and collection.card.details %}
+                                    {% set card_details_content %}
+                                        {% for placement in collection.card.details %}
+                                            {{ collection_macros.component(item_components, placement, item, 'card') }}
+                                        {% endfor %}
+                                    {% endset %}
+                                    {% if card_details_content|trim %}
+                                        <div class="collection-card-details">
+                                            {{ card_details_content }}
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            {% endset %}
+                            {% if card_body_content|trim %}
+                                <div class="card-body collection-card-body d-flex flex-column gap-2">
+                                    {{ card_body_content }}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        {% if collection.card.footer %}
+                            {% set footer_content %}
+                                {% for placement in collection.card.footer %}
+                                    {{ collection_macros.component(item_components, placement, item, 'card') }}
+                                {% endfor %}
+                            {% endset %}
+                            {% if footer_content|trim %}
+                                <footer class="card-footer collection-card-footer">
+                                    {{ footer_content }}
+                                </footer>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% set visible_columns = collection.list.columns
+            |rejectattr(
+                'component_id',
+                'in',
+                hidden_list_columns|default([]),
+            )
+            |list %}
+        {% set drag_columns = visible_columns
+            |selectattr('component_id', 'equalto', 'drag_handle')
+            |list %}
+        {% set drag_column = drag_columns|first %}
+        {% set content_columns = visible_columns
+            |rejectattr('component_id', 'equalto', 'drag_handle')
+            |list %}
+        <div class="admin-collection-list-scroll">
+            <div
+                class="admin-collection admin-collection-list"
+                style="--collection-list-columns:
+                    {% if drag_column %}{{ drag_column.width }} {% endif %}
+                    {% if collection.list.details %}1.75rem {% endif %}
+                    {% for column in content_columns %}{{ column.width }} {% endfor %};"
+                role="table"
+                aria-label="{{ collection.key }}"
+            >
+                <div class="collection-list-header" role="row">
+                    {% if drag_column %}
+                        <div class="collection-list-header-cell {{ drag_column.header_class }}" role="columnheader">
+                            {% if drag_column.label %}{{ _(drag_column.label) }}{% endif %}
+                        </div>
+                    {% endif %}
+                    {% if collection.list.details %}
+                        <div
+                            class="collection-list-header-cell collection-details-column"
+                            role="columnheader"
+                            aria-label="{{ _('Details') }}"
+                        ></div>
+                    {% endif %}
+                    {% for column in content_columns %}
+                        <div class="collection-list-header-cell {{ column.header_class }}" role="columnheader">
+                            {% if column.label %}{{ _(column.label) }}{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div
+                    class="collection-list-items {{ collection_items_class }} {% if sortable %}sortable with-handles{% endif %}"
+                    role="rowgroup"
+                    {% for name, value in collection_items_data.items() %}data-{{ name }}="{{ value }}"{% endfor %}
+                >
+                    {% for item in items %}
+                        {% set item_id = collection.item_id(item) %}
+                        {% set details_id = 'collection-' ~ collection.key ~ '-details-' ~ item_id %}
+                        {% set item_class_renderer = item_components|attr('item_class') %}
+                        {% if collection.row_href_component %}
+                            {% set row_href_renderer = item_components|attr(collection.row_href_component) %}
+                            {% set row_href = row_href_renderer(item, 'list', none)|trim %}
+                        {% else %}
+                            {% set row_href = '' %}
+                        {% endif %}
+                        {% set list_details_content %}
+                            {% for placement in collection.list.details %}
+                                {{ collection_macros.component(item_components, placement, item, 'details') }}
+                            {% endfor %}
+                        {% endset %}
+                        <article
+                            id="collection-{{ collection.key }}-item-{{ item_id }}"
+                            class="collection-list-item collection-item
+                                {% if row_href %}collection-list-item-actionable{% endif %}
+                                {% if item_class_renderer %}{{ item_class_renderer(item, 'list')|trim }}{% endif %}"
+                            data-collection-item-id="{{ item_id }}"
+                            data-testid="{{ collection.key }}-item"
+                            role="rowgroup"
+                        >
+                            {% if collection.reorder_input_name %}
+                                <input
+                                    type="hidden"
+                                    name="{{ collection.reorder_input_name }}"
+                                    value="{{ item_id }}"
+                                />
+                            {% endif %}
+                            <div
+                                class="collection-list-row {% if row_href %}collection-list-row-actionable{% endif %}"
+                                role="row"
+                                {% if row_href %}
+                                    data-collection-row-href="{{ row_href }}"
+                                    tabindex="0"
+                                {% endif %}
+                            >
+                                {% if drag_column %}
+                                    <div
+                                        class="collection-list-cell collection-list-cell-{{ drag_column.component_id }} {{ drag_column.cell_class }}"
+                                        role="cell"
+                                    >
+                                        {{ collection_macros.component(item_components, drag_column, item, 'list') }}
+                                    </div>
+                                {% endif %}
+                                {% if collection.list.details %}
+                                    <div class="collection-list-cell collection-details-column" role="cell">
+                                        {% if list_details_content|trim %}
+                                            <button
+                                                class="btn collection-details-button"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#{{ details_id }}"
+                                                aria-expanded="{{ 'true' if show_details else 'false' }}"
+                                                aria-controls="{{ details_id }}"
+                                                title="{{ _('Toggle details') }}"
+                                            >
+                                                <i class="bi-chevron-right"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                {% for column in content_columns %}
+                                    <div
+                                        class="collection-list-cell collection-list-cell-{{ column.component_id }} {{ column.cell_class }}"
+                                        role="cell"
+                                    >
+                                        {{ collection_macros.component(item_components, column, item, 'list') }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% if list_details_content|trim %}
+                                <div
+                                    id="{{ details_id }}"
+                                    class="collapse collection-list-details
+                                        {% if row_href %}collection-list-details-actionable{% endif %}
+                                        {% if show_details %}show collapse-state-not-saved{% endif %}"
+                                    {% if row_href %}
+                                        data-collection-row-href="{{ row_href }}"
+                                        role="link"
+                                        tabindex="0"
+                                    {% endif %}
+                                >
+                                    <div class="collection-list-details-content">
+                                        {{ list_details_content }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+    <div class="mx-auto" style="max-width: 500px;">
+        <h5 class="mt-2 my-5 text-center">{{ empty_message }}</h5>
+    </div>
+{% endif %}

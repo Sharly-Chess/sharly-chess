@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Any
 
 from litestar.exceptions import NotFoundException
@@ -9,6 +10,12 @@ from data.event import Event
 from utils.enum import TournamentRating
 from data.screens.manager import ScreenTypeManager
 from plugins.manager import plugin_manager
+from web.admin.collection import (
+    AdminCollectionSpec,
+    get_admin_collection_spec,
+    resolve_admin_collection_show_details,
+    resolve_admin_collection_view_mode,
+)
 from web.controllers.base_controller import BaseController, WebContext
 from web.utils import RequestUtils
 
@@ -54,6 +61,15 @@ class AdminWebContext(WebContext):
     def theme(self) -> str:
         return 'dark'
 
+    def get_admin_collection_spec(self, collection_key: str) -> AdminCollectionSpec:
+        collection_spec = get_admin_collection_spec(collection_key)
+        plugin_manager.hook_for_event(self.admin_event, 'extend_admin_collection')(
+            collection_key=collection_key,
+            collection_spec=collection_spec,
+            event=self.admin_event,
+        )
+        return collection_spec
+
     @property
     def template_context(self) -> dict[str, Any]:
         per_plugin_context = plugin_manager.hook_for_event(
@@ -70,6 +86,13 @@ class AdminWebContext(WebContext):
             | {
                 'admin_tab': self.admin_tab,
                 'admin_event': self.admin_event,
+                'get_admin_collection_spec': self.get_admin_collection_spec,
+                'get_admin_collection_view_mode': partial(
+                    resolve_admin_collection_view_mode, self.request
+                ),
+                'get_admin_collection_show_details': partial(
+                    resolve_admin_collection_show_details, self.request
+                ),
             }
             | plugin_context
         )

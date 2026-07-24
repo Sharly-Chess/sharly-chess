@@ -1,5 +1,10 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('menus') %}
+{% set collection_view_mode = get_admin_collection_view_mode('menus') %}
+{% set collection_show_details = get_admin_collection_show_details('menus') %}
+{% set collection_url = url_for('admin-event-menus-tab', event_uniq_id=admin_event.uniq_id) %}
+
 {% block top_left_nav %}
     {{ admin_macros.admin_title(
         _('Menus'),
@@ -9,24 +14,7 @@
 
 {% block top_right_nav %}
     {% if client.can_manage_screens %}
-        {% with id='show-details-on-menu-list', name='show_details', show=show_details %}
-            <div
-                class="form-check form-switch d-inline-block pe-2"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
-            >
-                <input
-                    hx-get="{{ url_for('admin-event-menus-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %}
-                />
-                <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-            </div>
-        {% endwith %}
+        {% include '/admin/common/collection_controls.html' %}
         <button
             class="btn btn-primary text-nowrap ms-1"
             hx-get="{{ url_for('admin-menu-create-modal', event_uniq_id=admin_event.uniq_id) }}"
@@ -43,28 +31,19 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row gy-2 gx-3">
-        {% if admin_menus %}
-            {% for menu in admin_menus %}
-                {% include 'menu_card.html' %}
-            {% endfor %}
-        {% else %}
-            <div class="mx-auto" style="max-width: 500px;">
-                <h5 class="mt-2 my-5 text-center">
-                    {{ _('No menus') }}
-                </h5>
-                {% if client.can_manage_screens %}
-                    <p>
-                        {{ _('Menus group screens together so users can navigate between them.') }}
-                    </p>
-                    <p>
-                        {{ _('Add screens, multi-screens or whole screen types to a menu, then reorder them as you like.') }}
-                    </p>
-                    <p>
-                        {{ _('Create a menu now to get started.') }}
-                    </p>
-                {% endif %}
-            </div>
-        {% endif %}
-    </div>
+    {% with
+        items=admin_menus,
+        empty_message=_('No menus'),
+        sortable=false,
+        show_details=collection_show_details
+    %}
+        {% include '/admin/common/collection.html' %}
+    {% endwith %}
+    {% if not admin_menus and client.can_manage_screens %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <p>{{ _('Menus group screens together so users can navigate between them.') }}</p>
+            <p>{{ _('Add screens, multi-screens or whole screen types to a menu, then reorder them as you like.') }}</p>
+            <p>{{ _('Create a menu now to get started.') }}</p>
+        </div>
+    {% endif %}
 {% endblock %}

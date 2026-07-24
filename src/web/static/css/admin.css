@@ -301,11 +301,16 @@
 .screen-card-table {
     width: 100%;
     max-width: 100%;
+    table-layout: fixed;
     font-size: 0.75rem;
 }
 .screen-card-table th, .screen-card-table td {
     border-width: 1px;
     text-overflow: ellipsis;
+}
+.screen-card-table th:nth-child(2),
+.screen-card-table td:nth-child(2) {
+    width: 15%;
 }
 
 .dropdown-item-lg {

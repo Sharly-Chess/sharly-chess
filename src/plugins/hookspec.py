@@ -67,6 +67,7 @@ if TYPE_CHECKING:
     )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
+    from web.admin.collection import AdminCollectionSpec
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
     from data.columns.column import ColumnUsage, Column
 
@@ -93,6 +94,15 @@ class AppHookSpecs:
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
         """Provide additional template context for AdminWebContext"""
+
+    @hookspec
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: Optional['Event'],
+    ):
+        """Extend a request-scoped admin card/list collection."""
 
     # ---------------------------------------------------------------------------------
     # Input-Output

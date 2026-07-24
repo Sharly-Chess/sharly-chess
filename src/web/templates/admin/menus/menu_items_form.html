@@ -20,7 +20,7 @@
             {% for menu_item in menu_items %}
                 {% set screen = menu_item.screen %}
                 {% set family = menu_item.family %}
-                {% set screen_type = menu_item.screen_type %}
+                {% set screen_type = menu_item.screen_type_object %}
                 <div class="border border-secondary bg-body-tertiary {% if reorder_items %}cursor-grab{% endif %}">
                     <input type="hidden" name="menu_item_ids" value="{{ menu_item.id }}"/>
                     <div class="p-2 d-flex align-items-center gap-4 menu-item-row">
