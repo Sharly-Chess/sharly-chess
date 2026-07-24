@@ -1,23 +1,20 @@
-from typing import Annotated, Any
+from typing import Any
 
-from litestar import get, post
-from litestar.enums import RequestEncodingType
+from litestar import get
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
-from litestar.response import Template
-from litestar_htmx import HTMXRequest, HTMXTemplate
+from litestar.response import Redirect, Template
+from litestar_htmx import HTMXRequest
 
-from data.access_levels.actions import AuthAction
 from data.screens.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chess960 import PLUGIN_NAME
 from plugins.chess960.utils import (
     Chess960ScreenPluginData,
-    random_position_number,
 )
 from web.controllers.admin.base_admin_controller import AdminWebContext
-from web.controllers.admin.base_event_admin_controller import BaseEventAdminController
-from web.guards import ActionGuard, EventGuard
+from web.controllers.admin.screen_admin_controller import (
+    ScreenAdminRenderer,
+)
 
 
 class Chess960WebContext(AdminWebContext):
@@ -51,8 +48,20 @@ class Chess960WebContext(AdminWebContext):
         }
 
 
+class Chess960Controller(ScreenAdminRenderer):
+    @get(
+        path='/event/{event_uniq_id:str}/chess960-screens',
+        name='admin-event-chess960-screens-tab',
+    )
+    async def htmx_admin_event_chess960_screens_tab(
+        self, request: HTMXRequest
+    ) -> Template | Redirect:
+        return self._admin_event_screens_render(request, screen_type='chess960')
+
+
+"""
 class Chess960Controller(BaseEventAdminController):
-    guards = [EventGuard(), ActionGuard(AuthAction.MANAGE_SCREENS)]
+    guards = [EventGuard(), ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS)]
 
     @classmethod
     def _render_form(
@@ -89,3 +98,4 @@ class Chess960Controller(BaseEventAdminController):
         data = dict(data)
         data['chess960_number'] = str(random_position_number())
         return self._render_form(web_context, data=data)
+"""

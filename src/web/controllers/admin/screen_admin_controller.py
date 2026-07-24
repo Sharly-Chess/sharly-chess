@@ -103,7 +103,241 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
         }
 
 
-class ScreenAdminController(BaseEventAdminController):
+class ScreenAdminRenderer(BaseEventAdminController):
+    guards = [
+        EventGuard(),
+        ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
+    ]
+
+    @classmethod
+    def _admin_event_screens_render(
+        cls,
+        request: HTMXRequest,
+        modal: str | None = None,
+        action: str | None = None,
+        screen_id: int | None = None,
+        screen_type: str | None = None,
+        screen_set_id: int | None = None,
+        reload_event: bool = False,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+        scroll_to_screen_id: int | None = None,
+    ) -> HTMXTemplate | Redirect:
+        web_context = ScreenAdminWebContext(
+            request,
+            screen_id=screen_id,
+            screen_type_id=screen_type,
+            screen_set_id=screen_set_id,
+            reload_event=reload_event,
+        )
+        event = web_context.get_admin_event()
+        admin_screen_types_data: dict[ScreenType, dict[str, Any]] = {
+            screen_type: {}
+            for screen_type in ScreenTypeManager(event).objects()
+            if screen_type.supports_event_type(event.event_type)
+        }
+        template_context: dict[str, Any] = web_context.template_context
+
+        if web_context.client.can_manage_screens:
+            # 'admin' view
+            show_family_screens = SessionScreensShowFamilyScreens(request).get()
+            sorted_screens_by_type: dict[str, list[Screen]]
+            if show_family_screens:
+                sorted_screens_by_type = event.sorted_screens_by_screen_type
+            else:
+                sorted_screens_by_type = event.sorted_basic_screens_by_screen_type
+            for screen_type_ in list(admin_screen_types_data):
+                screens = sorted_screens_by_type[screen_type_.id]
+                admin_screen_types_data[screen_type_]['screens'] = screens
+                admin_screen_types_data[screen_type_]['title'] = (
+                    f'{screen_type_.name} ({len(screens) or "-"})'
+                )
+            template_context |= {
+                'admin_event_tab': 'admin-event-screens-tab',
+                'admin_screen_types_data': admin_screen_types_data,
+                'show_family_screens': show_family_screens,
+                'show_details': SessionScreensShowDetails(request).get(),
+                'admin_screens_screen_types': SessionScreensScreenTypes(request).get(),
+                'admin_screens_count': sum(
+                    len(data) for data in admin_screen_types_data.values()
+                ),
+                'scroll_to_screen_id': scroll_to_screen_id,
+            }
+        else:
+            # 'user' view
+            screen_type_obj = web_context.screen_type
+            assert screen_type_obj is not None
+            if web_context.client.can_view_private_screens:
+                sorted_screens = event.sorted_screens_by_screen_type[screen_type_obj.id]
+            else:
+                sorted_screens = event.sorted_public_screens_by_screen_type[
+                    screen_type_obj.id
+                ]
+            if not sorted_screens:
+                return Redirect(admin_event_url(request, event_uniq_id=event.uniq_id))
+
+            # setdefault: legacy screens of a type no longer offered for
+            # the event's type still render rather than crash.
+            admin_screen_type_data = admin_screen_types_data.setdefault(
+                screen_type_obj, {}
+            )
+            admin_screen_type_data['screens'] = sorted_screens
+            admin_screen_type_data['title'] = (
+                f'{screen_type_obj.name} ({len(sorted_screens) or "-"})'
+            )
+
+            template_context |= {
+                'admin_event_tab': f'admin-event-{screen_type_obj.id}-screens-tab',
+                'admin_screen_type_data': admin_screen_type_data,
+                'admin_screens_count': len(admin_screen_type_data['screens']),
+            }
+
+        match modal:
+            case None:
+                pass
+            case 'screen':
+                if data is None:
+                    public: bool | None = None
+                    name: str | None = None
+                    columns: int | None = None
+                    font_size: int | None = None
+                    menu_text: str | None = None
+                    timer_id: int | None = None
+                    message_default: bool | None = None
+                    message_text: str | None = None
+                    init_set_tournament_id: int | None = None
+                    # Type-specific form values, provided by the screen type.
+                    type_values: dict[str, Any] = {}
+                    match action:
+                        case 'update':
+                            stored_screen = web_context.get_admin_screen().stored_screen
+                            assert stored_screen is not None
+                            name = stored_screen.name
+                        case 'create':
+                            screen_type_obj = web_context.screen_type
+                            assert screen_type_obj is not None
+                            # Set-based screens open on a first tournament.
+                            if screen_type_obj.has_screen_sets:
+                                init_set_tournament_id = list(
+                                    event.tournaments_by_id.keys()
+                                )[0]
+                            # No default name: an unnamed screen is named
+                            # automatically from its tournament(s).
+                        case 'clone':
+                            screen = web_context.get_admin_screen()
+                            name = event.get_unused_screen_name(
+                                base_name=screen.name,
+                                screen_type=screen.screen_type,
+                            )
+                        case 'delete':
+                            pass
+                        case _:
+                            raise ValueError(f'action=[{action}]')
+                    match action:
+                        case 'update' | 'clone':
+                            screen = web_context.get_admin_screen()
+                            stored_screen = screen.stored_screen
+                            assert stored_screen is not None
+                            public = stored_screen.public
+                            columns = stored_screen.columns
+                            font_size = stored_screen.font_size
+                            menu_text = stored_screen.menu_text
+                            timer_id = stored_screen.timer_id
+                            type_values = screen.screen_type.default_form_data(screen)
+                            message_default = stored_screen.message_default
+                            message_text = stored_screen.message_text
+                        case 'create':
+                            public = True
+                            message_default = True
+                            create_type = web_context.screen_type
+                            assert create_type is not None
+                            type_values = create_type.create_form_data(event)
+                            columns = type_values.pop('columns', None)
+                        case 'delete':
+                            pass
+                        case _:
+                            raise ValueError(f'action=[{action}]')
+                    form_values: dict[str, Any] = {
+                        'public': public,
+                        'name': name,
+                        'columns': columns,
+                        'font_size': font_size,
+                        'menu_text': menu_text,
+                        'timer_id': timer_id,
+                        'message_text_checkbox': message_default,
+                        'message_text': message_text,
+                        'init_set_tournament_id': init_set_tournament_id,
+                    }
+                    form_values.update(type_values)
+                    form_values['background_color_checkbox'] = (
+                        form_values.get('background_color') is None
+                    )
+                    data = WebContext.values_dict_to_form_data(form_values)
+                # Errors are only surfaced when passed in from a failed submit;
+                # a freshly opened form must not show validation errors.
+                if errors is None:
+                    errors = {}
+                template_context |= {
+                    'tournament_options': web_context.get_tournament_options(),
+                    'screen_type_options': cls._get_screen_type_options(
+                        family_screens_only=False, event=event
+                    ),
+                    'timer_options': cls._get_timer_options(event),
+                    'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
+                    'screen_uniq_ids': list(event.screens_by_uniq_id.keys()),
+                    'players_player_format_options': web_context.get_players_screen_player_format_options(),
+                    'players_board_format_options': web_context.get_players_screen_board_format_options(),
+                    'players_opponent_format_options': web_context.get_players_screen_opponent_format_options(),
+                    'modal': modal,
+                    'action': action,
+                    'data': data,
+                    'errors': errors,
+                }
+            case 'screen_sets':
+                template_context |= {
+                    'modal': modal,
+                }
+            case 'screen_set_form':
+                if data is None:
+                    if action == 'update' and web_context.admin_screen_set:
+                        stored_screen_set = (
+                            web_context.admin_screen_set.stored_screen_set
+                        )
+                        assert stored_screen_set is not None
+                        data = {
+                            'tournament_id': WebContext.value_to_form_data(
+                                stored_screen_set.tournament_id
+                            ),
+                            'fixed_boards_str': WebContext.value_to_form_data(
+                                stored_screen_set.fixed_boards_str
+                            ),
+                            'name': WebContext.value_to_form_data(
+                                stored_screen_set.name
+                            ),
+                            'first': WebContext.value_to_form_data(
+                                stored_screen_set.first
+                            ),
+                            'last': WebContext.value_to_form_data(
+                                stored_screen_set.last
+                            ),
+                        }
+                    else:
+                        data = {}
+                if errors is None:
+                    errors = {}
+                template_context |= {
+                    'tournament_options': web_context.get_tournament_options(),
+                    'modal': modal,
+                    'action': action,
+                    'data': data,
+                    'errors': errors,
+                }
+            case _:
+                raise ValueError(f'modal=[{modal}]')
+        return cls._admin_base_event_render(template_context)
+
+
+class ScreenAdminController(ScreenAdminRenderer):
     guards = [
         EventGuard(),
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
@@ -360,233 +594,6 @@ class ScreenAdminController(BaseEventAdminController):
             'last': last,
             'fixed_boards_str': fixed_boards_str,
         }, errors
-
-    @classmethod
-    def _admin_event_screens_render(
-        cls,
-        request: HTMXRequest,
-        modal: str | None = None,
-        action: str | None = None,
-        screen_id: int | None = None,
-        screen_type: str | None = None,
-        screen_set_id: int | None = None,
-        reload_event: bool = False,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-        scroll_to_screen_id: int | None = None,
-    ) -> HTMXTemplate | Redirect:
-        web_context = ScreenAdminWebContext(
-            request,
-            screen_id=screen_id,
-            screen_type_id=screen_type,
-            screen_set_id=screen_set_id,
-            reload_event=reload_event,
-        )
-        event = web_context.get_admin_event()
-        admin_screen_types_data: dict[ScreenType, dict[str, Any]] = {
-            screen_type: {}
-            for screen_type in ScreenTypeManager(event).objects()
-            if screen_type.supports_event_type(event.event_type)
-        }
-        template_context: dict[str, Any] = web_context.template_context
-
-        if web_context.client.can_manage_screens:
-            # 'admin' view
-            show_family_screens = SessionScreensShowFamilyScreens(request).get()
-            sorted_screens_by_type: dict[str, list[Screen]]
-            if show_family_screens:
-                sorted_screens_by_type = event.sorted_screens_by_screen_type
-            else:
-                sorted_screens_by_type = event.sorted_basic_screens_by_screen_type
-            for screen_type_ in list(admin_screen_types_data):
-                screens = sorted_screens_by_type[screen_type_.id]
-                admin_screen_types_data[screen_type_]['screens'] = screens
-                admin_screen_types_data[screen_type_]['title'] = (
-                    f'{screen_type_.name} ({len(screens) or "-"})'
-                )
-            template_context |= {
-                'admin_event_tab': 'admin-event-screens-tab',
-                'admin_screen_types_data': admin_screen_types_data,
-                'show_family_screens': show_family_screens,
-                'show_details': SessionScreensShowDetails(request).get(),
-                'admin_screens_screen_types': SessionScreensScreenTypes(request).get(),
-                'admin_screens_count': sum(
-                    len(data) for data in admin_screen_types_data.values()
-                ),
-                'scroll_to_screen_id': scroll_to_screen_id,
-            }
-        else:
-            # 'user' view
-            screen_type_obj = web_context.screen_type
-            assert screen_type_obj is not None
-            if web_context.client.can_view_private_screens:
-                sorted_screens = event.sorted_screens_by_screen_type[screen_type_obj.id]
-            else:
-                sorted_screens = event.sorted_public_screens_by_screen_type[
-                    screen_type_obj.id
-                ]
-            if not sorted_screens:
-                return Redirect(admin_event_url(request, event_uniq_id=event.uniq_id))
-
-            # setdefault: legacy screens of a type no longer offered for
-            # the event's type still render rather than crash.
-            admin_screen_type_data = admin_screen_types_data.setdefault(
-                screen_type_obj, {}
-            )
-            admin_screen_type_data['screens'] = sorted_screens
-            admin_screen_type_data['title'] = (
-                f'{screen_type_obj.name} ({len(sorted_screens) or "-"})'
-            )
-
-            template_context |= {
-                'admin_event_tab': f'admin-event-{screen_type_obj.id}-screens-tab',
-                'admin_screen_type_data': admin_screen_type_data,
-                'admin_screens_count': len(admin_screen_type_data['screens']),
-            }
-
-        match modal:
-            case None:
-                pass
-            case 'screen':
-                if data is None:
-                    public: bool | None = None
-                    name: str | None = None
-                    columns: int | None = None
-                    font_size: int | None = None
-                    menu_text: str | None = None
-                    timer_id: int | None = None
-                    message_default: bool | None = None
-                    message_text: str | None = None
-                    init_set_tournament_id: int | None = None
-                    # Type-specific form values, provided by the screen type.
-                    type_values: dict[str, Any] = {}
-                    match action:
-                        case 'update':
-                            stored_screen = web_context.get_admin_screen().stored_screen
-                            assert stored_screen is not None
-                            name = stored_screen.name
-                        case 'create':
-                            screen_type_obj = web_context.screen_type
-                            assert screen_type_obj is not None
-                            # Set-based screens open on a first tournament.
-                            if screen_type_obj.has_screen_sets:
-                                init_set_tournament_id = list(
-                                    event.tournaments_by_id.keys()
-                                )[0]
-                            # No default name: an unnamed screen is named
-                            # automatically from its tournament(s).
-                        case 'clone':
-                            screen = web_context.get_admin_screen()
-                            name = event.get_unused_screen_name(
-                                base_name=screen.name,
-                                screen_type=screen.screen_type,
-                            )
-                        case 'delete':
-                            pass
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    match action:
-                        case 'update' | 'clone':
-                            screen = web_context.get_admin_screen()
-                            stored_screen = screen.stored_screen
-                            assert stored_screen is not None
-                            public = stored_screen.public
-                            columns = stored_screen.columns
-                            font_size = stored_screen.font_size
-                            menu_text = stored_screen.menu_text
-                            timer_id = stored_screen.timer_id
-                            type_values = screen.screen_type.default_form_data(screen)
-                            message_default = stored_screen.message_default
-                            message_text = stored_screen.message_text
-                        case 'create':
-                            public = True
-                            message_default = True
-                            create_type = web_context.screen_type
-                            assert create_type is not None
-                            type_values = create_type.create_form_data(event)
-                            columns = type_values.pop('columns', None)
-                        case 'delete':
-                            pass
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    form_values: dict[str, Any] = {
-                        'public': public,
-                        'name': name,
-                        'columns': columns,
-                        'font_size': font_size,
-                        'menu_text': menu_text,
-                        'timer_id': timer_id,
-                        'message_text_checkbox': message_default,
-                        'message_text': message_text,
-                        'init_set_tournament_id': init_set_tournament_id,
-                    }
-                    form_values.update(type_values)
-                    form_values['background_color_checkbox'] = (
-                        form_values.get('background_color') is None
-                    )
-                    data = WebContext.values_dict_to_form_data(form_values)
-                # Errors are only surfaced when passed in from a failed submit;
-                # a freshly opened form must not show validation errors.
-                if errors is None:
-                    errors = {}
-                template_context |= {
-                    'tournament_options': web_context.get_tournament_options(),
-                    'screen_type_options': cls._get_screen_type_options(
-                        family_screens_only=False, event=event
-                    ),
-                    'timer_options': cls._get_timer_options(event),
-                    'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
-                    'screen_uniq_ids': list(event.screens_by_uniq_id.keys()),
-                    'players_player_format_options': web_context.get_players_screen_player_format_options(),
-                    'players_board_format_options': web_context.get_players_screen_board_format_options(),
-                    'players_opponent_format_options': web_context.get_players_screen_opponent_format_options(),
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors,
-                }
-            case 'screen_sets':
-                template_context |= {
-                    'modal': modal,
-                }
-            case 'screen_set_form':
-                if data is None:
-                    if action == 'update' and web_context.admin_screen_set:
-                        stored_screen_set = (
-                            web_context.admin_screen_set.stored_screen_set
-                        )
-                        assert stored_screen_set is not None
-                        data = {
-                            'tournament_id': WebContext.value_to_form_data(
-                                stored_screen_set.tournament_id
-                            ),
-                            'fixed_boards_str': WebContext.value_to_form_data(
-                                stored_screen_set.fixed_boards_str
-                            ),
-                            'name': WebContext.value_to_form_data(
-                                stored_screen_set.name
-                            ),
-                            'first': WebContext.value_to_form_data(
-                                stored_screen_set.first
-                            ),
-                            'last': WebContext.value_to_form_data(
-                                stored_screen_set.last
-                            ),
-                        }
-                    else:
-                        data = {}
-                if errors is None:
-                    errors = {}
-                template_context |= {
-                    'tournament_options': web_context.get_tournament_options(),
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors,
-                }
-            case _:
-                raise ValueError(f'modal=[{modal}]')
-        return cls._admin_base_event_render(template_context)
 
     @get(
         path='/event/{event_uniq_id:str}/screens',
