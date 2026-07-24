@@ -9079,8 +9079,3 @@ msgstr ""
 msgid "← Back to IT1 certificate"
 msgstr ""
 
-#~ msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
-#~ msgstr ""
-
-#~ msgid "Fixed boards:"
-#~ msgstr ""
