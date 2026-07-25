@@ -45,7 +45,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
             ListColumn(
                 'criteria',
                 label=_('Criteria'),
-                width='minmax(min-content, 1.4fr)',
+                width='minmax(12rem, 1.4fr)',
             ),
             ListColumn('players_count', label=_('Players')),
             ListColumn('prizes_count', label=_('Prizes')),
