@@ -23,8 +23,13 @@
 
 {% macro source(item, view, placement) %}
     {% if item.family %}
-        <span class="text-truncate" title="{{ item.family.display_name }}">
-            <i class="bi-window-split pe-1"></i>{{ item.family.display_name }}
+        {% set source_label = (
+            item.family.screen_type.family_screen_label(item.sorted_screen_sets[0])
+            if view == 'list'
+            else item.family.display_name
+        ) %}
+        <span class="text-truncate" title="{{ source_label }}">
+            <i class="bi-window-split pe-1"></i>{{ source_label }}
         </span>
     {% endif %}
 {% endmacro %}
