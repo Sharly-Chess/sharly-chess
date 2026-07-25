@@ -4750,7 +4750,7 @@ msgstr "Pas de résultat"
 msgid "No results."
 msgstr "Aucun résultat."
 
-msgid "No role required."
+msgid "No role required"
 msgstr "Aucun rôle requis."
 
 msgid "No roles defined."
@@ -9207,4 +9207,3 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-

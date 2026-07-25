@@ -87,7 +87,7 @@
     {% elif item.user_account %}
         <span class="text-warning"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No roles defined.') }}</span>
     {% else %}
-        <span class="text-secondary">{{ _('No role required.') }}</span>
+        <span class="text-secondary">{{ _('No role required') }}</span>
     {% endif %}
 {% endmacro %}
 
@@ -179,8 +179,8 @@
         {% set tournament_count = admin_event.tournaments|length %}
         <div class="d-flex flex-column gap-1">
             {% if not account.roles and account.user_account %}
-                <div class="text-warning">
-                    {{ _('No roles defined.') }}
+                <div class="text-secondary">
+                    {{ _('None') }}
                 </div>
             {% else %}
                 {% for role in account.roles %}
@@ -279,9 +279,9 @@
                     </div>
                 {% endfor %}
             {% elif account.user_account %}
-                <span class="text-warning">{{ _('No roles defined.') }}</span>
+                <span class="text-secondary">{{ _('None') }}</span>
             {% else %}
-                <span class="text-secondary">{{ _('No role required.') }}</span>
+                <span class="text-secondary">{{ _('No role required') }}</span>
             {% endif %}
         </section>
         <section class="collection-detail-section">
