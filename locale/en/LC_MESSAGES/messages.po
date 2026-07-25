@@ -4756,9 +4756,6 @@ msgstr ""
 msgid "No roles defined"
 msgstr ""
 
-msgid "No roles defined."
-msgstr ""
-
 msgid "No rotators"
 msgstr ""
 

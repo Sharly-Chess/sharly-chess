@@ -4756,9 +4756,6 @@ msgstr "Aucun rôle requis"
 msgid "No roles defined"
 msgstr "Aucun rôle défini"
 
-msgid "No roles defined."
-msgstr ""
-
 msgid "No rotators"
 msgstr "Aucun écran rotatif"
 
