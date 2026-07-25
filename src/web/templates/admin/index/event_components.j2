@@ -43,7 +43,7 @@
 {% macro unique_id(item, view, placement) %}
     <div class="collection-fact">
         <span class="collection-fact-label"><i class="bi-question-circle-fill"></i>{{ _('Unique ID') }}</span>
-        <code>{{ item.uniq_id }}</code>
+        {{ item.uniq_id }}
     </div>
 {% endmacro %}
 
