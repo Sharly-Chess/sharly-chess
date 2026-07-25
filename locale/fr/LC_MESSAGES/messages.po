@@ -1153,8 +1153,8 @@ msgstr "Couleur de fond :"
 msgid "Background colour: %(color)s"
 msgstr "Couleur de fond : %(color)s"
 
-msgid "Background image:"
-msgstr "Image de fond :"
+msgid "Background image URL:"
+msgstr "URL de l'image de fond :"
 
 msgid "Bahamas"
 msgstr "Bahamas"
@@ -1279,6 +1279,9 @@ msgstr "Numéros des échiquiers :"
 msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
 
+msgid "Board selection:"
+msgstr "Sélection des échiquiers :"
+
 #, python-format
 msgid "Board sets of screen %(screen_name)s"
 msgstr "Ensembles d'échiquiers de l'écran %(screen_name)s"
@@ -1362,6 +1365,12 @@ msgstr "Par défaut : %(minutes)d (minutes)"
 msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
 msgstr "En effectuant cette opération, vous activez un mode non-sécurisé pour cette ronde, autorisant ainsi d'autres opérations non-sécurisées."
 
+msgid "By first / last board number"
+msgstr "Par premier / dernier numéro d'échiquier"
+
+msgid "By first / last pairing (fixed boards keep their pairing position)"
+msgstr "Par premier / dernier appariement (les échiquiers fixes gardent leur position d'appariement)"
+
 msgid "By match"
 msgstr "Par match"
 
@@ -1373,6 +1382,9 @@ msgstr "Par ordre alpha."
 
 msgid "By rating step"
 msgstr "Par pas d'Elo"
+
+msgid "By specific board numbers"
+msgstr "Par numéros d'échiquier spécifiques"
 
 msgid "Bye"
 msgstr "Exempte"
@@ -1720,8 +1732,8 @@ msgstr "Colonnes"
 msgid "Columns:"
 msgstr "Colonnes :"
 
-msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
-msgstr "Les numéros des tables fixes, séparés par des virgules ; si ce champ est utilisé, les autres champs ne sont pas pris en compte."
+msgid "Comma-separated board numbers to show."
+msgstr "Numéros d'échiquier à afficher, séparés par des virgules."
 
 msgid "Comment"
 msgstr "Commentaire"
@@ -3128,6 +3140,9 @@ msgstr "Prénom"
 msgid "First name:"
 msgstr "Prénom :"
 
+msgid "First pairing:"
+msgstr "Premier appariement :"
+
 msgid "First player:"
 msgstr "Premier·e joueur·euse :"
 
@@ -3145,9 +3160,6 @@ msgstr "Ordre des échiquiers fixes :"
 
 msgid "Fixed board:"
 msgstr "Échiquier fixe :"
-
-msgid "Fixed boards:"
-msgstr "Échiquiers fixes :"
 
 msgid "Fixed table"
 msgstr "Table fixe"
@@ -3432,6 +3444,12 @@ msgstr "L'horaire [{hour}] a été créé."
 msgid "Hours"
 msgstr "Horaires"
 
+msgid "How the boards shown by these screens are chosen and ordered."
+msgstr "Comment les échiquiers affichés par ces écrans sont choisis et ordonnés."
+
+msgid "How the boards shown by this set are chosen and ordered."
+msgstr "Comment les échiquiers affichés par cet ensemble sont choisis et ordonnés."
+
 msgid "Hungary"
 msgstr "Hongrie"
 
@@ -3486,6 +3504,9 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 #, python-format
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
+
+msgid "Image: uploaded"
+msgstr "Image : téléversée"
 
 msgid "Import"
 msgstr "Importer"
@@ -3721,6 +3742,9 @@ msgstr "Valeur invalide [{value}] pour le champ [{field}] (attendu : l’une de
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
 
+msgid "Invalid value."
+msgstr "Valeur invalide."
+
 #, python-brace-format
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr "Date de naissance invalide (attendue : {min} - {max})"
@@ -3832,6 +3856,9 @@ msgstr "Dernier match :"
 
 msgid "Last name:"
 msgstr "Nom de famille :"
+
+msgid "Last pairing:"
+msgstr "Dernier appariement :"
 
 msgid "Last player:"
 msgstr "Dernier·e joueur·euse :"
@@ -5130,6 +5157,9 @@ msgstr "Historique des adversaires"
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officielles (coupe de la fédération...)."
 
+msgid "Or upload an image (stored with the event, max 2 MB):"
+msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
+
 msgid "Organiser"
 msgstr "Organisateur·ice"
 
@@ -5300,6 +5330,10 @@ msgstr "Exemption assignée à l'équipe [{team}]."
 msgid "Pairings"
 msgstr "Appariements"
 
+#, python-format
+msgid "Pairings %f-%l"
+msgstr "App. %f-%l"
+
 msgid "Pairings *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>A</u>ppariements"
 
@@ -5312,6 +5346,10 @@ msgstr "Appariements par ordre alphabétique"
 #, python-brace-format
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
+
+#, python-format
+msgid "Pairings from #%(first)d to #%(last)d"
+msgstr "Appariements du n°%(first)d au n°%(last)d"
 
 #, python-brace-format
 msgid "Pairings generated for all rounds of tournament [{tournament}]."
@@ -5697,8 +5735,8 @@ msgstr "Veuillez choisir le tournoi."
 msgid "Please consider contacting support, or installing the new version manually."
 msgstr "Considérez contacter le support, ou installer la nouvelle version manuellement."
 
-msgid "Please enter the image URL."
-msgstr "Veuillez entrer l'URL de l'image."
+msgid "Please enter an image URL or upload a file."
+msgstr "Veuillez saisir l'URL d'une image ou téléverser un fichier."
 
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
@@ -6199,7 +6237,7 @@ msgstr "Pl."
 msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
 msgstr "Pl. Gén."
 
-msgid "Rnd.Boa"
+msgid "Rnd.Brd"
 msgstr "Rde.Ech"
 
 msgid "Romania"
@@ -6572,9 +6610,6 @@ msgstr "Sélectionner cette table vide (forfait pour le·la joueur·euse appari�
 
 msgid "Select to pair (White, then pick the opponent)"
 msgstr "Sélectionner pour apparier (Blanc, puis choisir l'adversaire)"
-
-msgid "Selection"
-msgstr "Sélection"
 
 #, python-format
 msgid "Selection: %(selection)s"
@@ -7247,6 +7282,9 @@ msgstr "Les fonctionnalités suivant ne seront pas importées :"
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
 
+msgid "The image is too large (max 2 MB)."
+msgstr "L'image est trop volumineuse (max. 2 Mo)."
+
 msgid "The label used for this multi-screen in menus. Its range is appended automatically."
 msgstr "Le libellé utilisé pour cet écran multiple dans les menus. Sa plage est ajoutée automatiquement."
 
@@ -7539,6 +7577,9 @@ msgstr "Le type de critère utilisé pour filtrer les joueur·euses."
 
 msgid "The update could not be downloaded. Consult the logs for more details."
 msgstr "La mise à jour n'a pas pu être téléchargée. Consultez les logs pour plus d'informations."
+
+msgid "The uploaded image is too large (max 2 MB)."
+msgstr "L'image téléversée est trop volumineuse (max. 2 Mo)."
 
 #, python-brace-format
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
@@ -7842,6 +7883,9 @@ msgstr "Les départages sont gérés par le jeu de règles « {name} ». Chang
 
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
 msgstr "Les départages déterminent le classement des joueur·euses ayant le même nombre de points."
+
+msgid "Time"
+msgstr "Heure"
 
 msgid "Time control"
 msgstr "Cadence"
@@ -8835,6 +8879,9 @@ msgstr "tous les échiquiers"
 msgid "all the matches"
 msgstr "tous les matchs"
 
+msgid "all the pairings"
+msgstr "tous les appariements"
+
 msgid "all the players"
 msgstr "tou·tes les joueur·euses"
 
@@ -9006,6 +9053,34 @@ msgstr "de %(n)s adversaires"
 msgid "of %(n)s played games"
 msgstr "de %(n)s parties jouées"
 
+#, python-brace-format
+msgid "pairings from #{first} to #{last}"
+msgstr "appariements du n°{first} au n°{last}"
+
+#, python-brace-format
+msgid "pairings from #{first} to #{last}, on {parts} screens"
+msgstr "appariements du n°{first} au n°{last}, sur {parts} écrans"
+
+#, python-brace-format
+msgid "pairings from #{first} to end"
+msgstr "appariements du n°{first} à la fin"
+
+#, python-brace-format
+msgid "pairings from #{first} to end, on {parts} screens"
+msgstr "appariements du n°{first} à la fin, sur {parts} écrans"
+
+#, python-brace-format
+msgid "pairings from start to #{last}"
+msgstr "appariements du début au n°{last}"
+
+#, python-brace-format
+msgid "pairings from start to #{last}, on {parts} screens"
+msgstr "appariements du début au n°{last}, sur {parts} écrans"
+
+#, python-brace-format
+msgid "pairings on {parts} screens"
+msgstr "appariements sur {parts} écrans"
+
 msgid "player already received a PAB in a previous round"
 msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"
 
@@ -9091,6 +9166,22 @@ msgstr "écrans de {number} matchs par colonne du n°{first} à la fin"
 #, python-brace-format
 msgid "screens of {number} matches per column from start to #{last}"
 msgstr "écrans de {number} matchs par colonne du début au n°{last}"
+
+#, python-brace-format
+msgid "screens of {number} pairings"
+msgstr "écrans de {number} appariements"
+
+#, python-brace-format
+msgid "screens of {number} pairings from #{first} to #{last}"
+msgstr "écrans de {number} appariements du n°{first} au n°{last}"
+
+#, python-brace-format
+msgid "screens of {number} pairings from #{first} to end"
+msgstr "écrans de {number} appariements du n°{first} à la fin"
+
+#, python-brace-format
+msgid "screens of {number} pairings from start to #{last}"
+msgstr "écrans de {number} appariements du début au n°{last}"
 
 #, python-brace-format
 msgid "screens of {number} players"

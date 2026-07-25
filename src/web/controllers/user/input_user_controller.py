@@ -11,7 +11,7 @@ from litestar.channels import ChannelsPlugin
 
 from data.access_levels.actions import AuthAction
 from data.board import Board
-from data.screen import Screen
+from data.screens.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController

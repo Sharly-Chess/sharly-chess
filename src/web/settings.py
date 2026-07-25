@@ -64,7 +64,6 @@ from web.controllers.admin.team_admin_controller import TeamAdminController
 from web.controllers.admin.timer_admin_controller import TimerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminController
 from web.controllers.admin.account_admin_controller import AccountAdminController
-from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
 from web.controllers.qrcode_controller import QRCodeController
 from web.controllers.user.screen_user_controller import ScreenUserController
@@ -84,12 +83,11 @@ static_files_router: Router = create_static_files_router(
     path='/static',
     directories=list(static_files_folders),
     name='static',
-    cache_control=CacheControlHeader(max_age=3600),
+    cache_control=CacheControlHeader(max_age=0 if DEVEL_ENV else 3600),
 )
 
 _route_handlers: Sequence[ControllerRouterHandler] = [
     IndexController,
-    BackgroundController,
     ScreenUserController,
     InputUserController,
     IndexAdminController,

@@ -1320,7 +1320,7 @@ class EventDatabase(MigrationDatabase):
                 'SELECT `board`.`id`, `board`.`white_player_id`, '
                 '`board`.`black_player_id`, `board`.`index`, '
                 '`board`.`last_result_update`, `board`.`team_board_id`, '
-                '`paired_board`.`round` '
+                '`board`.`fixed_number`, `paired_board`.`round` '
                 'FROM ('
                 '  SELECT `board_id`, MIN(`round`) AS `round` '
                 '  FROM `pairing` '
@@ -1332,7 +1332,7 @@ class EventDatabase(MigrationDatabase):
                 'SELECT `board`.`id`, `board`.`white_player_id`, '
                 '`board`.`black_player_id`, `board`.`index`, '
                 '`board`.`last_result_update`, `board`.`team_board_id`, '
-                '`team_board`.`round` '
+                '`board`.`fixed_number`, `team_board`.`round` '
                 'FROM `team_board` '
                 'JOIN `board` ON `board`.`team_board_id` = `team_board`.`id` '
                 'WHERE `team_board`.`tournament_id` = ? '
@@ -1354,6 +1354,7 @@ class EventDatabase(MigrationDatabase):
             index,
             last_result_update,
             team_board_id,
+            fixed_number,
             round_,
         ) in self.cursor.fetchall():
             board = StoredBoard(
@@ -1365,6 +1366,7 @@ class EventDatabase(MigrationDatabase):
                     last_result_update
                 ),
                 team_board_id=team_board_id,
+                fixed_number=fixed_number,
             )
             if round_ in stored_boards_by_round:
                 stored_boards_by_round[round_].append(board)
@@ -1375,7 +1377,13 @@ class EventDatabase(MigrationDatabase):
     def add_stored_board(self, stored_board: StoredBoard) -> int:
         fields = self._get_fields_dict(
             stored_board,
-            ['white_player_id', 'black_player_id', 'index', 'team_board_id'],
+            [
+                'white_player_id',
+                'black_player_id',
+                'index',
+                'team_board_id',
+                'fixed_number',
+            ],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1390,7 +1398,13 @@ class EventDatabase(MigrationDatabase):
     def update_stored_board(self, stored_board: StoredBoard):
         fields = self._get_fields_dict(
             stored_board,
-            ['white_player_id', 'black_player_id', 'index', 'team_board_id'],
+            [
+                'white_player_id',
+                'black_player_id',
+                'index',
+                'team_board_id',
+                'fixed_number',
+            ],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_board.id is not None
@@ -1984,6 +1998,7 @@ class EventDatabase(MigrationDatabase):
             last=row['last'],
             parts=row['parts'],
             number=row['number'],
+            fixed_board_order=row.get('fixed_board_order'),
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
             last_update=cls.load_datetime_from_database_field(row['last_update']),
@@ -2033,6 +2048,7 @@ class EventDatabase(MigrationDatabase):
             'last',
             'parts',
             'number',
+            'fixed_board_order',
             'message_default',
             'message_text',
             'last_update',
@@ -2060,6 +2076,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.last,
             stored_family.parts,
             stored_family.number,
+            stored_family.fixed_board_order,
             stored_family.message_default,
             stored_family.message_text,
             self.now_as_database_timestamp(),
@@ -2143,6 +2160,7 @@ class EventDatabase(MigrationDatabase):
             background_color=row['background_color'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
+            plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
             last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
@@ -2220,6 +2238,7 @@ class EventDatabase(MigrationDatabase):
             'background_color',
             'message_default',
             'message_text',
+            'plugin_data',
             'last_update',
         ]
         params: list = [
@@ -2265,6 +2284,7 @@ class EventDatabase(MigrationDatabase):
             stored_screen.background_color if stored_screen.type == 'image' else None,
             stored_screen.message_default,
             stored_screen.message_text,
+            self.dump_to_json_database_field(stored_screen.plugin_data, {}),
             self.now_as_database_timestamp(),
         ]
         if stored_screen.id is None:
@@ -2321,6 +2341,7 @@ class EventDatabase(MigrationDatabase):
             fixed_boards_str=row['fixed_boards_str'],
             first=row['first'],
             last=row['last'],
+            fixed_board_order=row.get('fixed_board_order'),
             last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
@@ -2379,6 +2400,7 @@ class EventDatabase(MigrationDatabase):
             'fixed_boards_str',
             'first',
             'last',
+            'fixed_board_order',
             'last_update',
         ]
         params: list = [
@@ -2389,6 +2411,7 @@ class EventDatabase(MigrationDatabase):
             stored_screen_set.fixed_boards_str,
             stored_screen_set.first,
             stored_screen_set.last,
+            stored_screen_set.fixed_board_order,
             self.now_as_database_timestamp(),
         ]
         if stored_screen_set.id is None:

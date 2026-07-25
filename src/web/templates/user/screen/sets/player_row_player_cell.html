@@ -2,7 +2,7 @@
     class="
         player-cell
         {% if (
-            is_input and
+            screen.screen_type.allows_check_in and
             last_check_in_updated and
             last_check_in_updated.expiration > now and
             last_check_in_updated.tournament_id == tournament.id and

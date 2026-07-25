@@ -15,12 +15,14 @@ from common import REQUEST_TIMEOUT
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from data.screen import Screen
-from data.screen_set import ScreenSet
+from data.screens.screen import Screen
+from data.screens.screen_set import ScreenSet
+from data.screens.manager import ScreenTypeManager
+from data.screens.screen_types import ScreenType
+from utils import Utils
+from utils.enum import BoardSelectionMode
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredScreen, StoredScreenSet
-from utils import Utils
-from utils.enum import ScreenType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -36,13 +38,16 @@ from web.session import (
 )
 from web.urls import admin_event_url
 
+# A 2 MB image is ~2.8 MB once base64-encoded into a data: URI.
+MAX_UPLOADED_IMAGE_CHARS = 2_800_000
+
 
 class ScreenAdminWebContext(BaseEventAdminWebContext):
     def __init__(
         self,
         request: HTMXRequest,
         screen_id: int | None = None,
-        screen_type: str | None = None,
+        screen_type_id: str | None = None,
         screen_set_id: int | None = None,
         reload_event: bool = False,
     ):
@@ -67,14 +72,14 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
                     f'Screen set [{screen_set_id}] not found for screen [{self.admin_screen.uniq_id}]'
                 )
 
-        self.screen_type: ScreenType | None = None
+        # The raw type id (a built-in id or a plugin-defined one).
+        self.screen_type_id: str | None = None
         if self.admin_screen:
-            self.screen_type = self.admin_screen.type
-        elif screen_type:
-            try:
-                self.screen_type = ScreenType(screen_type)
-            except ValueError:
-                raise NotFoundException(f'Unknown screen type [{screen_type}].')
+            self.screen_type_id = self.admin_screen.type
+        elif screen_type_id:
+            if screen_type_id not in ScreenTypeManager(self.get_admin_event()).ids():
+                raise NotFoundException(f'Unknown screen type [{screen_type_id}].')
+            self.screen_type_id = screen_type_id
 
     def get_admin_screen(self) -> Screen:
         assert self.admin_screen is not None
@@ -84,9 +89,11 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
         assert self.admin_screen_set is not None
         return self.admin_screen_set
 
-    def get_screen_type(self) -> ScreenType:
-        assert self.screen_type is not None
-        return self.screen_type
+    @property
+    def screen_type(self) -> ScreenType | None:
+        if self.screen_type_id is None:
+            return None
+        return ScreenTypeManager(self.get_admin_event()).get_object(self.screen_type_id)
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -120,31 +127,22 @@ class ScreenAdminController(BaseEventAdminController):
         init_set_tournament_id: int | None = None
         match action:
             case 'create':
-                assert web_context.screen_type is not None
-                type_ = web_context.screen_type
-                if not type_.supports_event_type(event.event_type):
+                screen_type = web_context.screen_type
+                assert screen_type is not None
+                assert web_context.screen_type_id is not None
+                type_ = web_context.screen_type_id
+                if not screen_type.supports_event_type(event.event_type):
                     raise ValueError(
                         f'Screen type [{type_}] is not available for '
                         f'[{event.event_type}] events.'
                     )
-                match type_:
-                    case (
-                        ScreenType.BOARDS
-                        | ScreenType.INPUT
-                        | ScreenType.PLAYERS
-                        | ScreenType.RANKING
-                        | ScreenType.CHECK_IN
-                    ):
-                        field = 'init_set_tournament_id'
-                        init_set_tournament_id = WebContext.form_data_to_int(
-                            data, field
-                        )
-                        if init_set_tournament_id not in event.tournaments_by_id:
-                            errors[field] = _('Please choose the tournament.')
-                    case ScreenType.RESULTS | ScreenType.IMAGE:
-                        pass
-                    case _:
-                        raise ValueError(f'type=[{type_}]')
+                # Set-based screens open on a first tournament; standalone
+                # ones (results, image) don't take one.
+                if screen_type.has_screen_sets:
+                    field = 'init_set_tournament_id'
+                    init_set_tournament_id = WebContext.form_data_to_int(data, field)
+                    if init_set_tournament_id not in event.tournaments_by_id:
+                        errors[field] = _('Please choose the tournament.')
             case 'update' | 'clone' | 'delete':
                 stored_screen = web_context.get_admin_screen().stored_screen
                 assert stored_screen is not None
@@ -157,22 +155,12 @@ class ScreenAdminController(BaseEventAdminController):
         columns: int | None = None
         font_size: int | None = None
         timer_id: int | None = None
-        input_exit_button: bool | None = None
-        players_show_unpaired: bool | None = None
-        players_player_format: int | None = None
-        players_board_format: int | None = None
-        players_opponent_format: int | None = None
-        results_limit: int | None = None
-        results_max_age: int | None = None
-        results_tournament_ids: list[int] = []
-        ranking_crosstable: bool = False
-        ranking_round: int | None = None
-        ranking_min_points: float | None = None
-        ranking_max_points: float | None = None
-        background_image: str | None = None
-        background_color: str | None = None
         message_default: bool = True
         message_text: str | None = None
+        # Type-specific StoredScreen fields, extracted by the screen type.
+        type_values: dict[str, Any] = {}
+        # Plugin-provided screen data, persisted into StoredScreen.plugin_data.
+        plugin_data: dict[str, dict[str, Any]] = {}
         match action:
             case 'create' | 'clone' | 'update':
                 name = WebContext.form_data_to_str(data, 'name') or ''
@@ -187,8 +175,7 @@ class ScreenAdminController(BaseEventAdminController):
                     font_size = WebContext.form_data_to_int(data, field, minimum=1)
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                if type_ != ScreenType.IMAGE:
-                    menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
+                menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 field = 'timer_id'
                 try:
                     timer_id = WebContext.form_data_to_int(data, field)
@@ -198,101 +185,53 @@ class ScreenAdminController(BaseEventAdminController):
                         )
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
-                match type_:
-                    case ScreenType.BOARDS:
-                        pass
-                    case ScreenType.INPUT:
-                        input_exit_button = WebContext.form_data_to_bool(
-                            data, 'input_exit_button'
-                        )
-                    case ScreenType.CHECK_IN:
-                        input_exit_button = WebContext.form_data_to_bool(
-                            data, 'input_exit_button'
-                        )
-                    case ScreenType.PLAYERS:
-                        players_show_unpaired = WebContext.form_data_to_bool(
-                            data, 'players_show_unpaired'
-                        )
-                        players_player_format = WebContext.form_data_to_int(
-                            data, 'players_player_format'
-                        )
-                        players_board_format = WebContext.form_data_to_int(
-                            data, 'players_board_format'
-                        )
-                        players_opponent_format = WebContext.form_data_to_int(
-                            data, 'players_opponent_format'
-                        )
-                    case ScreenType.RESULTS:
-                        field = 'results_limit'
-                        try:
-                            results_limit = WebContext.form_data_to_int(data, field)
-                        except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                        field = 'results_max_age'
-                        try:
-                            results_max_age = WebContext.form_data_to_int(data, field)
-                        except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                        results_tournament_ids = [
-                            tournament_id
-                            for tournament_id in WebContext.form_data_to_list_int(
-                                data, 'results_tournament_ids'
-                            )
-                            if tournament_id in event.tournaments_by_id
-                        ]
-                    case ScreenType.RANKING:
-                        ranking_crosstable = WebContext.form_data_to_bool(
-                            data, field := 'ranking_crosstable'
-                        )
-                        try:
-                            ranking_round = WebContext.form_data_to_int(
-                                data, field := 'ranking_round'
-                            )
-                        except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                        try:
-                            ranking_min_points = WebContext.form_data_to_float(
-                                data, field := 'ranking_min_points'
-                            )
-                        except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                        try:
-                            ranking_max_points = WebContext.form_data_to_float(
-                                data, field := 'ranking_max_points'
-                            )
-                        except ValueError:
-                            errors[field] = _('A positive integer is expected.')
-                    case ScreenType.IMAGE:
-                        field = 'background_image'
-                        background_image = WebContext.form_data_to_str(data, field, '')
-                        if not background_image:
-                            errors[field] = _('Please enter the image URL.')
-                        elif not validators.url(background_image):
+                screen_type = web_context.screen_type
+                assert screen_type is not None
+                type_values = screen_type.read_form_data(data, errors, event)
+                for (
+                    plugin_id,
+                    plugin_data_class,
+                ) in Screen.plugin_data_class_by_plugin_id().items():
+                    previous_object = (
+                        web_context.admin_screen.plugin_data.get(plugin_id)
+                        if web_context.admin_screen
+                        else None
+                    )
+                    plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                        data, action=action, previous_object=previous_object
+                    ).to_stored_value()
+                # The background image URL's format and reachability are checked
+                # here since that is network I/O (kept out of the data layer).
+                if 'background_image' in type_values:
+                    field = 'background_image'
+                    background_image = type_values[field]
+                    if not background_image:
+                        errors[field] = _('Please enter an image URL or upload a file.')
+                    elif background_image.startswith('data:'):
+                        # An uploaded image, stored inline in the event database.
+                        if len(background_image) > MAX_UPLOADED_IMAGE_CHARS:
                             errors[field] = _(
-                                'Invalid URL [{background_image}].'
-                            ).format(background_image=background_image)
-                        else:
-                            try:
-                                response = requests.get(
-                                    background_image, timeout=REQUEST_TIMEOUT
-                                )
-                                if response.status_code != 200:
-                                    errors[field] = _(
-                                        'URL [{url}] responded code [{code}].'
-                                    ).format(
-                                        url=background_image, code=response.status_code
-                                    )
-                            except requests.ConnectionError as ce:
-                                errors[field] = _(
-                                    'URL [{url}] did not respond (error: [{error}]).'
-                                ).format(url=background_image, error=str(ce))
-                        background_color = (
-                            cls._admin_validate_background_color_update_data(
-                                data, errors
+                                'The uploaded image is too large (max 2 MB).'
                             )
+                    elif not validators.url(background_image):
+                        errors[field] = _('Invalid URL [{background_image}].').format(
+                            background_image=background_image
                         )
-                    case _:
-                        raise ValueError(f'type=[{type_}]')
+                    else:
+                        try:
+                            response = requests.get(
+                                background_image, timeout=REQUEST_TIMEOUT
+                            )
+                            if response.status_code != 200:
+                                errors[field] = _(
+                                    'URL [{url}] responded code [{code}].'
+                                ).format(
+                                    url=background_image, code=response.status_code
+                                )
+                        except requests.ConnectionError as ce:
+                            errors[field] = _(
+                                'URL [{url}] did not respond (error: [{error}]).'
+                            ).format(url=background_image, error=str(ce))
                 field = 'message_text'
                 message_default = WebContext.form_data_to_bool(
                     data, field + '_checkbox'
@@ -311,7 +250,7 @@ class ScreenAdminController(BaseEventAdminController):
                     uniq_id = web_context.get_admin_screen().uniq_id
                 else:
                     uniq_id = event.get_unused_screen_uniq_id(
-                        ScreenType(type_),
+                        web_context.screen_type,
                         Utils.name_to_uniq_id(name) if name else None,
                     )
             case 'delete':
@@ -336,24 +275,12 @@ class ScreenAdminController(BaseEventAdminController):
             font_size=font_size,
             menu_text=menu_text,
             timer_id=timer_id,
-            input_exit_button=input_exit_button,
-            players_show_unpaired=players_show_unpaired,
-            players_player_format=players_player_format,
-            players_board_format=players_board_format,
-            players_opponent_format=players_opponent_format,
-            results_limit=results_limit,
-            results_max_age=results_max_age,
-            results_tournament_ids=results_tournament_ids,
-            ranking_crosstable=ranking_crosstable,
-            ranking_round=ranking_round,
-            ranking_min_points=ranking_min_points,
-            ranking_max_points=ranking_max_points,
-            background_image=background_image,
-            background_color=background_color,
             message_default=message_default,
             message_text=message_text,
+            plugin_data=plugin_data,
             errors=errors,
             init_set_tournament_id=init_set_tournament_id,
+            **type_values,
         )
 
     @staticmethod
@@ -391,29 +318,23 @@ class ScreenAdminController(BaseEventAdminController):
                     )
         except ValueError:
             errors[field] = _('A positive integer is expected.')
-        field = 'first'
-        try:
-            first = WebContext.form_data_to_int(data, field, minimum=1)
-        except ValueError:
-            errors[field] = _('A positive integer is expected.')
-        field = 'last'
-        try:
-            last = WebContext.form_data_to_int(data, field, minimum=1)
-        except ValueError:
-            errors[field] = _('A positive integer is expected.')
-        if first and last and first > last:
-            error: str = _(
-                'Numbers {first} and {last} are not compatible ({first} > {last}).'
-            ).format(first=first, last=last)
-            errors['first'] = error
-            errors['last'] = error
+        mode: BoardSelectionMode | None = None
+        if screen.screen_type.supports_fixed_boards:
+            mode_value = WebContext.form_data_to_str(data, 'fixed_board_order') or ''
+            if mode_value and mode_value not in {m.value for m in BoardSelectionMode}:
+                errors['fixed_board_order'] = _('Invalid value.')
+            else:
+                mode = (
+                    BoardSelectionMode(mode_value)
+                    if mode_value
+                    else BoardSelectionMode.PAIRING
+                )
         fixed_boards_str: str | None = None
-        if screen.type in [ScreenType.BOARDS, ScreenType.INPUT]:
+        if mode == BoardSelectionMode.SPECIFIC:
+            # Explicit board numbers; first/last are not used.
             fixed_boards_str = WebContext.form_data_to_str(data, 'fixed_boards_str')
             if fixed_boards_str:
-                for fixed_board_str in list(
-                    map(str.strip, fixed_boards_str.split(','))
-                ):
+                for fixed_board_str in map(str.strip, fixed_boards_str.split(',')):
                     if fixed_board_str:
                         try:
                             int(fixed_board_str)
@@ -422,6 +343,25 @@ class ScreenAdminController(BaseEventAdminController):
                                 'Invalid board number [{fixed_board_str}].'
                             ).format(fixed_board_str=fixed_board_str)
                             break
+        else:
+            # Range by first/last (pairing position or board number); any
+            # explicit board list is cleared.
+            field = 'first'
+            try:
+                first = WebContext.form_data_to_int(data, field, minimum=1)
+            except ValueError:
+                errors[field] = _('A positive integer is expected.')
+            field = 'last'
+            try:
+                last = WebContext.form_data_to_int(data, field, minimum=1)
+            except ValueError:
+                errors[field] = _('A positive integer is expected.')
+            if first and last and first > last:
+                error: str = _(
+                    'Numbers {first} and {last} are not compatible ({first} > {last}).'
+                ).format(first=first, last=last)
+                errors['first'] = error
+                errors['last'] = error
 
         if errors:
             return None, errors
@@ -433,6 +373,7 @@ class ScreenAdminController(BaseEventAdminController):
             'first': first,
             'last': last,
             'fixed_boards_str': fixed_boards_str,
+            'fixed_board_order': mode.value if mode else None,
         }, errors
 
     @classmethod
@@ -447,18 +388,19 @@ class ScreenAdminController(BaseEventAdminController):
         reload_event: bool = False,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        scroll_to_screen_id: int | None = None,
     ) -> HTMXTemplate | Redirect:
         web_context = ScreenAdminWebContext(
             request,
             screen_id=screen_id,
-            screen_type=screen_type,
+            screen_type_id=screen_type,
             screen_set_id=screen_set_id,
             reload_event=reload_event,
         )
         event = web_context.get_admin_event()
         admin_screen_types_data: dict[ScreenType, dict[str, Any]] = {
             screen_type: {}
-            for screen_type in ScreenType
+            for screen_type in ScreenTypeManager(event).objects()
             if screen_type.supports_event_type(event.event_type)
         }
         template_context: dict[str, Any] = web_context.template_context
@@ -466,13 +408,13 @@ class ScreenAdminController(BaseEventAdminController):
         if web_context.client.can_manage_screens:
             # 'admin' view
             show_family_screens = SessionScreensShowFamilyScreens(request).get()
-            sorted_screens_by_type: dict[ScreenType, list[Screen]]
+            sorted_screens_by_type: dict[str, list[Screen]]
             if show_family_screens:
                 sorted_screens_by_type = event.sorted_screens_by_screen_type
             else:
                 sorted_screens_by_type = event.sorted_basic_screens_by_screen_type
             for screen_type_ in list(admin_screen_types_data):
-                screens = sorted_screens_by_type[screen_type_]
+                screens = sorted_screens_by_type[screen_type_.id]
                 admin_screen_types_data[screen_type_]['screens'] = screens
                 admin_screen_types_data[screen_type_]['title'] = (
                     f'{screen_type_.name} ({len(screens) or "-"})'
@@ -484,30 +426,35 @@ class ScreenAdminController(BaseEventAdminController):
                 'show_details': SessionScreensShowDetails(request).get(),
                 'admin_screens_screen_types': SessionScreensScreenTypes(request).get(),
                 'admin_screens_count': sum(
-                    len(admin_screen_types_data[ScreenType(screen_type)])
-                    for screen_type in admin_screen_types_data
+                    len(data) for data in admin_screen_types_data.values()
                 ),
+                'scroll_to_screen_id': scroll_to_screen_id,
             }
         else:
             # 'user' view
-            screen_type = web_context.get_screen_type()
+            screen_type_obj = web_context.screen_type
+            assert screen_type_obj is not None
             if web_context.client.can_view_private_screens:
-                sorted_screens = event.sorted_screens_by_screen_type[screen_type]
+                sorted_screens = event.sorted_screens_by_screen_type[screen_type_obj.id]
             else:
-                sorted_screens = event.sorted_public_screens_by_screen_type[screen_type]
+                sorted_screens = event.sorted_public_screens_by_screen_type[
+                    screen_type_obj.id
+                ]
             if not sorted_screens:
                 return Redirect(admin_event_url(request, event_uniq_id=event.uniq_id))
 
             # setdefault: legacy screens of a type no longer offered for
             # the event's type still render rather than crash.
-            admin_screen_type_data = admin_screen_types_data.setdefault(screen_type, {})
+            admin_screen_type_data = admin_screen_types_data.setdefault(
+                screen_type_obj, {}
+            )
             admin_screen_type_data['screens'] = sorted_screens
             admin_screen_type_data['title'] = (
-                f'{screen_type.name} ({len(sorted_screens) or "-"})'
+                f'{screen_type_obj.name} ({len(sorted_screens) or "-"})'
             )
 
             template_context |= {
-                'admin_event_tab': f'admin-event-{screen_type.value}-screens-tab',
+                'admin_event_tab': f'admin-event-{screen_type_obj.id}-screens-tab',
                 'admin_screen_type_data': admin_screen_type_data,
                 'admin_screens_count': len(admin_screen_type_data['screens']),
             }
@@ -523,54 +470,31 @@ class ScreenAdminController(BaseEventAdminController):
                     font_size: int | None = None
                     menu_text: str | None = None
                     timer_id: int | None = None
-                    background_image: str | None = None
-                    background_color: str | None = None
                     message_default: bool | None = None
                     message_text: str | None = None
-                    input_exit_button: bool | None = None
-                    players_show_unpaired: bool = True
-                    players_player_format: int | None = None
-                    players_board_format: int | None = None
-                    players_opponent_format: int | None = None
-                    results_limit: int | None = None
-                    results_max_age: int | None = None
-                    results_tournament_ids: list[int] | None = None
-                    ranking_crosstable: bool = False
-                    ranking_round: int | None = None
-                    ranking_min_points: float | None = None
-                    ranking_max_points: float | None = None
                     init_set_tournament_id: int | None = None
+                    # Type-specific form values, provided by the screen type.
+                    type_values: dict[str, Any] = {}
                     match action:
                         case 'update':
                             stored_screen = web_context.get_admin_screen().stored_screen
                             assert stored_screen is not None
                             name = stored_screen.name
                         case 'create':
-                            screen_type = web_context.get_screen_type()
-                            match screen_type:
-                                case (
-                                    ScreenType.INPUT
-                                    | ScreenType.BOARDS
-                                    | ScreenType.PLAYERS
-                                    | ScreenType.RANKING
-                                    | ScreenType.CHECK_IN
-                                ):
-                                    init_set_tournament_id = list(
-                                        event.tournaments_by_id.keys()
-                                    )[0]
-                                case ScreenType.RESULTS | ScreenType.IMAGE:
-                                    pass
-                                case _:
-                                    raise ValueError(f'screen_type=[{screen_type}]')
+                            screen_type_obj = web_context.screen_type
+                            assert screen_type_obj is not None
+                            # Set-based screens open on a first tournament.
+                            if screen_type_obj.has_screen_sets:
+                                init_set_tournament_id = list(
+                                    event.tournaments_by_id.keys()
+                                )[0]
                             # No default name: an unnamed screen is named
                             # automatically from its tournament(s).
-                            if ScreenType.RANKING:
-                                ranking_crosstable = False
                         case 'clone':
                             screen = web_context.get_admin_screen()
                             name = event.get_unused_screen_name(
                                 base_name=screen.name,
-                                screen_type=ScreenType(screen.type),
+                                screen_type=screen.screen_type,
                             )
                         case 'delete':
                             pass
@@ -584,126 +508,40 @@ class ScreenAdminController(BaseEventAdminController):
                             public = stored_screen.public
                             columns = stored_screen.columns
                             font_size = stored_screen.font_size
-                            if screen.type != ScreenType.IMAGE:
-                                menu_text = stored_screen.menu_text
+                            menu_text = stored_screen.menu_text
                             timer_id = stored_screen.timer_id
-                            match screen.type:
-                                case ScreenType.BOARDS:
-                                    pass
-                                case ScreenType.CHECK_IN:
-                                    input_exit_button = stored_screen.input_exit_button
-                                case ScreenType.INPUT:
-                                    input_exit_button = stored_screen.input_exit_button
-                                case ScreenType.PLAYERS:
-                                    players_show_unpaired = (
-                                        stored_screen.players_show_unpaired or False
-                                    )
-                                    players_player_format = (
-                                        stored_screen.players_player_format
-                                    )
-                                    players_board_format = (
-                                        stored_screen.players_board_format
-                                    )
-                                    players_opponent_format = (
-                                        stored_screen.players_opponent_format
-                                    )
-                                case ScreenType.RESULTS:
-                                    results_limit = stored_screen.results_limit
-                                    results_max_age = stored_screen.results_max_age
-                                    results_tournament_ids = (
-                                        stored_screen.results_tournament_ids
-                                    )
-                                case ScreenType.RANKING:
-                                    ranking_crosstable = (
-                                        stored_screen.ranking_crosstable
-                                    )
-                                    ranking_round = stored_screen.ranking_round
-                                    ranking_min_points = (
-                                        stored_screen.ranking_min_points
-                                    )
-                                    ranking_max_points = (
-                                        stored_screen.ranking_max_points
-                                    )
-                                case ScreenType.IMAGE:
-                                    background_image = stored_screen.background_image
-                                    background_color = screen.background_color
-                                case _:
-                                    raise ValueError(f'screen_type={screen.type}')
+                            type_values = screen.screen_type.default_form_data(screen)
                             message_default = stored_screen.message_default
                             message_text = stored_screen.message_text
                         case 'create':
                             public = True
                             message_default = True
-                            match web_context.screen_type:
-                                case (
-                                    ScreenType.BOARDS
-                                    | ScreenType.INPUT
-                                    | ScreenType.CHECK_IN
-                                    | ScreenType.RANKING
-                                    | ScreenType.RESULTS
-                                    | ScreenType.IMAGE
-                                ):
-                                    pass
-                                case ScreenType.PLAYERS:
-                                    columns = cls.get_default_players_screen_columns(
-                                        event
-                                    )
-                                    players_player_format = (
-                                        cls.get_default_players_screen_player_format(
-                                            event
-                                        ).value
-                                    )
-                                    players_board_format = (
-                                        cls.get_default_players_screen_board_format(
-                                            event
-                                        ).value
-                                    )
-                                    players_opponent_format = (
-                                        cls.get_default_players_screen_opponent_format(
-                                            event
-                                        ).value
-                                    )
-                                case _:
-                                    raise ValueError(
-                                        f'screen_type={web_context.screen_type}'
-                                    )
+                            create_type = web_context.screen_type
+                            assert create_type is not None
+                            type_values = create_type.create_form_data(event)
+                            columns = type_values.pop('columns', None)
                         case 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
-                    data = WebContext.values_dict_to_form_data(
-                        {
-                            'public': public,
-                            'name': name,
-                            'columns': columns,
-                            'font_size': font_size,
-                            'menu_text': menu_text,
-                            'timer_id': timer_id,
-                            'input_exit_button': input_exit_button,
-                            'players_show_unpaired': players_show_unpaired,
-                            'players_player_format': players_player_format,
-                            'players_board_format': players_board_format,
-                            'players_opponent_format': players_opponent_format,
-                            'results_limit': results_limit,
-                            'results_max_age': results_max_age,
-                            'ranking_crosstable': ranking_crosstable,
-                            'ranking_round': ranking_round,
-                            'ranking_min_points': ranking_min_points,
-                            'ranking_max_points': ranking_max_points,
-                            'background_image': background_image,
-                            'background_color': background_color,
-                            'background_color_checkbox': background_color is None,
-                            'message_text_checkbox': message_default,
-                            'message_text': message_text,
-                            'init_set_tournament_id': init_set_tournament_id,
-                            'results_tournament_ids': results_tournament_ids,
-                        }
+                    form_values: dict[str, Any] = {
+                        'public': public,
+                        'name': name,
+                        'columns': columns,
+                        'font_size': font_size,
+                        'menu_text': menu_text,
+                        'timer_id': timer_id,
+                        'message_text_checkbox': message_default,
+                        'message_text': message_text,
+                        'init_set_tournament_id': init_set_tournament_id,
+                    }
+                    form_values.update(type_values)
+                    form_values['background_color_checkbox'] = (
+                        form_values.get('background_color') is None
                     )
-                stored_screen = cls._admin_validate_screen_update_data(
-                    action, web_context, data
-                )
-                assert stored_screen is not None
-                errors = stored_screen.errors
+                    data = WebContext.values_dict_to_form_data(form_values)
+                # Errors are only surfaced when passed in from a failed submit;
+                # a freshly opened form must not show validation errors.
                 if errors is None:
                     errors = {}
                 template_context |= {
@@ -749,6 +587,14 @@ class ScreenAdminController(BaseEventAdminController):
                             'last': WebContext.value_to_form_data(
                                 stored_screen_set.last
                             ),
+                            'fixed_board_order': WebContext.value_to_form_data(
+                                stored_screen_set.fixed_board_order
+                                or (
+                                    BoardSelectionMode.SPECIFIC.value
+                                    if stored_screen_set.fixed_boards_str is not None
+                                    else BoardSelectionMode.PAIRING.value
+                                )
+                            ),
                         }
                     else:
                         data = {}
@@ -772,38 +618,30 @@ class ScreenAdminController(BaseEventAdminController):
     async def htmx_admin_event_screens_tab(
         self,
         request: HTMXRequest,
-        show_family_screens: FromPath[bool | None],
-        show_details: FromPath[bool | None],
-        admin_screens_show_boards: FromQuery[bool | None],
-        admin_screens_show_input: FromQuery[bool | None],
-        admin_screens_show_players: FromQuery[bool | None],
-        admin_screens_show_results: FromQuery[bool | None],
-        admin_screens_show_ranking: FromQuery[bool | None],
-        admin_screens_show_image: FromQuery[bool | None],
+        show_family_screens: FromQuery[bool | None],
+        show_details: FromQuery[bool | None],
     ) -> Template | Redirect:
         if show_family_screens is not None:
             SessionScreensShowFamilyScreens(request).set(show_family_screens)
         if show_details is not None:
             SessionScreensShowDetails(request).set(show_details)
+        # The expand/collapse of each type's section is posted as
+        # ``admin_screens_show_<type_id>`` — read generically so any screen
+        # type (including plugin-defined ones) is handled.
+        prefix = 'admin_screens_show_'
         screen_types = SessionScreensScreenTypes(request).get()
-        for screen_type, param in {
-            'boards': admin_screens_show_boards,
-            'input': admin_screens_show_input,
-            'players': admin_screens_show_players,
-            'results': admin_screens_show_results,
-            'ranking': admin_screens_show_ranking,
-            'image': admin_screens_show_image,
-        }.items():
-            if param is not None:
-                if param:
-                    screen_types.add(screen_type)
-                else:
-                    try:
-                        screen_types.remove(screen_type)
-                    except KeyError:
-                        pass
-                SessionScreensScreenTypes(request).set(screen_types)
+        changed = False
+        for key, raw in request.query_params.items():
+            if not key.startswith(prefix):
                 continue
+            type_id = key[len(prefix) :]
+            if raw in ('true', 'on', '1'):
+                screen_types.add(type_id)
+            else:
+                screen_types.discard(type_id)
+            changed = True
+        if changed:
+            SessionScreensScreenTypes(request).set(screen_types)
         return self._admin_event_screens_render(request)
 
     @get(
@@ -840,6 +678,12 @@ class ScreenAdminController(BaseEventAdminController):
             screen_id=screen_id,
         )
 
+    @staticmethod
+    def _expand_screen_type_section(request: HTMXRequest, screen_type: str) -> None:
+        screen_types = SessionScreensScreenTypes(request).get()
+        screen_types.add(screen_type)
+        SessionScreensScreenTypes(request).set(screen_types)
+
     def _admin_screen_update(
         self,
         request: HTMXRequest,
@@ -857,7 +701,7 @@ class ScreenAdminController(BaseEventAdminController):
                 web_context = ScreenAdminWebContext(
                     request,
                     screen_id=screen_id,
-                    screen_type=screen_type,
+                    screen_type_id=screen_type,
                 )
             case _:
                 raise ValueError(f'action=[{action}]')
@@ -876,6 +720,7 @@ class ScreenAdminController(BaseEventAdminController):
                 data=data,
                 errors=stored_screen.errors,
             )
+        scroll_to_screen_id: int | None = None
         with EventDatabase(event.uniq_id, write=True) as event_database:
             match action:
                 case 'create':
@@ -889,13 +734,13 @@ class ScreenAdminController(BaseEventAdminController):
                     )
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     assert stored_screen.id is not None
-                    if stored_screen.type in [
-                        ScreenType.BOARDS,
-                        ScreenType.INPUT,
-                        ScreenType.PLAYERS,
-                        ScreenType.RANKING,
-                        ScreenType.CHECK_IN,
-                    ]:
+                    self._expand_screen_type_section(request, stored_screen.type)
+                    scroll_to_screen_id = stored_screen.id
+                    if (
+                        ScreenTypeManager(event)
+                        .get_object(stored_screen.type)
+                        .has_screen_sets
+                    ):
                         if init_set_tournament_id is None:
                             raise RuntimeError(
                                 'Missing data: not able to create default screen set'
@@ -913,13 +758,13 @@ class ScreenAdminController(BaseEventAdminController):
                     screen = web_context.get_admin_screen()
                     stored_screen = event_database.add_stored_screen(stored_screen)
                     assert stored_screen.id is not None
-                    if stored_screen.type in [
-                        ScreenType.BOARDS,
-                        ScreenType.INPUT,
-                        ScreenType.PLAYERS,
-                        ScreenType.RANKING,
-                        ScreenType.CHECK_IN,
-                    ]:
+                    self._expand_screen_type_section(request, stored_screen.type)
+                    scroll_to_screen_id = stored_screen.id
+                    if (
+                        ScreenTypeManager(event)
+                        .get_object(stored_screen.type)
+                        .has_screen_sets
+                    ):
                         for screen_set in screen.sorted_screen_sets:
                             assert screen_set.id is not None
                             event_database.clone_stored_screen_set(
@@ -933,6 +778,8 @@ class ScreenAdminController(BaseEventAdminController):
                     )
                 case 'update':
                     stored_screen = event_database.update_stored_screen(stored_screen)
+                    assert stored_screen.id is not None
+                    scroll_to_screen_id = stored_screen.id
                     Message.success(
                         request,
                         _('Screen [{screen_uniq_id}] has been updated.').format(
@@ -951,7 +798,9 @@ class ScreenAdminController(BaseEventAdminController):
                 case _:
                     raise ValueError(f'action=[{action}]')
 
-        return self._admin_event_screens_render(request, reload_event=True)
+        return self._admin_event_screens_render(
+            request, reload_event=True, scroll_to_screen_id=scroll_to_screen_id
+        )
 
     @post(
         path='/screen-create/{event_uniq_id:str}/{screen_type:str}',
@@ -1186,6 +1035,7 @@ class ScreenAdminController(BaseEventAdminController):
                     stored_screen_set.first = values['first']
                     stored_screen_set.last = values['last']
                     stored_screen_set.fixed_boards_str = values['fixed_boards_str']
+                    stored_screen_set.fixed_board_order = values['fixed_board_order']
                     event_database.update_stored_screen_set(stored_screen_set)
                 case 'delete':
                     screen_set = web_context.get_admin_screen_set()

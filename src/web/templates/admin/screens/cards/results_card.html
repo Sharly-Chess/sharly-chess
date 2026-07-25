@@ -1,0 +1,26 @@
+<div>
+    {% if data.results_limit %}
+        {{ _('Max number: %(num)d', num=data.results_limit) }}
+    {% else %}
+        {{ _('Max number: unlimited') }}
+    {% endif %}
+</div>
+<div>
+    {% if data.results_max_age %}
+        {{ ngettext('Max age: %(num)d minute', 'Max age: %(num)d minutes', data.results_max_age) }}
+    {% else %}
+        {{ _('Max age: unlimited') }}
+    {% endif %}
+    {% if data.results_max_age_default %}
+        <span class="fst-italic">
+            {{ _('(by default)') }}
+        </span>
+    {% endif %}
+</div>
+<div>
+    {% if data.tournament_ids %}
+        {{ data.tournament_names }}
+    {% else %}
+        {{ _('All the tournaments') }}
+    {% endif %}
+</div>

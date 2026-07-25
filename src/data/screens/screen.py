@@ -1,31 +1,26 @@
+import builtins
 import weakref
-from collections.abc import Iterator, Collection
-from datetime import datetime, timedelta
-from functools import cached_property
+from collections.abc import Collection
+from datetime import datetime
+from functools import cached_property, cache
 from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common.background import inline_image_url
 from common.i18n import _
-from common.i18n.utils import normalized_key
 from common.logger import get_logger
-from common.sharly_chess_config import SharlyChessConfig
-from data.board import Board
-from data.screen_set import ScreenSet, format_range
-from data.timer import Timer
+from data.screens.screen_set import ScreenSet, format_range
+from data.screens.timer import Timer
+from plugins.manager import plugin_manager
+from plugins.utils import PluginData
 
-from utils.enum import (
-    ScreenType,
-    PlayersScreenPlayerFormat,
-    PlayersScreenBoardFormat,
-    PlayersScreenOpponentFormat,
-)
 from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.family import Family
+    from data.screens.family import Family
     from data.menu import Menu, MenuNavEntry
+    from data.screens.screen_types import ScreenType
 
 
 logger = get_logger()
@@ -69,31 +64,18 @@ class Screen:
 
     @cached_property
     def screen_sets_by_id(self) -> dict[int | None, ScreenSet]:
-        match self.type:
-            case (
-                ScreenType.BOARDS
-                | ScreenType.INPUT
-                | ScreenType.PLAYERS
-                | ScreenType.RANKING
-                | ScreenType.CHECK_IN
-            ):
-                if self.stored_screen:
-                    return {
-                        stored_screen_set.id: ScreenSet(
-                            self, stored_screen_set=stored_screen_set
-                        )
-                        for stored_screen_set in self.stored_screen.stored_screen_sets
-                    }
-                else:
-                    return {
-                        self.id: ScreenSet(
-                            self, family=self.family, family_part=self.family_part
-                        )
-                    }
-            case ScreenType.RESULTS | ScreenType.IMAGE:
-                return {}
-            case _:
-                raise ValueError(f'type=[{self.type}]')
+        if not self.screen_type.has_screen_sets:
+            return {}
+        if self.stored_screen:
+            return {
+                stored_screen_set.id: ScreenSet(
+                    self, stored_screen_set=stored_screen_set
+                )
+                for stored_screen_set in self.stored_screen.stored_screen_sets
+            }
+        return {
+            self.id: ScreenSet(self, family=self.family, family_part=self.family_part)
+        }
 
     @property
     def screen_sets(self) -> Collection[ScreenSet]:
@@ -112,12 +94,23 @@ class Screen:
         return self.family.id if self.family else None
 
     @property
-    def type(self) -> ScreenType:
+    def type(self) -> str:
+        """The screen's type id (a built-in id or a plugin-defined one). Use
+        ``screen_type`` for behaviour/metadata; this is the raw id stored on
+        the screen (or family)."""
         if self.stored_screen:
-            return ScreenType(self.stored_screen.type)
+            return self.stored_screen.type
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.type
+
+    @property
+    def screen_type(self) -> 'ScreenType':
+        """The screen-type entity for this screen, resolved through the
+        manager (so a plugin-defined type is honoured)."""
+        from data.screens.manager import ScreenTypeManager
+
+        return ScreenTypeManager(self.event).get_object(self.type)
 
     @property
     def public(self) -> bool:
@@ -139,43 +132,7 @@ class Screen:
     def name(self) -> str:
         if self.stored_screen and self.stored_screen.name:
             return self.stored_screen.name
-        if self.type == ScreenType.RESULTS:
-            # The selected tournament name(s), joined by ' / '; 'Last results'
-            # when the screen spans every tournament.
-            names: list[str] = []
-            for tournament_id in self.results_tournament_ids:
-                tournament_name = self.event.tournaments_by_id[tournament_id].name
-                if tournament_name and tournament_name not in names:
-                    names.append(tournament_name)
-            return ' / '.join(names) if names else _('Last results')
-        if self.type == ScreenType.IMAGE:
-            return _('Image')
-        if self.stored_screen is not None:
-            # A basic screen with no explicit name: the tournament name(s) of
-            # its sets, joined by ' / ' (deduplicated).
-            tournament_names: list[str] = []
-            for screen_set in self.sorted_screen_sets:
-                tournament_name = screen_set.tournament.name
-                if tournament_name and tournament_name not in tournament_names:
-                    tournament_names.append(tournament_name)
-            return ' / '.join(tournament_names) if tournament_names else _('Screen')
-        # A family-generated screen keeps its per-screen name (with first/last),
-        # as its family already carries the tournament-and-range default name.
-        match self.type:
-            case ScreenType.BOARDS | ScreenType.INPUT:
-                return self.sorted_screen_sets[0].name_for_boards
-            case ScreenType.PLAYERS | ScreenType.CHECK_IN:
-                first_set = self.sorted_screen_sets[0]
-                if (
-                    self.type == ScreenType.CHECK_IN
-                    and first_set.tournament.is_team_tournament
-                ):
-                    return first_set.name_for_teams
-                return first_set.name_for_players
-            case ScreenType.RANKING:
-                return self.sorted_screen_sets[0].name_for_ranking
-            case _:
-                raise ValueError(f'type=[{self.type}]')
+        return self.screen_type.default_screen_name(self)
 
     @property
     def columns(self) -> int:
@@ -394,224 +351,12 @@ class Screen:
             return self.family.input_exit_button
 
     @property
-    def players_show_unpaired(self) -> bool:
-        match self.type:
-            case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.CHECK_IN:
-                # Needed to display the players before the first round is paired
-                return True
-            case ScreenType.PLAYERS:
-                if self.stored_screen:
-                    show_unpaired = self.stored_screen.players_show_unpaired
-                    assert show_unpaired is not None
-                    return show_unpaired
-                else:
-                    if self.family is None:
-                        raise RuntimeError('Family reference unexpectedly None')
-                    return self.family.players_show_unpaired
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @property
-    def players_player_format(self) -> PlayersScreenPlayerFormat:
-        if self.type != ScreenType.PLAYERS:
-            raise ValueError(f'type=[{self.type}]')
-        if self.stored_screen:
-            player_format = self.stored_screen.players_player_format
-            assert player_format is not None
-            return PlayersScreenPlayerFormat(player_format)
-        else:
-            if self.family is None:
-                raise RuntimeError('Family reference unexpectedly None')
-            return self.family.players_player_format
-
-    @property
-    def players_board_format(self) -> PlayersScreenBoardFormat:
-        if self.type != ScreenType.PLAYERS:
-            raise ValueError(f'type=[{self.type}]')
-        if self.stored_screen:
-            board_format = self.stored_screen.players_board_format
-            assert board_format is not None
-            return PlayersScreenBoardFormat(board_format)
-        elif self.family is None:
-            raise RuntimeError('Family reference unexpectedly None')
-        return self.family.players_board_format
-
-    @property
-    def players_opponent_format(self) -> PlayersScreenOpponentFormat:
-        if self.type != ScreenType.PLAYERS:
-            raise ValueError(f'type=[{self.type}]')
-        if self.stored_screen:
-            opponent_format = self.stored_screen.players_opponent_format
-            assert opponent_format is not None
-            return PlayersScreenOpponentFormat(opponent_format)
-        else:
-            if self.family is None:
-                raise RuntimeError('Family reference unexpectedly None')
-            return self.family.players_opponent_format
-
-    @property
     def icon_str(self) -> str:
-        return self.type.icon_str
-
-    @staticmethod
-    def screen_type_str(
-        type_: ScreenType,
-        crosstable: bool | None,
-    ) -> str:
-        if type_ == ScreenType.RANKING:
-            if crosstable:
-                return _('Crosstable')
-            else:
-                return _('Ranking')
-        else:
-            return str(type_)
+        return self.screen_type.icon_str
 
     @property
     def type_str(self) -> str:
-        return self.screen_type_str(
-            self.type,
-            self.ranking_crosstable if self.type == ScreenType.RANKING else None,
-        )
-
-    @cached_property
-    def results_limit(self) -> int:
-        match self.type:
-            case ScreenType.RESULTS:
-                assert self.stored_screen is not None
-                if not self.stored_screen.results_limit:
-                    return SharlyChessConfig.default_results_screen_limit
-                elif (
-                    self.stored_screen.results_limit
-                    and self.stored_screen.results_limit % self.columns > 0
-                ):
-                    results_limit: int = self.columns * (
-                        self.stored_screen.results_limit // self.columns + 1
-                    )
-                    logger.info(
-                        f'Screen [{self.uniq_id}]: Maximum number of results set to '
-                        f'[{results_limit}] to fit on [{self.columns}] columns.'
-                    )
-                    return results_limit
-                else:
-                    return self.stored_screen.results_limit
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @cached_property
-    def results_max_age(self) -> int:
-        match self.type:
-            case ScreenType.RESULTS:
-                assert self.stored_screen is not None
-                return (
-                    self.stored_screen.results_max_age
-                    or SharlyChessConfig.default_results_screen_max_age
-                )
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @cached_property
-    def results_tournament_ids(self) -> list[int]:
-        match self.type:
-            case ScreenType.RESULTS:
-                assert self.stored_screen is not None
-                return [
-                    tournament_id
-                    for tournament_id in self.stored_screen.results_tournament_ids
-                    if tournament_id in self.event.tournaments_by_id
-                ]
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @cached_property
-    def results_tournament_names(self) -> str:
-        return ', '.join(
-            sorted(
-                (
-                    self.event.tournaments_by_id[tournament_id].name
-                    for tournament_id in self.results_tournament_ids
-                ),
-                key=normalized_key,
-            )
-        )
-
-    @cached_property
-    def _results(self) -> list[Board]:
-        boards: list[Board] = []
-        oldest = datetime.now() - timedelta(minutes=self.results_max_age)
-        for tournament in self.event.tournaments:
-            if (
-                self.results_tournament_ids
-                and tournament.id not in self.results_tournament_ids
-            ):
-                continue
-            for board in tournament.get_round_boards(tournament.current_round):
-                if board.last_result_update and board.last_result_update >= oldest:
-                    boards.append(board)
-        boards.sort(key=lambda b: b.last_result_update or datetime.min, reverse=True)
-        return boards
-
-    def _clear_results_cache(self):
-        self.__dict__.pop('_results', None)
-
-    @property
-    def results_lists(self) -> Iterator[list[Board]]:
-        column_size: int = (
-            self.results_limit if self.results_limit else len(self._results)
-        ) // self.columns
-        for i in range(self.columns):
-            yield self._results[i * column_size : (i + 1) * column_size]
-
-    @property
-    def ranking_crosstable(self) -> bool:
-        match self.type:
-            case ScreenType.RANKING:
-                if self.stored_screen:
-                    return self.stored_screen.ranking_crosstable
-                else:
-                    if self.family is None:
-                        raise RuntimeError('Family reference unexpectedly None')
-                    return self.family.ranking_crosstable
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @property
-    def ranking_round(self) -> int | None:
-        match self.type:
-            case ScreenType.RANKING:
-                if self.stored_screen:
-                    return self.stored_screen.ranking_round
-                else:
-                    if self.family is None:
-                        raise RuntimeError('Family reference unexpectedly None')
-                    return self.family.ranking_round
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @property
-    def ranking_min_points(self) -> float | None:
-        match self.type:
-            case ScreenType.RANKING:
-                if self.stored_screen:
-                    return self.stored_screen.ranking_min_points
-                else:
-                    if self.family is None:
-                        raise RuntimeError('Family reference unexpectedly None')
-                    return self.family.ranking_min_points
-            case _:
-                raise ValueError(f'type=[{self.type}]')
-
-    @property
-    def ranking_max_points(self) -> float | None:
-        match self.type:
-            case ScreenType.RANKING:
-                if self.stored_screen:
-                    return self.stored_screen.ranking_max_points
-                else:
-                    if self.family is None:
-                        raise RuntimeError('Family reference unexpectedly None')
-                    return self.family.ranking_max_points
-            case _:
-                raise ValueError(f'type=[{self.type}]')
+        return self.screen_type.type_str(self)
 
     @property
     def last_update(self) -> datetime:
@@ -655,3 +400,23 @@ class Screen:
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.message_text
+
+    @staticmethod
+    @cache
+    def plugin_data_class_by_plugin_id() -> dict[str, builtins.type[PluginData]]:
+        return {
+            plugin_id: plugin_data_class
+            for plugin_id, plugin_data_class in plugin_manager.hook.get_screen_plugin_data_class()
+        }
+
+    @cached_property
+    def plugin_data(self) -> dict[str, PluginData]:
+        stored_plugin_data = (
+            self.stored_screen.plugin_data if self.stored_screen else {}
+        )
+        return {
+            plugin_id: plugin_data_class.from_stored_value(
+                stored_plugin_data.get(plugin_id, {})
+            )
+            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+        }

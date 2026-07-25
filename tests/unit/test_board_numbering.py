@@ -13,6 +13,7 @@ class FakeStoredBoard:
         self.index = index
         self.white_player_id = white_player_id
         self.black_player_id = black_player_id
+        self.fixed_number = None
 
 
 class FakeTournament:

@@ -1153,7 +1153,7 @@ msgstr ""
 msgid "Background colour: %(color)s"
 msgstr ""
 
-msgid "Background image:"
+msgid "Background image URL:"
 msgstr ""
 
 msgid "Bahamas"
@@ -1279,6 +1279,9 @@ msgstr ""
 msgid "Board selection (by number)"
 msgstr ""
 
+msgid "Board selection:"
+msgstr ""
+
 #, python-format
 msgid "Board sets of screen %(screen_name)s"
 msgstr ""
@@ -1362,6 +1365,12 @@ msgstr ""
 msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
 msgstr ""
 
+msgid "By first / last board number"
+msgstr ""
+
+msgid "By first / last pairing (fixed boards keep their pairing position)"
+msgstr ""
+
 msgid "By match"
 msgstr ""
 
@@ -1372,6 +1381,9 @@ msgid "By player"
 msgstr ""
 
 msgid "By rating step"
+msgstr ""
+
+msgid "By specific board numbers"
 msgstr ""
 
 msgid "Bye"
@@ -1720,7 +1732,7 @@ msgstr ""
 msgid "Columns:"
 msgstr ""
 
-msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
+msgid "Comma-separated board numbers to show."
 msgstr ""
 
 msgid "Comment"
@@ -3128,6 +3140,9 @@ msgstr ""
 msgid "First name:"
 msgstr ""
 
+msgid "First pairing:"
+msgstr ""
+
 msgid "First player:"
 msgstr ""
 
@@ -3144,9 +3159,6 @@ msgid "Fixed board ordering:"
 msgstr ""
 
 msgid "Fixed board:"
-msgstr ""
-
-msgid "Fixed boards:"
 msgstr ""
 
 msgid "Fixed table"
@@ -3432,6 +3444,12 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
+msgid "How the boards shown by these screens are chosen and ordered."
+msgstr ""
+
+msgid "How the boards shown by this set are chosen and ordered."
+msgstr ""
+
 msgid "Hungary"
 msgstr ""
 
@@ -3485,6 +3503,9 @@ msgstr ""
 
 #, python-format
 msgid "Image: %(image)s"
+msgstr ""
+
+msgid "Image: uploaded"
 msgstr ""
 
 msgid "Import"
@@ -3721,6 +3742,9 @@ msgstr ""
 msgid "Invalid value [{value}]."
 msgstr ""
 
+msgid "Invalid value."
+msgstr ""
+
 #, python-brace-format
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
@@ -3831,6 +3855,9 @@ msgid "Last match:"
 msgstr ""
 
 msgid "Last name:"
+msgstr ""
+
+msgid "Last pairing:"
 msgstr ""
 
 msgid "Last player:"
@@ -5128,6 +5155,9 @@ msgstr ""
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr ""
 
+msgid "Or upload an image (stored with the event, max 2 MB):"
+msgstr ""
+
 msgid "Organiser"
 msgstr ""
 
@@ -5298,6 +5328,10 @@ msgstr ""
 msgid "Pairings"
 msgstr ""
 
+#, python-format
+msgid "Pairings %f-%l"
+msgstr ""
+
 msgid "Pairings *** WITH_SHORTCUT_INDICATION"
 msgstr "P<u>a</u>irings"
 
@@ -5309,6 +5343,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Pairings for round #{round}"
+msgstr ""
+
+#, python-format
+msgid "Pairings from #%(first)d to #%(last)d"
 msgstr ""
 
 #, python-brace-format
@@ -5695,7 +5733,7 @@ msgstr ""
 msgid "Please consider contacting support, or installing the new version manually."
 msgstr ""
 
-msgid "Please enter the image URL."
+msgid "Please enter an image URL or upload a file."
 msgstr ""
 
 msgid "Please enter the name of the event."
@@ -6197,7 +6235,7 @@ msgstr "Rk."
 msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
 msgstr "Rk. O."
 
-msgid "Rnd.Boa"
+msgid "Rnd.Brd"
 msgstr ""
 
 msgid "Romania"
@@ -6569,9 +6607,6 @@ msgid "Select this empty table (forfeit for the paired player)"
 msgstr ""
 
 msgid "Select to pair (White, then pick the opponent)"
-msgstr ""
-
-msgid "Selection"
 msgstr ""
 
 #, python-format
@@ -7245,6 +7280,9 @@ msgstr ""
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr ""
 
+msgid "The image is too large (max 2 MB)."
+msgstr ""
+
 msgid "The label used for this multi-screen in menus. Its range is appended automatically."
 msgstr ""
 
@@ -7536,6 +7574,9 @@ msgid "The type of criterion used to filter the players."
 msgstr ""
 
 msgid "The update could not be downloaded. Consult the logs for more details."
+msgstr ""
+
+msgid "The uploaded image is too large (max 2 MB)."
 msgstr ""
 
 #, python-brace-format
@@ -7839,6 +7880,9 @@ msgid "Tie-breaks are managed by rule set \"{name}\". Change the rule set on the
 msgstr ""
 
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
+msgstr ""
+
+msgid "Time"
 msgstr ""
 
 msgid "Time control"
@@ -8833,6 +8877,9 @@ msgstr ""
 msgid "all the matches"
 msgstr ""
 
+msgid "all the pairings"
+msgstr ""
+
 msgid "all the players"
 msgstr ""
 
@@ -9004,6 +9051,34 @@ msgstr ""
 msgid "of %(n)s played games"
 msgstr ""
 
+#, python-brace-format
+msgid "pairings from #{first} to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from #{first} to #{last}, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from #{first} to end"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from #{first} to end, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from start to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from start to #{last}, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings on {parts} screens"
+msgstr ""
+
 msgid "player already received a PAB in a previous round"
 msgstr ""
 
@@ -9088,6 +9163,22 @@ msgstr ""
 
 #, python-brace-format
 msgid "screens of {number} matches per column from start to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} pairings"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} pairings from #{first} to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} pairings from #{first} to end"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} pairings from start to #{last}"
 msgstr ""
 
 #, python-brace-format

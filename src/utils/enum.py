@@ -21,6 +21,30 @@ class Extension(StrEnum):
     TEMPLATE = 'template'
 
 
+class BoardSelectionMode(StrEnum):
+    """How a board screen selects and orders its boards: by first/last pairing
+    position (fixed boards keep their pairing slot), by first/last board
+    number, or by an explicit list of board numbers."""
+
+    PAIRING = 'pairing'
+    BOARD_NUMBER = 'board'
+    SPECIFIC = 'specific'
+
+    @classmethod
+    def options(cls, *, include_specific: bool = True) -> dict[str, str]:
+        """Value → translated label, for form selects (default first).
+        ``include_specific`` is False for families (no board-numbers field)."""
+        options: dict[str, str] = {
+            cls.PAIRING: _(
+                'By first / last pairing (fixed boards keep their pairing position)'
+            ),
+            cls.BOARD_NUMBER: _('By first / last board number'),
+        }
+        if include_specific:
+            options[cls.SPECIFIC] = _('By specific board numbers')
+        return options
+
+
 class Result(IntEnum):
     """An enum representing the results in the database. Should be subclassed if the point value is not the default."""
 
@@ -1136,104 +1160,6 @@ class TeamByeType(StrEnum):
     @classmethod
     def manual_bye_types(cls) -> tuple['TeamByeType', ...]:
         return (cls.HPB, cls.FPB, cls.ZPB)
-
-
-class ScreenType(StrEnum):
-    CHECK_IN = 'check-in'
-    INPUT = 'input'
-    BOARDS = 'boards'
-    PLAYERS = 'players'
-    RESULTS = 'results'
-    RANKING = 'ranking'
-    IMAGE = 'image'
-
-    @classmethod
-    def screen_types(cls) -> tuple[Self, ...]:
-        return tuple(cls(st) for st in cls)
-
-    def supports_event_type(self, event_type: 'EventType') -> bool:
-        """Whether screens of this type can be created in an event of
-        *event_type*. Pairings-by-player has no team counterpart (team
-        events pair matches, not individual players)."""
-        if self == ScreenType.PLAYERS:
-            return event_type == EventType.INDIVIDUAL
-        return True
-
-    @property
-    def name(self) -> str:
-        match self:
-            case ScreenType.BOARDS:
-                return _('Pairings by board')
-            case ScreenType.CHECK_IN:
-                return _('Check-in')
-            case ScreenType.INPUT:
-                return _('Results entry')
-            case ScreenType.PLAYERS:
-                return _('Pairings by player')
-            case ScreenType.RESULTS:
-                return _('Last results')
-            case ScreenType.RANKING:
-                return _('Ranking')
-            case ScreenType.IMAGE:
-                return _('Image')
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    def __str__(self) -> str:
-        return self.name
-
-    @property
-    def icon_str(self) -> str:
-        match self:
-            case self.BOARDS:
-                return 'bi-card-list'
-            case self.CHECK_IN:
-                return 'bi-check-square'
-            case self.INPUT:
-                return 'bi-pencil'
-            case self.PLAYERS:
-                return 'bi-people'
-            case self.RESULTS:
-                return 'bi-1-square'
-            case self.RANKING:
-                return 'bi-trophy'
-            case self.IMAGE:
-                return 'bi-image'
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    @property
-    def tooltip_text(self) -> str:
-        match self:
-            case self.BOARDS:
-                return _('Boards screens show pairings by board number.')
-            case self.CHECK_IN:
-                return _('Check-in screens allow players to check-in or out.')
-            case self.INPUT:
-                return _(
-                    'Input screens show pairings by board number and allow people to enter results.'
-                )
-            case self.PLAYERS:
-                return _('Players screens show pairings by alphabetical order.')
-            case self.RESULTS:
-                return _('Results screens show the last results (most recent first).')
-            case self.RANKING:
-                return _('Ranking screens show the players by rank.')
-            case self.IMAGE:
-                return _('Image screens show an image (local or remote).')
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    @property
-    def families_allowed(self) -> bool:
-        """Returns True if the screen type can be used for families, False otherwise."""
-        match self:
-            case self.BOARDS | self.INPUT | self.PLAYERS | self.RANKING | self.CHECK_IN:
-                return True
-            case self.RESULTS | self.IMAGE:
-                return False
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
 
 
 class MenuSubmenuMode(StrEnum):

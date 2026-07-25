@@ -1,4 +1,3 @@
-from contextlib import suppress
 from datetime import datetime
 
 from litestar import head, get
@@ -8,9 +7,6 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_304_NOT_MODIFIED
 from litestar_htmx import HTMXTemplate
 
-from data.screen_set import ScreenSet
-from data.tournament import Tournament
-from utils.enum import ScreenType
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
     DisplayControllerUserWebContext,
@@ -28,30 +24,6 @@ from web.guards import (
 
 class ScreenUserController(BaseScreenUserController):
     guards = [EventGuard()]
-
-    @staticmethod
-    def _user_screen_set_refresh_needed(
-        screen_set: ScreenSet,
-        date: datetime,
-    ) -> bool:
-        tournament: Tournament = screen_set.tournament
-        if (
-            max(
-                tournament.last_update,
-                tournament.last_player_update,
-            )
-            > date
-        ):
-            return True
-        match screen_set.type:
-            case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                if tournament.last_pairing_update > date:
-                    return True
-            case ScreenType.PLAYERS | ScreenType.CHECK_IN:
-                pass
-            case _:
-                raise ValueError(f'type={screen_set.type}')
-        return False
 
     @classmethod
     def _user_screen_refresh_needed(
@@ -71,38 +43,7 @@ class ScreenUserController(BaseScreenUserController):
                 return True
             if screen.last_update > date_dt:
                 return True
-            match screen.type:
-                case ScreenType.IMAGE:
-                    pass
-                case (
-                    ScreenType.BOARDS
-                    | ScreenType.INPUT
-                    | ScreenType.PLAYERS
-                    | ScreenType.RANKING
-                    | ScreenType.CHECK_IN
-                ):
-                    for screen_set in screen.screen_sets:
-                        if cls._user_screen_set_refresh_needed(screen_set, date_dt):
-                            return True
-                case ScreenType.RESULTS:
-                    results_tournament_ids: list[int] = (
-                        screen.results_tournament_ids
-                        if screen.results_tournament_ids
-                        else list(event.tournaments_by_id.keys())
-                    )
-                    for tournament_id in results_tournament_ids:
-                        with suppress(KeyError):
-                            tournament = event.tournaments_by_id[tournament_id]
-                            if (
-                                max(
-                                    tournament.last_update,
-                                    tournament.last_pairing_update,
-                                )
-                                > date_dt
-                            ):
-                                return True
-                case _:
-                    raise ValueError(f'type={screen.type}')
+            return screen.screen_type.refresh_needed(screen, date_dt)
         return False
 
     @get(

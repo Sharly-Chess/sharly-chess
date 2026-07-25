@@ -14,7 +14,7 @@ from common.exception import FormError
 from common.i18n import _, ngettext
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from data.timer import Timer, TimerHour
+from data.screens.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimer, StoredTimerHour
 from utils.date_time import format_date
