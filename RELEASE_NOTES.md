@@ -48,3 +48,7 @@ In order to maintain compatibility with the display of table numbers on the FFE 
 - Check-in screens now correctly use the configure column count (5.0.0)
 - Vertical lines are now displayed between columns (5.0.0)
 - A new **Chess 960** plugin allows you to display start positions for each round (5.0.0)
+
+## Documents
+
+- Norm reports generated before the end of the tournament now assume that players will play the remaining rounds for the purposes of displaying 1.5.6a and 1.4.3d (5.0.0)
