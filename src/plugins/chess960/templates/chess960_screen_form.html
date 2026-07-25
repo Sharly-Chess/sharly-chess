@@ -1,6 +1,6 @@
 <h4>{{ _('Chess960') }}</h4>
 <div class="row gy-2 gx-3">
-    <div class="col-6">
+    <div class="col-6 align-items-center">
         {{ admin_macros.number_input(
             name='chess960_number',
             label=_('Start position number:'),
@@ -16,22 +16,26 @@
             hx_sync="this:replace",
             hx_indicator="#please-wait"
         ) }}
-        <button
-            type="button"
-            id="chess960-random"
-            class="btn btn-outline-secondary text-nowrap my-1"
-        >
-            <i class="bi bi-dice-3-fill"></i>
-            {{ _('Randomize') }}
-        </button>
-        <button
-            type="button"
-            id="chess960-print"
-            class="btn btn-outline-secondary text-nowrap my-1"
-        >
-            <i class="bi bi-search"></i>
-            {{ _('See all Chess960 positions') }}
-        </button>
+        <div class="d-flex align-items-center">
+            <button
+                type="button"
+                id="chess960-random"
+                class="flex-grow-1 btn btn-outline-primary text-nowrap mt-3"
+            >
+                <i class="bi bi-dice-3-fill"></i>
+                {{ _('Randomize') }}
+            </button>
+        </div>
+        <div class="d-flex align-items-center">
+            <button
+                type="button"
+                id="chess960-print"
+                class="flex-grow-1 btn btn-outline-primary text-nowrap mt-3"
+            >
+                <i class="bi bi-search"></i>
+                {{ _('See all Chess960 positions') }}
+            </button>
+        </div>
     </div>
     <div class="col-6 d-flex align-items-center">
         <div id="chess960-svg" class="mx-auto" style="height: 240px; width: 240px;" >
