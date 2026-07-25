@@ -2,7 +2,7 @@ import builtins
 import weakref
 from collections.abc import Collection
 from datetime import datetime
-from functools import cached_property, cache
+from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
@@ -402,7 +402,6 @@ class Screen:
         return self.family.message_text
 
     @staticmethod
-    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, builtins.type[PluginData]]:
         return {
             plugin_id: plugin_data_class

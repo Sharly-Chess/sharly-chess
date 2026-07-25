@@ -7999,6 +7999,9 @@ msgstr "Tournois : %(num)d"
 msgid "Transfer"
 msgstr "Virement"
 
+msgid "Transfer *** TOURNAMENT CONNECTIONS"
+msgstr "Transfert"
+
 msgid "Trinidad & Tobago"
 msgstr "Trinité-et-Tobago"
 

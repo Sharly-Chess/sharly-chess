@@ -11,6 +11,7 @@ from plugins.utils import (
     NavDataTransferItem,
     PluginData,
     AccountPluginData,
+    TournamentConnectionField,
 )
 from utils.enum import (
     Result,
@@ -308,12 +309,13 @@ class AppHookSpecs:
         """Get the context used for the templates provided for the tournament page."""
 
     @hookspec
-    def get_tournament_card_connection_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
-        """Add a template path for a connection to display on the tournament cards.
-        These templates are displayed in priority in the card.
-        Return None if the connection is undefined."""
+    ) -> TournamentConnectionField | None:
+        """Describe a tournament's connection to an external service.
+
+        These fields are grouped in the tournament card and list Transfer
+        section. Return None if the connection is undefined."""
 
     @hookspec
     def get_tournament_card_fields_template(self) -> str:

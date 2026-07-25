@@ -33,11 +33,14 @@ from plugins.utils import (
     PluginData,
     NavDataTransferItem,
     Plugin,
+    TournamentConnectionField,
 )
+from web.admin.collection import ListColumn
 from web.controllers.base_controller import BaseController
 from utils.enum import EventType
 
 if TYPE_CHECKING:
+    from data.event import Event
     from data.player import TournamentPlayer, Player
     from data.tournament import Tournament
     from database.sqlite.event.event_store import (
@@ -45,6 +48,7 @@ if TYPE_CHECKING:
         StoredTournament,
         StoredPlayer,
     )
+    from web.admin.collection import AdminCollectionSpec
 
 logger = get_logger()
 
@@ -184,12 +188,29 @@ class SCEPlugin(Plugin):
         return {'sce_utils': SCEUtils}
 
     @hookimpl
-    def get_tournament_card_connection_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
+    ) -> TournamentConnectionField | None:
         if not SCEUtils.get_tournament_plugin_data(tournament).id:
             return None
-        return '/sce_tournament_card_connection.html'
+        return TournamentConnectionField(
+            label=_('Sharly-Chess.com'),
+            template='/sce_tournament_connection_value.html',
+        )
+
+    @hookimpl
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: 'Event | None',
+    ) -> None:
+        if collection_key != 'tournaments':
+            return
+        collection_spec.ensure_list_column(
+            ListColumn('transfer', label=_('Transfer *** TOURNAMENT CONNECTIONS')),
+            before='actions',
+        )
 
     @hookimpl
     def on_tournament_data_updated(

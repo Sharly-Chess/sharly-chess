@@ -7997,6 +7997,9 @@ msgstr ""
 msgid "Transfer"
 msgstr ""
 
+msgid "Transfer *** TOURNAMENT CONNECTIONS"
+msgstr "Transfer"
+
 msgid "Trinidad & Tobago"
 msgstr ""
 

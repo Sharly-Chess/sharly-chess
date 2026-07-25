@@ -26,7 +26,9 @@ from plugins.utils import (
     NavDataTransferItem,
     Plugin,
     PluginData,
+    TournamentConnectionField,
 )
+from web.admin.collection import ListColumn
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
@@ -34,6 +36,7 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
+    from web.admin.collection import AdminCollectionSpec
 
 
 class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
@@ -141,12 +144,29 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         return {'cr_utils': CRUtils}
 
     @hookimpl
-    def get_tournament_card_connection_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
+    ) -> TournamentConnectionField | None:
         if not CRUtils.get_tournament_plugin_data(tournament).tnr:
             return None
-        return '/chess_results_tournament_card_connection.html'
+        return TournamentConnectionField(
+            label=_('Chess-Results'),
+            template='/chess_results_tournament_connection_value.html',
+        )
+
+    @hookimpl
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: 'Event | None',
+    ) -> None:
+        if collection_key != 'tournaments':
+            return
+        collection_spec.ensure_list_column(
+            ListColumn('transfer', label=_('Transfer *** TOURNAMENT CONNECTIONS')),
+            before='actions',
+        )
 
     @hookimpl
     def get_tournament_card_action_menu_items_template(self) -> str:

@@ -83,6 +83,23 @@ class AdminCollectionSpec:
             self.list.columns, column, before=before, after=after
         )
 
+    def ensure_list_column(
+        self,
+        column: ListColumn,
+        *,
+        before: str | None = None,
+        after: str | None = None,
+    ) -> None:
+        """Add a list column unless one with the same id already exists.
+
+        Lets several plugins contribute to a single shared column."""
+        if any(
+            existing.component_id == column.component_id
+            for existing in self.list.columns
+        ):
+            return
+        self.add_list_column(column, before=before, after=after)
+
     def add_list_detail(
         self,
         placement: ComponentPlacement,

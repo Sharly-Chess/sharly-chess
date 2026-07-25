@@ -10,28 +10,32 @@
     {%- endif -%}
 {%- endmacro %}
 
+{% macro status_icon(item) %}
+    {% if not item.started %}
+        {% set status_class = 'text-warning' %}
+    {% elif item.playing %}
+        {% set status_class = 'text-primary' %}
+    {% elif item.finished %}
+        {% set status_class = 'text-success' %}
+    {% else %}
+        {% set status_class = 'text-secondary' %}
+    {% endif %}
+    {{ admin_macros.tournament_status_icon(item, status_class ~ ' flex-shrink-0') }}
+{% endmacro %}
+
 {% macro identity(item, view, placement) %}
-    <span class="fw-bold text-truncate d-block">{{ item.name }}</span>
+    {% if view == 'list' %}
+        <span class="d-inline-flex align-items-center gap-2 min-width-0">
+            {{ status_icon(item) }}
+            <span class="fw-bold text-truncate">{{ item.name }}</span>
+        </span>
+    {% else %}
+        <span class="fw-bold text-truncate d-block">{{ item.name }}</span>
+    {% endif %}
 {% endmacro %}
 
 {% macro status(item, view, placement) %}
-    {% if not item.started %}
-        {% set status_label = _('Registration') %}
-        {% set status_class = 'text-warning' %}
-    {% elif item.playing %}
-        {% set status_label = _('Playing') %}
-        {% set status_class = 'text-primary' %}
-    {% elif item.finished %}
-        {% set status_label = _('Finished') %}
-        {% set status_class = 'text-success' %}
-    {% else %}
-        {% set status_label = _('Round finished') %}
-        {% set status_class = 'text-secondary' %}
-    {% endif %}
-    <span class="d-inline-flex align-items-center gap-2 text-nowrap {{ status_class }}">
-        {{ admin_macros.tournament_status_icon(item) }}
-        {% if view != 'card' %}<span>{{ status_label }}</span>{% endif %}
-    </span>
+    {{ status_icon(item) }}
 {% endmacro %}
 
 {% macro drag_handle(item, view, placement) %}
@@ -204,53 +208,138 @@
     {% endif %}
 {% endmacro %}
 
+{% macro tie_break_section_warning(item, extra_class='') %}
+    {% set section_warning = (
+        _('It is highly recommended to set at least one tie-break.')
+        if not item.tie_breaks_by_id else
+        item.tie_breaks_warning_message
+    ) %}
+    {% if section_warning %}
+        <i
+            class="bi-exclamation-triangle-fill text-warning flex-shrink-0 {{ extra_class }}"
+            {{ macros.tooltip_attributes(
+                'warning' if not item.tie_breaks_by_id else '',
+                section_warning,
+                'top',
+            ) }}
+        ></i>
+    {% endif %}
+{% endmacro %}
+
 {% macro tie_break_summary(item, view, placement) %}
     {% if view == 'list' %}
-        {% call collection_macros.column_edit_button(
-            not client.can_update_tournaments,
-            url_for(
-                'admin-tie-breaks-modal',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=item.id,
-            ),
-            'info' if client.can_update_tournaments else 'warning',
-            (
-                _('Configure the tie-breaks of the tournament.')
-                if client.can_update_tournaments else
-                _('You are not allowed to update the tournament.')
-            ) if not item.tie_breaks_by_id else '',
-            'collection-inline-edit-label-group'
-            ~ (' pb-1' if item.tie_breaks_by_id else ''),
-            true,
-            'collection-inline-edit-preserve-colour',
-            _('Configure the tie-breaks of the tournament.'),
-        ) %}
-            <span class="d-inline-flex flex-wrap align-items-center gap-1 min-width-0">
-                {{ tie_break_values(item) }}
-            </span>
-        {% endcall %}
-    {% else %}
-        <span class="tournament-tie-break-summary">
-            <span class="d-inline-flex flex-wrap align-items-center gap-1 min-width-0">
-                {{ tie_break_values(item) }}
-            </span>
-            {{ tie_break_configuration_button(item) }}
+        <span class="d-flex align-items-center gap-2 w-100">
+            {% call collection_macros.column_edit_button(
+                not client.can_update_tournaments,
+                url_for(
+                    'admin-tie-breaks-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=item.id,
+                ),
+                'info' if client.can_update_tournaments else 'warning',
+                (
+                    _('Configure the tie-breaks of the tournament.')
+                    if client.can_update_tournaments else
+                    _('You are not allowed to update the tournament.')
+                ) if not item.tie_breaks_by_id else '',
+                'collection-inline-edit-label-group'
+                ~ (' pb-1' if item.tie_breaks_by_id else ''),
+                true,
+                'collection-inline-edit-preserve-colour',
+                _('Configure the tie-breaks of the tournament.'),
+            ) %}
+                <span class="d-inline-flex flex-wrap align-items-center gap-1 min-width-0">
+                    {{ tie_break_values(item) }}
+                </span>
+            {% endcall %}
+            {{ tie_break_section_warning(item, 'ms-auto') }}
         </span>
+    {% else %}
+        <div class="collection-fact">
+            <span class="collection-fact-label">
+                <i class="bi-list-ol"></i>{{ _('Tie-breaks') }}
+            </span>
+            <span class="tournament-tie-break-summary d-flex align-items-start gap-2">
+                <span class="d-inline-flex flex-wrap align-items-center gap-1 min-width-0 flex-grow-1">
+                    {{ tie_break_values(item) }}
+                </span>
+                {{ tie_break_section_warning(item, 'pt-1') }}
+                {{ tie_break_configuration_button(item) }}
+            </span>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro criteria_content(tournament) %}
+    {% if tournament.criteria %}
+        {{ tournament.criteria_string }}
+    {% else %}
+        <span class="text-secondary"><i>{{ _('Undefined *** PLURAL') }}</i></span>
+    {% endif %}
+    {% if tournament.num_players_not_matching_criteria > 0 %}
+        <i
+            class="bi-exclamation-triangle-fill text-warning ps-1"
+            {{ macros.tooltip_attributes(
+                'warning',
+                ngettext(
+                    '%(num)d player does not match criteria.',
+                    '%(num)d players do not match criteria.',
+                    tournament.num_players_not_matching_criteria,
+                ),
+                'top',
+            ) }}
+        ></i>
+    {% endif %}
+{% endmacro %}
+
+{% macro criteria(item, view, placement) %}
+    {% if view == 'card' %}
+        {% set tournament = item %}
+        <div class="collection-fact">
+            <span class="collection-fact-label">
+                <i class="bi-funnel-fill"></i>{{ _('Criteria') }}
+            </span>
+            <span>{{ criteria_content(tournament) }}</span>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro transfer(item, view, placement) %}
+    {% set tournament = item %}
+    {% set fields = get_tournament_connection_fields(tournament) %}
+    {% if fields %}
+        {% if view == 'card' %}
+            <div class="d-flex flex-column gap-2 pb-2 mb-1 border-bottom">
+                {% for field in fields %}
+                    <div class="collection-fact">
+                        <span class="collection-fact-label">
+                            <i class="bi-arrow-left-right"></i>{{ field.label }}
+                        </span>
+                        <span>{% include field.template %}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="d-flex flex-column gap-1">
+                {% for field in fields %}
+                    <span class="text-nowrap">
+                        <span class="text-secondary">{{ field.label }}:</span>
+                        {% include field.template %}
+                    </span>
+                {% endfor %}
+            </div>
+        {% endif %}
     {% endif %}
 {% endmacro %}
 
 {% macro details(item, view, placement) %}
     {% set tournament = item %}
-    {% set card_connection_templates = get_tournament_card_connection_templates(tournament) %}
-    <div class="collection-details-grid">
-        {% if card_connection_templates %}
-            <section class="collection-detail-section collection-detail-wide">
-                <h6>{{ _('Connections') }}</h6>
-                <div class="d-flex flex-column gap-1">
-                    {% for template in card_connection_templates %}
-                        {% include template %}
-                    {% endfor %}
-                </div>
+
+    {% set narrow_sections %}
+        {% if view != 'card' %}
+            <section class="collection-detail-section">
+                <h6>{{ _('Rating') }}</h6>
+                {{ rating(tournament, view, placement) }}
             </section>
         {% endif %}
 
@@ -261,28 +350,12 @@
             </section>
         {% endif %}
 
-        <section class="collection-detail-section">
-            <h6>{{ _('Criteria') }}</h6>
-            {% if tournament.criteria %}
-                {{ tournament.criteria_string }}
-            {% else %}
-                <span class="text-secondary"><i>{{ _('Undefined *** PLURAL') }}</i></span>
-            {% endif %}
-            {% if tournament.num_players_not_matching_criteria > 0 %}
-                <i
-                    class="bi-exclamation-triangle-fill text-warning ps-1"
-                    {{ macros.tooltip_attributes(
-                        'warning',
-                        ngettext(
-                            '%(num)d player does not match criteria.',
-                            '%(num)d players do not match criteria.',
-                            tournament.num_players_not_matching_criteria,
-                        ),
-                        'top',
-                    ) }}
-                ></i>
-            {% endif %}
-        </section>
+        {% if view != 'card' %}
+            <section class="collection-detail-section">
+                <h6>{{ _('Criteria') }}</h6>
+                {{ criteria_content(tournament) }}
+            </section>
+        {% endif %}
 
         <section class="collection-detail-section">
             <h6>{{ _('Schedule') }}</h6>
@@ -324,7 +397,9 @@
                 </div>
             {% endif %}
         </section>
+    {% endset %}
 
+    {% set arbiters_section %}
         <section class="collection-detail-section {% if view == 'card' %}collection-detail-wide{% endif %}">
             <h6>{{ _('Arbiters') }}</h6>
             <div>
@@ -348,6 +423,19 @@
                 {% endif %}
             </div>
         </section>
+    {% endset %}
+
+    <div class="collection-details-grid {% if view != 'card' %}collection-details-grid-triple{% endif %}">
+        {% if view == 'card' %}
+            {{ narrow_sections }}
+            {{ arbiters_section }}
+        {% else %}
+            {# Row detail: narrow sections fill columns 1-2, arbiters flows into column 3. #}
+            <div class="collection-detail-left-group">
+                {{ narrow_sections }}
+            </div>
+            {{ arbiters_section }}
+        {% endif %}
 
         {% if plugin_card_fields_templates %}
             <section class="collection-detail-section collection-detail-wide">

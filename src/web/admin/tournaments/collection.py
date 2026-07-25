@@ -24,8 +24,10 @@ COLLECTION_SPEC = AdminCollectionSpec(
             ComponentPlacement('rating', 'me-auto'),
         ),
         body=(
+            ComponentPlacement('transfer'),
             ComponentPlacement('time_control'),
             ComponentPlacement('pairing'),
+            ComponentPlacement('criteria'),
             ComponentPlacement('tie_break_summary'),
         ),
         details=(ComponentPlacement('details'),),
@@ -44,7 +46,6 @@ COLLECTION_SPEC = AdminCollectionSpec(
                 label=_('Tournament'),
                 width='minmax(min-content, 1.4fr)',
             ),
-            ListColumn('status', label=_('Status')),
             ListColumn(
                 'participants',
                 label=_('Players'),
@@ -56,7 +57,6 @@ COLLECTION_SPEC = AdminCollectionSpec(
                 label=_('Rounds'),
                 cell_class='text-nowrap',
             ),
-            ListColumn('rating', label=_('Rating')),
             ListColumn(
                 'pairing',
                 label=_('Pairing system'),

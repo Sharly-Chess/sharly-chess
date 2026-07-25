@@ -2,7 +2,7 @@ from datetime import date, datetime
 import weakref
 from collections import Counter, defaultdict
 from collections.abc import Collection
-from functools import cached_property, cache
+from functools import cached_property
 from logging import Logger
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any
@@ -144,7 +144,6 @@ class Tournament:
     # -------------------------------------------------------------------------
 
     @staticmethod
-    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class

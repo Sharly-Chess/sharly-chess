@@ -21,6 +21,10 @@ from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
+from web.controllers.admin.tournament_admin_controller import (
+    TournamentAdminController,
+    TournamentAdminWebContext,
+)
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, TournamentActionGuard, ActionGuard
 from web.messages import Message
@@ -209,4 +213,6 @@ class ChessResultsController(BaseEventAdminController):
         else:
             Message.success(request, _('Tournament successfully uploaded.'))
 
-        return self.render_messages(request)
+        return TournamentAdminController._admin_event_tournaments_render(
+            TournamentAdminWebContext(request)
+        )

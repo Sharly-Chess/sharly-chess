@@ -744,6 +744,14 @@ body[data-bs-theme="dark"] .htmx-indicator {
     grid-column: 1 / -1;
 }
 
+.collection-detail-left-group {
+    grid-column: 1 / 3;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 1.5rem;
+    align-content: start;
+}
+
 .collection-list-cell-actions .collection-component,
 .collection-list-cell-actions .collection-actions {
     width: 100%;
@@ -883,6 +891,11 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
     .collection-detail-wide {
         grid-column: auto;
+    }
+
+    .collection-detail-left-group {
+        grid-column: auto;
+        grid-template-columns: 1fr;
     }
 }
 
