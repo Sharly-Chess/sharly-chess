@@ -47,3 +47,4 @@ In order to maintain compatibility with the dispaly of table numbers on the FFE 
 - Families have been renamed **Multi-Screens** (5.0.0)
 - Check-in screens now correctly use the configure column count (5.0.0)
 - Vertical lines are now displayed between columns (5.0.0)
+- A new **Chess 960** plugin allows you to display start positions for each round (5.0.0)

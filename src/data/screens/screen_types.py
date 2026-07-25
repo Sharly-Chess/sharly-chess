@@ -478,6 +478,11 @@ class ScreenType(IdentifiableEntity, ABC):
         """Whether the type can back a family (a multi-screen)."""
         return True
 
+    @property
+    def multi_column_allowed(self) -> bool:
+        """Whether multi-column layout is allowed."""
+        return True
+
     def default_screen_name(self, screen: 'Screen') -> str:
         """The screen's automatic name when it has no stored name. A plugin
         type overrides this (or ``default_family_screen_name``) to name its

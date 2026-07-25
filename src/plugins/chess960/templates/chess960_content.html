@@ -1,0 +1,40 @@
+<style>
+    .chess960-screen {
+        padding: 2vmin;
+    }
+    .chess960-board-area {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 1 / 1;
+        /* Keep a whole board within the viewport height, even when a column is
+           wider than the screen is tall; the square letterboxes and centres. */
+        max-height: 80vh;
+    }
+    .chess960-board-area svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    /* Scroll mode: boards keep a natural square size, the view scrolls. */
+    .chess960-scroll {
+        position: absolute;
+        inset: 0;
+        overflow-y: auto;
+    }
+</style>
+<div class="screen chess960-screen d-flex flex-column">
+    <h2 class="set-title text-center">
+        {% if data.chess960_number %}
+            {{ _('Position #%(number)d', number=data.chess960_number) }}
+        {% else %}
+            {{ _('Position not set yet, please wait…') }}
+        {% endif %}
+    </h2>
+    {% if data.board_svg %}
+        <div class="chess960-board-area">
+            {{ data.board_svg | safe }}
+        </div>
+    {% endif %}
+</div>
