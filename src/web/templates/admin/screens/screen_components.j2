@@ -81,20 +81,17 @@
     {% set screen_type = screen.screen_type %}
     <div class="collection-details-grid">
         {% if view != 'card' %}
-            <section class="collection-detail-section">
-                <h6>{{ _('Configuration') }}</h6>
-                {% if screen_type.card_config_template %}
+            {% if screen_type.card_config_template %}
+                <section class="collection-detail-section">
                     {% include screen_type.card_config_template %}
-                {% else %}
-                    <span class="text-secondary">{{ _('No general configuration') }}</span>
-                {% endif %}
-            </section>
-            <section class="collection-detail-section">
-                <h6>{{ _('Content') }}</h6>
-                {% if screen_type.card_template %}
+                </section>
+            {% endif %}
+            {% if screen_type.card_template %}
+                <section class="collection-detail-section">
+                    <h6>{{ _('Content') }}</h6>
                     {% include screen_type.card_template %}
-                {% endif %}
-            </section>
+                </section>
+            {% endif %}
         {% endif %}
         {% if client.can_view_public_screens and screen_type.card_detail_template %}
             <section class="collection-detail-section collection-detail-wide">
