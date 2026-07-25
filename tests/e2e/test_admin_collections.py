@@ -161,7 +161,7 @@ class TestAdminCollections:
         )
         tie_breaks = item.locator('.collection-component-tie_break_summary')
         expect(tie_breaks).to_contain_text('None')
-        expect(tie_breaks.locator('[class*="bi-exclamation"]')).to_have_count(0)
+        expect(tie_breaks.locator('[class*="bi-exclamation"]')).to_have_count(1)
         configuration_buttons = item.locator(
             'button[aria-label="Configure the tie-breaks of the tournament."]'
         )
