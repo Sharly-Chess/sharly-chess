@@ -85,7 +85,7 @@
             {{ item.roles|map(attribute='role_type')|join(', ') }}
         </span>
     {% elif item.user_account %}
-        <span class="text-warning"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No roles defined.') }}</span>
+        <span class="text-secondary">{{ _('None') }}</span>
     {% else %}
         <span class="text-secondary">{{ _('No role required') }}</span>
     {% endif %}
@@ -165,9 +165,9 @@
             </span>
         {% else %}
             <span
-                class="text-warning text-nowrap"
+                class="text-secondary text-nowrap"
                 {{ macros.tooltip_attributes('', permissions_tooltip(item), 'top') }}
-            ><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('None') }}</span>
+            >{{ _('None') }}</span>
         {% endif %}
         {% if view == 'list' %}{{ permissions_button(item) }}{% endif %}
     </span>
@@ -180,7 +180,7 @@
         <div class="d-flex flex-column gap-1">
             {% if not account.roles and account.user_account %}
                 <div class="text-secondary">
-                    {{ _('None') }}
+                    {{ _('No roles defined') }}
                 </div>
             {% else %}
                 {% for role in account.roles %}

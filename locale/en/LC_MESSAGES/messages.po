@@ -4753,6 +4753,9 @@ msgstr ""
 msgid "No role required"
 msgstr ""
 
+msgid "No roles defined"
+msgstr ""
+
 msgid "No roles defined."
 msgstr ""
 
@@ -4775,9 +4778,6 @@ msgid "No screens to add."
 msgstr ""
 
 msgid "No screens."
-msgstr ""
-
-msgid "No such screens."
 msgstr ""
 
 msgid "No table available for {n} teams."
@@ -9205,3 +9205,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+

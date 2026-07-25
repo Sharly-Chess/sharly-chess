@@ -4751,10 +4751,13 @@ msgid "No results."
 msgstr "Aucun résultat."
 
 msgid "No role required"
-msgstr "Aucun rôle requis."
+msgstr "Aucun rôle requis"
+
+msgid "No roles defined"
+msgstr "Aucun rôle défini"
 
 msgid "No roles defined."
-msgstr "Aucun rôle défini."
+msgstr ""
 
 msgid "No rotators"
 msgstr "Aucun écran rotatif"
@@ -4776,9 +4779,6 @@ msgstr "Pas d'écran à ajouter."
 
 msgid "No screens."
 msgstr "Aucun écran."
-
-msgid "No such screens."
-msgstr "Aucun écran de ce type."
 
 msgid "No table available for {n} teams."
 msgstr "Aucune table disponible pour {n} équipes."
@@ -9207,3 +9207,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
