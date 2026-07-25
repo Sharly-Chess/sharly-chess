@@ -66,6 +66,7 @@ from database.sqlite.event.event_store import (
     StoredPrize,
 )
 from plugins.manager import plugin_manager
+from plugins.utils import TournamentConnectionField
 from utils import Utils
 from utils.date_time import format_date, format_date_range
 from utils.enum import (
@@ -199,8 +200,8 @@ class TournamentAdminController(BaseEventAdminController):
             web_context.template_context
             | {
                 'admin_event_tab': 'admin-event-tournaments-tab',
-                'get_tournament_card_connexion_templates': partial(
-                    cls._get_tournament_card_connexion_templates, event=event
+                'get_tournament_connection_fields': partial(
+                    cls._get_tournament_connection_fields, event=event
                 ),
                 'tournament_card_time_control_template': plugin_manager.hook_for_event(
                     event, 'get_tournament_card_time_control_template'
@@ -220,15 +221,15 @@ class TournamentAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @staticmethod
-    def _get_tournament_card_connexion_templates(
+    def _get_tournament_connection_fields(
         tournament: Tournament, event: Event
-    ) -> list[str]:
+    ) -> list[TournamentConnectionField]:
         return [
-            template
-            for template in plugin_manager.hook_for_event(
-                event, 'get_tournament_card_connexion_template'
+            field
+            for field in plugin_manager.hook_for_event(
+                event, 'get_tournament_connection_field'
             )(tournament=tournament)
-            if template is not None
+            if field is not None
         ]
 
     @get(

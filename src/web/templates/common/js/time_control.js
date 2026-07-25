@@ -134,6 +134,19 @@ function humanizeTrf25Short(trf) {
     }
 }
 
+function renderHumanizedTimeControls(root = document) {
+    const elements = [];
+    if (root instanceof Element && root.matches('.tc-human')) {
+        elements.push(root);
+    }
+    if (root.querySelectorAll) {
+        elements.push(...root.querySelectorAll('.tc-human'));
+    }
+    elements.forEach(element => {
+        element.textContent = humanizeTrf25Short(element.dataset.trf);
+    });
+}
+
 function parseTrf25(input) {
     const raw = String(input ?? '').trim();
     if (!raw) return { white: [{ seconds: 0 }] };

@@ -74,14 +74,14 @@ class TestRotator:
         modal.locator('button[type=submit]').click()
         TestUtils.button_by_text(modal, 'Close').click()
 
-        card = page.locator(f"div.card:has-text('{ROTATOR_NAME}')")
-        expect(card).to_be_visible()
+        item = page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
+        expect(item).to_be_visible()
 
-        card.locator('button[hx-get*="delete"]').click()
+        item.locator('button[hx-get*="delete"]').click()
         expect(modal).to_be_visible()
         TestUtils.button_by_text(modal, 'Delete').click()
         expect(
-            page.locator(f"div.card:has-text('{ROTATOR_NAME}')")
+            page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
         ).not_to_be_attached()
 
     def test_duplicate_rotator(
@@ -101,21 +101,21 @@ class TestRotator:
         )
 
         page.goto(f'/event/{EVENT_ID}/rotators')
-        card = page.locator(f"div.card:has-text('{ROTATOR_NAME}')")
-        expect(card).to_be_visible()
-        button = card.locator('button[hx-get*="clone"]')
+        item = page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
+        expect(item).to_be_visible()
+        button = item.locator('button[hx-get*="clone"]')
         button.click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Duplicated rotator'
         modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
-        card = page.locator(f"div.card:has-text('{name}')")
-        expect(card).to_be_visible()
-        expect(card.get_by_test_id('screens-count')).to_contain_text('1')
-        expect(card.get_by_test_id('families-count')).to_contain_text('1')
+        item = page.get_by_test_id('rotators-item').filter(has_text=name)
+        expect(item).to_be_visible()
+        expect(item.get_by_test_id('screens-count')).to_contain_text('1')
+        expect(item.get_by_test_id('families-count')).to_contain_text('1')
 
-        card.locator('button[hx-get*="delete"]').click()
+        item.locator('button[hx-get*="delete"]').click()
         expect(modal).to_be_visible()
         TestUtils.button_by_text(modal, 'Delete').click()
         TestUtils.delete_rotator(api_request_context, EVENT_ID, rotator_id)
@@ -134,9 +134,9 @@ class TestRotator:
         )
 
         page.goto(f'/event/{EVENT_ID}/rotators')
-        card = page.locator(f"div.card:has-text('{ROTATOR_NAME}')")
-        expect(card).to_be_visible()
-        TestUtils.button_by_text(card, 'Screens').click()
+        item = page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
+        expect(item).to_be_visible()
+        item.locator('button[hx-get*="screens-modal"]').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
 

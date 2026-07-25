@@ -387,3 +387,16 @@ class NavDataTransferItem(NamedTuple):
     icon_path: str
     modal_route_name: str
     has_upload_error: bool
+
+
+class TournamentConnectionField(NamedTuple):
+    """A plugin-supplied field describing a tournament's connection to an
+    external service.
+
+    ``label`` is the field name and ``template`` renders only its value (for
+    instance the identifier and a link). These fields are grouped in the
+    tournament card and list Transfer section.
+    """
+
+    label: str
+    template: str

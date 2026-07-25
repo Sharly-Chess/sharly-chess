@@ -304,6 +304,9 @@ msgstr ""
 msgid "Schedule"
 msgstr ""
 
+msgid "Sharly-Chess.com"
+msgstr ""
+
 msgid "Sharly-Chess.com authorization canceled."
 msgstr ""
 
@@ -320,9 +323,6 @@ msgid "Sharly-Chess.com player conflicts"
 msgstr ""
 
 msgid "Sharly-Chess.com players"
-msgstr ""
-
-msgid "Sharly-Chess.com tournament"
 msgstr ""
 
 msgid "Sharly-Chess.com tournament conflicts"
@@ -393,6 +393,9 @@ msgid "Tournament successfully imported."
 msgstr ""
 
 msgid "Tournament upload has been planned."
+msgstr ""
+
+msgid "Transfer"
 msgstr ""
 
 msgid "Type"

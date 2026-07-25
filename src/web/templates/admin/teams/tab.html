@@ -1,29 +1,17 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('teams') %}
+{% set collection_view_mode = get_admin_collection_view_mode('teams') %}
+{% set collection_show_details = get_admin_collection_show_details('teams') %}
+{% set collection_url = url_for('admin-event-teams-tab', event_uniq_id=admin_event.uniq_id) %}
+{% set collection_card_controls_template = '/admin/teams/team_collection_card_controls.html' %}
+
 {% block top_left_nav %}
     {{ admin_macros.admin_title(_('Teams'), '') }}
 {% endblock %}
 
 {% block top_right_nav %}
-    {% for id, name, show, label, tip in [
-        ('show-roster', 'show_roster', show_roster, _('Rosters'), _('Show/hide the team rosters on the cards.')),
-        ('show-lineup', 'show_lineup', show_lineup, _('Lineups'), _('Show/hide the round lineups on the cards.')),
-    ] %}
-        <div
-            class="form-check form-switch d-inline-block pe-3"
-            {{ macros.tooltip_attributes('info', tip, 'top') }}
-        >
-            <input
-                hx-get="{{ url_for('admin-event-teams-tab', event_uniq_id=admin_event.uniq_id) }}"
-                hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                hx-target="body"
-                hx-indicator="#please-wait"
-                class="form-check-input"
-                type="checkbox"
-                id="{{ id }}"
-                {% if show %}checked{% endif %} /><label for="{{ id }}" class="form-check-label"> {{ label }}</label>
-        </div>
-    {% endfor %}
+    {% include '/admin/common/collection_controls.html' %}
     <button
         class="btn btn-outline-primary text-nowrap ms-1"
         {% if not admin_event.teams %}
@@ -151,21 +139,36 @@
                             </span>
                         {% endif %}
                     </h5>
-                    <div
-                        class="row gy-3 gx-3 team-sortable"
-                        data-tournament-id="{{ tournament.id }}"
-                        {% if not tournament.can_add_teams %}data-closed="1"{% endif %}
-                        {% if sort_mode.value != 'MANUAL' %}data-auto-sort="1"{% endif %}
+                    {% if tournament_teams %}
                         {% if sort_mode.value == 'TEAM_AVERAGE_RATING' %}
-                            data-sort-key="team-avg"
+                            {% set sort_key = 'team-avg' %}
                         {% elif sort_mode.value == 'LINEUP_AVERAGE_RATING' %}
-                            data-sort-key="lineup-avg"
+                            {% set sort_key = 'lineup-avg' %}
+                        {% else %}
+                            {% set sort_key = '' %}
                         {% endif %}
-                    >
-                        {% for team in tournament_teams %}
-                            {% include 'team_card.html' %}
-                        {% endfor %}
-                        {% if not tournament_teams %}
+                        {% with
+                            items=tournament_teams,
+                            empty_message=_('No teams'),
+                            sortable=false,
+                            show_details=collection_show_details,
+                            collection_items_class='team-sortable',
+                            collection_items_data={
+                                'tournament-id': tournament.id,
+                                'closed': '1' if not tournament.can_add_teams else '',
+                                'auto-sort': '1' if sort_mode.value != 'MANUAL' else '',
+                                'sort-key': sort_key,
+                            }
+                        %}
+                            {% include '/admin/common/collection.html' %}
+                        {% endwith %}
+                    {% else %}
+                        <div
+                            class="row gy-3 gx-3 team-sortable"
+                            data-tournament-id="{{ tournament.id }}"
+                            {% if not tournament.can_add_teams %}data-closed="1"{% endif %}
+                            {% if sort_mode.value != 'MANUAL' %}data-auto-sort="1"{% endif %}
+                        >
                             <div class="col-12 non-sortable">
                                 <div
                                     class="text-center text-muted p-4 rounded"
@@ -175,8 +178,8 @@
                                     {{ _('Drag teams here') }}
                                 </div>
                             </div>
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
             <div class="mb-3">
@@ -185,18 +188,28 @@
                     {{ _('Unassigned') }}
                     <span class="text-muted small">({{ unassigned_teams|length }})</span>
                 </h5>
-                {% set sortable = draggable %}
-                <div
-                    class="row gy-3 gx-3 team-sortable"
-                    data-tournament-id=""
-                >
-                    {% for team in unassigned_teams %}
-                        {% include 'team_card.html' %}
-                    {% endfor %}
-                </div>
-                {% if not unassigned_teams %}
-                    <div class="text-muted ms-3 mt-3">
-                        {{ _('All teams are assigned to a tournament.') }}
+                {% if unassigned_teams %}
+                    {% with
+                        items=unassigned_teams,
+                        empty_message=_('No teams'),
+                        sortable=false,
+                        show_details=collection_show_details,
+                        collection_items_class='team-sortable',
+                        collection_items_data={'tournament-id': ''}
+                    %}
+                        {% include '/admin/common/collection.html' %}
+                    {% endwith %}
+                {% else %}
+                    <div class="row gy-3 gx-3 team-sortable" data-tournament-id="">
+                        <div class="col-12 non-sortable">
+                            <div
+                                class="text-center text-muted p-4 rounded"
+                                style="border: 2px dashed var(--bs-border-color);"
+                            >
+                                <i class="bi-box-arrow-in-down d-block fs-3 mb-2"></i>
+                                {{ _('All teams are assigned to a tournament.') }}
+                            </div>
+                        </div>
                     </div>
                 {% endif %}
             </div>

@@ -57,20 +57,20 @@
 
 {% if not client.account.administrator %}
     {% if nav_tab.events|length > 0 %}
+        {% set collection = get_admin_collection_spec('events') %}
+        {% set collection_view_mode = {'value': 'cards'} %}
         <section class="p-4 my-4">
             <div class="container-fluid" style="--bs-gutter-x: 0;">
-                <div class="row gy-2 gx-3 justify-content-center">
-                    {% if nav_tab.events %}
-                        {% for event in nav_tab.events %}
-                            {% with
-                                card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                                hide_public_status=True
-                            %}
-                                {% include 'event_card.html' %}
-                            {% endwith %}
-                        {% endfor %}
-                    {% endif %}
-                </div>
+                {% with
+                    items=nav_tab.events,
+                    empty_message=_('No public events.'),
+                    sortable=false,
+                    show_details=false,
+                    hide_public_status=true,
+                    collection_items_class='home-event-collection home-event-collection-count-' ~ ([nav_tab.events|length, 3]|min)
+                %}
+                    {% include '/admin/common/collection.html' %}
+                {% endwith %}
             </div>
         </section>
     {% endif %}

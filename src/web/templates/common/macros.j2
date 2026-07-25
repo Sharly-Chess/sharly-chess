@@ -14,6 +14,14 @@
     hx-on::before-send="$('body .tooltip').remove(); $('body .tooltip-inner').remove(); $('body .tooltip-arrow').remove();"
 {% endmacro %}
 
+{% macro action_tooltip(tooltip_type, tooltip_text, tooltip_placement='top') %}
+    {% if tooltip_text %}
+        <span {{ tooltip_attributes(tooltip_type, tooltip_text, tooltip_placement) }}>{{ caller() }}</span>
+    {% else %}
+        {{ caller() }}
+    {% endif %}
+{% endmacro %}
+
 {% macro point_adjustment_tooltip(tournament, team_id, round_) %}
 {%- set manual = tournament.stored_point_adjustment(team_id, round_) -%}
 {%- set rs = tournament.rule_set_point_adjustment(team_id, round_) -%}

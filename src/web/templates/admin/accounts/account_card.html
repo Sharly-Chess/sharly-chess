@@ -45,7 +45,7 @@
     <div class="d-flex flex-column gap-1">
         {% if not account.roles and account.user_account %}
             <div class="text-warning">
-                {{ _('No roles defined.') }}
+                {{ _('No roles defined') }}
             </div>
         {% else %}
             {% for role in account.roles %}

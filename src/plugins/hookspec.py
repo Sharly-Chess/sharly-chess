@@ -11,6 +11,7 @@ from plugins.utils import (
     NavDataTransferItem,
     PluginData,
     AccountPluginData,
+    TournamentConnectionField,
 )
 from utils.enum import (
     Result,
@@ -67,6 +68,7 @@ if TYPE_CHECKING:
     )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
+    from web.admin.collection import AdminCollectionSpec
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
     from data.columns.column import ColumnUsage, Column
 
@@ -93,6 +95,15 @@ class AppHookSpecs:
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
         """Provide additional template context for AdminWebContext"""
+
+    @hookspec
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: Optional['Event'],
+    ):
+        """Extend a request-scoped admin card/list collection."""
 
     # ---------------------------------------------------------------------------------
     # Input-Output
@@ -298,12 +309,13 @@ class AppHookSpecs:
         """Get the context used for the templates provided for the tournament page."""
 
     @hookspec
-    def get_tournament_card_connexion_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
-        """Add a template path for a connexion to display on the tournament cards.
-        These templates are displayed in priority in the card.
-        Return None if the connexion is undefined."""
+    ) -> TournamentConnectionField | None:
+        """Describe a tournament's connection to an external service.
+
+        These fields are grouped in the tournament card and list Transfer
+        section. Return None if the connection is undefined."""
 
     @hookspec
     def get_tournament_card_fields_template(self) -> str:

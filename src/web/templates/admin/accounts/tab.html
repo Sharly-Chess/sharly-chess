@@ -1,5 +1,10 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('accounts') %}
+{% set collection_view_mode = get_admin_collection_view_mode('accounts') %}
+{% set collection_show_details = get_admin_collection_show_details('accounts') %}
+{% set collection_url = url_for('admin-event-accounts-tab', event_uniq_id=admin_event.uniq_id) %}
+
 {% block top_left_nav %}
     {{ admin_macros.admin_title(_('Staff'), 'staff') }}
     <script>preparePrintModal()</script>
@@ -22,23 +27,7 @@
             {{ _('Get started') }}
         </button>
     {% else %}
-        {% set show=show_details %}
-        <div
-            class="form-check form-switch d-inline-block pe-2"
-            {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
-        >
-            <input
-                hx-get="{{ url_for('admin-event-accounts-tab', event_uniq_id=admin_event.uniq_id) }}"
-                hx-vals='{"show_details": "{% if show %}false{% else %}true{% endif %}"}'
-                hx-target="body"
-                hx-indicator="#please-wait"
-                class="form-check-input"
-                type="checkbox"
-                id="show-details-on-account-list"
-                {% if show %}checked{% endif %}
-            />
-            <label for="show-details-on-account-list" class="form-check-label"> {{ _('Details') }}</label>
-        </div>
+        {% include '/admin/common/collection_controls.html' %}
         <span
             {{ macros.tooltip_attributes('info', _('Add an account to the event.'), 'top') }}
         >
@@ -107,10 +96,13 @@
             ) }}</p>
         </div>
     {% else %}
-        <div class="row gy-2 gx-3">
-            {% for account in admin_event.sorted_accounts %}
-                {% include 'account_card.html' %}
-            {% endfor %}
-        </div>
+        {% with
+            items=admin_event.sorted_accounts,
+            empty_message=_('No accounts'),
+            sortable=false,
+            show_details=collection_show_details
+        %}
+            {% include '/admin/common/collection.html' %}
+        {% endwith %}
     {% endif %}
 {% endblock %}

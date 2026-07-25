@@ -1,0 +1,36 @@
+{% set collection_url = collection_url|default(request.url.path, true) %}
+<div class="collection-controls">
+    {% if
+        collection_view_mode.value == 'cards'
+        and collection_card_controls_template|default('')
+    %}
+        {% include collection_card_controls_template %}
+    {% elif collection.card.details or collection.list.details %}
+        <div
+            class="form-check form-switch collection-details-toggle mb-0"
+            {{ macros.tooltip_attributes('info', _('Expand or collapse the details of every item.'), 'top') }}
+        >
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="collection-{{ collection.key }}-show-details"
+                {% if collection_show_details %}checked{% endif %}
+                hx-get="{{ collection_url }}"
+                hx-vals='{"collection_details": "{{ 'false' if collection_show_details else 'true' }}"}'
+                hx-target="body"
+                hx-push-url="false"
+                hx-indicator="#please-wait"
+                {% if collection_show_details %}
+                    hx-on::before-request="clearCollectionCollapseStates('{{ collection.key }}')"
+                {% endif %}
+            />
+            <label
+                class="form-check-label"
+                for="collection-{{ collection.key }}-show-details"
+            >
+                {{ _('Details') }}
+            </label>
+        </div>
+    {% endif %}
+    {% include '/admin/common/collection_view_toggle.html' %}
+</div>

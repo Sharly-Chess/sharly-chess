@@ -4,6 +4,7 @@
 
 - Significantly improved speed of the application (5.0.0)
 - Reorganize the desktop application into tabs (5.0.0)
+- Card-based administration pages now offer a compact list view with key information in columns and expandable details (5.0.0)
 - Added fédération CUR (5.0.0)
 
 ## Events

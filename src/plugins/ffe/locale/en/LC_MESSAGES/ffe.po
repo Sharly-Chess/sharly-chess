@@ -179,10 +179,6 @@ msgstr ""
 msgid "FFE certification number:"
 msgstr ""
 
-#, python-format
-msgid "FFE certification number: %(ffe_id)d"
-msgstr ""
-
 msgid "FFE database (local)"
 msgstr ""
 
@@ -469,6 +465,9 @@ msgstr ""
 msgid "Please select a file."
 msgstr ""
 
+msgid "Public page of the tournament."
+msgstr ""
+
 #, python-brace-format
 msgid "Ranking by league after round #{round}"
 msgstr ""
@@ -613,6 +612,9 @@ msgid "Trainee Arbiter"
 msgstr ""
 
 msgid "Trainee:"
+msgstr ""
+
+msgid "Transfer"
 msgstr ""
 
 msgid "Unknown league."

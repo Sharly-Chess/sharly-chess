@@ -107,6 +107,9 @@ msgstr ""
 msgid "Please enter a password for the ChessEvent connection."
 msgstr ""
 
+msgid "Public page of the tournament."
+msgstr ""
+
 msgid "Settings error"
 msgstr ""
 
@@ -163,6 +166,9 @@ msgid "Tournament has not been configured to be used with ChessEvent."
 msgstr ""
 
 msgid "Tournament not found"
+msgstr ""
+
+msgid "Transfer"
 msgstr ""
 
 msgid "Unauthorized access"
