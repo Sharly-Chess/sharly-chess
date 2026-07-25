@@ -16,7 +16,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
         summary=(
             ComponentPlacement('screen_type'),
             ComponentPlacement('source'),
-            ComponentPlacement('coverage'),
+            ComponentPlacement('screen_sets'),
         ),
         body=(ComponentPlacement('summary'),),
         details=(ComponentPlacement('details'),),
@@ -35,7 +35,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
                 width='minmax(min-content, 1fr)',
             ),
             ListColumn('source', label=_('Multi-Screen')),
-            ListColumn('coverage', label=_('Content')),
+            ListColumn('screen_sets', label=_('Content')),
             ListColumn(
                 'actions',
                 label=_('Actions'),
