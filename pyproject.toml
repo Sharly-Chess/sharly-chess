@@ -27,6 +27,7 @@ dependencies = [
   "argon2-cffi",
   "babel ~= 2.16.0",
   "chardet ~= 5.2.0",
+  "chess ~= 1.11.2",
   "colorama ~= 0.4.6",
   "colorlog ~= 6.9.0",
   "cryptography ~= 44.0.0",

@@ -108,15 +108,17 @@
                                     ) }}
                                 </div>
                             {% endif %}
-                            <div class="col-12 col-md-6">
-                                {{ admin_macros.number_input(
-                                    name='columns',
-                                    label=_('Columns:'),
-                                    placeholder=_('E.g.: %(num)d', num=2),
-                                    tooltip_text=_('The number of columns used to display data.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
+                            {% if screen_type.multi_column_allowed %}
+                                <div class="col-12 col-md-6">
+                                    {{ admin_macros.number_input(
+                                        name='columns',
+                                        label=_('Columns:'),
+                                        placeholder=_('E.g.: %(num)d', num=2),
+                                        tooltip_text=_('The number of columns used to display data.'),
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
+                            {% endif %}
                             <div class="col-12 col-md-6">
                                 {{ admin_macros.number_input(
                                     name='font_size',
