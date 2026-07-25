@@ -209,6 +209,19 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     width: calc(var(--vw, 100vw) - var(--side-bar-width));
 }
 
+#copyright {
+    flex-wrap: wrap;
+    width: 100%;
+    min-width: 0;
+    min-height: 60px;
+    padding: .5rem 1rem;
+}
+
+#copyright a {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
 .input-block {
     display: flex;
     flex-wrap: wrap;
