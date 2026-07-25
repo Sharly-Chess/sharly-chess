@@ -67,10 +67,16 @@ class TestAdminCollections:
 
         item = page.get_by_test_id('teams-item').filter(has_text=name)
         expect(item).to_be_visible()
-        page.get_by_role('checkbox', name='Details').check()
+        details = item.locator('.collection-list-details')
+        item.locator('.collection-details-button').click()
+        expect(details).to_have_class(re.compile(r'\bshow\b'))
+        details_toggle = page.get_by_role('checkbox', name='Details')
+        details_toggle.check()
         expect(item.locator('.collection-list-details')).to_have_class(
             re.compile(r'\bshow\b')
         )
+        details_toggle.uncheck()
+        expect(details).not_to_have_class(re.compile(r'\bshow\b'))
         page.get_by_role('button', name='Card view').click()
         item = page.get_by_test_id('teams-item').filter(has_text=name)
         expect(page.get_by_role('checkbox', name='Rosters')).to_be_checked()

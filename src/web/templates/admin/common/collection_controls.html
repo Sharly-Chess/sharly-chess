@@ -20,6 +20,9 @@
                 hx-target="body"
                 hx-push-url="false"
                 hx-indicator="#please-wait"
+                {% if collection_show_details %}
+                    hx-on::before-request="clearCollectionCollapseStates('{{ collection.key }}')"
+                {% endif %}
             />
             <label
                 class="form-check-label"

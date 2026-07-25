@@ -251,6 +251,17 @@ const saveState = (element, isOpen) => {
     localStorage.setItem('collapseStates', JSON.stringify(states));
 };
 
+function clearCollectionCollapseStates(collectionKey) {
+    const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
+    const idPrefix = `collection-${collectionKey}-details-`;
+    Object.keys(states).forEach(id => {
+        if (id.startsWith(idPrefix)) {
+            delete states[id];
+        }
+    });
+    localStorage.setItem('collapseStates', JSON.stringify(states));
+}
+
 // Listen globally for Bootstrap collapse show/hide
 window.addEventListener('show.bs.collapse', e => saveState(e.target, true));
 
