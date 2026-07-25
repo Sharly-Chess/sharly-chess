@@ -485,11 +485,28 @@ body[data-bs-theme="dark"] .htmx-indicator {
     .admin-collection-cards {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .home-event-collection-count-1 {
+        grid-template-columns: minmax(0, 1fr);
+        width: calc(50% - .5rem);
+        margin-inline: auto;
+    }
 }
 
 @media (min-width: 1200px) {
     .admin-collection-cards {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .home-event-collection-count-1 {
+        grid-template-columns: minmax(0, 1fr);
+        width: calc(33.333333% - .666667rem);
+    }
+
+    .home-event-collection-count-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: calc(66.666667% - .333333rem);
+        margin-inline: auto;
     }
 }
 

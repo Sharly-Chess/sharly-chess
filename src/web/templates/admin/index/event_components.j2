@@ -48,10 +48,12 @@
 {% endmacro %}
 
 {% macro visibility(item, view, placement) %}
-    {% if item.public %}
-        <span class="text-success text-nowrap"><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
-    {% else %}
-        <span class="text-warning text-nowrap"><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
+    {% if not hide_public_status|default(false) %}
+        {% if item.public %}
+            <span class="text-success text-nowrap"><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
+        {% else %}
+            <span class="text-warning text-nowrap"><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
+        {% endif %}
     {% endif %}
 {% endmacro %}
 
@@ -146,78 +148,80 @@
 
 {% macro actions(item, view, placement) %}
     {% set event = item %}
-    <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
-        <div class="d-flex align-items-center gap-1">
-            {% if client.can_manage_events and event.are_all_plugins_enabled %}
-                <span
-                    {{ macros.tooltip_attributes('info', _('Export event in SCE format'), 'top') }}
-                >
+    {% if event.are_all_plugins_enabled and (client.can_manage_events or client.can_create_events) %}
+        <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-1">
+                {% if client.can_manage_events %}
+                    <span
+                        {{ macros.tooltip_attributes('info', _('Export event in SCE format'), 'top') }}
+                    >
+                        <button
+                            class="btn btn-sm btn-outline-primary"
+                            hx-get="{{ url_for('event-export-modal', event_uniq_id=event.uniq_id) }}"
+                            hx-push-url="false"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-box-arrow-right"></i>
+                            {% if view == 'card' %}<span class="ms-1">{{ _('Export') }}</span>{% endif %}
+                        </button>
+                    </span>
+                {% endif %}
+            </div>
+            <div class="d-flex align-items-center gap-1">
+                {% if client.can_manage_events %}
                     <button
                         class="btn btn-sm btn-outline-primary"
-                        hx-get="{{ url_for('event-export-modal', event_uniq_id=event.uniq_id) }}"
                         hx-push-url="false"
+                        hx-get="{{ url_for(
+                            'admin-event-modal',
+                            admin_tab=admin_tab,
+                            event_uniq_id=event.uniq_id,
+                            action='update',
+                        ) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
-                    >
-                        <i class="bi-box-arrow-right"></i>
-                        {% if view == 'card' %}<span class="ms-1">{{ _('Export') }}</span>{% endif %}
-                    </button>
-                </span>
-            {% endif %}
+                        {{ macros.tooltip_attributes('info', _('Edit the properties of the event.'), 'top') }}
+                    ><i class="bi-pencil-fill"></i></button>
+                {% endif %}
+                {% if client.can_create_events %}
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        hx-push-url="false"
+                        hx-get="{{ url_for(
+                            'admin-event-modal',
+                            admin_tab=admin_tab,
+                            event_uniq_id=event.uniq_id,
+                            action='clone',
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        {{ macros.tooltip_attributes('info', _('Duplicate the event.'), 'top') }}
+                    ><i class="bi-copy"></i></button>
+                {% endif %}
+                {% if client.can_manage_events %}
+                    <button
+                        class="btn btn-sm btn-outline-danger"
+                        hx-push-url="false"
+                        hx-get="{{ url_for(
+                            'admin-event-delete-modal',
+                            admin_tab=admin_tab,
+                            event_uniq_id=event.uniq_id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        {{ macros.tooltip_attributes('info', _('Archive the event.'), 'top') }}
+                    ><i class="bi-archive-fill"></i></button>
+                {% endif %}
+            </div>
         </div>
-        <div class="d-flex align-items-center gap-1">
-            {% if client.can_manage_events and event.are_all_plugins_enabled %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    hx-push-url="false"
-                    hx-get="{{ url_for(
-                        'admin-event-modal',
-                        admin_tab=admin_tab,
-                        event_uniq_id=event.uniq_id,
-                        action='update',
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    {{ macros.tooltip_attributes('info', _('Edit the properties of the event.'), 'top') }}
-                ><i class="bi-pencil-fill"></i></button>
-            {% endif %}
-            {% if client.can_create_events and event.are_all_plugins_enabled %}
-                <button
-                    class="btn btn-sm btn-outline-primary"
-                    hx-push-url="false"
-                    hx-get="{{ url_for(
-                        'admin-event-modal',
-                        admin_tab=admin_tab,
-                        event_uniq_id=event.uniq_id,
-                        action='clone',
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    {{ macros.tooltip_attributes('info', _('Duplicate the event.'), 'top') }}
-                ><i class="bi-copy"></i></button>
-            {% endif %}
-            {% if client.can_manage_events and event.are_all_plugins_enabled %}
-                <button
-                    class="btn btn-sm btn-outline-danger"
-                    hx-push-url="false"
-                    hx-get="{{ url_for(
-                        'admin-event-delete-modal',
-                        admin_tab=admin_tab,
-                        event_uniq_id=event.uniq_id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
-                    {{ macros.tooltip_attributes('info', _('Archive the event.'), 'top') }}
-                ><i class="bi-archive-fill"></i></button>
-            {% endif %}
-        </div>
-    </div>
+    {% endif %}
 {% endmacro %}
