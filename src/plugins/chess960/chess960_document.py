@@ -7,7 +7,7 @@ from data.print_documents.documents import (
     PrintDocument,
 )
 from plugins.chess960.utils import board_svg
-from utils.file import image_file_inline_url, ttf_file_inline_url
+from utils.file import ttf_file_inline_url
 
 
 class Chess960PrintDocument(PrintDocument):
@@ -36,9 +36,6 @@ class Chess960PrintDocument(PrintDocument):
             'sharly_chess_config': SharlyChessConfig(),
             'font_family': font_file.stem,
             'font_url': ttf_file_inline_url(font_file),
-            'charly_chess_logo_url': image_file_inline_url(
-                BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
-            ),
             'positions': {number: board_svg(number) for number in range(1, 961)},
             'event': self.event,
         }

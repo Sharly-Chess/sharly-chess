@@ -10,20 +10,6 @@
 body {
     margin: 2rem auto;
 }
-body::after {
-    content: "";
-    background-image: url("{{ charly_chess_logo_url }}");
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: contain;
-    opacity: 0.15;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    position: fixed;
-    z-index: -1;
-}
 h1, h2 {
     text-align: center;
     font-weight: bold;
