@@ -877,7 +877,6 @@ body[data-bs-theme="dark"] .htmx-indicator {
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    overflow-x: auto;
     padding: .1rem;
 }
 
