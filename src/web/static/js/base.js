@@ -244,6 +244,23 @@ window.addEventListener("show.bs.dropdown", function(event) {
     closeTooltips();
 });
 
+// Flip hover-opened dropdown submenus to the left when they would overflow the
+// right edge of the viewport.
+function positionDropdownSubmenu(submenu) {
+    const menu = submenu.querySelector(':scope > .dropdown-menu');
+    if (!menu) return;
+    submenu.classList.remove('dropdown-submenu-flip-left');
+    if (menu.getBoundingClientRect().right > document.documentElement.clientWidth) {
+        submenu.classList.add('dropdown-submenu-flip-left');
+    }
+}
+document.addEventListener('mouseover', function(event) {
+    const submenu = event.target.closest && event.target.closest('.dropdown-submenu');
+    if (submenu) {
+        requestAnimationFrame(() => positionDropdownSubmenu(submenu));
+    }
+});
+
 const saveState = (element, isOpen) => {
     if (!element.id || element.classList.contains('collapse-state-not-saved')) return;
     const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');

@@ -1087,6 +1087,10 @@ body[data-bs-theme="dark"] .htmx-indicator {
     left: 100%;
     margin-top: -37px;
 }
+.dropdown-submenu.dropdown-submenu-flip-left:hover > .dropdown-menu {
+    left: auto;
+    right: 100%;
+}
 .dropdown-toggle::after {
     font-size: var(--font-md);
     margin-bottom: -2px;
