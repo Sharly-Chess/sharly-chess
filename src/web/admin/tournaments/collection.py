@@ -21,6 +21,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
         summary=(
             ComponentPlacement('participants', 'ms-auto'),
             ComponentPlacement('round_progress'),
+            ComponentPlacement('illegal_moves'),
             ComponentPlacement('rating', 'me-auto'),
         ),
         body=(

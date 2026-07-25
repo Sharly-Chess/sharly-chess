@@ -109,6 +109,27 @@
     </span>
 {% endmacro %}
 
+{% macro illegal_moves(item, view, placement) %}
+    {% if not item.record_illegal_moves %}
+        {% set text = _('Illegal moves are not recorded.') %}
+    {% else %}
+        {% set text = ngettext(
+            'At most %(num)d illegal move is recorded.',
+            'At most %(num)d illegal moves are recorded.',
+            item.record_illegal_moves,
+        ) %}
+    {% endif %}
+    <span class="text-nowrap" {{ macros.tooltip_attributes('info', text, 'top') }}>
+        {% if not item.record_illegal_moves %}
+            <i class="bi-flag text-secondary"></i>
+        {% else %}
+            {% for i in range(item.record_illegal_moves) %}
+                <i class="bi-flag-fill"></i>
+            {% endfor %}
+        {% endif %}
+    </span>
+{% endmacro %}
+
 {% macro time_control(item, view, placement) %}
     {% set tournament = item %}
     {% if tournament.time_control_trf25 %}
@@ -407,7 +428,10 @@
                 {% if tournament.chief_arbiter %}
                     {{ tournament.chief_arbiter.full_name }}
                 {% else %}
-                    <span class="text-secondary"><i>{{ _('Undefined *** SINGULAR') }}</i></span>
+                    <span
+                        class="text-secondary"
+                        {{ macros.tooltip_attributes('info', _('Use the Staff tab to declare arbiters.'), 'right') }}
+                    ><i>{{ _('Undefined *** SINGULAR') }}</i></span>
                 {% endif %}
             </div>
             <div>
@@ -419,7 +443,10 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <span class="text-secondary"><i>{{ _('None') }}</i></span>
+                    <span
+                        class="text-secondary"
+                        {{ macros.tooltip_attributes('info', _('Use the Staff tab to declare arbiters.'), 'right') }}
+                    ><i>{{ _('None') }}</i></span>
                 {% endif %}
             </div>
         </section>
@@ -484,20 +511,28 @@
                         </li>
                     {% endif %}
                     <li>
-                        <button
-                            class="dropdown-item text-nowrap"
-                            hx-get="{{ url_for(
-                                'documents-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=tournament.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
+                        <span
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _('Generate documents (players, results, etc.).'),
+                                'top',
+                            ) }}
                         >
-                            <i class="bi-file-earmark-text-fill pe-1"></i>{{ _('Documents') }}
-                        </button>
+                            <button
+                                class="dropdown-item text-nowrap"
+                                hx-get="{{ url_for(
+                                    'documents-modal',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                            >
+                                <i class="bi-file-earmark-text-fill pe-1"></i>{{ _('Documents') }}
+                            </button>
+                        </span>
                     </li>
                     {% if tournament.started %}
                         <li>
@@ -613,18 +648,26 @@
                         </button>
                     </li>
                     <li>
-                        <button
-                            class="dropdown-item text-nowrap"
-                            hx-get="{{ url_for(
-                                'admin-random-player',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=tournament.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
+                        <span
+                            {{ macros.tooltip_attributes(
+                                'info',
+                                _('May be used for per-round prize giveaways etc.'),
+                                'top',
+                            ) }}
                         >
-                            <i class="bi-dice-3-fill pe-1"></i>{{ _('Choose a random player') }}
-                        </button>
+                            <button
+                                class="dropdown-item text-nowrap"
+                                hx-get="{{ url_for(
+                                    'admin-random-player',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    tournament_id=tournament.id,
+                                ) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            >
+                                <i class="bi-dice-3-fill pe-1"></i>{{ _('Choose a random player') }}
+                            </button>
+                        </span>
                     </li>
                     {% for menu_items_template in plugin_card_action_menu_items_templates %}
                         <li><hr class="dropdown-divider"></li>
