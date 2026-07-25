@@ -13,7 +13,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
     components_template='/admin/rotators/rotator_components.j2',
     card=CardLayout(
         header=(ComponentPlacement('identity', 'flex-grow-1 min-width-0'),),
-        summary=(ComponentPlacement('coverage', 'mx-auto'),),
+        summary=(ComponentPlacement('screen_assignments', 'mx-auto'),),
         body=(
             ComponentPlacement('delay'),
             ComponentPlacement('timer'),
@@ -31,7 +31,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
             ListColumn('delay', label=_('Delay')),
             ListColumn('timer', label=_('Timer')),
             ListColumn(
-                'coverage',
+                'screen_assignments',
                 label=_('Screens / Multi-Screens'),
                 width='minmax(11rem, 1fr)',
             ),

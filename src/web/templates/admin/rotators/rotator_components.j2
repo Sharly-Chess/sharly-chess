@@ -38,7 +38,7 @@
     </button>
 {% endmacro %}
 
-{% macro coverage(item, view, placement) %}
+{% macro screen_assignments(item, view, placement) %}
     {% if view == 'card' %}
         <span class="d-inline-flex align-items-center gap-3">
             {{ screens_count(item, view, placement) }}
