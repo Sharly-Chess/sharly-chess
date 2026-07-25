@@ -6852,12 +6852,6 @@ msgstr ""
 msgid "Staff member roles"
 msgstr ""
 
-msgid "Standalone"
-msgstr ""
-
-msgid "Standalone screen"
-msgstr ""
-
 msgid "Standard"
 msgstr ""
 
@@ -9247,4 +9241,3 @@ msgstr ""
 
 #~ msgid "Enable/disable the details on the cards below."
 #~ msgstr ""
-

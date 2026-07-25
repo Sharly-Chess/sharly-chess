@@ -29,8 +29,8 @@
     {% endif %}
 {% endmacro %}
 
-{% macro coverage(item, view, placement) %}
-    {% set coverage_content %}
+{% macro screen_sets(item, view, placement) %}
+    {% set screen_sets_content %}
         {% if item.screen_type.has_screen_sets %}
             <span class="text-nowrap">
                 <i class="bi-collection-fill pe-1 text-secondary"></i>
@@ -40,8 +40,6 @@
                     item.sorted_screen_sets|length,
                 ) }}
             </span>
-        {% else %}
-            <span class="text-secondary">{{ _('Standalone') }}</span>
         {% endif %}
     {% endset %}
     {% if view == 'list' and not item.family and item.screen_type.has_screen_sets %}
@@ -58,10 +56,10 @@
             _('You are not allowed to manage screens.'),
             'collection-inline-edit-label-group',
         ) %}
-            {{ coverage_content }}
+            {{ screen_sets_content }}
         {% endcall %}
     {% else %}
-        {{ coverage_content }}
+        {{ screen_sets_content }}
     {% endif %}
 {% endmacro %}
 
@@ -95,8 +93,6 @@
                 <h6>{{ _('Content') }}</h6>
                 {% if screen_type.card_template %}
                     {% include screen_type.card_template %}
-                {% else %}
-                    <span class="text-secondary">{{ _('Standalone screen') }}</span>
                 {% endif %}
             </section>
         {% endif %}

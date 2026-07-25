@@ -6854,12 +6854,6 @@ msgstr "Informations"
 msgid "Staff member roles"
 msgstr "Rôles"
 
-msgid "Standalone"
-msgstr "Autonome"
-
-msgid "Standalone screen"
-msgstr "Écran autonome"
-
 msgid "Standard"
 msgstr "Standard"
 
@@ -9249,4 +9243,3 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Enable/disable the details on the cards below."
 #~ msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."
-
