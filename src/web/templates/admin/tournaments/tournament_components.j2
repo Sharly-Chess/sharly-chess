@@ -452,7 +452,7 @@
         </section>
     {% endset %}
 
-    <div class="collection-details-grid {% if view != 'card' %}collection-details-grid-triple{% endif %}">
+    <div class="collection-details-grid {% if view == 'card' %}collection-details-grid-single{% else %}collection-details-grid-triple{% endif %}">
         {% if view == 'card' %}
             {{ narrow_sections }}
             {{ arbiters_section }}
