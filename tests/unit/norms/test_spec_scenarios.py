@@ -1250,6 +1250,58 @@ class TestRule_1_5_6a:
         # Player 1 missed >1 round → excluded → 39 eligible players → fails.
         assert compute_high_level_tournament(tournament) is False
 
+    def test_in_progress_round_keeps_completed_rounds_correct(self):
+        """A round whose results are still pending must not count as a missed
+        round. Otherwise a player who already missed one round would reach two
+        misses, drop out of the eligible set, and corrupt the counts of the
+        already-completed rounds until every result is entered."""
+        from data.norms import compute_high_level_tournament_trail
+        from data.pairings.systems import SwissPairingSystem
+
+        def _pairing(result):
+            return SimpleNamespace(
+                result=result,
+                opponent=None,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        players = {}
+        for i in range(1, 41):
+            pairings = {}
+            for r in range(1, 10):
+                if r == 9:
+                    result = Result.NO_RESULT  # round 9 in progress
+                elif i == 1 and r == 3:
+                    result = Result.ZERO_POINT_BYE  # player 1's single miss
+                else:
+                    result = Result.DRAW
+                pairings[r] = _pairing(result)
+            players[i] = SimpleNamespace(
+                rating_type=PlayerRatingType.FIDE,
+                federation=Federation('USA'),
+                title=PlayerTitle.NONE,
+                rating=2200,
+                pairings_by_round=pairings,
+            )
+        tournament = SimpleNamespace(
+            event=SimpleNamespace(federation='FRA'),
+            rounds=9,
+            pairing_system=SwissPairingSystem(),
+            tournament_players_by_id=players,
+        )
+        present_by_round = {
+            row.round_: row.fide_rated_present
+            for row in compute_high_level_tournament_trail(tournament)
+        }
+        # Player 1 (one bye) stays eligible despite the pending round 9, so the
+        # completed rounds still count all 40 eligible players (round 3 shows 39
+        # only because player 1 is absent that round).
+        assert present_by_round[1] == 40
+        assert present_by_round[8] == 40
+        assert present_by_round[3] == 39
+        assert present_by_round[9] == 0
+
     def test_not_high_level_for_round_robin(self):
         """1.5.6a is Swiss-only. A 40-player Round-Robin that would pass
         every other criterion must still fail."""
@@ -1465,6 +1517,51 @@ class TestRule_1_4_3d_eligibility:
         exemption = compute_big_tournament_exemption(self._tournament(players))
         # The doomed player contributes to NO round. Every round has 11.
         assert exemption.foreigners == 11
+
+    def test_in_progress_round_keeps_completed_rounds_correct(self):
+        """A round whose results are still pending must not count as a missed
+        round, so a player with one bye stays eligible and the completed
+        rounds keep their full counts while the current round is played."""
+        from data.norms import compute_big_tournament_exemption_trail
+
+        def _pairing(result):
+            return SimpleNamespace(
+                result=result,
+                opponent=None,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        def _player(federation, bye_round=None):
+            pairings = {}
+            for r in range(1, 10):
+                if r == 9:
+                    result = Result.NO_RESULT  # round 9 in progress
+                elif r == bye_round:
+                    result = Result.ZERO_POINT_BYE
+                else:
+                    result = Result.DRAW
+                pairings[r] = _pairing(result)
+            return SimpleNamespace(
+                rating_type=PlayerRatingType.FIDE,
+                federation=Federation(federation),
+                title=PlayerTitle.GRANDMASTER,
+                rating=2500,
+                pairings_by_round=pairings,
+            )
+
+        players = [_player('USA') for _ in range(3)]
+        players.append(_player('USA', bye_round=3))  # one bye → still eligible
+        players += [_player('GER') for _ in range(4)]
+        players += [_player('ESP') for _ in range(4)]
+        foreigners_by_round = {
+            row.round_: row.foreigners
+            for row in compute_big_tournament_exemption_trail(self._tournament(players))
+        }
+        assert foreigners_by_round[1] == 12
+        assert foreigners_by_round[8] == 12
+        assert foreigners_by_round[3] == 11  # bye player absent that round
+        assert foreigners_by_round[9] == 0
 
     def test_pab_does_not_count_as_missed_round(self):
         """Spec: "players will be counted only if they miss at most one
