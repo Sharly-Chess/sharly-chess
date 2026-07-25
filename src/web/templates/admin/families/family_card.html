@@ -22,9 +22,11 @@
             <div>
                 {{ _('Selection: %(selection)s', selection=family.numbers_str) }}
             </div>
-            <div>
-                {{ _('Columns:') }} {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
-            </div>
+            {% if family.screen_type.multi_column_allowed %}
+                <div>
+                    {{ _('Columns:') }} {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+                </div>
+            {% endif %}
             {% if screen_type.has_exit_button %}
                 <div>
                     <i class="bi-x-circle pe-1"></i>
@@ -36,10 +38,6 @@
                     {% endif %}
                 </div>
             {% endif %}
-            {% if screen_type.card_detail_template %}
-                {% set data = screen_type.family_card_context(family) %}
-                {% include screen_type.card_detail_template %}
-            {% endif %}
             <div>
                 <i class="bi-hand-index pe-1"></i>
                 {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}
@@ -48,6 +46,10 @@
                 <i class="bi-clock-fill pe-1"></i>
                 {% if family.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
             </div>
+            {% if screen_type.card_detail_template %}
+                {% set data = screen_type.family_card_context(family) %}
+                {% include screen_type.card_detail_template %}
+            {% endif %}
             {% if family.message_text %}
                 <div
                         class="px-2 alert-message screen-alert-message"

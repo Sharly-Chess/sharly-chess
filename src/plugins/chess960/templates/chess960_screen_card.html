@@ -1,0 +1,14 @@
+<div class="text-center">
+    {% if data.chess960_number %}
+        {{ _('Position #%(number)d', number=data.chess960_number) }}<br/>
+    {% else %}
+        <span class="fst-italic">
+            {{ _('Position not set') }}
+        </span>
+    {% endif %}
+</div>
+<div class="d-flex align-items-center">
+    <div class="mx-auto" style="height: 180px; width: 180px;" >
+        {{ data.board_svg | safe }}
+    </div>
+</div>

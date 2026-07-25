@@ -4,9 +4,11 @@
         {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
     </div>
 {% endif %}
-<div>
-    {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
-</div>
+{% if screen.screen_type.multi_column_allowed %}
+    <div>
+        {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+    </div>
+{% endif %}
 <div>
     <i class="bi-hand-index pe-1"></i>
     {{ _('Menu label: %(menu_label)s', menu_label=screen.menu_entry_label) }}

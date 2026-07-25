@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ document.title }}</title>
+        <style>
+            {% include 'chess960_positions.css' %}
+        </style>
+    </head>
+    <body>
+        <h1>{{ _('All Chess960 positions') }}</h1>
+        <div class="positions-wrapper">
+            {% for number, svg in positions.items() %}
+                <div class="position-wrapper">
+                    <h2>
+                        {{ _('Position #%(number)d', number=number) }}
+                    </h2>
+                    {{ svg | safe }}
+                </div>
+            {% endfor %}
+        </div>
+    </body>
+</html>
