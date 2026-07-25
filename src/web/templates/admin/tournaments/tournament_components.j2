@@ -211,10 +211,12 @@
         {% for stored_id, tie_break in item.tie_breaks_by_id.items() %}
             {% if stored_id in invalid_messages_by_id %}
                 {% set badge_class = 'text-bg-danger' %}
+                {% set has_issue = true %}
                 {% set tooltip = tie_break.full_name ~ ': ' ~ invalid_messages_by_id[stored_id] %}
             {% else %}
                 {% set warning_message = tie_break.get_warning_for_tournament(item) %}
                 {% set badge_class = 'text-bg-warning' if warning_message else 'text-bg-secondary' %}
+                {% set has_issue = warning_message %}
                 {% set tooltip = tie_break.full_name ~ (': ' ~ warning_message if warning_message else '') %}
             {% endif %}
             <span
@@ -222,6 +224,7 @@
                 {{ macros.tooltip_attributes('', tooltip, 'top') }}
             >
                 {{ tie_break.acronym }}
+                {% if has_issue %}<i class="bi-exclamation-triangle-fill ps-1"></i>{% endif %}
             </span>
         {% endfor %}
     {% else %}
