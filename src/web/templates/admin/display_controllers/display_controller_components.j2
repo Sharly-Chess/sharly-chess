@@ -1,0 +1,143 @@
+{% macro item_class(item, view) -%}
+    collection-status-{{ 'success' if item.public else 'warning' }}
+{%- endmacro %}
+
+{% macro identity(item, view, placement) %}
+    <span class="d-inline-flex align-items-center gap-2 min-width-0">
+        {% if client.can_manage_screens %}{{ macros.display_controller_visibility_icon(item, '') }}{% endif %}
+        <span class="fw-bold text-truncate">{{ item.name }}</span>
+    </span>
+{% endmacro %}
+
+{% macro assignment(item, view, placement) %}
+    <span class="{% if not item.assigned_object %}text-secondary{% endif %} text-truncate">
+        {{ item.assigned_description or _('Neither screen nor rotator currently assigned') }}
+    </span>
+{% endmacro %}
+
+{% macro visibility(item, view, placement) %}
+    {% if item.public %}
+        <span class="text-success text-nowrap"><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
+    {% else %}
+        <span class="text-warning text-nowrap"><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro actions(item, view, placement) %}
+    {% set display_controller = item %}
+    <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-1">
+            {% if client.can_manage_screens %}
+                {% if display_controller.assigned_object %}
+                    <a
+                        class="btn btn-sm btn-outline-primary"
+                        href="{{ url_for(
+                            'user-display-controller',
+                            event_uniq_id=admin_event.uniq_id,
+                            display_controller_id=display_controller.id,
+                        ) }}"
+                        target="_blank"
+                        {{ macros.tooltip_attributes('info', _('Go to the display controller.'), 'top') }}
+                    ><i class="bi-eye"></i></a>
+                {% endif %}
+                <div
+                    class="dropdown d-inline"
+                    {{ macros.tooltip_attributes('info', _('Assign a screen to the controller.'), 'top') }}
+                >
+                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi-box-arrow-in-right"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for basic_screen in sorted_screens %}
+                            {% if loop.changed(basic_screen.type) %}
+                                <li><h6 class="dropdown-header">{{ basic_screen.type_str }}</h6></li>
+                            {% endif %}
+                            <li>
+                                <button
+                                    class="dropdown-item text-start"
+                                    hx-patch="{{ url_for(
+                                        'admin-display-controller-assign',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        display_controller_id=display_controller.id,
+                                        type='screen',
+                                        object_uniq_id=basic_screen.uniq_id,
+                                    ) }}"
+                                    hx-indicator="#please-wait"
+                                >
+                                    {{ macros.screen_type_icon(basic_screen.screen_type) }} <b>{{ basic_screen.name }}</b>
+                                </button>
+                            </li>
+                        {% endfor %}
+                        {% if admin_event.sorted_rotators and sorted_screens %}
+                            <li><hr class="dropdown-divider"></li>
+                        {% endif %}
+                        {% for rotator in admin_event.sorted_rotators %}
+                            <li>
+                                <button
+                                    class="dropdown-item text-start"
+                                    hx-patch="{{ url_for(
+                                        'admin-display-controller-assign',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        display_controller_id=display_controller.id,
+                                        type='rotator',
+                                        object_uniq_id=rotator.name,
+                                    ) }}"
+                                    hx-indicator="#please-wait"
+                                >
+                                    {{ macros.rotator_icon() }} <b>{{ rotator.name }}</b>
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% if display_controller.assigned_object %}
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        hx-patch="{{ url_for(
+                            'admin-display-controller-clear',
+                            event_uniq_id=admin_event.uniq_id,
+                            display_controller_id=display_controller.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        {{ macros.tooltip_attributes('info', _('Remove the screen from the display controller.'), 'top') }}
+                    ><i class="bi-x-lg"></i></button>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if client.can_manage_screens %}
+            <div class="d-flex align-items-center gap-1">
+                {% call macros.action_tooltip('info', _('Edit the properties of the display controller.'), 'top') %}
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        hx-get="{{ url_for(
+                            'admin-display-controller-modal',
+                            action='update',
+                            event_uniq_id=admin_event.uniq_id,
+                            display_controller_id=display_controller.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    ><i class="bi-pencil-fill"></i></button>
+                {% endcall %}
+                {% call macros.action_tooltip('info', _('Delete the display controller.'), 'top') %}
+                    <button
+                        class="btn btn-sm btn-outline-danger"
+                        hx-get="{{ url_for(
+                            'admin-display-controller-modal',
+                            action='delete',
+                            event_uniq_id=admin_event.uniq_id,
+                            display_controller_id=display_controller.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    ><i class="bi-trash-fill"></i></button>
+                {% endcall %}
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}

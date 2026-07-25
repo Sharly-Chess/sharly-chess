@@ -40,13 +40,15 @@ class TestFamilyScreensFunctionality:
         name = 'Test family'
         modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
-        card = page.locator(f"div.card:has-text('{name}')")
-        expect(card).to_be_visible()
+        item = page.get_by_test_id('families-item').filter(has_text=name)
+        expect(item).to_be_visible()
 
-        button = card.locator('button[hx-get*="delete"]')
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
+        expect(
+            page.get_by_test_id('families-item').filter(has_text=name)
+        ).not_to_be_attached()
 
     def test_results_entry_family_by_parts(
         self,

@@ -1,0 +1,67 @@
+{% macro component(component_library, placement, item, view) %}
+    {% set component_content %}
+        {% if placement.template %}
+            {% include placement.template %}
+        {% else %}
+            {% set renderer = component_library|attr(placement.component_id) %}
+            {{ renderer(item, view, placement) }}
+        {% endif %}
+    {% endset %}
+    {% if component_content|trim %}
+        <div class="collection-component collection-component-{{ placement.component_id }} {{ placement.css_class }}">
+            {{ component_content }}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro list_grid_template(collection, hidden_list_columns=[]) -%}
+    {% set visible_columns = collection.list.columns
+        |rejectattr('component_id', 'in', hidden_list_columns)
+        |list %}
+    {% set drag_column = visible_columns
+        |selectattr('component_id', 'equalto', 'drag_handle')
+        |first %}
+    {% if drag_column %}{{ drag_column.width }} {% endif %}
+    {% if collection.list.details %}1.75rem {% endif %}
+    {% for column in visible_columns
+        |rejectattr('component_id', 'equalto', 'drag_handle')
+    %}{{ column.width }} {% endfor %}
+{%- endmacro %}
+
+{% macro column_edit_button(
+    disabled,
+    url,
+    tooltip_category,
+    tooltip_message,
+    label_class='',
+    opens_modal=true,
+    button_class='',
+    aria_label=''
+) %}
+    <span
+        {% if tooltip_message %}
+            {{ macros.tooltip_attributes(tooltip_category, tooltip_message, 'top') }}
+        {% endif %}
+    >
+        <button
+            class="collection-inline-edit {{ button_class }}"
+            {% if aria_label or tooltip_message %}
+                aria-label="{{ aria_label or tooltip_message }}"
+            {% endif %}
+            {% if disabled %}
+                disabled
+            {% else %}
+                hx-get="{{ url }}"
+                {% if opens_modal %}
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% endif %}
+            {% endif %}
+        >
+            <span class="collection-inline-edit-label {{ label_class }}">{{ caller() }}</span>
+            <i class="bi-pencil-fill collection-inline-edit-icon"></i>
+        </button>
+    </span>
+{% endmacro %}

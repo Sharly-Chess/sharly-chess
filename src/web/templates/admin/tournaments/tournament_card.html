@@ -62,10 +62,10 @@
 {% endblock %}
 
 {% block card_text %}
-    {% set card_connexion_templates = get_tournament_card_connexion_templates(tournament) %}
-    {% if card_connexion_templates %}
+    {% set card_connection_templates = get_tournament_card_connection_templates(tournament) %}
+    {% if card_connection_templates %}
         <div class="card-block d-flex flex-column gap-1">
-            {% for template in card_connexion_templates %}
+            {% for template in card_connection_templates %}
                 {% include template %}
             {% endfor %}
         </div>

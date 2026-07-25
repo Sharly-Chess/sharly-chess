@@ -1,6 +1,6 @@
 import weakref
 from datetime import date
-from functools import total_ordering, cached_property, cache
+from functools import total_ordering, cached_property
 from typing import TYPE_CHECKING, Any
 
 from babel.lists import format_list
@@ -63,7 +63,6 @@ class Player:
         self.plugin_data = self._get_plugin_data()
 
     @staticmethod
-    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class

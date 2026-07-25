@@ -286,12 +286,12 @@ class BaseAccessLevelTest:
                 expect(input_screens_button).to_be_visible()
                 input_screens_button.click()
 
-        card = page.locator(f"div.card:has-text('{screen.name}')")
+        item = page.get_by_test_id('screens-item').filter(has_text=screen.name)
 
         if can_access:
-            expect(card).to_be_visible()
+            expect(item).to_be_visible()
         else:
-            expect(card).not_to_be_visible()
+            expect(item).not_to_be_visible()
 
         if can_access:
             # Test access to the input screen

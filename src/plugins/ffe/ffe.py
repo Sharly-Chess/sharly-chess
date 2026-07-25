@@ -136,6 +136,7 @@ from plugins.utils import (
     PluginUtils,
     PluginData,
     AccountPluginData,
+    TournamentConnectionField,
 )
 from utils.enum import (
     EventType,
@@ -143,6 +144,7 @@ from utils.enum import (
     Result,
     TournamentRating,
 )
+from web.admin.collection import ListColumn
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
 
@@ -153,6 +155,7 @@ if TYPE_CHECKING:
     from data.rule_sets import RuleSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
+    from web.admin.collection import AdminCollectionSpec
 
 
 class FfePluginHooks:
@@ -753,14 +756,31 @@ class FfePlugin(Plugin):
         return {'ffe_utils': FFEUtils}
 
     @hookimpl
-    def get_tournament_card_connexion_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
+    ) -> TournamentConnectionField | None:
         if tournament.event.is_team_event:
             return None
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
-        return '/ffe_tournament_card_connexion.html'
+        return TournamentConnectionField(
+            label=_('FFE'),
+            template='/ffe_tournament_connection_value.html',
+        )
+
+    @hookimpl
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: Optional['Event'],
+    ) -> None:
+        if collection_key != 'tournaments':
+            return
+        collection_spec.ensure_list_column(
+            ListColumn('transfer', label=_('Transfer')),
+            before='actions',
+        )
 
     @hookimpl
     def get_tournament_card_action_menu_items_template(self) -> str:

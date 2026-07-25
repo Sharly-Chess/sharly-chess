@@ -268,6 +268,30 @@ class SessionEventsShowDetails(BoolSessionVariable):
         return 'events_show_details'
 
 
+class SessionAdminCollectionViewMode(SubKeySessionVariable[str]):
+    """The preferred projection for each card-based admin collection."""
+
+    @property
+    def key(self) -> str:
+        return 'admin_collection_view_modes'
+
+    @property
+    def default_value(self) -> str:
+        return 'list'
+
+
+class SessionAdminCollectionShowDetails(SubKeySessionVariable[bool]):
+    """Whether every item in an admin collection should expose its details."""
+
+    @property
+    def key(self) -> str:
+        return 'admin_collection_show_details'
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
 class SessionTeamsShowRoster(BoolSessionVariable):
     @property
     def key(self) -> str:

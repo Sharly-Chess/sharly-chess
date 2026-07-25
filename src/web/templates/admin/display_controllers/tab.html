@@ -1,5 +1,10 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('display-controllers') %}
+{% set collection_view_mode = get_admin_collection_view_mode('display-controllers') %}
+{% set collection_show_details = get_admin_collection_show_details('display-controllers') %}
+{% set collection_url = url_for('admin-event-display-controllers-tab', event_uniq_id=admin_event.uniq_id) %}
+
 {% block top_left_nav %}
     {{ admin_macros.admin_title(
         _('Display controllers'),
@@ -12,6 +17,7 @@
 {% endblock %}
 
 {% block top_right_nav %}
+    {% include '/admin/common/collection_controls.html' %}
     {% if client.can_manage_screens %}
         <span
             {{ macros.tooltip_attributes(
@@ -37,43 +43,24 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row gy-2 gx-3">
-        {% if admin_display_controllers %}
-            {% for display_controller in admin_display_controllers %}
-                {% with
-                    card_url=
-                        ''
-                        if client.can_manage_screens or not display_controller.assigned_object else
-                        url_for('user-display-controller', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id),
-                    card_class='border-danger' if display_controller.private else ''
-                %}
-                    {% include 'display_controller_card.html' %}
-                {% endwith %}
-            {% endfor %}
-        {% else %}
-           <div class="mx-auto" style="max-width: 500px;">
-                <h5 class="mt-2 my-5 text-center">
-                    {{ _('No display controllers') }}
-                </h5>
-                {% if client.can_manage_screens %}
-                    <p>
-                        {{ _('Display controllers allow you to control screens at your event from your server (or any allowed device).') }}
-                    </p>
-                    <p>
-                        {{ _('Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator.') }}
-                    </p>
-                    <p>
-                        {{ _('From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:') }}
-                        <i class="bi bi-box-arrow-in-right ps-2"></i>
-                    </p>
-                    <p>
-                        {{ _('Any number of devices can be controlled by the same display controller.') }}
-                    </p>
-                    <p>
-                        {{ _('Create a display controller now to get started.') }}
-                    </p>
-               {% endif %}
-            </div>
-        {% endif %}
-    </div>
+    {% with
+        items=admin_display_controllers,
+        empty_message=_('No display controllers'),
+        sortable=false,
+        show_details=collection_show_details
+    %}
+        {% include '/admin/common/collection.html' %}
+    {% endwith %}
+    {% if not admin_display_controllers and client.can_manage_screens %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <p>{{ _('Display controllers allow you to control screens at your event from your server (or any allowed device).') }}</p>
+            <p>{{ _('Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator.') }}</p>
+            <p>
+                {{ _('From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:') }}
+                <i class="bi-box-arrow-in-right ps-2"></i>
+            </p>
+            <p>{{ _('Any number of devices can be controlled by the same display controller.') }}</p>
+            <p>{{ _('Create a display controller now to get started.') }}</p>
+        </div>
+    {% endif %}
 {% endblock %}

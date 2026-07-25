@@ -57,13 +57,17 @@ class TestSingleScreensFunctionality:
         modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
 
-        page.get_by_test_id('accordion-screen-type-input').click()
-        card = page.locator(f"div.card:has-text('{name}')")
-        expect(card).to_be_visible()
-        button = card.locator('button[hx-get*="delete"]')
+        screen_type_section = page.get_by_test_id('accordion-screen-type-input')
+        if screen_type_section.get_attribute('aria-expanded') == 'false':
+            screen_type_section.click()
+        item = page.get_by_test_id('screens-item').filter(has_text=name)
+        expect(item).to_be_visible()
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
+        expect(
+            page.get_by_test_id('screens-item').filter(has_text=name)
+        ).not_to_be_attached()
 
     def test_check_in_screen(
         self,

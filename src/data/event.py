@@ -3,7 +3,7 @@ import itertools
 from collections import defaultdict
 from contextlib import suppress
 from datetime import date, datetime
-from functools import total_ordering, cached_property, cache
+from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from types import NotImplementedType
@@ -68,7 +68,6 @@ class Event:
         self.stored_event: StoredEvent = stored_event
 
     @staticmethod
-    @cache
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class

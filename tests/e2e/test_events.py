@@ -19,9 +19,9 @@ class TestEventFunctionality:
         expect(page).to_have_url(f'/event/{EVENT_ID}/tournaments')
 
         page.goto('/current_events')
-        card = page.locator(f"div.card:has-text('Unique ID: {EVENT_ID}')")
-        expect(card).to_be_visible()
-        button = card.locator('button[hx-get*="delete"]')
+        item = page.get_by_test_id('events-item').filter(has_text=EVENT_ID)
+        expect(item).to_be_visible()
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
 
         modal = page.locator('.modal-dialog')
@@ -29,8 +29,8 @@ class TestEventFunctionality:
         modal.locator('#archive').check()
         modal.locator('button[type=submit]').click()
         page.goto('/event/current_events')
-        card = page.locator(f"div.card:has-text('Unique ID: {EVENT_ID}')")
-        expect(card).not_to_be_attached()
+        item = page.get_by_test_id('events-item').filter(has_text=EVENT_ID)
+        expect(item).not_to_be_attached()
 
     def test_rename_event(self, page: Page, api_request_context: APIRequestContext):
         new_uniq_id = EVENT_ID + '-2'

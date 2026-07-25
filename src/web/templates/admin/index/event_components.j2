@@ -1,0 +1,251 @@
+{% macro item_class(item, view) -%}
+    {%- if not item.are_all_plugins_enabled -%}
+        collection-status-danger
+    {%- elif item.public -%}
+        collection-status-success
+    {%- else -%}
+        collection-status-warning
+    {%- endif -%}
+{%- endmacro %}
+
+{% macro row_href(item, view, placement) %}
+    {% if item.are_all_plugins_enabled %}
+        {{ url_for('admin-event', event_uniq_id=item.uniq_id) }}
+    {% endif %}
+{% endmacro %}
+
+{% macro identity(item, view, placement) %}
+    <span class="d-inline-flex align-items-center gap-2 min-width-0">
+        <span class="fw-bold {% if view == 'list' %}text-truncate{% else %}collection-card-title{% endif %}">
+            {{ item.name }}
+        </span>
+        {% if not item.are_all_plugins_enabled %}
+            <i
+                class="bi-exclamation-triangle-fill text-danger"
+                {{ macros.tooltip_attributes(
+                    'warning',
+                    _(
+                        'One or more of the plugins required to use this event '
+                        'are disabled, making it inaccessible. You can enable '
+                        'plugins in the application settings.'
+                    ),
+                    'top',
+                ) }}
+            ></i>
+        {% endif %}
+    </span>
+{% endmacro %}
+
+{% macro date_range(item, view, placement) %}
+    <span class="{% if not item.tournament_count %}fst-italic text-secondary{% endif %} text-nowrap">
+        <i class="bi-calendar-range pe-1 text-secondary"></i>
+        {{ format_date_range(item.start_date, item.stop_date) }}
+        {% if not item.tournament_count %}({{ _('default') }}){% endif %}
+    </span>
+{% endmacro %}
+
+{% macro unique_id(item, view, placement) %}
+    <div class="collection-fact">
+        <span class="collection-fact-label"><i class="bi-question-circle-fill"></i>{{ _('Unique ID') }}</span>
+        {{ item.uniq_id }}
+    </div>
+{% endmacro %}
+
+{% macro visibility(item, view, placement) %}
+    {% if not hide_public_status|default(false) %}
+        {% if item.public %}
+            <span
+                class="text-success text-nowrap"
+                {{ macros.tooltip_attributes('info', _('This event is public (by default, screens are visible by the spectators).'), 'top') }}
+            ><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
+        {% else %}
+            <span
+                class="text-warning text-nowrap"
+                {{ macros.tooltip_attributes('info', _('This event is private (by default, screens are not visible by the spectators).'), 'top') }}
+            ><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro tournaments_count(item, view, placement) %}
+    <span class="{% if not item.tournament_count %}text-secondary{% endif %} text-nowrap">
+        <i class="bi-diagram-3-fill pe-1"></i>{{ item.tournament_count }}
+    </span>
+{% endmacro %}
+
+{% macro players_count(item, view, placement) %}
+    <span class="{% if not item.player_count %}text-secondary{% endif %} text-nowrap">
+        <i class="bi-people-fill pe-1"></i>{{ item.player_count }}
+    </span>
+{% endmacro %}
+
+{% macro teams_count(item, view, placement) %}
+    {% if item.is_team_event %}
+        <span
+            class="{% if not item.team_count %}text-secondary{% endif %} text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of teams: %(num)d', num=item.team_count), 'top') }}
+        >
+            <i class="bi-flag-fill pe-1"></i>{{ item.team_count }}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro plugin_health(item, view, placement) %}
+    {% if client.can_manage_events and item.enabled_plugins %}
+        <div class="collection-fact">
+            <span class="collection-fact-label"><i class="bi-plugin"></i>{{ _('Plugins') }}</span>
+            <span>
+                {{ item.enabled_plugins|length }}
+                <i
+                    class="{% if item.are_all_plugins_enabled %}bi-info-circle-fill{% else %}bi-exclamation-triangle-fill text-danger{% endif %} ps-1"
+                    {{ macros.tooltip_attributes('', item.plugins_tooltip_message, 'right') }}
+                ></i>
+            </span>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro details(item, view, placement) %}
+    {% set show_plugin_details = view != 'card' and client.can_manage_events and item.enabled_plugins %}
+    <div
+        class="collection-details-grid
+            {% if view == 'card' %}
+                collection-details-grid-single
+            {% elif show_plugin_details %}
+                collection-details-grid-triple
+            {% endif %}"
+    >
+        <section class="collection-detail-section">
+            <h6>{{ _('Organisation') }}</h6>
+            <div class="{% if not item.organiser_name %}text-secondary{% endif %}">
+                <i class="bi-building-fill pe-1"></i>{{ item.organiser_name or _('No organiser') }}
+            </div>
+            <div class="{% if not item.organiser_director %}text-secondary{% endif %}">
+                <i class="bi-person-bounding-box pe-1"></i>{{ item.organiser_director or _('No director') }}
+            </div>
+            <div class="{% if not item.organiser_email %}text-secondary{% endif %}">
+                <i class="bi-envelope-fill pe-1"></i>
+                {% if item.organiser_email %}
+                    <a href="mailto:{{ item.organiser_email }}">{{ item.organiser_email }}</a>
+                {% else %}
+                    {{ _('No email') }}
+                {% endif %}
+            </div>
+            <div class="{% if not item.organiser_home_page %}text-secondary{% endif %}">
+                <i class="bi-box-arrow-up-right pe-1"></i>
+                {% if item.organiser_home_page %}
+                    <a href="{{ item.organiser_home_page }}" target="_blank">{{ item.organiser_home_page }}</a>
+                {% else %}
+                    {{ _('No home page') }}
+                {% endif %}
+            </div>
+        </section>
+        <section class="collection-detail-section">
+            <h6>{{ _('Event content') }}</h6>
+            {% if item.is_team_event %}<div><i class="bi-flag-fill pe-1"></i>{{ _('Teams: %(num)d', num=item.team_count) }}</div>{% endif %}
+            <div><i class="bi-clock-fill pe-1"></i>{{ _('Timers: %(num)d', num=item.timer_count) }}</div>
+            <div><i class="bi-fullscreen pe-1"></i>{{ _('Screens: %(num)d', num=item.screen_count) }}</div>
+            <div><i class="bi-arrows-fullscreen pe-1"></i>{{ _('Multi-screens: %(num)d', num=item.family_count) }}</div>
+            <div><i class="bi-repeat pe-1"></i>{{ _('Rotators: %(num)d', num=item.rotator_count) }}</div>
+        </section>
+        {% if show_plugin_details %}
+            <section class="collection-detail-section">
+                <h6>{{ _('Plugins') }}</h6>
+                <div class="d-flex flex-column gap-1">
+                    {% for plugin in item.plugins %}
+                        <div class="{% if not plugin.is_enabled %}text-danger fw-bold{% endif %}">
+                            {% if plugin.is_enabled %}
+                                {{ plugin.name }}
+                            {% else %}
+                                {{ _('{plugin} (disabled)').format(plugin=plugin.name) }}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro actions(item, view, placement) %}
+    {% set event = item %}
+    {% if event.are_all_plugins_enabled and (client.can_manage_events or client.can_create_events) %}
+        <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-1">
+                {% if client.can_manage_events %}
+                    <span
+                        {{ macros.tooltip_attributes('info', _('Export event in SCE format'), 'top') }}
+                    >
+                        <button
+                            class="btn btn-sm btn-outline-primary"
+                            hx-get="{{ url_for('event-export-modal', event_uniq_id=event.uniq_id) }}"
+                            hx-push-url="false"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-box-arrow-right"></i>
+                            {% if view == 'card' %}<span class="ms-1">{{ _('Export') }}</span>{% endif %}
+                        </button>
+                    </span>
+                {% endif %}
+            </div>
+            <div class="d-flex align-items-center gap-1">
+                {% if client.can_manage_events %}
+                    {% call macros.action_tooltip('info', _('Edit the properties of the event.'), 'top') %}
+                        <button
+                            class="btn btn-sm btn-outline-primary"
+                            hx-push-url="false"
+                            hx-get="{{ url_for(
+                                'admin-event-modal',
+                                admin_tab=admin_tab,
+                                event_uniq_id=event.uniq_id,
+                                action='update',
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        ><i class="bi-pencil-fill"></i></button>
+                    {% endcall %}
+                {% endif %}
+                {% if client.can_create_events %}
+                    {% call macros.action_tooltip('info', _('Duplicate the event.'), 'top') %}
+                        <button
+                            class="btn btn-sm btn-outline-primary"
+                            hx-push-url="false"
+                            hx-get="{{ url_for(
+                                'admin-event-modal',
+                                admin_tab=admin_tab,
+                                event_uniq_id=event.uniq_id,
+                                action='clone',
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        ><i class="bi-copy"></i></button>
+                    {% endcall %}
+                {% endif %}
+                {% if client.can_manage_events %}
+                    {% call macros.action_tooltip('info', _('Archive the event.'), 'top') %}
+                        <button
+                            class="btn btn-sm btn-outline-danger"
+                            hx-push-url="false"
+                            hx-get="{{ url_for(
+                                'admin-event-delete-modal',
+                                admin_tab=admin_tab,
+                                event_uniq_id=event.uniq_id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        ><i class="bi-archive-fill"></i></button>
+                    {% endcall %}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}

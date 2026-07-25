@@ -54,6 +54,57 @@ setSize();
 window.addEventListener('resize', setSize);
 window.addEventListener('htmx:afterSettle', function () { setSize(); closeTooltips(); });
 
+const collectionInteractiveSelector = [
+    'a',
+    'button',
+    'input',
+    'select',
+    'textarea',
+    'label',
+    '[role="button"]',
+    '[contenteditable="true"]',
+    '[hx-get]',
+    '[hx-post]',
+    '[hx-put]',
+    '[hx-patch]',
+    '[hx-delete]',
+    '[data-bs-toggle]',
+    '.handle',
+].join(',');
+
+window.addEventListener('click', function (event) {
+    const item = event.target.closest(
+        '[data-collection-row-href], [data-collection-card-href]'
+    );
+    if (
+        !item
+        || event.target.closest(collectionInteractiveSelector)
+        || !window.getSelection()?.isCollapsed
+    ) {
+        return;
+    }
+    window.location.assign(
+        item.dataset.collectionRowHref || item.dataset.collectionCardHref
+    );
+});
+
+window.addEventListener('keydown', function (event) {
+    const item = event.target.closest(
+        '[data-collection-row-href], [data-collection-card-href]'
+    );
+    if (
+        !item
+        || event.target !== item
+        || !['Enter', ' '].includes(event.key)
+    ) {
+        return;
+    }
+    event.preventDefault();
+    window.location.assign(
+        item.dataset.collectionRowHref || item.dataset.collectionCardHref
+    );
+});
+
 window.addEventListener("htmx:wsBeforeMessage", function(evt) {
     try {
         const msg = JSON.parse(evt.detail.message);
@@ -193,12 +244,40 @@ window.addEventListener("show.bs.dropdown", function(event) {
     closeTooltips();
 });
 
+// Flip hover-opened dropdown submenus to the left when they would overflow the
+// right edge of the viewport.
+function positionDropdownSubmenu(submenu) {
+    const menu = submenu.querySelector(':scope > .dropdown-menu');
+    if (!menu) return;
+    submenu.classList.remove('dropdown-submenu-flip-left');
+    if (menu.getBoundingClientRect().right > document.documentElement.clientWidth) {
+        submenu.classList.add('dropdown-submenu-flip-left');
+    }
+}
+document.addEventListener('mouseover', function(event) {
+    const submenu = event.target.closest && event.target.closest('.dropdown-submenu');
+    if (submenu) {
+        requestAnimationFrame(() => positionDropdownSubmenu(submenu));
+    }
+});
+
 const saveState = (element, isOpen) => {
     if (!element.id || element.classList.contains('collapse-state-not-saved')) return;
     const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
     states[element.id] = isOpen;
     localStorage.setItem('collapseStates', JSON.stringify(states));
 };
+
+function clearCollectionCollapseStates(collectionKey) {
+    const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
+    const idPrefix = `collection-${collectionKey}-details-`;
+    Object.keys(states).forEach(id => {
+        if (id.startsWith(idPrefix)) {
+            delete states[id];
+        }
+    });
+    localStorage.setItem('collapseStates', JSON.stringify(states));
+}
 
 // Listen globally for Bootstrap collapse show/hide
 window.addEventListener('show.bs.collapse', e => saveState(e.target, true));
@@ -209,7 +288,7 @@ const restoreState = () => {
   const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
   Object.entries(states).forEach(([id, isOpen]) => {
     const el = document.getElementById(id);
-    if (!el) return;
+    if (!el || el.classList.contains('collapse-state-not-saved')) return;
     if (isOpen) {
         // Immediately show, bypassing Bootstrap animation
         el.classList.add('show');
@@ -241,6 +320,7 @@ window.addEventListener('htmx:beforeCleanupElement', function(event) {
 window.addEventListener('htmx:afterRequest', function() {
     // Refresh once after all out-of-band swaps.
     activateTooltips();
+    renderHumanizedTimeControls();
     closeTooltips();
     closeAirPickers();
 });
