@@ -141,12 +141,12 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         return {'cr_utils': CRUtils}
 
     @hookimpl
-    def get_tournament_card_connexion_template(
+    def get_tournament_card_connection_template(
         self, tournament: 'Tournament'
     ) -> str | None:
         if not CRUtils.get_tournament_plugin_data(tournament).tnr:
             return None
-        return '/chess_results_tournament_card_connexion.html'
+        return '/chess_results_tournament_card_connection.html'
 
     @hookimpl
     def get_tournament_card_action_menu_items_template(self) -> str:

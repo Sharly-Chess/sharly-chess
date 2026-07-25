@@ -184,12 +184,12 @@ class SCEPlugin(Plugin):
         return {'sce_utils': SCEUtils}
 
     @hookimpl
-    def get_tournament_card_connexion_template(
+    def get_tournament_card_connection_template(
         self, tournament: 'Tournament'
     ) -> str | None:
         if not SCEUtils.get_tournament_plugin_data(tournament).id:
             return None
-        return '/sce_tournament_card_connexion.html'
+        return '/sce_tournament_card_connection.html'
 
     @hookimpl
     def on_tournament_data_updated(

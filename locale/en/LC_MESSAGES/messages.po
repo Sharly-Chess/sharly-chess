@@ -34,6 +34,14 @@ msgid "%(first)s - %(last)s"
 msgstr ""
 
 #, python-format
+msgid "%(minutes)d min after"
+msgstr ""
+
+#, python-format
+msgid "%(minutes)d min before"
+msgstr ""
+
+#, python-format
 msgid "%(minutes)d minutes after"
 msgstr ""
 
@@ -168,8 +176,20 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d set"
+msgid_plural "%(num)d sets"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d team"
 msgid_plural "%(num)d teams"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d time"
+msgid_plural "%(num)d times"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -199,6 +219,10 @@ msgstr ""
 
 #, python-format
 msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
+msgstr ""
+
+#, python-format
+msgid "%(seconds)d sec."
 msgstr ""
 
 #, python-format
@@ -681,6 +705,9 @@ msgstr ""
 msgid "Actions / Access levels"
 msgstr ""
 
+msgid "Active *** ACTIVE ACCOUNT"
+msgstr "Active"
+
 msgid "Actual"
 msgstr ""
 
@@ -757,6 +784,9 @@ msgid "Add tournaments"
 msgstr ""
 
 msgid "Added automatically, on top of any manual points below."
+msgstr ""
+
+msgid "Additional information"
 msgstr ""
 
 msgid "Administration"
@@ -960,6 +990,9 @@ msgstr ""
 msgid "Arbiter: %(name)s"
 msgstr ""
 
+msgid "Arbiters"
+msgstr ""
+
 msgid "Archive"
 msgstr ""
 
@@ -1003,6 +1036,9 @@ msgid "Assign this team to a tournament now or leave unassigned."
 msgstr ""
 
 msgid "Assign to a display controller."
+msgstr ""
+
+msgid "Assigned display"
 msgstr ""
 
 msgid "At least a minimum or a maximum category must be defined."
@@ -1145,6 +1181,9 @@ msgid "Barbados"
 msgstr ""
 
 msgid "Base date"
+msgstr ""
+
+msgid "Base lineup"
 msgstr ""
 
 msgid "Base lineup:"
@@ -1467,6 +1506,9 @@ msgstr ""
 msgid "Captain: %(name)s"
 msgstr ""
 
+msgid "Card view"
+msgstr ""
+
 msgid "Cash"
 msgstr ""
 
@@ -1692,6 +1734,9 @@ msgstr ""
 msgid "Colour rule:"
 msgstr ""
 
+msgid "Colour thresholds"
+msgstr ""
+
 msgid "Columns"
 msgstr ""
 
@@ -1731,6 +1776,9 @@ msgstr ""
 msgid "Complete Team"
 msgstr ""
 
+msgid "Configuration"
+msgstr ""
+
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
 
@@ -1768,6 +1816,9 @@ msgid "Connection to the server failed (timeout)."
 msgstr ""
 
 msgid "Connection to the server failed."
+msgstr ""
+
+msgid "Connections"
 msgstr ""
 
 msgid "Consider all paired games for the final round as draws."
@@ -2178,6 +2229,9 @@ msgstr ""
 msgid "Definitive withdrawal"
 msgstr ""
 
+msgid "Delay"
+msgstr ""
+
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr ""
@@ -2326,6 +2380,9 @@ msgstr ""
 msgid "Display Controller"
 msgstr ""
 
+msgid "Display controller"
+msgstr ""
+
 msgid "Display controller [{display_controller}] has been created."
 msgstr ""
 
@@ -2348,6 +2405,9 @@ msgid "Display controllers allow you to control screens at your event from your 
 msgstr ""
 
 msgid "Display history on hover"
+msgstr ""
+
+msgid "Display options"
 msgstr ""
 
 msgid "Display the exit button"
@@ -2458,6 +2518,15 @@ msgid "Drag teams here"
 msgstr ""
 
 msgid "Drag the sets to order them."
+msgstr ""
+
+msgid "Drag to change the pairing order or tournament."
+msgstr ""
+
+msgid "Drag to reorder"
+msgstr ""
+
+msgid "Drag to reorder the category."
 msgstr ""
 
 msgid "Draw"
@@ -2741,6 +2810,9 @@ msgstr ""
 msgid "Edit the selected affiliation."
 msgstr ""
 
+msgid "Edit the sets displayed on the screen."
+msgstr ""
+
 msgid "Edit the sets of boards displayed on the screen."
 msgstr ""
 
@@ -2793,9 +2865,6 @@ msgid "Enable player check-in from check-in screens."
 msgstr ""
 
 msgid "Enable this account"
-msgstr ""
-
-msgid "Enable/disable the details on the cards below."
 msgstr ""
 
 #, python-format
@@ -2853,6 +2922,9 @@ msgstr ""
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
+msgid "Event content"
+msgstr ""
+
 msgid "Event export"
 msgstr ""
 
@@ -2893,6 +2965,9 @@ msgid "Existing players"
 msgstr ""
 
 msgid "Exit button:"
+msgstr ""
+
+msgid "Expand or collapse the details of every item."
 msgstr ""
 
 msgid "Experimental features"
@@ -3046,6 +3121,9 @@ msgid "Filter out players with a greater rating."
 msgstr ""
 
 msgid "Filter out players with a lower rating."
+msgstr ""
+
+msgid "Finished"
 msgstr ""
 
 msgid "Finland"
@@ -3228,6 +3306,9 @@ msgid "Genders"
 msgstr ""
 
 msgid "General"
+msgstr ""
+
+msgid "General configuration"
 msgstr ""
 
 msgid "Generate"
@@ -3482,6 +3563,9 @@ msgstr ""
 
 msgid "In-tournament"
 msgstr ""
+
+msgid "Inactive *** INACTIVE ACCOUNT"
+msgstr "Inactive"
 
 msgid "Include IDs and passwords for uploading results"
 msgstr ""
@@ -3839,6 +3923,9 @@ msgstr[1] ""
 msgid "Line not recognized: {line}"
 msgstr ""
 
+msgid "Lineup"
+msgstr ""
+
 #, python-format
 msgid "Lineup for round #%(round)d:"
 msgstr ""
@@ -3854,6 +3941,9 @@ msgid "Link to a board not involving the player."
 msgstr ""
 
 msgid "List of players"
+msgstr ""
+
+msgid "List view"
 msgstr ""
 
 msgid "Lithuania"
@@ -4480,6 +4570,9 @@ msgstr ""
 msgid "No Prize Category"
 msgstr ""
 
+msgid "No accounts"
+msgstr ""
+
 msgid "No alert message"
 msgstr ""
 
@@ -4531,10 +4624,16 @@ msgstr ""
 msgid "No games played on the board for this player."
 msgstr ""
 
+msgid "No general configuration"
+msgstr ""
+
 msgid "No group of two or more members."
 msgstr ""
 
 msgid "No home page"
+msgstr ""
+
+msgid "No hours"
 msgstr ""
 
 msgid "No hours."
@@ -4661,6 +4760,9 @@ msgid "No result"
 msgstr ""
 
 msgid "No results."
+msgstr ""
+
+msgid "No role required."
 msgstr ""
 
 msgid "No roles defined."
@@ -4903,6 +5005,9 @@ msgstr ""
 msgid "Number of teams: %(num)d"
 msgstr ""
 
+msgid "Number of times"
+msgstr ""
+
 msgid "Number of wins"
 msgstr ""
 
@@ -4937,6 +5042,9 @@ msgid "Once created, you can select the timer to display in the settings of each
 msgstr ""
 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
+msgstr ""
+
+msgid "One or more of the plugins required to use this event are disabled, making it inaccessible."
 msgstr ""
 
 msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
@@ -5027,6 +5135,9 @@ msgid "Optional: pre-configure the tournament for an official rule set (federati
 msgstr ""
 
 msgid "Or upload an image (stored with the event, max 2 MB):"
+msgstr ""
+
+msgid "Organisation"
 msgstr ""
 
 msgid "Organiser"
@@ -5664,6 +5775,9 @@ msgstr ""
 msgid "Primary score:"
 msgstr ""
 
+msgid "Private"
+msgstr ""
+
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prize"
 
@@ -5750,6 +5864,9 @@ msgstr ""
 
 msgid "Pts *** POINTS COLUMN HEADER"
 msgstr "Pts"
+
+msgid "Public"
+msgstr ""
 
 msgid "Public event"
 msgstr ""
@@ -5884,6 +6001,9 @@ msgstr ""
 msgid "Ratings update"
 msgstr ""
 
+msgid "Ready"
+msgstr ""
+
 msgid "Reason"
 msgstr ""
 
@@ -5915,6 +6035,9 @@ msgid "Refresh networks"
 msgstr ""
 
 msgid "Refresh this page."
+msgstr ""
+
+msgid "Registration"
 msgstr ""
 
 msgid "Regular event"
@@ -6063,6 +6186,9 @@ msgstr "Rk. O."
 msgid "Rnd.Brd"
 msgstr ""
 
+msgid "Roles"
+msgstr ""
+
 msgid "Romania"
 msgstr ""
 
@@ -6153,7 +6279,14 @@ msgid "Round #{round}"
 msgstr ""
 
 #, python-format
+msgid "Round %(current)d of %(total)d"
+msgstr ""
+
+#, python-format
 msgid "Round %(round)d - Board %(board_number)d"
+msgstr ""
+
+msgid "Round finished"
 msgstr ""
 
 msgid "Round meets 1.5.6a?"
@@ -6267,6 +6400,9 @@ msgstr ""
 msgid "Schedule"
 msgstr ""
 
+msgid "Scheduled hours"
+msgstr ""
+
 msgid "Scope"
 msgstr ""
 
@@ -6322,6 +6458,9 @@ msgid "Screen types:"
 msgstr ""
 
 msgid "Screens"
+msgstr ""
+
+msgid "Screens / Multi-Screens"
 msgstr ""
 
 msgid "Screens list"
@@ -6419,6 +6558,9 @@ msgid "Select this empty table (forfeit for the paired player)"
 msgstr ""
 
 msgid "Select to pair (White, then pick the opponent)"
+msgstr ""
+
+msgid "Selection"
 msgstr ""
 
 #, python-format
@@ -6708,6 +6850,12 @@ msgid "Staff information"
 msgstr ""
 
 msgid "Staff member roles"
+msgstr ""
+
+msgid "Standalone"
+msgstr ""
+
+msgid "Standalone screen"
 msgstr ""
 
 msgid "Standard"
@@ -7735,6 +7883,9 @@ msgstr ""
 msgid "Today"
 msgstr ""
 
+msgid "Toggle details"
+msgstr ""
+
 msgid "Togo"
 msgstr ""
 
@@ -7760,6 +7911,9 @@ msgid "Total"
 msgstr ""
 
 msgid "Total prize value"
+msgstr ""
+
+msgid "Total value"
 msgstr ""
 
 msgid "Tournament"
@@ -7930,6 +8084,9 @@ msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
 
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
+msgstr ""
+
+msgid "Unique ID"
 msgstr ""
 
 #, python-format
@@ -8215,6 +8372,9 @@ msgstr ""
 msgid "View event configuration"
 msgstr ""
 
+msgid "View mode"
+msgstr ""
+
 msgid "View passed events"
 msgstr ""
 
@@ -8234,6 +8394,9 @@ msgid "View the Tournaments tab"
 msgstr ""
 
 msgid "View the menu."
+msgstr ""
+
+msgid "Visibility"
 msgstr ""
 
 msgid "Visibility:"
@@ -8470,6 +8633,9 @@ msgid "You are not allowed to generate the pairings."
 msgstr ""
 
 msgid "You are not allowed to manage prizes."
+msgstr ""
+
+msgid "You are not allowed to manage screens."
 msgstr ""
 
 msgid "You are not allowed to modify Full-Point Byes."
@@ -9078,4 +9244,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Enable/disable the details on the cards below."
+#~ msgstr ""
 

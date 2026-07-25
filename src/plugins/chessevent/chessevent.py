@@ -175,12 +175,12 @@ class ChessEventPlugin(Plugin):
         return {'chessevent_utils': ChessEventUtils}
 
     @hookimpl
-    def get_tournament_card_connexion_template(
+    def get_tournament_card_connection_template(
         self, tournament: Tournament
     ) -> str | None:
         if not ChessEventUtils.resolve_tournament_name(tournament):
             return None
-        return '/chessevent_tournament_card_connexion.html'
+        return '/chessevent_tournament_card_connection.html'
 
     @hookimpl(trylast=True)
     def get_nav_data_transfer_items(

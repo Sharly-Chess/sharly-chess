@@ -241,13 +241,13 @@
 
 {% macro details(item, view, placement) %}
     {% set tournament = item %}
-    {% set card_connexion_templates = get_tournament_card_connexion_templates(tournament) %}
+    {% set card_connection_templates = get_tournament_card_connection_templates(tournament) %}
     <div class="collection-details-grid">
-        {% if card_connexion_templates %}
+        {% if card_connection_templates %}
             <section class="collection-detail-section collection-detail-wide">
                 <h6>{{ _('Connections') }}</h6>
                 <div class="d-flex flex-column gap-1">
-                    {% for template in card_connexion_templates %}
+                    {% for template in card_connection_templates %}
                         {% include template %}
                     {% endfor %}
                 </div>

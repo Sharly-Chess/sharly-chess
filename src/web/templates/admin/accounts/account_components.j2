@@ -70,12 +70,12 @@
         <span
             class="text-success text-nowrap"
             {{ macros.tooltip_attributes('info', _('This account is active, anonymous users can log in to it.'), 'top') }}
-        ><i class="bi-person-fill-check pe-1"></i>{{ _('Active') }}</span>
+        ><i class="bi-person-fill-check pe-1"></i>{{ _('Active *** ACTIVE ACCOUNT') }}</span>
     {% else %}
         <span
             class="text-danger text-nowrap"
             {{ macros.tooltip_attributes('info', _('This account is not active, anonymous users can not log in to it.'), 'top') }}
-        ><i class="bi-person-fill-x pe-1"></i>{{ _('Inactive') }}</span>
+        ><i class="bi-person-fill-x pe-1"></i>{{ _('Inactive *** INACTIVE ACCOUNT') }}</span>
     {% endif %}
 {% endmacro %}
 
@@ -87,7 +87,7 @@
     {% elif item.user_account %}
         <span class="text-warning"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No roles defined.') }}</span>
     {% else %}
-        <span class="text-secondary">{{ _('No role required') }}</span>
+        <span class="text-secondary">{{ _('No role required.') }}</span>
     {% endif %}
 {% endmacro %}
 
@@ -278,7 +278,7 @@
             {% elif account.user_account %}
                 <span class="text-warning">{{ _('No roles defined.') }}</span>
             {% else %}
-                <span class="text-secondary">{{ _('No role required') }}</span>
+                <span class="text-secondary">{{ _('No role required.') }}</span>
             {% endif %}
         </section>
         <section class="collection-detail-section">

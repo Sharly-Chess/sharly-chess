@@ -753,14 +753,14 @@ class FfePlugin(Plugin):
         return {'ffe_utils': FFEUtils}
 
     @hookimpl
-    def get_tournament_card_connexion_template(
+    def get_tournament_card_connection_template(
         self, tournament: 'Tournament'
     ) -> str | None:
         if tournament.event.is_team_event:
             return None
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
-        return '/ffe_tournament_card_connexion.html'
+        return '/ffe_tournament_card_connection.html'
 
     @hookimpl
     def get_tournament_card_action_menu_items_template(self) -> str:

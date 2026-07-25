@@ -34,6 +34,14 @@ msgid "%(first)s - %(last)s"
 msgstr "%(first)s à %(last)s"
 
 #, python-format
+msgid "%(minutes)d min after"
+msgstr "%(minutes)d min. après"
+
+#, python-format
+msgid "%(minutes)d min before"
+msgstr "%(minutes)d min. avant"
+
+#, python-format
 msgid "%(minutes)d minutes after"
 msgstr "%(minutes)d minutes après"
 
@@ -168,10 +176,22 @@ msgstr[0] "%(num)d écran"
 msgstr[1] "%(num)d écrans"
 
 #, python-format
+msgid "%(num)d set"
+msgid_plural "%(num)d sets"
+msgstr[0] "%(num)d ensemble"
+msgstr[1] "%(num)d ensembles"
+
+#, python-format
 msgid "%(num)d team"
 msgid_plural "%(num)d teams"
 msgstr[0] "%(num)d équipe"
 msgstr[1] "%(num)d équipes"
+
+#, python-format
+msgid "%(num)d time"
+msgid_plural "%(num)d times"
+msgstr[0] "%(num)d horaire"
+msgstr[1] "%(num)d horaires"
 
 #, python-format
 msgid "%(num)d tournament"
@@ -200,6 +220,10 @@ msgstr "%(rating)s (%(rating_type)s)"
 #, python-format
 msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
 msgstr "%(rating)s (%(rating_type)s) : %(min)d → %(max)d"
+
+#, python-format
+msgid "%(seconds)d sec."
+msgstr "%(seconds)d sec."
 
 #, python-format
 msgid "%(set_name)s (check-in)"
@@ -681,6 +705,9 @@ msgstr "Actions"
 msgid "Actions / Access levels"
 msgstr "Actions / Niveaux d'accès"
 
+msgid "Active *** ACTIVE ACCOUNT"
+msgstr "Actif"
+
 msgid "Actual"
 msgstr "Réel"
 
@@ -691,7 +718,7 @@ msgid "Add a criterion to the list."
 msgstr "Ajouter un critère à la liste."
 
 msgid "Add a display controller to the event."
-msgstr "Ajouter un pilote d'afficheurs."
+msgstr "Ajouter un pilote d'afficheur."
 
 msgid "Add a group to the list."
 msgstr "Ajouter un groupe à la liste"
@@ -758,6 +785,9 @@ msgstr "Ajouter des tournois"
 
 msgid "Added automatically, on top of any manual points below."
 msgstr "Ajoutés automatiquement, en plus des points manuels ci-dessous."
+
+msgid "Additional information"
+msgstr "Informations complémentaires"
 
 msgid "Administration"
 msgstr "Administration"
@@ -960,6 +990,9 @@ msgstr "Arbitre :"
 msgid "Arbiter: %(name)s"
 msgstr "Arbitre : %(name)s"
 
+msgid "Arbiters"
+msgstr "Arbitres"
+
 msgid "Archive"
 msgstr "Archiver"
 
@@ -1004,6 +1037,9 @@ msgstr "Assigner cette équipe à un tournoi maintenant ou la laisser non assign
 
 msgid "Assign to a display controller."
 msgstr "Attribuer à un pilote d'écran."
+
+msgid "Assigned display"
+msgstr "Affichage assigné"
 
 msgid "At least a minimum or a maximum category must be defined."
 msgstr "Au moins une catégorie minimale ou catégorie maximale doit être définie."
@@ -1146,6 +1182,9 @@ msgstr "Barbade"
 
 msgid "Base date"
 msgstr "Date de référence"
+
+msgid "Base lineup"
+msgstr "Composition de base"
 
 msgid "Base lineup:"
 msgstr "Composition de base :"
@@ -1467,6 +1506,9 @@ msgstr "Capitaine :"
 msgid "Captain: %(name)s"
 msgstr "Capitaine : %(name)s"
 
+msgid "Card view"
+msgstr "Affichage en cartes"
+
 msgid "Cash"
 msgstr "Espèces"
 
@@ -1692,6 +1734,9 @@ msgstr "Motif des couleurs :"
 msgid "Colour rule:"
 msgstr "Règle des couleurs :"
 
+msgid "Colour thresholds"
+msgstr "Seuils des couleurs"
+
 msgid "Columns"
 msgstr "Colonnes"
 
@@ -1731,6 +1776,9 @@ msgstr "Prix complémentaire"
 msgid "Complete Team"
 msgstr "Équipe complète"
 
+msgid "Configuration"
+msgstr "Configuration"
+
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
 
@@ -1769,6 +1817,9 @@ msgstr "La connexion au serveur a échoué (délai expiré)."
 
 msgid "Connection to the server failed."
 msgstr "La connexion au serveur a échoué."
+
+msgid "Connections"
+msgstr "Connexions"
 
 msgid "Consider all paired games for the final round as draws."
 msgstr "Considérer toutes les parties appariées pour la dernière ronde comme nulles."
@@ -1837,10 +1888,10 @@ msgid "Create a category"
 msgstr "Créer une catégorie"
 
 msgid "Create a display controller"
-msgstr "Créer un pilote d'afficheurs"
+msgstr "Créer un pilote d'afficheur"
 
 msgid "Create a display controller now to get started."
-msgstr "Créez un pilote d'afficheurs maintenant commencer."
+msgstr "Créez un pilote d'afficheur maintenant commencer."
 
 msgid "Create a menu"
 msgstr "Créer un menu"
@@ -1903,7 +1954,7 @@ msgid "Create criterion"
 msgstr "Créer un critère"
 
 msgid "Create display controller"
-msgstr "Créer un pilote d'afficheurs"
+msgstr "Créer un pilote d'afficheur"
 
 msgid "Create event"
 msgstr "Créer un évènement"
@@ -2178,6 +2229,9 @@ msgstr "Définit comment les préférences de couleur des équipes sont calculé
 msgid "Definitive withdrawal"
 msgstr "Forfait définitif"
 
+msgid "Delay"
+msgstr "Délai"
+
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr "Délai n°%(num)d :"
@@ -2198,7 +2252,7 @@ msgid "Delete all hours for this timer and start fresh."
 msgstr "Supprimer tous les horaires de ce chronomètre et recommencer."
 
 msgid "Delete display controller"
-msgstr "Supprimer le pilote d'afficheurs"
+msgstr "Supprimer le pilote d'afficheur"
 
 msgid "Delete menu"
 msgstr "Supprimer le menu"
@@ -2234,7 +2288,7 @@ msgid "Delete the category."
 msgstr "Supprimer la catégorie."
 
 msgid "Delete the display controller."
-msgstr "Supprimer le pilote d'afficheurs."
+msgstr "Supprimer le pilote d'afficheur."
 
 msgid "Delete the existing players"
 msgstr "Supprimer les joueur·euses existant·es"
@@ -2324,31 +2378,37 @@ msgid "Display"
 msgstr "Affichage"
 
 msgid "Display Controller"
-msgstr "Pilote d'afficheurs"
+msgstr "Pilote d'afficheur"
+
+msgid "Display controller"
+msgstr "Pilote d'afficheur"
 
 msgid "Display controller [{display_controller}] has been created."
-msgstr "Le pilote d'afficheurs [{display_controller}] a été créé."
+msgstr "Le pilote d'afficheur [{display_controller}] a été créé."
 
 msgid "Display controller [{display_controller}] has been deleted."
-msgstr "Le pilote d'afficheurs [{display_controller}] a été supprimé."
+msgstr "Le pilote d'afficheur [{display_controller}] a été supprimé."
 
 msgid "Display controller [{display_controller}] has been updated."
-msgstr "Le pilote d'afficheurs [{display_controller}] a été modifié."
+msgstr "Le pilote d'afficheur [{display_controller}] a été modifié."
 
 msgid "Display controllers"
-msgstr "Pilotes d'afficheurs"
+msgstr "Pilotes d'afficheur"
 
 msgid "Display controllers ({num})"
-msgstr "Pilotes d'afficheurs ({num})"
+msgstr "Pilotes d'afficheur ({num})"
 
 msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
-msgstr "P<u>i</u>lotes d'afficheurs ({num})"
+msgstr "P<u>i</u>lotes d'afficheur ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
-msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
+msgstr "Les pilotes d'afficheur vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
 
 msgid "Display history on hover"
 msgstr "Afficher l'historique au survol"
+
+msgid "Display options"
+msgstr "Options d'affichage"
 
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
@@ -2459,6 +2519,15 @@ msgstr "Déposer les équipes ici"
 
 msgid "Drag the sets to order them."
 msgstr "Faites glisser les ensembles pour les ordonner."
+
+msgid "Drag to change the pairing order or tournament."
+msgstr "Glisser pour modifier l'ordre d'appariement ou le tournoi.'"
+
+msgid "Drag to reorder"
+msgstr "Glisser pour réordonner"
+
+msgid "Drag to reorder the category."
+msgstr "Glisser pour réordonner la catégorie."
 
 msgid "Draw"
 msgstr "Nulle"
@@ -2652,7 +2721,7 @@ msgid "Edit criterion"
 msgstr "Modifier le critère"
 
 msgid "Edit display controller"
-msgstr "Modifier le pilote d'afficheurs"
+msgstr "Modifier le pilote d'afficheur"
 
 msgid "Edit event"
 msgstr "Modifier l'évènement"
@@ -2712,7 +2781,7 @@ msgid "Edit the properties of the category."
 msgstr "Modifier les propriétés de la catégorie."
 
 msgid "Edit the properties of the display controller."
-msgstr "Modifier les propriétés du pilote d'afficheurs."
+msgstr "Modifier les propriétés du pilote d'afficheur."
 
 msgid "Edit the properties of the event."
 msgstr "Modifier les propriétés de l'évènement."
@@ -2740,6 +2809,9 @@ msgstr "Modifier les propriétés du tournoi."
 
 msgid "Edit the selected affiliation."
 msgstr "Modifier l'affiliation sélectionnée."
+
+msgid "Edit the sets displayed on the screen."
+msgstr "Modifier les ensembles affichés sur l'écran."
 
 msgid "Edit the sets of boards displayed on the screen."
 msgstr "Modifier les ensembles d'échiquiers affichés sur l'écran."
@@ -2794,9 +2866,6 @@ msgstr "Activer le pointage des joueur·euses depuis les écrans de pointage."
 
 msgid "Enable this account"
 msgstr "Activer ce compte"
-
-msgid "Enable/disable the details on the cards below."
-msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."
 
 #, python-format
 msgid "Encounter already happened at round #%(round)d"
@@ -2853,6 +2922,9 @@ msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
 
+msgid "Event content"
+msgstr "Contenu de l'évènement"
+
 msgid "Event export"
 msgstr "Export d'évènement"
 
@@ -2894,6 +2966,9 @@ msgstr "Joueur·euses existant·es"
 
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
+
+msgid "Expand or collapse the details of every item."
+msgstr "Développer ou réduire les détails de tous les éléments."
 
 msgid "Experimental features"
 msgstr "Fonctionnalités expérimentales"
@@ -3047,6 +3122,9 @@ msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
 
 msgid "Filter out players with a lower rating."
 msgstr "Exclure les joueur·euses ayant un Elo moins élevé."
+
+msgid "Finished"
+msgstr "Terminé"
 
 msgid "Finland"
 msgstr "Finlande"
@@ -3229,6 +3307,9 @@ msgstr "Genres"
 
 msgid "General"
 msgstr "Général"
+
+msgid "General configuration"
+msgstr "Configuration générale"
 
 msgid "Generate"
 msgstr "Générer"
@@ -3482,6 +3563,9 @@ msgstr "Dals les évènements par équipes, le départage est calculé en utilis
 
 msgid "In-tournament"
 msgstr "Dans le tournoi"
+
+msgid "Inactive *** INACTIVE ACCOUNT"
+msgstr "Inactif"
 
 msgid "Include IDs and passwords for uploading results"
 msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en ligne des résultats"
@@ -3839,6 +3923,9 @@ msgstr[1] "Limite {operator} {count} demi-points"
 msgid "Line not recognized: {line}"
 msgstr "Ligne non reconnue : {line}"
 
+msgid "Lineup"
+msgstr "Composition"
+
 #, python-format
 msgid "Lineup for round #%(round)d:"
 msgstr "Composition pour la ronde n°%(round)d :"
@@ -3855,6 +3942,9 @@ msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
 
 msgid "List of players"
 msgstr "Liste des participant·es"
+
+msgid "List view"
+msgstr "Affichage en liste"
 
 msgid "Lithuania"
 msgstr "Lituanie"
@@ -4430,7 +4520,7 @@ msgid "New checkins are in, refresh your browser"
 msgstr "De nouveaux pointages ont été effectués, actualisez la page"
 
 msgid "New display controller"
-msgstr "Nouveau pilote d'afficheurs"
+msgstr "Nouveau pilote d'afficheur"
 
 msgid "New event"
 msgstr "Nouvel évènement"
@@ -4480,6 +4570,9 @@ msgstr "Aucun Groupe de Prix Non-Cumulables"
 msgid "No Prize Category"
 msgstr "Aucune catégorie de prix"
 
+msgid "No accounts"
+msgstr "Aucun compte"
+
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
 
@@ -4505,7 +4598,7 @@ msgid "No director"
 msgstr "Aucun Directeur·ice "
 
 msgid "No display controllers"
-msgstr "Aucun pilote d'afficheurs"
+msgstr "Aucun pilote d'afficheur"
 
 msgid "No dropdowns"
 msgstr "Sans menus déroulants"
@@ -4531,11 +4624,17 @@ msgstr "Aucune partie en cours — tous les résultats sont saisis."
 msgid "No games played on the board for this player."
 msgstr "Aucune partie jouée sur l'échiquier pour ce·tte joueur·euse."
 
+msgid "No general configuration"
+msgstr "Pas de configuration générale"
+
 msgid "No group of two or more members."
 msgstr "Aucun groupe d'au moins deux membres."
 
 msgid "No home page"
 msgstr "Aucun site web"
+
+msgid "No hours"
+msgstr "Aucun horaire"
 
 msgid "No hours."
 msgstr "Aucun horaire."
@@ -4662,6 +4761,9 @@ msgstr "Pas de résultat"
 
 msgid "No results."
 msgstr "Aucun résultat."
+
+msgid "No role required."
+msgstr "Aucun rôle requis."
 
 msgid "No roles defined."
 msgstr "Aucun rôle défini."
@@ -4903,6 +5005,9 @@ msgstr "Nombre d'écrans :"
 msgid "Number of teams: %(num)d"
 msgstr "Nombre d'équipes : %(num)d"
 
+msgid "Number of times"
+msgstr "Nombre d'horaires"
+
 msgid "Number of wins"
 msgstr "Nombre de victoires"
 
@@ -4941,6 +5046,9 @@ msgstr "Une fois créé, vous pouvez sélectionner le chronomètre à afficher d
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
 
+msgid "One or more of the plugins required to use this event are disabled, making it inaccessible."
+msgstr "Au moins l'un des plug-ins requis pour utiliser cet évènement est désactivé."
+
 msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
 msgstr "Au moins l'un des plug-ins requis pour utiliser cet évènement est désactivé, le rendant inaccessible. Vous pouvez activer les plug-ins dans les paramètres de l'application."
 
@@ -4960,7 +5068,7 @@ msgid "Only allowed users can see private screens."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans privés."
 
 msgid "Only allowed users can view private display controllers."
-msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'afficheurs privés."
+msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'afficheur privés."
 
 msgid "Only allowed users can view private rotators."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
@@ -5030,6 +5138,9 @@ msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officie
 
 msgid "Or upload an image (stored with the event, max 2 MB):"
 msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
+
+msgid "Organisation"
+msgstr "Organisation"
 
 msgid "Organiser"
 msgstr "Organisateur·ice"
@@ -5666,6 +5777,9 @@ msgstr "Ronde précédente"
 msgid "Primary score:"
 msgstr "Score principal :"
 
+msgid "Private"
+msgstr "Privé"
+
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prix"
 
@@ -5752,6 +5866,9 @@ msgstr "Mandataire (le cas échéant) :"
 
 msgid "Pts *** POINTS COLUMN HEADER"
 msgstr "Pts"
+
+msgid "Public"
+msgstr "Public"
 
 msgid "Public event"
 msgstr "Évènement public"
@@ -5886,6 +6003,9 @@ msgstr "Classements"
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
 
+msgid "Ready"
+msgstr "Prêt"
+
 msgid "Reason"
 msgstr "Raison"
 
@@ -5919,6 +6039,9 @@ msgstr "Actualiser les réseaux"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
+msgid "Registration"
+msgstr "Inscription"
+
 msgid "Regular event"
 msgstr "Évènement régulier"
 
@@ -5938,7 +6061,7 @@ msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
 
 msgid "Remove the screen from the display controller."
-msgstr "Supprimer la redirection du pilote d'afficheurs vers cet écran."
+msgstr "Supprimer la redirection du pilote d'afficheur vers cet écran."
 
 msgid "Rename event"
 msgstr "Renommer l'évènement"
@@ -6065,6 +6188,9 @@ msgstr "Pl. Gén."
 msgid "Rnd.Brd"
 msgstr "Rde.Ech"
 
+msgid "Roles"
+msgstr "Rôles"
+
 msgid "Romania"
 msgstr "Roumanie"
 
@@ -6095,7 +6221,7 @@ msgid "Rotator"
 msgstr "Écran rotatif"
 
 msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
-msgstr "L'écran rotatif [{rotator}] est utilisé par le pilote d'afficheurs [{display_controller}]."
+msgstr "L'écran rotatif [{rotator}] est utilisé par le pilote d'afficheur [{display_controller}]."
 
 msgid "Rotator [{rotator}] has been created."
 msgstr "L'écran rotatif [{rotator}] a été créé."
@@ -6155,8 +6281,15 @@ msgid "Round #{round}"
 msgstr "Ronde n°{round}"
 
 #, python-format
+msgid "Round %(current)d of %(total)d"
+msgstr "Ronde %(current)d sur %(total)d"
+
+#, python-format
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr "Ronde %(round)d – Echiquier %(board_number)d"
+
+msgid "Round finished"
+msgstr "Ronde terminée"
 
 msgid "Round meets 1.5.6a?"
 msgstr "La ronde satisfait 1.5.6a ?"
@@ -6269,6 +6402,9 @@ msgstr "Enregistrer les points"
 msgid "Schedule"
 msgstr "Horaires"
 
+msgid "Scheduled hours"
+msgstr "Calendrier"
+
 msgid "Scope"
 msgstr "Périmètre"
 
@@ -6297,7 +6433,7 @@ msgid "Screen Management"
 msgstr "Gestion de l'affichage"
 
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
-msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'afficheurs [{display_controller}]."
+msgstr "L'écran [{screen_uniq_id}] est utilisé par le pilote d'afficheur [{display_controller}]."
 
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr "L'écran [{screen_uniq_id}] a été créé."
@@ -6325,6 +6461,9 @@ msgstr "Types d'écran :"
 
 msgid "Screens"
 msgstr "Écrans"
+
+msgid "Screens / Multi-Screens"
+msgstr "Écrans / Multi-écrans"
 
 msgid "Screens list"
 msgstr "Liste d'écrans"
@@ -6422,6 +6561,9 @@ msgstr "Sélectionner cette table vide (forfait pour le·la joueur·euse appari�
 
 msgid "Select to pair (White, then pick the opponent)"
 msgstr "Sélectionner pour apparier (Blanc, puis choisir l'adversaire)"
+
+msgid "Selection"
+msgstr "Sélection"
 
 #, python-format
 msgid "Selection: %(selection)s"
@@ -6711,6 +6853,12 @@ msgstr "Informations"
 
 msgid "Staff member roles"
 msgstr "Rôles"
+
+msgid "Standalone"
+msgstr "Autonome"
+
+msgid "Standalone screen"
+msgstr "Écran autonome"
 
 msgid "Standard"
 msgstr "Standard"
@@ -7295,7 +7443,7 @@ msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
-msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'administrateur·ice."
+msgstr "Les écrans utilisés par le pilote d'afficheur sont désignés par l'administrateur·ice."
 
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
 msgstr "La somme des scores [{tie_break}] des adversaires joué·es sur l'échiquier."
@@ -7439,10 +7587,10 @@ msgid "This database is not installed (to install it: Menu > Data sources)."
 msgstr "Cette base de données n'est pas installée (pour l'installer : Menu > Sources de données)."
 
 msgid "This display controller is private (not visible by the spectators)."
-msgstr "Ce pilote d'afficheurs est privé (non visible des spectateur·ices)."
+msgstr "Ce pilote d'afficheur est privé (non visible des spectateur·ices)."
 
 msgid "This display controller is public (visible by the spectators)."
-msgstr "Ce pilote d'afficheurs est public (visible des spectateur·ices)."
+msgstr "Ce pilote d'afficheur est public (visible des spectateur·ices)."
 
 msgid "This document is not available for unpaired tournaments."
 msgstr "Ce document n'est pas disponible pour les tournois non-appariés."
@@ -7737,6 +7885,9 @@ msgstr "À apparier"
 msgid "Today"
 msgstr "Aujourd'hui"
 
+msgid "Toggle details"
+msgstr "Afficher/masquer les détails"
+
 msgid "Togo"
 msgstr "Togo"
 
@@ -7763,6 +7914,9 @@ msgstr "Total"
 
 msgid "Total prize value"
 msgstr "Valeur totale des prix"
+
+msgid "Total value"
+msgstr "Valeur totale"
 
 msgid "Tournament"
 msgstr "Tournoi"
@@ -7933,6 +8087,9 @@ msgstr "Non défini"
 
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr "Type de fichier [{suffix}] non pris en charge (attendu : {expected})."
+
+msgid "Unique ID"
+msgstr "Identifiant unique"
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
@@ -8217,6 +8374,9 @@ msgstr "Voir les détails des cartes d'évènement"
 msgid "View event configuration"
 msgstr "Voir la configuration de l'évènement"
 
+msgid "View mode"
+msgstr "Mode d'affichage"
+
 msgid "View passed events"
 msgstr "Voir les évènement passés"
 
@@ -8237,6 +8397,9 @@ msgstr "Voir l'onglet Tournois"
 
 msgid "View the menu."
 msgstr "Voir le menu."
+
+msgid "Visibility"
+msgstr "Visibilité"
 
 msgid "Visibility:"
 msgstr "Visibilité :"
@@ -8473,6 +8636,9 @@ msgstr "Vous n'êtes pas autorisé·e à générer les appariements."
 
 msgid "You are not allowed to manage prizes."
 msgstr "Vous n'êtes pas autorisé·e à gérer les prix."
+
+msgid "You are not allowed to manage screens."
+msgstr "Vous n'êtes pas autorisé·e à gérer les écrans."
 
 msgid "You are not allowed to modify Full-Point Byes."
 msgstr "Vous n'êtes pas autorisé·e à modifier des byes point entier."
@@ -9080,3 +9246,7 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "Enable/disable the details on the cards below."
+#~ msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."
+

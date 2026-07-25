@@ -199,8 +199,8 @@ class TournamentAdminController(BaseEventAdminController):
             web_context.template_context
             | {
                 'admin_event_tab': 'admin-event-tournaments-tab',
-                'get_tournament_card_connexion_templates': partial(
-                    cls._get_tournament_card_connexion_templates, event=event
+                'get_tournament_card_connection_templates': partial(
+                    cls._get_tournament_card_connection_templates, event=event
                 ),
                 'tournament_card_time_control_template': plugin_manager.hook_for_event(
                     event, 'get_tournament_card_time_control_template'
@@ -220,13 +220,13 @@ class TournamentAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @staticmethod
-    def _get_tournament_card_connexion_templates(
+    def _get_tournament_card_connection_templates(
         tournament: Tournament, event: Event
     ) -> list[str]:
         return [
             template
             for template in plugin_manager.hook_for_event(
-                event, 'get_tournament_card_connexion_template'
+                event, 'get_tournament_card_connection_template'
             )(tournament=tournament)
             if template is not None
         ]

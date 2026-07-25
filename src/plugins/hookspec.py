@@ -308,12 +308,12 @@ class AppHookSpecs:
         """Get the context used for the templates provided for the tournament page."""
 
     @hookspec
-    def get_tournament_card_connexion_template(
+    def get_tournament_card_connection_template(
         self, tournament: 'Tournament'
     ) -> str | None:
-        """Add a template path for a connexion to display on the tournament cards.
+        """Add a template path for a connection to display on the tournament cards.
         These templates are displayed in priority in the card.
-        Return None if the connexion is undefined."""
+        Return None if the connection is undefined."""
 
     @hookspec
     def get_tournament_card_fields_template(self) -> str:
