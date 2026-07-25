@@ -4,6 +4,9 @@ msgstr ""
 msgid "Auto-upload enabled"
 msgstr ""
 
+msgid "Chess-Results"
+msgstr ""
+
 msgid "Chess-Results.com"
 msgstr ""
 
@@ -73,10 +76,6 @@ msgstr ""
 msgid "Tournament is currently being uploaded."
 msgstr ""
 
-#, python-format
-msgid "Tournament number: %(tnr)s"
-msgstr ""
-
 msgid "Tournament on Chess-Results.com"
 msgstr ""
 
@@ -87,6 +86,9 @@ msgid "Tournament upload failed, consult the Chess-Results.com modal for more de
 msgstr ""
 
 msgid "Tournament upload has been planned."
+msgstr ""
+
+msgid "Transfer"
 msgstr ""
 
 msgid "Up to date"

@@ -176,10 +176,6 @@ msgstr "Numéro d'homologation FFE non défini."
 msgid "FFE certification number:"
 msgstr "Numéro d'homologation :"
 
-#, python-format
-msgid "FFE certification number: %(ffe_id)d"
-msgstr "Homologation FFE : %(ffe_id)d"
-
 msgid "FFE database (local)"
 msgstr "Base de données FFE (locale)"
 
@@ -451,6 +447,9 @@ msgstr "Joueur·euses :"
 msgid "Please select a file."
 msgstr "Veuillez sélectionner un fichier."
 
+msgid "Public page of the tournament."
+msgstr "Page publique du tournoi."
+
 msgid "Ranking by league after round #{round}"
 msgstr "Classement par ligue après la ronde n°{round}"
 
@@ -590,6 +589,9 @@ msgstr "Arbitre stagiaire"
 
 msgid "Trainee:"
 msgstr "Stagiaire :"
+
+msgid "Transfer"
+msgstr "Transfert"
 
 msgid "Unknown league."
 msgstr "Ligue inconnue."

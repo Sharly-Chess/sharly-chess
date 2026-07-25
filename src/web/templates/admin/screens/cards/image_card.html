@@ -1,8 +1,6 @@
 <div>
     {% if data.image %}
-        {% if data.image.startswith('data:') %}
-            {{ _('Image: uploaded') }}
-        {% else %}
+        {% if not data.image.startswith('data:') %}
             {{ _('Image: %(image)s', image=data.image) }}
         {% endif %}
         <div>

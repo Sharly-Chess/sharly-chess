@@ -1818,9 +1818,6 @@ msgstr "La connexion au serveur a échoué (délai expiré)."
 msgid "Connection to the server failed."
 msgstr "La connexion au serveur a échoué."
 
-msgid "Connections"
-msgstr "Connexions"
-
 msgid "Consider all paired games for the final round as draws."
 msgstr "Considérer toutes les parties appariées pour la dernière ronde comme nulles."
 
@@ -3123,9 +3120,6 @@ msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
 msgid "Filter out players with a lower rating."
 msgstr "Exclure les joueur·euses ayant un Elo moins élevé."
 
-msgid "Finished"
-msgstr "Terminé"
-
 msgid "Finland"
 msgstr "Finlande"
 
@@ -3512,9 +3506,6 @@ msgstr "Les écrans d'image affichent une image (locale ou distante)."
 #, python-format
 msgid "Image: %(image)s"
 msgstr "Image : %(image)s"
-
-msgid "Image: uploaded"
-msgstr "Image : téléversée"
 
 msgid "Import"
 msgstr "Importer"
@@ -4624,9 +4615,6 @@ msgstr "Aucune partie en cours — tous les résultats sont saisis."
 msgid "No games played on the board for this player."
 msgstr "Aucune partie jouée sur l'échiquier pour ce·tte joueur·euse."
 
-msgid "No general configuration"
-msgstr "Pas de configuration générale"
-
 msgid "No group of two or more members."
 msgstr "Aucun groupe d'au moins deux membres."
 
@@ -4821,9 +4809,6 @@ msgstr "Aucun chronomètre"
 
 msgid "No title norm has been achieved in this tournament."
 msgstr "Aucune norme de titre n'a été réalisée dans ce tournoi."
-
-msgid "No tournaments"
-msgstr "Aucun tournoi"
 
 msgid "No tournaments."
 msgstr "Aucun tournoi."
@@ -5045,9 +5030,6 @@ msgstr "Une fois créé, vous pouvez sélectionner le chronomètre à afficher d
 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
-
-msgid "One or more of the plugins required to use this event are disabled, making it inaccessible."
-msgstr "Au moins l'un des plug-ins requis pour utiliser cet évènement est désactivé."
 
 msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
 msgstr "Au moins l'un des plug-ins requis pour utiliser cet évènement est désactivé, le rendant inaccessible. Vous pouvez activer les plug-ins dans les paramètres de l'application."
@@ -5652,10 +5634,6 @@ msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront
 msgid "Players:"
 msgstr "Joueur·euses :"
 
-#, python-format
-msgid "Players: %(num)d"
-msgstr "Joueur·euses : %(num)d"
-
 msgid "Playing"
 msgstr "En cours"
 
@@ -6039,9 +6017,6 @@ msgstr "Actualiser les réseaux"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
-msgid "Registration"
-msgstr "Inscription"
-
 msgid "Regular event"
 msgstr "Évènement régulier"
 
@@ -6213,6 +6188,9 @@ msgstr "Effectif — %(team)s"
 msgid "Rosters"
 msgstr "Effectifs"
 
+msgid "Rotation delay"
+msgstr "Délai de rotation"
+
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
@@ -6287,9 +6265,6 @@ msgstr "Ronde %(current)d sur %(total)d"
 #, python-format
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr "Ronde %(round)d – Echiquier %(board_number)d"
-
-msgid "Round finished"
-msgstr "Ronde terminée"
 
 msgid "Round meets 1.5.6a?"
 msgstr "La ronde satisfait 1.5.6a ?"
@@ -7992,15 +7967,8 @@ msgstr "Tournois affichés :"
 msgid "Tournaments:"
 msgstr "Tournois :"
 
-#, python-format
-msgid "Tournaments: %(num)d"
-msgstr "Tournois : %(num)d"
-
 msgid "Transfer"
 msgstr "Virement"
-
-msgid "Transfer *** TOURNAMENT CONNECTIONS"
-msgstr "Transfert"
 
 msgid "Trinidad & Tobago"
 msgstr "Trinité-et-Tobago"
@@ -8087,10 +8055,6 @@ msgstr "Type de fichier [{suffix}] non pris en charge (attendu : {expected})."
 
 msgid "Unique ID"
 msgstr "Identifiant unique"
-
-#, python-format
-msgid "Unique ID: %(uniq_id)s"
-msgstr "Identifiant unique : %(uniq_id)s"
 
 #, python-format
 msgid "Unique ID: [%(uniq_id)s]"
@@ -9244,5 +9208,3 @@ msgstr "— Non assigné·e —"
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
 
-#~ msgid "Enable/disable the details on the cards below."
-#~ msgstr "Activer/désactiver l'affichage des détails sur les cartes ci-dessous."

@@ -1818,9 +1818,6 @@ msgstr ""
 msgid "Connection to the server failed."
 msgstr ""
 
-msgid "Connections"
-msgstr ""
-
 msgid "Consider all paired games for the final round as draws."
 msgstr ""
 
@@ -3123,9 +3120,6 @@ msgstr ""
 msgid "Filter out players with a lower rating."
 msgstr ""
 
-msgid "Finished"
-msgstr ""
-
 msgid "Finland"
 msgstr ""
 
@@ -3511,9 +3505,6 @@ msgstr ""
 
 #, python-format
 msgid "Image: %(image)s"
-msgstr ""
-
-msgid "Image: uploaded"
 msgstr ""
 
 msgid "Import"
@@ -4624,9 +4615,6 @@ msgstr ""
 msgid "No games played on the board for this player."
 msgstr ""
 
-msgid "No general configuration"
-msgstr ""
-
 msgid "No group of two or more members."
 msgstr ""
 
@@ -4820,9 +4808,6 @@ msgid "No timers"
 msgstr ""
 
 msgid "No title norm has been achieved in this tournament."
-msgstr ""
-
-msgid "No tournaments"
 msgstr ""
 
 msgid "No tournaments."
@@ -5042,9 +5027,6 @@ msgid "Once created, you can select the timer to display in the settings of each
 msgstr ""
 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
-msgstr ""
-
-msgid "One or more of the plugins required to use this event are disabled, making it inaccessible."
 msgstr ""
 
 msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
@@ -5650,10 +5632,6 @@ msgstr ""
 msgid "Players:"
 msgstr ""
 
-#, python-format
-msgid "Players: %(num)d"
-msgstr ""
-
 msgid "Playing"
 msgstr ""
 
@@ -6037,9 +6015,6 @@ msgstr ""
 msgid "Refresh this page."
 msgstr ""
 
-msgid "Registration"
-msgstr ""
-
 msgid "Regular event"
 msgstr ""
 
@@ -6211,6 +6186,9 @@ msgstr ""
 msgid "Rosters"
 msgstr ""
 
+msgid "Rotation delay"
+msgstr ""
+
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""
@@ -6284,9 +6262,6 @@ msgstr ""
 
 #, python-format
 msgid "Round %(round)d - Board %(board_number)d"
-msgstr ""
-
-msgid "Round finished"
 msgstr ""
 
 msgid "Round meets 1.5.6a?"
@@ -7990,15 +7965,8 @@ msgstr ""
 msgid "Tournaments:"
 msgstr ""
 
-#, python-format
-msgid "Tournaments: %(num)d"
-msgstr ""
-
 msgid "Transfer"
 msgstr ""
-
-msgid "Transfer *** TOURNAMENT CONNECTIONS"
-msgstr "Transfer"
 
 msgid "Trinidad & Tobago"
 msgstr ""
@@ -8084,10 +8052,6 @@ msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr ""
 
 msgid "Unique ID"
-msgstr ""
-
-#, python-format
-msgid "Unique ID: %(uniq_id)s"
 msgstr ""
 
 #, python-format
@@ -9242,5 +9206,3 @@ msgstr ""
 msgid "← Back to IT1 certificate"
 msgstr ""
 
-#~ msgid "Enable/disable the details on the cards below."
-#~ msgstr ""

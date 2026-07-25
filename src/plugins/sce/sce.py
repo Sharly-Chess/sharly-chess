@@ -208,7 +208,7 @@ class SCEPlugin(Plugin):
         if collection_key != 'tournaments':
             return
         collection_spec.ensure_list_column(
-            ListColumn('transfer', label=_('Transfer *** TOURNAMENT CONNECTIONS')),
+            ListColumn('transfer', label=_('Transfer')),
             before='actions',
         )
 

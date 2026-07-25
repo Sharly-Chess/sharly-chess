@@ -4,6 +4,9 @@ msgstr "Mise en ligne automatique désactivée"
 msgid "Auto-upload enabled"
 msgstr "Mise en ligne automatique activée"
 
+msgid "Chess-Results"
+msgstr "Chess-Results"
+
 msgid "Chess-Results.com"
 msgstr "Chess-Results.com"
 
@@ -73,10 +76,6 @@ msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
 msgid "Tournament is currently being uploaded."
 msgstr "Le tournoi est en cours de mise en ligne."
 
-#, python-format
-msgid "Tournament number: %(tnr)s"
-msgstr "Numéro de tournoi : %(tnr)s"
-
 msgid "Tournament on Chess-Results.com"
 msgstr "Tournoi sur le site Chess-Results.com"
 
@@ -88,6 +87,9 @@ msgstr "La mise en ligne du tournoi a échoué, consultez la modale Chess-Result
 
 msgid "Tournament upload has been planned."
 msgstr "La mise en ligne du tournoi a été planifiée."
+
+msgid "Transfer"
+msgstr "Transfert"
 
 msgid "Up to date"
 msgstr "À jour"
