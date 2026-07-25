@@ -95,9 +95,11 @@
     {% set client_can_manage_account = client.can_manage_account(account.id) %}
     {% call macros.action_tooltip(
         'info' if account.edit_permissions and client_can_manage_account else 'warning',
-        _('Edit the permissions of the account.')
-        if account.edit_permissions and client_can_manage_account
-        else _('The permissions of this account can not be updated.'),
+        _('The permissions of this account can not be updated.')
+        if not account.edit_permissions
+        else _('You are not allowed to update the permissions of this account.')
+        if not client_can_manage_account
+        else _('Edit the permissions of the account.'),
         'top',
     ) %}
         <button
@@ -319,7 +321,15 @@
     <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
         {% if view == 'card' %}{{ permissions_button(account, true) }}{% endif %}
         <div class="d-flex align-items-center gap-1">
-            {% call macros.action_tooltip('info', _('Edit the properties of the account.'), 'top') %}
+            {% call macros.action_tooltip(
+                'info' if account.edit_properties and client_can_manage_account else 'warning',
+                _('This account can not be updated.')
+                if not account.edit_properties
+                else _('You are not allowed to update this account.')
+                if not client_can_manage_account
+                else _('Edit the properties of the account.'),
+                'top',
+            ) %}
                 <button
                     class="btn btn-sm btn-outline-primary"
                     {% if account.edit_properties and client_can_manage_account %}
@@ -333,7 +343,15 @@
                     {% endif %}
                 ><i class="bi-pencil-fill"></i></button>
             {% endcall %}
-            {% call macros.action_tooltip('info', _('Duplicate the account.'), 'top') %}
+            {% call macros.action_tooltip(
+                'info' if account.edit_properties and client_can_manage_account else 'warning',
+                _('This account can not be duplicated.')
+                if not account.edit_properties
+                else _('You are not allowed to duplicate this account.')
+                if not client_can_manage_account
+                else _('Duplicate the account.'),
+                'top',
+            ) %}
                 <button
                     class="btn btn-sm btn-outline-primary"
                     {% if account.edit_properties and client_can_manage_account %}
@@ -347,7 +365,15 @@
                     {% endif %}
                 ><i class="bi-copy"></i></button>
             {% endcall %}
-            {% call macros.action_tooltip('info', _('Delete the account.'), 'top') %}
+            {% call macros.action_tooltip(
+                'info' if account.edit_properties and client_can_manage_account else 'warning',
+                _('This account can not be deleted.')
+                if not account.edit_properties
+                else _('You are not allowed to delete this account.')
+                if not client_can_manage_account
+                else _('Delete the account.'),
+                'top',
+            ) %}
                 <button
                     class="btn btn-sm btn-outline-danger"
                     {% if account.edit_properties and client_can_manage_account %}

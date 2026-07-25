@@ -26,7 +26,10 @@
             {{ team.name }}
         </div>
         {% if view == 'card' and team.group %}
-            <div class="small text-muted text-truncate">
+            <div
+                class="small text-muted text-truncate"
+                {{ macros.tooltip_attributes('info', _('Affiliation.'), 'top') }}
+            >
                 <i class="bi-collection-fill pe-1"></i>{{ team.group.name }}
             </div>
         {% endif %}

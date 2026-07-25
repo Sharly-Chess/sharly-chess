@@ -15,13 +15,21 @@
 {% endmacro %}
 
 {% macro screens_count(item, view, placement) %}
-    <span class="text-nowrap" data-testid="screens-count">
+    <span
+        class="text-nowrap"
+        data-testid="screens-count"
+        {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
+    >
         <i class="bi-window pe-1 text-secondary"></i>{{ item.covered_basic_screens|length }}
     </span>
 {% endmacro %}
 
 {% macro families_count(item, view, placement) %}
-    <span class="text-nowrap" data-testid="families-count">
+    <span
+        class="text-nowrap"
+        data-testid="families-count"
+        {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
+    >
         <i class="bi-window-split pe-1 text-secondary"></i>{{ item.covered_families|length }}
     </span>
 {% endmacro %}

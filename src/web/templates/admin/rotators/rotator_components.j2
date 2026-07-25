@@ -10,13 +10,21 @@
 {% endmacro %}
 
 {% macro screens_count(item, view, placement) %}
-    <span class="text-nowrap" data-testid="screens-count">
+    <span
+        class="text-nowrap"
+        data-testid="screens-count"
+        {{ macros.tooltip_attributes('info', _('Number of screens'), 'top') }}
+    >
         <i class="bi-window pe-1 text-secondary"></i>{{ item.screens|length }}
     </span>
 {% endmacro %}
 
 {% macro families_count(item, view, placement) %}
-    <span class="text-nowrap" data-testid="families-count">
+    <span
+        class="text-nowrap"
+        data-testid="families-count"
+        {{ macros.tooltip_attributes('info', _('Number of multi-screens'), 'top') }}
+    >
         <i class="bi-window-split pe-1 text-secondary"></i>{{ item.families|length }}
     </span>
 {% endmacro %}
@@ -83,14 +91,44 @@
 {% endmacro %}
 
 {% macro delay(item, view, placement) %}
-    <span class="text-nowrap"><i class="bi-hourglass-split pe-1 text-secondary"></i>{{ _('%(seconds)d sec.', seconds=item.delay) }}</span>
+    <span
+        class="text-nowrap"
+        {{ macros.tooltip_attributes('info', _('Rotation delay'), 'top') }}
+    ><i class="bi-hourglass-split pe-1 text-secondary"></i>{{ _('%(seconds)d sec.', seconds=item.delay) }}</span>
 {% endmacro %}
 
 {% macro timer(item, view, placement) %}
     {% if item.timer %}
-        <span class="text-truncate"><i class="bi-clock-fill pe-1 text-secondary"></i>{{ item.timer.name }}</span>
+        <span
+            class="text-truncate"
+            {{ macros.tooltip_attributes('info', _('Timer'), 'top') }}
+        ><i class="bi-clock-fill pe-1 text-secondary"></i>{{ item.timer.name }}</span>
     {% else %}
         <span class="text-secondary fst-italic">{{ _('Default timers') }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro alert_message_content(rotator) %}
+    {% if rotator.message_text %}
+        <div
+            class="px-2 alert-message rotator-alert-message"
+            style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+        >{{ rotator.message_text }}</div>
+    {% else %}
+        <span class="text-secondary fst-italic">
+            {{ _('Default alert messages') if rotator.message_default else _('No alert message') }}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro alert_message(item, view, placement) %}
+    {% if view == 'card' and client.can_manage_screens %}
+        <div class="collection-fact">
+            <span class="collection-fact-label">
+                <i class="bi-chat-left-text-fill"></i>{{ _('Alert message') }}
+            </span>
+            <div>{{ alert_message_content(item) }}</div>
+        </div>
     {% endif %}
 {% endmacro %}
 
@@ -120,19 +158,10 @@
                 <span class="text-secondary">{{ _('None') }}</span>
             {% endfor %}
         </section>
-        {% if client.can_manage_screens %}
+        {% if view != 'card' and client.can_manage_screens %}
             <section class="collection-detail-section collection-detail-wide">
                 <h6>{{ _('Alert message') }}</h6>
-                {% if rotator.message_text %}
-                    <div
-                        class="px-2 alert-message rotator-alert-message"
-                        style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
-                    >{{ rotator.message_text }}</div>
-                {% else %}
-                    <span class="text-secondary fst-italic">
-                        {{ _('Default alert messages') if rotator.message_default else _('No alert message') }}
-                    </span>
-                {% endif %}
+                {{ alert_message_content(rotator) }}
             </section>
         {% endif %}
     </div>

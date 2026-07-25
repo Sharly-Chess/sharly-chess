@@ -24,7 +24,11 @@
                 class="bi-exclamation-triangle-fill text-danger"
                 {{ macros.tooltip_attributes(
                     'warning',
-                    _('One or more of the plugins required to use this event are disabled, making it inaccessible.'),
+                    _(
+                        'One or more of the plugins required to use this event '
+                        'are disabled, making it inaccessible. You can enable '
+                        'plugins in the application settings.'
+                    ),
                     'top',
                 ) }}
             ></i>
@@ -50,9 +54,15 @@
 {% macro visibility(item, view, placement) %}
     {% if not hide_public_status|default(false) %}
         {% if item.public %}
-            <span class="text-success text-nowrap"><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
+            <span
+                class="text-success text-nowrap"
+                {{ macros.tooltip_attributes('info', _('This event is public (by default, screens are visible by the spectators).'), 'top') }}
+            ><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
         {% else %}
-            <span class="text-warning text-nowrap"><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
+            <span
+                class="text-warning text-nowrap"
+                {{ macros.tooltip_attributes('info', _('This event is private (by default, screens are not visible by the spectators).'), 'top') }}
+            ><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
         {% endif %}
     {% endif %}
 {% endmacro %}
@@ -67,6 +77,17 @@
     <span class="{% if not item.player_count %}text-secondary{% endif %} text-nowrap">
         <i class="bi-people-fill pe-1"></i>{{ item.player_count }}
     </span>
+{% endmacro %}
+
+{% macro teams_count(item, view, placement) %}
+    {% if item.is_team_event %}
+        <span
+            class="{% if not item.team_count %}text-secondary{% endif %} text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of teams: %(num)d', num=item.team_count), 'top') }}
+        >
+            <i class="bi-flag-fill pe-1"></i>{{ item.team_count }}
+        </span>
+    {% endif %}
 {% endmacro %}
 
 {% macro plugin_health(item, view, placement) %}

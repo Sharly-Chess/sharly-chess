@@ -20,6 +20,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
             ComponentPlacement('date_range'),
             ComponentPlacement('tournaments_count'),
             ComponentPlacement('players_count'),
+            ComponentPlacement('teams_count'),
         ),
         body=(
             ComponentPlacement('unique_id'),

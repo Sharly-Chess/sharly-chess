@@ -17,6 +17,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
         body=(
             ComponentPlacement('delay'),
             ComponentPlacement('timer'),
+            ComponentPlacement('alert_message'),
         ),
         details=(ComponentPlacement('details'),),
         footer=(ComponentPlacement('actions'),),
