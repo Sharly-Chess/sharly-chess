@@ -1,5 +1,5 @@
 {% macro item_class(item, view) -%}
-    collection-status-{{ 'success' if item.public else 'warning' }}
+    collection-status-{{ 'success' if item.public else 'danger' }}
 {%- endmacro %}
 
 {% macro identity(item, view, placement) %}
