@@ -113,10 +113,10 @@
         <div class="admin-collection-list-scroll">
             <div
                 class="admin-collection admin-collection-list"
-                style="--collection-list-columns:
-                    {% if drag_column %}{{ drag_column.width }} {% endif %}
-                    {% if collection.list.details %}1.75rem {% endif %}
-                    {% for column in content_columns %}{{ column.width }} {% endfor %};"
+                style="--collection-list-columns: {{ collection_macros.list_grid_template(
+                    collection,
+                    hidden_list_columns|default([]),
+                ) }};"
                 role="table"
                 aria-label="{{ collection.key }}"
             >

@@ -14,6 +14,20 @@
     {% endif %}
 {% endmacro %}
 
+{% macro list_grid_template(collection, hidden_list_columns=[]) -%}
+    {% set visible_columns = collection.list.columns
+        |rejectattr('component_id', 'in', hidden_list_columns)
+        |list %}
+    {% set drag_column = visible_columns
+        |selectattr('component_id', 'equalto', 'drag_handle')
+        |first %}
+    {% if drag_column %}{{ drag_column.width }} {% endif %}
+    {% if collection.list.details %}1.75rem {% endif %}
+    {% for column in visible_columns
+        |rejectattr('component_id', 'equalto', 'drag_handle')
+    %}{{ column.width }} {% endfor %}
+{%- endmacro %}
+
 {% macro column_edit_button(
     disabled,
     url,
