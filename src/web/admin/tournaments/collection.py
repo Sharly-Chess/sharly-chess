@@ -1,5 +1,6 @@
 from web.admin.collection import (
     AdminCollectionSpec,
+    AdminCollectionViewMode,
     CardLayout,
     ComponentPlacement,
     ListColumn,
@@ -12,6 +13,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
     key='tournaments',
     components_template='/admin/tournaments/tournament_components.j2',
     reorder_input_name='item',
+    default_view_mode=AdminCollectionViewMode.CARDS,
     card=CardLayout(
         header=(
             ComponentPlacement('status'),

@@ -57,6 +57,7 @@ class AdminCollectionSpec:
     reorder_input_name: str | None = None
     card_href_component: str | None = None
     row_href_component: str | None = None
+    default_view_mode: AdminCollectionViewMode = AdminCollectionViewMode.LIST
 
     def item_id(self, item: Any) -> str:
         return str(getattr(item, self.item_id_attribute))
@@ -167,8 +168,9 @@ def resolve_admin_collection_view_mode(
     try:
         return AdminCollectionViewMode(stored_mode)
     except ValueError:
-        session_value.set(AdminCollectionViewMode.LIST)
-        return AdminCollectionViewMode.LIST
+        default_mode = get_admin_collection_spec(collection_key).default_view_mode
+        session_value.set(default_mode)
+        return default_mode
 
 
 def resolve_admin_collection_show_details(
