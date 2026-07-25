@@ -29,11 +29,6 @@ COLLECTION_SPEC = AdminCollectionSpec(
                 label=_('Screen'),
                 width='minmax(min-content, 1.4fr)',
             ),
-            ListColumn(
-                'screen_type',
-                label=_('Type'),
-                width='minmax(min-content, 1fr)',
-            ),
             ListColumn('source', label=_('Multi-Screen')),
             ListColumn('screen_sets', label=_('Content')),
             ListColumn(
