@@ -204,16 +204,9 @@ body[data-bs-theme="dark"] #top-nav-wrapper {
     flex-grow: 1;
     align-items: flex-end;
     justify-content: center;
-    position: fixed;
+    position: sticky;
     left: var(--side-bar-width);
-    right: 0;
-    bottom: 0;
-    z-index: 3;
-    background: var(--bs-body-bg);
-}
-
-#scroll-wrapper {
-    padding-bottom: 60px;
+    width: calc(var(--vw, 100vw) - var(--side-bar-width));
 }
 
 .input-block {
