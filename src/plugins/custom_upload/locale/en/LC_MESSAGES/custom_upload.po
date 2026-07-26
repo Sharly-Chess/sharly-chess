@@ -19,10 +19,10 @@ msgstr ""
 msgid "Connection:"
 msgstr ""
 
-msgid "Custom Upload"
+msgid "Custom location"
 msgstr ""
 
-msgid "Custom location"
+msgid "Custom upload"
 msgstr ""
 
 msgid "Default server path:"
@@ -165,4 +165,7 @@ msgstr ""
 
 msgid "to be configured"
 msgstr ""
+
+#~ msgid "Custom Upload"
+#~ msgstr ""
 

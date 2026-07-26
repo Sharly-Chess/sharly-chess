@@ -28,7 +28,7 @@ class CustomUploadPlugin(Plugin):
 
     @staticmethod
     def static_name() -> str:
-        return _('Custom Upload')
+        return _('Custom upload')
 
     @property
     def description(self) -> str:

@@ -19,11 +19,11 @@ msgstr "Tester la connexion"
 msgid "Connection:"
 msgstr "Connexion :"
 
-msgid "Custom Upload"
-msgstr "Mise en ligne personnalisée"
-
 msgid "Custom location"
 msgstr "Serveur personnel"
+
+msgid "Custom upload"
+msgstr "Mise en ligne personnalisée"
 
 msgid "Default server path:"
 msgstr "Chemin sur le serveur par défaut :"
@@ -165,4 +165,7 @@ msgstr "le chemin sur le serveur n'a pas pu être trouvé"
 
 msgid "to be configured"
 msgstr "à configurer"
+
+#~ msgid "Custom Upload"
+#~ msgstr "Mise en ligne personnalisée"
 
