@@ -2419,13 +2419,14 @@ class Tournament:
     @property
     def has_titled_players(self) -> bool:
         return any(
-            player.title != PlayerTitle.NONE for player in self.tournament_players
+            player.strongest_title != PlayerTitle.NONE
+            for player in self.tournament_players
         )
 
     @property
     def has_norm_eligible_titled_players(self) -> bool:
         return any(
-            player.title in TitleNorm.TITLE_HOLDERS
+            not player.held_titles.isdisjoint(TitleNorm.TITLE_HOLDERS)
             for player in self.tournament_players
         )
 

@@ -89,14 +89,42 @@ class TitleColumn(DatasheetColumn):
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         try:
-            PlayerTitle(value)
-            stored_player.title = value
+            title = PlayerTitle(value)
         except ValueError:
             raise SharlyChessException(
                 _('Unknown value (expected: {expected}).').format(
-                    expected='|'.join(PlayerTitle)
+                    expected='|'.join(t.value for t in PlayerTitle.open_titles())
                 )
             )
+        if title.is_women:
+            raise SharlyChessException(
+                _('Unknown value (expected: {expected}).').format(
+                    expected='|'.join(t.value for t in PlayerTitle.open_titles())
+                )
+            )
+        stored_player.title = value
+
+
+class WomenTitleColumn(DatasheetColumn):
+    @property
+    def id(self) -> str:
+        return 'women_title'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.women_title.value
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        try:
+            title = PlayerTitle(value)
+        except ValueError:
+            title = None
+        if title is None or (title is not PlayerTitle.NONE and not title.is_women):
+            raise SharlyChessException(
+                _('Unknown value (expected: {expected}).').format(
+                    expected='|'.join(t.value for t in PlayerTitle.women_titles())
+                )
+            )
+        stored_player.women_title = value
 
 
 class LastNameColumn(DatasheetColumn):

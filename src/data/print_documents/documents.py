@@ -2073,7 +2073,8 @@ class NormReportPrintDocument(PrintDocument):
                 rule_143_exemption=exemption_code
             ).items()
             if norm.meets_gender
-            and tournament_player.title.sort_index < norm_title.player_title.sort_index
+            and tournament_player.title_on_norm_ladder(norm_title).sort_index
+            < norm_title.player_title.sort_index
         }
         apply_143abc_exemption(
             norms,
@@ -2155,7 +2156,8 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
                 rule_143_exemption=exemption_code
             ).items()
             if norm.meets_gender
-            and tournament_player.title.sort_index < norm_title.player_title.sort_index
+            and tournament_player.title_on_norm_ladder(norm_title).sort_index
+            < norm_title.player_title.sort_index
         }
         apply_143abc_exemption(
             norms,
@@ -2350,7 +2352,8 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 tn: result
                 for tn, result in all_norms.items()
                 if result.is_met
-                and tournament_player.title.sort_index < tn.player_title.sort_index
+                and tournament_player.title_on_norm_ladder(tn).sort_index
+                < tn.player_title.sort_index
             }
             if achieved:
                 achievers.append({'player': tournament_player, 'norms': achieved})

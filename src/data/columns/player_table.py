@@ -99,7 +99,7 @@ class TitleColumn(TournamentPlayerTableColumn):
         return '\u00a0'
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.title.short_name
+        return tournament_player.display_title
 
     @property
     def shared_classes(self) -> str:

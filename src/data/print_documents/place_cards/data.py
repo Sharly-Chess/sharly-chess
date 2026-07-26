@@ -53,7 +53,7 @@ class PlaceCardPlayer:
             if tournament_player.year_of_birth:
                 self.year_of_birth = str(tournament_player.year_of_birth)
             self.gender = tournament_player.gender.short_name
-            self.title = tournament_player.title.short_name
+            self.title = tournament_player.display_title
             self.federation = tournament_player.federation.name
             self.club = tournament_player.club.name
             self.category = tournament_player.category.name

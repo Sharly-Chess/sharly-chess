@@ -5,7 +5,7 @@
         <div class="modal-header d-flex justify-content-between align-items-end position-relative">
             <div class="flex flex-column gap-0 align-items-start">
                 <h2 class="modal-title">
-                    {{admin_player.title.short_name}} {{ admin_player.full_name }}
+                    {{ admin_player.display_title }} {{ admin_player.full_name }}
                     {% if not tournament_player.has_withdrawn and not admin_event.is_team_event %}
                         {% set status = tournament_player.check_in_status_no_bye %}
                         <i
@@ -158,7 +158,7 @@
                         {% set bye_modifiable_for_round = round >= tournament_player.tournament.current_round and not pairing.board %}
                         {% if pairing.opponent_id %}
                             {% set opp=tournament_player.tournament.tournament_players_by_id[pairing.opponent_id] %}
-                            {% set opponent = opp.title.short_name ~ ' ' ~ opp.full_name %}
+                            {% set opponent = opp.display_title ~ ' ' ~ opp.full_name %}
                             {% set federation=opp.federation %}
                             {% set rating=opp.rating_str %}
                             {% set color=pairing.color %}

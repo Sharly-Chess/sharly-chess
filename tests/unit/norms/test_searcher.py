@@ -44,7 +44,8 @@ from utils.types import Federation, NormCheckResult
 @dataclass
 class FakeOpponent:
     """Duck-typed stand-in for `TournamentPlayer`. The norm code only
-    reads `id`, `rating`, `rating_type`, `federation`, `title` on opponents.
+    reads `id`, `rating`, `rating_type`, `federation`, `title`,
+    `women_title`, `held_titles` and `strongest_title` on opponents.
     """
 
     id: int
@@ -52,6 +53,19 @@ class FakeOpponent:
     rating_type: PlayerRatingType = PlayerRatingType.FIDE
     federation: Federation = Federation('FRA')
     title: PlayerTitle = PlayerTitle.NONE
+    women_title: PlayerTitle = PlayerTitle.NONE
+
+    @property
+    def held_titles(self) -> frozenset[PlayerTitle]:
+        return frozenset(
+            title
+            for title in (self.title, self.women_title)
+            if title != PlayerTitle.NONE
+        )
+
+    @property
+    def strongest_title(self) -> PlayerTitle:
+        return max(self.title, self.women_title, key=lambda title: title.sort_index)
 
 
 def make_inputs(
@@ -72,8 +86,9 @@ def make_inputs(
         results.append(res)
         included.append(rnd)
         feds[opp.federation] += 1
-        if opp.title in TitleNorm.TITLE_HOLDERS:
-            titles[opp.title] += 1
+        for title in opp.held_titles:
+            if title in TitleNorm.TITLE_HOLDERS:
+                titles[title] += 1
     return NormInputs(
         played_games=len(rounds_data),
         federations_counter=feds,
@@ -639,6 +654,134 @@ def _untitled(id_: int, rating: int = 2000, federation: str = 'FRA') -> FakeOppo
         federation=Federation(federation),
         title=PlayerTitle.NONE,
     )
+
+
+def _wim(id_: int, rating: int = 2100, federation: str = 'GER') -> FakeOpponent:
+    """A woman holding only the WIM title (no open title)."""
+    return FakeOpponent(
+        id_,
+        rating,
+        rating_type=PlayerRatingType.FIDE,
+        federation=Federation(federation),
+        women_title=PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+    )
+
+
+def _wgm(id_: int, rating: int = 2300, federation: str = 'USA') -> FakeOpponent:
+    """A woman holding only the WGM title (no open title)."""
+    return FakeOpponent(
+        id_,
+        rating,
+        rating_type=PlayerRatingType.FIDE,
+        federation=Federation(federation),
+        women_title=PlayerTitle.WOMAN_GRANDMASTER,
+    )
+
+
+def _im_wim(id_: int, rating: int = 2400, federation: str = 'FRA') -> FakeOpponent:
+    """A woman holding both the open IM title and the women WIM title."""
+    return FakeOpponent(
+        id_,
+        rating,
+        rating_type=PlayerRatingType.FIDE,
+        federation=Federation(federation),
+        title=PlayerTitle.INTERNATIONAL_MASTER,
+        women_title=PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+    )
+
+
+class TestWomenTitlesCountTowardsNorms:
+    """1.4.5 — the required-title and title-holder counts must look at the
+    women title as well as the open title. A player can hold an open title
+    (which historically masked their women title in the single field) or
+    only a women title; either must be counted."""
+
+    def _evaluator(self, gender: PlayerGender = PlayerGender.WOMAN):
+        return _real_searcher(rounds=9, gender=gender).evaluator
+
+    def test_women_titled_opponents_count_for_wim_norm(self):
+        """A WIM norm requires opponents holding WIM/WGM/IM/GM. Nine
+        opponents whose ONLY title is the women WIM title must all count —
+        before the open/women split their open `title` was NONE and they
+        were silently ignored."""
+        opponents = [_wim(i, federation=f'F{i:02d}') for i in range(1, 10)]
+        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        res = self._evaluator().evaluate_one(inputs, TitleNorm.WIM, False)
+        assert res.required_titles_met == 9
+        assert not res.not_enough_required_titles
+        assert res.num_title_holders == 9
+
+    def test_wgm_opponents_count_as_title_holders(self):
+        """WGM women-only opponents are title-holders (1.4.5a) and satisfy a
+        WGM norm's required set (WGM/IM/GM)."""
+        opponents = [_wgm(i, federation=f'F{i:02d}') for i in range(1, 10)]
+        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        res = self._evaluator().evaluate_one(inputs, TitleNorm.WGM, False)
+        assert res.num_title_holders == 9
+        assert res.required_titles_met == 9
+        assert not res.not_enough_required_titles
+
+    def test_dual_titled_opponent_counted_once(self):
+        """An opponent who is both IM (open) and WIM (women) is one person:
+        they count once as a title-holder, even though the per-title display
+        breakdown lists them under both IM and WIM."""
+        opponents = [_im_wim(1)] + [_untitled(i) for i in range(2, 10)]
+        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        res = self._evaluator().evaluate_one(inputs, TitleNorm.GM, False)
+        # Counted once as an opponent, not twice.
+        assert res.num_title_holders == 1
+        # Per-title display breakdown records both of their titles.
+        assert res.title_counts[PlayerTitle.INTERNATIONAL_MASTER] == 1
+        assert res.title_counts[PlayerTitle.WOMAN_INTERNATIONAL_MASTER] == 1
+        assert sum(res.title_counts.values()) == 2
+
+    def test_required_titles_checks_both_fields_for_wim_norm(self):
+        """A WIM norm's required set is WIM/WGM/IM/GM. An opponent counts if
+        EITHER of their titles is in the set — the whole point of the split:
+
+          * FM + WIM   → counts (via WIM; FM alone would not qualify, and
+            `strongest_title` would pick FM and wrongly miss it)
+          * IM only    → counts (via the open IM)
+          * WGM only   → counts (via the women WGM)
+          * FM only    → does NOT count (FM not in the required set)
+          * WFM only   → does NOT count
+
+        FM and WFM are still title-holders (1.4.5a), so `num_title_holders`
+        exceeds `required_titles_met`."""
+        opponents = [
+            FakeOpponent(
+                1,
+                2200,
+                title=PlayerTitle.FIDE_MASTER,
+                women_title=PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            ),
+            FakeOpponent(2, 2200, title=PlayerTitle.INTERNATIONAL_MASTER),
+            FakeOpponent(3, 2200, women_title=PlayerTitle.WOMAN_GRANDMASTER),
+            FakeOpponent(4, 2200, title=PlayerTitle.FIDE_MASTER),
+            FakeOpponent(5, 2200, women_title=PlayerTitle.WOMAN_FIDE_MASTER),
+        ] + [_untitled(i) for i in range(6, 10)]
+        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        res = self._evaluator().evaluate_one(inputs, TitleNorm.WIM, False)
+        # Opponents 1, 2 and 3 qualify; 4 (FM) and 5 (WFM) do not.
+        assert res.required_titles_met == 3
+        # But all of 1-5 are title-holders (WFM/FM included).
+        assert res.num_title_holders == 5
+
+    def test_wim_women_title_does_not_satisfy_wgm_norm(self):
+        """A WGM norm's required set is WGM/IM/GM — it does NOT include WIM.
+        So a WIM opponent is a title-holder but does not satisfy the WGM
+        norm's required-titles rule; a WGM or IM opponent does."""
+        opponents = [
+            FakeOpponent(1, 2200, women_title=PlayerTitle.WOMAN_INTERNATIONAL_MASTER),
+            FakeOpponent(2, 2200, women_title=PlayerTitle.WOMAN_GRANDMASTER),
+            FakeOpponent(3, 2200, title=PlayerTitle.INTERNATIONAL_MASTER),
+        ] + [_untitled(i) for i in range(4, 10)]
+        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        res = self._evaluator().evaluate_one(inputs, TitleNorm.WGM, False)
+        # WGM (opp 2) and IM (opp 3) qualify; WIM (opp 1) does not.
+        assert res.required_titles_met == 2
+        # All three hold title-holder titles.
+        assert res.num_title_holders == 3
 
 
 class TestSearcherWithRealEvaluator:

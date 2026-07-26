@@ -911,9 +911,9 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'SELECT `id`, `last_name`, `ratings`, `first_name`, '
             '`date_of_birth`, `year_of_birth`, `gender`, `mail`, `phone`, '
-            '`comment`, `owed`, `paid`, `title`, `fide_id`, `federation`, '
-            '`club`, `fixed`, `check_in`, `team_id`, `team_index`, '
-            '`plugin_data` FROM `player`'
+            '`comment`, `owed`, `paid`, `title`, `women_title`, `fide_id`, '
+            '`federation`, `club`, `fixed`, `check_in`, `team_id`, '
+            '`team_index`, `plugin_data` FROM `player`'
         )
         assert self.cursor is not None
         stored_players: list[StoredPlayer] = []
@@ -931,6 +931,7 @@ class EventDatabase(MigrationDatabase):
             owed,
             paid,
             title,
+            women_title,
             fide_id,
             federation,
             club,
@@ -959,6 +960,7 @@ class EventDatabase(MigrationDatabase):
                     owed=owed,
                     paid=paid,
                     title=title,
+                    women_title=women_title,
                     fide_id=fide_id,
                     federation=federation,
                     club=club,
@@ -985,6 +987,7 @@ class EventDatabase(MigrationDatabase):
                 'owed',
                 'paid',
                 'title',
+                'women_title',
                 'fide_id',
                 'federation',
                 'club',

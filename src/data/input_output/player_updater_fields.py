@@ -101,6 +101,27 @@ class TitleUpdaterField(PlayerUpdaterField):
         stored_player.title = match_stored_player.title
 
 
+class WomenTitleUpdaterField(PlayerUpdaterField):
+    @staticmethod
+    def static_id() -> str:
+        return 'women_title'
+
+    @staticmethod
+    def static_name() -> str:
+        return ''
+
+    def get_string_value(self, player: Player) -> str:
+        return player.women_title.short_name
+
+    def is_updated(self, src_player: Player, match_player: Player) -> bool:
+        return src_player.women_title != match_player.women_title
+
+    def update_player(
+        self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
+    ):
+        stored_player.women_title = match_stored_player.women_title
+
+
 class NameUpdaterField(PlayerUpdaterField):
     @staticmethod
     def static_id() -> str:

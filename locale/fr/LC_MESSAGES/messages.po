@@ -8523,6 +8523,9 @@ msgstr "Grand Maître Internationale Féminin"
 msgid "Woman International Master"
 msgstr "Maître Internationale Féminin"
 
+msgid "Women's Title:"
+msgstr "Titre féminin"
+
 msgid "XLSX format"
 msgstr "Format XLSX"
 
@@ -9204,4 +9207,7 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "Women Title:"
+#~ msgstr "Titre féminin"
 

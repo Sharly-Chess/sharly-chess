@@ -210,8 +210,8 @@ def _build_players(tournament: Tournament) -> list[dict[str, Any]]:
         }
         if player.first_name:
             p['firstName'] = player.first_name
-        if player.title.value:
-            p['title'] = player.title.value
+        if player.strongest_title.value:
+            p['title'] = player.strongest_title.value
         if player.rating:
             p['rating'] = player.rating
             rating_type_str = SCEPlayerRatingType.get_outer_value(player.rating_type)

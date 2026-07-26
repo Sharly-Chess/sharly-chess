@@ -196,7 +196,7 @@
                                             {{ player.federation }}
                                         </td>
                                         <td rowspan="{{ entry.norms | length }}" class="center">
-                                            {{ player.title.short_name or '-' }}
+                                            {{ player.display_title or '-' }}
                                         </td>
                                     {% endif %}
                                     <td class="center">
@@ -287,12 +287,12 @@
                                             {{ player.federation }}
                                         </td>
                                         <td rowspan="{{ entry.requirements | length }}" class="center">
-                                            {{ player.title.short_name or '-' }}
+                                            {{ player.display_title or '-' }}
                                         </td>
                                         <td rowspan="{{ entry.requirements | length }}">
                                             {{ opp.full_name }}
                                             <span class="note">
-                                                {{ opp.title.short_name or '' }}
+                                                {{ opp.display_title or '' }}
                                                 {% if opp.rating %}({{ opp.rating }}){% endif %}
                                                 — {{ opp.federation }}
                                             </span>
