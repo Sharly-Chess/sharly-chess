@@ -38,17 +38,43 @@
         ) }}
     </div>
     <div class="text-center mt-4 mb-1">
-        <button
-            type="button"
-            class="btn btn-outline-primary text-nowrap"
-            hx-post="{{ url_for('custom-upload-test-auth', action='update') }}"
-            hx-target="closest .auth-fields"
-            hx-swap="morphdom"
-            hx-vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}'
-            hx-indicator="#please-wait"
-        >
-            <i class="bi bi-wifi pe-1"></i>
-            {{ _('Connection test') }}
-        </button>
+        <span id="test-connection" {{ macros.tooltip_attributes('', _('Host and FTP username are required')) }}>
+            <button
+                type="button"
+                class="btn btn-outline-primary text-nowrap"
+                hx-post="{{ url_for('custom-upload-test-auth', action='update') }}"
+                hx-target="closest .auth-fields"
+                hx-swap="morphdom"
+                hx-vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}'
+                hx-indicator="#please-wait"
+            >
+                <i class="bi bi-wifi pe-1"></i>
+                {{ _('Connection test') }}
+            </button>
+        </span>
+        <script>
+            function isThereEmptyRequiredField() {
+                let emptyField = false;
+                $('[name="ftp_host"], [name="ftp_username"]').each(function() {
+                    if ($(this).val().length == 0) {
+                        emptyField = true;
+                    }
+                });
+                return emptyField;
+            }
+
+            function updateTestConnectionButtonState() {
+                const emptyRequiredField = isThereEmptyRequiredField();
+                $('#test-connection > button').prop('disabled', emptyRequiredField)
+                $('#test-connection').tooltip(emptyRequiredField ? 'enable' : 'disable')
+            }
+
+            updateTestConnectionButtonState()
+            $('[name="ftp_host"], [name="ftp_username"]').keyup(function() {
+                updateTestConnectionButtonState()
+            })
+        </script>
+        <style>
+        </style>
     </div>
 </div>

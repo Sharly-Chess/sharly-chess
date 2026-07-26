@@ -55,7 +55,7 @@ dependencies = [
   "toga == 0.5.4",
   "wheel >= 0.45.1",
   "wsproto ~= 1.2.0",
-  "paramiko>=4.0.0",
+  "paramiko >= 5.0.0",
 ]
 
 [project.optional-dependencies]

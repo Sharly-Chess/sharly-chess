@@ -73,6 +73,9 @@ msgstr "Échec de la connexion au serveur distant."
 msgid "Failure"
 msgstr "Échec"
 
+msgid "Host and FTP username are required"
+msgstr "Hôte et identifiant FTP sont requis"
+
 msgid "Host:"
 msgstr "Hôte :"
 
@@ -124,9 +127,6 @@ msgstr "Status"
 msgid "There should be no more than one unescaped '?' character"
 msgstr "Il ne doit pas y avoir plus d'un caractère '?' non échappé"
 
-msgid "To be configured"
-msgstr "À configurer"
-
 msgid "Tournament"
 msgstr "Tournoi"
 
@@ -162,3 +162,7 @@ msgstr "consulter les logs"
 
 msgid "target server path not found"
 msgstr "le chemin sur le serveur n'a pas pu être trouvé"
+
+msgid "to be configured"
+msgstr "à configurer"
+

@@ -73,6 +73,9 @@ msgstr ""
 msgid "Failure"
 msgstr ""
 
+msgid "Host and FTP username are required"
+msgstr ""
+
 msgid "Host:"
 msgstr ""
 
@@ -124,9 +127,6 @@ msgstr ""
 msgid "There should be no more than one unescaped '?' character"
 msgstr ""
 
-msgid "To be configured"
-msgstr ""
-
 msgid "Tournament"
 msgstr ""
 
@@ -162,3 +162,7 @@ msgstr ""
 
 msgid "target server path not found"
 msgstr ""
+
+msgid "to be configured"
+msgstr ""
+
