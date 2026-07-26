@@ -44,8 +44,8 @@ def _player_ns(**kwargs) -> SimpleNamespace:
     kwargs['held_titles'] = frozenset(
         t for t in (title, women) if t != PlayerTitle.NONE
     )
-    kwargs['title_on_norm_ladder'] = (
-        lambda title_norm: women if title_norm.player_title.is_women else title
+    kwargs['title_on_norm_ladder'] = lambda title_norm: (
+        women if title_norm.player_title.is_women else title
     )
     return SimpleNamespace(**kwargs)
 
