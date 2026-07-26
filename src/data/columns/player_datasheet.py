@@ -93,16 +93,15 @@ class TitleColumn(DatasheetColumn):
         except ValueError:
             raise SharlyChessException(
                 _('Unknown value (expected: {expected}).').format(
-                    expected='|'.join(t.value for t in PlayerTitle.open_titles())
+                    expected='|'.join(t.value for t in PlayerTitle)
                 )
             )
+        # A women title entered in the open-title column is accepted and
+        # routed to the women-title field rather than rejected.
         if title.is_women:
-            raise SharlyChessException(
-                _('Unknown value (expected: {expected}).').format(
-                    expected='|'.join(t.value for t in PlayerTitle.open_titles())
-                )
-            )
-        stored_player.title = value
+            stored_player.women_title = value
+        else:
+            stored_player.title = value
 
 
 class WomenTitleColumn(DatasheetColumn):

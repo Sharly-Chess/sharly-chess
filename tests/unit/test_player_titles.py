@@ -4,7 +4,11 @@ for imports/exports/sorting/logic); `display_title` is the human-readable
 string that shows the women title alongside the open one unless the open
 title outranks it on the combined FIDE ladder."""
 
+import pytest
+
+from common import SharlyChessException
 from data.board import PlayerRatingType
+from data.columns.player_datasheet import TitleColumn, WomenTitleColumn
 from data.event import Event
 from database.sqlite.event.event_store import StoredEvent, StoredPlayer
 from utils.enum import PlayerTitle, TitleNorm
@@ -124,6 +128,37 @@ class TestTitleOnNormLadder:
             player.title_on_norm_ladder(TitleNorm.IM)
             == PlayerTitle.INTERNATIONAL_MASTER
         )
+
+
+class TestDatasheetTitleColumns:
+    """The open-title datasheet column accepts a women title and routes it to
+    the women field instead of rejecting it; the women-title column still only
+    accepts women titles."""
+
+    def test_open_column_sets_open_title(self):
+        stored = StoredPlayer(id=1)
+        TitleColumn()._augment_stored_player(stored, 'IM')
+        assert stored.title == 'IM'
+        assert stored.women_title == ''
+
+    def test_open_column_routes_women_title_to_women_field(self):
+        stored = StoredPlayer(id=1)
+        TitleColumn()._augment_stored_player(stored, 'WIM')
+        assert stored.title == ''
+        assert stored.women_title == 'WIM'
+
+    def test_open_column_rejects_unknown_value(self):
+        with pytest.raises(SharlyChessException):
+            TitleColumn()._augment_stored_player(StoredPlayer(id=1), 'ZZ')
+
+    def test_women_column_sets_women_title(self):
+        stored = StoredPlayer(id=1)
+        WomenTitleColumn()._augment_stored_player(stored, 'WGM')
+        assert stored.women_title == 'WGM'
+
+    def test_women_column_rejects_open_title(self):
+        with pytest.raises(SharlyChessException):
+            WomenTitleColumn()._augment_stored_player(StoredPlayer(id=1), 'IM')
 
 
 class TestFideTier:
