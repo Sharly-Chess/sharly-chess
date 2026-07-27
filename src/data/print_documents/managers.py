@@ -95,6 +95,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.ListPlayerSortPrintOption,
             options.ShowWarningsPrintOption,
             options.NonMonetaryPrintOption,
+            options.FederationPrintOption,
             options.ClubThresholdPrintOption,
             options.Rule143ExemptionPrintOption,
             options.QRCodeNetworkPrintOption,

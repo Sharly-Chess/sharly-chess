@@ -51,6 +51,7 @@ from data.print_documents.options import (
     ListPlayerSortPrintOption,
     ShowWarningsPrintOption,
     NonMonetaryPrintOption,
+    FederationPrintOption,
     ClubThresholdPrintOption,
     TournamentPrintOption,
     TournamentsPrintOption,
@@ -547,11 +548,16 @@ class BoardPrintDocument(PrintDocument, ABC):
         return False
 
     @property
+    def show_federation(self) -> bool:
+        return False
+
+    @property
     def board_columns(self) -> list[BoardColumn]:
         return BoardColumnHandler(ColumnUsage.PRINT).get_pairings_columns(
             self.tournament,
             self.at_round,
             ResultColumn if self.show_results else NoResultColumn,
+            show_federation=self.show_federation,
         )
 
     @property
@@ -620,6 +626,7 @@ class PairingPrintDocument(PrintDocument):
             PairingStylePrintOption,
             RoundPrintOption,
             FixedBoardOrderPrintOption,
+            FederationPrintOption,
         ]
 
     @cached_property
@@ -652,7 +659,14 @@ class BoardPairingPrintDocument(BoardPrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return BoardPrintDocument.available_options() + [FixedBoardOrderPrintOption]
+        return BoardPrintDocument.available_options() + [
+            FixedBoardOrderPrintOption,
+            FederationPrintOption,
+        ]
+
+    @property
+    def show_federation(self) -> bool:
+        return bool(self._get_option(FederationPrintOption).value)
 
     @property
     def title(self) -> str:

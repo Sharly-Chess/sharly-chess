@@ -637,6 +637,20 @@ class NonMonetaryPrintOption(PrintOption):
         return False
 
 
+class FederationPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'federation'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
+
+
 class ClubThresholdPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:

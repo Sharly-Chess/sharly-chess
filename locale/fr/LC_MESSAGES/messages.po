@@ -3564,6 +3564,9 @@ msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en lig
 msgid "Include beta versions in updates"
 msgstr "Inclure les versions bêta dans les mises à jour"
 
+msgid "Include federation column"
+msgstr "Inclure la colonne de la fédération"
+
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
 
