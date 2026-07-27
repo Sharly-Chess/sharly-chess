@@ -709,6 +709,43 @@ class Rule143ExemptionPrintOption(PrintOption):
             raise OptionError(f'Unknown 1.4.3 exemption: {self.value}', self)
 
 
+class NormsForecastSortPrintOption(PrintOption):
+    """Row ordering for the forecast table of the Tournament Norms Summary.
+
+    - 'rank'  → current standings position (default).
+    - 'table' → board number of the forecast round's pairing.
+    - 'name'  → alphabetical by player name.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'norms-forecast-sort'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return 'rank'
+
+    @property
+    def sort_choices(self) -> dict[str, str]:
+        """{value: label} for the dropdown."""
+        return {
+            'rank': _('Ranking'),
+            'table': _('Table number'),
+            'name': _('Alphabetical'),
+        }
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value not in ('rank', 'table', 'name'):
+            # Untranslated; should not happen via UI
+            raise OptionError(f'Unknown forecast sort: {self.value}', self)
+
+
 class NormChoicePrintOption(PrintOption):
     """Which norm to render in the Norm Calculation Details document.
     The detail doc shows only one norm at a time, so the arbiter picks

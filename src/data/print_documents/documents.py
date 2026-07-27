@@ -36,6 +36,7 @@ from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
     NormChoicePrintOption,
+    NormsForecastSortPrintOption,
     OptionalPlayerPrintOption,
     Rule143ExemptionPrintOption,
     PlayerSplitPrintOption,
@@ -2263,6 +2264,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         return [
             TournamentPrintOption,
             Rule143ExemptionPrintOption,
+            NormsForecastSortPrintOption,
         ]
 
     @property
@@ -2399,6 +2401,8 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         from data.norms import TitleNormForecaster
 
         exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        sort_mode = self._get_option(NormsForecastSortPrintOption).value
+        self.tournament.ensure_tournament_player_ranks_computed()
         candidates: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
             forecaster = TitleNormForecaster(
@@ -2441,32 +2445,48 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             if not requirements:
                 continue
             pairing = tournament_player.pairings_by_round[forecast_round]
+            board = pairing.board
             candidates.append(
                 {
                     'player': tournament_player,
                     'opponent': pairing.opponent,
                     'requirements': requirements,  # dict[TitleNorm, ForecastRequirement | None]
                     'achieved': achieved,
+                    'rank': tournament_player.rank,
+                    'board_number': board.number if board is not None else None,
                 }
             )
 
-        # Order: GM-chasers first, then by player name. Within a player,
-        # norms are already TitleNorm-ordered by the forecaster.
-        def _sort_key(entry):
+        self._sort_candidates(candidates, sort_mode)
+        return {
+            'candidates': candidates,
+            'forecast_round': forecast_round,
+            'sort_mode': sort_mode,
+        }
+
+    @staticmethod
+    def _sort_candidates(candidates: list[dict[str, Any]], sort_mode: str) -> None:
+        """Order forecast rows per the arbiter's sort choice. Unpaired
+        (board-less) players sink to the bottom of a table-number sort."""
+
+        def _highest_norm_key(entry):
             highest_norm = max(
                 entry['requirements'].keys(),
                 key=lambda tn: tn.player_title.sort_index,
             )
-            return (
-                -highest_norm.player_title.sort_index,
-                entry['player'].name_sort_key,
-            )
+            return -highest_norm.player_title.sort_index
 
-        candidates.sort(key=_sort_key)
-        return {
-            'candidates': candidates,
-            'forecast_round': forecast_round,
-        }
+        if sort_mode == 'name':
+            candidates.sort(key=lambda e: e['player'].name_sort_key)
+        elif sort_mode == 'table':
+            candidates.sort(
+                key=lambda e: (
+                    e['board_number'] is None,
+                    e['board_number'] or 0,
+                )
+            )
+        else:  # 'rank'
+            candidates.sort(key=lambda e: e['rank'])
 
 
 class QRCodePrintDocument(PrintDocument):
