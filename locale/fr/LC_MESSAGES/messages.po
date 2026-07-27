@@ -3034,7 +3034,7 @@ msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 
 msgid "FIDE ID *** FIDE ID COLUMN HEADER"
-msgstr "Identifiant FIDE"
+msgstr "Identi. FIDE"
 
 msgid "FIDE ID:"
 msgstr "Identifiant FIDE :"
