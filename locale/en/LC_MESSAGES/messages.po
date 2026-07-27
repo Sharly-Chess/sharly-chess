@@ -947,6 +947,9 @@ msgstr ""
 msgid "Allows pairing of the players, either using a pairing engine or manually"
 msgstr ""
 
+msgid "Alphabetical"
+msgstr ""
+
 msgid "An error occurred. Consult the logs for more details."
 msgstr ""
 
@@ -3092,6 +3095,9 @@ msgstr ""
 msgid "FIDE ID"
 msgstr ""
 
+msgid "FIDE ID *** FIDE ID COLUMN HEADER"
+msgstr "FIDE ID"
+
 msgid "FIDE ID:"
 msgstr ""
 
@@ -3638,6 +3644,9 @@ msgid "Include IDs and passwords for uploading results"
 msgstr ""
 
 msgid "Include beta versions in updates"
+msgstr ""
+
+msgid "Include federation column"
 msgstr ""
 
 msgid "Include incomplete teams"
@@ -4578,8 +4587,8 @@ msgstr ""
 msgid "Need help?"
 msgstr ""
 
-msgid "Needs"
-msgstr ""
+msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
+msgstr "Needs"
 
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
@@ -4973,8 +4982,8 @@ msgstr ""
 msgid "None *** FEDERATION"
 msgstr "None"
 
-msgid "Norm"
-msgstr ""
+msgid "Norm *** NORM COLUMN HEADER"
+msgstr "Norm"
 
 msgid "Norm Calculation Details"
 msgstr ""
@@ -4986,8 +4995,8 @@ msgstr ""
 msgid "Norm Report"
 msgstr ""
 
-msgid "Norm(s) Achieved"
-msgstr ""
+msgid "Norm(s) Achieved *** NORMS ACHIEVED COLUMN HEADER"
+msgstr "Norm(s) Achieved"
 
 msgid "Normalisation factor"
 msgstr ""
@@ -5033,8 +5042,8 @@ msgstr ""
 msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr ""
 
-msgid "Notes"
-msgstr ""
+msgid "Notes *** NOTES COLUMN HEADER"
+msgstr "Notes"
 
 msgid "Notification"
 msgstr ""
@@ -5206,8 +5215,8 @@ msgid "Opponent"
 msgstr ""
 
 #, python-brace-format
-msgid "Opponent (R{round})"
-msgstr ""
+msgid "Opponent (R{round}) *** OPPONENT COLUMN HEADER"
+msgstr "Opponent (R{round})"
 
 msgid "Opponent Elo"
 msgstr ""
@@ -5577,6 +5586,9 @@ msgstr ""
 
 msgid "Played"
 msgstr ""
+
+msgid "Played *** GAMES PLAYED COLUMN HEADER"
+msgstr "Played"
 
 msgid "Played *** TEAM RANKING HEADER PLAYED"
 msgstr "Played"
@@ -6052,6 +6064,9 @@ msgstr ""
 msgid "Ra"
 msgstr ""
 
+msgid "Ra *** AVERAGE OPPONENT RATING COLUMN HEADER"
+msgstr "Ra"
+
 msgid "Random"
 msgstr ""
 
@@ -6486,6 +6501,9 @@ msgstr ""
 msgid "Rp"
 msgstr ""
 
+msgid "Rp *** PERFORMANCE RATING COLUMN HEADER"
+msgstr "Rp"
+
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
@@ -6566,6 +6584,9 @@ msgid "Score"
 msgstr ""
 
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
+msgstr "Score"
+
+msgid "Score *** SCORE COLUMN HEADER"
 msgstr "Score"
 
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
@@ -7129,6 +7150,9 @@ msgstr ""
 
 #, python-format
 msgid "Table %(table)d"
+msgstr ""
+
+msgid "Table number"
 msgstr ""
 
 msgid "Table numbers:"
@@ -8064,6 +8088,9 @@ msgstr ""
 
 msgid "Title"
 msgstr ""
+
+msgid "Title *** TITLE COLUMN HEADER"
+msgstr "Title"
 
 msgid "Title Norms"
 msgstr ""

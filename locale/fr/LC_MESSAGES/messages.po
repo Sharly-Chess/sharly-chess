@@ -947,6 +947,9 @@ msgstr "Autorise la gestion des joueur·euses, la saisie de résultats spéciaux
 msgid "Allows pairing of the players, either using a pairing engine or manually"
 msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appariement ou manuellement"
 
+msgid "Alphabetical"
+msgstr "Alphabétique"
+
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
@@ -3092,6 +3095,9 @@ msgstr "Arbitre FIDE"
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 
+msgid "FIDE ID *** FIDE ID COLUMN HEADER"
+msgstr "Identi. FIDE"
+
 msgid "FIDE ID:"
 msgstr "Identifiant FIDE :"
 
@@ -3639,6 +3645,9 @@ msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en lig
 
 msgid "Include beta versions in updates"
 msgstr "Inclure les versions bêta dans les mises à jour"
+
+msgid "Include federation column"
+msgstr "Inclure la colonne de la fédération"
 
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
@@ -4578,7 +4587,7 @@ msgstr "Nauru"
 msgid "Need help?"
 msgstr "Besoin d'aide ?"
 
-msgid "Needs"
+msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
 msgstr "Requis"
 
 msgid "Neither screen nor rotator currently assigned"
@@ -4973,7 +4982,7 @@ msgstr "Aucune (pas de préférences de couleur)"
 msgid "None *** FEDERATION"
 msgstr "Aucune"
 
-msgid "Norm"
+msgid "Norm *** NORM COLUMN HEADER"
 msgstr "Norme"
 
 msgid "Norm Calculation Details"
@@ -4986,7 +4995,7 @@ msgstr "Détail du calcul de la norme — %(norm)s"
 msgid "Norm Report"
 msgstr "Rapport de norme"
 
-msgid "Norm(s) Achieved"
+msgid "Norm(s) Achieved *** NORMS ACHIEVED COLUMN HEADER"
 msgstr "Norme(s) réalisée(s)"
 
 msgid "Normalisation factor"
@@ -5033,7 +5042,7 @@ msgstr "Remarque"
 msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
 
-msgid "Notes"
+msgid "Notes *** NOTES COLUMN HEADER"
 msgstr "Notes"
 
 msgid "Notification"
@@ -5208,7 +5217,7 @@ msgid "Opponent"
 msgstr "Adversaire"
 
 #, python-brace-format
-msgid "Opponent (R{round})"
+msgid "Opponent (R{round}) *** OPPONENT COLUMN HEADER"
 msgstr "Adversaire (R{round})"
 
 msgid "Opponent Elo"
@@ -5578,6 +5587,9 @@ msgid "Place card type:"
 msgstr "Type de chevalet :"
 
 msgid "Played"
+msgstr "Parties"
+
+msgid "Played *** GAMES PLAYED COLUMN HEADER"
 msgstr "Parties"
 
 msgid "Played *** TEAM RANKING HEADER PLAYED"
@@ -6054,6 +6066,9 @@ msgstr "RÉS"
 msgid "Ra"
 msgstr "Ra"
 
+msgid "Ra *** AVERAGE OPPONENT RATING COLUMN HEADER"
+msgstr "Ra"
+
 msgid "Random"
 msgstr "Aléatoire"
 
@@ -6488,6 +6503,9 @@ msgstr "Lignes par écran :"
 msgid "Rp"
 msgstr "Rp"
 
+msgid "Rp *** PERFORMANCE RATING COLUMN HEADER"
+msgstr "Rp"
+
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
@@ -6568,6 +6586,9 @@ msgid "Score"
 msgstr "Score"
 
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
+msgstr "Score"
+
+msgid "Score *** SCORE COLUMN HEADER"
 msgstr "Score"
 
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
@@ -7132,6 +7153,9 @@ msgstr "TRF26"
 #, python-format
 msgid "Table %(table)d"
 msgstr "Table %(table)d"
+
+msgid "Table number"
+msgstr "Numéro de table"
 
 msgid "Table numbers:"
 msgstr "Numéros des tables :"
@@ -8065,6 +8089,9 @@ msgid "Timor-Leste"
 msgstr "Timor-Leste"
 
 msgid "Title"
+msgstr "Titre"
+
+msgid "Title *** TITLE COLUMN HEADER"
 msgstr "Titre"
 
 msgid "Title Norms"
@@ -9575,3 +9602,17 @@ msgstr "— Non assigné·e —"
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
 
+#~ msgid "Needs"
+#~ msgstr "Requis"
+
+#~ msgid "Norm"
+#~ msgstr "Norme"
+
+#~ msgid "Opponent (R{round})"
+#~ msgstr "Adversaire (R{round})"
+
+#~ msgid "Norm(s) Achieved"
+#~ msgstr "Norme(s) réalisée(s)"
+
+#~ msgid "Notes"
+#~ msgstr "Notes"

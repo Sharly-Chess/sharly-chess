@@ -53,3 +53,4 @@ In order to maintain compatibility with the display of table numbers on the FFE 
 ## Documents
 
 - Norm reports generated before the end of the tournament now assume that players will play the remaining rounds for the purposes of displaying 1.5.6a and 1.4.3d (5.0.0)
+- The pairings document now has an option to include a federation column (5.0.0)
