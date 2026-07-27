@@ -14,9 +14,10 @@ Molter contract.
 |------|---------|
 | `molter-specification.md` | Standalone specification: hard rules, ideals, quality requirements, and a high-level overview of the recipe approach. |
 | `molter-developer-guide.md` | Developer guide: runtime path, `.mrec` format, rebuild scripts, validation, and known limits. |
+| `build_grid_recipes.py` | Primary recipe builder: factor-grid schedules (optimal I1/prefix by construction) with decoupled block colouring. |
 | `build_quality_summary.py` | Main quality-audit workbook for the recipe artifact: validation, timings, grades, I1, I1 prefix deficit, I2, I3, I4, I5, exact/relaxed S5. By default it replays `src/data/pairings/resources/molter_recipes.mrec` and audits `N<=50`, `P=2,4,6,8,10,12`, `R<=14`. |
-| `build_solver_recipe_suite.py` | Reproducible recipe-suite orchestrator. It runs deterministic passes, resumes without discarding completed work, merges the best results by metric priority, and writes a manifest. |
-| `build_solver_recipes.py` | Low-level recipe build/replay tool. JSON is the readable resumable research state; the adjacent `.mrec` file is the compact runtime artifact. |
+| `build_solver_recipe_suite.py` | Reproducible orchestrator for the older search portfolio. It runs deterministic passes, resumes without discarding completed work, merges the best results by metric priority, and writes a manifest. |
+| `build_solver_recipes.py` | Low-level recipe build/replay/merge tool. JSON is the readable resumable research state; the adjacent `.mrec` file is the compact runtime artifact. |
 | `build_xlsx.py` | Builds display workbooks with in-sheet controls for team and floater highlighting. |
 | `build_dna_xlsx.py` | Builds the DNA reference workbook: `N=3..15`, `P=2,4,6,8,10,12`, `R=2..N-1`, using the app recipe artifact. |
 
@@ -27,26 +28,14 @@ file does not store every final pairing verbosely. It stores, for each covered
 case, a compact schedule recipe plus one colour bit per game. Replay rebuilds
 the table deterministically without a live solver or runtime search.
 
-The app-visible Molter range is capped for quality:
-
-- `N = 3..20` teams;
-- `P = 2,4,6,8,10,12` players per team;
-- `R = 1..13` rounds, where `R < N`, plus the full `N = 15`, `R = 14`
-  tables needed by the DNA reference range.
-
-The packed research artifact also contains recipes for `N = 21..25`. They stay
-available for audit and future improvement, but the application does not expose
-them because the current quality work is not good enough there.
-
-If an exact requested shape is not covered by the app-visible range, the
-application refuses the Molter table instead of improvising a result.
-
-The underlying recipe collection currently covers:
+The app-visible Molter range matches the packed recipe collection:
 
 - `N = 3..25` teams;
 - `P = 2,4,6,8,10,12` players per team;
-- `R = 1..13` rounds, where `R < N`, plus `N = 15`, `R = 14` for each
-  supported `P`.
+- every legal round count `R = 1..N-1`, including full round robins.
+
+If an exact requested shape is not covered, the application refuses the Molter
+table instead of improvising a result.
 
 ## Hard Constraints
 
@@ -110,23 +99,27 @@ success.
 
 Current recipe snapshot:
 
-- `1404/1404` covered recipes are structurally valid.
-- The application quality gate exposes the `1014` recipes with `N <= 20`.
-- Quality distribution: `A=360`, `B=904`, `C=34`, `D=106`, `FAIL=0`.
-- A/B cases dominate up to roughly twenty teams.
-- The serious remaining weaknesses are mostly larger-`N` I1/prefix cases,
-  especially around `N = 21`, `N = 23`, and `N = 25`.
+- `1794/1794` covered recipes are structurally valid and app-exposed; every
+  `(N, P)` shape covers all of `R = 1..N-1`.
+- Quality distribution: `A=384`, `B=1410`, `C=0`, `D=0`, `FAIL=0`.
+- Every case reaches its arithmetic I1 optimum with a zero prefix deficit;
+  B-grades are small ideal misses, mostly relaxed per-round colour balance
+  (bounded S5 instead of exact) and minor floater-balance slack.
 
-This work produces valid and generally good tables over the current range, but
-it does **not** close the mathematical problem. Stronger CP-SAT, SAT, ILP, C++,
-SageMath, or combinatorial constructors are welcome if they preserve the hard
-rules and improve the quality vector.
+The quality problem over this range is closed in practice, not mathematically:
+recipes come from constructions plus small bounded searches, not a closed-form
+algorithm. Improvements that lift B-cases to A (exact per-round S5 with
+unchanged I1/prefix) are welcome if they preserve the hard rules and the
+metric priority.
 
 ## Useful Commands
 
 ```sh
 # Main audit of the shipped artifact
 python3 build_quality_summary.py molter_quality_summary.xlsx --workers 8 --recipe-file ../../../src/data/pairings/resources/molter_recipes.mrec
+
+# Build grid-based recipe candidates (whole grid, or --case N,P,R)
+python3 build_grid_recipes.py --output .context/grid_recipes.json
 
 # Display workbook; use the per-sheet checkbox to highlight floaters in red
 python3 build_xlsx.py molter_tables.xlsx --recipe-file ../../../src/data/pairings/resources/molter_recipes.mrec
