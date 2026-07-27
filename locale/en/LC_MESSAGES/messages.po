@@ -9227,18 +9227,3 @@ msgstr ""
 msgid "← Back to IT1 certificate"
 msgstr ""
 
-#~ msgid "Needs"
-#~ msgstr ""
-
-#~ msgid "Norm"
-#~ msgstr ""
-
-#~ msgid "Opponent (R{round})"
-#~ msgstr ""
-
-#~ msgid "Norm(s) Achieved"
-#~ msgstr ""
-
-#~ msgid "Notes"
-#~ msgstr ""
-
