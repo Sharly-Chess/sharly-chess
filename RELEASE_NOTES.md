@@ -60,3 +60,4 @@ In order to maintain compatibility with the dispaly of table numbers on the FFE 
 
 - Norm reports generated before the end of the tournament now assume that players will play the remaining rounds for the purposes of displaying 1.5.6a and 1.4.3d (5.0.0)
 - Title norm calculations now take women titles into account: opponents holding a WGM or WIM title are correctly counted towards the 1.4.5 and 1.4.3d requirements, even when they also hold an open title (5.0.0)
+- The pairings document now has an option to include a federation column (5.0.0)

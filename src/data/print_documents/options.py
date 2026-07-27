@@ -637,6 +637,20 @@ class NonMonetaryPrintOption(PrintOption):
         return False
 
 
+class FederationPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'federation'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
+
+
 class ClubThresholdPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
@@ -707,6 +721,43 @@ class Rule143ExemptionPrintOption(PrintOption):
         if self.value not in ('none', '1.4.3a', '1.4.3b', '1.4.3c'):
             # Untranslated; should not happen via UI
             raise OptionError(f'Unknown 1.4.3 exemption: {self.value}', self)
+
+
+class NormsForecastSortPrintOption(PrintOption):
+    """Row ordering for the forecast table of the Tournament Norms Summary.
+
+    - 'rank'  → current standings position (default).
+    - 'table' → board number of the forecast round's pairing.
+    - 'name'  → alphabetical by player name.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'norms-forecast-sort'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return 'rank'
+
+    @property
+    def sort_choices(self) -> dict[str, str]:
+        """{value: label} for the dropdown."""
+        return {
+            'rank': _('Ranking'),
+            'table': _('Table number'),
+            'name': _('Alphabetical'),
+        }
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value not in ('rank', 'table', 'name'):
+            # Untranslated; should not happen via UI
+            raise OptionError(f'Unknown forecast sort: {self.value}', self)
 
 
 class NormChoicePrintOption(PrintOption):

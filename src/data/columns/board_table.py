@@ -153,6 +153,20 @@ class WhiteRatingColumn(BoardColumn):
         return 'text-end'
 
 
+class WhiteFederationColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        wtp = board.optional_white_tournament_player
+        return wtp.federation.name if wtp else ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
 class ResultColumn(BoardColumn):
     @property
     def header_content(self) -> str:
@@ -252,6 +266,20 @@ class BlackRatingColumn(BoardColumn):
     @property
     def shared_classes(self) -> str:
         return 'text-end'
+
+
+class BlackFederationColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        black = board.black_tournament_player
+        return black.federation.name if black else ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
 
 
 class BlackRealPointsColumn(BoardColumn):

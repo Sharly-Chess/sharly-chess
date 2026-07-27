@@ -44,7 +44,7 @@
                 font-weight: 600;
                 text-align: left;
             }
-            td.center {
+            .center {
                 text-align: center;
             }
             td.right {
@@ -154,16 +154,16 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>{{ _('Player') }}</th>
-                            <th>{{ _('FIDE ID') }}</th>
-                            <th>{{ _('Fed') }}</th>
-                            <th>{{ _('Title') }}</th>
-                            <th>{{ _('Norm(s) Achieved') }}</th>
-                            <th class="center">{{ _('Played') }}</th>
-                            <th class="center">{{ _('Score') }}</th>
-                            <th class="center">{{ _('Ra') }}</th>
-                            <th class="center">{{ _('Rp') }}</th>
-                            <th>{{ _('Notes') }}</th>
+                            <th>{{ _('Name *** NAME COLUMN HEADER') }}</th>
+                            <th>{{ _('FIDE ID *** FIDE ID COLUMN HEADER') }}</th>
+                            <th>{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                            <th>{{ _('Title *** TITLE COLUMN HEADER') }}</th>
+                            <th>{{ _('Norm(s) Achieved *** NORMS ACHIEVED COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Played *** GAMES PLAYED COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Score *** SCORE COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Ra *** AVERAGE OPPONENT RATING COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Rp *** PERFORMANCE RATING COLUMN HEADER') }}</th>
+                            <th>{{ _('Notes *** NOTES COLUMN HEADER') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -265,12 +265,16 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>{{ _('Player') }}</th>
-                            <th>{{ _('Fed') }}</th>
-                            <th>{{ _('Title') }}</th>
-                            <th>{{ _('Opponent (R{round})').format(round=forecast_round) }}</th>
-                            <th>{{ _('Norm') }}</th>
-                            <th class="center">{{ _('Needs') }}</th>
+                            {% if sort_mode == 'table' %}
+                                <th class="center">{{ _('Bd. *** BOARD NUMBER COLUMN HEADER') }}</th>
+                            {% endif %}
+                            <th class="center">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+                            <th>{{ _('Name *** NAME COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Title *** TITLE COLUMN HEADER') }}</th>
+                            <th>{{ _('Opponent (R{round}) *** OPPONENT COLUMN HEADER').format(round=forecast_round) }}</th>
+                            <th class="center">{{ _('Norm *** NORM COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Needs *** NORM REQUIREMENT COLUMN HEADER') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -280,6 +284,14 @@
                             {% for tn, required in entry.requirements.items() %}
                                 <tr>
                                     {% if loop.first %}
+                                        {% if sort_mode == 'table' %}
+                                            <td rowspan="{{ entry.requirements | length }}" class="center">
+                                                {{ entry.board_number if entry.board_number is not none else '-' }}
+                                            </td>
+                                        {% endif %}
+                                        <td rowspan="{{ entry.requirements | length }}" class="center">
+                                            {{ entry.rank }}
+                                        </td>
                                         <td rowspan="{{ entry.requirements | length }}">
                                             {{ player.full_name }}
                                         </td>
