@@ -1315,7 +1315,7 @@ class PlayersScreenPlayerFormat(IntEnum):
         player: 'TournamentPlayer',
     ) -> str:
         return self.format_string.format(
-            title=player.title.short_name,
+            title=player.display_title,
             full_name=player.full_name,
             rating=player.rating,
             rating_type=player.rating_type.short_name,
@@ -1445,7 +1445,7 @@ class PlayersScreenOpponentFormat(IntEnum):
         tournament_player: 'TournamentPlayer',
     ) -> str:
         return self.format_string.format(
-            title=tournament_player.title.short_name,
+            title=tournament_player.display_title,
             full_name=tournament_player.full_name,
             rating=tournament_player.rating,
             rating_type=tournament_player.rating_type.short_name,
