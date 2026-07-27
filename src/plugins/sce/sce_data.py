@@ -396,7 +396,7 @@ class SCEPlayerSyncData:
             first_name=player.first_name,
             year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=player.fide_id,
-            title=player.title,
+            title=player.strongest_title,
             club=player.club.name,
             federation=player.federation.name,
             rating=player.rating,
@@ -523,7 +523,8 @@ class SCEPlayerSyncData:
             stored_player.date_of_birth = None
             stored_player.year_of_birth = self.year_of_birth
         stored_player.fide_id = self.fide_id
-        stored_player.title = self.title.value
+        stored_player.title = self.title.open_value
+        stored_player.women_title = self.title.women_value
         stored_player.federation = self.federation or event.federation
         stored_player.club = self.club
         stored_player.phone = self.phone

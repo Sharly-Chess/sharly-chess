@@ -120,7 +120,9 @@ def _round_counts_143d(
         foreigners=len(present_foreign),
         federations=len({p.federation for p in present_foreign}),
         titled_foreigners=sum(
-            1 for p in present_foreign if p.title in TitleNorm.MASTER_TITLES
+            1
+            for p in present_foreign
+            if any(title in TitleNorm.MASTER_TITLES for title in p.held_titles)
         ),
     )
 

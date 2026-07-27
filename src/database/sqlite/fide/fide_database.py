@@ -45,11 +45,11 @@ class FideDatabase(LocalSourcePlayerDatabase):
 
     @staticmethod
     def version() -> Version:
-        return Version('1')
+        return Version('2')
 
     @property
     def _source_file_name(self) -> str:
-        return 'fide_players_v1.db'
+        return 'fide_players_v2.db'
 
     @classmethod
     def credentials_file(cls) -> Path:
@@ -98,6 +98,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
+            women_title=row['fide_women_title'],
             transient_arbiter_titles={'fide': row['fide_arbiter_title']},
             ratings=ratings,
             fide_id=row['fide_id'],

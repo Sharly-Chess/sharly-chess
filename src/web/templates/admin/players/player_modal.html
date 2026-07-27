@@ -271,8 +271,9 @@
                 <h4>
                     {{ _('FIDE') }}
                 </h4>
+                {% set is_woman = data['gender'] == woman_gender_value %}
                 <div class="row gy-2 gx-3">
-                    <div class="col-12 col-sm-6">
+                    <div id="fide-id-col" class="{{ 'col-12' if is_woman else 'col-12 col-sm-6' }}">
                         {{ admin_macros.number_input(
                             name='fide_id',
                             label=_('FIDE ID:'),
@@ -284,7 +285,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-sm-6">
+                    <div id="title-col" class="{{ 'col-6' if is_woman else 'col-12 col-sm-6' }}">
                         {{ admin_macros.select_input(
                             name='title',
                             label=_('FIDE Title:'),
@@ -292,7 +293,32 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div id="women-title-col" class="{{ 'col-6' if is_woman else 'col-6 d-none' }}">
+                        {{ admin_macros.select_input(
+                            name='women_title',
+                            label=_("Women's Title:"),
+                            select_options=women_title_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
+                <script>
+                    (function () {
+                        var $gender = $('select[name="gender"]');
+                        function updateWomenTitleLayout() {
+                            var isWoman = $gender.val() === {{ woman_gender_value | tojson }};
+                            $('#fide-id-col').attr('class', isWoman ? 'col-12' : 'col-12 col-sm-6');
+                            $('#title-col').attr('class', isWoman ? 'col-6' : 'col-12 col-sm-6');
+                            if (isWoman) {
+                                $('#women-title-col').attr('class', 'col-6');
+                            } else {
+                                $('#women-title-col').attr('class', 'col-6 d-none');
+                                $('select[name="women_title"]').val('');
+                            }
+                        }
+                        $gender.on('change', updateWomenTitleLayout);
+                    })();
+                </script>
                 {% for template in plugin_templates_by_section['fide'] %}
                     {% include template %}
                 {% endfor %}

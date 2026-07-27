@@ -13,6 +13,12 @@
 - A player with a fixed table number no longer results in empty table at the place they would have been assigned to (5.0.0)
 - Added an FFE plugin option to specifically leave empty tables for fixed boards for compatibility with the FFE website (5.0.0)
 
+## Players
+
+- Players now have separate FIDE titles for the open and women titles, so a player can hold both at once (for example IM and WIM) (5.0.0)
+- Titles are displayed intelligently: both are shown when they matter (e.g. FM and WIM), but the women title is hidden when the open title supersedes it (e.g. GM instead of GM/WGM) (5.0.0)
+- When the FIDE database is installed locally, players looked up from it (including via an FFE search) have their women title filled in automatically (5.0.0)
+
 ## Teams
 
 - _Sharly Chess_ now supports **Teams** events! (5.0.0)
@@ -53,4 +59,5 @@ In order to maintain compatibility with the dispaly of table numbers on the FFE 
 ## Documents
 
 - Norm reports generated before the end of the tournament now assume that players will play the remaining rounds for the purposes of displaying 1.5.6a and 1.4.3d (5.0.0)
+- Title norm calculations now take women titles into account: opponents holding a WGM or WIM title are correctly counted towards the 1.4.5 and 1.4.3d requirements, even when they also hold an open title (5.0.0)
 - The pairings document now has an option to include a federation column (5.0.0)

@@ -164,7 +164,7 @@
                 <div class="player">{{ tournament_player.full_name }}</div>
                 <div class="meta">
                     {{ tournament_player.federation }} —
-                    {{ _('Current title:') }} {{ tournament_player.title.short_name or '—' }} —
+                    {{ _('Current title:') }} {{ tournament_player.display_title or '—' }} —
                     {{ _('FIDE ID:') }} {{ tournament_player.fide_id or '—' }}
                 </div>
                 <div class="meta">
@@ -436,7 +436,7 @@
                                 <td class="center">{{ loop.index }}</td>
                                 <td>{{ entry.opponent.full_name }}</td>
                                 <td class="center">{{ entry.opponent.federation }}</td>
-                                <td class="center">{{ entry.opponent.title.short_name or '—' }}</td>
+                                <td class="center">{{ entry.opponent.display_title or '—' }}</td>
                                 <td class="right">
                                     {% if norm.adjusted_player and entry.opponent.id == norm.adjusted_player.id %}
                                         {{ norm.adjusted_player_rating }}
@@ -759,7 +759,7 @@
                                 <td class="center">{{ entry.round_ }}</td>
                                 <td>{% if entry.opponent %}{{ entry.opponent.full_name }}{% else %}—{% endif %}</td>
                                 <td class="center">{{ entry.opponent.federation if entry.opponent else '—' }}</td>
-                                <td class="center">{% if entry.opponent and entry.opponent.title %}{{ entry.opponent.title.short_name or '—' }}{% else %}—{% endif %}</td>
+                                <td class="center">{% if entry.opponent and entry.opponent.display_title %}{{ entry.opponent.display_title or '—' }}{% else %}—{% endif %}</td>
                                 <td class="right">{% if entry.opponent and entry.opponent.rating %}{{ entry.opponent.rating }}{% else %}—{% endif %}</td>
                                 <td class="center">
                                     {{ entry.raw_result | string if entry.raw_result else '—' }}

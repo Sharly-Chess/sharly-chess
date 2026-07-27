@@ -728,6 +728,50 @@ class PlayerTitle(StrEnum):
             return cls.NONE
 
     @property
+    def is_women(self) -> bool:
+        """True for the women-only titles (WCM, WFM, WIM, WGM)."""
+        return self in (
+            PlayerTitle.WOMAN_CANDIDATE_MASTER,
+            PlayerTitle.WOMAN_FIDE_MASTER,
+            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            PlayerTitle.WOMAN_GRANDMASTER,
+        )
+
+    @classmethod
+    def open_titles(cls) -> list['PlayerTitle']:
+        """NONE + the open titles (CM, FM, IM, GM), weakest-to-strongest."""
+        return [title for title in cls if not title.is_women]
+
+    @classmethod
+    def women_titles(cls) -> list['PlayerTitle']:
+        """NONE + the women titles (WCM, WFM, WIM, WGM), weakest-to-strongest."""
+        return [cls.NONE] + [title for title in cls if title.is_women]
+
+    @property
+    def fide_tier(self) -> int:
+        """Rank on the combined FIDE ladder, where each women title sits at
+        the same tier as the open title one letter below it (WGM≈IM, WIM≈FM,
+        WFM≈CM). Used to decide whether an open title outranks a women title
+        for display: an open title with a strictly higher tier makes the
+        women title redundant (GM hides WGM, IM hides WIM), while equal tiers
+        (FM and WIM) are shown together."""
+        match self:
+            case PlayerTitle.NONE:
+                return 0
+            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
+                return 1
+            case PlayerTitle.WOMAN_FIDE_MASTER | PlayerTitle.CANDIDATE_MASTER:
+                return 2
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER | PlayerTitle.FIDE_MASTER:
+                return 3
+            case PlayerTitle.WOMAN_GRANDMASTER | PlayerTitle.INTERNATIONAL_MASTER:
+                return 4
+            case PlayerTitle.GRANDMASTER:
+                return 5
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
@@ -777,6 +821,19 @@ class PlayerTitle(StrEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+    @property
+    def open_value(self) -> str:
+        """This title's stored value for the open-title slot — empty when it
+        is a women title. Lets a single source title be routed into the
+        separate `title` / `women_title` fields."""
+        return PlayerTitle.NONE.value if self.is_women else self.value
+
+    @property
+    def women_value(self) -> str:
+        """This title's stored value for the women-title slot — empty when it
+        is an open title."""
+        return self.value if self.is_women else PlayerTitle.NONE.value
 
 
 class FideArbiterTitle(StrEnum):
@@ -1258,7 +1315,7 @@ class PlayersScreenPlayerFormat(IntEnum):
         player: 'TournamentPlayer',
     ) -> str:
         return self.format_string.format(
-            title=player.title.short_name,
+            title=player.display_title,
             full_name=player.full_name,
             rating=player.rating,
             rating_type=player.rating_type.short_name,
@@ -1388,7 +1445,7 @@ class PlayersScreenOpponentFormat(IntEnum):
         tournament_player: 'TournamentPlayer',
     ) -> str:
         return self.format_string.format(
-            title=tournament_player.title.short_name,
+            title=tournament_player.display_title,
             full_name=tournament_player.full_name,
             rating=tournament_player.rating,
             rating_type=tournament_player.rating_type.short_name,

@@ -106,7 +106,7 @@ class WhiteTitleColumn(BoardColumn):
 
     def get_cell_content(self, board: Board) -> Any:
         wtp = board.optional_white_tournament_player
-        return wtp.title.short_name if wtp else ''
+        return wtp.display_title if wtp else ''
 
 
 class WhiteNameColumn(BoardColumn):
@@ -219,7 +219,7 @@ class BlackTitleColumn(BoardColumn):
         tournament_player = board.black_tournament_player
         if not tournament_player:
             return ''
-        return tournament_player.title.short_name
+        return tournament_player.display_title
 
 
 class BlackNameColumn(BoardColumn):

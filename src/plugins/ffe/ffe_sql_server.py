@@ -116,13 +116,15 @@ class FFESqlServer(SqlServer):
         elif isinstance(dob, date):
             date_of_birth = dob
 
+        fide_title = PapiPlayerTitle.get_core_object(row['FideTitre'] or '')
         return StoredPlayer(
             id=None,
             first_name=row['Prenom'].title() if row['Prenom'] else '',
             last_name=row['Nom'].upper(),
             date_of_birth=date_of_birth,
             gender=PapiPlayerGender.get_core_object(row['Sexe']),
-            title=PapiPlayerTitle.get_core_object(row['FideTitre'] or ''),
+            title=fide_title.open_value,
+            women_title=fide_title.women_value,
             ratings={
                 TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from data.norms.searcher import TitleNormSubsetSearcher
-from utils.enum import Result, TitleNorm
+from utils.enum import PlayerTitle, Result, TitleNorm
 from utils.types import NormCheckResult
 
 if TYPE_CHECKING:
@@ -68,6 +68,11 @@ class TitleNormForecaster:
     def tournament(self):
         return self.player.tournament
 
+    def _current_ladder_title(self, tn: TitleNorm) -> PlayerTitle:
+        """The applicant's title on the same ladder as `tn` — see
+        `Player.title_on_norm_ladder`."""
+        return self.player.title_on_norm_ladder(tn)
+
     def can_forecast_round(self, round_: int) -> bool:
         """True iff the player has an opponent in `round_` (round paired)
         and the result isn't already entered."""
@@ -97,7 +102,8 @@ class TitleNormForecaster:
         return {
             tn: res
             for tn, res in results.items()
-            if res.is_met and tn.player_title.sort_index > self.player.title.sort_index
+            if res.is_met
+            and tn.player_title.sort_index > self._current_ladder_title(tn).sort_index
         }
 
     def forecast_round(
@@ -160,7 +166,7 @@ class TitleNormForecaster:
         chaseable: dict[TitleNorm, ForecastRequirement] = {}
         for tn in TitleNorm.values():
             # Skip norms not above the applicant's current title.
-            if tn.player_title.sort_index <= self.player.title.sort_index:
+            if tn.player_title.sort_index <= self._current_ladder_title(tn).sort_index:
                 continue
             # First outcome (in LOSS, DRAW, WIN order) that achieves it.
             for outcome in _FORECAST_OUTCOMES:

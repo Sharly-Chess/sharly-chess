@@ -370,8 +370,8 @@ class Board:
         return (
             f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
             + (
-                f'[{field_prefix}Title "{tournament_player.title.value}"]\n'
-                if tournament_player.title != PlayerTitle.NONE
+                f'[{field_prefix}Title "{tournament_player.strongest_title.value}"]\n'
+                if tournament_player.strongest_title != PlayerTitle.NONE
                 else ''
             )
             + f'[{field_prefix}Elo "{rating}"]\n'
