@@ -3570,6 +3570,9 @@ msgstr ""
 msgid "Include beta versions in updates"
 msgstr ""
 
+msgid "Include federation column"
+msgstr ""
+
 msgid "Include incomplete teams"
 msgstr ""
 
