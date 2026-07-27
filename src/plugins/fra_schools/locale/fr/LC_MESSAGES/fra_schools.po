@@ -36,7 +36,7 @@ msgid "Edit the selected French school."
 msgstr "Metre à jour l'établissement scolaire sélectionné."
 
 msgid "Exclude: {values}"
-msgstr "Exclure : {values}"
+msgstr "Exclure : {values}"
 
 msgid "FFE Scholar Championship"
 msgstr "Classement championnat scolaire FFE"

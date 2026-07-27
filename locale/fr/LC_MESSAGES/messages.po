@@ -1085,7 +1085,7 @@ msgstr "Automatique"
 
 #, python-format
 msgid "Automatically build groups of %(members)s sharing the chosen attribute; members of the same group are kept from being paired together."
-msgstr "Construit automatiquement des groupes de %(members)s partageant l'attribut choisi ; les membres d'un même groupe ne sont pas appariés ensemble."
+msgstr "Construit automatiquement des groupes de %(members)s partageant l'attribut choisi ; les membres d'un même groupe ne sont pas appariés ensemble."
 
 msgid "Automatically create timer hours matching the round schedule of a specific tournament."
 msgstr "Créer automatiquement les horaires à partir des horaires des rondes d'un tournoi."
@@ -1169,7 +1169,7 @@ msgid "Background colour: %(color)s"
 msgstr "Couleur de fond : %(color)s"
 
 msgid "Background image URL:"
-msgstr "URL de l'image de fond :"
+msgstr "URL de l'image de fond :"
 
 msgid "Bahamas"
 msgstr "Bahamas"
@@ -1296,7 +1296,7 @@ msgid "Board selection (by number)"
 msgstr "Sélection des échiquiers (par numéro)"
 
 msgid "Board selection:"
-msgstr "Sélection des échiquiers :"
+msgstr "Sélection des échiquiers :"
 
 #, python-format
 msgid "Board sets of screen %(screen_name)s"
@@ -1795,7 +1795,7 @@ msgid "Configure the tie-breaks of the tournament."
 msgstr "Configurer les départages du tournoi."
 
 msgid "Confirm the new data folder \"{folder}\"?"
-msgstr "Confirmer le nouveau dossier de données \"{folder}\"?"
+msgstr "Confirmer le nouveau dossier de données « {folder} » ?"
 
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
@@ -2224,7 +2224,7 @@ msgid "Define tournament groups among which players are distributed one at a tim
 msgstr "Définir des groupes de tournois parmi lesquels les joueur·euses sont répartis un par un, aboutissant à des tournois aux classements équilibrés."
 
 msgid "Defines how team colour preferences are calculated. Type A uses simple White/Black preferences, while Type B distinguishes between strong and mild preferences based on colour history and colour difference."
-msgstr "Définit comment les préférences de couleur des équipes sont calculées. Le type A utilise des préférences Blancs/Noirs simples ; le type B distingue les préférences fortes et faibles en fonction de l'historique des couleurs et de la différence de couleur."
+msgstr "Définit comment les préférences de couleur des équipes sont calculées. Le type A utilise des préférences Blancs/Noirs simples ; le type B distingue les préférences fortes et faibles en fonction de l'historique des couleurs et de la différence de couleur."
 
 msgid "Definitive withdrawal"
 msgstr "Forfait définitif"
@@ -2467,7 +2467,7 @@ msgid "Do not use this order as ranking."
 msgstr "Ne pas utiliser cet ordre comme classement."
 
 msgid "Do you want to add the new data folder to the Microsoft Defender exception list?"
-msgstr "Voulez-vous ajouter le nouveau dossier des données à la liste d'exclusions de Microsoft Defender ?"
+msgstr "Voulez-vous ajouter le nouveau dossier des données à la liste d'exclusions de Microsoft Defender ?"
 
 msgid "Do you want to install the update now?"
 msgstr "Voulez-vous installer la mise à jour maintenant ?"
@@ -3155,7 +3155,7 @@ msgid "First name:"
 msgstr "Prénom :"
 
 msgid "First pairing:"
-msgstr "Premier appariement :"
+msgstr "Premier appariement :"
 
 msgid "First player:"
 msgstr "Premier·e joueur·euse :"
@@ -3170,7 +3170,7 @@ msgid "Fixed board"
 msgstr "Échiquier fixe"
 
 msgid "Fixed board ordering:"
-msgstr "Ordre des échiquiers fixes :"
+msgstr "Ordre des échiquiers fixes :"
 
 msgid "Fixed board:"
 msgstr "Échiquier fixe :"
@@ -3844,7 +3844,7 @@ msgid "Last name:"
 msgstr "Nom de famille :"
 
 msgid "Last pairing:"
-msgstr "Dernier appariement :"
+msgstr "Dernier appariement :"
 
 msgid "Last player:"
 msgstr "Dernier·e joueur·euse :"
@@ -4709,7 +4709,7 @@ msgid "No player is in contention for a title norm in round {round}."
 msgstr "Aucun·e joueur·euse ne peut prétendre à une norme à la ronde {round}."
 
 msgid "No player is rated within this range; use the rating step method instead."
-msgstr "Aucun joueur n'a d'Elo dans cette plage ; utilisez plutôt la méthode par pas d'Elo."
+msgstr "Aucun joueur n'a d'Elo dans cette plage ; utilisez plutôt la méthode par pas d'Elo."
 
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
@@ -5125,7 +5125,7 @@ msgid "Optional: pre-configure the tournament for an official rule set (federati
 msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officielles (coupe de la fédération...)."
 
 msgid "Or upload an image (stored with the event, max 2 MB):"
-msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
+msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
 
 msgid "Organisation"
 msgstr "Organisation"
@@ -6609,7 +6609,7 @@ msgid "Set by the rule set [%(name)s]."
 msgstr "Défini par le règlement [%(name)s]."
 
 msgid "Set each team's affiliation from its players. A team is filled only when all its players share the chosen value; teams where it cannot be determined are left unchanged."
-msgstr "Renseigne l'affiliation de chaque équipe à partir de ses joueur·euses. Une équipe n'est renseignée que si tou·tes ses joueur·euses partagent la même valeur ; les équipes pour lesquelles elle ne peut être déterminée sont laissées inchangées."
+msgstr "Renseigne l'affiliation de chaque équipe à partir de ses joueur·euses. Une équipe n'est renseignée que si tou·tes ses joueur·euses partagent la même valeur ; les équipes pour lesquelles elle ne peut être déterminée sont laissées inchangées."
 
 msgid "Set illegal moves"
 msgstr "Noter les coups illégaux"
@@ -6622,7 +6622,7 @@ msgstr "Noter des résultats spéciaux"
 
 #, python-format
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
-msgstr "Affiliation définie pour %(filled)d équipe(s) à partir de « %(source)s »."
+msgstr "Affiliation définie pour %(filled)d équipe(s) à partir de « %(source)s »."
 
 msgid "Set the current round"
 msgstr "Changer la ronde courante"
@@ -6983,7 +6983,7 @@ msgstr "Suisse par équipes"
 
 #, python-format
 msgid "Team [%(team)s] successfully created!"
-msgstr "Équipe [%(team)s] créée avec succès !"
+msgstr "Équipe [%(team)s] créée avec succès !"
 
 msgid "Team [{team}] has been created."
 msgstr "L'équipe [{team}] a été créée."
@@ -7327,7 +7327,7 @@ msgid "The number of screens on which the teams will be distributed, optional (t
 msgstr "Le nombre d'écrans sur lesquels les équipes seront réparties, optionnel (le nombre d'écrans est toujours le même et le nombre d'équipes par écran s'adapte au nombre d'équipes)."
 
 msgid "The number of team matches per column, optional (the number of screens adapts to the number of matches; a match spans one row per board)."
-msgstr "Le nombre de matchs par colonne, optionnel (le nombre d'écrans s'adapte au nombre de matchs ; un match occupe une ligne par échiquier)."
+msgstr "Le nombre de matchs par colonne, optionnel (le nombre d'écrans s'adapte au nombre de matchs ; un match occupe une ligne par échiquier)."
 
 msgid "The number of the first board to select."
 msgstr "Le numéro du premier échiquier à prendre en compte."
@@ -7469,7 +7469,7 @@ msgid "The timer displayed on the screens of the multi-screen."
 msgstr "Le chronomètre affiché sur les écrans de l'écran multiple."
 
 msgid "The tournament has invalid tie-breaks; please fix them before saving as a set."
-msgstr "Le tournoi contient des départages invalides ; corrigez-les avant d'enregistrer l'ensemble."
+msgstr "Le tournoi contient des départages invalides ; corrigez-les avant d'enregistrer l'ensemble."
 
 msgid "The tournament has no tie-breaks to save."
 msgstr "Le tournoi ne contient aucun départage à enregistrer."
@@ -7688,7 +7688,7 @@ msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} rondes)."
 
 msgid "This round is paired; the prohibited pairings used are frozen."
-msgstr "Cette ronde est appariée ; les protections d'appariement utilisées sont figées."
+msgstr "Cette ronde est appariée ; les protections d'appariement utilisées sont figées."
 
 #, python-format
 msgid "This round will use round #%(round)d's line-up when paired."
@@ -8236,7 +8236,7 @@ msgid "Updates"
 msgstr "Mises à jour"
 
 msgid "Updates are available!"
-msgstr "Des mises à jour sont disponibles !"
+msgstr "Des mises à jour sont disponibles !"
 
 msgid "Updating"
 msgstr "Mise à jour"
@@ -8263,7 +8263,7 @@ msgid "Use dropdowns"
 msgstr "Utiliser des menus déroulants"
 
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
-msgstr "Utiliser uniquement les caractères \"{w}\" et \"{b}\" (ou laisser vide pour la valeur par défaut)."
+msgstr "Utiliser uniquement les caractères « {w} » et « {b} » (ou laisser vide pour la valeur par défaut)."
 
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
@@ -8435,7 +8435,7 @@ msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 
 msgid "Warning: over half of the players are absent!"
-msgstr "Attention : plus de la moitié des joueur·euses sont absent·es !"
+msgstr "Attention : plus de la moitié des joueur·euses sont absent·es !"
 
 msgid "Warning: potential data loss"
 msgstr "Attention : perte de données potentielle"
@@ -8476,7 +8476,7 @@ msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
 msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."
-msgstr "Ce dont le joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat sur l'échiquier » signifie qu'une victoire, une nulle ou une défaite jouée conviennent toutes — mais la ronde doit être jouée (un forfait devient une défaite par forfait et disqualifie la norme). « norme déjà acquise » signifie qu'elle est acquise quel que soit le résultat de la ronde {round} — soit le résultat est déjà saisi, soit elle tient sans cette ronde (1.4.1e)."
+msgstr "Ce dont le·la joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat sur l'échiquier » signifie qu'une victoire, une nulle ou une défaite jouée conviennent toutes — mais la ronde doit être jouée (un forfait devient une défaite par forfait et disqualifie la norme). « norme déjà acquise » signifie qu'elle est acquise quel que soit le résultat de la ronde {round} — soit le résultat est déjà saisi, soit elle tient sans cette ronde (1.4.1e)."
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
