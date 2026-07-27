@@ -703,6 +703,7 @@ class PlayerAdminController(BaseEventAdminController):
                 tr: PlayerRating(estimated=0) for tr in TournamentRating
             }
             title = PlayerTitle.NONE.value
+            women_title = PlayerTitle.NONE.value
             federation = event.federation
             club: str | None = None
             fide_id: int | None = None
@@ -732,6 +733,7 @@ class PlayerAdminController(BaseEventAdminController):
                             PlayerRating.from_stored_value(rating)
                         )
                     title = stored_player.title
+                    women_title = stored_player.women_title
                     federation = stored_player.federation
                     club = stored_player.club
                     fide_id = stored_player.fide_id or None
@@ -791,6 +793,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'tournament_id': tournament_id,
                     'team_id': team_id_value or '',
                     'title': title,
+                    'women_title': women_title,
                     'federation': federation,
                     'fide_id': fide_id,
                     'club': club,
@@ -886,8 +889,16 @@ class PlayerAdminController(BaseEventAdminController):
                 str(t.value): f'{t.short_name} - {t.name}'
                 if t.short_name
                 else f'{t.name}'
-                for t in PlayerTitle
+                for t in PlayerTitle.open_titles()
             },
+            'women_title_options': {
+                str(t.value): f'{t.short_name} - {t.name}'
+                if t.short_name
+                else f'{t.name}'
+                for t in PlayerTitle.women_titles()
+            },
+            # The women title field is only shown for women players.
+            'woman_gender_value': PlayerGender.WOMAN.value,
             'federation_options': cls._get_federation_options(),
             'tournament_options': tournament_options,
             'team_options': team_options,
@@ -1160,6 +1171,13 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
+        try:
+            if value := WebContext.form_data_to_str(data, field := 'women_title'):
+                PlayerTitle(value)
+        except ValueError:
+            # should never happen, not translated.
+            errors[field] = f'Invalid title value [{data[field]}].'
+            data[field] = ''
         federation = WebContext.form_data_to_str(data, field := 'federation', '')
         if federation not in SharlyChessConfig().federations:
             # should never happen, not translated.
@@ -1235,6 +1253,8 @@ class PlayerAdminController(BaseEventAdminController):
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
             title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
+            women_title=WebContext.form_data_to_str(data, 'women_title')
+            or PlayerTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
                     estimated=WebContext.form_data_to_int(

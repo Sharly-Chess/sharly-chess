@@ -37,7 +37,7 @@ msgstr "Metre à jour l'établissement scolaire sélectionné."
 
 #, python-brace-format
 msgid "Exclude: {values}"
-msgstr "Exclure : {values}"
+msgstr "Exclure : {values}"
 
 msgid "FFE Scholar Championship"
 msgstr "Classement championnat scolaire FFE"

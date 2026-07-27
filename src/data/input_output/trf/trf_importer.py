@@ -1111,6 +1111,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 if re.match(r'^\d{4}/00/00$', trf_player.birth_date):
                     year_of_birth = int(trf_player.birth_date.split('/')[0])
 
+        trf_title = TrfPlayerTitle.get_core_object(trf_player.title)
         stored_player = StoredPlayer(
             id=trf_player.id,
             last_name=trf_player.name.split(',')[0].strip().upper(),
@@ -1121,7 +1122,8 @@ class TrfTournamentImporter(FileTournamentImporter):
                 else None
             ),
             gender=TrfPlayerGender.get_core_object(trf_player.gender).value,
-            title=TrfPlayerTitle.get_core_object(trf_player.title).value,
+            title=trf_title.open_value,
+            women_title=trf_title.women_value,
             fide_id=trf_player.fide_id,
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,

@@ -138,7 +138,7 @@ msgstr "Arbitre Élite 2"
 
 #, python-brace-format
 msgid "Exclude: {values}"
-msgstr "Exclure : {values}"
+msgstr "Exclure : {values}"
 
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
@@ -177,7 +177,7 @@ msgid "FFE certification number not defined."
 msgstr "Numéro d'homologation FFE non défini."
 
 msgid "FFE certification number:"
-msgstr "Numéro d'homologation :"
+msgstr "Numéro d'homologation :"
 
 msgid "FFE database (local)"
 msgstr "Base de données FFE (locale)"
@@ -330,7 +330,7 @@ msgid "Leagues (FFE)"
 msgstr "Ligues (FFE)"
 
 msgid "Leave empty tables for fixed boards:"
-msgstr "Laisser des tables vides pour les échiquiers fixes :"
+msgstr "Laisser des tables vides pour les échiquiers fixes :"
 
 msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."

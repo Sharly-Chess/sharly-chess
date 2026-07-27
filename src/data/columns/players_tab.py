@@ -309,7 +309,7 @@ class RatingPlayersTabColumn(PlayersTabColumn):
     def _get_sort_key(self, player: Player) -> tuple:
         tp = player.optional_single_tournament_player
         rating = tp.rating if tp is not None else (player.event_default_rating or 0)
-        return -rating, -player.title.sort_index
+        return -rating, -player.strongest_title.sort_index
 
     @property
     def swap_asc_desc_icon(self) -> bool:

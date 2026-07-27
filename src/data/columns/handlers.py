@@ -326,6 +326,7 @@ class PlayerDatasheetColumnHandler:
     def _base_columns(self) -> list[DatasheetColumn]:
         columns: list[DatasheetColumn] = [
             pds.TitleColumn(),
+            pds.WomenTitleColumn(),
             pds.LastNameColumn(),
             pds.FirstNameColumn(),
             pds.DateOfBirthColumn(),

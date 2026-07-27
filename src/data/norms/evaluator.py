@@ -264,9 +264,11 @@ class TitleNormEvaluator:
             else:
                 inputs.federations_counter[opponent.federation] += 1
 
-            # 1.4.5a — CM/WCM are NOT counted as title-holders.
-            if opponent.title in TitleNorm.TITLE_HOLDERS:
-                inputs.titles_counter[opponent.title] += 1
+            # 1.4.5a — CM/WCM are NOT counted as title-holders. Both the
+            # open and women titles count (e.g. an IM + WIM opponent).
+            for title in opponent.held_titles:
+                if title in TitleNorm.TITLE_HOLDERS:
+                    inputs.titles_counter[title] += 1
 
             # 1.4.2c — the last-round forfeit-against is scored as a LOSS.
             applied_142c = (
@@ -353,8 +355,16 @@ class TitleNormEvaluator:
         """1.4.5a — at least 50% of opponents are title-holders (CM/WCM
         excluded; the inputs already filter those out via TITLE_HOLDERS).
         Threshold scales with played_games per spec wording "50% of the
-        opponents". Returns (passes, num_title_holders)."""
-        num_titles = sum(inputs.titles_counter.values())
+        opponents". Returns (passes, num_title_holders).
+
+        Counts each opponent once, even if they hold both an open and a
+        women title-holder title (the per-title `titles_counter` used for
+        display may count such an opponent under both)."""
+        num_titles = sum(
+            1
+            for opponent in inputs.opponents
+            if any(title in TitleNorm.TITLE_HOLDERS for title in opponent.held_titles)
+        )
         return (
             num_titles >= tn.minimum_title_holders(inputs.played_games),
             num_titles,
@@ -365,8 +375,17 @@ class TitleNormEvaluator:
     ) -> tuple[bool, int]:
         """1.4.5b-e — minimum count of opponents holding the norm's required
         title set (GM norm needs at least 1/3 GMs, min 3; etc.). Threshold
-        scales with played_games. Returns (passes, count_met)."""
-        count = sum(inputs.titles_counter.get(t, 0) for t in tn.required_titles)
+        scales with played_games. Returns (passes, count_met).
+
+        Counts each opponent once if either of their titles is in the
+        norm's required set — e.g. for a WIM norm an opponent's WIM women
+        title qualifies even when their open title does not (or is unset)."""
+        required = frozenset(tn.required_titles)
+        count = sum(
+            1
+            for opponent in inputs.opponents
+            if not opponent.held_titles.isdisjoint(required)
+        )
         return (
             count >= tn.minimum_required_titles(self.tournament, inputs.played_games),
             count,

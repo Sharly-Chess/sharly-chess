@@ -29,7 +29,7 @@
                 >
                     <td class=number">{{ grid_id_by_player_id[player_id] }}</td>
                     {% with player=tournament.tournament_players_by_id[player_id] %}
-                        <td class="player-title">{{ player.title }}</td>
+                        <td class="player-title">{{ player.display_title }}</td>
                         <td class="player">{{ player.full_name }}</td>
                         <td class="federation">{{ player.federation }}</td>
                         <td class="rating">{{ player.rating_str }}</td>

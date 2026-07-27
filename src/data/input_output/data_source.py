@@ -17,6 +17,7 @@ from data.input_output.player_updater_fields import (
     PlayerUpdaterField,
     FideIDUpdaterField,
     TitleUpdaterField,
+    WomenTitleUpdaterField,
     NameUpdaterField,
     CategoryUpdaterField,
     GenderPlayerUpdater,
@@ -215,6 +216,7 @@ class DataSource(IdentifiableEntity, ABC):
                 return
             src_stored_player.federation = fide_stored_player.federation
             src_stored_player.title = fide_stored_player.title
+            src_stored_player.women_title = fide_stored_player.women_title
             src_stored_player.transient_arbiter_titles['fide'] = (
                 fide_stored_player.transient_arbiter_titles.get('fide', '')
             )
@@ -401,6 +403,7 @@ class FideDataSource(LocalDataSource):
         return [
             FideIDUpdaterField(),
             TitleUpdaterField(),
+            WomenTitleUpdaterField(),
             NameUpdaterField(),
             CategoryUpdaterField(),
             GenderPlayerUpdater(),
@@ -460,6 +463,7 @@ class FideDataSource(LocalDataSource):
     def imported_datasheet_columns(self) -> list[DatasheetColumn]:
         columns: list[DatasheetColumn] = [
             pds.TitleColumn(),
+            pds.WomenTitleColumn(),
             pds.LastNameColumn(),
             pds.FirstNameColumn(),
             pds.DateOfBirthColumn(),

@@ -37,7 +37,7 @@ msgid "Authorization failed, consult the logs for more details."
 msgstr "Autorisation échouée, consultez les logs pour plus de détails."
 
 msgid "Authorization failed, possible CSRF attack!"
-msgstr "Autorisation échouée, possible attaque CSRF !"
+msgstr "Autorisation échouée, possible attaque CSRF !"
 
 msgid "Auto-synchronisation"
 msgstr "Synchronisation automatique"
@@ -126,7 +126,7 @@ msgstr "L'évènement [{event}] a été connecté avec succès à Sharly-Chess.c
 
 #, python-brace-format
 msgid "Event [{event}] successfully imported!"
-msgstr "L'évènement [{event}] a été importé avec succès !"
+msgstr "L'évènement [{event}] a été importé avec succès !"
 
 msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified."
 msgstr "L'évènement a été archivé sur Sharly-Chess.com, il ne peut plus être modifié."

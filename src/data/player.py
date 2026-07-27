@@ -158,7 +158,57 @@ class Player:
 
     @property
     def title(self) -> PlayerTitle:
+        """The player's open title (GM, IM, FM, CM or NONE)."""
         return PlayerTitle(self.stored_player.title)
+
+    @property
+    def women_title(self) -> PlayerTitle:
+        """The player's women title (WGM, WIM, WFM, WCM or NONE)."""
+        return PlayerTitle(self.stored_player.women_title)
+
+    @property
+    def strongest_title(self) -> PlayerTitle:
+        """The single most prestigious title held (open or women), by rank.
+        Used wherever exactly one title is required — imports, exports,
+        sorting and title-holder logic."""
+        return max(self.title, self.women_title, key=lambda title: title.sort_index)
+
+    @property
+    def display_title(self) -> str:
+        """Human-readable title(s) for display. Shows the women title next
+        to the open title unless the open title outranks it on the combined
+        FIDE ladder: GM hides WGM and IM hides WIM (redundant), but an
+        equal or lower open title is shown alongside — e.g. FM + WIM renders
+        as "FM/WIM" because FM does not supersede WIM."""
+        open_title, women_title = self.title, self.women_title
+        if women_title == PlayerTitle.NONE:
+            return open_title.short_name
+        if open_title == PlayerTitle.NONE:
+            return women_title.short_name
+        if open_title.fide_tier > women_title.fide_tier:
+            return open_title.short_name
+        return f'{open_title.short_name}/{women_title.short_name}'
+
+    @property
+    def held_titles(self) -> frozenset[PlayerTitle]:
+        """The player's held titles (open and/or women), excluding NONE.
+
+        Norm checks test membership against both titles: a player can hold
+        an open title and a women title at once (e.g. IM + WIM), and either
+        may satisfy a title requirement."""
+        return frozenset(
+            title
+            for title in (self.title, self.women_title)
+            if title != PlayerTitle.NONE
+        )
+
+    def title_on_norm_ladder(self, title_norm: TitleNorm) -> PlayerTitle:
+        """The player's title on the same ladder as `title_norm`: the women
+        title for women norms (WIM, WGM), the open title for open norms (IM,
+        GM). Open and women titles are separate ladders, so a norm is only
+        "already held" when the matching-ladder title outranks it — an FM
+        with no women title can still be chasing a WIM norm."""
+        return self.women_title if title_norm.player_title.is_women else self.title
 
     @cached_property
     def category(self) -> PlayerCategory:
@@ -797,7 +847,7 @@ class TournamentPlayer(Player):
                 f'{self.last_name}{f", {self.first_name}" if self.first_name else ""}'
             )[:32],
             gender=TrfPlayerGender.get_outer_value(self.gender) or '',
-            title=TrfPlayerTitle.get_outer_value(self.title) or '',
+            title=TrfPlayerTitle.get_outer_value(self.strongest_title) or '',
             rating=self.fide_rating_value or 0,
             federation=self.federation.name,
             fide_id=self.fide_id,
