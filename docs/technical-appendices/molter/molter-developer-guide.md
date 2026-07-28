@@ -20,9 +20,10 @@ disagree, the code and verifier are the source of truth.
 | `src/data/pairings/resources/molter_recipes.mrec` | Compact recipe artifact shipped with the app. |
 | `src/data/pairings/fixed_table.py` | Generic fixed-table engine used after a recipe has produced a `FixedPairingTable`. |
 | `src/data/pairings/molter_verifier.py` | Hard-rule verifier and quality notes. |
+| `docs/technical-appendices/molter/build_grid_recipes.py` | Primary recipe builder: factor-grid schedules with decoupled colouring. |
 | `docs/technical-appendices/molter/molter_recipe_generator.py` | Portable table builder used for baselines and recipe research. Not imported by the app. |
-| `docs/technical-appendices/molter/build_solver_recipe_suite.py` | Reproducible offline recipe-builder orchestration. |
-| `docs/technical-appendices/molter/build_solver_recipes.py` | Low-level recipe build, replay, packing and metrics helpers. |
+| `docs/technical-appendices/molter/build_solver_recipe_suite.py` | Reproducible offline recipe-builder orchestration for the older search portfolio. |
+| `docs/technical-appendices/molter/build_solver_recipes.py` | Low-level recipe build, replay, packing, metrics and merge helpers. |
 | `docs/technical-appendices/molter/build_quality_summary.py` | Audit workbook for validation, timing and quality grades. |
 | `docs/technical-appendices/molter/build_xlsx.py` | Human-readable table workbooks. |
 
@@ -116,50 +117,71 @@ valid but should be treated as an unsolved quality case.
 
 ## 5. Current Coverage and Quality
 
-The app-visible Molter range is capped for quality:
-
-- `N = 3..20`;
-- even `P = 2..12`;
-- `R = 1..13` where legal, plus the full `N = 15`, `R = 14` DNA tables.
-
-The packed research artifact currently covers:
+The app-visible Molter range matches the packed artifact:
 
 - `N = 3..25`;
 - even `P = 2..12`;
-- `R = 1..13` where legal, plus `N = 15`, `R = 14` for each supported `P`.
+- every legal round count `R = 1..N-1`, including full round robins.
 
 Latest validated snapshot:
 
-- `1404/1404` covered cases pass hard validation.
-- `1014` covered cases with `N <= 20` are exposed by the runtime app.
-- Quality grades: `A=360`, `B=902`, `C=33`, `D=103`, `FAIL=0`.
-- The serious weaknesses are mostly I1/prefix coverage at larger `N`.
-- High quality is generally good through about twenty teams; after that, the
-  artifact is valid but visibly not fully solved in many cases.
+- `1794/1794` covered cases pass hard validation and are exposed by the app.
+- Quality grades: `A=384`, `B=1410`, `C=0`, `D=0`, `FAIL=0`.
+- Every case reaches its arithmetic I1 lower bound with a zero prefix
+  deficit. The B-grades are small ideal misses: mostly relaxed per-round
+  colour balance (hard bounded S5 instead of exact) and minor I2/I3/I4 slack.
 
-This is why the docs present the recipe suite as the maintained source for the
-runtime artifact. The portable builder is a useful component in the
-recipe-building portfolio, not the final answer.
+The grid builder is the maintained candidate source for the runtime artifact;
+the older suite remains a valid challenger and still owns the best known
+recipes for a minority of shapes.
 
 ## 6. Offline Recipe Build Workflow
 
-Use `build_solver_recipe_suite.py` when rebuilding the collection. It is the
-reproducibility layer over `build_solver_recipes.py`.
+The artifact is cumulative: every rebuild merges new candidates against the
+current `.mrec`, and a candidate replaces an existing recipe only when it is
+strictly better under the metric priority and passes the hard verifier. There
+is therefore no required builder order — run any builder over any subset of
+shapes and merge.
 
-The suite:
+The primary candidate source is the grid builder:
 
-1. Builds a baseline grid.
-2. Selects weak cases by current metrics.
-3. Runs deterministic improvement passes for odd/even cases.
-4. Uses CP-SAT/OR-Tools where useful for row, offset, integrated schedule/colour
-   and strict-S5 recolouring attempts.
-5. Writes each pass to its own resumable file under `.context`.
-6. Merges pass outputs by metric priority.
-7. Writes a manifest with the builder hash and pass configuration.
-8. Packs the promoted result to `.mrec`.
+```sh
+# Rebuild candidates for the whole grid, or pass --case N,P,R for one shape
+python3 docs/technical-appendices/molter/build_grid_recipes.py \
+  --output .context/grid_recipes.json
 
-The merge priority is intentionally stricter than "anything valid". It follows
-the numbered I definitions, with the I1 prefix signals immediately after I1:
+# Merge against the shipped artifact and pack
+python3 docs/technical-appendices/molter/build_solver_recipes.py \
+  --merge-only --ignore-existing-output \
+  --merge-input src/data/pairings/resources/molter_recipes.mrec \
+  --merge-input .context/grid_recipes.json \
+  --output .context/merged.json --packed-output .context/merged.mrec
+```
+
+The grid builder treats schedule and colour as independent problems:
+
+1. **Schedule.** Both parities reduce to a symbol grid — one 1-factor per
+   board (even `N`) or one one-odd 2-factor per board pair (odd `N`), per
+   round. S4 only forbids repeating a factor in a column, so balanced loads
+   give the `I1` optimum, fresh factors in early rows give a zero prefix
+   deficit, and distinct factors per row give `I5 <= 1`. For odd `N` a small
+   backtracking pass picks dropped edges (floater roles) per cell for
+   S6c/I2/I3/I4, with a CP-SAT role polish for the stubborn shapes.
+2. **Colour.** Rounds are coloured in two-round blocks. The union of a block's
+   matchings is a set of even cycles; alternating colours around each cycle
+   satisfies C1/C2/C3 and returns every team to balance at the block boundary.
+   Per-cycle flips (then, if needed, a per-block CP-SAT that lets a few
+   players carry a one-block colour debt) keep the odd-round team drift within
+   the S5 bound. The last two blocks are solved together so the final block's
+   constraints are planned for.
+
+The older search portfolio (`build_solver_recipe_suite.py` over
+`build_solver_recipes.py`) remains a valid candidate source and still wins on
+a minority of small shapes — mostly exact per-round colour balance and some
+two-round tables — so its recipes persist in the artifact.
+
+The merge priority follows the numbered I definitions, with the I1 prefix
+signals immediately after I1:
 
 ```text
 I1
@@ -174,13 +196,6 @@ exact S5
 
 A candidate that validates but worsens an earlier metric is rejected even if a
 later metric improves.
-
-Typical command:
-
-```sh
-python3 docs/technical-appendices/molter/build_solver_recipe_suite.py \
-  --output .context/quality_grid_all_recipes.json
-```
 
 The JSON is verbose by design: it is the resumable audit state. The adjacent
 `.mrec` is the compact replay artifact. After promoting a new artifact, run the
@@ -261,26 +276,30 @@ keeps support limits explicit and avoids silent quality regressions.
 
 ## 11. Research Notes
 
-Current bad cases are not caused by runtime replay. Replay is fast. The hard part
-is finding schedules that simultaneously satisfy:
+Replay is fast; all remaining questions are offline. The central finding
+behind the grid builder is that schedule quality and colour legality are
+almost independent:
 
-- strict hard validation;
-- strong I1/prefix coverage;
-- colourability under S5/C1/C2/C3;
-- acceptable I2/I3/I4/I5.
+- Every valid schedule is hard-rule colourable per two-round block by cycle
+  alternation, so I1/prefix quality never has to be traded away for
+  colourability in general.
+- The genuine coupling is narrow: bounding the odd-round team drift is a
+  discrepancy problem over cycle flips, and it has real infeasibility pockets.
+  At `R = 2` every player must alternate, drift is fixed entirely by the flip
+  choice, and some factor pairings provably cannot stay within the bound —
+  those shapes need colour-aware schedule selection, which the older builder
+  provides.
 
-Some weak larger-`N` cases have good raw opponent schedules that become difficult
-or impossible to colour under the hard colour rules. This suggests that better
-results probably require a stronger combined schedule-and-colour model, not just
-minor tweaks to the existing constructive generator.
+Open questions worth pursuing:
 
-Potential future approaches:
+- A rotational dropped-edge formula over a Hamiltonian (Walecki-style)
+  2-factor decomposition could make the odd-`N` floater roles fully
+  constructive. This needs a new schedule kind, because replay is tied to the
+  shipped factorization.
+- A characterization of the two-round colourability obstruction (which factor
+  pairings admit flips within the drift bound).
+- Exact per-round S5 together with optimal I1/prefix: the current artifact
+  keeps exact S5 only where it costs nothing earlier in the priority order.
 
-- CP-SAT model that chooses opponent schedule and colour together.
-- SAT/SMT encoding for hard feasibility and proof of impossibility.
-- ILP/min-cost-flow hybrids for prefix coverage plus colour drift.
-- Native C++/Rust search for larger deterministic portfolios.
-- New combinatorial constructions for high-`N` prefix coverage.
-
-Any such approach is welcome if it keeps the verifier as the gate and improves
+Any new approach is welcome if it keeps the verifier as the gate and improves
 the quality vector.

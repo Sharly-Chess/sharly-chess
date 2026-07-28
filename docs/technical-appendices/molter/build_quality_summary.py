@@ -1242,12 +1242,14 @@ def main() -> int:
         raise SystemExit('The recipe file contains no cases matching the filters.')
     players = tuple(sorted({players_per_team for _n, players_per_team, _r in tasks}))
     max_team_count = max(n for n, _p, _r in tasks)
-    max_short_rounds = max(r for _n, _p, r in tasks)
+    artifact_max_rounds = max(r for _n, _p, r in tasks)
+    max_short_rounds = args.max_short_rounds
     include_full = False
     recipe_name = _RECIPE_FILE.name if _RECIPE_FILE is not None else 'recipe artifact'
     round_scope = (
         f'Recipe artifact cases from {recipe_name}; '
-        f'R1..R{max_short_rounds} where present'
+        f'comparison columns R1..R{max_short_rounds}; '
+        f'artifact cases present through R{artifact_max_rounds}'
     )
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
