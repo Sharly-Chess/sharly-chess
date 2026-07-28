@@ -516,30 +516,14 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           # Isolate the DMG so generate_appcast doesn't also sign the generic
-          # export/*.zip. Write the EdDSA key to a temp file for --ed-key-file;
-          # tr strips stray whitespace/newlines the strict base64 decoder rejects.
+          # export/*.zip. The EdDSA key goes to a temp file for --ed-key-file.
           mkdir -p sparkle-feed
           cp "export/sharly-chess-${VERSION}-mac.dmg" sparkle-feed/
           KEY_FILE="$(mktemp)"
           trap 'rm -f "$KEY_FILE"' EXIT
-          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | tr -d '[:space:]' > "$KEY_FILE"
-          # TEMP DIAGNOSTIC. od -c spaces the characters out so GitHub's secret
-          # mask doesn't redact them; reveals quotes, newlines, spaces, length.
-          # Key will be rotated afterwards. Remove this block once confirmed.
-          echo "[key-check] raw secret (od -c):"
-          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | od -c
-          echo "[key-check] stripped key file (od -c):"
-          od -c "$KEY_FILE"
-          python3 - "$KEY_FILE" <<'PY'
-          import base64, sys
-          raw = open(sys.argv[1], 'rb').read()
-          print(f"[key-check] chars={len(raw)}")
-          try:
-              dec = base64.b64decode(raw, validate=True)
-              print(f"[key-check] valid base64, bytes={len(dec)}")
-          except Exception as e:
-              print(f"[key-check] invalid base64: {e}")
-          PY
+          # Keep only base64 characters: strips whitespace and paste artifacts
+          # (e.g. a shell's no-newline "%" marker) the strict decoder rejects.
+          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | tr -cd 'A-Za-z0-9+/=' > "$KEY_FILE"
           vendor/sparkle/bin/generate_appcast \
             --ed-key-file "$KEY_FILE" \
             --download-url-prefix "https://github.com/Sharly-Chess/sharly-chess/releases/download/${VERSION}/" \
