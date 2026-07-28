@@ -103,6 +103,9 @@ msgstr ""
 msgid "No document type is matching input."
 msgstr ""
 
+msgid "No internet connection."
+msgstr ""
+
 msgid "Not configured"
 msgstr ""
 

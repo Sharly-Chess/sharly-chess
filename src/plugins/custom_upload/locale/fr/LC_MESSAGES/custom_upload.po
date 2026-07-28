@@ -103,6 +103,9 @@ msgstr "Aucun document encore configuré."
 msgid "No document type is matching input."
 msgstr "Aucun type de document ne correspond à la saisie."
 
+msgid "No internet connection detected."
+msgstr "Aucune connexion internet détectée."
+
 msgid "Not configured"
 msgstr "Non configuré"
 

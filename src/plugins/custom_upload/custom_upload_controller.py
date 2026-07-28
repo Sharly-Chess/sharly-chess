@@ -389,22 +389,21 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        ftp_auth_valid: bool | None = None
-
         ftp_host: str | None = WebContext.form_data_to_str(data, 'ftp_host', '')
         ftp_username: str | None = WebContext.form_data_to_str(data, 'ftp_username', '')
         ftp_password: str | None = WebContext.form_data_to_str(data, 'ftp_password', '')
 
+        errors = {}
         if NetworkMonitor.connected():
             ftp_auth_valid = False
             if ftp_host and ftp_username:
                 ftp_auth_valid = CustomUploadUploader.test_ftp(
                     ftp_host, ftp_username, ftp_password or ''
                 )
-
-        errors = {}
-        if ftp_auth_valid is False:
-            errors['ftp_host'] = _('Failed to connect to server.')
+            if not ftp_auth_valid:
+                errors['ftp_host'] = _('Failed to connect to server.')
+        else:
+            errors['ftp_host'] = _('No internet connection detected.')
 
         return HTMXTemplate(
             template_name='custom_upload_tournament_auth_fields.html',
@@ -416,7 +415,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     'ftp_password': data['ftp_password'],
                 },
                 'ftp_password_visible': data['ftp_password_visible'] == 'true',
-                'custom_upload_auth_valid': ftp_auth_valid is True,
+                'custom_upload_auth_valid': not errors,
                 'errors': errors,
             },
         )
