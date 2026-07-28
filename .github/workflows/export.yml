@@ -259,21 +259,7 @@ jobs:
       group: gh-pages-publish
       cancel-in-progress: false
     steps:
-      - name: Checkout gh-pages
-        uses: actions/checkout@v4.2.2
-        with:
-          ref: gh-pages
-          path: flatpak-repo-publish
-      - name: Download x86_64 OSTree
-        uses: actions/download-artifact@v4
-        with:
-          name: ostree-x86_64
-      - name: Download arm64 OSTree
-        uses: actions/download-artifact@v4
-        with:
-          name: ostree-arm64
-      - name: Install OSTree tools
-        run: sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder ostree
+      # Decide first, before any expensive work, so pre-releases exit in seconds.
       - name: Set version
         shell: bash
         run: |
@@ -291,6 +277,25 @@ jobs:
             echo "IS_STABLE=false" >> $GITHUB_ENV
             echo "::notice::$VERSION is a pre-release; skipping gh-pages Flatpak publish."
           fi
+      - name: Checkout gh-pages
+        if: env.IS_STABLE == 'true'
+        uses: actions/checkout@v4.2.2
+        with:
+          ref: gh-pages
+          path: flatpak-repo-publish
+      - name: Download x86_64 OSTree
+        if: env.IS_STABLE == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ostree-x86_64
+      - name: Download arm64 OSTree
+        if: env.IS_STABLE == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ostree-arm64
+      - name: Install OSTree tools
+        if: env.IS_STABLE == 'true'
+        run: sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder ostree
       - name: Import GPG key
         if: env.IS_STABLE == 'true'
         env:
