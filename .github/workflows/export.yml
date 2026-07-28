@@ -507,14 +507,13 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           # Isolate the DMG so generate_appcast doesn't also sign the generic
-          # export/*.zip. generate_appcast reads the EdDSA key from a file, so
-          # write the secret to a temp file (printf avoids a trailing newline)
-          # and remove it on exit.
+          # export/*.zip. Write the EdDSA key to a temp file for --ed-key-file;
+          # tr strips stray whitespace/newlines the strict base64 decoder rejects.
           mkdir -p sparkle-feed
           cp "export/sharly-chess-${VERSION}-mac.dmg" sparkle-feed/
           KEY_FILE="$(mktemp)"
           trap 'rm -f "$KEY_FILE"' EXIT
-          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" > "$KEY_FILE"
+          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | tr -d '[:space:]' > "$KEY_FILE"
           vendor/sparkle/bin/generate_appcast \
             --ed-key-file "$KEY_FILE" \
             --download-url-prefix "https://github.com/Sharly-Chess/sharly-chess/releases/download/${VERSION}/" \
