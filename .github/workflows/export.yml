@@ -120,10 +120,7 @@ jobs:
         env:
           WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
         run: |
-          python scripts/export/windows/signtool.py \
-          "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe" \
-          "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe" \
-          --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+          python scripts/export/windows/signtool.py "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe" "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe" --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
