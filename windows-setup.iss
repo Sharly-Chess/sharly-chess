@@ -15,6 +15,11 @@
 ; #define IsUpdate 1 ; 1 = update, 0 = install
 ; #define UseSignTool "no" ; yes / no
 
+; CI signs post-compile, so default UseSignTool off unless explicitly defined.
+#ifndef UseSignTool
+  #define UseSignTool "no"
+#endif
+
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
