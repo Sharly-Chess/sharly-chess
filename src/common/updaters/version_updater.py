@@ -111,7 +111,7 @@ class VersionUpdater:
         if sys.platform == 'win32':
             return f'Sharly Chess Updater {version}.exe'
         if sys.platform == 'darwin':
-            suffix = 'macos.dmg'
+            suffix = 'mac.dmg'
         else:
             # Detect architecture for Linux
             # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
