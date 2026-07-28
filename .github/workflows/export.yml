@@ -490,6 +490,7 @@ jobs:
         run: |
           echo "Cleaning up macOS build artifacts..."
           # Preserve the DMG file but clean up other build artifacts
+          mkdir -p export
           find dist/ -name "*.dmg" -exec mv {} export/ \;
           rm -rf dist/
           rm -rf build/
