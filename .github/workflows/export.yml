@@ -511,6 +511,19 @@ jobs:
           KEY_FILE="$(mktemp)"
           trap 'rm -f "$KEY_FILE"' EXIT
           printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | tr -d '[:space:]' > "$KEY_FILE"
+          # TEMP DIAGNOSTIC (safe: prints no key material). Remove once the key
+          # is confirmed. Sparkle's private key = 88 chars -> 64 bytes; the
+          # public key = 44 chars -> 32 bytes; non-multiple-of-4 = truncated.
+          python3 - "$KEY_FILE" <<'PY'
+          import base64, sys
+          raw = open(sys.argv[1], 'rb').read()
+          print(f"[key-check] chars={len(raw)}")
+          try:
+              dec = base64.b64decode(raw, validate=True)
+              print(f"[key-check] valid base64, bytes={len(dec)}")
+          except Exception as e:
+              print(f"[key-check] invalid base64: {e}")
+          PY
           vendor/sparkle/bin/generate_appcast \
             --ed-key-file "$KEY_FILE" \
             --download-url-prefix "https://github.com/Sharly-Chess/sharly-chess/releases/download/${VERSION}/" \
