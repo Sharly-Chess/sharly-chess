@@ -41,13 +41,13 @@ from xlsxwriter.utility import xl_rowcol_to_cell  # noqa: E402
 import build_solver_recipes as recipes  # noqa: E402
 from data.pairings.molter_verifier import verify_molter_table  # noqa: E402
 
-TEAM_COUNTS = range(3, 16)
+TEAM_COUNTS = range(3, 26)
 PLAYER_COUNTS = (2, 4, 6, 8, 10, 12)
 # Criteria analysis: one tab per round count (odd counts included, now that odd
 # rounds are generated directly) up to the largest full table (N − 1 = 50 for
-# N = 51), over teams 3–15 plus the large odd sizes.
+# N = 51), over teams 3–25 plus the large odd sizes.
 ROUND_TABS = tuple(range(1, 51))
-ANALYSIS_TEAMS = tuple(range(3, 16)) + tuple(range(17, 52, 2))
+ANALYSIS_TEAMS = tuple(range(3, 26)) + tuple(range(27, 52, 2))
 _Measures = tuple[int, int, int, int, int, int]
 _SummaryRows = dict[tuple[int, int, int], tuple[bool, _Measures | None]]
 _RECIPE_BY_KEY: dict[tuple[int, int, int], dict] = {}

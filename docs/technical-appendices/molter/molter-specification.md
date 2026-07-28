@@ -274,22 +274,32 @@ does not invent a table at runtime.
 
 ## 7. How Recipes Are Built
 
-The recipe builders are offline research tools. They are deterministic and
-resumable, but they are a portfolio of searches rather than a final mathematical
-algorithm.
+The recipe builders are offline research tools. The artifact is cumulative:
+builders produce candidates, and a candidate replaces a shipped recipe only
+when it passes the hard verifier and strictly improves the metric priority.
 
-The broad workflow is:
+The primary builder constructs schedules and colours separately:
 
-1. Start from the current portable generator to get a valid baseline when
-   possible.
-2. Try alternative schedule families for weak cases, especially I1 and prefix
-   failures.
-3. Use CP-SAT/OR-Tools passes where useful to search rows, offsets, integrated
-   schedule/colour choices and strict-S5 recolourings.
-4. Verify every candidate against the hard Molter rules.
-5. Keep only candidates that are not worse than the current best metric vector.
-6. Merge pass outputs by priority metric.
-7. Pack the winning cases into `.mrec`.
+1. **Schedule as a factor grid.** A round is one 1-factor of `K_N` per board
+   (even `N`) or one one-odd 2-factor per board pair (odd `N`). S4 reduces to
+   never repeating a factor in a column, so a grid with balanced factor loads,
+   fresh factors in early rounds and distinct factors per round achieves the
+   arithmetic optimum for I1, prefix coverage and I5 by construction. Odd
+   `N` additionally assigns dropped edges (floater roles) per cell for
+   S6c/I2/I3/I4.
+2. **Colour by block alternation.** In each two-round block the union of the
+   matchings is a set of even cycles; alternating colours around each cycle
+   satisfies C1/C2/C3 and returns every team to balance at the block end.
+   Cycle flips, and where needed a small per-block CP-SAT allowing one-block
+   colour debts, keep the odd-round team drift within the hard S5 bound.
+
+The older search portfolio (offset searches, CP-SAT row/occurrence models,
+strict-S5 recolouring) remains a candidate source and still provides the best
+known tables for a minority of shapes, mostly exact per-round colour balance
+and some two-round tables.
+
+All candidates are verified against the hard rules, merged by priority metric,
+and packed into `.mrec`.
 
 The merge priority follows the numbered `I` definitions:
 
@@ -309,31 +319,24 @@ The `.mrec` output is the compact runtime artifact.
 
 ## 8. Current Coverage and Limits
 
-The runtime app exposes:
-
-- `N = 3..20`;
-- even `P = 2..12`;
-- `R = 1..13`, where legal, plus the full `N = 15`, `R = 14` DNA tables.
-
-The current packed research artifact covers:
+The runtime app exposes the full packed artifact:
 
 - `N = 3..25`;
 - even `P = 2..12`;
-- `R = 1..13`, where legal, plus `N = 15`, `R = 14` for each supported `P`.
+- every legal round count `R = 1..N-1`, including full round robins.
 
 Current quality snapshot:
 
-- `1404/1404` covered cases are structurally valid.
-- `1014` covered cases with `N <= 20` are exposed by the runtime app.
-- `A = 360`, `B = 904`, `C = 34`, `D = 106`, `FAIL = 0`.
-- Serious D-grade cases are mostly larger-team I1/prefix coverage failures,
-  concentrated from roughly `N = 19` onward and especially at `N = 21`, `23`,
-  and `25`.
+- `1794/1794` covered cases are structurally valid.
+- `A = 384`, `B = 1410`, `C = 0`, `D = 0`, `FAIL = 0`.
+- Every case reaches its arithmetic I1 lower bound with a zero prefix
+  deficit; B-grades are small ideal misses, mostly relaxed per-round colour
+  balance and minor floater-balance slack.
 
-In practical terms: the current work gives high-quality tables up to about twenty
-teams, with a few visible exceptions before that. Beyond that, more research is
-needed. This may be better CP/SAT/ILP modelling, a stronger constructive
-argument, better native search, or official table expertise.
+In practical terms: the whole supported range now ships good Molter tables.
+The remaining research value is in lifting B to A (exact per-round S5 at
+unchanged I1/prefix), extending coverage, and closing the mathematical
+questions in the developer guide's research notes.
 
 ## 9. Conformance
 
