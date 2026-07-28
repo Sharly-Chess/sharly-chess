@@ -33,9 +33,9 @@ jobs:
         with:
           format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Setup Python
-        uses: actions/setup-python@v5.5.0
+        uses: actions/setup-python@v6
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           # NOTE(pascalaubry): on Windows self-hosted runners, the first install fails:
@@ -123,7 +123,7 @@ jobs:
           python scripts/export/windows/signtool.py "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe" "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe" --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
@@ -148,7 +148,7 @@ jobs:
       XDG_RUNTIME_DIR: /tmp/flatpak-runtime
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Install system dependencies
@@ -236,7 +236,7 @@ jobs:
             com.sharlychess.SharlyChess \
             --arch=${{ matrix.flatpak_arch }}
       - name: Upload .flatpak bundle artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}
           path: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}.flatpak
@@ -245,7 +245,7 @@ jobs:
         shell: bash
         run: tar -czf repo-${{ matrix.arch }}.tar.gz repo-staging
       - name: Upload OSTree artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ostree-${{ matrix.arch }}
           path: repo-${{ matrix.arch }}.tar.gz
@@ -279,18 +279,18 @@ jobs:
           fi
       - name: Checkout gh-pages
         if: env.IS_STABLE == 'true'
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
         with:
           ref: gh-pages
           path: flatpak-repo-publish
       - name: Download x86_64 OSTree
         if: env.IS_STABLE == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ostree-x86_64
       - name: Download arm64 OSTree
         if: env.IS_STABLE == 'true'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: ostree-arm64
       - name: Install OSTree tools
@@ -421,9 +421,9 @@ jobs:
         with:
           format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Setup Python
-        uses: actions/setup-python@v5.5.0
+        uses: actions/setup-python@v6
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           python-version: 3.13
@@ -535,7 +535,7 @@ jobs:
             sparkle-feed/
           cp sparkle-feed/appcast.xml export/appcast.xml
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: |
@@ -563,19 +563,19 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: export-windows/
       - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: export-macos/
       - name: Download Linux Flatpak artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: sharly-chess-${{ steps.version.outputs.version }}-linux-*
           path: export-linux/
@@ -594,7 +594,7 @@ jobs:
           cp export-linux/sharly-chess-${VERSION}-linux-x86_64/sharly-chess-${VERSION}-linux-x86_64.flatpak release-files/
           cp export-linux/sharly-chess-${VERSION}-linux-arm64/sharly-chess-${VERSION}-linux-arm64.flatpak release-files/
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: "Version ${{ steps.version.outputs.version }} (${{ steps.date.outputs.year }}-${{ steps.date.outputs.month }}-${{ steps.date.outputs.day }})"
