@@ -283,11 +283,21 @@ jobs:
             VERSION="${{ github.ref_name }}"
           fi
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          # Only final X.Y.Z releases are published to the stable Flatpak repo;
+          # pre-releases (dev/a/b/rc) build but must not reach master.
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "IS_STABLE=true" >> $GITHUB_ENV
+          else
+            echo "IS_STABLE=false" >> $GITHUB_ENV
+            echo "::notice::$VERSION is a pre-release; skipping gh-pages Flatpak publish."
+          fi
       - name: Import GPG key
+        if: env.IS_STABLE == 'true'
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: gpg --batch --import <(echo "$GPG_PRIVATE_KEY")
       - name: Merge OSTree repositories and sign
+        if: env.IS_STABLE == 'true'
         shell: bash
         run: |
           # Initialize the target repo if it doesn't exist
@@ -350,6 +360,7 @@ jobs:
             --gpg-homedir="$HOME/.gnupg" \
             flatpak-repo-publish/repo
       - name: Generate .flatpakrepo files
+        if: env.IS_STABLE == 'true'
         shell: bash
         run: |
           touch flatpak-repo-publish/.nojekyll
@@ -369,6 +380,7 @@ jobs:
           EOF
 
       - name: Push to GitHub Pages
+        if: env.IS_STABLE == 'true'
         working-directory: flatpak-repo-publish
         shell: bash
         run: |
