@@ -3,6 +3,7 @@ from typing import Any
 
 from litestar import get, Response
 from litestar.exceptions import NotFoundException
+from litestar.params import FromQuery
 from litestar.response import Redirect, Template
 from litestar_htmx import HTMXRequest
 
@@ -70,7 +71,7 @@ class Chess960SvgController(BaseController):
     )
     async def chess960_svg(
         self,
-        chess960_number: Any = 0,
+        chess960_number: FromQuery[Any] = 0,
     ) -> Response[str]:
         number: int = 0
         with suppress(ValueError):

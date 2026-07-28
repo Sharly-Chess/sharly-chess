@@ -78,12 +78,14 @@ msgstr ""
 msgid "E.g.: my_password"
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{event_id}] does not exist."
 msgstr ""
 
 msgid "Event not found"
 msgstr ""
 
+#, python-brace-format
 msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
 msgstr ""
 
@@ -123,9 +125,11 @@ msgstr ""
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr ""
 
+#, python-brace-format
 msgid "Synchronisation failed for tournament [{tournament}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Synchronisation failed for {count} tournament"
 msgid_plural "Synchronisation failed for {count} tournaments"
 msgstr[0] ""
@@ -140,6 +144,7 @@ msgstr ""
 msgid "Synchronize tournaments with ChessEvent"
 msgstr ""
 
+#, python-brace-format
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
 msgstr ""
 
@@ -149,9 +154,11 @@ msgstr ""
 msgid "Tournament"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_name}] does not exist in event [{event_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] successfully synchronized."
 msgstr ""
 
@@ -185,11 +192,13 @@ msgstr ""
 msgid "my_password"
 msgstr ""
 
+#, python-brace-format
 msgid "{count} tournament ignored"
 msgid_plural "{count} tournaments ignored"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} tournament successfully synchronized"
 msgid_plural "{count} tournament successfully synchronized"
 msgstr[0] ""

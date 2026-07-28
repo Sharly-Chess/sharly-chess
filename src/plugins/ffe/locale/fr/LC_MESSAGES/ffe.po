@@ -42,9 +42,11 @@ msgstr "Indemnités d'arbitrage"
 msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
 
+#, python-brace-format
 msgid "At most 3 men allowed on the roster ({n} listed)."
 msgstr "Au plus 3 hommes autorisés dans la liste des joueur·euses ({n} trouvés)."
 
+#, python-brace-format
 msgid "At most 3 women allowed on the roster ({n} listed)."
 msgstr "Au plus 3 femmes autorisées dans la liste des joueur·euses ({n} trouvées)."
 
@@ -134,6 +136,7 @@ msgstr "Arbitre Élite 1"
 msgid "Elite Arbiter (level 2)"
 msgstr "Arbitre Élite 2"
 
+#, python-brace-format
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
@@ -194,6 +197,7 @@ msgstr "Licence FFE A (compétition)"
 msgid "FFE licence B (leisure)"
 msgstr "Licence FFE B (loisir)"
 
+#, python-brace-format
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
 
@@ -230,11 +234,13 @@ msgstr "Lien de facture non trouvé, vérifier qu'un tournoi a été envoyé et 
 msgid "File"
 msgstr "Fichier"
 
+#, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
 msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
 msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins significatives et les {count} valeurs les plus significatives sont retirées."
 
+#, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least significant value is removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
 msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative est retirée."
@@ -273,15 +279,19 @@ msgstr "Incompatible"
 msgid "Invalid FFE certification number or password."
 msgstr "Identifiant FFE ou mot de passe invalide."
 
+#, python-brace-format
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
 
+#, python-brace-format
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr "Format de date invalide [{date}] (attendu : {format})"
 
+#, python-brace-format
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr "Extension de fichier [{extension}] invalide (attendue : {expected})."
 
+#, python-brace-format
 msgid "Invalid format (expected: {format})."
 msgstr "Format invalide (attendu : {format})."
 
@@ -297,6 +307,7 @@ msgstr "Coupe Jean-Claude Loubatière (sans protection 3e ronde)"
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
 
+#, python-brace-format
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
@@ -375,15 +386,18 @@ msgstr "N - Expirée"
 msgid "Name"
 msgstr "Nom"
 
+#, python-brace-format
 msgid "Need at least 2 men on the roster ({n} listed)."
 msgstr "Au moins 2 hommes sont requis dans l'effectif ({n} trouvés)."
 
+#, python-brace-format
 msgid "Need at least 2 women on the roster ({n} listed)."
 msgstr "Au moins 2 femmes sont requises dans l'effectif ({n} trouvées)."
 
 msgid "Never uploaded"
 msgstr "Jamais mis en ligne"
 
+#, python-brace-format
 msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr "Aucun identifiant FFE défini pour le tournoi [{tournament}]."
 
@@ -396,6 +410,7 @@ msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 msgid "No internet connection"
 msgstr "Aucune connexion à internet"
 
+#, python-brace-format
 msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
 msgstr "Aucun composition de {n} joueur·euses légale: plus faible somme {sum} > plafond {cap}."
 
@@ -426,6 +441,7 @@ msgstr "Page du tournoi sur le site FFE."
 msgid "Papi export is not available for team events."
 msgstr "L'export Papi n'est pas possible pour les évènements par équipe."
 
+#, python-brace-format
 msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
 msgstr "L'export Papi ne supporte que les systèmes de points de partie standard (1 / 0.5 / 0) ou « victoire à 3 points » (3 / 1 / 0). Valeurs actuelles : {win} / {draw} / {loss}."
 
@@ -435,9 +451,11 @@ msgstr "Fichier Papi"
 msgid "Pending"
 msgstr "En attente"
 
+#, python-brace-format
 msgid "Player rating above {cap}: {names}."
 msgstr "Joueur·euses classé·e au dessus de {cap} : {names}."
 
+#, python-brace-format
 msgid "Player without an A (competition) FFE licence: {names}."
 msgstr "Joueur·euses sans licence A (compétition) : {names}."
 
@@ -450,18 +468,21 @@ msgstr "Veuillez sélectionner un fichier."
 msgid "Public page of the tournament."
 msgstr "Page publique du tournoi."
 
+#, python-brace-format
 msgid "Ranking by league after round #{round}"
 msgstr "Classement par ligue après la ronde n°{round}"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
 
+#, python-brace-format
 msgid "Roster must consist of women players only: {names}."
 msgstr "Seules les femmes sont autorisées dans l'effectif : {names}."
 
 msgid "Rules successfully uploaded."
 msgstr "Le règlement a été mis en ligne avec succès."
 
+#, python-brace-format
 msgid "Rules upload failed for tournament [{tournaments}]."
 msgid_plural "Rules upload failed for tournaments [{tournaments}]."
 msgstr[0] "La mise en ligne du règlement a échoué pour le tournoi [{tournaments}]."
@@ -533,12 +554,15 @@ msgstr "L'identifiant FFE est un entier positif."
 msgid "The FFE always uses the FIDE rating when available."
 msgstr "La FFE utilise toujours le classement FIDE lorsqu’il est disponible."
 
+#, python-brace-format
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 
+#, python-brace-format
 msgid "The Papi format does not support result [{result}]."
 msgstr "Le format Papi ne supporte pas le résultat [{result}]."
 
+#, python-brace-format
 msgid "The [{tie_break}] tie-break as implemented in Papi."
 msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
 
@@ -596,12 +620,15 @@ msgstr "Transfert"
 msgid "Unknown league."
 msgstr "Ligue inconnue."
 
+#, python-brace-format
 msgid "Unknown player ID [{player_id}]"
 msgstr "Identifiant de joueur inconnu [{player_id}]."
 
+#, python-brace-format
 msgid "Unknown value (expected: {expected})."
 msgstr "Valeur inconnue (attendu : {expected})."
 
+#, python-brace-format
 msgid "Unknown value [{value}]"
 msgstr "Valeur [{value}] inconnue."
 
@@ -675,16 +702,19 @@ msgstr "le tournoi n'a pas pu être converti au format Papi"
 msgid "tournament most likely marked as finished on the FFE website"
 msgstr "le tournoi a probablement été marqué comme terminé sur le site FFE"
 
+#, python-brace-format
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
 
+#, python-brace-format
 msgid "{n} forfeited board above a board on which a game was played, counted as -1."
 msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
 msgstr[0] "{n} échiquier après un échiquier perdu par forfait, compté -1."
 msgstr[1] "{n} échiquiers après un échiquier perdu par forfait, comptés -1 chacun."
 
+#, python-brace-format
 msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] "{n} partie perdue par forfait, comptée -1."

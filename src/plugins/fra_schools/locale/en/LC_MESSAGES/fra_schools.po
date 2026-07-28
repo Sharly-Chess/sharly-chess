@@ -35,6 +35,7 @@ msgstr ""
 msgid "Edit the selected French school."
 msgstr ""
 
+#, python-brace-format
 msgid "Exclude: {values}"
 msgstr ""
 
@@ -62,6 +63,7 @@ msgstr ""
 msgid "Include incomplete teams"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
@@ -86,6 +88,7 @@ msgstr ""
 msgid "Postal code"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking by school after round #{round}"
 msgstr ""
 
@@ -141,6 +144,7 @@ msgstr ""
 msgid "Update the school [%(school_name)s]"
 msgstr ""
 
+#, python-brace-format
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"
 msgstr[0] ""

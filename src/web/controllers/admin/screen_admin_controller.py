@@ -3,10 +3,10 @@ from typing import Annotated, Any
 import requests
 import validators
 from litestar import post, get, delete, patch
-from litestar.exceptions import NotFoundException, ClientException
-from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.exceptions import NotFoundException, ClientException
+from litestar.params import Body, FromPath, FromQuery
+from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -625,8 +625,8 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_event_screens_tab(
         self,
         request: HTMXRequest,
-        show_family_screens: bool | None,
-        show_details: bool | None,
+        show_family_screens: FromQuery[bool | None],
+        show_details: FromQuery[bool | None],
     ) -> Template | Redirect:
         if show_family_screens is not None:
             SessionScreensShowFamilyScreens(request).set(show_family_screens)
@@ -658,7 +658,7 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_create_modal(
         self,
         request: HTMXRequest,
-        screen_type: str,
+        screen_type: FromPath[str],
     ) -> Template | Redirect:
         return self._admin_event_screens_render(
             request,
@@ -675,8 +675,8 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_modal(
         self,
         request: HTMXRequest,
-        action: str,
-        screen_id: int | None,
+        action: FromPath[str],
+        screen_id: FromPath[int | None],
     ) -> Template | Redirect:
         return self._admin_event_screens_render(
             request,
@@ -821,7 +821,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        screen_type: str,
+        screen_type: FromPath[str],
     ) -> Template | Redirect:
         return self._admin_screen_update(
             request,
@@ -838,7 +838,7 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_clone(
         self,
         request: HTMXRequest,
-        screen_id: int,
+        screen_id: FromPath[int],
         data: Annotated[
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -859,7 +859,7 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_update(
         self,
         request: HTMXRequest,
-        screen_id: int,
+        screen_id: FromPath[int],
         data: Annotated[
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -884,7 +884,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        screen_id: int,
+        screen_id: FromPath[int],
     ) -> HTMXTemplate:
         web_context = ScreenAdminWebContext(request, screen_id)
         event = web_context.get_admin_event()
@@ -924,7 +924,7 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_delete(
         self,
         request: HTMXRequest,
-        screen_id: int,
+        screen_id: FromPath[int],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -945,7 +945,7 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_sets_modal(
         self,
         request: HTMXRequest,
-        screen_id: int,
+        screen_id: FromPath[int],
     ) -> Template | Redirect:
         return self._admin_event_screens_render(
             request,
@@ -961,7 +961,7 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_set_create_modal(
         self,
         request: HTMXRequest,
-        screen_id: int,
+        screen_id: FromPath[int],
     ) -> Template | Redirect:
         return self._admin_event_screens_render(
             request,
@@ -978,8 +978,8 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_set_update_modal(
         self,
         request: HTMXRequest,
-        screen_id: int,
-        screen_set_id: int,
+        screen_id: FromPath[int],
+        screen_set_id: FromPath[int],
     ) -> Template | Redirect:
         return self._admin_event_screens_render(
             request,
@@ -1072,7 +1072,7 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_set_create(
         self,
         request: HTMXRequest,
-        screen_id: int,
+        screen_id: FromPath[int],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -1093,8 +1093,8 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_set_clone(
         self,
         request: HTMXRequest,
-        screen_id: int,
-        screen_set_id: int,
+        screen_id: FromPath[int],
+        screen_set_id: FromPath[int],
         data: Annotated[
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -1115,8 +1115,8 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_set_update(
         self,
         request: HTMXRequest,
-        screen_id: int,
-        screen_set_id: int,
+        screen_id: FromPath[int],
+        screen_set_id: FromPath[int],
         data: Annotated[
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -1142,8 +1142,8 @@ class ScreenAdminController(ScreenAdminRenderer):
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        screen_id: int,
-        screen_set_id: int,
+        screen_id: FromPath[int],
+        screen_set_id: FromPath[int],
     ) -> Template | Redirect:
         return self._admin_screen_sets_update(
             request,
@@ -1160,7 +1160,7 @@ class ScreenAdminController(ScreenAdminRenderer):
     async def htmx_admin_screen_reorder_sets(
         self,
         request: HTMXRequest,
-        screen_id: int,
+        screen_id: FromPath[int],
         data: Annotated[
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),

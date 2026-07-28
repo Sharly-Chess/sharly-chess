@@ -42,7 +42,7 @@ The handling of fixed tables has been improved in several ways:
 
 ### Special considerations when using the FFE (French federation) plugin
 
-In order to maintain compatibility with the dispaly of table numbers on the FFE website:
+In order to maintain compatibility with the display of table numbers on the FFE website:
 
 - By default we still leave the orignal table empty when the players are moved to a fixed table number
 - In this compatibility mode, duplicate tables still occur when fixed table numbers are inside the normal table range

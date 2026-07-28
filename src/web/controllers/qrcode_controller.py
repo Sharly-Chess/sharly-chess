@@ -5,6 +5,7 @@ from typing import Any
 import qrcode
 import PIL.Image
 from litestar import get
+from litestar.params import FromPath
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import File
 
@@ -68,8 +69,8 @@ class QRCodeController(BaseController):
     async def qrcode(
         self,
         request: HTMXRequest,
-        ip: str,
-        logo: Any = None,
+        ip: FromPath[str],
+        logo: FromPath[Any] = None,
     ) -> File:
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         suffix: str | None = None

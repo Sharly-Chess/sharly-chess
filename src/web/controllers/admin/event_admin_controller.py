@@ -1,16 +1,17 @@
 from typing import Any
 
 from litestar import Response, get
+from litestar.params import FromPath
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
 
 from data.access_levels.actions import AuthAction
 from data.screens.display_controller import DisplayController
+from data.screens.manager import ScreenTypeManager
 from data.screens.rotator import Rotator
 from data.screens.screen import Screen
 from data.tournament import Tournament
 from plugins.ffe.ffe_upload_controller import HTMXTemplate
-from data.screens.manager import ScreenTypeManager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -44,7 +45,7 @@ class EventAdminController(BaseEventAdminController):
     async def htmx_admin_event(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
+        event_uniq_id: FromPath[str],
     ) -> Template | Redirect:
         web_context = BaseEventAdminWebContext(request)
         if web_context.admin_event is None:

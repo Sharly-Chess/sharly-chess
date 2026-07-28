@@ -4,7 +4,7 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHash
 from litestar import post, get
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar_htmx import HTMXTemplate, ClientRedirect
@@ -76,7 +76,7 @@ class ProfileController(BaseController):
     async def htmx_profile_modal(
         self,
         request: HTMXRequest,
-        locale: str | None = None,
+        locale: FromQuery[str | None] = None,
     ) -> Template:
         web_context = ProfileWebContext(request)
         self.set_locale(request, locale)
@@ -89,7 +89,7 @@ class ProfileController(BaseController):
     async def htmx_profile_login(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
+        event_uniq_id: FromPath[str],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),

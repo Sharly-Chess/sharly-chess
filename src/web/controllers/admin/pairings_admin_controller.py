@@ -1,5 +1,6 @@
 from operator import attrgetter
 
+from litestar.di import NamedDependency
 from litestar.exceptions import NotFoundException, ClientException
 
 from common import experimental_features_enabled
@@ -14,7 +15,7 @@ from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -522,11 +523,11 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_pairings_tab(
         self,
         request: HTMXRequest,
-        tournament_id: int | None,
-        round: int | None,
-        show_without_results: bool | None,
-        board_sort: str | None = None,
-        skip_ratings_warning: bool = False,
+        tournament_id: FromPath[int | None],
+        round: FromPath[int | None],
+        show_without_results: FromQuery[bool | None] = None,
+        board_sort: FromQuery[str | None] = None,
+        skip_ratings_warning: FromQuery[bool] = False,
     ) -> Template:
         if show_without_results is not None:
             SessionPairingsShowWithoutResults(request).set(show_without_results)
@@ -552,9 +553,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_pairings_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        board_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        board_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round, board_id)
         return self._admin_event_pairings_render(
@@ -575,9 +576,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_team_pairings_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_board_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_board_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
@@ -627,7 +628,11 @@ class PairingsAdminController(BaseEventAdminController):
         name='admin-team-point-adjustment-modal',
     )
     async def htmx_admin_team_point_adjustment_modal(
-        self, request: HTMXRequest, tournament_id: int, round: int, team_id: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
@@ -655,9 +660,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_team_point_adjustment_set(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
@@ -691,9 +696,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_unpair_team_board(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_board_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_board_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -723,9 +728,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_unpaired_player_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        player_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request, tournament_id, round, player_id=player_id
@@ -848,10 +853,10 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_set_result(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        board_id: int,
-        result: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        board_id: FromPath[int],
+        result: FromPath[int],
     ) -> Template:
         return self._admin_update_result(
             request,
@@ -872,9 +877,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_unpair(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        board_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        board_id: FromPath[int],
     ) -> Template:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
@@ -905,9 +910,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_permute(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        board_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        board_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -929,8 +934,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_set_result_hotkey(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -997,10 +1002,10 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_swap_board_player(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        board_id: int,
-        side: str,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        board_id: FromPath[int],
+        side: FromPath[str],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -1256,10 +1261,10 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_player_check_in_out(
         self,
         request: HTMXRequest,
-        channels: ChannelsPlugin,
-        tournament_id: int,
-        player_id: int,
-        round: int,
+        channels: NamedDependency[ChannelsPlugin],
+        tournament_id: FromPath[int],
+        player_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1290,9 +1295,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_player_return_to_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        player_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        player_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1321,9 +1326,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_set_player_zpb(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        player_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1353,9 +1358,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_set_player_hpb(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        player_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1400,9 +1405,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_cancel_bye(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        player_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1431,9 +1436,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_unpaired_team_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         admin_tournament = web_context.get_admin_tournament()
@@ -1509,9 +1514,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_set_team_zpb(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
     ) -> Template:
         return self._set_team_bye(
             request,
@@ -1533,9 +1538,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_set_team_hpb(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
     ) -> Template:
         return self._set_team_bye(
             request,
@@ -1557,9 +1562,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_set_team_fpb(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
     ) -> Template:
         return self._set_team_bye(
             request,
@@ -1581,9 +1586,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_cancel_team_bye(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
     ) -> Template:
         return self._set_team_bye(
             request,
@@ -1605,9 +1610,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_pair_team(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1668,9 +1673,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_pair_player(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        player_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1732,10 +1737,10 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_pair_flat(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        first: str,
-        second: str,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        first: FromPath[str],
+        second: FromPath[str],
     ) -> Template:
         """Flat (Molter) manual pairing from the sidebar's select-then-pick
         flow. ``first``/``second`` are tokens: ``p<id>`` for a player,
@@ -1788,10 +1793,10 @@ class PairingsAdminController(BaseEventAdminController):
     )
     async def htmx_pairings_set_all_present(
         self,
-        channels: ChannelsPlugin,
+        channels: NamedDependency[ChannelsPlugin],
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1831,8 +1836,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_generate_round_pairings(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1852,8 +1857,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_generate_round_partial_pairings(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1922,7 +1927,7 @@ class PairingsAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -1961,8 +1966,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def admin_pairings_unpair(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -1993,7 +1998,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def admin_pairings_unpair_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -2015,11 +2020,11 @@ class PairingsAdminController(BaseEventAdminController):
     async def admin_pairings_safety_mode_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        action: str,
-        redirect_method: str,
-        redirect_route: str,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        action: FromPath[str],
+        redirect_method: FromPath[str],
+        redirect_route: FromPath[str],
     ) -> Template:
         try:
             protected_action = PairingAction(action)
@@ -2067,8 +2072,8 @@ class PairingsAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         mode = WebContext.form_data_to_str(data, 'mode') or ''
         try:
@@ -2086,8 +2091,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def admin_pairings_unfinished_round_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -2123,8 +2128,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_ratings_warning_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
 
@@ -2143,8 +2148,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_absents_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request, tournament_id, round, load_check_in_data=True
@@ -2163,8 +2168,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_team_absents_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         return self._admin_event_pairings_render(
@@ -2182,9 +2187,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_team_toggle_check_in(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        team_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
@@ -2205,8 +2210,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_set_all_teams_present(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
@@ -2225,8 +2230,8 @@ class PairingsAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, round_=round
@@ -2268,8 +2273,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_settings_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         return self._render_pairings_settings_modal(web_context)
@@ -2286,8 +2291,8 @@ class PairingsAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -2322,8 +2327,8 @@ class PairingsAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -2363,8 +2368,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_set_current_round(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        current_round: int,
+        tournament_id: FromPath[int],
+        current_round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -2527,7 +2532,10 @@ class PairingsAdminController(BaseEventAdminController):
         guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
     )
     async def htmx_admin_prohibited_pairings_modal(
-        self, request: HTMXRequest, tournament_id: int, round: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         return self._render_prohibited_pairings_modal(web_context)
@@ -2541,8 +2549,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_prohibited_pairings_config(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
@@ -2566,7 +2574,11 @@ class PairingsAdminController(BaseEventAdminController):
         guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
     )
     async def htmx_admin_prohibited_pairings_manual_form(
-        self, request: HTMXRequest, tournament_id: int, round: int, index: int = -1
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        index: FromPath[int] = -1,
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
@@ -2597,8 +2609,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_prohibited_pairings_manual_save(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
@@ -2641,7 +2653,11 @@ class PairingsAdminController(BaseEventAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_prohibited_pairings_manual_delete(
-        self, request: HTMXRequest, tournament_id: int, round: int, index: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        index: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
@@ -2662,9 +2678,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_add_illegal_move(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        player_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
@@ -2688,9 +2704,9 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_delete_illegal_move(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
-        player_id: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -2712,11 +2728,11 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_pairings_refresh_message(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
-        round: int,
-        reason: str,
-        ignore: bool = False,
+        event_uniq_id: FromPath[str],
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        reason: FromPath[str],
+        ignore: FromQuery[bool] = False,
     ) -> Template:
         if ignore:
             return HTMXTemplate(template_name='/common/empty.html')
@@ -2743,8 +2759,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_absents_modal_new_check_ins_message(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -2786,8 +2802,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def admin_pairings_info_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        round: int,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
@@ -2921,7 +2937,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_manual_tiebreak_update(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
         data: Annotated[
             dict[str, str | list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -2990,8 +3006,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_manual_tiebreak_reset(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
+        event_uniq_id: FromPath[str],
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()

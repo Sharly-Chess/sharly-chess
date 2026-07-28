@@ -17,7 +17,7 @@ from jinja2 import (
 )
 from jinja2.runtime import Context as JinjaContext
 from litestar import Router
-from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.plugins.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.events import listener
 from litestar.middleware.session import SessionMiddleware
