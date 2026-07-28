@@ -540,9 +540,6 @@ class ProjectBuilder(ABC):
             '--hiddenimport=pairing',
             '--hiddenimport=plugins',
             '--hiddenimport=web',
-            # web.admin.<name>.collection modules are imported dynamically
-            # (web/admin/collection.py), so PyInstaller can't see them statically.
-            '--collect-submodules=web.admin',
             '--hiddenimport=babel.numbers',
             '--hiddenimport=pyexcel_io.writers',
             '--hiddenimport=colorlog',

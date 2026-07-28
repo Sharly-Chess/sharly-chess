@@ -1,7 +1,6 @@
 from copy import deepcopy
 from dataclasses import dataclass, field
 from enum import StrEnum
-from importlib import import_module
 from typing import Any, TypeVar
 
 from litestar.plugins.htmx import HTMXRequest
@@ -187,25 +186,38 @@ def resolve_admin_collection_show_details(
     return session_value.get()
 
 
-_SPEC_MODULES = {
-    'accounts': 'web.admin.accounts.collection',
-    'display-controllers': 'web.admin.display_controllers.collection',
-    'events': 'web.admin.events.collection',
-    'families': 'web.admin.families.collection',
-    'menus': 'web.admin.menus.collection',
-    'prize-categories': 'web.admin.prizes.collection',
-    'rotators': 'web.admin.rotators.collection',
-    'screens': 'web.admin.screens.collection',
-    'teams': 'web.admin.teams.collection',
-    'timers': 'web.admin.timers.collection',
-    'tournaments': 'web.admin.tournaments.collection',
+from web.admin.accounts.collection import COLLECTION_SPEC as _accounts_spec  # noqa: E402
+from web.admin.display_controllers.collection import (  # noqa: E402
+    COLLECTION_SPEC as _display_controllers_spec,
+)
+from web.admin.events.collection import COLLECTION_SPEC as _events_spec  # noqa: E402
+from web.admin.families.collection import COLLECTION_SPEC as _families_spec  # noqa: E402
+from web.admin.menus.collection import COLLECTION_SPEC as _menus_spec  # noqa: E402
+from web.admin.prizes.collection import COLLECTION_SPEC as _prizes_spec  # noqa: E402
+from web.admin.rotators.collection import COLLECTION_SPEC as _rotators_spec  # noqa: E402
+from web.admin.screens.collection import COLLECTION_SPEC as _screens_spec  # noqa: E402
+from web.admin.teams.collection import COLLECTION_SPEC as _teams_spec  # noqa: E402
+from web.admin.timers.collection import COLLECTION_SPEC as _timers_spec  # noqa: E402
+from web.admin.tournaments.collection import COLLECTION_SPEC as _tournaments_spec  # noqa: E402
+
+_SPECS: dict[str, AdminCollectionSpec] = {
+    'accounts': _accounts_spec,
+    'display-controllers': _display_controllers_spec,
+    'events': _events_spec,
+    'families': _families_spec,
+    'menus': _menus_spec,
+    'prize-categories': _prizes_spec,
+    'rotators': _rotators_spec,
+    'screens': _screens_spec,
+    'teams': _teams_spec,
+    'timers': _timers_spec,
+    'tournaments': _tournaments_spec,
 }
 
 
 def get_admin_collection_spec(collection_key: str) -> AdminCollectionSpec:
     try:
-        module_name = _SPEC_MODULES[collection_key]
+        spec = _SPECS[collection_key]
     except KeyError as error:
         raise ValueError(f'Unknown admin collection [{collection_key}].') from error
-    module = import_module(module_name)
-    return deepcopy(module.COLLECTION_SPEC)
+    return deepcopy(spec)
