@@ -30,7 +30,7 @@ class WindowsInstaller:
         dev_exe = cls.dev_exe_path()
         if dev_exe:
             return dev_exe
-        return TMP_DIR / f'Sharly Chess Installer {version}.exe'
+        return TMP_DIR / f'sharly-chess-installer-{version}.exe'
 
     @classmethod
     def download(cls, version: Version, url: str | None) -> bool:
