@@ -38,9 +38,9 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
 #if Int(IsUpdate) == 1
-  OutputBaseFilename=Sharly Chess Updater {#AppVersion}
+  OutputBaseFilename=sharly-chess-updater-{#AppVersion}
 #else
-  OutputBaseFilename=Sharly Chess Installer {#AppVersion}
+  OutputBaseFilename=sharly-chess-installer-{#AppVersion}
 #endif
 OutputDir=export
 SetupIconFile={#ImagesDir}\sharly-chess.ico

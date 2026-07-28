@@ -120,15 +120,15 @@ jobs:
         env:
           WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
         run: |
-          python scripts/export/windows/signtool.py "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe" "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe" --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+          python scripts/export/windows/signtool.py export/sharly-chess-installer-${{ steps.version.outputs.version }}.exe export/sharly-chess-updater-${{ steps.version.outputs.version }}.exe --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
-            export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe
-            export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe
+            export/sharly-chess-installer-${{ steps.version.outputs.version }}.exe
+            export/sharly-chess-updater-${{ steps.version.outputs.version }}.exe
 
 
 
@@ -584,8 +584,8 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p release-files
           # Windows
-          cp "export-windows/Sharly Chess Installer ${VERSION}.exe" "release-files/Sharly Chess Installer ${VERSION}.exe"
-          cp "export-windows/Sharly Chess Updater ${VERSION}.exe" "release-files/Sharly Chess Updater ${VERSION}.exe"
+          cp export-windows/sharly-chess-installer-${VERSION}.exe release-files/
+          cp export-windows/sharly-chess-updater-${VERSION}.exe release-files/
           # macOS
           cp export-macos/sharly-chess-${VERSION}-mac.dmg release-files/sharly-chess-${VERSION}-mac.dmg
           # macOS Sparkle appcast (the app fetches this per-release to self-update)
@@ -601,8 +601,8 @@ jobs:
           draft: true
           prerelease: ${{ contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc') }}
           files: |
-            release-files/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe
-            release-files/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe
+            release-files/sharly-chess-installer-${{ steps.version.outputs.version }}.exe
+            release-files/sharly-chess-updater-${{ steps.version.outputs.version }}.exe
             release-files/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
             release-files/appcast.xml
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.flatpak
