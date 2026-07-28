@@ -104,12 +104,17 @@ jobs:
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
         with:
           path: windows-setup.iss
-          options: /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=0
+          # Each /D must be on its own line (the action splits options on newlines).
+          options: |
+            /DAppVersion=${{ steps.version.outputs.version }}
+            /DIsUpdate=0
       - name: Compile Updater
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
         with:
           path: windows-setup.iss
-          options: /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=1
+          options: |
+            /DAppVersion=${{ steps.version.outputs.version }}
+            /DIsUpdate=1
       - name: Sign Updater and installer
         shell: powershell
         env:
