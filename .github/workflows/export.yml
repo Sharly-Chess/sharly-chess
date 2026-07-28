@@ -511,9 +511,13 @@ jobs:
           KEY_FILE="$(mktemp)"
           trap 'rm -f "$KEY_FILE"' EXIT
           printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | tr -d '[:space:]' > "$KEY_FILE"
-          # TEMP DIAGNOSTIC (safe: prints no key material). Remove once the key
-          # is confirmed. Sparkle's private key = 88 chars -> 64 bytes; the
-          # public key = 44 chars -> 32 bytes; non-multiple-of-4 = truncated.
+          # TEMP DIAGNOSTIC. od -c spaces the characters out so GitHub's secret
+          # mask doesn't redact them; reveals quotes, newlines, spaces, length.
+          # Key will be rotated afterwards. Remove this block once confirmed.
+          echo "[key-check] raw secret (od -c):"
+          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | od -c
+          echo "[key-check] stripped key file (od -c):"
+          od -c "$KEY_FILE"
           python3 - "$KEY_FILE" <<'PY'
           import base64, sys
           raw = open(sys.argv[1], 'rb').read()
