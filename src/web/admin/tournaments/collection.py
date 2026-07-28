@@ -9,7 +9,7 @@ from web.admin.collection import (
 from web.admin.label import _
 
 
-COLLECTION_SPEC = AdminCollectionSpec(
+COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     key='tournaments',
     components_template='/admin/tournaments/tournament_components.j2',
     reorder_input_name='item',
