@@ -127,8 +127,8 @@ jobs:
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
-            "export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe"
-            "export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
+            export/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe
+            export/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe
 
 
 
@@ -594,10 +594,10 @@ jobs:
           tag_name: ${{ steps.version.outputs.version }}
           name: "Version ${{ steps.version.outputs.version }} (${{ steps.date.outputs.year }}-${{ steps.date.outputs.month }}-${{ steps.date.outputs.day }})"
           draft: true
-          prerelease: contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc')
+          prerelease: ${{ contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc') }}
           files: |
-            "release-files/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe"
-            "release-files/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe"
+            release-files/Sharly Chess Installer ${{ steps.version.outputs.version }}.exe
+            release-files/Sharly Chess Updater ${{ steps.version.outputs.version }}.exe
             release-files/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
             release-files/appcast.xml
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.flatpak
