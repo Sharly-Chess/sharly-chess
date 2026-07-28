@@ -32,7 +32,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
-#if IsUpdate == 1
+#if Int(IsUpdate) == 1
   OutputBaseFilename=Sharly Chess Updater {#AppVersion}
 #else
   OutputBaseFilename=Sharly Chess Installer {#AppVersion}
@@ -56,7 +56,7 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 
 [Tasks]
-#if IsUpdate == 0
+#if Int(IsUpdate) == 0
   Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
   Name: "defenderprogram"; Description: "{cm:DefenderProgram}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
   Name: "defenderdata"; Description: "{cm:DefenderData}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
@@ -70,7 +70,7 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 Source: "dist\sharly-chess-{#AppVersion}\*"; DestDir: "{app}"; Excludes: "\tmp\*"; Flags: ignoreversion recursesubdirs
 
 [Icons]
-#if IsUpdate == 0
+#if Int(IsUpdate) == 0
   Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"
   Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
 #endif
@@ -79,7 +79,7 @@ Source: "dist\sharly-chess-{#AppVersion}\*"; DestDir: "{app}"; Excludes: "\tmp\*
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall
 
 [Registry]
-#if IsUpdate == 0
+#if Int(IsUpdate) == 0
   Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "data_directory"; ValueData: "{code:GetDataDir}"
   Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "locale"; ValueData: "{code:GetActiveLanguage}"
 #endif
@@ -203,7 +203,7 @@ begin
 end;
 
 [Messages]
-#if IsUpdate == 1
+#if Int(IsUpdate) == 1
     en.SetupAppTitle=Update
     fr.SetupAppTitle=Mise à jour
 
