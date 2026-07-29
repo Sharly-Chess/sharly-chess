@@ -239,7 +239,7 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_event_tournaments_tab(
         self,
         request: HTMXRequest,
-        show_details: FromPath[bool | None],
+        show_details: FromQuery[bool | None],
     ) -> Template:
         web_context = TournamentAdminWebContext(request)
         if show_details is not None:

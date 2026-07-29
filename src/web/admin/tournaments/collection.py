@@ -68,7 +68,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
             ListColumn(
                 'tie_break_summary',
                 label=_('Tie-breaks'),
-                width='minmax(14rem, 1.5fr)',
+                width='minmax(auto, max-content)',
             ),
             ListColumn(
                 'actions',

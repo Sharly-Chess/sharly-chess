@@ -2578,7 +2578,7 @@ class PairingsAdminController(BaseEventAdminController):
         request: HTMXRequest,
         tournament_id: FromPath[int],
         round: FromPath[int],
-        index: FromPath[int] = -1,
+        index: FromQuery[int] = -1,
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
