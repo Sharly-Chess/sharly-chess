@@ -204,3 +204,9 @@ msgid_plural "{count} tournament successfully synchronized"
 msgstr[0] ""
 msgstr[1] ""
 
+#~ msgid "Public page of the tournament."
+#~ msgstr ""
+
+#~ msgid "Transfer"
+#~ msgstr ""
+
