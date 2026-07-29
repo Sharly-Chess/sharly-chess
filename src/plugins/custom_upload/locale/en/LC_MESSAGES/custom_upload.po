@@ -103,13 +103,16 @@ msgstr ""
 msgid "No document type is matching input."
 msgstr ""
 
-msgid "No internet connection."
+msgid "No internet connection detected."
 msgstr ""
 
 msgid "Not configured"
 msgstr ""
 
 msgid "Ongoing"
+msgstr ""
+
+msgid "Path does not exist or is inaccessible."
 msgstr ""
 
 msgid "Pending"
@@ -170,5 +173,8 @@ msgid "to be configured"
 msgstr ""
 
 #~ msgid "Custom Upload"
+#~ msgstr ""
+
+#~ msgid "No internet connection."
 #~ msgstr ""
 

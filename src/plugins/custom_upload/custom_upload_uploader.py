@@ -1,4 +1,3 @@
-import socket
 import time
 import urllib
 from datetime import datetime
@@ -109,14 +108,16 @@ class CustomUploadUploader:
             )
 
     @classmethod
-    def test_ftp(cls, ftp_host: str, ftp_username: str, ftp_password: str) -> bool:
+    def test_ftp(
+        cls, ftp_host: str, ftp_username: str, ftp_password: str, target_path: str
+    ) -> None:
         """Connection attempt to the FTP server.
-        Returns True on success, False if the connection doesn't succeed"""
+        Throws ConnectionError exception if the connection doesn't succeed.
+        Throws FileNotFoundError exception if the target path can't be found."""
 
-        logger.info('Testing SSH connection for [%s]...', ftp_host)
-        if auth := cls._ftp_auth(ftp_host, ftp_username, ftp_password):
-            logger.info('SSH connection succeeded.')
-        return auth
+        logger.info('Testing SFTP connection for [%s]...', ftp_host)
+        cls._sftp_auth_check(ftp_host, ftp_username, ftp_password, target_path)
+        logger.info('SFTP connection succeeded.')
 
     @classmethod
     def upload_tournament(
@@ -330,7 +331,7 @@ class CustomUploadUploader:
         Thread(target=_run, daemon=True).start()
 
     @staticmethod
-    def _does_remote_path_exist(sftp_client: SFTPClient, remote_path: str):
+    def _does_remote_path_exist(sftp_client: SFTPClient, remote_path: str) -> bool:
         try:
             sftp_client.stat(remote_path)
         except FileNotFoundError:
@@ -338,18 +339,24 @@ class CustomUploadUploader:
         return True
 
     @staticmethod
-    def _ftp_auth(host: str, username: str, password: str) -> bool:
+    def _sftp_auth_check(
+        host: str, username: str, password: str, target_path: str
+    ) -> None:
         with paramiko.SSHClient() as client:
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
                 client.connect(host, username=username, password=password, timeout=5)
-                return True
+                sftp_client = client.open_sftp()
             except (
                 BadHostKeyException,
                 AuthenticationException,
                 NoValidConnectionsError,
                 SSHException,
-                socket.error,
+                OSError,
                 TimeoutError,
             ):
-                return False
+                raise ConnectionError(f'Cannot connect to {host}')
+            if not CustomUploadUploader._does_remote_path_exist(
+                sftp_client, target_path
+            ):
+                raise FileNotFoundError(f'Remote path not found: {target_path}')

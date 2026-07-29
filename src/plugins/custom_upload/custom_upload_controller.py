@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 from typing import Any, Annotated
 
 from litestar import get, post, patch
@@ -385,23 +386,38 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     async def htmx_custom_upload_test_auth(
         self,
         data: Annotated[
-            dict[str, Any],
+            dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        ftp_host: str | None = WebContext.form_data_to_str(data, 'ftp_host', '')
-        ftp_username: str | None = WebContext.form_data_to_str(data, 'ftp_username', '')
-        ftp_password: str | None = WebContext.form_data_to_str(data, 'ftp_password', '')
+        ftp_host: str = WebContext.form_data_to_str(data, 'ftp_host', '')
+        ftp_username: str = WebContext.form_data_to_str(data, 'ftp_username', '')
+        ftp_password: str = WebContext.form_data_to_str(data, 'ftp_password', '')
+        default_server_path: str = WebContext.form_data_to_str(
+            data, 'default_server_path', '/'
+        )
 
         errors = {}
+        auth_valid = False
+        path_valid = False
         if NetworkMonitor.connected():
-            ftp_auth_valid = False
             if ftp_host and ftp_username:
-                ftp_auth_valid = CustomUploadUploader.test_ftp(
-                    ftp_host, ftp_username, ftp_password or ''
-                )
-            if not ftp_auth_valid:
-                errors['ftp_host'] = _('Failed to connect to server.')
+                try:
+                    CustomUploadUploader.test_ftp(
+                        ftp_host,
+                        ftp_username,
+                        ftp_password or '',
+                        Path(default_server_path).as_posix(),
+                    )
+                    auth_valid = True
+                    path_valid = True
+                except ConnectionError:
+                    errors['ftp_host'] = _('Failed to connect to server.')
+                except FileNotFoundError:
+                    auth_valid = True
+                    errors['default_server_path'] = _(
+                        'Path does not exist or is inaccessible.'
+                    )
         else:
             errors['ftp_host'] = _('No internet connection detected.')
 
@@ -415,7 +431,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     'ftp_password': data['ftp_password'],
                 },
                 'ftp_password_visible': data['ftp_password_visible'] == 'true',
-                'custom_upload_auth_valid': not errors,
+                'custom_upload_auth_valid': auth_valid,
+                'custom_upload_path_valid': path_valid,
                 'errors': errors,
             },
         )
