@@ -50,7 +50,7 @@
                                 {% endfor %}
                             {% endset %}
                             {% if summary_content|trim %}
-                                <div class="collection-card-summary d-flex flex-wrap align-items-center gap-3">
+                                <div class="collection-card-summary d-flex flex-wrap align-items-center gap-3 {{ collection.card.summary_class }}">
                                     {{ summary_content }}
                                 </div>
                             {% endif %}

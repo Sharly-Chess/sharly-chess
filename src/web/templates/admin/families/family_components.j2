@@ -2,9 +2,9 @@
     {%- if not item.screens_by_uniq_id -%}
         collection-status-danger
     {%- elif item.public -%}
-        collection-status-success
+        collection-status-public
     {%- else -%}
-        collection-status-danger
+        collection-status-private
     {%- endif -%}
 {%- endmacro %}
 
