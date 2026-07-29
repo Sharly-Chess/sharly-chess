@@ -43,7 +43,7 @@
             <i class="bi-trophy-fill pe-1"></i>
             {{ prize_count }}
         </div>
-        {% if not prize_category.is_main and not prize_category.criteria %}
+        {% if not prize_category.is_main and not prize_category.criteria and prize_category.ranks_by_final_standing %}
             {% set warning=_('No criteria defined.') %}
         {% elif player_count < prize_count %}
             {% set warning=_('With less players than prizes, some prizes will not be attributed.') %}
@@ -75,6 +75,8 @@
                     {{ _('All the players') }}
                 {% elif prize_category.criteria %}
                     {{ prize_category.criteria_string }}
+                {% elif not prize_category.ranks_by_final_standing %}
+                    {{ _('All the players') }}
                 {% else %}
                     <span class="text-secondary">
                         <i>{{ _('Undefined *** PLURAL') }}</i>
@@ -82,6 +84,12 @@
                 {% endif %}
             </div>
         </div>
+        {% if not prize_category.ranks_by_final_standing %}
+            <div class="d-flex gap-2">
+                <div>{{ _('%(string)s:', string=_('Ranking basis')) }}</div>
+                <div>{{ prize_category.ranking_basis_name }}</div>
+            </div>
+        {% endif %}
         {% if show_details %}
             <div class="d-flex gap-2">
                 <div>{{ _('%(string)s:', string=_('Prizes')) }}</div>

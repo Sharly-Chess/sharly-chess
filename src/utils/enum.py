@@ -21,6 +21,35 @@ class Extension(StrEnum):
     TEMPLATE = 'template'
 
 
+class PrizeCategoryRankingBasis(StrEnum):
+    """How a prize category orders its eligible players before prizes are
+    assigned: by the tournament final standing (points + tie-breaks), by the
+    players' average per-round performance indicator, or by their best
+    single-round performance indicator. Non-standing bases let a category
+    reward performance rather than final position."""
+
+    FINAL_STANDING = 'final_standing'
+    AVERAGE_PERFORMANCE = 'average_performance'
+    BEST_ROUND_PERFORMANCE = 'best_round_performance'
+
+    @property
+    def name(self) -> str:
+        match self:
+            case PrizeCategoryRankingBasis.FINAL_STANDING:
+                return _('By final standing')
+            case PrizeCategoryRankingBasis.AVERAGE_PERFORMANCE:
+                return _('By average performance')
+            case PrizeCategoryRankingBasis.BEST_ROUND_PERFORMANCE:
+                return _('By best single-round performance')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @classmethod
+    def options(cls) -> dict[str, str]:
+        """Value → translated label, for form selects (final standing first)."""
+        return {basis.value: basis.name for basis in cls}
+
+
 class BoardSelectionMode(StrEnum):
     """How a board screen selects and orders its boards: by first/last pairing
     position (fixed boards keep their pairing slot), by first/last board

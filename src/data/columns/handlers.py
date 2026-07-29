@@ -157,20 +157,27 @@ class PlayerColumnHandler:
             ]
         )
 
-    def get_prize_assignment_columns(self) -> list[TournamentPlayerTableColumn]:
-        return self.get_columns(
-            [
-                pt.RankOverallColumn,
-                pt.TitleColumn,
-                pt.NameColumn,
-                pt.RatingColumn,
-                pt.CategoryColumn,
-                pt.GenderColumn,
-                pt.FederationColumn,
-                pt.ClubColumn,
-                pt.PointsColumn,
-            ],
-        )
+    def get_prize_assignment_columns(
+        self,
+        include_average_performance: bool = False,
+        include_best_round_performance: bool = False,
+    ) -> list[TournamentPlayerTableColumn]:
+        column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
+            pt.RankOverallColumn,
+            pt.TitleColumn,
+            pt.NameColumn,
+            pt.RatingColumn,
+            pt.CategoryColumn,
+            pt.GenderColumn,
+            pt.FederationColumn,
+            pt.ClubColumn,
+            pt.PointsColumn,
+        ]
+        if include_average_performance:
+            column_types.append(pt.AveragePerformanceColumn)
+        if include_best_round_performance:
+            column_types.append(pt.BestRoundPerformanceColumn)
+        return self.get_columns(column_types)
 
 
 class BoardColumnHandler:

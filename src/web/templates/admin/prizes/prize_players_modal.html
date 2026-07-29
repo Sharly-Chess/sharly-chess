@@ -58,6 +58,15 @@
                         <th scope="col">
                             {{ _('Pts *** POINTS COLUMN HEADER') }}
                         </th>
+                        {% if admin_prize_category.ranks_by_average_performance %}
+                            <th scope="col">
+                                {{ _('Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER') }}
+                            </th>
+                        {% elif admin_prize_category.ranks_by_best_round_performance %}
+                            <th scope="col">
+                                {{ _('Peak perf. *** PEAK PERFORMANCE COLUMN HEADER') }}
+                            </th>
+                        {% endif %}
                          <th scope="col">
                             {{ _('Prize *** PRIZE COLUMN HEADER') }}
                         </th>
@@ -105,6 +114,14 @@
                             <td class="{{ prize_class }}">
                                 {{ player.points_str }}
                             </td>
+                            {% if not admin_prize_category.ranks_by_final_standing %}
+                                {% set metric = admin_prize_category.ranking_metric(player) %}
+                                <td class="{{ prize_class }}">
+                                    {% if metric is not none %}
+                                        {{ "%+.2f"|format(metric) }}
+                                    {% endif %}
+                                </td>
+                            {% endif %}
                             <td class="{{ prize_class }}">
                                 {% if assigned_prize %}
                                     {{ assigned_prize.name }}

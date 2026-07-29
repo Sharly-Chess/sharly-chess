@@ -79,7 +79,13 @@ from data.print_documents.individual_teams import IndividualTeamType, Individual
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.enum import Result, TitleNorm, PlayerGender, ScoreType
+from utils.enum import (
+    Result,
+    TitleNorm,
+    PlayerGender,
+    ScoreType,
+    PrizeCategoryRankingBasis,
+)
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
 
@@ -489,12 +495,9 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
         results: list[tuple[TournamentPlayer, TournamentPlayer, Result, float]] = []
         for tournament_player in self.tournament.tournament_players:
             pairing = tournament_player.pairings[ranking_round]
-            if pairing.opponent_id and pairing.played:
+            rating_change = tournament_player.round_performance(ranking_round)
+            if pairing.opponent_id and pairing.played and rating_change is not None:
                 opponent = self.tournament.tournament_players_by_id[pairing.opponent_id]
-                expected_score = 1 / (
-                    1 + 10 ** ((opponent.rating - tournament_player.rating) / 400)
-                )
-                rating_change = 20 * (pairing.result.points() - expected_score)
                 results.append(
                     (tournament_player, opponent, pairing.result, rating_change)
                 )
@@ -1741,9 +1744,22 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
+        ranking_bases = {
+            category.ranking_basis
+            for tournament in self.tournaments
+            for prize_group in tournament.sorted_prize_groups
+            for category in prize_group.categories
+        }
         return PlayerColumnHandler(
             self.get_event(), ColumnUsage.PRINT
-        ).get_prize_assignment_columns()
+        ).get_prize_assignment_columns(
+            include_average_performance=(
+                PrizeCategoryRankingBasis.AVERAGE_PERFORMANCE in ranking_bases
+            ),
+            include_best_round_performance=(
+                PrizeCategoryRankingBasis.BEST_ROUND_PERFORMANCE in ranking_bases
+            ),
+        )
 
 
 class PrizeReceiptsPrintDocument(PrintDocument):
