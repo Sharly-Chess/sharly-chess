@@ -126,6 +126,13 @@ class PrizeGroup:
         sorted_tournament_players: list[TournamentPlayer] = list(
             self.tournament.tournament_players_by_rank.values()
         )
+        # Each category orders its eligible players by its own ranking basis
+        # (final standing by default, or a performance metric). Computed once
+        # here as it is queried repeatedly during assignment.
+        sorted_players_by_category_id: dict[int, list[TournamentPlayer]] = {
+            category.id: category.sorted_tournament_players
+            for category in self.categories
+        }
         assigned_prizes: dict[int, AssignedPrize] = {}
         unassigned_prizes: list[AssignedPrize] = []
         removed_from_main_set: set[int] = set()
@@ -193,13 +200,12 @@ class PrizeGroup:
             )
         )
 
-        # Find eligible player for a prize
+        # Find eligible player for a prize, following the category's own
+        # ranking basis (the category player list is already filtered by
+        # criteria and ordered by the ranking basis).
         def find_eligible_tournament_player(prize_: Prize):
-            for tournament_player_ in sorted_tournament_players:
-                if not prize_.prize_category.player_matches_criteria(
-                    tournament_player_
-                ):
-                    continue
+            category_players = sorted_players_by_category_id[prize_.prize_category.id]
+            for tournament_player_ in category_players:
                 current_ = assigned_prizes.get(tournament_player_.id)
                 if not current_ or current_.value < prize_.value:
                     return tournament_player_

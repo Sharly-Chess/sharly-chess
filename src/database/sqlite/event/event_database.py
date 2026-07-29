@@ -2954,6 +2954,7 @@ class EventDatabase(MigrationDatabase):
             sharing_threshold=row['sharing_threshold'],
             is_main=cls.load_bool_from_database_field(row['is_main']),
             index=row['index'],
+            ranking_basis=row['ranking_basis'],
         )
 
     def load_prize_group_stored_prize_categories(
@@ -2989,6 +2990,7 @@ class EventDatabase(MigrationDatabase):
                 'sharing_threshold',
                 'is_main',
                 'index',
+                'ranking_basis',
             ],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
@@ -3007,7 +3009,14 @@ class EventDatabase(MigrationDatabase):
     ):
         fields = self._get_fields_dict(
             stored_prize_category,
-            ['prize_group_id', 'name', 'prize_sharing', 'sharing_threshold', 'is_main'],
+            [
+                'prize_group_id',
+                'name',
+                'prize_sharing',
+                'sharing_threshold',
+                'is_main',
+                'ranking_basis',
+            ],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_prize_category.id is not None

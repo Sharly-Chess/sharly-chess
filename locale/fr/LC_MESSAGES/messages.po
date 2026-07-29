@@ -1155,6 +1155,9 @@ msgstr "Elo moyen : %(rating)d"
 msgid "Average rating: {rating}"
 msgstr "Classement moyen : {rating}"
 
+msgid "Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER"
+msgstr "Perf. moy."
+
 msgid "Avoid pairing by"
 msgstr "Éviter d'apparier par"
 
@@ -1390,6 +1393,12 @@ msgstr "Burkina Faso"
 msgid "Burundi"
 msgstr "Burundi"
 
+msgid "By average performance"
+msgstr "Par performance moyenne"
+
+msgid "By best single-round performance"
+msgstr "Par meilleure performance sur une ronde"
+
 msgid "By board"
 msgstr "Par échiquier"
 
@@ -1406,6 +1415,9 @@ msgstr "Par défaut : %(minutes)d (minutes)"
 
 msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
 msgstr "En effectuant cette opération, vous activez un mode non-sécurisé pour cette ronde, autorisant ainsi d'autres opérations non-sécurisées."
+
+msgid "By final standing"
+msgstr "Par classement final"
 
 msgid "By first / last board number"
 msgstr "Par premier / dernier numéro d'échiquier"
@@ -3531,6 +3543,9 @@ msgstr "Comment les échiquiers affichés par ces écrans sont choisis et ordonn
 msgid "How the boards shown by this set are chosen and ordered."
 msgstr "Comment les échiquiers affichés par cet ensemble sont choisis et ordonnés."
 
+msgid "How the players of this category are ranked before prizes are assigned: by their final standing, or by their performance."
+msgstr "La manière dont les joueur·euses de cette catégorie sont classé·es avant l'attribution des prix : selon leur classement final ou selon leur performance."
+
 msgid "Hungary"
 msgstr "Hongrie"
 
@@ -5516,6 +5531,9 @@ msgstr "Mot de passe :"
 msgid "Payment"
 msgstr "Paiement"
 
+msgid "Peak perf. *** PEAK PERFORMANCE COLUMN HEADER"
+msgstr "Perf. max."
+
 msgid "Penalty"
 msgstr "Pénalité"
 
@@ -6099,6 +6117,9 @@ msgstr "Classement après la ronde %(round)d"
 #, python-brace-format
 msgid "Ranking after round #{round}"
 msgstr "Classement après la ronde {round}"
+
+msgid "Ranking basis"
+msgstr "Critère de classement"
 
 msgid "Ranking before the first round"
 msgstr "Classement avant la première ronde"
@@ -8653,9 +8674,6 @@ msgstr "Voir l'onglet Tournois"
 msgid "View the menu."
 msgstr "Voir le menu."
 
-msgid "Visibility"
-msgstr "Visibilité"
-
 msgid "Visibility:"
 msgstr "Visibilité :"
 
@@ -9619,3 +9637,10 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Notes"
 #~ msgstr "Notes"
+
+#~ msgid "Visibility"
+#~ msgstr "Visibilité"
+
+#~ msgid "Perf. *** PERFORMANCE COLUMN HEADER"
+#~ msgstr "Perf."
+

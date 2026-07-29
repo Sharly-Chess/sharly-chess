@@ -1155,6 +1155,9 @@ msgstr ""
 msgid "Average rating: {rating}"
 msgstr ""
 
+msgid "Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER"
+msgstr "Avg. perf."
+
 msgid "Avoid pairing by"
 msgstr ""
 
@@ -1390,6 +1393,12 @@ msgstr ""
 msgid "Burundi"
 msgstr ""
 
+msgid "By average performance"
+msgstr ""
+
+msgid "By best single-round performance"
+msgstr ""
+
 msgid "By board"
 msgstr ""
 
@@ -1405,6 +1414,9 @@ msgid "By default: %(minutes)d minutes"
 msgstr ""
 
 msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
+msgstr ""
+
+msgid "By final standing"
 msgstr ""
 
 msgid "By first / last board number"
@@ -3531,6 +3543,9 @@ msgstr ""
 msgid "How the boards shown by this set are chosen and ordered."
 msgstr ""
 
+msgid "How the players of this category are ranked before prizes are assigned: by their final standing, or by their performance."
+msgstr ""
+
 msgid "Hungary"
 msgstr ""
 
@@ -5514,6 +5529,9 @@ msgstr ""
 msgid "Payment"
 msgstr ""
 
+msgid "Peak perf. *** PEAK PERFORMANCE COLUMN HEADER"
+msgstr "Peak perf."
+
 msgid "Penalty"
 msgstr ""
 
@@ -6096,6 +6114,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Ranking after round #{round}"
+msgstr ""
+
+msgid "Ranking basis"
 msgstr ""
 
 msgid "Ranking before the first round"
@@ -8651,9 +8672,6 @@ msgstr ""
 msgid "View the menu."
 msgstr ""
 
-msgid "Visibility"
-msgstr ""
-
 msgid "Visibility:"
 msgstr ""
 
@@ -9602,4 +9620,10 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Visibility"
+#~ msgstr ""
+
+#~ msgid "Perf. *** PERFORMANCE COLUMN HEADER"
+#~ msgstr "Perf."
 

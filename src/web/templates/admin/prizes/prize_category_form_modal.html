@@ -85,7 +85,7 @@
                                 ) }}
                             </span>
                             <i
-                                class="bi bi-info-circle-fill"
+                                class="bi bi-info-circle-fill ms-2"
                                 {{ macros.tooltip_attributes(
                                     'info', _('The main category is open to all the players.'), 'top'
                                 ) }}
@@ -114,7 +114,7 @@
                                 ) }}
                             </span>
                             <i
-                                class="bi bi-info-circle-fill"
+                                class="bi bi-info-circle-fill ms-2"
                                 {{ macros.tooltip_attributes(
                                     '',
                                     _(
@@ -157,6 +157,36 @@
                             ) }}
                         </div>
                     </div>
+                    <div
+                        class="col-12"
+                        id="ranking-basis-container"
+                        {% if data['is_main'] == 'on' %}
+                            style="display: none"
+                        {% endif %}
+                    >
+                        {{ admin_macros.select_input(
+                            name='ranking_basis',
+                            label=_('%(string)s:', string=_('Ranking basis')),
+                            tooltip_text=_(
+                                'How the players of this category are ranked before '
+                                'prizes are assigned: by their final standing, or by '
+                                'their performance.'
+                            ),
+                            select_options=ranking_basis_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <script>
+                        (() => {
+                            const isMain = document.getElementById('is-main');
+                            const container = document.getElementById('ranking-basis-container');
+                            const toggle = () => {
+                                container.style.display = isMain.checked ? 'none' : 'block';
+                            };
+                            isMain.addEventListener('change', toggle);
+                            toggle();
+                        })();
+                    </script>
                     {% if not has_non_monetary_prizes %}
                         <script>
                             $('#is-main').on('change', (event) => {

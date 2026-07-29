@@ -49,7 +49,7 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
 )
 from utils import Utils
-from utils.enum import FormAction, PlayerGender
+from utils.enum import FormAction, PlayerGender, PrizeCategoryRankingBasis
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -432,6 +432,14 @@ class PrizeAdminController(BaseEventAdminController):
                 used_names.remove(prize_category.name)
             if name in used_names:
                 errors[field] = _('This name is already used.')
+        field = 'ranking_basis'
+        ranking_basis = WebContext.form_data_to_str(data, field)
+        if ranking_basis:
+            try:
+                PrizeCategoryRankingBasis(ranking_basis)
+            except ValueError:
+                errors[field] = _('Invalid value.')
+                logger.error('Unknown prize category ranking basis [%s]', ranking_basis)
         is_main = WebContext.form_data_to_bool(data, 'is_main')
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
         if not is_main and share_prizes:
@@ -515,6 +523,7 @@ class PrizeAdminController(BaseEventAdminController):
                     'share_prizes': False,
                     'sharing_threshold': '',
                     'prize_sharing': AveragePrizeSharing.static_id(),
+                    'ranking_basis': PrizeCategoryRankingBasis.FINAL_STANDING.value,
                 }
             )
             if action == FormAction.CREATE:
@@ -531,6 +540,7 @@ class PrizeAdminController(BaseEventAdminController):
             'modal': 'prize_category',
             'action': action,
             'prize_sharing_options': prize_sharing_options,
+            'ranking_basis_options': PrizeCategoryRankingBasis.options(),
             'age_category_options': {
                 category.id: category.name
                 for category in event.player_categories
@@ -595,6 +605,12 @@ class PrizeAdminController(BaseEventAdminController):
                 data['prize_sharing'] if share_prizes else NoPrizeSharing.static_id()
             ),
             index=len(prize_group.categories),
+            ranking_basis=(
+                PrizeCategoryRankingBasis.FINAL_STANDING.value
+                if WebContext.form_data_to_bool(data, 'is_main')
+                else WebContext.form_data_to_str(data, 'ranking_basis')
+                or PrizeCategoryRankingBasis.FINAL_STANDING.value
+            ),
         )
         if current_main_category and stored_category.is_main:
             current_stored_category = current_main_category.stored_prize_category
@@ -706,6 +722,12 @@ class PrizeAdminController(BaseEventAdminController):
             WebContext.form_data_to_float(data, 'sharing_threshold')
             if share_prizes
             else None
+        )
+        stored_category.ranking_basis = (
+            PrizeCategoryRankingBasis.FINAL_STANDING.value
+            if stored_category.is_main
+            else WebContext.form_data_to_str(data, 'ranking_basis')
+            or PrizeCategoryRankingBasis.FINAL_STANDING.value
         )
         prize_category.update()
         if not was_main and prize_category.is_main:
@@ -1224,6 +1246,7 @@ class PrizeAdminController(BaseEventAdminController):
                 'is_main': prize_category.is_main,
                 'sharing_threshold': prize_category.sharing_threshold,
                 'share_prizes': share_prizes,
+                'ranking_basis': prize_category.ranking_basis.value,
             }
         )
         if share_prizes:
