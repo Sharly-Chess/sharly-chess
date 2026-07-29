@@ -72,6 +72,56 @@ def test_molter_engine_rejects_more_than_twenty_five_teams() -> None:
     assert '25' in message
 
 
+def test_molter_engine_disables_pairing_when_every_lineup_is_empty() -> None:
+    teams = [
+        SimpleNamespace(
+            id=index,
+            tournament_id=1,
+            pairing_number=index,
+            effective_round_slots=lambda _round: [None] * 4,
+        )
+        for index in range(1, 5)
+    ]
+    tournament = SimpleNamespace(
+        id=1,
+        event=SimpleNamespace(sorted_teams=teams),
+        team_player_count=4,
+        rounds=3,
+        rule_set=None,
+    )
+
+    message = MolterEngine().pairings_generation_disabled_message(tournament, 1)
+
+    assert message == 'Pairings generation disabled if there are no players to pair.'
+
+
+def test_molter_engine_allows_pairing_with_an_incomplete_roster() -> None:
+    teams = [
+        SimpleNamespace(
+            id=index,
+            tournament_id=1,
+            pairing_number=index,
+            effective_round_slots=(
+                (lambda _round: [object(), None, None, None])
+                if index == 1
+                else (lambda _round: [None] * 4)
+            ),
+        )
+        for index in range(1, 5)
+    ]
+    tournament = SimpleNamespace(
+        id=1,
+        event=SimpleNamespace(sorted_teams=teams),
+        team_player_count=4,
+        rounds=3,
+        rule_set=None,
+    )
+
+    message = MolterEngine().pairings_generation_disabled_message(tournament, 1)
+
+    assert message is None
+
+
 def test_all_molter_recipes_replay_and_validate() -> None:
     tables = iter_molter_recipe_tables()
 
