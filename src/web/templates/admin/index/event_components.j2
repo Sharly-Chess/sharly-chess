@@ -101,6 +101,22 @@
     {% endif %}
 {% endmacro %}
 
+{% macro event_type(item, view, placement) %}
+    {% if item.is_team_event %}
+        <span
+            class="text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of teams: %(num)d', num=item.team_count), 'top') }}
+        >
+            <i class="bi-flag-fill pe-1"></i>{{ _('Team') }}
+            <span class="{% if not item.team_count %}text-secondary{% endif %}">({{ item.team_count }})</span>
+        </span>
+    {% else %}
+        <span class="text-secondary text-nowrap">
+            <i class="bi-person-fill pe-1"></i>{{ _('Individual') }}
+        </span>
+    {% endif %}
+{% endmacro %}
+
 {% macro plugin_health(item, view, placement) %}
     {% if client.can_manage_events and item.enabled_plugins %}
         <div class="collection-fact">
