@@ -9623,18 +9623,3 @@ msgstr "— Non assigné·e —"
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
 
-#~ msgid "Needs"
-#~ msgstr "Requis"
-
-#~ msgid "Norm"
-#~ msgstr "Norme"
-
-#~ msgid "Opponent (R{round})"
-#~ msgstr "Adversaire (R{round})"
-
-#~ msgid "Norm(s) Achieved"
-#~ msgstr "Norme(s) réalisée(s)"
-
-#~ msgid "Notes"
-#~ msgstr "Notes"
-
