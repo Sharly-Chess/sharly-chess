@@ -1016,6 +1016,10 @@ body[data-bs-theme="dark"] .htmx-indicator {
     gap: .2rem;
 }
 
+.collection-date-stacked {
+    line-height: 1.15;
+}
+
 .collection-details-button {
     --bs-btn-padding-x: .25rem;
     --bs-btn-padding-y: .1rem;

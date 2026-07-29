@@ -35,14 +35,13 @@ COLLECTION_SPEC = AdminCollectionSpec(
             ListColumn(
                 'identity',
                 label=_('Event'),
-                width='minmax(min-content, 1.4fr)',
+                width='minmax(8rem, 1.4fr)',
             ),
             ListColumn(
                 'date_range',
                 label=_('Dates'),
                 width='minmax(min-content, 1fr)',
             ),
-            ListColumn('visibility', label=_('Visibility')),
             ListColumn(
                 'tournaments_count',
                 label=_('Tournaments'),

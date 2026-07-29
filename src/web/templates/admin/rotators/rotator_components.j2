@@ -62,11 +62,12 @@
                 rotator_id=item.id,
             ),
             'info' if client.can_manage_screens else 'warning',
-            _('Define the screens and multi-screens to display.')
-            if client.can_manage_screens else
-            _('You are not allowed to manage screens.'),
+            '',
             'collection-inline-edit-label-group',
             false,
+            aria_label=_('Define the screens and multi-screens to display.')
+            if client.can_manage_screens else
+            _('You are not allowed to manage screens.'),
         ) %}
             <span class="d-inline-flex align-items-center gap-3">
                 {{ screens_count(item, view, placement) }}
