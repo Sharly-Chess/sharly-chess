@@ -1,5 +1,5 @@
 {% macro item_class(item, view) -%}
-    collection-status-{{ 'success' if item.public else 'danger' }}
+    collection-status-{{ 'public' if item.public else 'private' }}
 {%- endmacro %}
 
 {% macro identity(item, view, placement) %}
@@ -17,9 +17,9 @@
 
 {% macro visibility(item, view, placement) %}
     {% if item.public %}
-        <span class="text-success text-nowrap"><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
+        <span class="text-visibility-public text-nowrap"><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
     {% else %}
-        <span class="text-warning text-nowrap"><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
+        <span class="text-visibility-private text-nowrap"><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
     {% endif %}
 {% endmacro %}
 

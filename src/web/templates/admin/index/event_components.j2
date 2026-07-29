@@ -2,9 +2,9 @@
     {%- if not item.are_all_plugins_enabled -%}
         collection-status-danger
     {%- elif item.public -%}
-        collection-status-success
+        collection-status-public
     {%- else -%}
-        collection-status-danger
+        collection-status-private
     {%- endif -%}
 {%- endmacro %}
 
@@ -66,12 +66,12 @@
     {% if not hide_public_status|default(false) %}
         {% if item.public %}
             <span
-                class="text-success text-nowrap"
+                class="text-visibility-public text-nowrap"
                 {{ macros.tooltip_attributes('info', _('This event is public (by default, screens are visible by the spectators).'), 'top') }}
             ><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
         {% else %}
             <span
-                class="text-danger text-nowrap"
+                class="text-visibility-private text-nowrap"
                 {{ macros.tooltip_attributes('info', _('This event is private (by default, screens are not visible by the spectators).'), 'top') }}
             ><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
         {% endif %}

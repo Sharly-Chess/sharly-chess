@@ -562,6 +562,29 @@ body[data-bs-theme="dark"] .htmx-indicator {
     --collection-status-color: var(--bs-secondary);
 }
 
+/* Single source of truth for the public/private visibility colours, used for
+   status stripes, icons and labels across every card/row. */
+:root {
+    --pw-visibility-public-color: var(--bs-success);
+    --pw-visibility-private-color: var(--bs-warning);
+}
+
+.collection-status-public {
+    --collection-status-color: var(--pw-visibility-public-color);
+}
+
+.collection-status-private {
+    --collection-status-color: var(--pw-visibility-private-color);
+}
+
+.text-visibility-public {
+    color: var(--pw-visibility-public-color) !important;
+}
+
+.text-visibility-private {
+    color: var(--pw-visibility-private-color) !important;
+}
+
 .collection-card-actionable {
     cursor: pointer;
 }
