@@ -796,6 +796,11 @@ body[data-bs-theme="dark"] .htmx-indicator {
     width: 100%;
 }
 
+.collection-list-cell.collection-list-cell-tie_break_summary {
+    min-width: 14rem;
+    min-width: calc-size(max-content, min(14rem, size));
+}
+
 .tournament-tie-break-summary {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
