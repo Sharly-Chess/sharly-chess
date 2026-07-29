@@ -9621,9 +9621,3 @@ msgstr ""
 msgid "← Back to IT1 certificate"
 msgstr ""
 
-#~ msgid "Visibility"
-#~ msgstr ""
-
-#~ msgid "Perf. *** PERFORMANCE COLUMN HEADER"
-#~ msgstr "Perf."
-
