@@ -9637,10 +9637,3 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Notes"
 #~ msgstr "Notes"
-
-#~ msgid "Visibility"
-#~ msgstr "Visibilité"
-
-#~ msgid "Perf. *** PERFORMANCE COLUMN HEADER"
-#~ msgstr "Perf."
-
