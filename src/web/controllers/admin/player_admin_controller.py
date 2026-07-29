@@ -613,7 +613,7 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_event_players_search(
         self,
         request: HTMXRequest,
-        search: FromPath[str | None] = None,
+        search: FromQuery[str | None] = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -659,7 +659,7 @@ class PlayerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         player_id: FromPath[int],
-        close_modal: FromPath[int] = 1,
+        close_modal: FromQuery[int] = 1,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         return self._render_player_table_row(web_context, close_modal=bool(close_modal))
@@ -2556,7 +2556,7 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         data_source_id: FromPath[str],
         tab: FromPath[str],
-        tournament_id: FromPath[int | None] = None,
+        tournament_id: FromQuery[int | None] = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request,

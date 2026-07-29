@@ -5,7 +5,7 @@ from typing import Any, Annotated
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body, FromPath
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXRequest, HTMXTemplate
@@ -230,7 +230,7 @@ class PrizeAdminController(BaseEventAdminController):
         request: HTMXRequest,
         tournament_id: FromPath[int | None],
         prize_group_id: FromPath[int | None],
-        show_details: FromPath[bool | None],
+        show_details: FromQuery[bool | None],
     ) -> Template:
         if show_details is not None:
             SessionPrizesShowDetails(request).set(show_details)
