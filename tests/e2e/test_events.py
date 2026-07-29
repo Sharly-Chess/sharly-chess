@@ -8,6 +8,22 @@ EVENT_ID = 'test-event-e2e'
 
 @pytest.mark.e2e
 class TestEventFunctionality:
+    def test_sce_oauth_callback_accepts_standard_query_parameter_names(
+        self, api_request_context: APIRequestContext
+    ):
+        response = api_request_context.get(
+            '/sce/oauth/callback/import-event',
+            params={
+                'code': 'test-code',
+                'state': 'unknown-state',
+                'event_id': 'test-event-id',
+            },
+            max_redirects=0,
+        )
+
+        assert response.status == 302
+        assert response.headers['location'] == '/'
+
     def test_create_and_delete_event(self, page: Page):
         page.goto('/')
         TestUtils.button_by_text(page, 'Create an event').click()

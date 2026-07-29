@@ -328,8 +328,8 @@ class SCEAdminController(BaseAdminController):
         request: HTMXRequest,
         action: FromPath[str],
         event_uniq_id: FromPath[str | None],
-        state_param: Annotated[FromQuery[str], QueryParameter(name='state')],
-        sce_event_id: Annotated[FromQuery[str], QueryParameter(name='event_id')] = '',
+        state_param: Annotated[str, QueryParameter(name='state')],
+        sce_event_id: Annotated[str, QueryParameter(name='event_id')] = '',
         code: FromQuery[str] = '',
         error: FromQuery[str] = '',
     ) -> Redirect:
