@@ -67,8 +67,15 @@ class WindowsUpdater:
     def run(cls):
         exe = str(cls.exe_path())
         locale = SharlyChessConfig().locale
-        params = ['/SILENT', '/NOCANCEL', f'/LANG={locale}']
+        log_path = TMP_DIR / 'update.log'
+        params = ['/SILENT', '/NOCANCEL', f'/LANG={locale}', f'/LOG="{log_path}"']
         # Type error when not running on windows
         ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
             None, 'runas', exe, ' '.join(params), None, 1
         )
+        # Terminate this process immediately. ShellExecuteW only *launches* the
+        # elevated updater; if we return to the normal shutdown path, the running
+        # executable and its _internal DLLs stay locked long enough that Inno
+        # Setup skips the in-use files (the .exe isn't overwritten). Hard-exiting
+        # releases the locks before the updater reaches its file-copy phase.
+        os._exit(0)
