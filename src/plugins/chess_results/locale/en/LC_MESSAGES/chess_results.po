@@ -125,12 +125,3 @@ msgstr ""
 msgid "tournament finished, upload no longer possible"
 msgstr ""
 
-#~ msgid "Chess-Results"
-#~ msgstr ""
-
-#~ msgid "Transfer"
-#~ msgstr ""
-
-#~ msgid "Tournament number: %(tnr)s"
-#~ msgstr ""
-

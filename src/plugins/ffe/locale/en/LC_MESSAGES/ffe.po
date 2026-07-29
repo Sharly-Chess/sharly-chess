@@ -720,12 +720,3 @@ msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
 
-#~ msgid "Public page of the tournament."
-#~ msgstr ""
-
-#~ msgid "Transfer"
-#~ msgstr ""
-
-#~ msgid "FFE certification number: %(ffe_id)d"
-#~ msgstr ""
-
