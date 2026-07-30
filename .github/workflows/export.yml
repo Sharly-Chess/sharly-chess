@@ -20,11 +20,9 @@ jobs:
     uses: ./.github/workflows/full_tests.yml
 
   export-sharly-chess-windows:
-    # Next job export-sharly-chess-windows needs to run on a Windows self-hosted GitHub runner
-    # for cloud code-signing. If the job doesn't start, it is probably because GitHub did not
-    # find a self-hosted runner with label 'your-github-id'.
-    # In this case, check the labels of your runners.
-    runs-on: ${{ github.actor }}
+    # Code signing is done inline via Azure Trusted Signing (service-principal
+    # auth), so this runs on a standard GitHub-hosted Windows runner.
+    runs-on: windows-latest
     steps:
       # Get the current date to set the title of the release
       - name: Get current date
@@ -96,10 +94,25 @@ jobs:
           echo "Using version: ${VERSION}"
       - name: Build project
         shell: powershell
-        env:
-          WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
         run: |
-          python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}" --windows-signtool-cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+          python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}"
+      # Sign every bundled binary before compiling the installers so they embed
+      # signed files. Runs on the GitHub-hosted runner via Azure Trusted Signing.
+      - name: Sign application binaries (Azure Trusted Signing)
+        uses: azure/trusted-signing-action@v2.0.0
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          trusted-signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.AZURE_SIGNING_PROFILE }}
+          files-folder: dist/sharly-chess-${{ steps.version.outputs.version }}
+          files-folder-filter: dll,exe
+          files-folder-recurse: true
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com/
+          timestamp-digest: SHA256
       - name: Compile Installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
         with:
@@ -115,12 +128,21 @@ jobs:
           options: |
             /DAppVersion=${{ steps.version.outputs.version }}
             /DIsUpdate=1
-      - name: Sign Updater and installer
-        shell: powershell
-        env:
-          WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
-        run: |
-          python scripts/export/windows/signtool.py export/sharly-chess-installer-${{ steps.version.outputs.version }}.exe export/sharly-chess-updater-${{ steps.version.outputs.version }}.exe --cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+      - name: Sign installer and updater (Azure Trusted Signing)
+        uses: azure/trusted-signing-action@v2.0.0
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          trusted-signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ secrets.AZURE_SIGNING_PROFILE }}
+          files-folder: export
+          files-folder-filter: exe
+          files-folder-recurse: false
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com/
+          timestamp-digest: SHA256
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
