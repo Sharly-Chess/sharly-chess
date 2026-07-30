@@ -875,20 +875,19 @@ class SharlyChessServerToga(toga.App):
         searched_at = VersionUpdater.LATEST_VERSION_SEARCHED_AT
         if search_ongoing:
             message = _('Searching for updates...')
-        elif not latest or not searched_at:
+        elif not searched_at:
             message = _('Update search failed (no internet)')
+        elif latest and latest > SHARLY_CHESS_VERSION:
+            message = _('Updates are available!')
+            if self.update_available_box not in self.home_view.children:
+                self.home_view.insert(0, self.update_available_box)
+            if not skip_settings:
+                self.latest_version_label.style.font_weight = 'bold'
+                self.latest_version_btn.text = _('Install')
+                self.latest_version_btn.on_press = self._show_update_dialog
         else:
-            if latest > SHARLY_CHESS_VERSION:
-                message = _('Updates are available!')
-                if self.update_available_box not in self.home_view.children:
-                    self.home_view.insert(0, self.update_available_box)
-                if not skip_settings:
-                    self.latest_version_label.style.font_weight = 'bold'
-                    self.latest_version_btn.text = _('Install')
-                    self.latest_version_btn.on_press = self._show_update_dialog
-            else:
-                message = _('No available update')
-                message += f' ({self._last_search_message(searched_at)})'
+            message = _('No available update')
+            message += f' ({self._last_search_message(searched_at)})'
 
         if not skip_settings:
             self.latest_version_label.text = message

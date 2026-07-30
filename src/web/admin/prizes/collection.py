@@ -8,7 +8,7 @@ from web.admin.collection import (
 from web.admin.label import _
 
 
-COLLECTION_SPEC = AdminCollectionSpec(
+COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     key='prize-categories',
     components_template='/admin/prizes/prize_category_components.j2',
     reorder_input_name='item',

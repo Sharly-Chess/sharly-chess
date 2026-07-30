@@ -8,7 +8,7 @@ from web.admin.collection import (
 from web.admin.label import _
 
 
-COLLECTION_SPEC = AdminCollectionSpec(
+COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     key='timers',
     components_template='/admin/timers/timer_components.j2',
     card=CardLayout(

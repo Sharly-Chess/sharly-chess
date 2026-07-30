@@ -109,9 +109,9 @@ class VersionUpdater:
         """Name of the asset to download in order to install a new version."""
 
         if sys.platform == 'win32':
-            return f'Sharly Chess Updater {version}.exe'
+            return f'sharly-chess-updater-{version}.exe'
         if sys.platform == 'darwin':
-            suffix = 'macos.dmg'
+            suffix = 'mac.dmg'
         else:
             # Detect architecture for Linux
             # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
@@ -132,4 +132,4 @@ class VersionUpdater:
     def get_asset_url(cls, version: Version) -> str:
         base_url = 'https://github.com/Sharly-Chess/sharly-chess/releases/download'
         name = cls.get_asset_name(version)
-        return f'{base_url}/{name}/{version}'
+        return f'{base_url}/{version}/{name}'

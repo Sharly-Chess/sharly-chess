@@ -8,7 +8,7 @@ from web.admin.collection import (
 from web.admin.label import _
 
 
-COLLECTION_SPEC = AdminCollectionSpec(
+COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     key='events',
     components_template='/admin/index/event_components.j2',
     item_id_attribute='uniq_id',

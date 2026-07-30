@@ -205,32 +205,23 @@ class PointsColumn(TournamentPlayerTableColumn):
         return 'fw-bold text-center'
 
 
-class AveragePerformanceColumn(TournamentPlayerTableColumn):
-    @property
-    def header_content(self) -> str:
-        return _('Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER')
-
-    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        performance = tournament_player.average_round_performance
-        return '' if performance is None else f'{performance:+.2f}'
+class PrizeMetricColumn(TournamentPlayerTableColumn):
+    """Value column for the prize assignment document. Shows the metric each
+    category ranks by: points for a final-standing category, average or peak
+    performance for a performance-based one. The header and cell branch on the
+    ``prize_category`` in scope where the column is rendered."""
 
     @property
-    def shared_classes(self) -> str:
-        return 'text-center'
+    def header_template(self) -> str | None:
+        return '/admin/print/cells/prize_metric_header.html'
 
-
-class BestRoundPerformanceColumn(TournamentPlayerTableColumn):
     @property
-    def header_content(self) -> str:
-        return _('Peak perf. *** PEAK PERFORMANCE COLUMN HEADER')
-
-    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        performance = tournament_player.best_round_performance
-        return '' if performance is None else f'{performance:+.2f}'
+    def cell_template(self) -> str | None:
+        return '/admin/print/cells/prize_metric.html'
 
     @property
     def shared_classes(self) -> str:
-        return 'text-center'
+        return 'fw-bold text-center'
 
 
 class AlphaPointsColumn(TournamentPlayerTableColumn):

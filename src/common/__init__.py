@@ -99,6 +99,17 @@ def _default_data_dir() -> Path:
             return Path(documents_path) / 'Sharly Chess'
         case 'darwin':
             return MACOS_SUPPORT_DIR / 'data'
+        case 'linux':
+            # Packaged linux runs always set the data dir explicitly (--path), so
+            # this default is only reached by build tooling that imports this
+            # module; return a sane XDG path so that import doesn't fail.
+            xdg_data_home = os.getenv('XDG_DATA_HOME')
+            base = (
+                Path(xdg_data_home)
+                if xdg_data_home
+                else Path.home() / '.local' / 'share'
+            )
+            return base / 'Sharly Chess'
         case _:
             raise NotImplementedError(f'{sys.platform=}')
 
