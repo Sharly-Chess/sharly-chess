@@ -84,7 +84,6 @@ from utils.enum import (
     TitleNorm,
     PlayerGender,
     ScoreType,
-    PrizeCategoryRankingBasis,
 )
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
@@ -1744,22 +1743,9 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
-        ranking_bases = {
-            category.ranking_basis
-            for tournament in self.tournaments
-            for prize_group in tournament.sorted_prize_groups
-            for category in prize_group.categories
-        }
         return PlayerColumnHandler(
             self.get_event(), ColumnUsage.PRINT
-        ).get_prize_assignment_columns(
-            include_average_performance=(
-                PrizeCategoryRankingBasis.AVERAGE_PERFORMANCE in ranking_bases
-            ),
-            include_best_round_performance=(
-                PrizeCategoryRankingBasis.BEST_ROUND_PERFORMANCE in ranking_bases
-            ),
-        )
+        ).get_prize_assignment_columns()
 
 
 class PrizeReceiptsPrintDocument(PrintDocument):
