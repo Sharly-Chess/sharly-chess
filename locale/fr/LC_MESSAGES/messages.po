@@ -6293,10 +6293,10 @@ msgid "Reset manual tie-break"
 msgstr "Réinitialiser le départage manuel"
 
 msgid "Restart to complete the move"
-msgstr "Redémarrer pour compléter le déplacement"
+msgstr "Redémarrer pour appliquer le déplacement"
 
 msgid "Restarting will be required to complete the move."
-msgstr "Un redémarrage sera requis pour compléter le déplacement."
+msgstr "Un redémarrage sera requis pour appliquer le déplacement."
 
 msgid "Restore"
 msgstr "Restaurer"
