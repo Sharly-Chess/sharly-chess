@@ -1,0 +1,6 @@
+{% if prize_category.ranks_by_final_standing %}
+    {{ tournament_player.points_str }}
+{% else %}
+    {% set metric = prize_category.ranking_metric(tournament_player) %}
+    {% if metric is not none %}{{ '%+.2f'|format(metric) }}{% endif %}
+{% endif %}
