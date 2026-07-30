@@ -4425,9 +4425,6 @@ msgstr ""
 msgid "Mo *** MONDAY"
 msgstr "Mo"
 
-msgid "Modified, restart to apply"
-msgstr ""
-
 msgid "Moldova"
 msgstr ""
 
@@ -4450,6 +4447,9 @@ msgid "Montenegro"
 msgstr ""
 
 msgid "Morocco"
+msgstr ""
+
+msgid "Move"
 msgstr ""
 
 #, python-format
@@ -6290,7 +6290,10 @@ msgstr ""
 msgid "Reset manual tie-break"
 msgstr ""
 
-msgid "Restarting will be required to apply the change."
+msgid "Restart to complete the move"
+msgstr ""
+
+msgid "Restarting will be required to complete the move."
 msgstr ""
 
 msgid "Restore"

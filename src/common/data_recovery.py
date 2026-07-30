@@ -151,7 +151,11 @@ class DataRecovery:
         )
         if not max_previous:
             return
-        min_version = Version(f'{current.major}.{max(current.minor - 2, 0)}.0')
+
+        def get_min_version(major: int, minor: int) -> Version:
+            return Version(f'{major}.{minor}.0.dev0')
+
+        min_version = get_min_version(current.major, max(current.minor - 2, 0))
         if current.minor < 2:
             last_major_minor = next(
                 (
@@ -164,16 +168,15 @@ class DataRecovery:
             if last_major_minor is not None:
                 sup_minor_count = max(2 - current.minor, 0)
                 last_sup_minor = min(last_major_minor - sup_minor_count, 0)
-                min_version = Version(f'{current.major - 1}.{last_sup_minor}.0')
+                min_version = get_min_version(current.major - 1, last_sup_minor)
         if max_previous > min_version:
             min_version = max_previous
 
         for version in versions:
             if version >= min_version:
                 continue
+            shutil.rmtree(cls._get_version_dir(version), ignore_errors=True)
             logger.info('Data of version [%s] removed (no longer supported)', version)
-
-            shutil.rmtree(cls._get_version_dir(version))
 
     @classmethod
     def _recover_version(cls, version: Version) -> bool:
