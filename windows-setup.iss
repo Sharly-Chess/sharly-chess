@@ -67,6 +67,14 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
   Name: "defenderdata"; Description: "{cm:DefenderData}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
 #endif
 
+[InstallDelete]
+; Remove previous *.dist-info before copying the new files. These folders are
+; version-named (e.g. sharly_chess-5.0.0a4.dist-info), and Inno only overwrites
+; same-named files, so stale ones from the old version pile up in _internal and
+; importlib.metadata could then read the wrong version for the app or a
+; dependency. Runs before [Files], which rewrites the current ones.
+Type: filesandordirs; Name: "{app}\_internal\*.dist-info"
+
 [Files]
 #if UseSignTool == "yes"
   Source: "dist\sharly-chess-{#AppVersion}\{#AppExeName}"; Flags: signonce dontcopy
