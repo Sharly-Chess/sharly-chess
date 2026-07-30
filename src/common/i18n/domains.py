@@ -35,22 +35,22 @@ class Domain:
     @classmethod
     @cache
     def get_domains(cls) -> list[Self]:
-        return (
-            [
-                cls(),
-            ]
-            + [
+        domains: list[Self] = [
+            cls(),
+        ]
+        if DEVEL_ENV:
+            domains += [
                 cls(plugin_dir.name)
                 for plugin_dir in PLUGINS_DIR.glob('*')
                 if (plugin_dir / '__init__.py').exists()
             ]
-            if DEVEL_ENV
-            else [
+        else:
+            domains += [
                 cls(plugin_dir.name)
                 for plugin_dir in PLUGINS_DIR.glob('*')
                 if cls._get_domain_locale_dir(plugin_dir.name).is_dir()
             ]
-        )
+        return domains
 
     def locale_lc_messages_dir(
         self,
