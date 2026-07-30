@@ -229,7 +229,7 @@ class PrizeAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         tournament_id: FromPath[int | None],
-        prize_group_id: FromPath[int | None],
+        prize_group_id: FromQuery[int | None],
         show_details: FromQuery[bool | None],
     ) -> Template:
         if show_details is not None:

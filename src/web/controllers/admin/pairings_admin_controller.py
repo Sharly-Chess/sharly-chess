@@ -523,8 +523,8 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_pairings_tab(
         self,
         request: HTMXRequest,
-        tournament_id: FromPath[int | None],
-        round: FromPath[int | None],
+        tournament_id: FromQuery[int | None],
+        round: FromQuery[int | None],
         show_without_results: FromQuery[bool | None] = None,
         board_sort: FromQuery[str | None] = None,
         skip_ratings_warning: FromQuery[bool] = False,
@@ -545,9 +545,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @get(
-        path=[
-            '/event/{event_uniq_id:str}/pairing/{tournament_id:int}/{round:int}/{board_id:int}',
-        ],
+        path='/event/{event_uniq_id:str}/pairing/{tournament_id:int}/{round:int}/{board_id:int}',
         name='admin-event-pairing-modal',
     )
     async def htmx_admin_pairings_modal(
@@ -567,10 +565,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @get(
-        path=[
-            '/event/{event_uniq_id:str}/team-pairing/'
-            '{tournament_id:int}/{round:int}/{team_board_id:int}',
-        ],
+        path='/event/{event_uniq_id:str}/team-pairing/{tournament_id:int}/{round:int}/{team_board_id:int}',
         name='admin-event-team-pairing-modal',
     )
     async def htmx_admin_team_pairings_modal(
@@ -720,9 +715,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @get(
-        path=[
-            '/event/{event_uniq_id:str}/unpaired-modal/{tournament_id:int}/{round:int}/{player_id:int}',
-        ],
+        path='/event/{event_uniq_id:str}/unpaired-modal/{tournament_id:int}/{round:int}/{player_id:int}',
         name='pairings-unpaired-player-modal',
     )
     async def htmx_pairings_unpaired_player_modal(
@@ -1427,10 +1420,7 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @get(
-        path=[
-            '/event/{event_uniq_id:str}/unpaired-team-modal/'
-            '{tournament_id:int}/{round:int}/{team_id:int}',
-        ],
+        path='/event/{event_uniq_id:str}/unpaired-team-modal/{tournament_id:int}/{round:int}/{team_id:int}',
         name='pairings-unpaired-team-modal',
     )
     async def htmx_pairings_unpaired_team_modal(
