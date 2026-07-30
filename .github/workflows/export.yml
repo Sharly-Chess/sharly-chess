@@ -111,7 +111,6 @@ jobs:
           files-folder-filter: dll,exe
           files-folder-recurse: true
           file-digest: SHA256
-          timestamp-rfc3161: http://timestamp.acs.microsoft.com/
           timestamp-digest: SHA256
       - name: Compile Installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
@@ -141,7 +140,6 @@ jobs:
           files-folder-filter: exe
           files-folder-recurse: false
           file-digest: SHA256
-          timestamp-rfc3161: http://timestamp.acs.microsoft.com/
           timestamp-digest: SHA256
 
       - name: Upload artifacts
