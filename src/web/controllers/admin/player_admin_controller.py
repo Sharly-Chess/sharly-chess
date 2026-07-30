@@ -961,10 +961,7 @@ class PlayerAdminController(BaseEventAdminController):
         return stored_player, errors
 
     @post(
-        path=[
-            '/player-modal/from-search/{event_uniq_id:str}/'
-            '{data_source_id:str}/{player_source_id:str}',
-        ],
+        path='/player-modal/from-search/{event_uniq_id:str}/{data_source_id:str}/{player_source_id:str}',
         name='player-modal-from-search',
     )
     async def htmx_player_modal_from_search(

@@ -197,10 +197,7 @@ class AccountAdminController(BaseEventAdminController):
         )
 
     @post(
-        path=[
-            '/account-modal/from-search/{event_uniq_id:str}/'
-            '{data_source_id:str}/{player_source_id:str}',
-        ],
+        path='/account-modal/from-search/{event_uniq_id:str}/{data_source_id:str}/{player_source_id:str}',
         name='account-modal-from-search',
     )
     async def htmx_account_modal_from_search(
