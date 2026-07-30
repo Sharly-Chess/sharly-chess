@@ -205,6 +205,34 @@ class PointsColumn(TournamentPlayerTableColumn):
         return 'fw-bold text-center'
 
 
+class AveragePerformanceColumn(TournamentPlayerTableColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER')
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        performance = tournament_player.average_round_performance
+        return '' if performance is None else f'{performance:+.2f}'
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
+class BestRoundPerformanceColumn(TournamentPlayerTableColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Peak perf. *** PEAK PERFORMANCE COLUMN HEADER')
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        performance = tournament_player.best_round_performance
+        return '' if performance is None else f'{performance:+.2f}'
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
 class AlphaPointsColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:

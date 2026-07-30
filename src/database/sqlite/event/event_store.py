@@ -8,7 +8,7 @@ from typing import Any
 
 
 from common.sharly_chess_config import SharlyChessConfig
-from utils.enum import EventType
+from utils.enum import EventType, PrizeCategoryRankingBasis
 
 
 def set_stored_fields(obj: Any, **fields: Any) -> None:
@@ -66,6 +66,7 @@ class StoredPrizeCategory:
     sharing_threshold: float | None
     is_main: bool
     index: int
+    ranking_basis: str = PrizeCategoryRankingBasis.FINAL_STANDING.value
     stored_prize_criteria: list[StoredPrizeCriterion] = field(
         default_factory=list[StoredPrizeCriterion]
     )

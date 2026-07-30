@@ -2,9 +2,9 @@
     {%- if not item.are_all_plugins_enabled -%}
         collection-status-danger
     {%- elif item.public -%}
-        collection-status-success
+        collection-status-public
     {%- else -%}
-        collection-status-warning
+        collection-status-private
     {%- endif -%}
 {%- endmacro %}
 
@@ -15,8 +15,11 @@
 {% endmacro %}
 
 {% macro identity(item, view, placement) %}
-    <span class="d-inline-flex align-items-center gap-2 min-width-0">
-        <span class="fw-bold {% if view == 'list' %}text-truncate{% else %}collection-card-title{% endif %}">
+    <span class="{% if view == 'list' %}d-flex{% else %}d-inline-flex{% endif %} align-items-center gap-2 min-width-0">
+        {% if view == 'list' and not hide_public_status|default(false) %}
+            {{ macros.visibility_icon('event', item.public, class='flex-shrink-0') }}
+        {% endif %}
+        <span class="fw-bold {% if view == 'list' %}text-truncate min-width-0{% else %}collection-card-title{% endif %}">
             {{ item.name }}
         </span>
         {% if not item.are_all_plugins_enabled %}
@@ -37,10 +40,18 @@
 {% endmacro %}
 
 {% macro date_range(item, view, placement) %}
-    <span class="{% if not item.tournament_count %}fst-italic text-secondary{% endif %} text-nowrap">
-        <i class="bi-calendar-range pe-1 text-secondary"></i>
-        {{ format_date_range(item.start_date, item.stop_date) }}
-        {% if not item.tournament_count %}({{ _('default') }}){% endif %}
+    {% set is_range = view == 'list' and item.stop_date and item.start_date != item.stop_date %}
+    <span class="{% if not item.tournament_count %}fst-italic text-secondary{% endif %} d-inline-flex align-items-center gap-2 text-nowrap {% if is_range %}collection-date-stacked{% endif %}">
+        <i class="bi-calendar-range text-secondary"></i>
+        {% if is_range %}
+            <span class="d-flex flex-column">
+                <span>{{ format_date(item.start_date) }}</span>
+                <span>{{ format_date(item.stop_date) }}</span>
+            </span>
+        {% else %}
+            <span>{{ format_date_range(item.start_date, item.stop_date) }}</span>
+        {% endif %}
+        {% if not item.tournament_count %}<span>({{ _('default') }})</span>{% endif %}
     </span>
 {% endmacro %}
 
@@ -55,12 +66,12 @@
     {% if not hide_public_status|default(false) %}
         {% if item.public %}
             <span
-                class="text-success text-nowrap"
+                class="text-visibility-public text-nowrap"
                 {{ macros.tooltip_attributes('info', _('This event is public (by default, screens are visible by the spectators).'), 'top') }}
             ><i class="bi-eye-fill pe-1"></i>{{ _('Public') }}</span>
         {% else %}
             <span
-                class="text-warning text-nowrap"
+                class="text-visibility-private text-nowrap"
                 {{ macros.tooltip_attributes('info', _('This event is private (by default, screens are not visible by the spectators).'), 'top') }}
             ><i class="bi-eye-slash-fill pe-1"></i>{{ _('Private') }}</span>
         {% endif %}
@@ -86,6 +97,22 @@
             {{ macros.tooltip_attributes('info', _('Number of teams: %(num)d', num=item.team_count), 'top') }}
         >
             <i class="bi-flag-fill pe-1"></i>{{ item.team_count }}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro event_type(item, view, placement) %}
+    {% if item.is_team_event %}
+        <span
+            class="text-nowrap"
+            {{ macros.tooltip_attributes('info', _('Number of teams: %(num)d', num=item.team_count), 'top') }}
+        >
+            <i class="bi-flag-fill pe-1"></i>{{ _('Team') }}
+            <span class="{% if not item.team_count %}text-secondary{% endif %}">({{ item.team_count }})</span>
+        </span>
+    {% else %}
+        <span class="text-secondary text-nowrap">
+            <i class="bi-person-fill pe-1"></i>{{ _('Individual') }}
         </span>
     {% endif %}
 {% endmacro %}

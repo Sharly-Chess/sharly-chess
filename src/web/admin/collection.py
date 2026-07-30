@@ -35,6 +35,7 @@ class ListColumn(ComponentPlacement):
 class CardLayout:
     header: tuple[ComponentPlacement, ...]
     summary: tuple[ComponentPlacement, ...] = ()
+    summary_class: str = ''
     body: tuple[ComponentPlacement, ...] = ()
     details: tuple[ComponentPlacement, ...] = ()
     footer: tuple[ComponentPlacement, ...] = ()

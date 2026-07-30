@@ -438,6 +438,7 @@
 | `sharing_threshold` | `FLOAT`   |                                                           | The threshold for prize sharing                   |
 | `is_main`           | `INTEGER` | NOT NULL<br/>DEFAULT 0                                    | Boolean: whether this is the main prize category  |
 | `index`             | `INTEGER` | NOT NULL                                                  | The ordering index of the category                |
+| `ranking_basis`     | `TEXT`    | NOT NULL<br/>DEFAULT 'final_standing'                     | How players are ranked (final standing or performance) |
 
 ### `prize_criterion` table (prize criteria)
 

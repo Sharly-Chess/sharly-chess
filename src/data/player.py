@@ -1140,6 +1140,43 @@ class TournamentPlayer(Player):
     def has_played_games(self) -> bool:
         return any(pairing.played for pairing in self.pairings.values())
 
+    def round_performance(self, round_index: int) -> float | None:
+        """Single-round performance indicator: the Elo rating change (K=20)
+        for the game played in ``round_index``, based on the opponent's rating
+        and the result. ``None`` when that round was not played against an
+        opponent (unplayed, bye or forfeit)."""
+        pairing = self.pairings.get(round_index)
+        if pairing is None or not pairing.opponent_id or not pairing.played:
+            return None
+        opponent = self.tournament.tournament_players_by_id[pairing.opponent_id]
+        expected_score = 1 / (1 + 10 ** ((opponent.rating - self.rating) / 400))
+        return 20 * (pairing.result.points() - expected_score)
+
+    @property
+    def round_performances(self) -> list[float]:
+        """The per-round performance indicators of every game actually played."""
+        return [
+            performance
+            for round_index in self.pairings
+            if (performance := self.round_performance(round_index)) is not None
+        ]
+
+    @property
+    def average_round_performance(self) -> float | None:
+        """Average of the per-round performance indicators, ``None`` when the
+        player has played no game."""
+        performances = self.round_performances
+        if not performances:
+            return None
+        return sum(performances) / len(performances)
+
+    @property
+    def best_round_performance(self) -> float | None:
+        """Best of the per-round performance indicators, ``None`` when the
+        player has played no game."""
+        performances = self.round_performances
+        return max(performances) if performances else None
+
     @property
     def has_been_paired(self) -> bool:
         """True if the player has ever been placed on a board (a real

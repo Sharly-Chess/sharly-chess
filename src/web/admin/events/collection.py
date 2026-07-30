@@ -15,6 +15,7 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     card_href_component='row_href',
     row_href_component='row_href',
     card=CardLayout(
+        summary_class='justify-content-center',
         header=(ComponentPlacement('identity', 'flex-grow-1 min-width-0'),),
         summary=(
             ComponentPlacement('date_range'),
@@ -35,14 +36,13 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
             ListColumn(
                 'identity',
                 label=_('Event'),
-                width='minmax(min-content, 1.4fr)',
+                width='minmax(8rem, 1.4fr)',
             ),
             ListColumn(
                 'date_range',
                 label=_('Dates'),
                 width='minmax(min-content, 1fr)',
             ),
-            ListColumn('visibility', label=_('Visibility')),
             ListColumn(
                 'tournaments_count',
                 label=_('Tournaments'),
@@ -52,6 +52,12 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
             ListColumn(
                 'players_count',
                 label=_('Players'),
+                header_class='text-center',
+                cell_class='justify-content-center',
+            ),
+            ListColumn(
+                'event_type',
+                label=_('Type'),
                 header_class='text-center',
                 cell_class='justify-content-center',
             ),

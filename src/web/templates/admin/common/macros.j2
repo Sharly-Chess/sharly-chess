@@ -643,8 +643,8 @@ with_indicator: display a loading indicator, optional
                     pw-input-group
                     {% if input_type in ['password', 'search', 'integer-range', 'select-range'] %}input-group{% endif %}
                     {% if default_checkbox %}input-group{% endif %}
-                    {% if input_type == 'switch' %}form-check form-switch d-inline-block{% endif %}
-                    {% if input_type == 'checkbox' %}form-check d-inline-block{% endif %}
+                    {% if input_type == 'switch' %}form-check form-switch d-inline-block me-2{% endif %}
+                    {% if input_type == 'checkbox' %}form-check d-inline-block me-2{% endif %}
                 "
             >
                 {% if input_type == 'select' %}

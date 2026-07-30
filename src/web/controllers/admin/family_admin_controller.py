@@ -4,7 +4,7 @@ from litestar import post, get, patch, delete
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body, FromPath
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -417,7 +417,7 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_event_families_tab(
         self,
         request: HTMXRequest,
-        show_details: FromPath[bool | None],
+        show_details: FromQuery[bool | None],
     ) -> Template:
         if show_details is not None:
             SessionFamiliesShowDetails(request).set(show_details)
