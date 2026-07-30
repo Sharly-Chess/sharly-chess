@@ -4425,9 +4425,6 @@ msgstr "Femmes manquantes"
 msgid "Mo *** MONDAY"
 msgstr "Lu"
 
-msgid "Modified, restart to apply"
-msgstr "Modifié, redémarrer pour appliquer"
-
 msgid "Moldova"
 msgstr "République de Moldova"
 
@@ -4451,6 +4448,9 @@ msgstr "Monténégro"
 
 msgid "Morocco"
 msgstr "Maroc"
+
+msgid "Move"
+msgstr "Déplacer"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -6292,8 +6292,11 @@ msgstr "Réinitialiser le pointage"
 msgid "Reset manual tie-break"
 msgstr "Réinitialiser le départage manuel"
 
-msgid "Restarting will be required to apply the change."
-msgstr "Un redémarrage sera requis pour appliquer le changement."
+msgid "Restart to complete the move"
+msgstr "Redémarrer pour appliquer le déplacement"
+
+msgid "Restarting will be required to complete the move."
+msgstr "Un redémarrage sera requis pour appliquer le déplacement."
 
 msgid "Restore"
 msgstr "Restaurer"
@@ -7409,7 +7412,7 @@ msgid "The data folder could not be added to the Microsoft Defender exception li
 msgstr "Le dossier des données n'a pas pu être ajouté à la liste d'exclusions de Microsoft Defender."
 
 msgid "The data folder has been successfully added to the Microsoft Defender exception list."
-msgstr "Le dossier des données a bien été ajouté à la list d'exclusions de Microsoft Defender."
+msgstr "Le dossier des données a bien été ajouté à la liste d'exclusions de Microsoft Defender."
 
 msgid "The default federation for your events."
 msgstr "La fédération par défaut pour vos évènements."
@@ -9622,19 +9625,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Needs"
-#~ msgstr "Requis"
-
-#~ msgid "Norm"
-#~ msgstr "Norme"
-
-#~ msgid "Opponent (R{round})"
-#~ msgstr "Adversaire (R{round})"
-
-#~ msgid "Norm(s) Achieved"
-#~ msgstr "Norme(s) réalisée(s)"
-
-#~ msgid "Notes"
-#~ msgstr "Notes"
 

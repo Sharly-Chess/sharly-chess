@@ -10,6 +10,7 @@ from packaging.version import Version
 from requests import get
 from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
+from common import SHARLY_CHESS_VERSION
 from common.logger import (
     get_logger,
 )
@@ -102,6 +103,8 @@ class VersionUpdater:
             logger.info('Most recent release found: [%s].', str(version))
             cls.LATEST_VERSION = version
             break
+        if cls.LATEST_VERSION == SHARLY_CHESS_VERSION:
+            logger.info('Version [%s] is up to date.', str(SHARLY_CHESS_VERSION))
         cls.LATEST_VERSION_SEARCHED_AT = datetime.now()
 
     @classmethod
