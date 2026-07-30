@@ -20,6 +20,7 @@ from plugins.custom_upload.utils import (
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
     CustomUploadEventPluginData,
+    TransferProtocol,
 )
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -128,6 +129,12 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             context=web_context.template_context
             | {
                 'data': custom_upload_data.to_form_data(),
+                'transfer_protocol_options': {
+                    WebContext.value_to_form_data(
+                        transfer_protocol.value
+                    ): transfer_protocol.name
+                    for transfer_protocol in TransferProtocol
+                },
                 'errors': {},
             },
             re_target='#modal-wrapper',
@@ -396,6 +403,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         default_server_path: str = WebContext.form_data_to_str(
             data, 'default_server_path', '/'
         )
+        transfer_protocol: TransferProtocol = TransferProtocol(
+            WebContext.form_data_to_str(data, 'transfer_protocol', 'SFTP')
+        )
 
         errors = {}
         auth_valid = False
@@ -408,6 +418,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                         ftp_username,
                         ftp_password or '',
                         Path(default_server_path).as_posix(),
+                        transfer_protocol == TransferProtocol.SFTP,
                     )
                     auth_valid = True
                     path_valid = True
@@ -429,6 +440,13 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     'default_server_path': data['default_server_path'],
                     'ftp_username': data['ftp_username'],
                     'ftp_password': data['ftp_password'],
+                    'transfer_protocol': data['transfer_protocol'],
+                },
+                'transfer_protocol_options': {
+                    WebContext.value_to_form_data(
+                        transfer_protocol.value
+                    ): transfer_protocol.name
+                    for transfer_protocol in TransferProtocol
                 },
                 'ftp_password_visible': data['ftp_password_visible'] == 'true',
                 'custom_upload_auth_valid': auth_valid,

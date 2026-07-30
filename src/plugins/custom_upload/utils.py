@@ -1,6 +1,7 @@
 import json
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import StrEnum
 from typing import Any, Self
 
 from common.i18n import _
@@ -26,6 +27,11 @@ from utils.date_time import format_datetime
 from utils.entity import EntityManager
 from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
+
+
+class TransferProtocol(StrEnum):
+    FTP = 'FTP'
+    SFTP = 'SFTP'
 
 
 class CustomUploadUtils:
@@ -216,6 +222,7 @@ class CustomUploadEventPluginData(PluginData):
     default_server_path: str | None = None
     ftp_username: str | None = None
     ftp_password: str | None = None
+    transfer_protocol: TransferProtocol = TransferProtocol.SFTP
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -224,6 +231,9 @@ class CustomUploadEventPluginData(PluginData):
             default_server_path=stored_value.get('default_server_path', None),
             ftp_username=stored_value.get('ftp_username', None),
             ftp_password=stored_value.get('ftp_password', None),
+            transfer_protocol=TransferProtocol(
+                stored_value.get('transfer_protocol', 'SFTP')
+            ),
         )
 
     @classmethod
@@ -242,6 +252,9 @@ class CustomUploadEventPluginData(PluginData):
             ),
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
+            transfer_protocol=TransferProtocol(
+                WebContext.form_data_to_str(data, 'transfer_protocol') or 'SFTP'
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -250,6 +263,7 @@ class CustomUploadEventPluginData(PluginData):
             'default_server_path': self.default_server_path,
             'ftp_username': self.ftp_username,
             'ftp_password': self.ftp_password,
+            'transfer_protocol': self.transfer_protocol.value,
         }
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
@@ -258,6 +272,7 @@ class CustomUploadEventPluginData(PluginData):
             'default_server_path': self.default_server_path,
             'ftp_username': self.ftp_username,
             'ftp_password': self.ftp_password,
+            'transfer_protocol': self.transfer_protocol.value,
         }
 
         return WebContext.values_dict_to_form_data(form_data)

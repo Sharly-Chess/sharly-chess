@@ -118,6 +118,9 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+msgid "Protocol:"
+msgstr ""
+
 msgid "Remove the document from the upload list."
 msgstr ""
 

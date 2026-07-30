@@ -1,6 +1,8 @@
+import ftplib
 import time
 import urllib
 from datetime import datetime
+from ftplib import error_perm
 from functools import partial
 from io import BytesIO
 from pathlib import Path
@@ -35,6 +37,7 @@ from plugins.custom_upload.utils import (
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
     CustomUploadEventPluginData,
+    TransferProtocol,
 )
 from plugins.utils import PluginUtils
 from utils import Utils
@@ -109,15 +112,25 @@ class CustomUploadUploader:
 
     @classmethod
     def test_ftp(
-        cls, ftp_host: str, ftp_username: str, ftp_password: str, target_path: str
+        cls,
+        ftp_host: str,
+        ftp_username: str,
+        ftp_password: str,
+        target_path: str,
+        is_sftp: bool = True,
     ) -> None:
         """Connection attempt to the FTP server.
         Throws ConnectionError exception if the connection doesn't succeed.
         Throws FileNotFoundError exception if the target path can't be found."""
 
-        logger.info('Testing SFTP connection for [%s]...', ftp_host)
-        cls._sftp_auth_check(ftp_host, ftp_username, ftp_password, target_path)
-        logger.info('SFTP connection succeeded.')
+        logger.info('Testing connection for [%s]...', ftp_host)
+        if is_sftp:
+            logger.info('Connection attempt via SFTP')
+            cls._sftp_auth_check(ftp_host, ftp_username, ftp_password, target_path)
+        else:
+            logger.info('Connection attempt via FTP')
+            cls._ftp_auth_check(ftp_host, ftp_username, ftp_password, target_path)
+        logger.info('Connection succeeded.')
 
     @classmethod
     def upload_tournament(
@@ -162,6 +175,7 @@ class CustomUploadUploader:
 
         logger.info('Uploading tournament [%s]...', tournament.name)
 
+        event_plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
         tournament_plugin_data = CustomUploadUtils.get_tournament_plugin_data(
             tournament
         )
@@ -174,17 +188,88 @@ class CustomUploadUploader:
             logger.exception('Error uploading tournament [%s]', tournament.name)
             return
 
-        with paramiko.SSHClient() as ftp_client:
-            ftp_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-            cls._ftp_upload(
-                CustomUploadUtils.get_event_plugin_data(tournament.event),
+        # TODO: both upload methods are quite similar, common logic should be extracted here
+        if event_plugin_data.transfer_protocol == TransferProtocol.SFTP:
+            cls._sftp_upload(
+                event_plugin_data,
                 tournament_plugin_data,
                 tournament,
                 result_id,
-                ftp_client,
                 temporary_files,
             )
+        else:
+            cls._ftp_upload(
+                event_plugin_data,
+                tournament_plugin_data,
+                tournament,
+                result_id,
+                temporary_files,
+            )
+
+    @classmethod
+    def _sftp_upload(
+        cls,
+        event_plugin_data: CustomUploadEventPluginData,
+        tournament_plugin_data: CustomUploadTournamentPluginData,
+        tournament: Tournament,
+        result_id: str,
+        temporary_files: list[tuple[BytesIO, str]],
+    ):
+        failure_status: Optional[FailureCustomUploadStatus] = None
+
+        host = event_plugin_data.ftp_host
+        username = event_plugin_data.ftp_username
+        password = event_plugin_data.ftp_password
+
+        with paramiko.SSHClient() as ssh_client:
+            ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            try:
+                ssh_client.connect(host, username=username, password=password)
+                sftp_client = ssh_client.open_sftp()
+
+                server_path = tournament_plugin_data.server_path
+                if not server_path:
+                    server_path = event_plugin_data.default_server_path or ''
+
+                target_path = Path('/') / Path(server_path)
+                if not CustomUploadUploader._does_remote_path_exist_sftp(
+                    sftp_client, target_path.as_posix()
+                ):
+                    logger.error(
+                        'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
+                        tournament.name,
+                        target_path,
+                    )
+                    failure_status = TargetLocationNotFoundCustomUploadStatus()
+                    return
+
+                for (
+                    temporary_document_file,
+                    file_name,
+                ) in temporary_files:
+                    sftp_client.putfo(
+                        temporary_document_file,
+                        (target_path / file_name).as_posix(),
+                    )
+                    logger.info('Uploaded document file [%s]', file_name)
+                    temporary_document_file.close()
+            except Exception:
+                logger.exception('Error uploading tournament [%s]', tournament.name)
+                failure_status = UnexpectedFailureCustomUploadStatus()
+            finally:
+                sftp_client.close()
+                cls.ongoing_result_ids.discard(result_id)
+                now = datetime.now()
+                if failure_status:
+                    tournament_plugin_data.upload_failure_id = failure_status.id
+                else:
+                    tournament_plugin_data.upload_failure_id = None
+                    tournament_plugin_data.last_upload_at = now
+                tournament_plugin_data.last_upload_attempt_at = now
+                CustomUploadUtils.update_tournament_plugin_data(
+                    tournament, tournament_plugin_data
+                )
+                cls.publish_upload_event()
 
     @classmethod
     def _ftp_upload(
@@ -193,7 +278,6 @@ class CustomUploadUploader:
         tournament_plugin_data: CustomUploadTournamentPluginData,
         tournament: Tournament,
         result_id: str,
-        ftp_client: paramiko.SSHClient,
         temporary_files: list[tuple[BytesIO, str]],
     ):
         failure_status: Optional[FailureCustomUploadStatus] = None
@@ -203,36 +287,33 @@ class CustomUploadUploader:
         password = event_plugin_data.ftp_password
 
         try:
-            ftp_client.connect(host, username=username, password=password)
-            sftp_client = ftp_client.open_sftp()
+            with ftplib.FTP(host, username, password) as ftp_client:
+                server_path = tournament_plugin_data.server_path
+                if not server_path:
+                    server_path = event_plugin_data.default_server_path or ''
 
-            server_path = tournament_plugin_data.server_path
-            if not server_path:
-                server_path = event_plugin_data.default_server_path or ''
+                target_path = Path('/') / Path(server_path)
+                if not CustomUploadUploader._does_remote_path_exist_ftp(
+                    ftp_client, target_path.as_posix()
+                ):
+                    logger.error(
+                        'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
+                        tournament.name,
+                        target_path,
+                    )
+                    failure_status = TargetLocationNotFoundCustomUploadStatus()
+                    return
 
-            target_path = Path('/') / Path(server_path)
-            if not CustomUploadUploader._does_remote_path_exist(
-                sftp_client, target_path.as_posix()
-            ):
-                logger.error(
-                    'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
-                    tournament.name,
-                    target_path,
-                )
-                failure_status = TargetLocationNotFoundCustomUploadStatus()
-                return
-
-            for (
-                temporary_document_file,
-                file_name,
-            ) in temporary_files:
-                sftp_client.putfo(
+                for (
                     temporary_document_file,
-                    (target_path / file_name).as_posix(),
-                )
-                logger.info('Uploaded document file [%s]', file_name)
-                temporary_document_file.close()
-            sftp_client.close()
+                    file_name,
+                ) in temporary_files:
+                    ftp_client.storbinary(
+                        f'STOR {file_name}',
+                        temporary_document_file,
+                    )
+                    logger.info('Uploaded document file [%s]', file_name)
+                    temporary_document_file.close()
         except Exception:
             logger.exception('Error uploading tournament [%s]', tournament.name)
             failure_status = UnexpectedFailureCustomUploadStatus()
@@ -331,10 +412,18 @@ class CustomUploadUploader:
         Thread(target=_run, daemon=True).start()
 
     @staticmethod
-    def _does_remote_path_exist(sftp_client: SFTPClient, remote_path: str) -> bool:
+    def _does_remote_path_exist_sftp(sftp_client: SFTPClient, remote_path: str) -> bool:
         try:
             sftp_client.stat(remote_path)
         except FileNotFoundError:
+            return False
+        return True
+
+    @staticmethod
+    def _does_remote_path_exist_ftp(ftp_client: ftplib.FTP, remote_path: str) -> bool:
+        try:
+            ftp_client.cwd(remote_path)
+        except error_perm:
             return False
         return True
 
@@ -356,7 +445,24 @@ class CustomUploadUploader:
                 TimeoutError,
             ):
                 raise ConnectionError(f'Cannot connect to {host}')
-            if not CustomUploadUploader._does_remote_path_exist(
+
+            if not CustomUploadUploader._does_remote_path_exist_sftp(
                 sftp_client, target_path
             ):
                 raise FileNotFoundError(f'Remote path not found: {target_path}')
+
+    @staticmethod
+    def _ftp_auth_check(
+        host: str, username: str, password: str, target_path: str
+    ) -> None:
+        # TODO: refactor ugly nesting
+        try:
+            with ftplib.FTP(host, username, password, timeout=5) as ftp_client:
+                if not CustomUploadUploader._does_remote_path_exist_ftp(
+                    ftp_client, target_path
+                ):
+                    raise FileNotFoundError(f'Remote path not found: {target_path}')
+        except FileNotFoundError:
+            raise
+        except OSError:
+            raise ConnectionError(f'Cannot connect to {host}')

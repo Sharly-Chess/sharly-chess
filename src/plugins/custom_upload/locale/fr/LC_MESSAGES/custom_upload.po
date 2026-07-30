@@ -118,6 +118,9 @@ msgstr "Le chemin n'existe pas ou est inaccessible."
 msgid "Pending"
 msgstr "En attente"
 
+msgid "Protocol:"
+msgstr "Protocole :"
+
 msgid "Remove the document from the upload list."
 msgstr "Retirer le document de la liste de mise en ligne."
 
