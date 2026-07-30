@@ -15,7 +15,7 @@
 ; #define IsUpdate 1 ; 1 = update, 0 = install
 ; #define UseSignTool "no" ; yes / no
 
-; CI signs post-compile, so default UseSignTool off unless explicitly defined.
+; Default off for local/dev builds; CI passes /DUseSignTool=yes to sign via Inno.
 #ifndef UseSignTool
   #define UseSignTool "no"
 #endif
@@ -45,6 +45,13 @@ DisableReadyPage=yes
 OutputDir=export
 SetupIconFile={#ImagesDir}\sharly-chess.ico
 SolidCompression=yes
+; When UseSignTool=yes, iscc is called with /Sazuresign=... so Inno signs the
+; setup exe AND the generated uninstaller (unins000.exe) via Azure Trusted
+; Signing — the one thing the external signing action can't reach.
+#if UseSignTool == "yes"
+SignTool=azuresign
+SignedUninstaller=yes
+#endif
 
 ; Wizard style
 WizardBackColor="#313334"

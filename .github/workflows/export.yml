@@ -96,51 +96,39 @@ jobs:
         shell: powershell
         run: |
           python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}"
-      # Sign every bundled binary before compiling the installers so they embed
-      # signed files. Runs on the GitHub-hosted runner via Azure Trusted Signing.
-      - name: Sign application binaries (Azure Trusted Signing)
-        uses: azure/trusted-signing-action@v2.0.0
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: https://weu.codesigning.azure.net/
-          trusted-signing-account-name: sharly-chess-signing
-          certificate-profile-name: SharlyChessProfile
-          files-folder: dist/sharly-chess-${{ steps.version.outputs.version }}
-          files-folder-filter: dll,exe
-          files-folder-recurse: true
-          file-digest: SHA256
-          timestamp-digest: SHA256
+      # Inno must sign the installer/updater AND the generated uninstaller
+      # (unins000.exe) via its own SignTool — the external action can't reach it.
+      # Install Inno + the Trusted Signing dlib and expose the paths azuresign.cmd needs.
+      - name: Install Inno Setup and Trusted Signing tooling
+        shell: pwsh
+        run: |
+          choco install innosetup nuget.commandline --no-progress -y
+          nuget install Microsoft.Trusted.Signing.Client -OutputDirectory "$env:RUNNER_TEMP\ts" -ExcludeVersion
+          $dlib = (Get-ChildItem "$env:RUNNER_TEMP\ts" -Recurse -Filter Azure.CodeSigning.Dlib.dll | Select-Object -First 1).FullName
+          $signtool = (Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe' | Sort-Object FullName -Descending | Select-Object -First 1).FullName
+          $meta = "$env:RUNNER_TEMP\ts-metadata.json"
+          @{ Endpoint = 'https://weu.codesigning.azure.net/'; CodeSigningAccountName = 'sharly-chess-signing'; CertificateProfileName = 'SharlyChessProfile' } | ConvertTo-Json | Set-Content -Path $meta -Encoding utf8
+          "SIGNTOOL=$signtool" | Out-File $env:GITHUB_ENV -Append
+          "TS_DLIB=$dlib"      | Out-File $env:GITHUB_ENV -Append
+          "TS_METADATA=$meta"  | Out-File $env:GITHUB_ENV -Append
+          "ISCC=C:\Program Files (x86)\Inno Setup 6\ISCC.exe" | Out-File $env:GITHUB_ENV -Append
+          Write-Host "signtool=$signtool"; Write-Host "dlib=$dlib"
       - name: Compile Installer
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
-        with:
-          path: windows-setup.iss
-          # Each /D must be on its own line (the action splits options on newlines).
-          options: |
-            /DAppVersion=${{ steps.version.outputs.version }}
-            /DIsUpdate=0
+        shell: pwsh
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: |
+          & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=0 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `"`$f`"" windows-setup.iss
       - name: Compile Updater
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
-        with:
-          path: windows-setup.iss
-          options: |
-            /DAppVersion=${{ steps.version.outputs.version }}
-            /DIsUpdate=1
-      - name: Sign installer and updater (Azure Trusted Signing)
-        uses: azure/trusted-signing-action@v2.0.0
-        with:
-          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: https://weu.codesigning.azure.net/
-          trusted-signing-account-name: sharly-chess-signing
-          certificate-profile-name: SharlyChessProfile
-          files-folder: export
-          files-folder-filter: exe
-          files-folder-recurse: false
-          file-digest: SHA256
-          timestamp-digest: SHA256
+        shell: pwsh
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: |
+          & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=1 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `"`$f`"" windows-setup.iss
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
