@@ -120,7 +120,7 @@ jobs:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         run: |
-          & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=0 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `"`$f`"" windows-setup.iss
+          & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=0 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `$f" windows-setup.iss
       - name: Compile Updater
         shell: pwsh
         env:
@@ -128,7 +128,7 @@ jobs:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         run: |
-          & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=1 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `"`$f`"" windows-setup.iss
+          & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=1 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `$f" windows-setup.iss
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v6
