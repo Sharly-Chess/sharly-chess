@@ -104,9 +104,9 @@ jobs:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          trusted-signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.AZURE_SIGNING_PROFILE }}
+          endpoint: https://weu.codesigning.azure.net/
+          trusted-signing-account-name: sharly-chess-signing
+          certificate-profile-name: SharlyChessProfile
           files-folder: dist/sharly-chess-${{ steps.version.outputs.version }}
           files-folder-filter: dll,exe
           files-folder-recurse: true
@@ -134,9 +134,9 @@ jobs:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
-          trusted-signing-account-name: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
-          certificate-profile-name: ${{ secrets.AZURE_SIGNING_PROFILE }}
+          endpoint: https://weu.codesigning.azure.net/
+          trusted-signing-account-name: sharly-chess-signing
+          certificate-profile-name: SharlyChessProfile
           files-folder: export
           files-folder-filter: exe
           files-folder-recurse: false
