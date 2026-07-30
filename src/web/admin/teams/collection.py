@@ -8,7 +8,7 @@ from web.admin.collection import (
 from web.admin.label import _
 
 
-COLLECTION_SPEC = AdminCollectionSpec(
+COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     key='teams',
     components_template='/admin/teams/team_components.j2',
     card=CardLayout(

@@ -8,7 +8,7 @@ from web.admin.collection import (
 from web.admin.label import _
 
 
-COLLECTION_SPEC = AdminCollectionSpec(
+COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     key='display-controllers',
     components_template=('/admin/display_controllers/display_controller_components.j2'),
     card=CardLayout(
