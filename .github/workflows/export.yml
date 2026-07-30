@@ -103,7 +103,7 @@ jobs:
         shell: pwsh
         run: |
           choco install innosetup nuget.commandline --no-progress -y
-          nuget install Microsoft.Trusted.Signing.Client -OutputDirectory "$env:RUNNER_TEMP\ts" -ExcludeVersion
+          nuget install Microsoft.ArtifactSigning.Client -Version 1.0.128 -OutputDirectory "$env:RUNNER_TEMP\ts" -ExcludeVersion
           $dlib = (Get-ChildItem "$env:RUNNER_TEMP\ts" -Recurse -Filter Azure.CodeSigning.Dlib.dll | Select-Object -First 1).FullName
           $signtool = (Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe' | Sort-Object FullName -Descending | Select-Object -First 1).FullName
           $meta = "$env:RUNNER_TEMP\ts-metadata.json"
