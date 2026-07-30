@@ -12,8 +12,13 @@
 ; These constants are passed as params when compiling the script.
 ; Uncomment in dev to use with Inno Setup Compiler.
 ; #define AppVersion "5.0.0.dev1" ; must match a version installed in /dist
-; #define IsUpdate "yes" ; yes / no
+; #define IsUpdate 1 ; 1 = update, 0 = install
 ; #define UseSignTool "no" ; yes / no
+
+; Default off for local/dev builds; CI passes /DUseSignTool=yes to sign via Inno.
+#ifndef UseSignTool
+  #define UseSignTool "no"
+#endif
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -32,14 +37,21 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 DisableReadyPage=yes
-#if IsUpdate == "yes"
-  OutputBaseFilename=Sharly Chess Updater {#AppVersion}
+#if Int(IsUpdate) == 1
+  OutputBaseFilename=sharly-chess-updater-{#AppVersion}
 #else
-  OutputBaseFilename=Sharly Chess Installer {#AppVersion}
+  OutputBaseFilename=sharly-chess-installer-{#AppVersion}
 #endif
 OutputDir=export
 SetupIconFile={#ImagesDir}\sharly-chess.ico
 SolidCompression=yes
+; When UseSignTool=yes, iscc is called with /Sazuresign=... so Inno signs the
+; setup exe AND the generated uninstaller (unins000.exe) via Azure Trusted
+; Signing — the one thing the external signing action can't reach.
+#if UseSignTool == "yes"
+SignTool=azuresign
+SignedUninstaller=yes
+#endif
 
 ; Wizard style
 WizardBackColor="#313334"
@@ -56,11 +68,19 @@ Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 
 [Tasks]
-#if IsUpdate == "no"
+#if Int(IsUpdate) == 0
   Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"
   Name: "defenderprogram"; Description: "{cm:DefenderProgram}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
   Name: "defenderdata"; Description: "{cm:DefenderData}"; GroupDescription: "{cm:DefenderGroup}"; Check: GetIsDefenderActive()
 #endif
+
+[InstallDelete]
+; Remove previous *.dist-info before copying the new files. These folders are
+; version-named (e.g. sharly_chess-5.0.0a4.dist-info), and Inno only overwrites
+; same-named files, so stale ones from the old version pile up in _internal and
+; importlib.metadata could then read the wrong version for the app or a
+; dependency. Runs before [Files], which rewrites the current ones.
+Type: filesandordirs; Name: "{app}\_internal\*.dist-info"
 
 [Files]
 #if UseSignTool == "yes"
@@ -70,7 +90,7 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 Source: "dist\sharly-chess-{#AppVersion}\*"; DestDir: "{app}"; Excludes: "\tmp\*"; Flags: ignoreversion recursesubdirs
 
 [Icons]
-#if IsUpdate == "no"
+#if Int(IsUpdate) == 0
   Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"
   Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
 #endif
@@ -79,7 +99,7 @@ Source: "dist\sharly-chess-{#AppVersion}\*"; DestDir: "{app}"; Excludes: "\tmp\*
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall
 
 [Registry]
-#if IsUpdate == "no"
+#if Int(IsUpdate) == 0
   Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "data_directory"; ValueData: "{code:GetDataDir}"
   Root: HKCU; Subkey: "{#RegKey}"; ValueType: string; ValueName: "locale"; ValueData: "{code:GetActiveLanguage}"
 #endif
@@ -126,7 +146,7 @@ end;
 
 procedure InitializeWizard;
 begin
-  if ExpandConstant('{#IsUpdate}') = 'no' then
+  if {#IsUpdate} = 0 then
   begin
     InitIsDefenderActive();
     InitDataDir();
@@ -203,7 +223,7 @@ begin
 end;
 
 [Messages]
-#if IsUpdate == "yes"
+#if Int(IsUpdate) == 1
     en.SetupAppTitle=Update
     fr.SetupAppTitle=Mise à jour
 

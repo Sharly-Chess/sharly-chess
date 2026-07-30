@@ -5,7 +5,7 @@ import pytest
 from jinja2 import DictLoader, Environment
 
 from web.admin.collection import (
-    _SPEC_MODULES,
+    _SPECS,
     AdminCollectionSpec,
     AdminCollectionViewMode,
     ComponentPlacement,
@@ -20,15 +20,13 @@ TEMPLATES_ROOT = Path(__file__).parents[2] / 'src' / 'web' / 'templates'
 
 
 def test_collection_specs_are_owned_by_feature_modules() -> None:
-    for key, module_name in _SPEC_MODULES.items():
-        assert module_name.startswith('web.admin.')
-        assert module_name.endswith('.collection')
+    for key in _SPECS:
         spec = get_admin_collection_spec(key)
         assert isinstance(spec, AdminCollectionSpec)
         assert spec.key == key
 
 
-@pytest.mark.parametrize('key', _SPEC_MODULES)
+@pytest.mark.parametrize('key', _SPECS)
 def test_collection_spec_components_exist_in_feature_template(key: str) -> None:
     spec = get_admin_collection_spec(key)
     source = (TEMPLATES_ROOT / spec.components_template.removeprefix('/')).read_text()
@@ -198,7 +196,7 @@ def test_admin_context_applies_collection_plugins_to_a_fresh_spec(
     ) == 1
 
 
-@pytest.mark.parametrize('key', _SPEC_MODULES)
+@pytest.mark.parametrize('key', _SPECS)
 def test_collection_detail_placements_are_additive(key: str) -> None:
     spec = get_admin_collection_spec(key)
     card_core_components = {

@@ -14,8 +14,8 @@ logger = get_logger()
 IS_VERSION = 6
 ISCC_EXE = Path(rf'C:\Program Files (x86)\Inno Setup {IS_VERSION}\ISCC.exe')
 ISS_SCRIPT_FILE = BASE_DIR / 'windows-setup.iss'
-UPDATER_EXE = EXPORT_DIR / f'Sharly Chess Updater {SHARLY_CHESS_VERSION}.exe'
-INSTALLER_EXE = EXPORT_DIR / f'Sharly Chess Installer {SHARLY_CHESS_VERSION}.exe'
+UPDATER_EXE = EXPORT_DIR / f'sharly-chess-updater-{SHARLY_CHESS_VERSION}.exe'
+INSTALLER_EXE = EXPORT_DIR / f'sharly-chess-installer-{SHARLY_CHESS_VERSION}.exe'
 PROJECT_DIR = DIST_DIR / f'sharly-chess-{SHARLY_CHESS_VERSION}'
 
 
@@ -53,7 +53,7 @@ def run_iscc(dst_file: Path, is_update: bool):
         str(ISCC_EXE),
         str(ISS_SCRIPT_FILE),
         f'/DAppVersion={SHARLY_CHESS_VERSION}',
-        f'/DIsUpdate={"yes" if is_update else "no"}',
+        f'/DIsUpdate={1 if is_update else 0}',
         '/DUseSignTool=no',
     ]
     logger.info('Running command [%s]...', ' '.join(cmd))
