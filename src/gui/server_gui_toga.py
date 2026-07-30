@@ -392,7 +392,7 @@ class SharlyChessServerToga(toga.App):
         self.settings_view: Optional[toga.Box] = None
         self.launch_browser_switch: Optional[toga.Switch] = None
         self.data_path_input: Optional[TextInput] = None
-        self.data_path_edit_button: Optional[toga.Button] = None
+        self.data_path_move_button: Optional[toga.Button] = None
         self.check_beta_switch: Optional[toga.Switch] = None
         self.latest_version_label: Optional[toga.Label] = None
         self.latest_version_btn: Optional[toga.Button] = None
@@ -604,10 +604,10 @@ class SharlyChessServerToga(toga.App):
         if MANUAL_PATH_USED:
             self.data_path_input.enabled = False
         else:
-            self.data_path_edit_button = toga.Button(
-                _('Edit'), on_press=self._handle_data_path_selection
+            self.data_path_move_button = toga.Button(
+                _('Move'), on_press=self._handle_data_path_selection
             )
-            data_path_buttons.append(self.data_path_edit_button)
+            data_path_buttons.append(self.data_path_move_button)
         current_version_message = _('Current version: Sharly Chess {version}').format(
             version=SHARLY_CHESS_VERSION
         )
@@ -759,7 +759,7 @@ class SharlyChessServerToga(toga.App):
             _('Data folder'),
             _('Confirm the new data folder "{folder}"?').format(folder=new_data_dir)
             + '\n'
-            + _('Restarting will be required to apply the change.'),
+            + _('Restarting will be required to complete the move.'),
         )
         if not await self.main_window.dialog(confirm_dialog):
             return
@@ -772,14 +772,14 @@ class SharlyChessServerToga(toga.App):
 
         assert self.settings_view is not None
         assert self.data_path_input is not None
-        assert self.data_path_edit_button is not None
+        assert self.data_path_move_button is not None
         self.data_path_input.enabled = False
-        self.data_path_edit_button.enabled = False
+        self.data_path_move_button.enabled = False
         self.settings_view.index(self.data_path_input)
         self.settings_view.insert(
             self.settings_view.index(self.data_path_input) + 2,
             toga.Label(
-                _('Modified, restart to apply'),
+                _('Restart to complete the move'),
                 color='red',
                 font_weight='bold',
                 text_align='center',
