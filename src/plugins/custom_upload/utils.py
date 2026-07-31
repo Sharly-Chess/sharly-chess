@@ -30,8 +30,8 @@ from web.controllers.base_controller import WebContext
 
 
 class TransferProtocol(StrEnum):
-    FTP = 'FTP'
     SFTP = 'SFTP'
+    FTP = 'FTP'
 
 
 class CustomUploadUtils:
