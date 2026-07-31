@@ -121,7 +121,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             web_context.get_admin_event()
         )
         return HTMXTemplate(
-            template_name='custom_upload_event_configuration_modal.html',
+            template_name='custom_upload_configuration_modal.html',
             context=web_context.template_context
             | {
                 'data': custom_upload_data.to_form_data(),
@@ -564,7 +564,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             errors['ftp_host'] = _('No internet connection detected.')
 
         return HTMXTemplate(
-            template_name='custom_upload_tournament_auth_fields.html',
+            template_name='custom_upload_auth_fields.html',
             context=web_context.template_context
             | {
                 'data': {
