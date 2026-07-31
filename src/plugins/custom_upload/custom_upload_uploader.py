@@ -6,7 +6,6 @@ from ftplib import error_perm
 from io import BytesIO
 from pathlib import PurePosixPath
 from threading import Thread, Timer
-from typing import Optional
 
 import paramiko.client
 from paramiko.sftp_client import SFTPClient
@@ -36,7 +35,6 @@ from plugins.custom_upload.custom_upload_status import (
 from plugins.custom_upload.utils import (
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
-    CustomUploadEventPluginData,
     TransferProtocol,
 )
 from utils import Utils
@@ -211,10 +209,26 @@ class CustomUploadUploader:
                 )
                 return
 
+            host = event_plugin_data.ftp_host
+            username = event_plugin_data.ftp_username
+            password = event_plugin_data.ftp_password
+            transfer_protocol = event_plugin_data.transfer_protocol
+            port = event_plugin_data.transfer_port
+
+            server_path = tournament_plugin_data.server_path
+            if not server_path:
+                server_path = event_plugin_data.default_server_path
+
+            target_path = cls.normalize_server_path(server_path)
+
             # TODO: both upload methods are quite similar, common logic should be extracted here
             if event_plugin_data.transfer_protocol == TransferProtocol.SFTP:
                 cls._sftp_upload(
-                    event_plugin_data,
+                    host,
+                    username,
+                    password,
+                    port,
+                    target_path,
                     tournament_plugin_data,
                     tournament,
                     result_id,
@@ -222,7 +236,12 @@ class CustomUploadUploader:
                 )
             else:
                 cls._ftp_upload(
-                    event_plugin_data,
+                    host,
+                    username,
+                    password,
+                    port,
+                    transfer_protocol == TransferProtocol.FTPS,
+                    target_path,
                     tournament_plugin_data,
                     tournament,
                     result_id,
@@ -235,32 +254,29 @@ class CustomUploadUploader:
     @classmethod
     def _sftp_upload(
         cls,
-        event_plugin_data: CustomUploadEventPluginData,
+        host: str,
+        username: str,
+        password: str,
+        port: int,
+        target_path: str,
         tournament_plugin_data: CustomUploadTournamentPluginData,
         tournament: Tournament,
         result_id: str,
         temporary_files: list[tuple[BytesIO, str]],
     ):
-        failure_status: Optional[FailureCustomUploadStatus] = None
-
-        host = event_plugin_data.ftp_host
-        username = event_plugin_data.ftp_username
-        password = event_plugin_data.ftp_password
+        failure_status: FailureCustomUploadStatus | None = None
 
         with paramiko.SSHClient() as ssh_client:
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            sftp_client: Optional[SFTPClient] = None
+            sftp_client: SFTPClient | None = None
             try:
-                ssh_client.connect(host, username=username, password=password)
+                ssh_client.connect(
+                    host, username=username, password=password, port=port
+                )
                 sftp_client = ssh_client.open_sftp()
 
-                server_path = tournament_plugin_data.server_path
-                if not server_path:
-                    server_path = event_plugin_data.default_server_path
-
-                target_path = PurePosixPath(cls.normalize_server_path(server_path))
                 if not CustomUploadUploader._does_remote_path_exist_sftp(
-                    sftp_client, target_path.as_posix()
+                    sftp_client, target_path
                 ):
                     logger.error(
                         'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
@@ -276,7 +292,7 @@ class CustomUploadUploader:
                 ) in temporary_files:
                     sftp_client.putfo(
                         temporary_document_file,
-                        (target_path / file_name).as_posix(),
+                        (PurePosixPath(target_path) / file_name).as_posix(),
                     )
                     logger.info('Uploaded document file [%s]', file_name)
             except AuthenticationException:
@@ -317,33 +333,26 @@ class CustomUploadUploader:
     @classmethod
     def _ftp_upload(
         cls,
-        event_plugin_data: CustomUploadEventPluginData,
+        host: str,
+        username: str,
+        password: str,
+        port: int,
+        tls_enabled: bool,
+        target_path: str,
         tournament_plugin_data: CustomUploadTournamentPluginData,
         tournament: Tournament,
         result_id: str,
         temporary_files: list[tuple[BytesIO, str]],
     ):
-        failure_status: Optional[FailureCustomUploadStatus] = None
-
-        host = event_plugin_data.ftp_host
-        username = event_plugin_data.ftp_username
-        password = event_plugin_data.ftp_password
-        transfer_protocol = event_plugin_data.transfer_protocol
-        port = event_plugin_data.transfer_port
-
         try:
             ftp_client_type: type[ftplib.FTP] = ftplib.FTP
-            if transfer_protocol == TransferProtocol.FTPS:
+            if tls_enabled:
                 ftp_client_type = ftplib.FTP_TLS
 
             with ftp_client_type() as ftp_client:
                 ftp_client.connect(host, port, timeout=5)
                 ftp_client.login(username, password)
-                server_path = tournament_plugin_data.server_path
-                if not server_path:
-                    server_path = event_plugin_data.default_server_path
 
-                target_path = cls.normalize_server_path(server_path)
                 if not CustomUploadUploader._does_remote_path_exist_ftp(
                     ftp_client, target_path
                 ):
