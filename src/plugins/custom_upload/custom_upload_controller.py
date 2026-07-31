@@ -539,7 +539,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         auth_valid = False
         path_valid = False
         if NetworkMonitor.connected():
-            if ftp_host and ftp_username and transfer_port:
+            if ftp_host and ftp_username:
                 try:
                     CustomUploadUploader.test_file_transfer_connection(
                         ftp_host,

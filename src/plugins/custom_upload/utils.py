@@ -31,11 +31,14 @@ from utils.entity import EntityManager
 from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
 
+DEFAULT_FTP_PORT = 21
+DEFAULT_SFTP_PORT = 22
+
 
 class TransferProtocol(StrEnum):
     SFTP = 'SFTP'
-    FTP = 'FTP'
     FTPS = 'FTPS'
+    FTP = 'FTP'
 
     @classmethod
     def parse(cls, value: str | None) -> 'TransferProtocol':
@@ -50,6 +53,18 @@ class TransferProtocol(StrEnum):
             WebContext.value_to_form_data(protocol.value): protocol.name
             for protocol in cls
         }
+
+    @property
+    def name(self) -> str:
+        match self:
+            case TransferProtocol.SFTP:
+                return _('SFTP (FTP over SSH)')
+            case TransferProtocol.FTPS:
+                return _('FTPS (FTP with TLS/SSL)')
+            case TransferProtocol.FTP:
+                return _('FTP (unsecured)')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
 
 
 class CustomUploadUtils:
@@ -173,7 +188,7 @@ class CustomUploadEventPluginData(PluginData):
     ftp_username: str | None = None
     ftp_password: str | None = None
     transfer_protocol: TransferProtocol = TransferProtocol.SFTP
-    transfer_port: int = 22
+    transfer_port: int | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -185,7 +200,7 @@ class CustomUploadEventPluginData(PluginData):
             transfer_protocol=TransferProtocol.parse(
                 stored_value.get('transfer_protocol')
             ),
-            transfer_port=stored_value.get('transfer_port', 22),
+            transfer_port=stored_value.get('transfer_port', None),
         )
 
     @classmethod
@@ -207,7 +222,7 @@ class CustomUploadEventPluginData(PluginData):
             transfer_protocol=TransferProtocol.parse(
                 WebContext.form_data_to_str(data, 'transfer_protocol')
             ),
-            transfer_port=WebContext.form_data_to_int(data, 'transfer_port') or 22,
+            transfer_port=WebContext.form_data_to_int(data, 'transfer_port'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:

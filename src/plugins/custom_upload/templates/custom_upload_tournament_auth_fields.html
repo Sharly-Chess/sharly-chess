@@ -2,7 +2,7 @@
 {% import '/common/macros.j2' as macros with context %}
 
 <div class="auth-fields row gy-2 gx-3">
-    <div class="col-12 col-md-12">
+    <div class="col-12">
         {{ admin_macros.text_input(
             name='ftp_host',
             label=_('Host:'),
@@ -11,13 +11,20 @@
             data=data, errors=errors
         ) }}
     </div>
-    <div class="col-12 col-md-12">
-        {{ admin_macros.text_input(
-            name='default_server_path',
-            label=_('Default server path:'),
-            placeholder=_('E.g.: tournaments'),
-            valid=custom_upload_path_valid,
-            hx_indicator="unset",
+    <div class="col-12 col-md-6">
+        {{ admin_macros.select_input(
+            name='transfer_protocol',
+            label=_('Protocol:'),
+            select_options=transfer_protocol_options,
+            data=data, errors=errors
+        ) }}
+    </div>
+        <div class="col-12 col-md-6">
+        {{ admin_macros.number_input(
+            name='transfer_port',
+            label=_('Port:'),
+            placeholder=_('E.g.: %(num)d', num=22),
+            min=1, max=10000, step=1,
             data=data, errors=errors
         ) }}
     </div>
@@ -39,20 +46,13 @@
             data=data, errors=errors
         ) }}
     </div>
-    <div class="col-12 col-md-6">
-        {{ admin_macros.select_input(
-            name='transfer_protocol',
-            label=_('Protocol:'),
-            select_options=transfer_protocol_options,
-            data=data, errors=errors
-        ) }}
-    </div>
-        <div class="col-12 col-md-6">
-        {{ admin_macros.number_input(
-            name='transfer_port',
-            label=_('Port:'),
-            placeholder=_('E.g.: %(num)d', num=22),
-            min=1, max=10000, step=1,
+    <div class="col-12 col-md-12">
+        {{ admin_macros.text_input(
+            name='default_server_path',
+            label=_('Default server path:'),
+            placeholder=_('E.g.: tournaments'),
+            valid=custom_upload_path_valid,
+            hx_indicator="unset",
             data=data, errors=errors
         ) }}
     </div>

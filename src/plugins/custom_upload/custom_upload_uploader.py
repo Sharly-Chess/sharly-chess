@@ -36,6 +36,8 @@ from plugins.custom_upload.utils import (
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
     TransferProtocol,
+    DEFAULT_SFTP_PORT,
+    DEFAULT_FTP_PORT,
 )
 from utils import Utils
 from web.channels import channels_plugin
@@ -124,7 +126,7 @@ class CustomUploadUploader:
         password: str,
         target_path: str,
         protocol: TransferProtocol,
-        port: int,
+        port: int | None,
     ) -> None:
         """Connection attempt to the FTP/SFTP server.
         Throws ConnectionError exception if the connection doesn't succeed.
@@ -135,13 +137,19 @@ class CustomUploadUploader:
         match protocol:
             case TransferProtocol.SFTP:
                 logger.info('Connection attempt via SFTP.')
-                cls._sftp_auth_check(host, username, password, port, target_path)
+                cls._sftp_auth_check(
+                    host, username, password, port or DEFAULT_SFTP_PORT, target_path
+                )
             case TransferProtocol.FTP:
                 logger.info('Connection attempt via FTP.')
-                cls._ftp_auth_check(host, username, password, port, target_path)
+                cls._ftp_auth_check(
+                    host, username, password, port or DEFAULT_FTP_PORT, target_path
+                )
             case TransferProtocol.FTPS:
                 logger.info('Connection attempt via FTPS.')
-                cls._ftps_auth_check(host, username, password, port, target_path)
+                cls._ftps_auth_check(
+                    host, username, password, port or DEFAULT_FTP_PORT, target_path
+                )
         logger.info('Connection succeeded.')
 
     @classmethod
@@ -230,7 +238,7 @@ class CustomUploadUploader:
                     host,
                     username,
                     password,
-                    port,
+                    port or DEFAULT_SFTP_PORT,
                     target_path,
                     tournament_plugin_data,
                     tournament,
@@ -242,7 +250,7 @@ class CustomUploadUploader:
                     host,
                     username,
                     password,
-                    port,
+                    port or DEFAULT_FTP_PORT,
                     transfer_protocol == TransferProtocol.FTPS,
                     target_path,
                     tournament_plugin_data,
@@ -349,6 +357,7 @@ class CustomUploadUploader:
         temporary_files: list[tuple[BytesIO, str]],
     ):
         failure_status: FailureCustomUploadStatus | None = None
+
         try:
             ftp_client_type: type[ftplib.FTP] = ftplib.FTP
             if tls_enabled:
