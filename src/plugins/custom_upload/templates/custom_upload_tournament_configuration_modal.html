@@ -24,7 +24,7 @@
                     {% if default_server_path %}
                         {% set server_path_placeholder = _('Defaults to:') ~ ' ' ~ default_server_path %}
                     {% else %}
-                        {% set server_path_placeholder = _('E.g.: tournaments/my_tournament') %}
+                        {% set server_path_placeholder = _('E.g.: tournaments/my_tournament (optional)') %}
                     {% endif %}
                     {{ admin_macros.text_input(
                         name='server_path',

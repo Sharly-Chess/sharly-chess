@@ -55,7 +55,7 @@ msgstr ""
 msgid "E.g.: pairings_myTournament_round_1"
 msgstr ""
 
-msgid "E.g.: tournaments/my_tournament"
+msgid "E.g.: tournaments/my_tournament (optional)"
 msgstr ""
 
 msgid "Edit configuration"

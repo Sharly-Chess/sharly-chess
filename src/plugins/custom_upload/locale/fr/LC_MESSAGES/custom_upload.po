@@ -55,8 +55,8 @@ msgstr "Exemple : mon_nom (obligatoire)"
 msgid "E.g.: pairings_myTournament_round_1"
 msgstr "Exemple : appariements_monTournoi_ronde_1"
 
-msgid "E.g.: tournaments/my_tournament"
-msgstr "Exemple : tournois/mon_tournoi"
+msgid "E.g.: tournaments/my_tournament (optional)"
+msgstr "Exemple : tournois/mon_tournoi (facultatif)"
 
 msgid "Edit configuration"
 msgstr "Modifier la configuration"
