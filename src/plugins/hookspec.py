@@ -359,14 +359,14 @@ class AppHookSpecs:
     @hookspec
     def get_prohibited_pairing_dimensions(
         self,
-    ) -> "list['ProhibitedPairingDimension']":
+    ) -> list['ProhibitedPairingDimension']:
         """Extra prohibited-pairing grouping dimensions a plugin
         contributes (e.g. a federation "ligue", a school). Each buckets
         a tournament's members so that members sharing a key must not be
         paired. Core already ships club / federation / team-group."""
 
     @hookspec
-    def get_team_affiliation_sources(self) -> "list['TeamAffiliationSource']":
+    def get_team_affiliation_sources(self) -> list['TeamAffiliationSource']:
         """Extra ways to derive a team's affiliation from its players (e.g. a
         federation league, a school), offered by the teams tab's
         "fill affiliations" action. Each resolves a team to an affiliation
@@ -375,7 +375,7 @@ class AppHookSpecs:
     @hookspec
     def get_round_prohibited_pairing_groups(
         self, tournament: 'Tournament', round_: int
-    ) -> "list['RoundProhibitedPairingGroup']":
+    ) -> list['RoundProhibitedPairingGroup']:
         """Prohibited-pairing groups a plugin contributes *dynamically* for a
         specific ``round_`` — typically computed from results so far (a static
         affiliation dimension can't express them). Each is a
