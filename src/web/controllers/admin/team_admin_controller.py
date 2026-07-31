@@ -1710,18 +1710,15 @@ class TeamAdminController(BaseEventAdminController):
         tournament_changed = team.stored_team.tournament_id != stored_team.tournament_id
         # The team leaves this tournament when it changes — renumber what's left.
         old_tournament = team.tournament if tournament_changed else None
-        # A team moving tournaments takes a fresh pairing number on the new side
-        # (its old one belongs to the old tournament and could collide).
-        if tournament_changed:
-            team.stored_team.pairing_number = None
         team.stored_team.name = stored_team.name
-        team.stored_team.tournament_id = stored_team.tournament_id
         team.stored_team.group_id = stored_team.group_id
         team.stored_team.captain_id = stored_team.captain_id
         team.stored_team.captain_name = stored_team.captain_name
         team.stored_team.federation = stored_team.federation
         event = web_context.get_admin_event()
         with EventDatabase(event.uniq_id, True) as database:
+            if tournament_changed:
+                team.set_tournament(stored_team.tournament_id, database)
             team.update(database)
         event.clear_team_cache()
         for tournament in event.tournaments:
