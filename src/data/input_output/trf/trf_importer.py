@@ -864,9 +864,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                     or pairing.result != Result.PAIRING_ALLOCATED_BYE.value
                 ):
                     continue
-                team_id = team_id_by_player_id.get(player_id)
-                if team_id is not None and team_id not in teams_in_real_match:
-                    pab_board_ids_by_team[team_id].add(board.id)
+                pab_team_id = team_id_by_player_id.get(player_id)
+                if pab_team_id is not None and pab_team_id not in teams_in_real_match:
+                    pab_board_ids_by_team[pab_team_id].add(board.id)
 
             # Lone (team, None) envelopes for this round:
             # * 320 record → engine PAB (single team per round).
