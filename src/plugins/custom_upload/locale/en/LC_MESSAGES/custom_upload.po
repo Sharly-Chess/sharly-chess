@@ -97,7 +97,7 @@ msgstr ""
 msgid "Filename on server:"
 msgstr ""
 
-msgid "Host and FTP username are required"
+msgid "Host and FTP username are required."
 msgstr ""
 
 msgid "Host:"
