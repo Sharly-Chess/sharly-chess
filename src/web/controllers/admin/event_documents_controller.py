@@ -341,7 +341,7 @@ class EventDocumentsController(BaseEventAdminController):
         event: Event,
         client: Client,
         flat_data: dict[str, str],
-    ) -> tuple[str | None, str, dict[str, str]]:
+    ) -> tuple[str | None, str, str, dict[str, str]]:
         """From picker form data, build ``(document_id, options_string, errors)``.
 
         The chosen document and its options are validated; ``options_string`` uses
@@ -355,7 +355,7 @@ class EventDocumentsController(BaseEventAdminController):
             document_type = PrintDocumentManager(event).get_type(document_id)
         except KeyError:
             errors['document'] = _('Please choose the document.')
-            return None, '', errors
+            return None, '', '', errors
 
         options: list[PrintOption] = []
         for option in document_type(client).default_options():
@@ -366,14 +366,19 @@ class EventDocumentsController(BaseEventAdminController):
             document.validate_options()
         except OptionError as error:
             errors[error.option.id] = str(error)
-            return document_id, '', errors
+            return document_id, '', '', errors
 
         options_string = '|'.join(
             f'{option.id}={flat_data[option.id]}'
             for option in document.default_options()
             if option.id in flat_data
         )
-        return document_id, options_string, errors
+
+        target_filename = (
+            WebContext.form_data_to_str(flat_data, 'target_filename') or ''
+        )
+
+        return document_id, options_string, target_filename, errors
 
     @classmethod
     def document_view(

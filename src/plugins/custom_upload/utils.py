@@ -157,10 +157,13 @@ class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus])
 @dataclass
 class ConfiguredDocument:
     """A document configured for upload: a print-document id and the
-    `id=value|id=value` options string consumed by the document-view endpoint."""
+    `id=value|id=value` options string consumed by the document-view endpoint.
+    target_filename is the selected name for the document on the server,
+    defaults to concatenation of document id and options."""
 
     document_id: str
     options: str = ''
+    target_filename: str = ''
 
 
 @dataclass
@@ -259,6 +262,7 @@ class CustomUploadTournamentPluginData(PluginData):
                 ConfiguredDocument(
                     document_id=document['document_id'],
                     options=document.get('options', ''),
+                    target_filename=document.get('target_filename', ''),
                 )
                 for document in stored_value.get('documents', [])
             ],
@@ -275,7 +279,11 @@ class CustomUploadTournamentPluginData(PluginData):
             ),
             'upload_failure_id': self.upload_failure_id,
             'documents': [
-                {'document_id': document.document_id, 'options': document.options}
+                {
+                    'document_id': document.document_id,
+                    'options': document.options,
+                    'target_filename': document.target_filename,
+                }
                 for document in self.documents
             ],
         }
@@ -300,6 +308,7 @@ class CustomUploadTournamentPluginData(PluginData):
                 ConfiguredDocument(
                     document_id=document_id,
                     options=data.get(f'document_{index}_options') or '',
+                    target_filename=data.get(f'document_{index}_target_filename') or '',
                 )
             )
         return documents
@@ -336,5 +345,6 @@ class CustomUploadTournamentPluginData(PluginData):
         for index, document in enumerate(self.documents):
             form_data[f'document_{index}_id'] = document.document_id
             form_data[f'document_{index}_options'] = document.options
+            form_data[f'document_{index}_target_filename'] = document.target_filename
 
         return WebContext.values_dict_to_form_data(form_data)

@@ -161,6 +161,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     'document_id': configured_document.document_id,
                     'options': configured_document.options,
                     'name': name,
+                    'target_filename': configured_document.target_filename,
                 }
             )
         return web_context.template_context | {
@@ -297,9 +298,10 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 web_context, tournament_plugin_data
             )
         document = tournament_plugin_data.documents[document_index]
-        picker_data = {'document': document.document_id} | self._options_to_form_data(
-            document.options
-        )
+        picker_data = {
+            'document': document.document_id,
+            'target_filename': document.target_filename,
+        } | self._options_to_form_data(document.options)
         return self._render_document_picker(
             web_context,
             tournament_plugin_data,
@@ -329,7 +331,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         )
         edit_index_raw = flat_data.get('edit_index')
         edit_index = int(edit_index_raw) if edit_index_raw else None
-        document_id, options_string, errors = (
+        document_id, options_string, target_filename, errors = (
             EventDocumentsController.build_document_options(
                 event, web_context.client, flat_data
             )
@@ -342,7 +344,11 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 errors=errors,
                 edit_index=edit_index,
             )
-        document = ConfiguredDocument(document_id=document_id, options=options_string)
+        document = ConfiguredDocument(
+            document_id=document_id,
+            options=options_string,
+            target_filename=target_filename,
+        )
         if edit_index is not None and 0 <= edit_index < len(
             tournament_plugin_data.documents
         ):

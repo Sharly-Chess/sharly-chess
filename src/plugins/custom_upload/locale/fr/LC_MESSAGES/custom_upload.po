@@ -50,6 +50,9 @@ msgstr "Exemple : mon_mot_de_passe"
 msgid "E.g.: my_username"
 msgstr "Exemple : mon_identifiant"
 
+msgid "E.g.: pairings_myTournament_round_1"
+msgstr "Exemple : appariements_monTournoi_ronde_1"
+
 msgid "E.g.: tournaments"
 msgstr "Exemple : tournois"
 
@@ -85,6 +88,9 @@ msgstr "Échec de la connexion au serveur distant."
 
 msgid "Failure"
 msgstr "Échec"
+
+msgid "Filename on server:"
+msgstr "Nom du fichier sur le serveur :"
 
 msgid "Host and FTP username are required"
 msgstr "Hôte et identifiant FTP sont requis"

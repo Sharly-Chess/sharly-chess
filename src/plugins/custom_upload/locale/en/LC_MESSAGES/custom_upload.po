@@ -50,6 +50,9 @@ msgstr ""
 msgid "E.g.: my_username"
 msgstr ""
 
+msgid "E.g.: pairings_myTournament_round_1"
+msgstr ""
+
 msgid "E.g.: tournaments"
 msgstr ""
 
@@ -84,6 +87,9 @@ msgid "Failed to connect to server."
 msgstr ""
 
 msgid "Failure"
+msgstr ""
+
+msgid "Filename on server:"
 msgstr ""
 
 msgid "Host and FTP username are required"

@@ -54,6 +54,8 @@
                     {% for document in documents_display %}
                         <input type="hidden" name="document_{{ document.index }}_id" value="{{ document.document_id }}">
                         <input type="hidden" name="document_{{ document.index }}_options" value="{{ document.options }}">
+                        <input type="hidden" name="document_{{ document.index }}_target_filename"
+                               value="{{ document.target_filename }}">
                         <div class="border border-secondary bg-body-tertiary">
                             <div class="p-2 d-flex align-items-center gap-4">
                                 <div class="text-start flex-grow-1">

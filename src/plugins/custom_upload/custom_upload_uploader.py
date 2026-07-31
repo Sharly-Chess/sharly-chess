@@ -421,14 +421,20 @@ class CustomUploadUploader:
                 document_htmx_template.template_name, document_htmx_template.context
             )
             temporary_document_file = BytesIO(html_content.encode())
-            options_suffix = re.sub(
-                r'[^A-Za-z0-9]+', '_', configured_document.options
-            ).strip('_')
-            file_name = (
-                f'{"_".join(event.name.split())}_{configured_document.document_id}'
-            )
-            if options_suffix:
-                file_name += f'_{options_suffix}'
+
+            normalized_filename = configured_document.target_filename.strip()
+            file_name: str
+            if normalized_filename:
+                file_name = normalized_filename
+            else:
+                options_suffix = re.sub(
+                    r'[^A-Za-z0-9]+', '_', configured_document.options
+                ).strip('_')
+                file_name = (
+                    f'{"_".join(event.name.split())}_{configured_document.document_id}'
+                )
+                if options_suffix:
+                    file_name += f'_{options_suffix}'
             file_name += '.html'
             temporary_files_with_name.append((temporary_document_file, file_name))
         return temporary_files_with_name

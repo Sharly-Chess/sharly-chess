@@ -29,6 +29,17 @@
                     <input type="hidden" name="edit_index" value="{{ edit_index }}">
                 {% endif %}
 
+                <div class="row gy-2 gx-3 mb-2">
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                        name='target_filename',
+                        label=_('Filename on server:'),
+                        placeholder=_('E.g.: pairings_myTournament_round_1'),
+                        data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+
                 {% include '/admin/event/_document_picker_fields.html' %}
             </form>
         </div>
