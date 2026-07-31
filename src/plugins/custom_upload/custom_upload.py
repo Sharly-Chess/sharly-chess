@@ -14,11 +14,17 @@ from plugins.custom_upload.utils import (
     CustomUploadEventPluginData,
 )
 from plugins.hookspec import hookimpl
-from plugins.utils import Plugin, NavDataTransferItem, PluginData
+from plugins.utils import (
+    Plugin,
+    NavDataTransferItem,
+    PluginData,
+    TournamentConnectionField,
+)
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.tournament import Tournament
 
 
 class CustomUploadPlugin(Plugin):
@@ -74,6 +80,17 @@ class CustomUploadPlugin(Plugin):
     @hookimpl
     def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, CustomUploadTournamentPluginData
+
+    @hookimpl
+    def get_tournament_connection_field(
+        self, tournament: 'Tournament'
+    ) -> TournamentConnectionField | None:
+        if not CustomUploadUtils.get_tournament_plugin_data(tournament).documents:
+            return None
+        return TournamentConnectionField(
+            label=_('Custom location'),
+            template='/custom_upload_tournament_connection_value.html',
+        )
 
     # ---------------------------------------------------------------------------------
     # Upload

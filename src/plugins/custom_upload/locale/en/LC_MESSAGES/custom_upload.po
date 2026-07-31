@@ -178,6 +178,9 @@ msgstr ""
 msgid "to be configured"
 msgstr ""
 
+msgid "To be configured"
+msgstr ""
+
 #~ msgid "Custom Upload"
 #~ msgstr ""
 

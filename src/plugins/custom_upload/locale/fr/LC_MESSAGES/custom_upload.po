@@ -178,6 +178,9 @@ msgstr "le chemin sur le serveur n'a pas pu être trouvé"
 msgid "to be configured"
 msgstr "à configurer"
 
+msgid "To be configured"
+msgstr "À configurer"
+
 #~ msgid "Custom Upload"
 #~ msgstr "Mise en ligne personnalisée"
 

@@ -1,0 +1,3 @@
+{% set event_data = custom_upload_utils.get_event_plugin_data(tournament.event) %}
+{% set tournament_data = custom_upload_utils.get_tournament_plugin_data(tournament) %}
+<span class="text-nowrap">{{ tournament_data.server_path or event_data.default_server_path }}</span>
