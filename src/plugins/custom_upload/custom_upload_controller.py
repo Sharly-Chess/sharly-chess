@@ -172,6 +172,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             'data': tournament_plugin_data.to_form_data(),
             'documents_display': documents_display,
             'no_documents': not tournament_plugin_data.documents,
+            'default_server_path': CustomUploadUtils.get_event_plugin_data(
+                event
+            ).default_server_path,
             'errors': errors or {},
         }
 
@@ -240,16 +243,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        event_custom_upload_data = CustomUploadUtils.get_event_plugin_data(
-            tournament.event
-        )
         tournament_custom_upload_data = CustomUploadUtils.get_tournament_plugin_data(
             tournament
         )
-        if tournament_custom_upload_data.server_path is None:
-            tournament_custom_upload_data.server_path = (
-                event_custom_upload_data.default_server_path
-            )
         return self._render_tournament_config_modal(
             web_context, tournament_custom_upload_data
         )

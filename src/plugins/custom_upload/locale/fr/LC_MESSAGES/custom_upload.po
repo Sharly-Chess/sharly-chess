@@ -40,6 +40,9 @@ msgstr "Exemple : tournois"
 msgid "E.g.: tournaments/my_tournament"
 msgstr "Exemple : tournois/mon_tournoi"
 
+msgid "Defaults to:"
+msgstr "Par défaut :"
+
 msgid "E.g.: ftp.example.com"
 msgstr "Exemple : ftp.exemple.com"
 

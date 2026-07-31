@@ -21,10 +21,15 @@
                 hx-indicator="#please-wait"
             >
                 <div>
+                    {% if default_server_path %}
+                        {% set server_path_placeholder = _('Defaults to:') ~ ' ' ~ default_server_path %}
+                    {% else %}
+                        {% set server_path_placeholder = _('E.g.: tournaments/my_tournament') %}
+                    {% endif %}
                     {{ admin_macros.text_input(
                         name='server_path',
                         label=_('Server path:'),
-                        placeholder=_('E.g.: tournaments/my_tournament'),
+                        placeholder=server_path_placeholder,
                         hx_indicator="unset",
                         data=data, errors=errors
                     ) }}
