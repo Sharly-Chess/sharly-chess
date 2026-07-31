@@ -574,19 +574,49 @@ jobs:
           DMG_PATH="export/sharly-chess-${VERSION}-mac.dmg"
           SUBMISSION_ID="$(cat export/notary-submission-id.txt)"
           echo "Awaiting submission $SUBMISSION_ID ..."
-          # Blocks until Apple reaches a terminal state; bounded by timeout-minutes.
-          xcrun notarytool wait "$SUBMISSION_ID" \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-            --team-id "$APPLE_TEAM_ID"
-          # wait exits 0 once terminal; confirm it was actually Accepted.
-          STATUS=$(xcrun notarytool info "$SUBMISSION_ID" \
-            --apple-id "$APPLE_ID" \
-            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-            --team-id "$APPLE_TEAM_ID" 2>&1 | grep -i "status:" | head -1 | awk -F': *' '{print $2}')
-          echo "Notary status: $STATUS"
+          # Poll instead of a single `notarytool wait`: a long-lived wait dies on
+          # any transient network/API blip and fails the step even though Apple is
+          # still processing. Polling `info` lets us swallow those blips and only
+          # give up when Apple returns a terminal state or the job budget runs out.
+          # Leave margin under timeout-minutes so a re-run is triggered cleanly
+          # rather than the runner being hard-killed mid-poll.
+          DEADLINE=$(( $(date +%s) + 330 * 60 ))
+          POLL_INTERVAL=60
+          consecutive_errors=0
+          STATUS=""
+          while :; do
+            INFO=$(xcrun notarytool info "$SUBMISSION_ID" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID" 2>&1) || INFO=""
+            STATUS=$(printf '%s' "$INFO" | grep -i "status:" | head -1 | awk -F': *' '{print $2}')
+            echo "Notary status: ${STATUS:-<transient error>}"
+            case "$STATUS" in
+              Accepted) break ;;
+              Invalid|Rejected) break ;;
+              *)
+                # Empty status = transient error (network/auth blip). Tolerate a
+                # run of them, but bail if Apple keeps failing us so a re-run starts.
+                if [ -z "$STATUS" ]; then
+                  consecutive_errors=$((consecutive_errors + 1))
+                  echo "$INFO"
+                  if [ "$consecutive_errors" -ge 10 ]; then
+                    echo "Error: 10 consecutive notarytool failures. Re-run this job."
+                    exit 1
+                  fi
+                else
+                  consecutive_errors=0
+                fi
+                ;;
+            esac
+            if [ "$(date +%s)" -ge "$DEADLINE" ]; then
+              echo "Error: still not terminal near job timeout. Re-run this job."
+              exit 1
+            fi
+            sleep "$POLL_INTERVAL"
+          done
           if [ "$STATUS" != "Accepted" ]; then
-            echo "Error: notarization not Accepted. Fetching logs..."
+            echo "Error: notarization not Accepted (status: $STATUS). Fetching logs..."
             xcrun notarytool log "$SUBMISSION_ID" \
               --apple-id "$APPLE_ID" \
               --password "$APPLE_APP_SPECIFIC_PASSWORD" \
