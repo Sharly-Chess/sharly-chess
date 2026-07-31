@@ -187,6 +187,12 @@ msgstr ""
 msgid "could not connect to the server, check the host, credentials and protocol"
 msgstr ""
 
+msgid "invalid credentials, check the username and password"
+msgstr ""
+
+msgid "Invalid credentials."
+msgstr ""
+
 #~ msgid "Custom Upload"
 #~ msgstr ""
 

@@ -166,6 +166,16 @@ class ConnectionFailureCustomUploadStatus(FailureCustomUploadStatus):
         )
 
 
+class AuthenticationFailureCustomUploadStatus(FailureCustomUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'AUTHENTICATION_FAILURE'
+
+    @property
+    def details(self) -> str:
+        return _('invalid credentials, check the username and password')
+
+
 class TargetLocationNotFoundCustomUploadStatus(FailureCustomUploadStatus):
     @staticmethod
     def static_id() -> str:

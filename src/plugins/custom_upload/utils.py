@@ -20,6 +20,7 @@ from plugins.custom_upload.custom_upload_status import (
     UnexpectedFailureCustomUploadStatus,
     ModifiedCustomUploadStatus,
     OngoingCustomUploadStatus,
+    AuthenticationFailureCustomUploadStatus,
     ConnectionFailureCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
     PendingCustomUploadStatus,
@@ -138,6 +139,7 @@ class CustomUploadUtils:
 class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus]):
     def entity_types(self) -> list[type[FailureCustomUploadStatus]]:
         return [
+            AuthenticationFailureCustomUploadStatus,
             ConnectionFailureCustomUploadStatus,
             TargetLocationNotFoundCustomUploadStatus,
             UnexpectedFailureCustomUploadStatus,

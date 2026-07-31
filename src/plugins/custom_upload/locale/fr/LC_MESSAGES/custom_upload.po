@@ -187,6 +187,12 @@ msgstr "Modifier le document."
 msgid "could not connect to the server, check the host, credentials and protocol"
 msgstr "impossible de se connecter au serveur, vérifiez l'hôte, les identifiants et le protocole"
 
+msgid "invalid credentials, check the username and password"
+msgstr "identifiants invalides, vérifiez le nom d'utilisateur et le mot de passe"
+
+msgid "Invalid credentials."
+msgstr "Identifiants invalides."
+
 #~ msgid "Custom Upload"
 #~ msgstr "Mise en ligne personnalisée"
 

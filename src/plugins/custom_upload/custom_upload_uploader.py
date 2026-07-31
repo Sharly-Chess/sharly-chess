@@ -29,6 +29,7 @@ from data.loader import EventLoader
 from data.tournament import Tournament
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_status import (
+    AuthenticationFailureCustomUploadStatus,
     ConnectionFailureCustomUploadStatus,
     UnexpectedFailureCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
@@ -278,6 +279,13 @@ class CustomUploadUploader:
                     )
                     logger.info('Uploaded document file [%s]', file_name)
                     temporary_document_file.close()
+            except AuthenticationException:
+                logger.warning(
+                    'Authentication failed on [%s] for tournament [%s]',
+                    host,
+                    tournament.name,
+                )
+                failure_status = AuthenticationFailureCustomUploadStatus()
             except (SSHException, EOFError, OSError):
                 logger.warning(
                     'Could not connect to [%s] to upload tournament [%s]',
@@ -480,9 +488,10 @@ class CustomUploadUploader:
             try:
                 client.connect(host, username=username, password=password, timeout=5)
                 sftp_client = client.open_sftp()
+            except AuthenticationException:
+                raise PermissionError(f'Authentication failed for {host}')
             except (
                 BadHostKeyException,
-                AuthenticationException,
                 NoValidConnectionsError,
                 SSHException,
                 OSError,
@@ -508,5 +517,7 @@ class CustomUploadUploader:
                     raise FileNotFoundError(f'Remote path not found: {target_path}')
         except FileNotFoundError:
             raise
+        except ftplib.error_perm:
+            raise PermissionError(f'Authentication failed for {host}')
         except ftplib.all_errors:
             raise ConnectionError(f'Cannot connect to {host}')

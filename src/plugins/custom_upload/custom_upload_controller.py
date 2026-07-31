@@ -547,6 +547,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     )
                     auth_valid = True
                     path_valid = True
+                except PermissionError:
+                    errors['ftp_username'] = _('Invalid credentials.')
                 except ConnectionError:
                     errors['ftp_host'] = _('Failed to connect to server.')
                 except FileNotFoundError:
