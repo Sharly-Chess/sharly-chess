@@ -278,7 +278,6 @@ class CustomUploadUploader:
                         (target_path / file_name).as_posix(),
                     )
                     logger.info('Uploaded document file [%s]', file_name)
-                    temporary_document_file.close()
             except AuthenticationException:
                 logger.warning(
                     'Authentication failed on [%s] for tournament [%s]',
@@ -299,6 +298,8 @@ class CustomUploadUploader:
             finally:
                 if sftp_client is not None:
                     sftp_client.close()
+                for temporary_document_file, _ in temporary_files:
+                    temporary_document_file.close()
                 cls.ongoing_result_ids.discard(result_id)
                 now = datetime.now()
                 if failure_status:
@@ -354,7 +355,6 @@ class CustomUploadUploader:
                         temporary_document_file,
                     )
                     logger.info('Uploaded document file [%s]', file_name)
-                    temporary_document_file.close()
         except ftplib.all_errors:
             logger.warning(
                 'Could not connect to [%s] to upload tournament [%s]',
@@ -366,6 +366,8 @@ class CustomUploadUploader:
             logger.exception('Error uploading tournament [%s]', tournament.name)
             failure_status = UnexpectedFailureCustomUploadStatus()
         finally:
+            for temporary_document_file, _ in temporary_files:
+                temporary_document_file.close()
             cls.ongoing_result_ids.discard(result_id)
             now = datetime.now()
             if failure_status:
