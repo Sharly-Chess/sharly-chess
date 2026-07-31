@@ -338,8 +338,8 @@ class EventDocumentsController(BaseEventAdminController):
         """From picker form data, build ``(document_id, options_string, errors)``.
 
         The chosen document and its options are validated; ``options_string`` uses
-        the same ``id=value|id=value`` encoding consumed by :meth:`document_view`
-        (list values joined by ``;``, mirroring the `do_print` client behaviour).
+        the ``id=value|id=value`` encoding consumed by :meth:`document_view`, with
+        list values joined by ``;``.
         On validation failure ``errors`` is non-empty and ``options_string`` empty.
         """
         errors: dict[str, str] = {}
