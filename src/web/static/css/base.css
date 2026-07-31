@@ -975,6 +975,10 @@ body[data-bs-theme="dark"] .htmx-indicator {
     row-gap: .4rem;
 }
 
+.collection-list-empty-drop-zone {
+    grid-column: 1 / -1;
+}
+
 .collection-list-item {
     display: grid;
     grid-template-columns: subgrid;

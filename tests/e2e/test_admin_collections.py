@@ -3,6 +3,7 @@ import re
 import pytest
 from playwright.sync_api import APIRequestContext, Page, expect
 
+from data.pairings.variations import StandardTeamSwissVariation
 from tests.test_config import TestUtils
 from utils.enum import EventType
 
@@ -19,6 +20,22 @@ def setup(api_request_context: APIRequestContext):
         TEAM_EVENT_ID,
         via_api_request_context=api_request_context,
         overrides={'event_type': EventType.TEAM.value},
+    )
+    TestUtils.create_tournament(
+        TEAM_EVENT_ID,
+        TOURNAMENT_ID,
+        overrides={
+            'pairing': StandardTeamSwissVariation.static_id(),
+            'team_player_count': 4,
+        },
+    )
+    TestUtils.create_tournament(
+        TEAM_EVENT_ID,
+        SECOND_TOURNAMENT_ID,
+        overrides={
+            'pairing': StandardTeamSwissVariation.static_id(),
+            'team_player_count': 4,
+        },
     )
     TestUtils.create_event(
         PRIZE_EVENT_ID,
@@ -67,6 +84,12 @@ class TestAdminCollections:
 
         item = page.get_by_test_id('teams-item').filter(has_text=name)
         expect(item).to_be_visible()
+        empty_drop_zones = page.locator('.team-sortable').filter(
+            has=page.locator('.non-sortable')
+        )
+        expect(empty_drop_zones.first).to_have_class(
+            re.compile(r'\bcollection-list-items\b')
+        )
         details = item.locator('.collection-list-details')
         item.locator('.collection-details-button').click()
         expect(details).to_have_class(re.compile(r'\bshow\b'))
@@ -77,6 +100,40 @@ class TestAdminCollections:
         )
         details_toggle.uncheck()
         expect(details).not_to_have_class(re.compile(r'\bshow\b'))
+
+        auto_sort_directions = item.evaluate(
+            """element => {
+                const container = element.closest('.team-sortable');
+                const onMove = Sortable.get(container).options.onMove;
+                const target = document.createElement('div');
+                target.dataset.sortKey = 'lineup-avg';
+                const related = element.cloneNode(true);
+                const relatedInput = related.querySelector('.assignment-input');
+                const draggedValue = Number(
+                    element.querySelector('.assignment-input').dataset.lineupAvg
+                );
+                const directionFor = relatedValue => {
+                    relatedInput.dataset.lineupAvg = relatedValue;
+                    return onMove({
+                        to: target,
+                        dragged: element,
+                        related,
+                        willInsertAfter: false,
+                    });
+                };
+                return {
+                    beforeLower: directionFor(draggedValue - 1),
+                    afterEqual: directionFor(draggedValue),
+                    afterHigher: directionFor(draggedValue + 1),
+                };
+            }"""
+        )
+        assert auto_sort_directions == {
+            'beforeLower': -1,
+            'afterEqual': 1,
+            'afterHigher': 1,
+        }
+
         page.get_by_role('button', name='Card view').click()
         item = page.get_by_test_id('teams-item').filter(has_text=name)
         expect(page.get_by_role('checkbox', name='Rosters')).to_be_checked()

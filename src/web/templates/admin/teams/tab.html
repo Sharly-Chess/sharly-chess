@@ -5,6 +5,52 @@
 {% set collection_show_details = get_admin_collection_show_details('teams') %}
 {% set collection_url = url_for('admin-event-teams-tab', event_uniq_id=admin_event.uniq_id) %}
 {% set collection_card_controls_template = '/admin/teams/team_collection_card_controls.html' %}
+{% import '/admin/common/collection_macros.j2' as collection_macros with context %}
+
+{% macro empty_team_drop_zone(tournament_id, message, closed=false, auto_sort=false) %}
+    {% if collection_view_mode.value == 'list' %}
+        <div class="admin-collection-list-scroll">
+            <div
+                class="admin-collection admin-collection-list"
+                style="--collection-list-columns: {{ collection_macros.list_grid_template(collection) }};"
+            >
+                <div
+                    class="collection-list-items team-sortable"
+                    data-tournament-id="{{ tournament_id }}"
+                    {% if closed %}data-closed="1"{% endif %}
+                    {% if auto_sort %}data-auto-sort="1"{% endif %}
+                >
+                    <div class="collection-list-empty-drop-zone non-sortable">
+                        <div
+                            class="text-center text-muted p-4 rounded"
+                            style="border: 2px dashed var(--bs-border-color);"
+                        >
+                            <i class="bi-box-arrow-in-down d-block fs-3 mb-2"></i>
+                            {{ message }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div
+            class="row gy-3 gx-3 team-sortable"
+            data-tournament-id="{{ tournament_id }}"
+            {% if closed %}data-closed="1"{% endif %}
+            {% if auto_sort %}data-auto-sort="1"{% endif %}
+        >
+            <div class="col-12 non-sortable">
+                <div
+                    class="text-center text-muted p-4 rounded"
+                    style="border: 2px dashed var(--bs-border-color);"
+                >
+                    <i class="bi-box-arrow-in-down d-block fs-3 mb-2"></i>
+                    {{ message }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}
 
 {% block top_left_nav %}
     {{ admin_macros.admin_title(_('Teams'), '') }}
@@ -163,22 +209,12 @@
                             {% include '/admin/common/collection.html' %}
                         {% endwith %}
                     {% else %}
-                        <div
-                            class="row gy-3 gx-3 team-sortable"
-                            data-tournament-id="{{ tournament.id }}"
-                            {% if not tournament.can_add_teams %}data-closed="1"{% endif %}
-                            {% if sort_mode.value != 'MANUAL' %}data-auto-sort="1"{% endif %}
-                        >
-                            <div class="col-12 non-sortable">
-                                <div
-                                    class="text-center text-muted p-4 rounded"
-                                    style="border: 2px dashed var(--bs-border-color);"
-                                >
-                                    <i class="bi-box-arrow-in-down d-block fs-3 mb-2"></i>
-                                    {{ _('Drag teams here') }}
-                                </div>
-                            </div>
-                        </div>
+                        {{ empty_team_drop_zone(
+                            tournament.id,
+                            _('Drag teams here'),
+                            closed=not tournament.can_add_teams,
+                            auto_sort=sort_mode.value != 'MANUAL',
+                        ) }}
                     {% endif %}
                 </div>
             {% endfor %}
@@ -200,17 +236,10 @@
                         {% include '/admin/common/collection.html' %}
                     {% endwith %}
                 {% else %}
-                    <div class="row gy-3 gx-3 team-sortable" data-tournament-id="">
-                        <div class="col-12 non-sortable">
-                            <div
-                                class="text-center text-muted p-4 rounded"
-                                style="border: 2px dashed var(--bs-border-color);"
-                            >
-                                <i class="bi-box-arrow-in-down d-block fs-3 mb-2"></i>
-                                {{ _('All teams are assigned to a tournament.') }}
-                            </div>
-                        </div>
-                    </div>
+                    {{ empty_team_drop_zone(
+                        '',
+                        _('All teams are assigned to a tournament.'),
+                    ) }}
                 {% endif %}
             </div>
         </form>
@@ -270,15 +299,15 @@
                                 }
                                 const dragged = sortValue(evt.dragged, toKey);
                                 const related = sortValue(evt.related, toKey);
-                                // Descending order. Each value has a
-                                // single valid slot: allow inserting
-                                // BEFORE a sibling only when strictly
-                                // higher, AFTER it otherwise — equal
-                                // values settle after (no two-slot
-                                // ambiguity that drifts the ghost up).
-                                return evt.willInsertAfter
-                                    ? dragged <= related
-                                    : dragged > related;
+                                // Descending order. Tell Sortable which
+                                // side of the related team to use instead
+                                // of rejecting its first proposal. A
+                                // rejected BEFORE proposal never gets a
+                                // chance to become AFTER, which made
+                                // equal/lower-rated teams impossible to
+                                // drop into a non-empty auto-sorted list.
+                                // Equal values settle after.
+                                return dragged > related ? -1 : 1;
                             },
                             onEnd: function () {
                                 refreshAssignments();
