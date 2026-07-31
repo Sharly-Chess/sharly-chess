@@ -211,9 +211,13 @@ class CustomUploadUploader:
 
             host = event_plugin_data.ftp_host
             username = event_plugin_data.ftp_username
-            password = event_plugin_data.ftp_password
+            password = event_plugin_data.ftp_password or ''
             transfer_protocol = event_plugin_data.transfer_protocol
             port = event_plugin_data.transfer_port
+
+            if not host or not username:
+                # Host or username is missing, we can't upload
+                return
 
             server_path = tournament_plugin_data.server_path
             if not server_path:
@@ -221,7 +225,6 @@ class CustomUploadUploader:
 
             target_path = cls.normalize_server_path(server_path)
 
-            # TODO: both upload methods are quite similar, common logic should be extracted here
             if event_plugin_data.transfer_protocol == TransferProtocol.SFTP:
                 cls._sftp_upload(
                     host,
