@@ -157,66 +157,71 @@ class CustomUploadUploader:
         cls.ongoing_result_ids.add(result_id)
         cls.queued_result_ids.discard(result_id)
 
-        # NOTE (Molrn) Ensures a minimum time for the thread
-        # This prevents flashing and situations where both requests
-        # triggered by the `upload-event` web socket are treated as one
-        time.sleep(0.5)
-
-        # We refetch the latest event and tournament
-        loader = EventLoader()
-        if event_uniq_id not in loader.event_uniq_ids:
-            # The event has been deleted
-            return
-        event = loader.load_event(event_uniq_id)
-
-        tournament = event.tournaments_by_id.get(tournament_id, None)
-        if not tournament:
-            # The tournament has been deleted
-            return
-
-        if CustomUploadUtils.custom_upload_configuration_verification_message(
-            tournament
-        ):
-            # Skip this tournament if configuration is invalid
-            return
-
-        if not NetworkMonitor.connected():
-            # The network is offline, we can't upload
-            cls.publish_upload_event()
-            return
-
-        logger.info('Uploading tournament [%s]...', tournament.name)
-
-        event_plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
-        tournament_plugin_data = CustomUploadUtils.get_tournament_plugin_data(
-            tournament
-        )
-
         try:
-            temporary_files = cls._generate_documents_in_memory(
-                event, tournament_plugin_data, http_client
-            )
-        except Exception:
-            logger.exception('Error uploading tournament [%s]', tournament.name)
-            return
+            # NOTE (Molrn) Ensures a minimum time for the thread
+            # This prevents flashing and situations where both requests
+            # triggered by the `upload-event` web socket are treated as one
+            time.sleep(0.5)
 
-        # TODO: both upload methods are quite similar, common logic should be extracted here
-        if event_plugin_data.transfer_protocol == TransferProtocol.SFTP:
-            cls._sftp_upload(
-                event_plugin_data,
-                tournament_plugin_data,
-                tournament,
-                result_id,
-                temporary_files,
+            # We refetch the latest event and tournament
+            loader = EventLoader()
+            if event_uniq_id not in loader.event_uniq_ids:
+                # The event has been deleted
+                return
+            event = loader.load_event(event_uniq_id)
+
+            tournament = event.tournaments_by_id.get(tournament_id, None)
+            if not tournament:
+                # The tournament has been deleted
+                return
+
+            if CustomUploadUtils.custom_upload_configuration_verification_message(
+                tournament
+            ):
+                # Skip this tournament if configuration is invalid
+                return
+
+            if not NetworkMonitor.connected():
+                # The network is offline, we can't upload
+                return
+
+            logger.info('Uploading tournament [%s]...', tournament.name)
+
+            event_plugin_data = CustomUploadUtils.get_event_plugin_data(
+                tournament.event
             )
-        else:
-            cls._ftp_upload(
-                event_plugin_data,
-                tournament_plugin_data,
-                tournament,
-                result_id,
-                temporary_files,
+            tournament_plugin_data = CustomUploadUtils.get_tournament_plugin_data(
+                tournament
             )
+
+            try:
+                temporary_files = cls._generate_documents_in_memory(
+                    event, tournament_plugin_data, http_client
+                )
+            except Exception:
+                logger.exception('Error uploading tournament [%s]', tournament.name)
+                return
+
+            # TODO: both upload methods are quite similar, common logic should be extracted here
+            if event_plugin_data.transfer_protocol == TransferProtocol.SFTP:
+                cls._sftp_upload(
+                    event_plugin_data,
+                    tournament_plugin_data,
+                    tournament,
+                    result_id,
+                    temporary_files,
+                )
+            else:
+                cls._ftp_upload(
+                    event_plugin_data,
+                    tournament_plugin_data,
+                    tournament,
+                    result_id,
+                    temporary_files,
+                )
+        finally:
+            cls.ongoing_result_ids.discard(result_id)
+            cls.publish_upload_event()
 
     @classmethod
     def _sftp_upload(
