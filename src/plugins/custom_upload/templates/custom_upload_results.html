@@ -69,7 +69,6 @@
                         hx-post="{{ url_for('custom-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="#upload-results"
                         hx-swap="outerHTML"
-                        hx-on--before-request="$('#tournament-upload-statuses-{{tournament.id}}').addClass('invisible')"
                         {% if configuration_verification_message %}
                             disabled
                         {% endif %}
