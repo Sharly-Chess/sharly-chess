@@ -479,5 +479,5 @@ class CustomUploadUploader:
                     raise FileNotFoundError(f'Remote path not found: {target_path}')
         except FileNotFoundError:
             raise
-        except OSError:
+        except ftplib.all_errors:
             raise ConnectionError(f'Cannot connect to {host}')

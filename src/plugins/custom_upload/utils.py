@@ -291,7 +291,8 @@ class CustomUploadEventPluginData(PluginData):
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
             transfer_protocol=TransferProtocol(
-                WebContext.form_data_to_str(data, 'transfer_protocol') or TransferProtocol.SFTP.value
+                WebContext.form_data_to_str(data, 'transfer_protocol')
+                or TransferProtocol.SFTP.value
             ),
         )
 

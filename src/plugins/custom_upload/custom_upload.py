@@ -3,6 +3,7 @@ from typing import Iterable, Any, TYPE_CHECKING
 from packaging.version import Version
 
 from common.i18n import _
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent, StoredTournament
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_controller import (
@@ -72,6 +73,29 @@ class CustomUploadPlugin(Plugin):
     @hookimpl
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, CustomUploadEventPluginData
+
+    @hookimpl
+    def on_event_duplicated(self, event_database: 'EventDatabase'):
+        stored_event = event_database.load_stored_event()
+        event_plugin_data = CustomUploadEventPluginData.from_stored_value(
+            stored_event.plugin_data.get(PLUGIN_NAME, {})
+        )
+        event_plugin_data.ftp_password = None
+        stored_event.plugin_data[PLUGIN_NAME] = event_plugin_data.to_stored_value()
+        event_database.update_stored_event(stored_event)
+
+        for stored_tournament in event_database.load_stored_tournaments():
+            old_plugin_data = CustomUploadTournamentPluginData.from_stored_value(
+                stored_tournament.plugin_data.get(PLUGIN_NAME, {})
+            )
+            new_plugin_data = CustomUploadTournamentPluginData(
+                server_path=old_plugin_data.server_path,
+                documents=old_plugin_data.documents,
+            )
+            stored_tournament.plugin_data[PLUGIN_NAME] = (
+                new_plugin_data.to_stored_value()
+            )
+            event_database.update_stored_tournament(stored_tournament)
 
     # ---------------------------------------------------------------------------------
     # Tournaments
