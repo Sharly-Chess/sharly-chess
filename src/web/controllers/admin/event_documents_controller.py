@@ -304,7 +304,7 @@ class EventDocumentsController(BaseEventAdminController):
         option_data: dict[str, str] = {}
         if options:
             for option in urllib.parse.unquote(options).split('|'):
-                key, raw_value = option.split('=')
+                key, raw_value = option.split('=', 1)
                 option_data[key] = raw_value
         print_options: list[PrintOption] = []
         for print_option in document_type(web_context.client).default_options():
@@ -376,7 +376,7 @@ class EventDocumentsController(BaseEventAdminController):
         option_data: dict[str, str] = {}
         if options:
             for option in urllib.parse.unquote(options).split('|'):
-                key, raw_value = option.split('=')
+                key, raw_value = option.split('=', 1)
                 option_data[key] = raw_value
         print_options: list[PrintOption] = []
         for print_option in document_type(client).default_options():
