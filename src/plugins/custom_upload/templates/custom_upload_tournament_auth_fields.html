@@ -47,6 +47,15 @@
             data=data, errors=errors
         ) }}
     </div>
+        <div class="col-12 col-md-6">
+        {{ admin_macros.number_input(
+            name='transfer_port',
+            label=_('Port:'),
+            placeholder=_('E.g.: %(num)d', num=22),
+            min=1, max=10000, step=1,
+            data=data, errors=errors
+        ) }}
+    </div>
     <div class="text-center mt-4 mb-1">
         <span id="test-connection" {{ macros.tooltip_attributes('', _('Host and FTP username are required')) }}>
             <button

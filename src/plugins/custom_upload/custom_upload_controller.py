@@ -1,6 +1,6 @@
-from typing import Any, Annotated
+from typing import Annotated, Any
 
-from litestar import get, post, patch
+from litestar import get, patch, post
 from litestar.enums import RequestEncodingType
 from litestar.params import Body, FromPath
 from litestar.response import Template
@@ -9,16 +9,16 @@ from litestar_htmx import HTMXRequest, HTMXTemplate
 from common.i18n import _
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
-from data.print_documents import PrintDocumentManager, PrintDocument
+from data.print_documents import PrintDocument, PrintDocumentManager
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
 from plugins.custom_upload.utils import (
     ConfiguredDocument,
-    CustomUploadUtils,
-    CustomUploadTournamentPluginData,
     CustomUploadEventPluginData,
+    CustomUploadTournamentPluginData,
+    CustomUploadUtils,
     TransferProtocol,
 )
 from web.controllers.admin.base_event_admin_controller import (
@@ -28,7 +28,7 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.controllers.base_controller import WebContext
-from web.guards import EventGuard, ActionGuard, TournamentActionGuard
+from web.guards import ActionGuard, EventGuard, TournamentActionGuard
 
 type DocumentMetadata = tuple[ConfiguredDocument, type[PrintDocument] | None]
 
@@ -526,19 +526,21 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         transfer_protocol: TransferProtocol = TransferProtocol(
             WebContext.form_data_to_str(data, 'transfer_protocol', 'SFTP')
         )
+        transfer_port: int | None = WebContext.form_data_to_int(data, 'transfer_port')
 
         errors = {}
         auth_valid = False
         path_valid = False
         if NetworkMonitor.connected():
-            if ftp_host and ftp_username:
+            if ftp_host and ftp_username and transfer_port:
                 try:
-                    CustomUploadUploader.test_ftp(
+                    CustomUploadUploader.test_file_transfer_connection(
                         ftp_host,
                         ftp_username,
                         ftp_password,
                         default_server_path,
                         transfer_protocol == TransferProtocol.SFTP,
+                        transfer_port,
                     )
                     auth_valid = True
                     path_valid = True
@@ -564,6 +566,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     'ftp_username': data['ftp_username'],
                     'ftp_password': data['ftp_password'],
                     'transfer_protocol': data['transfer_protocol'],
+                    'transfer_port': data['transfer_port'],
                 },
                 'transfer_protocol_options': TransferProtocol.form_options(),
                 'ftp_password_visible': data.get('ftp_password_visible') == 'true',

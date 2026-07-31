@@ -119,26 +119,27 @@ class CustomUploadUploader:
         return PurePosixPath(path).as_posix()
 
     @classmethod
-    def test_ftp(
+    def test_file_transfer_connection(
         cls,
-        ftp_host: str,
-        ftp_username: str,
-        ftp_password: str,
+        host: str,
+        username: str,
+        password: str,
         target_path: str,
-        is_sftp: bool = True,
+        is_sftp: bool,
+        port: int,
     ) -> None:
-        """Connection attempt to the FTP server.
+        """Connection attempt to the FTP/SFTP server.
         Throws ConnectionError exception if the connection doesn't succeed.
         Throws FileNotFoundError exception if the target path can't be found."""
 
         target_path = cls.normalize_server_path(target_path)
-        logger.info('Testing connection for [%s]...', ftp_host)
+        logger.info('Testing connection for [%s]...', host)
         if is_sftp:
             logger.info('Connection attempt via SFTP')
-            cls._sftp_auth_check(ftp_host, ftp_username, ftp_password, target_path)
+            cls._sftp_auth_check(host, username, password, port, target_path)
         else:
             logger.info('Connection attempt via FTP')
-            cls._ftp_auth_check(ftp_host, ftp_username, ftp_password, target_path)
+            cls._ftp_auth_check(host, username, password, port, target_path)
         logger.info('Connection succeeded.')
 
     @classmethod
@@ -479,12 +480,14 @@ class CustomUploadUploader:
 
     @staticmethod
     def _sftp_auth_check(
-        host: str, username: str, password: str, target_path: str
+        host: str, username: str, password: str, port: int, target_path: str
     ) -> None:
         with paramiko.SSHClient() as client:
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
-                client.connect(host, username=username, password=password, timeout=5)
+                client.connect(
+                    host, username=username, password=password, port=port, timeout=5
+                )
                 sftp_client = client.open_sftp()
             except AuthenticationException:
                 raise PermissionError(f'Authentication failed for {host}')
@@ -504,18 +507,19 @@ class CustomUploadUploader:
 
     @staticmethod
     def _ftp_auth_check(
-        host: str, username: str, password: str, target_path: str
+        host: str, username: str, password: str, port: int, target_path: str
     ) -> None:
-        # TODO: refactor ugly nesting
-        try:
-            with ftplib.FTP(host, username, password, timeout=5) as ftp_client:
+        with ftplib.FTP() as ftp_client:
+            try:
+                ftp_client.connect(host, port, timeout=5)
+                ftp_client.login(username, password)
                 if not CustomUploadUploader._does_remote_path_exist_ftp(
                     ftp_client, target_path
                 ):
                     raise FileNotFoundError(f'Remote path not found: {target_path}')
-        except FileNotFoundError:
-            raise
-        except ftplib.error_perm:
-            raise PermissionError(f'Authentication failed for {host}')
-        except ftplib.all_errors:
-            raise ConnectionError(f'Cannot connect to {host}')
+            except FileNotFoundError:
+                raise
+            except ftplib.error_perm:
+                raise PermissionError(f'Authentication failed for {host}')
+            except ftplib.all_errors:
+                raise ConnectionError(f'Cannot connect to {host}')

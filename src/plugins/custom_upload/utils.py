@@ -163,6 +163,73 @@ class ConfiguredDocument:
 
 
 @dataclass
+class CustomUploadEventPluginData(PluginData):
+    ftp_host: str | None = None
+    default_server_path: str | None = None
+    ftp_username: str | None = None
+    ftp_password: str | None = None
+    transfer_protocol: TransferProtocol = TransferProtocol.SFTP
+    transfer_port: int = 22
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            ftp_host=stored_value.get('ftp_host', None),
+            default_server_path=stored_value.get('default_server_path', None),
+            ftp_username=stored_value.get('ftp_username', None),
+            ftp_password=stored_value.get('ftp_password', None),
+            transfer_protocol=TransferProtocol.parse(
+                stored_value.get('transfer_protocol')
+            ),
+            transfer_port=stored_value.get('transfer_port', 22),
+        )
+
+    @classmethod
+    def from_form_data(
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
+    ) -> Self:
+        if action == FormAction.UPDATE and previous_object:
+            return previous_object
+        return cls(
+            ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
+            default_server_path=WebContext.form_data_to_str(
+                data, 'default_server_path'
+            ),
+            ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
+            ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
+            transfer_protocol=TransferProtocol.parse(
+                WebContext.form_data_to_str(data, 'transfer_protocol')
+            ),
+            transfer_port=WebContext.form_data_to_int(data, 'transfer_port') or 22,
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'ftp_host': self.ftp_host,
+            'default_server_path': self.default_server_path,
+            'ftp_username': self.ftp_username,
+            'ftp_password': self.ftp_password,
+            'transfer_protocol': self.transfer_protocol.value,
+            'transfer_port': self.transfer_port,
+        }
+
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
+        form_data = {
+            'ftp_host': self.ftp_host,
+            'default_server_path': self.default_server_path,
+            'ftp_username': self.ftp_username,
+            'ftp_password': self.ftp_password,
+            'transfer_protocol': self.transfer_protocol.value,
+            'transfer_port': self.transfer_port,
+        }
+
+        return WebContext.values_dict_to_form_data(form_data)
+
+
+@dataclass
 class CustomUploadTournamentPluginData(PluginData):
     server_path: str | None = None
     last_upload_at: datetime | None = None
@@ -268,67 +335,5 @@ class CustomUploadTournamentPluginData(PluginData):
         for index, document in enumerate(self.documents):
             form_data[f'document_{index}_id'] = document.document_id
             form_data[f'document_{index}_options'] = document.options
-
-        return WebContext.values_dict_to_form_data(form_data)
-
-
-@dataclass
-class CustomUploadEventPluginData(PluginData):
-    ftp_host: str | None = None
-    default_server_path: str | None = None
-    ftp_username: str | None = None
-    ftp_password: str | None = None
-    transfer_protocol: TransferProtocol = TransferProtocol.SFTP
-
-    @classmethod
-    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
-        return cls(
-            ftp_host=stored_value.get('ftp_host', None),
-            default_server_path=stored_value.get('default_server_path', None),
-            ftp_username=stored_value.get('ftp_username', None),
-            ftp_password=stored_value.get('ftp_password', None),
-            transfer_protocol=TransferProtocol.parse(
-                stored_value.get('transfer_protocol')
-            ),
-        )
-
-    @classmethod
-    def from_form_data(
-        cls,
-        data: dict[str, str],
-        previous_object: Self | None = None,
-        action: str | None = None,
-    ) -> Self:
-        if action == FormAction.UPDATE and previous_object:
-            return previous_object
-        return cls(
-            ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
-            default_server_path=WebContext.form_data_to_str(
-                data, 'default_server_path'
-            ),
-            ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
-            ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
-            transfer_protocol=TransferProtocol.parse(
-                WebContext.form_data_to_str(data, 'transfer_protocol')
-            ),
-        )
-
-    def to_stored_value(self) -> dict[str, Any]:
-        return {
-            'ftp_host': self.ftp_host,
-            'default_server_path': self.default_server_path,
-            'ftp_username': self.ftp_username,
-            'ftp_password': self.ftp_password,
-            'transfer_protocol': self.transfer_protocol.value,
-        }
-
-    def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        form_data = {
-            'ftp_host': self.ftp_host,
-            'default_server_path': self.default_server_path,
-            'ftp_username': self.ftp_username,
-            'ftp_password': self.ftp_password,
-            'transfer_protocol': self.transfer_protocol.value,
-        }
 
         return WebContext.values_dict_to_form_data(form_data)
