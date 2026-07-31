@@ -124,7 +124,10 @@ class CustomUploadPlugin(Plugin):
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        has_upload_error = False
+        has_upload_error = any(
+            CustomUploadUtils.get_tournament_plugin_data(tournament).upload_failure_id
+            for tournament in event.tournaments
+        )
 
         return [
             NavDataTransferItem(
