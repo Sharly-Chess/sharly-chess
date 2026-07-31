@@ -200,6 +200,13 @@ class CustomUploadUploader:
                 )
             except Exception:
                 logger.exception('Error uploading tournament [%s]', tournament.name)
+                tournament_plugin_data.upload_failure_id = (
+                    UnexpectedFailureCustomUploadStatus().id
+                )
+                tournament_plugin_data.last_upload_attempt_at = datetime.now()
+                CustomUploadUtils.update_tournament_plugin_data(
+                    tournament, tournament_plugin_data
+                )
                 return
 
             # TODO: both upload methods are quite similar, common logic should be extracted here
