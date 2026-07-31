@@ -1,6 +1,6 @@
 import urllib
 from collections import defaultdict
-from typing import Annotated
+from typing import Annotated, Any
 
 from litestar import get, post
 from litestar.enums import RequestEncodingType
@@ -48,23 +48,17 @@ class EventDocumentsController(BaseEventAdminController):
         )
 
     @classmethod
-    def _render_documents_modal(
+    def default_document_picker_data(
         cls,
-        web_context: BaseEventAdminWebContext,
+        event: Event,
         document_id: str | None = None,
         tournament_ids: list[int] | None = None,
         _round: int | None = None,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-        success_message: str | None = None,
-    ) -> HTMXTemplate:
-        event = web_context.get_admin_event()
+    ) -> dict[str, str]:
+        """Default form data for the document picker: default value for every
+        print option, plus the selected document/round/tournament(s)."""
         print_options = PrintDocumentOptionManager(event).objects()
-        allowed_tournaments = cls._allowed_tournaments(web_context)
-        if len(allowed_tournaments) == 1:
-            tournament_ids = [allowed_tournaments[0].id]
-
-        default_data = WebContext.values_dict_to_form_data(
+        return WebContext.values_dict_to_form_data(
             {option.id: option.default_value for option in print_options}
             | {
                 'document': document_id or PlayerListPrintDocument.static_id(),
@@ -73,12 +67,22 @@ class EventDocumentsController(BaseEventAdminController):
                 'tournaments': tournament_ids,
             }
         )
-        data = default_data | (data or {})
-        document_ids_by_option_id: dict[str, list[str]] = defaultdict(list[str])
-        containers_by_document: dict[str, list[str]] = {'': []}
+
+    @classmethod
+    def document_picker_context(
+        cls,
+        web_context: BaseEventAdminWebContext,
+        data: dict[str, str],
+    ) -> dict[str, Any]:
+        """Context required to render the shared document picker fields
+        (`event/_document_picker_fields.html`)."""
+        event = web_context.get_admin_event()
+        print_options = PrintDocumentOptionManager(event).objects()
         allowed_tournaments = web_context.client.allowed_tournaments_for_action(
             AuthAction.GENERATE_DOCUMENTS
         )
+        document_ids_by_option_id: dict[str, list[str]] = defaultdict(list[str])
+        containers_by_document: dict[str, list[str]] = {'': []}
         documents = [
             doc
             for doc in PrintDocumentManager(event).objects()
@@ -124,22 +128,49 @@ class EventDocumentsController(BaseEventAdminController):
             ]
             for tournament in allowed_tournaments
         }
+        return {
+            'print_options': print_options,
+            'document_options': {document.id: document.name for document in documents},
+            'document_ids_by_option_id': document_ids_by_option_id,
+            'containers_by_document': containers_by_document,
+            'current_document_option_ids': current_document_option_ids,
+            'players_per_tournament_id': players_per_tournament_id,
+            'teams_per_tournament_id': teams_per_tournament_id,
+            'allowed_tournaments': allowed_tournaments,
+        }
 
-        template_context = {
+    @classmethod
+    def _render_documents_modal(
+        cls,
+        web_context: BaseEventAdminWebContext,
+        document_id: str | None = None,
+        tournament_ids: list[int] | None = None,
+        _round: int | None = None,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+        success_message: str | None = None,
+    ) -> HTMXTemplate:
+        event = web_context.get_admin_event()
+        allowed_tournaments = cls._allowed_tournaments(web_context)
+        if len(allowed_tournaments) == 1:
+            tournament_ids = [allowed_tournaments[0].id]
+
+        default_data = cls.default_document_picker_data(
+            event,
+            document_id=document_id,
+            tournament_ids=tournament_ids,
+            _round=_round,
+        )
+        data = default_data | (data or {})
+        picker_context = cls.document_picker_context(web_context, data)
+
+        template_context = picker_context | {
             'modal': 'print',
             'client': web_context.client,
             'account_options': web_context.get_account_options(),
             'tournament_options': web_context.get_tournament_options(
-                allowed_tournaments
+                picker_context['allowed_tournaments']
             ),
-            'players_per_tournament_id': players_per_tournament_id,
-            'teams_per_tournament_id': teams_per_tournament_id,
-            'document_ids_by_option_id': document_ids_by_option_id,
-            'allowed_tournaments': allowed_tournaments,
-            'document_options': {document.id: document.name for document in documents},
-            'current_document_option_ids': current_document_option_ids,
-            'print_options': print_options,
-            'containers_by_document': containers_by_document,
             'data': data,
             'success_message': success_message,
             'errors': errors or {},
@@ -296,6 +327,46 @@ class EventDocumentsController(BaseEventAdminController):
         return StreamingHTMXTemplate(
             template_name=print_document.template_name, context=template_context
         )
+
+    @classmethod
+    def build_document_options(
+        cls,
+        event: Event,
+        client: Client,
+        flat_data: dict[str, str],
+    ) -> tuple[str | None, str, dict[str, str]]:
+        """From picker form data, build ``(document_id, options_string, errors)``.
+
+        The chosen document and its options are validated; ``options_string`` uses
+        the same ``id=value|id=value`` encoding consumed by :meth:`document_view`
+        (list values joined by ``;``, mirroring the `do_print` client behaviour).
+        On validation failure ``errors`` is non-empty and ``options_string`` empty.
+        """
+        errors: dict[str, str] = {}
+        document_id = WebContext.form_data_to_str(flat_data, 'document') or ''
+        try:
+            document_type = PrintDocumentManager(event).get_type(document_id)
+        except KeyError:
+            errors['document'] = _('Please choose the document.')
+            return None, '', errors
+
+        options: list[PrintOption] = []
+        for option in document_type(client).default_options():
+            value = WebContext.form_data_to_value(flat_data, option.id, option.type)
+            options.append(type(option)(event, value))
+        try:
+            document = document_type(client, options)
+            document.validate_options()
+        except OptionError as error:
+            errors[error.option.id] = str(error)
+            return document_id, '', errors
+
+        options_string = '|'.join(
+            f'{option.id}={flat_data[option.id]}'
+            for option in document.default_options()
+            if option.id in flat_data
+        )
+        return document_id, options_string, errors
 
     @classmethod
     def document_view(

@@ -34,10 +34,10 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
-msgid "E.g.: /tournaments"
+msgid "E.g.: tournaments"
 msgstr ""
 
-msgid "E.g.: /tournaments/my_tournament"
+msgid "E.g.: tournaments/my_tournament"
 msgstr ""
 
 msgid "E.g.: ftp.example.com"

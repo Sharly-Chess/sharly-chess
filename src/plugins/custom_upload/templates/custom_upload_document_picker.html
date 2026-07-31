@@ -1,0 +1,63 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div id="document-picker-modal" class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">
+                <h2 class="mb-4">
+                    {{ _('Custom location') }} - {{ _('Add document') }}
+                </h2>
+                <h3>
+                    {{ _('Tournament:') }} {{ admin_tournament.name }}
+                </h3>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-post="{{ url_for('custom-upload-add-document-confirm', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                hx-target="#modal-wrapper"
+                hx-indicator="#please-wait"
+            >
+                {# Carry the in-progress tournament configuration (server path + already
+                   configured documents) so it survives the round-trip. #}
+                {% for name, value in config_data.items() %}
+                    <input type="hidden" name="{{ name }}" value="{{ value }}">
+                {% endfor %}
+
+                {% include '/admin/event/_document_picker_fields.html' %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap me-auto"
+                hx-post="{{ url_for('custom-upload-cancel-add-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                hx-include="#modal-form"
+                hx-target="#modal-wrapper"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <span id="submit-button-container">
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi-plus-circle pe-1"></i>
+                    {{ _('Add to list') }}
+                </button>
+            </span>
+        </div>
+    </div>
+</div>

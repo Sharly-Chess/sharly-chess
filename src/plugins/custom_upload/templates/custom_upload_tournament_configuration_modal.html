@@ -24,7 +24,7 @@
                     {{ admin_macros.text_input(
                         name='server_path',
                         label=_('Server path:'),
-                        placeholder=_('E.g.: /tournaments/my_tournament'),
+                        placeholder=_('E.g.: tournaments/my_tournament'),
                         hx_indicator="unset",
                         data=data, errors=errors
                     ) }}
@@ -34,24 +34,24 @@
                 {% if no_documents %}
                     <h5 class="text-center text-nowrap"> {{ _('No configured documents yet.') }} </h5>
                 {% endif %}
-                {% for document_name, document_url in data.items() if document_name.startswith('document_url_') %}
-                    <div class="d-flex gap-2 gy-2 gx-3 mt-2">
+                {% for document in documents_display %}
+                    <input type="hidden" name="document_{{ document.index }}_id" value="{{ document.document_id }}">
+                    <input type="hidden" name="document_{{ document.index }}_options" value="{{ document.options }}">
+                    <div class="d-flex gap-2 gy-2 gx-3 mt-2 align-items-center">
                         <div class="flex-grow-1">
-                            {{ admin_macros.text_input(
-                                name=document_name,
-                                label=_('Document URL:'),
-                                data={document_name: document_url},
-                                errors=errors
-                            ) }}
+                            <span class="fw-bold">{{ document.name }}</span>
+                            {% if document.options %}
+                                <small class="text-muted d-block">{{ document.options }}</small>
+                            {% endif %}
                         </div>
                         <div {{ macros.tooltip_attributes(
-            'info', _('Remove the document from the upload list.')
-        ) }}>
+                            'info', _('Remove the document from the upload list.')
+                        ) }}>
                             <button
                                 type="button"
                                 class="btn btn-outline-primary text-nowrap"
-                                hx-post="{{ url_for('remove-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, document_index=loop.index - 1) }}"
-                                hx-target="body"
+                                hx-post="{{ url_for('remove-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, document_index=document.index) }}"
+                                hx-target="#modal-wrapper"
                             >
                                 <i class="bi-trash"></i>
                             </button>
@@ -63,7 +63,7 @@
                             type="button"
                             class="btn btn-outline-primary text-nowrap mt-3"
                             hx-post="{{ url_for('add-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                            hx-target="body"
+                            hx-target="#modal-wrapper"
                     >
                         <i class="bi-plus-circle pe-1"></i>
                         {{ _('Add document') }}

@@ -1,0 +1,42 @@
+{# Reusable document selector + dynamic option panels.
+   Requires in context: document_options, print_options, current_document_option_ids,
+   containers_by_document, document_ids_by_option_id, players_per_tournament_id,
+   teams_per_tournament_id, data, errors. #}
+<script>
+    var playersPerTournamentId = {{ players_per_tournament_id | tojson }};
+    var teamsPerTournamentId = {{ teams_per_tournament_id | tojson }};
+</script>
+<div class="row gy-2 gx-3">
+    <div class="col-12">
+        {{ admin_macros.select_input(
+            name='document',
+            label=_('Document:'),
+            select_options=document_options,
+            data=data, errors=errors
+        ) }}
+    </div>
+</div>
+{% for option in print_options %}
+    <div
+        class="row gy-2 gx-3"
+        id="{{ option.container_id }}"
+        {% if option.id not in current_document_option_ids %}
+            style="display:none"
+        {% endif %}
+    >
+        {% include option.template_name %}
+    </div>
+{% endfor %}
+<script>
+    $('#document').change(function() {
+        const document_containers = {{ containers_by_document|tojson }}[$(this).val()];
+        let container_id = '';
+        default_print_document_id = $(this).val();
+        {% for option in print_options %}
+            container_id = '{{ option.container_id }}';
+            $('#' + container_id).css(
+                'display', document_containers.includes(container_id) ? 'block' : 'none'
+            );
+        {% endfor %}
+    });
+</script>

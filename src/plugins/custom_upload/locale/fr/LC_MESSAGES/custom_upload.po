@@ -34,11 +34,11 @@ msgstr "URL du document :"
 msgid "Documents"
 msgstr "Documents"
 
-msgid "E.g.: /tournaments"
-msgstr "Exemple : /tournois"
+msgid "E.g.: tournaments"
+msgstr "Exemple : tournois"
 
-msgid "E.g.: /tournaments/my_tournament"
-msgstr "Exemple : /tournois/mon_tournoi"
+msgid "E.g.: tournaments/my_tournament"
+msgstr "Exemple : tournois/mon_tournoi"
 
 msgid "E.g.: ftp.example.com"
 msgstr "Exemple : ftp.exemple.com"

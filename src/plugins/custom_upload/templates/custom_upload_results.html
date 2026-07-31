@@ -15,14 +15,18 @@
             </td>
             <td class="text-center">
                 {% for document in documents_by_tournament[tournament.id] %}
-                    {% set document_url = document[0] %}
+                    {% set configured_document = document[0] %}
                     {% set document_type = document[1] %}
+                    {% set document_url = url_for('document-view', event_uniq_id=admin_event.uniq_id, document=configured_document.document_id) %}
+                    {% if configured_document.options %}
+                        {% set document_url = document_url ~ '?options=' ~ (configured_document.options | urlencode) %}
+                    {% endif %}
                     <span
                         class="badge rounded-pill message-debug"
                         style="height: 20px"
                     >
                         <a href="{{ document_url }}" target="_blank">
-                            {{ document_type and _(document_type.static_name()) }}
+                            {{ document_type and _(document_type.static_name()) or configured_document.document_id }}
                         </a>
                     </span>
                 {% endfor %}

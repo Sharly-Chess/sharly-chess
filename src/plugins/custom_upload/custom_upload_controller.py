@@ -1,5 +1,3 @@
-import re
-from pathlib import Path
 from typing import Any, Annotated
 
 from litestar import get, post, patch
@@ -17,6 +15,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
 from plugins.custom_upload.utils import (
+    ConfiguredDocument,
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
     CustomUploadEventPluginData,
@@ -26,11 +25,12 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
+from web.controllers.admin.event_documents_controller import EventDocumentsController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 
-type DocumentMetadata = tuple[str, type[PrintDocument]]
+type DocumentMetadata = tuple[ConfiguredDocument, type[PrintDocument] | None]
 
 
 class CustomUploadAdminEventController(BaseEventAdminController):
@@ -43,29 +43,25 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _extract_document_id(document_url: str) -> str:
-        return re.findall(r'([\w-]*)[^/]*$', document_url)[0]
-
-    @staticmethod
     def _upload_results_context(
         web_context: BaseEventAdminWebContext,
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
-        tournaments = event.tournaments
+        document_manager = PrintDocumentManager(event)
         documents_by_tournament: dict[int, list[DocumentMetadata]] = {}
-        for tournament in tournaments:
-            document_urls = CustomUploadUtils.get_tournament_plugin_data(
+        for tournament in event.tournaments:
+            documents = CustomUploadUtils.get_tournament_plugin_data(
                 tournament
-            ).document_urls
+            ).documents
             documents_metadata: list[DocumentMetadata] = []
-            for document_url in document_urls:
-                document_id = CustomUploadAdminEventController._extract_document_id(
-                    document_url
-                )
-                document_type = PrintDocumentManager(
-                    web_context.get_admin_event()
-                ).get_type(document_id)
-                documents_metadata.append((document_url, document_type))
+            for configured_document in documents:
+                try:
+                    document_type: type[PrintDocument] | None = (
+                        document_manager.get_type(configured_document.document_id)
+                    )
+                except KeyError:
+                    document_type = None
+                documents_metadata.append((configured_document, document_type))
             documents_by_tournament[tournament.id] = documents_metadata
         event_plugin_data = CustomUploadUtils.get_event_plugin_data(event)
         return web_context.template_context | {
@@ -143,6 +139,95 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             after='settle',
         )
 
+    # ---------------------------------------------------------------------------------
+    # Tournament configuration (documents list)
+    # ---------------------------------------------------------------------------------
+
+    @staticmethod
+    def _tournament_config_context(
+        web_context: TournamentAdminWebContext,
+        tournament_plugin_data: CustomUploadTournamentPluginData,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        event = web_context.get_admin_event()
+        document_manager = PrintDocumentManager(event)
+        documents_display: list[dict[str, Any]] = []
+        for index, configured_document in enumerate(tournament_plugin_data.documents):
+            try:
+                document_type = document_manager.get_type(
+                    configured_document.document_id
+                )
+                name = _(document_type.static_name())
+            except KeyError:
+                name = configured_document.document_id
+            documents_display.append(
+                {
+                    'index': index,
+                    'document_id': configured_document.document_id,
+                    'options': configured_document.options,
+                    'name': name,
+                }
+            )
+        return web_context.template_context | {
+            'data': tournament_plugin_data.to_form_data(),
+            'documents_display': documents_display,
+            'no_documents': not tournament_plugin_data.documents,
+            'errors': errors or {},
+        }
+
+    def _render_tournament_config_modal(
+        self,
+        web_context: TournamentAdminWebContext,
+        tournament_plugin_data: CustomUploadTournamentPluginData,
+        errors: dict[str, str] | None = None,
+    ) -> Template:
+        return HTMXTemplate(
+            template_name='custom_upload_tournament_configuration_modal.html',
+            context=self._tournament_config_context(
+                web_context, tournament_plugin_data, errors
+            ),
+            re_target='#modal-wrapper',
+            re_swap='innerHTML',
+            trigger_event='modal_opened',
+            after='settle',
+        )
+
+    def _render_document_picker(
+        self,
+        web_context: TournamentAdminWebContext,
+        tournament_plugin_data: CustomUploadTournamentPluginData,
+        picker_data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> Template:
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        default_data = EventDocumentsController.default_document_picker_data(
+            event, tournament_ids=[tournament.id]
+        )
+        data = default_data | (picker_data or {})
+        picker_context = EventDocumentsController.document_picker_context(
+            web_context, data
+        )
+        return HTMXTemplate(
+            template_name='custom_upload_document_picker.html',
+            context=web_context.template_context
+            | picker_context
+            | {
+                'client': web_context.client,
+                'account_options': web_context.get_account_options(),
+                'tournament_options': web_context.get_tournament_options(
+                    picker_context['allowed_tournaments']
+                ),
+                'config_data': tournament_plugin_data.to_form_data(),
+                'data': data,
+                'errors': errors or {},
+            },
+            re_target='#modal-wrapper',
+            re_swap='innerHTML',
+            trigger_event='modal_opened',
+            after='settle',
+        )
+
     @get(
         path='/custom-upload/configuration-modal/{event_uniq_id:str}/{tournament_id:int}',
         name='custom-upload-tournament-configuration-modal',
@@ -165,18 +250,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             tournament_custom_upload_data.server_path = (
                 event_custom_upload_data.default_server_path
             )
-        return HTMXTemplate(
-            template_name='custom_upload_tournament_configuration_modal.html',
-            context=web_context.template_context
-            | {
-                'no_documents': not tournament_custom_upload_data.document_urls,
-                'data': tournament_custom_upload_data.to_form_data(),
-                'errors': {},
-            },
-            re_target='#modal-wrapper',
-            re_swap='innerHTML',
-            trigger_event='modal_opened',
-            after='settle',
+        return self._render_tournament_config_modal(
+            web_context, tournament_custom_upload_data
         )
 
     @post(
@@ -193,19 +268,62 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-        custom_upload_data = CustomUploadTournamentPluginData.from_form_data(data)
-        custom_upload_data.document_urls.append('')
-        return HTMXTemplate(
-            template_name='custom_upload_tournament_configuration_modal.html',
-            context=web_context.template_context
-            | {
-                'data': custom_upload_data.to_form_data(),
-                'errors': {},
-            },
-            re_target='#modal-wrapper',
-            re_swap='innerHTML',
-            after='settle',
+        tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(data)
+        return self._render_document_picker(web_context, tournament_plugin_data)
+
+    @post(
+        path='/custom-upload/add-document-confirm/{event_uniq_id:str}/{tournament_id:int}',
+        name='custom-upload-add-document-confirm',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_custom_upload_add_document_confirm(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        flat_data = WebContext.flatten_list_data(data)
+        event = web_context.get_admin_event()
+        tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(
+            flat_data
         )
+        document_id, options_string, errors = (
+            EventDocumentsController.build_document_options(
+                event, web_context.client, flat_data
+            )
+        )
+        if errors or not document_id:
+            return self._render_document_picker(
+                web_context,
+                tournament_plugin_data,
+                picker_data=flat_data,
+                errors=errors,
+            )
+        tournament_plugin_data.documents.append(
+            ConfiguredDocument(document_id=document_id, options=options_string)
+        )
+        return self._render_tournament_config_modal(web_context, tournament_plugin_data)
+
+    @post(
+        path='/custom-upload/cancel-add-document/{event_uniq_id:str}/{tournament_id:int}',
+        name='custom-upload-cancel-add-document',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_custom_upload_cancel_add_document(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(data)
+        return self._render_tournament_config_modal(web_context, tournament_plugin_data)
 
     @post(
         path='/custom-upload/remove-document/{event_uniq_id:str}/{tournament_id:int}/{document_index:int}',
@@ -222,20 +340,10 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         document_index: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-        custom_upload_data = CustomUploadTournamentPluginData.from_form_data(data)
-        custom_upload_data.document_urls.pop(document_index)
-        return HTMXTemplate(
-            template_name='custom_upload_tournament_configuration_modal.html',
-            context=web_context.template_context
-            | {
-                'no_documents': not custom_upload_data.document_urls,
-                'data': custom_upload_data.to_form_data(),
-                'errors': {},
-            },
-            re_target='#modal-wrapper',
-            re_swap='innerHTML',
-            after='settle',
-        )
+        tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(data)
+        if 0 <= document_index < len(tournament_plugin_data.documents):
+            tournament_plugin_data.documents.pop(document_index)
+        return self._render_tournament_config_modal(web_context, tournament_plugin_data)
 
     def _update_event_configuration(
         self,
@@ -285,40 +393,6 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         request = web_context.request
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
-
-        updated_document_urls = []
-        errors = {}
-        document_manager = PrintDocumentManager(web_context.get_admin_event())
-
-        for name, value in data.items():
-            if name.startswith('document_url'):
-                if value.count('?') > 1:
-                    errors[name] = _(
-                        "There should be no more than one unescaped '?' character"
-                    )
-                    continue
-                document_id = CustomUploadAdminEventController._extract_document_id(
-                    value
-                )
-                try:
-                    document_manager.get_type(document_id)
-                except KeyError:
-                    errors[name] = _('No document type is matching input.')
-                    continue
-                updated_document_urls.append(value)
-
-        if len(errors) > 0:
-            return HTMXTemplate(
-                template_name='custom_upload_tournament_configuration_modal.html',
-                context=web_context.template_context
-                | {
-                    'data': data,
-                    'errors': errors,
-                },
-                re_target='#modal-wrapper',
-                re_swap='innerHTML',
-                after='settle',
-            )
 
         previous_tournament_plugin_data = CustomUploadUtils.get_tournament_plugin_data(
             tournament
@@ -417,7 +491,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                         ftp_host,
                         ftp_username,
                         ftp_password or '',
-                        Path(default_server_path).as_posix(),
+                        default_server_path,
                         transfer_protocol == TransferProtocol.SFTP,
                     )
                     auth_valid = True

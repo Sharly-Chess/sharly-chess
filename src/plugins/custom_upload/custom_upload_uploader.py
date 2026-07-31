@@ -1,11 +1,11 @@
 import ftplib
+import re
 import time
-import urllib
 from datetime import datetime
 from ftplib import error_perm
 from functools import partial
 from io import BytesIO
-from pathlib import Path
+from pathlib import PurePosixPath
 from threading import Thread, Timer
 from typing import Optional
 
@@ -110,6 +110,16 @@ class CustomUploadUploader:
                 ['ws'],
             )
 
+    @staticmethod
+    def normalize_server_path(server_path: str | None) -> str:
+        """Clean a user-provided server path. A leading slash is optional: with
+        one the path is absolute from the server root, without one it is relative
+        to the FTP/SFTP login directory. Empty resolves to the login directory."""
+        path = (server_path or '').strip()
+        if not path:
+            return '.'
+        return PurePosixPath(path).as_posix()
+
     @classmethod
     def test_ftp(
         cls,
@@ -123,6 +133,7 @@ class CustomUploadUploader:
         Throws ConnectionError exception if the connection doesn't succeed.
         Throws FileNotFoundError exception if the target path can't be found."""
 
+        target_path = cls.normalize_server_path(target_path)
         logger.info('Testing connection for [%s]...', ftp_host)
         if is_sftp:
             logger.info('Connection attempt via SFTP')
@@ -229,9 +240,9 @@ class CustomUploadUploader:
 
                 server_path = tournament_plugin_data.server_path
                 if not server_path:
-                    server_path = event_plugin_data.default_server_path or ''
+                    server_path = event_plugin_data.default_server_path
 
-                target_path = Path('/') / Path(server_path)
+                target_path = PurePosixPath(cls.normalize_server_path(server_path))
                 if not CustomUploadUploader._does_remote_path_exist_sftp(
                     sftp_client, target_path.as_posix()
                 ):
@@ -290,11 +301,11 @@ class CustomUploadUploader:
             with ftplib.FTP(host, username, password) as ftp_client:
                 server_path = tournament_plugin_data.server_path
                 if not server_path:
-                    server_path = event_plugin_data.default_server_path or ''
+                    server_path = event_plugin_data.default_server_path
 
-                target_path = Path('/') / Path(server_path)
+                target_path = cls.normalize_server_path(server_path)
                 if not CustomUploadUploader._does_remote_path_exist_ftp(
-                    ftp_client, target_path.as_posix()
+                    ftp_client, target_path
                 ):
                     logger.error(
                         'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
@@ -339,22 +350,26 @@ class CustomUploadUploader:
         http_client: Client,
     ) -> list[tuple[BytesIO, str]]:
         temporary_files_with_name: list[tuple[BytesIO, str]] = []
-        for document_url in tournament_plugin_data.document_urls:
-            document_url_resource_part = document_url.split('/')[-1]
-            document_id, document_options = document_url_resource_part.split('?')
-            decoded_document_options = document_options.replace('options=', '')
-            decoded_document_options = urllib.parse.unquote(decoded_document_options)
+        for configured_document in tournament_plugin_data.documents:
             document_htmx_template = EventDocumentsController.document_view(
                 http_client,
                 event,
-                document_id,
-                decoded_document_options,
+                configured_document.document_id,
+                configured_document.options or None,
             )
             html_content = parse_jinja_template(
                 document_htmx_template.template_name, document_htmx_template.context
             )
             temporary_document_file = BytesIO(html_content.encode())
-            file_name = f'{"_".join(event.name.split())}_{document_id}_{decoded_document_options}.html'
+            options_suffix = re.sub(
+                r'[^A-Za-z0-9]+', '_', configured_document.options
+            ).strip('_')
+            file_name = (
+                f'{"_".join(event.name.split())}_{configured_document.document_id}'
+            )
+            if options_suffix:
+                file_name += f'_{options_suffix}'
+            file_name += '.html'
             temporary_files_with_name.append((temporary_document_file, file_name))
         return temporary_files_with_name
 
