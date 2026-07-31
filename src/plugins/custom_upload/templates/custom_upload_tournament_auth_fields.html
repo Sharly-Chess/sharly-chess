@@ -52,7 +52,7 @@
             <button
                 type="button"
                 class="btn btn-outline-primary text-nowrap"
-                hx-post="{{ url_for('custom-upload-test-auth', action='update') }}"
+                hx-post="{{ url_for('custom-upload-test-auth', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="closest .auth-fields"
                 hx-swap="morphdom"
                 hx-vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}'

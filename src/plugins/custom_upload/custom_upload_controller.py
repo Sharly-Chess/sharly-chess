@@ -509,16 +509,19 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         return self._render_upload_results(web_context)
 
     @post(
-        path='/custom-upload/test-auth',
+        path='/custom-upload/test-auth/{event_uniq_id:str}',
         name='custom-upload-test-auth',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
     async def htmx_custom_upload_test_auth(
         self,
+        request: HTMXRequest,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
+        web_context = BaseEventAdminWebContext(request)
         ftp_host: str = WebContext.form_data_to_str(data, 'ftp_host', '')
         ftp_username: str = WebContext.form_data_to_str(data, 'ftp_username', '')
         ftp_password: str = WebContext.form_data_to_str(data, 'ftp_password', '')
@@ -556,7 +559,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
 
         return HTMXTemplate(
             template_name='custom_upload_tournament_auth_fields.html',
-            context={
+            context=web_context.template_context
+            | {
                 'data': {
                     'ftp_host': data['ftp_host'],
                     'default_server_path': data['default_server_path'],
@@ -570,7 +574,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     ): transfer_protocol.name
                     for transfer_protocol in TransferProtocol
                 },
-                'ftp_password_visible': data['ftp_password_visible'] == 'true',
+                'ftp_password_visible': data.get('ftp_password_visible') == 'true',
                 'custom_upload_auth_valid': auth_valid,
                 'custom_upload_path_valid': path_valid,
                 'errors': errors,
