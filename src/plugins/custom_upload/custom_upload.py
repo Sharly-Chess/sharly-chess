@@ -3,6 +3,7 @@ from typing import Iterable, Any, TYPE_CHECKING
 from packaging.version import Version
 
 from common.i18n import _
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent, StoredTournament
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_controller import (
@@ -14,11 +15,17 @@ from plugins.custom_upload.utils import (
     CustomUploadEventPluginData,
 )
 from plugins.hookspec import hookimpl
-from plugins.utils import Plugin, NavDataTransferItem, PluginData
+from plugins.utils import (
+    Plugin,
+    NavDataTransferItem,
+    PluginData,
+    TournamentConnectionField,
+)
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.tournament import Tournament
 
 
 class CustomUploadPlugin(Plugin):
@@ -67,6 +74,29 @@ class CustomUploadPlugin(Plugin):
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, CustomUploadEventPluginData
 
+    @hookimpl
+    def on_event_duplicated(self, event_database: 'EventDatabase'):
+        stored_event = event_database.load_stored_event()
+        event_plugin_data = CustomUploadEventPluginData.from_stored_value(
+            stored_event.plugin_data.get(PLUGIN_NAME, {})
+        )
+        event_plugin_data.ftp_password = None
+        stored_event.plugin_data[PLUGIN_NAME] = event_plugin_data.to_stored_value()
+        event_database.update_stored_event(stored_event)
+
+        for stored_tournament in event_database.load_stored_tournaments():
+            old_plugin_data = CustomUploadTournamentPluginData.from_stored_value(
+                stored_tournament.plugin_data.get(PLUGIN_NAME, {})
+            )
+            new_plugin_data = CustomUploadTournamentPluginData(
+                server_path=old_plugin_data.server_path,
+                documents=old_plugin_data.documents,
+            )
+            stored_tournament.plugin_data[PLUGIN_NAME] = (
+                new_plugin_data.to_stored_value()
+            )
+            event_database.update_stored_tournament(stored_tournament)
+
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
@@ -74,6 +104,17 @@ class CustomUploadPlugin(Plugin):
     @hookimpl
     def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, CustomUploadTournamentPluginData
+
+    @hookimpl
+    def get_tournament_connection_field(
+        self, tournament: 'Tournament'
+    ) -> TournamentConnectionField | None:
+        if not CustomUploadUtils.get_tournament_plugin_data(tournament).documents:
+            return None
+        return TournamentConnectionField(
+            label=_('Custom location'),
+            template='/custom_upload_tournament_connection_value.html',
+        )
 
     # ---------------------------------------------------------------------------------
     # Upload
@@ -83,7 +124,10 @@ class CustomUploadPlugin(Plugin):
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        has_upload_error = False
+        has_upload_error = any(
+            CustomUploadUtils.get_tournament_plugin_data(tournament).upload_failure_id
+            for tournament in event.tournaments
+        )
 
         return [
             NavDataTransferItem(

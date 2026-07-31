@@ -34,11 +34,14 @@ msgstr "URL du document :"
 msgid "Documents"
 msgstr "Documents"
 
-msgid "E.g.: /tournaments"
-msgstr "Exemple : /tournois"
+msgid "E.g.: tournaments"
+msgstr "Exemple : tournois"
 
-msgid "E.g.: /tournaments/my_tournament"
-msgstr "Exemple : /tournois/mon_tournoi"
+msgid "E.g.: tournaments/my_tournament"
+msgstr "Exemple : tournois/mon_tournoi"
+
+msgid "Defaults to:"
+msgstr "Par défaut :"
 
 msgid "E.g.: ftp.example.com"
 msgstr "Exemple : ftp.exemple.com"
@@ -174,6 +177,21 @@ msgstr "le chemin sur le serveur n'a pas pu être trouvé"
 
 msgid "to be configured"
 msgstr "à configurer"
+
+msgid "Edit document"
+msgstr "Modifier le document"
+
+msgid "Edit the document."
+msgstr "Modifier le document."
+
+msgid "could not connect to the server, check the host, credentials and protocol"
+msgstr "impossible de se connecter au serveur, vérifiez l'hôte, les identifiants et le protocole"
+
+msgid "invalid credentials, check the username and password"
+msgstr "identifiants invalides, vérifiez le nom d'utilisateur et le mot de passe"
+
+msgid "Invalid credentials."
+msgstr "Identifiants invalides."
 
 #~ msgid "Custom Upload"
 #~ msgstr "Mise en ligne personnalisée"

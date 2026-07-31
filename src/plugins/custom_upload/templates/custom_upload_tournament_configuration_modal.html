@@ -21,53 +21,76 @@
                 hx-indicator="#please-wait"
             >
                 <div>
+                    {% if default_server_path %}
+                        {% set server_path_placeholder = _('Defaults to:') ~ ' ' ~ default_server_path %}
+                    {% else %}
+                        {% set server_path_placeholder = _('E.g.: tournaments/my_tournament') %}
+                    {% endif %}
                     {{ admin_macros.text_input(
                         name='server_path',
                         label=_('Server path:'),
-                        placeholder=_('E.g.: /tournaments/my_tournament'),
+                        placeholder=server_path_placeholder,
                         hx_indicator="unset",
                         data=data, errors=errors
                     ) }}
                 </div>
                 <hr />
                 <h4>{{ _('Documents') }}</h4>
-                {% if no_documents %}
-                    <h5 class="text-center text-nowrap"> {{ _('No configured documents yet.') }} </h5>
-                {% endif %}
-                {% for document_name, document_url in data.items() if document_name.startswith('document_url_') %}
-                    <div class="d-flex gap-2 gy-2 gx-3 mt-2">
-                        <div class="flex-grow-1">
-                            {{ admin_macros.text_input(
-                                name=document_name,
-                                label=_('Document URL:'),
-                                data={document_name: document_url},
-                                errors=errors
-                            ) }}
-                        </div>
-                        <div {{ macros.tooltip_attributes(
-            'info', _('Remove the document from the upload list.')
-        ) }}>
-                            <button
-                                type="button"
-                                class="btn btn-outline-primary text-nowrap"
-                                hx-post="{{ url_for('remove-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, document_index=loop.index - 1) }}"
-                                hx-target="body"
-                            >
-                                <i class="bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                {% endfor %}
-                <div class="text-center mt-4 mb-1">
+                <div class="d-flex justify-content-end gap-2 mb-3">
                     <button
-                            type="button"
-                            class="btn btn-outline-primary text-nowrap mt-3"
-                            hx-post="{{ url_for('add-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                            hx-target="body"
+                        type="button"
+                        class="btn btn-primary text-nowrap"
+                        hx-post="{{ url_for('add-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                        hx-target="#modal-wrapper"
                     >
-                        <i class="bi-plus-circle pe-1"></i>
+                        <i class="bi-plus-square pe-1"></i>
                         {{ _('Add document') }}
                     </button>
+                </div>
+                {% if no_documents %}
+                    <div class="text-danger">{{ _('No configured documents yet.') }}</div>
+                {% endif %}
+                <div class="d-flex flex-column gap-2">
+                    {% for document in documents_display %}
+                        <input type="hidden" name="document_{{ document.index }}_id" value="{{ document.document_id }}">
+                        <input type="hidden" name="document_{{ document.index }}_options" value="{{ document.options }}">
+                        <div class="border border-secondary bg-body-tertiary">
+                            <div class="p-2 d-flex align-items-center gap-4">
+                                <div class="text-start flex-grow-1">
+                                    <span class="fw-bold">{{ document.name }}</span>
+                                    {% if document.options %}
+                                        <small class="text-muted d-block">{{ document.options }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                    <span {{ macros.tooltip_attributes(
+                                        'info', _('Edit the document.')
+                                    ) }}>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary text-nowrap"
+                                            hx-post="{{ url_for('edit-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, document_index=document.index) }}"
+                                            hx-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-pencil-fill"></i>
+                                        </button>
+                                    </span>
+                                    <span {{ macros.tooltip_attributes(
+                                        'info', _('Remove the document from the upload list.')
+                                    ) }}>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-danger text-nowrap"
+                                            hx-post="{{ url_for('remove-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, document_index=document.index) }}"
+                                            hx-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-trash-fill"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </form>
         </div>

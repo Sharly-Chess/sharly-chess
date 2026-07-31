@@ -1,4 +1,5 @@
 import json
+import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
@@ -19,6 +20,8 @@ from plugins.custom_upload.custom_upload_status import (
     UnexpectedFailureCustomUploadStatus,
     ModifiedCustomUploadStatus,
     OngoingCustomUploadStatus,
+    AuthenticationFailureCustomUploadStatus,
+    ConnectionFailureCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
     PendingCustomUploadStatus,
 )
@@ -32,6 +35,20 @@ from web.controllers.base_controller import WebContext
 class TransferProtocol(StrEnum):
     SFTP = 'SFTP'
     FTP = 'FTP'
+
+    @classmethod
+    def parse(cls, value: str | None) -> 'TransferProtocol':
+        try:
+            return cls(value)
+        except ValueError:
+            return cls.SFTP
+
+    @classmethod
+    def form_options(cls) -> dict[str, str]:
+        return {
+            WebContext.value_to_form_data(protocol.value): protocol.name
+            for protocol in cls
+        }
 
 
 class CustomUploadUtils:
@@ -61,7 +78,7 @@ class CustomUploadUtils:
             return _('FTP host is not defined')
         if not event_plugin_data.ftp_username:
             return _('FTP credentials are not defined')
-        if not tournament_plugin_data.document_urls:
+        if not tournament_plugin_data.documents:
             return _('No configured documents')
         return None
 
@@ -129,9 +146,20 @@ class CustomUploadUtils:
 class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus]):
     def entity_types(self) -> list[type[FailureCustomUploadStatus]]:
         return [
+            AuthenticationFailureCustomUploadStatus,
+            ConnectionFailureCustomUploadStatus,
             TargetLocationNotFoundCustomUploadStatus,
             UnexpectedFailureCustomUploadStatus,
         ]
+
+
+@dataclass
+class ConfiguredDocument:
+    """A document configured for upload: a print-document id and the
+    `id=value|id=value` options string consumed by the document-view endpoint."""
+
+    document_id: str
+    options: str = ''
 
 
 @dataclass
@@ -140,7 +168,7 @@ class CustomUploadTournamentPluginData(PluginData):
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
-    document_urls: list[str] = field(default_factory=list)
+    documents: list[ConfiguredDocument] = field(default_factory=list)
 
     @property
     def last_upload_at_str(self) -> str:
@@ -159,7 +187,13 @@ class CustomUploadTournamentPluginData(PluginData):
                 stored_value.get('last_upload_attempt_at')
             ),
             upload_failure_id=stored_value.get('upload_failure_id'),
-            document_urls=stored_value.get('document_urls', []),
+            documents=[
+                ConfiguredDocument(
+                    document_id=document['document_id'],
+                    options=document.get('options', ''),
+                )
+                for document in stored_value.get('documents', [])
+            ],
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -172,8 +206,35 @@ class CustomUploadTournamentPluginData(PluginData):
                 self.last_upload_attempt_at
             ),
             'upload_failure_id': self.upload_failure_id,
-            'document_urls': self.document_urls,
+            'documents': [
+                {'document_id': document.document_id, 'options': document.options}
+                for document in self.documents
+            ],
         }
+
+    @staticmethod
+    def documents_from_form_data(data: dict[str, str]) -> list[ConfiguredDocument]:
+        """Rebuild the configured documents from the ``document_{i}_id`` /
+        ``document_{i}_options`` hidden fields carried by the configuration form."""
+        indices = sorted(
+            {
+                int(match.group(1))
+                for key in data
+                if (match := re.fullmatch(r'document_(\d+)_id', key))
+            }
+        )
+        documents: list[ConfiguredDocument] = []
+        for index in indices:
+            document_id = (data.get(f'document_{index}_id') or '').strip()
+            if not document_id:
+                continue
+            documents.append(
+                ConfiguredDocument(
+                    document_id=document_id,
+                    options=data.get(f'document_{index}_options') or '',
+                )
+            )
+        return documents
 
     @classmethod
     def from_form_data(
@@ -192,26 +253,21 @@ class CustomUploadTournamentPluginData(PluginData):
             last_upload_attempt_at = previous_object.last_upload_attempt_at
             upload_failure_id = previous_object.upload_failure_id
 
-        document_urls = [
-            value.strip()
-            for key, value in data.items()
-            if key.startswith('document_url_')
-        ]
-
         return cls(
             server_path=WebContext.form_data_to_str(data, 'server_path'),
             last_upload_at=last_upload_at,
             last_upload_attempt_at=last_upload_attempt_at,
             upload_failure_id=upload_failure_id,
-            document_urls=document_urls,
+            documents=cls.documents_from_form_data(data),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         form_data = {
             'server_path': self.server_path,
         }
-        for index, document_url in enumerate(self.document_urls):
-            form_data[f'document_url_{index}'] = document_url
+        for index, document in enumerate(self.documents):
+            form_data[f'document_{index}_id'] = document.document_id
+            form_data[f'document_{index}_options'] = document.options
 
         return WebContext.values_dict_to_form_data(form_data)
 
@@ -231,8 +287,8 @@ class CustomUploadEventPluginData(PluginData):
             default_server_path=stored_value.get('default_server_path', None),
             ftp_username=stored_value.get('ftp_username', None),
             ftp_password=stored_value.get('ftp_password', None),
-            transfer_protocol=TransferProtocol(
-                stored_value.get('transfer_protocol', TransferProtocol.SFTP.value)
+            transfer_protocol=TransferProtocol.parse(
+                stored_value.get('transfer_protocol')
             ),
         )
 
@@ -252,8 +308,8 @@ class CustomUploadEventPluginData(PluginData):
             ),
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
-            transfer_protocol=TransferProtocol(
-                WebContext.form_data_to_str(data, 'transfer_protocol') or TransferProtocol.SFTP.value
+            transfer_protocol=TransferProtocol.parse(
+                WebContext.form_data_to_str(data, 'transfer_protocol')
             ),
         )
 

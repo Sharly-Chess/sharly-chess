@@ -34,10 +34,13 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
-msgid "E.g.: /tournaments"
+msgid "E.g.: tournaments"
 msgstr ""
 
-msgid "E.g.: /tournaments/my_tournament"
+msgid "E.g.: tournaments/my_tournament"
+msgstr ""
+
+msgid "Defaults to:"
 msgstr ""
 
 msgid "E.g.: ftp.example.com"
@@ -173,6 +176,21 @@ msgid "target server path not found"
 msgstr ""
 
 msgid "to be configured"
+msgstr ""
+
+msgid "Edit document"
+msgstr ""
+
+msgid "Edit the document."
+msgstr ""
+
+msgid "could not connect to the server, check the host, credentials and protocol"
+msgstr ""
+
+msgid "invalid credentials, check the username and password"
+msgstr ""
+
+msgid "Invalid credentials."
 msgstr ""
 
 #~ msgid "Custom Upload"
