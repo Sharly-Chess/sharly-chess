@@ -7,7 +7,9 @@ from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
 from pkgutil import iter_modules
+from pyinstaller_versionfile import create_versionfile_from_input_file
 from types import ModuleType
+import yaml
 
 from PyInstaller.__main__ import run
 from packaging.version import Version, InvalidVersion
@@ -22,8 +24,10 @@ from common import (
     DEFAULT_PROGRAM_DIR,
     LOCALE_DIR,
     SRC_DIR,
+    TMP_DIR,
 )
 from common import SHARLY_CHESS_VERSION
+from common.i18n import locales
 from common.installation_checker import (
     InstallationChecker,
 )
@@ -528,6 +532,47 @@ class ProjectBuilder(ABC):
         return True
 
     def _build_exe(self) -> bool:
+        # building a YAML file is the only way to set multiple translations
+        yml_version_file: Path = TMP_DIR / 'pyinstaller-version.yml'
+        program_name: str = f'Sharly Chess {SHARLY_CHESS_VERSION}'
+        i18n_data: dict[
+            str, tuple[int, int]
+        ] = {  # https://learn.microsoft.com/en-us/windows/win32/menurc/varfileinfo-block#remarks
+            'en': (
+                1033,  # U.S. English
+                1200,  # Unicode
+            ),
+            'fr': (
+                1036,  # French
+                1200,  # Unicode
+            ),
+        }
+        with open(yml_version_file, 'w', encoding='utf-8') as f:
+            yaml.dump(
+                {
+                    'Version': f'{SHARLY_CHESS_VERSION.major}.{SHARLY_CHESS_VERSION.minor}.{SHARLY_CHESS_VERSION.micro}',
+                    'CompanyName': 'Sharly Chess',
+                    'FileDescription': f'{program_name}',
+                    'InternalName': f'{program_name}',
+                    'LegalCopyright': f'{SharlyChessConfig.en_copyright}',
+                    'OriginalFilename': f'{self.project_name}.exe',
+                    'ProductName': 'Sharly Chess',
+                    'Translation': [
+                        {
+                            'langID': i18n_data[locale][0],
+                            'charsetID': i18n_data[locale][1],
+                        }
+                        for locale in locales
+                    ],
+                },
+                f,
+                default_flow_style=False,
+            )
+        txt_version_file: Path = TMP_DIR / 'pyinstaller-version.txt'
+        create_versionfile_from_input_file(
+            output_file=str(txt_version_file),
+            input_file=str(yml_version_file),
+        )
         pyinstaller_params = [
             '--clean',
             '--noconfirm',
@@ -547,6 +592,8 @@ class ProjectBuilder(ABC):
             '--paths=.',
             '--optimize',
             '1',
+            '--version-file',
+            str(txt_version_file),
             'src/sharly_chess.py',
         ]
         migration_base_modules: list[ModuleType] = [
