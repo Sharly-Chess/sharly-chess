@@ -55,7 +55,7 @@
                     hx-target="#upload-results"
                     hx-swap="outerHTML"
                     class="text-nowrap white btn btn-outline-primary"
-                    hx-on--before-request="$('#upload-results .status').addClass('invisible')"
+                    hx-on--before-request="$('#upload-results [id^=tournament-upload-statuses-]').addClass('invisible')"
                 >
                     <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
                     {{ _('Upload all tournaments') }}
