@@ -42,7 +42,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
-    from data.team import Team
+    from data.teams.team import Team
     from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.input_output.trf.trf_data import TrfPlayer

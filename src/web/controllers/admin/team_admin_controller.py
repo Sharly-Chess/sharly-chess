@@ -16,7 +16,7 @@ from data.access_levels.client import Client
 from data.board import Board
 from data.event import Event
 from data.player import Player
-from data.team import RosterFullError, Team, TeamGroup
+from data.teams.team import RosterFullError, Team, TeamGroup
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTeam

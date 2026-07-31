@@ -26,7 +26,7 @@ from data.player import TournamentPlayer, Player
 from data.screens.rotator import Rotator
 from data.menu import Menu
 from data.screens.screen import Screen
-from data.team import Team
+from data.teams.team import Team
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils.enum import Result

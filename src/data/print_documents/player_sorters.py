@@ -9,7 +9,7 @@ from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
 
 if TYPE_CHECKING:
-    from data.team import Team
+    from data.teams.team import Team
 
 
 class GridPlayerSorter(IdentifiableEntity, ABC):

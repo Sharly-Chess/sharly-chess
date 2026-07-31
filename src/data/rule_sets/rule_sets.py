@@ -7,7 +7,7 @@ from utils.enum import EventType
 
 if TYPE_CHECKING:
     from data.pairings.fixed_table import FixedPairingTable
-    from data.team import Team
+    from data.teams.team import Team
     from database.sqlite.event.event_store import StoredTournament
 
 

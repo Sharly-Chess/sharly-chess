@@ -27,8 +27,8 @@ from common.logger import get_logger
 from data.board import Board
 from data.player import TournamentPlayer
 from data.event import Event
-from data.team import Team
-from data.team_board import TeamBoard
+from data.teams.team import Team
+from data.teams.team_board import TeamBoard
 from data.print_documents.documents import (
     PairingPrintDocument,
     PlayerRankingPrintDocument,

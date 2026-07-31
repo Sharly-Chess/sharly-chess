@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from database.sqlite.event.event_store import StoredTeamPairingBlock
 
 if TYPE_CHECKING:
-    from data.team import Team
+    from data.teams.team import Team
     from data.tournament import Tournament
 
 

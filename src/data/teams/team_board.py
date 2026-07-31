@@ -10,7 +10,7 @@ from utils.enum import TeamByeType, Result, ScoreType
 
 if TYPE_CHECKING:
     from data.board import Board
-    from data.team import Team
+    from data.teams.team import Team
     from data.tournament import Tournament
 
 
