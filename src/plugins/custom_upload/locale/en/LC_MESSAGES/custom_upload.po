@@ -1,3 +1,9 @@
+msgid "/ by default (root folder)"
+msgstr ""
+
+msgid "22 by default for SFTP, 21 for FTP/FTPS (optional)"
+msgstr ""
+
 msgid "Add document"
 msgstr ""
 
@@ -37,23 +43,16 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
-#, python-format
-msgid "E.g.: %(num)d"
+msgid "E.g.: ftp.example.com (mandatory)"
 msgstr ""
 
-msgid "E.g.: ftp.example.com"
+msgid "E.g.: my_p@ssw0rd (empty by default)"
 msgstr ""
 
-msgid "E.g.: my_password"
-msgstr ""
-
-msgid "E.g.: my_username"
+msgid "E.g.: my_username (mandatory)"
 msgstr ""
 
 msgid "E.g.: pairings_myTournament_round_1"
-msgstr ""
-
-msgid "E.g.: tournaments"
 msgstr ""
 
 msgid "E.g.: tournaments/my_tournament"

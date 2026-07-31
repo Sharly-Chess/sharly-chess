@@ -6,7 +6,7 @@
         {{ admin_macros.text_input(
             name='ftp_host',
             label=_('Host:'),
-            placeholder=_('E.g.: ftp.example.com'),
+            placeholder=_('E.g.: ftp.example.com (mandatory)'),
             valid=custom_upload_auth_valid,
             data=data, errors=errors
         ) }}
@@ -23,7 +23,7 @@
         {{ admin_macros.number_input(
             name='transfer_port',
             label=_('Port:'),
-            placeholder=_('E.g.: %(num)d', num=22),
+            placeholder=_('22 by default for SFTP, 21 for FTP/FTPS (optional)'),
             min=1, max=10000, step=1,
             data=data, errors=errors
         ) }}
@@ -32,7 +32,7 @@
         {{ admin_macros.text_input(
             name='ftp_username',
             label=_('FTP username:'),
-            placeholder=_('E.g.: my_username'),
+            placeholder=_('E.g.: my_username (mandatory)'),
             data=data, errors=errors
         ) }}
     </div>
@@ -41,7 +41,7 @@
             name='ftp_password',
             label=_('FTP password:'),
             autocomplete='new-password',
-            placeholder=_('E.g.: my_password'),
+            placeholder=_('E.g.: my_p@ssw0rd (empty by default)'),
             password_visible=ftp_password_visible,
             data=data, errors=errors
         ) }}
@@ -50,7 +50,7 @@
         {{ admin_macros.text_input(
             name='default_server_path',
             label=_('Default server path:'),
-            placeholder=_('E.g.: tournaments'),
+            placeholder=_('/ by default (root folder)'),
             valid=custom_upload_path_valid,
             hx_indicator="unset",
             data=data, errors=errors

@@ -1,3 +1,9 @@
+msgid "/ by default (root folder)"
+msgstr "/ par défaut (dossier racine)"
+
+msgid "22 by default for SFTP, 21 for FTP/FTPS (optional)"
+msgstr "22 par défaut pour SFTP, 21 pour FTP/FTPS (facultatif)"
+
 msgid "Add document"
 msgstr "Ajouter un document"
 
@@ -37,24 +43,17 @@ msgstr "Par défaut :"
 msgid "Documents"
 msgstr "Documents"
 
-#, python-format
-msgid "E.g.: %(num)d"
-msgstr "Exemple : %(num)d"
+msgid "E.g.: ftp.example.com (mandatory)"
+msgstr "Exemple : ftp.example.fr"
 
-msgid "E.g.: ftp.example.com"
-msgstr "Exemple : ftp.exemple.com"
+msgid "E.g.: my_p@ssw0rd (empty by default)"
+msgstr "Exemple : m0t_de_p@sse (vide par défaut)"
 
-msgid "E.g.: my_password"
-msgstr "Exemple : mon_mot_de_passe"
-
-msgid "E.g.: my_username"
-msgstr "Exemple : mon_identifiant"
+msgid "E.g.: my_username (mandatory)"
+msgstr "Exemple : mon_nom (obligatoire)"
 
 msgid "E.g.: pairings_myTournament_round_1"
 msgstr "Exemple : appariements_monTournoi_ronde_1"
-
-msgid "E.g.: tournaments"
-msgstr "Exemple : tournois"
 
 msgid "E.g.: tournaments/my_tournament"
 msgstr "Exemple : tournois/mon_tournoi"
