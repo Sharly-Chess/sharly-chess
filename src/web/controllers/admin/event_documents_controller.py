@@ -288,6 +288,26 @@ class EventDocumentsController(BaseEventAdminController):
             },
         )
 
+    @classmethod
+    def build_print_document(
+        cls, client: Client, event: Event, document: str, options: str | None = None
+    ) -> PrintDocument:
+        """Build a print document from a document id and an
+        ``id=value|id=value`` options string (list values joined by ``;``)."""
+        document_type = PrintDocumentManager(event).get_type(document)
+        option_data: dict[str, str] = {}
+        if options:
+            for option in urllib.parse.unquote(options).split('|'):
+                key, raw_value = option.split('=', 1)
+                option_data[key] = raw_value
+        print_options: list[PrintOption] = []
+        for print_option in document_type(client).default_options():
+            value = WebContext.form_data_to_value(
+                option_data, print_option.id, print_option.type
+            )
+            print_options.append(type(print_option)(event, value))
+        return document_type(client, print_options)
+
     @get(
         path='/document-view/{event_uniq_id:str}/{document: str}',
         name='document-view',
@@ -301,23 +321,9 @@ class EventDocumentsController(BaseEventAdminController):
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
-        document_type = PrintDocumentManager(event).get_type(document)
-        option_data: dict[str, str] = {}
-        if options:
-            for option in urllib.parse.unquote(options).split('|'):
-                key, raw_value = option.split('=', 1)
-                option_data[key] = raw_value
-        print_options: list[PrintOption] = []
-        for print_option in document_type(web_context.client).default_options():
-            value = WebContext.form_data_to_value(
-                option_data, print_option.id, print_option.type
-            )
-            print_options.append(type(print_option)(event, value))
-        print_document = document_type(
-            web_context.client,
-            print_options,
+        print_document = self.build_print_document(
+            web_context.client, event, document, options
         )
-
         template_context = (
             web_context.template_context
             | {
@@ -373,20 +379,7 @@ class EventDocumentsController(BaseEventAdminController):
     def document_view(
         cls, client: Client, event: Event, document: str, options: str | None = None
     ):
-        document_type = PrintDocumentManager(event).get_type(document)
-        option_data: dict[str, str] = {}
-        if options:
-            for option in urllib.parse.unquote(options).split('|'):
-                key, raw_value = option.split('=', 1)
-                option_data[key] = raw_value
-        print_options: list[PrintOption] = []
-        for print_option in document_type(client).default_options():
-            value = WebContext.form_data_to_value(
-                option_data, print_option.id, print_option.type
-            )
-            print_options.append(type(print_option)(event, value))
-        print_document = document_type(client, print_options)
-
+        print_document = cls.build_print_document(client, event, document, options)
         template_context = {
             'document': print_document,
         } | print_document.template_context
