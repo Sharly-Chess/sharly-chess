@@ -37,6 +37,10 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
+#, python-format
+msgid "E.g.: %(num)d"
+msgstr ""
+
 msgid "E.g.: ftp.example.com"
 msgstr ""
 
@@ -126,6 +130,9 @@ msgid "Path does not exist or is inaccessible."
 msgstr ""
 
 msgid "Pending"
+msgstr ""
+
+msgid "Port:"
 msgstr ""
 
 msgid "Protocol:"

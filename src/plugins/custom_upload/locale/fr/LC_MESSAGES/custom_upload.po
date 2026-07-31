@@ -37,6 +37,10 @@ msgstr "Par défaut :"
 msgid "Documents"
 msgstr "Documents"
 
+#, python-format
+msgid "E.g.: %(num)d"
+msgstr "Exemple : %(num)d"
+
 msgid "E.g.: ftp.example.com"
 msgstr "Exemple : ftp.exemple.com"
 
@@ -127,6 +131,9 @@ msgstr "Le chemin n'existe pas ou est inaccessible."
 
 msgid "Pending"
 msgstr "En attente"
+
+msgid "Port:"
+msgstr "Port :"
 
 msgid "Protocol:"
 msgstr "Protocole :"
