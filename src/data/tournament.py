@@ -3412,7 +3412,10 @@ class Tournament:
             if team_board.round > after_round:
                 continue
             stb = team_board.stored_team_board
-            if stb.team_b_id is not None:
+            if stb.team_b_id is not None or stb.bye_type not in (
+                None,
+                TeamByeType.PAB,
+            ):
                 continue
             tpn = tpn_by_team_id.get(stb.team_a_id)
             if tpn is not None:

@@ -215,6 +215,23 @@ class TrfTournamentImporter(FileTournamentImporter):
                         )
                         + str(exception)
                     )
+                # In a team TRF, 240 is authoritative for team F/H/Z byes.
+                # A no-opponent 001 block is player-level information:
+                # 0000 / "-" / blank (equivalent to Z) is also the
+                # specification's representation for a roster member who
+                # was not nominated. Sharly has no individual-bye state in
+                # a team tournament, so do not turn these Z/H/F blocks into
+                # persisted player pairings. The team envelope is rebuilt
+                # separately from 240.
+                result = TrfResult.get_core_object(
+                    trf_game.result, has_opponent=bool(trf_game.opponent_id)
+                )
+                if (
+                    event.is_team_event
+                    and not trf_game.opponent_id
+                    and result.is_no_board_bye
+                ):
+                    continue
                 stored_pairing, stored_board = self._read_trf_game(trf_game, player_id)
                 if stored_board:
                     if player_id in board_id_by_player_id_by_round[round_nb]:
@@ -729,6 +746,29 @@ class TrfTournamentImporter(FileTournamentImporter):
                 teams_in_real_match.add(team_a_id)
                 teams_in_real_match.add(team_b_id)
 
+            # Older Sharly exports could let a later manual-bye envelope
+            # overwrite the real team PAB in record 320. The compatibility
+            # recovery below uses individual ``0000 - U`` boards only when
+            # 320 and 240 contradict each other for the same team. Outside
+            # that legacy signature, 320 remains authoritative as required
+            # by TRF26. A U record belonging to a team in a real match is a
+            # hole-board instead and is handled by the real-match loop.
+            pab_board_ids_by_team: dict[int, set[int]] = defaultdict(set)
+            for board in stored_boards:
+                assert board.id is not None
+                player_id = board.white_player_id or board.black_player_id
+                if player_id is None:
+                    continue
+                pairing = pairing_by_player_round.get((player_id, round_))
+                if (
+                    pairing is None
+                    or pairing.result != Result.PAIRING_ALLOCATED_BYE.value
+                ):
+                    continue
+                team_id = team_id_by_player_id.get(player_id)
+                if team_id is not None and team_id not in teams_in_real_match:
+                    pab_board_ids_by_team[team_id].add(board.id)
+
             # Lone (team, None) envelopes for this round:
             # * 320 record → engine PAB (single team per round).
             # * 240 records → manual byes (HPB / FPB / ZPB), one team
@@ -754,6 +794,30 @@ class TrfTournamentImporter(FileTournamentImporter):
                         (tid, bt) for tid, bt in bye_envelopes if tid != mb_team_id
                     ]
                 bye_envelopes.append((mb_team_id, mb_type))
+            legacy_320_conflict = (
+                pab_team_id is not None
+                and (
+                    round_,
+                    pab_team_id,
+                )
+                in manual_byes_by_round_team
+            )
+            if legacy_320_conflict:
+                enveloped_team_ids = {team_id for team_id, _ in bye_envelopes}
+                inferred_candidates = [
+                    team_id
+                    for team_id in pab_board_ids_by_team
+                    if team_id not in enveloped_team_ids
+                ]
+                if inferred_candidates:
+                    inferred_team_id = min(
+                        inferred_candidates,
+                        key=lambda team_id: (
+                            -len(pab_board_ids_by_team[team_id]),
+                            pairing_number_by_team_id.get(team_id, team_id),
+                        ),
+                    )
+                    bye_envelopes.append((inferred_team_id, None))
 
             match_index = 0
             assigned_board_ids: set[int] = set()

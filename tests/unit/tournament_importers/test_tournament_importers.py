@@ -11,6 +11,7 @@ from data.input_output.tournament_importer_options import FileOption
 from data.input_output.trf.trf_data import (
     TrfGame,
     TrfPlayer,
+    TrfRoundBye,
     TrfTeam,
     TrfTournament,
 )
@@ -35,6 +36,7 @@ from utils.enum import (
     PlayerTitle,
     Result,
     ScoreType,
+    TeamByeType,
     TeamColourType,
 )
 
@@ -197,7 +199,7 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(team_1_player_names, ['ALPHA-ONE', 'ALPHA-TWO'])
 
     @staticmethod
-    def _write_team_trf(file_obj) -> str:
+    def _write_team_trf(file_obj, *, add_blank_reserve: bool = False) -> str:
         """Build a minimal TRF26 team Swiss (4 teams × 2 players, no
         rounds played) and write it to ``file_obj``. Returns the file
         path so the caller can clean it up. The fixture is generated
@@ -264,10 +266,127 @@ class TournamentImporterTestCase(TestCase):
         for player in trf_tournament.players:
             player.games.append(TrfGame(opponent_id=0, color='-', result='Z', round=1))
 
+        if add_blank_reserve:
+            # Give the round one ordinary board as well. Real team exports
+            # have board data alongside their team-bye records, and the
+            # importer reconstructs team envelopes while walking those
+            # populated rounds.
+            trf_tournament.players[2].games[0] = TrfGame(
+                opponent_id=5, color='w', result='1', round=1
+            )
+            trf_tournament.players[4].games[0] = TrfGame(
+                opponent_id=3, color='b', result='0', round=1
+            )
+            reserve = TrfPlayer(
+                id=next_player_id,
+                gender='m',
+                title='',
+                name='ALPHA-RESERVE, Player',
+                rating=1900,
+                federation='FRA',
+                fide_id=0,
+                birth_date='2000/01/01',
+                points=0.0,
+                rank=0,
+                games=[
+                    # The explicit round-2 Z forces the serializer to retain
+                    # round 1's empty block, exactly as Sharly does for a
+                    # reserve who was not fielded in round 1.
+                    TrfGame(opponent_id=None, color=' ', result=' ', round=1),
+                    TrfGame(opponent_id=0, color='-', result='Z', round=2),
+                ],
+            )
+            trf_tournament.players.append(reserve)
+            trf_tournament.teams[0].player_ids.append(reserve.id)
+            trf_tournament.num_players += 1
+            # Team 1 has a round-1 ZPB independently of the reserve's blank
+            # 001 entry.
+            trf_tournament.round_byes.append(
+                TrfRoundBye(type='Z', round=1, pairing_numbers=[1])
+            )
+
         path = file_obj.name
         TrfSerializer.dump(file_obj, trf_tournament)
         file_obj.close()
         return path
+
+    def test_trf_team_boardless_player_byes_are_not_imported(self):
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        trf_path = self._write_team_trf(
+            tempfile.NamedTemporaryFile(
+                'w', encoding='utf-8', suffix='.trfx', delete=False
+            ),
+            add_blank_reserve=True,
+        )
+        try:
+            tournament = self._import_tournament(
+                TrfTournamentImporter([FileOption(Path(trf_path))])
+            )
+        finally:
+            Path(trf_path).unlink(missing_ok=True)
+
+        team = tournament.teams_by_pairing_number[1]
+        reserve_player = next(
+            player for player in team.players if player.last_name == 'ALPHA-RESERVE'
+        )
+        reserve = tournament.tournament_players_by_id[reserve_player.id]
+        self.assertEqual(team.round_bye_type(1), TeamByeType.ZPB)
+        self.assertEqual(reserve.pairings_by_round[1].result, Result.NO_RESULT)
+        self.assertFalse(reserve.pairings_by_round[1].exists)
+        # Explicit player Z records are also not persisted as pairings:
+        # in a team 001 record, Z may simply mean that this roster player
+        # was absent or not nominated. Any team bye is represented
+        # independently by its team envelope.
+        self.assertEqual(reserve.pairings_by_round[2].result, Result.NO_RESULT)
+        self.assertFalse(reserve.pairings_by_round[2].exists)
+
+    def test_trf_team_recovers_pab_from_legacy_conflicting_320(self):
+        """Old Sharly exports could put the wrong team in 320 when a
+        manual team bye existed in the same round. The remaining U
+        boards still identify the real PAB team and must cause its team
+        envelope to be recovered."""
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        trf_text = (BASE_PATH / 'trf-team-import-test.trf').read_text(encoding='utf-8')
+        trf_text = trf_text.replace(
+            '320  2.0  5.0   5   3',
+            '240 Z 001    1\n320  2.0  5.0   1   3',
+        )
+        with tempfile.NamedTemporaryFile(
+            'w', encoding='utf-8', suffix='.trfx', delete=False
+        ) as file:
+            file.write(trf_text)
+            trf_path = Path(file.name)
+        try:
+            tournament = self._import_tournament(
+                TrfTournamentImporter([FileOption(trf_path)])
+            )
+        finally:
+            trf_path.unlink(missing_ok=True)
+
+        expected_team = tournament.teams_by_pairing_number[5]
+        pab = next(
+            team_board
+            for team_board in tournament.get_round_team_boards(1)
+            if team_board.stored_team_board.team_a_id == expected_team.id
+            and team_board.stored_team_board.team_b_id is None
+        )
+        self.assertEqual(pab.stored_team_board.bye_type, None)
+        self.assertTrue(
+            any(
+                pairing.result == Result.PAIRING_ALLOCATED_BYE
+                for player in expected_team.players
+                if (
+                    tournament_player := tournament.tournament_players_by_id.get(
+                        player.id
+                    )
+                )
+                for pairing in tournament_player.pairings_by_round.values()
+            )
+        )
 
     def test_trf_team_round_trip_with_oodo(self):
         """Re-importing a TRF26 file emitted by Sharly preserves every
@@ -942,6 +1061,21 @@ class TournamentImporterTestCase(TestCase):
                 expected_bye,
                 f'team pn={pn} round {round_}: bye_type lost on round trip',
             )
+
+    def test_trf_team_320_excludes_manual_byes(self):
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        tournament = self._import_tournament(
+            TrfTournamentImporter([FileOption(BASE_PATH / 'trf-team-import-test.trf')])
+        )
+        pab_team = tournament.teams_by_pairing_number[5]
+        self._set_team_manual_bye(tournament, pab_team.id, 1, TeamByeType.ZPB)
+
+        team_pabs = tournament.to_trf(after_round=1).team_pabs
+        self.assertIsNotNone(team_pabs)
+        assert team_pabs is not None
+        self.assertNotIn(1, team_pabs.team_id_by_round)
 
     def test_trf_team_into_individual_event_is_rejected(self):
         """A team TRF must not be importable into an individual event,
