@@ -268,6 +268,30 @@ class SessionEventsShowDetails(BoolSessionVariable):
         return 'events_show_details'
 
 
+class SessionAdminCollectionViewMode(SubKeySessionVariable[str]):
+    """The preferred projection for each card-based admin collection."""
+
+    @property
+    def key(self) -> str:
+        return 'admin_collection_view_modes'
+
+    @property
+    def default_value(self) -> str:
+        return 'list'
+
+
+class SessionAdminCollectionShowDetails(SubKeySessionVariable[bool]):
+    """Whether every item in an admin collection should expose its details."""
+
+    @property
+    def key(self) -> str:
+        return 'admin_collection_show_details'
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
 class SessionTeamsShowRoster(BoolSessionVariable):
     @property
     def key(self) -> str:
@@ -310,6 +334,20 @@ class SessionPairingsShowWithoutResults(BoolSessionVariable):
     @property
     def key(self) -> str:
         return 'pairings_show_without_results'
+
+
+class SessionPairingsBoardSort(SessionVariable[str]):
+    """Board column ordering on the pairings tab when a tournament has fixed
+    boards and is numbered compactly: ``'board'`` (by display number, default)
+    or ``'natural'`` (pairing order)."""
+
+    @property
+    def key(self) -> str:
+        return 'pairings_board_sort'
+
+    @property
+    def default_value(self) -> str:
+        return 'board'
 
 
 class SessionScreensScreenTypes(SessionVariable[set[str]]):

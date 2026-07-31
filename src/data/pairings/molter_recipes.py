@@ -25,7 +25,7 @@ from data.pairings.molter_recipe_replay import (
 
 _BINARY_MAGIC_V1 = b'MLTRCP\x01'
 _BINARY_MAGIC_V2 = b'MLTRCP\x02'
-MAX_APP_MOLTER_TEAM_COUNT = 20
+MAX_APP_MOLTER_TEAM_COUNT = 25
 _SCHEDULE_KINDS_BY_ID = {
     1: 'odd_cell_drops',
     2: 'even_factor_rows',

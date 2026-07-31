@@ -13,9 +13,9 @@ from litestar_htmx import HTMXRequest
 
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
-from data.display_controller import DisplayController
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.display_controller import DisplayController
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from data.tournament import Tournament
 from utils.enum import Result
 from web.utils import RequestUtils

@@ -6,7 +6,7 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% set _first_set = admin_screen.sorted_screen_sets | first %}
-                {% if admin_screen.type in ['boards', 'input'] %}
+                {% if admin_screen.screen_type.board_based %}
                     {% if _first_set and _first_set.shows_team_matches %}
                         {{ _('Match sets of screen %(screen_name)s', screen_name=admin_screen.name) }}
                     {% else %}

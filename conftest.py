@@ -188,7 +188,11 @@ def lan_page(lan_context):
     page = lan_context.new_page()
     page.set_default_timeout(15000)
     page.set_default_navigation_timeout(10000)
-    return page
+    yield page
+    # Spawned tabs must not keep polling after the test.
+    for open_page in list(lan_context.pages):
+        if not open_page.is_closed():
+            open_page.close()
 
 
 @pytest.fixture(scope='session')

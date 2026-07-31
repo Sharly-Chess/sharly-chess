@@ -3,9 +3,9 @@ from datetime import datetime
 from functools import total_ordering
 from typing import TYPE_CHECKING, Optional, Literal
 
-from database.sqlite.event.event_store import StoredBoard
+from database.sqlite.event.event_store import StoredBoard, set_stored_fields
 from database.sqlite.event.event_database import EventDatabase
-from utils.date_time import format_datetime
+from utils.date_time import format_time
 from utils.enum import Result, PlayerRatingType, PlayerTitle
 
 if TYPE_CHECKING:
@@ -14,6 +14,42 @@ if TYPE_CHECKING:
     from data.player import TournamentPlayer
     from data.team_board import TeamBoard
     from data.tournament import Tournament
+
+
+def compute_round_board_numbers(
+    entries: list[tuple[int, int | None, int]],
+    first_board_number: int,
+    leave_holes: bool,
+) -> dict[int, int]:
+    """Assign a display number to every board of a round.
+
+    ``entries`` are ``(identifier, fixed_number, standard_number)`` tuples in
+    board index (pairing) order. When ``leave_holes`` is true a fixed number
+    overrides the standard number of its own board, leaving that board's
+    standard number unused and duplicating the number it lands on. Otherwise
+    the round is numbered compactly: each fixed number is honoured once (the
+    earliest board in index order wins a clash) and every remaining board
+    takes the next free number, so the round has neither gaps nor duplicates.
+    """
+    if leave_holes:
+        return {
+            identifier: fixed or standard for identifier, fixed, standard in entries
+        }
+    numbers: dict[int, int] = {}
+    used: set[int] = set()
+    for identifier, fixed, _standard in entries:
+        if fixed and fixed not in used:
+            numbers[identifier] = fixed
+            used.add(fixed)
+    counter = first_board_number
+    for identifier, _fixed, _standard in entries:
+        if identifier in numbers:
+            continue
+        while counter in used:
+            counter += 1
+        numbers[identifier] = counter
+        used.add(counter)
+    return numbers
 
 
 @total_ordering
@@ -48,6 +84,14 @@ class Board:
         self._black_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
             weakref.ref(black) if black is not None else None
         )
+
+    def _player_ref(
+        self, player_id: int | None
+    ) -> Optional['ReferenceType[TournamentPlayer]']:
+        if not player_id:
+            return None
+        player = self.tournament.tournament_players_by_id.get(player_id)
+        return weakref.ref(player) if player is not None else None
 
     @property
     def tournament(self) -> 'Tournament':
@@ -115,12 +159,50 @@ class Board:
     def index(self) -> int:
         return self.stored_board.index
 
+    @index.setter
+    def index(self, value: int) -> None:
+        set_stored_fields(self.stored_board, index=value)
+        self.tournament.invalidate_board_layout()
+
+    @property
+    def white_player_id(self) -> int | None:
+        return self.stored_board.white_player_id
+
+    @white_player_id.setter
+    def white_player_id(self, value: int | None) -> None:
+        set_stored_fields(self.stored_board, white_player_id=value)
+        self._white_player_ref = self._player_ref(value)
+        self.tournament.invalidate_board_layout()
+
+    @property
+    def black_player_id(self) -> int | None:
+        return self.stored_board.black_player_id
+
+    @black_player_id.setter
+    def black_player_id(self, value: int | None) -> None:
+        set_stored_fields(self.stored_board, black_player_id=value)
+        self._black_player_ref = self._player_ref(value)
+        self.tournament.invalidate_board_layout()
+
     @property
     def standard_number(self) -> int:
         return self.tournament.first_board_number + self.index
 
     @property
     def fixed_number(self) -> int | None:
+        # A snapshot taken when the board was paired (``0`` = no fixed player)
+        # freezes the number so editing a player's fixed table can't renumber
+        # the rounds they have already played. Legacy boards stored no
+        # snapshot (``None``) and keep deriving from the seated players.
+        snapshot = self.stored_board.fixed_number
+        if snapshot is not None:
+            return snapshot or None
+        return self.live_fixed_number
+
+    @property
+    def live_fixed_number(self) -> int | None:
+        """Fixed table number derived from the currently seated players —
+        the value snapshotted onto a board when it is paired."""
         white_tp = self.optional_white_tournament_player
         fixed_white: int | None = white_tp.fixed if white_tp else None
         fixed_black: int | None = getattr(self.black_tournament_player, 'fixed', None)
@@ -133,15 +215,11 @@ class Board:
 
     @property
     def number(self) -> int:
-        return self.fixed_number or self.standard_number
+        return self.tournament.board_number(self)
 
     @property
     def number_str(self) -> str:
-        fixed = self.fixed_number
-        standard = self.standard_number
-        if fixed:
-            return f'{fixed} ({standard})'
-        return str(standard)
+        return str(self.number)
 
     @property
     def team_board(self) -> 'TeamBoard | None':
@@ -218,19 +296,15 @@ class Board:
 
     @property
     def last_result_update_str(self) -> str:
-        return (
-            format_datetime(self.last_result_update) if self.last_result_update else ''
-        )
+        return format_time(self.last_result_update) if self.last_result_update else ''
 
     def replace_player(
         self, new_player: 'TournamentPlayer', player_color: Literal['white', 'black']
     ):
         if player_color == 'white':
-            self._white_player_ref = weakref.ref(new_player)
-            self.stored_board.white_player_id = new_player.id
+            self.white_player_id = new_player.id
         else:
-            self._black_player_ref = weakref.ref(new_player)
-            self.stored_board.black_player_id = new_player.id
+            self.black_player_id = new_player.id
 
     def permute_colors(self):
         if self.optional_white_tournament_player is None:
@@ -248,8 +322,11 @@ class Board:
 
     def set_last_result_update(self, new_result: Result, database: EventDatabase):
         """Updates board timestamp. Clears board timestamp if result is NO_RESULT."""
-        self.stored_board.last_result_update = database.update_board_last_result_update(
-            self.identifier, clear=new_result == Result.NO_RESULT
+        set_stored_fields(
+            self.stored_board,
+            last_result_update=database.update_board_last_result_update(
+                self.identifier, clear=new_result == Result.NO_RESULT
+            ),
         )
 
     def to_pgn(
@@ -293,8 +370,8 @@ class Board:
         return (
             f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
             + (
-                f'[{field_prefix}Title "{tournament_player.title.value}"]\n'
-                if tournament_player.title != PlayerTitle.NONE
+                f'[{field_prefix}Title "{tournament_player.strongest_title.value}"]\n'
+                if tournament_player.strongest_title != PlayerTitle.NONE
                 else ''
             )
             + f'[{field_prefix}Elo "{rating}"]\n'

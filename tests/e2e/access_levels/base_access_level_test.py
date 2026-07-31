@@ -13,8 +13,7 @@ from tests.e2e.access_levels.conftest import (
     TOURNAMENT_ID,
     TOURNAMENT_UNPAIRED_ID,
 )
-from tests.test_config import TestUtils
-from utils.enum import ScreenType
+from tests.test_config import ScreenType, TestUtils
 
 
 class DisplayMode(IntEnum):
@@ -287,12 +286,12 @@ class BaseAccessLevelTest:
                 expect(input_screens_button).to_be_visible()
                 input_screens_button.click()
 
-        card = page.locator(f"div.card:has-text('{screen.name}')")
+        item = page.get_by_test_id('screens-item').filter(has_text=screen.name)
 
         if can_access:
-            expect(card).to_be_visible()
+            expect(item).to_be_visible()
         else:
-            expect(card).not_to_be_visible()
+            expect(item).not_to_be_visible()
 
         if can_access:
             # Test access to the input screen
@@ -352,13 +351,10 @@ class BaseAccessLevelTest:
         row = rows.filter(has_text='ALYX')
         result_cell = row.locator('div.score')
         if not can_enter:
-            expect(result_cell).not_to_have_attribute(
-                'hx-get', re.compile(r'.*result-modal.*')
-            )
+            expect(row).not_to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
             return
 
-        # Try to open the modal
-        expect(result_cell).to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
+        expect(row).to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
         row.click()
         modal = self.auth_page.locator('.modal-dialog')
 
@@ -395,9 +391,7 @@ class BaseAccessLevelTest:
             clear_button.click()
             expect(result_cell).to_have_text('#1')
         else:
-            expect(result_cell).not_to_have_attribute(
-                'hx-get', re.compile(r'.*result-modal.*')
-            )
+            expect(row).not_to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
 
     def assert_can_set_illegal_moves_via_screen(
         self,

@@ -6,7 +6,7 @@ from typing import Annotated, Any
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException, NotFoundException
-from litestar.params import Parameter, Body
+from litestar.params import Body, FromPath, QueryParameter, FromQuery
 from litestar.response import Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
@@ -27,7 +27,6 @@ from plugins.sce.sce_background_synchronizer import (
     is_sync_ongoing,
     is_sync_scheduled,
 )
-from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_background_uploader import (
     schedule_upload,
     upload_event_tournaments,
@@ -39,6 +38,7 @@ from plugins.sce.sce_data import (
     SCETournamentSyncData,
     SCEPlayerSyncData,
 )
+from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_sync_status import SuccessSCESyncStatus
 from plugins.sce.utils import SCEUtils
 from web.controllers.admin.base_admin_controller import (
@@ -326,12 +326,12 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_oauth_callback(
         self,
         request: HTMXRequest,
-        action: str,
-        event_uniq_id: str | None,
-        state_param: Annotated[str, Parameter(query='state')],
-        sce_event_id: Annotated[str, Parameter(query='event_id')] = '',
-        code: str = '',
-        error: str = '',
+        action: FromPath[str],
+        event_uniq_id: FromPath[str | None],
+        state_param: Annotated[str, QueryParameter(name='state')],
+        sce_event_id: Annotated[str, QueryParameter(name='event_id')] = '',
+        code: FromQuery[str] = '',
+        error: FromQuery[str] = '',
     ) -> Redirect:
         error_message: str | None = None
         tokens: SCETokens | None = None
@@ -432,7 +432,7 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_sync_modal(
         self,
         request: HTMXRequest,
-        no_refresh: bool = False,
+        no_refresh: FromQuery[bool] = False,
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
         message: str | None = None
@@ -529,7 +529,7 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_update_tournament_auto_upload(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -563,7 +563,7 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_upload_tournament_results(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
@@ -645,8 +645,8 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_resolve_tournament_conflict(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        choice: str,
+        tournament_id: FromPath[int],
+        choice: FromPath[str],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id)
         event = web_context.get_admin_event()
@@ -738,8 +738,8 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_resolve_player_conflict(
         self,
         request: HTMXRequest,
-        player_id: int,
-        choice: str,
+        player_id: FromPath[int],
+        choice: FromPath[str],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, player_id=player_id)
         event = web_context.get_admin_event()
@@ -789,7 +789,7 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_import_tournament(
         self,
         request: HTMXRequest,
-        sce_tournament_id: str,
+        sce_tournament_id: FromPath[str],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
         event = web_context.get_admin_event()
@@ -816,7 +816,7 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_upload_local_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id)
         event = web_context.get_admin_event()
@@ -907,7 +907,7 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_delete_local_player(
         self,
         request: HTMXRequest,
-        player_id: int,
+        player_id: FromPath[int],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, player_id=player_id)
         event = web_context.get_admin_event()
@@ -929,8 +929,8 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_delete_sce_player(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        sce_player_id: str,
+        tournament_id: FromPath[int],
+        sce_player_id: FromPath[str],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id)
         event = web_context.get_admin_event()
@@ -972,7 +972,7 @@ class SCEAdminController(BaseAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id=tournament_id)
         event = web_context.get_admin_event()

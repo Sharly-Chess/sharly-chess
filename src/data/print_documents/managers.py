@@ -95,8 +95,10 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.ListPlayerSortPrintOption,
             options.ShowWarningsPrintOption,
             options.NonMonetaryPrintOption,
+            options.FederationPrintOption,
             options.ClubThresholdPrintOption,
             options.Rule143ExemptionPrintOption,
+            options.NormsForecastSortPrintOption,
             options.QRCodeNetworkPrintOption,
             options.PlaceCardBoardNumbersPrintOption,
             options.PlaceCardMirrorPrintOption,
@@ -107,6 +109,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.IndividualTeamMinGenderCountPrintOption,
             options.IndividualTeamMaxPerEntityPrintOption,
             options.IndividualTeamDisplayIncompletePrintOption,
+            options.FixedBoardOrderPrintOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_print_option')(
             print_options=print_options

@@ -214,7 +214,7 @@
                                 </td>
                                 <td class="col-name left">
                                     {% if wtp %}
-                                        {% set _w_title = wtp.title.short_name %}
+                                        {% set _w_title = wtp.display_title %}
                                         <div class="player-name">
                                             <span class="color-chip"></span>{% if _w_title %}{{ _w_title }} {% endif %}{{ wtp.full_name }}
                                         </div>
@@ -227,7 +227,7 @@
                                 <td class="col-result">{{ b_result }}</td>
                                 <td class="col-name right">
                                     {% if btp %}
-                                        {% set _b_title = btp.title.short_name %}
+                                        {% set _b_title = btp.display_title %}
                                         <div class="player-name">
                                             {% if _b_title %}{{ _b_title }} {% endif %}{{ btp.full_name }}<span class="color-chip black" style="margin-left:4pt;margin-right:0"></span>
                                         </div>
@@ -326,7 +326,7 @@
                             </td>
                             <td class="col-name left">
                                 {% if team_a_player %}
-                                    {% set _a_title = team_a_player.title.short_name %}
+                                    {% set _a_title = team_a_player.display_title %}
                                     <div class="player-name">
                                         <span class="color-chip {% if team_a_color == 'B' %}black{% endif %}"></span>{% if _a_title %}{{ _a_title }} {% endif %}{{ team_a_player.full_name }}
                                     </div>
@@ -355,7 +355,7 @@
                             <td class="col-result">{{ b_result }}</td>
                             <td class="col-name right">
                                 {% if team_b_player %}
-                                    {% set _b_title = team_b_player.title.short_name %}
+                                    {% set _b_title = team_b_player.display_title %}
                                     {% set _b_color = 'B' if team_a_is_white else 'W' %}
                                     <div class="player-name">
                                         {% if _b_title %}{{ _b_title }} {% endif %}{{ team_b_player.full_name }}<span class="color-chip {% if _b_color == 'B' %}black{% endif %}" style="margin-left:4pt;margin-right:0"></span>

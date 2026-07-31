@@ -36,6 +36,7 @@ from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
     NormChoicePrintOption,
+    NormsForecastSortPrintOption,
     OptionalPlayerPrintOption,
     Rule143ExemptionPrintOption,
     PlayerSplitPrintOption,
@@ -51,6 +52,7 @@ from data.print_documents.options import (
     ListPlayerSortPrintOption,
     ShowWarningsPrintOption,
     NonMonetaryPrintOption,
+    FederationPrintOption,
     ClubThresholdPrintOption,
     TournamentPrintOption,
     TournamentsPrintOption,
@@ -66,6 +68,7 @@ from data.print_documents.options import (
     IndividualTeamMinGenderCountPrintOption,
     IndividualTeamMaxPerEntityPrintOption,
     IndividualTeamDisplayIncompletePrintOption,
+    FixedBoardOrderPrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
@@ -76,7 +79,12 @@ from data.print_documents.individual_teams import IndividualTeamType, Individual
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.enum import Result, TitleNorm, PlayerGender, ScoreType
+from utils.enum import (
+    Result,
+    TitleNorm,
+    PlayerGender,
+    ScoreType,
+)
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
 
@@ -486,12 +494,9 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
         results: list[tuple[TournamentPlayer, TournamentPlayer, Result, float]] = []
         for tournament_player in self.tournament.tournament_players:
             pairing = tournament_player.pairings[ranking_round]
-            if pairing.opponent_id and pairing.played:
+            rating_change = tournament_player.round_performance(ranking_round)
+            if pairing.opponent_id and pairing.played and rating_change is not None:
                 opponent = self.tournament.tournament_players_by_id[pairing.opponent_id]
-                expected_score = 1 / (
-                    1 + 10 ** ((opponent.rating - tournament_player.rating) / 400)
-                )
-                rating_change = 20 * (pairing.result.points() - expected_score)
                 results.append(
                     (tournament_player, opponent, pairing.result, rating_change)
                 )
@@ -546,11 +551,16 @@ class BoardPrintDocument(PrintDocument, ABC):
         return False
 
     @property
+    def show_federation(self) -> bool:
+        return False
+
+    @property
     def board_columns(self) -> list[BoardColumn]:
         return BoardColumnHandler(ColumnUsage.PRINT).get_pairings_columns(
             self.tournament,
             self.at_round,
             ResultColumn if self.show_results else NoResultColumn,
+            show_federation=self.show_federation,
         )
 
     @property
@@ -614,7 +624,13 @@ class PairingPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, PairingStylePrintOption, RoundPrintOption]
+        return [
+            TournamentPrintOption,
+            PairingStylePrintOption,
+            RoundPrintOption,
+            FixedBoardOrderPrintOption,
+            FederationPrintOption,
+        ]
 
     @cached_property
     def sub_document(self) -> PrintDocument:
@@ -644,9 +660,32 @@ class BoardPairingPrintDocument(BoardPrintDocument):
     def static_name() -> str:
         return _('Board Pairings')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return BoardPrintDocument.available_options() + [
+            FixedBoardOrderPrintOption,
+            FederationPrintOption,
+        ]
+
+    @property
+    def show_federation(self) -> bool:
+        return bool(self._get_option(FederationPrintOption).value)
+
     @property
     def title(self) -> str:
         return _('Pairings for round #{round}').format(round=self.at_round)
+
+    @property
+    def boards(self) -> list[Board]:
+        boards = super().boards
+        if self.tournament.leave_fixed_board_holes:
+            return boards
+        if (
+            self._get_option(FixedBoardOrderPrintOption).value
+            == FixedBoardOrderPrintOption.NATURAL
+        ):
+            return boards
+        return sorted(boards, key=lambda board: board.number)
 
 
 class PlayerPairingPrintDocument(PlayerPrintDocument):
@@ -2051,7 +2090,8 @@ class NormReportPrintDocument(PrintDocument):
                 rule_143_exemption=exemption_code
             ).items()
             if norm.meets_gender
-            and tournament_player.title.sort_index < norm_title.player_title.sort_index
+            and tournament_player.title_on_norm_ladder(norm_title).sort_index
+            < norm_title.player_title.sort_index
         }
         apply_143abc_exemption(
             norms,
@@ -2133,7 +2173,8 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
                 rule_143_exemption=exemption_code
             ).items()
             if norm.meets_gender
-            and tournament_player.title.sort_index < norm_title.player_title.sort_index
+            and tournament_player.title_on_norm_ladder(norm_title).sort_index
+            < norm_title.player_title.sort_index
         }
         apply_143abc_exemption(
             norms,
@@ -2241,6 +2282,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         return [
             TournamentPrintOption,
             Rule143ExemptionPrintOption,
+            NormsForecastSortPrintOption,
         ]
 
     @property
@@ -2328,7 +2370,8 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 tn: result
                 for tn, result in all_norms.items()
                 if result.is_met
-                and tournament_player.title.sort_index < tn.player_title.sort_index
+                and tournament_player.title_on_norm_ladder(tn).sort_index
+                < tn.player_title.sort_index
             }
             if achieved:
                 achievers.append({'player': tournament_player, 'norms': achieved})
@@ -2377,6 +2420,8 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         from data.norms import TitleNormForecaster
 
         exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        sort_mode = self._get_option(NormsForecastSortPrintOption).value
+        self.tournament.ensure_tournament_player_ranks_computed()
         candidates: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
             forecaster = TitleNormForecaster(
@@ -2419,32 +2464,48 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             if not requirements:
                 continue
             pairing = tournament_player.pairings_by_round[forecast_round]
+            board = pairing.board
             candidates.append(
                 {
                     'player': tournament_player,
                     'opponent': pairing.opponent,
                     'requirements': requirements,  # dict[TitleNorm, ForecastRequirement | None]
                     'achieved': achieved,
+                    'rank': tournament_player.rank,
+                    'board_number': board.number if board is not None else None,
                 }
             )
 
-        # Order: GM-chasers first, then by player name. Within a player,
-        # norms are already TitleNorm-ordered by the forecaster.
-        def _sort_key(entry):
+        self._sort_candidates(candidates, sort_mode)
+        return {
+            'candidates': candidates,
+            'forecast_round': forecast_round,
+            'sort_mode': sort_mode,
+        }
+
+    @staticmethod
+    def _sort_candidates(candidates: list[dict[str, Any]], sort_mode: str) -> None:
+        """Order forecast rows per the arbiter's sort choice. Unpaired
+        (board-less) players sink to the bottom of a table-number sort."""
+
+        def _highest_norm_key(entry):
             highest_norm = max(
                 entry['requirements'].keys(),
                 key=lambda tn: tn.player_title.sort_index,
             )
-            return (
-                -highest_norm.player_title.sort_index,
-                entry['player'].name_sort_key,
-            )
+            return -highest_norm.player_title.sort_index
 
-        candidates.sort(key=_sort_key)
-        return {
-            'candidates': candidates,
-            'forecast_round': forecast_round,
-        }
+        if sort_mode == 'name':
+            candidates.sort(key=lambda e: e['player'].name_sort_key)
+        elif sort_mode == 'table':
+            candidates.sort(
+                key=lambda e: (
+                    e['board_number'] is None,
+                    e['board_number'] or 0,
+                )
+            )
+        else:  # 'rank'
+            candidates.sort(key=lambda e: e['rank'])
 
 
 class QRCodePrintDocument(PrintDocument):

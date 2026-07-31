@@ -3,6 +3,7 @@ from contextlib import suppress
 from typing import Any
 
 from litestar import patch, delete, put, get
+from litestar.di import NamedDependency
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
@@ -10,7 +11,7 @@ from litestar.channels import ChannelsPlugin
 
 from data.access_levels.actions import AuthAction
 from data.board import Board
-from data.screen import Screen
+from data.screens.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
@@ -146,7 +147,7 @@ class InputUserController(BaseScreenUserController):
     async def htmx_user_toggle_check_in(
         self,
         request: HTMXRequest,
-        channels: ChannelsPlugin,
+        channels: NamedDependency[ChannelsPlugin],
     ) -> Template:
         web_context = PlayerUserWebContext(request)
         tournament = web_context.tournament
@@ -184,7 +185,7 @@ class InputUserController(BaseScreenUserController):
     async def htmx_user_team_toggle_check_in(
         self,
         request: HTMXRequest,
-        channels: ChannelsPlugin,
+        channels: NamedDependency[ChannelsPlugin],
     ) -> Template:
         web_context = TeamUserWebContext(request)
         tournament = web_context.tournament
@@ -278,7 +279,7 @@ class InputUserController(BaseScreenUserController):
     async def htmx_user_update_result(
         self,
         request: HTMXRequest,
-        channels: ChannelsPlugin,
+        channels: NamedDependency[ChannelsPlugin],
     ) -> Template:
         web_context = ResultUserWebContext(request)
         event = web_context.user_event
@@ -304,4 +305,8 @@ class InputUserController(BaseScreenUserController):
                 expiration=time.time() + 20,
             )
         )
-        return self._user_screen_render(web_context)
+        return self._user_screen_render(
+            web_context,
+            template_name='user/screen/content.html',
+            trigger_event='close_modal',
+        )

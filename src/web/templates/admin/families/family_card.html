@@ -5,14 +5,15 @@
 {% endblock %}
 
 {% block card_title %}
-    <span class="pe-1">{{ macros.screen_type_icon(family.type, true) }}</span>{{ family.type_str }}
+    <span class="pe-1">{{ macros.screen_type_icon(family.screen_type, true) }}</span>{{ family.type_str }}
 {% endblock %}
 
 {% block card_text %}
+    {% set screen_type = family.screen_type %}
     <div class="d-flex flex-column gap-1">
         {% if show_details %}
             <div>
-                <span class="pe-1">{{ macros.screen_type_icon(family.type, true) }}</span>
+                <span class="pe-1">{{ macros.screen_type_icon(family.screen_type, true) }}</span>
                 {{ _('Type: %(family_type)s', family_type=family.type_str) }}
             </div>
             <div>
@@ -21,10 +22,12 @@
             <div>
                 {{ _('Selection: %(selection)s', selection=family.numbers_str) }}
             </div>
-            <div>
-                {{ _('Columns:') }} {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
-            </div>
-            {% if family.type in ('input', 'check-in') %}
+            {% if family.screen_type.multi_column_allowed %}
+                <div>
+                    {{ _('Columns:') }} {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+                </div>
+            {% endif %}
+            {% if screen_type.has_exit_button %}
                 <div>
                     <i class="bi-x-circle pe-1"></i>
                     {{ _('Exit button:') }}
@@ -35,31 +38,6 @@
                     {% endif %}
                 </div>
             {% endif %}
-            {% if family.type == 'players' %}
-                {% with entity=family, tournament=family.tournament %}
-                    {% include '../common/card_players_screen_display.html' %}
-                {% endwith %}
-            {% endif %}
-            {% if family.type == 'ranking' %}
-                <div class="{% if family.ranking_round %}text-secondary{% endif %}">
-                    {% if family.ranking_round %}
-                        {# _('Round: %(round)d', round=family.ranking_round) #}
-                    {% else %}
-                        {{ _('Round: the last finished round') }}
-                    {% endif %}
-                </div>
-                {% if family.ranking_min_points or family.ranking_max_points %}
-                    <div>
-                        {% if family.ranking_min_points and family.ranking_max_points %}
-                            {{ _('Points: %(min)s to %(max)s', min='%0.2f' % family.ranking_min_points, max='%0.2f' % family.ranking_max_points) }}
-                        {% elif family.ranking_min_points %}
-                            {{ _('Points: %(min)s or more', min='%0.2f' % family.ranking_min_points) }}
-                        {% else %}
-                            {{ _('Points: up to %(max)s', max='%0.2f' % family.ranking_max_points) }}
-                        {% endif %}
-                    </div>
-                {% endif %}
-            {% endif %}
             <div>
                 <i class="bi-hand-index pe-1"></i>
                 {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}
@@ -68,6 +46,10 @@
                 <i class="bi-clock-fill pe-1"></i>
                 {% if family.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
             </div>
+            {% if screen_type.card_detail_template %}
+                {% set data = screen_type.family_card_context(family) %}
+                {% include screen_type.card_detail_template %}
+            {% endif %}
             {% if family.message_text %}
                 <div
                         class="px-2 alert-message screen-alert-message"
@@ -91,55 +73,9 @@
 
         {% if family.screens_by_uniq_id|length > 0 %}
             {% for screen in family.screens_by_uniq_id.values() %}
-                {% set screen_set=screen.sorted_screen_sets[0] %}
-                {% set tournament=family.tournament %}
                 <div>
                     {{ loop.index }}.
-                    {% if admin_event.is_team_event %}
-                        {% if tournament.current_round and family.type in ['boards', 'input'] and family.shows_team_matches %}
-                            {% if screen_set.first_team_match %}
-                                {{ _('Matches from #%(first)d to #%(last)d', first=screen_set.first_team_match.display_number, last=screen_set.last_team_match.display_number) }}
-                            {% else %}
-                                {{ _('Teams (none now)') }}
-                            {% endif %}
-                        {% elif tournament.current_round and family.type in ['boards', 'input'] %}
-                            {{ _(
-                                'Boards from #%(first)d to #%(last)d',
-                                first=screen_set.first_board.id + tournament.first_board_number - 1,
-                                last=screen_set.last_board.id + tournament.first_board_number - 1
-                            ) }}
-                        {% elif family.type in ['boards', 'input', 'players', 'check-in'] %}
-                            {% if screen_set.first_team_by_name %}
-                                {{ _('Teams from %(first)s to %(last)s', first=screen_set.first_team_by_name.name[:12], last=screen_set.last_team_by_name.name[:12]) }}
-                            {% else %}
-                                {{ _('Teams (none now)') }}
-                            {% endif %}
-                        {% else %} {# family.type == 'ranking' #}
-                            {% if screen_set.first_team_standing %}
-                                {{ _('Teams from #%(first)d to #%(last)d', first=screen_set.first_team_standing['rank'], last=screen_set.last_team_standing['rank']) }}
-                            {% else %}
-                                {{ _('Teams (none now)') }}
-                            {% endif %}
-                        {% endif %}
-                    {% elif tournament.current_round and family.type in ['boards', 'input'] %}
-                        {{ _(
-                            'Boards from #%(first)d to #%(last)d',
-                            first=screen_set.first_board.id + tournament.first_board_number - 1,
-                            last=screen_set.last_board.id + tournament.first_board_number - 1
-                        ) }}
-                    {% elif family.type in ['boards', 'input', 'players', 'check-in'] %}
-                        {% if screen_set.first_tournament_player_by_name %}
-                            {{ _('Players from %(first)s to %(last)s', first=screen_set.first_tournament_player_by_name.last_name[:8], last=screen_set.last_tournament_player_by_name.last_name[:8]) }}
-                        {% else %}
-                            {{ _('Players (none now)') }}
-                        {% endif %}
-                    {% else %} {# family.type == 'ranking' #}
-                        {% if screen_set.first_tournament_player_by_rank %}
-                            {{ _('Players from #%(first)d to #%(last)d', first=screen_set.first_tournament_player_by_rank.rank, last=screen_set.last_tournament_player_by_rank.rank) }}
-                        {% else %}
-                            {{ _('Players (none now)') }}
-                        {% endif %}
-                    {% endif %}
+                    {{ screen_type.family_screen_label(screen.sorted_screen_sets[0]) }}
                 </div>
             {% endfor %}
         {% else %}

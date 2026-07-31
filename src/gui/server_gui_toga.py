@@ -286,7 +286,9 @@ class SharlyChessServerToga(toga.App):
 
     instance: Optional['SharlyChessServerToga'] = None
 
-    def __init__(self, *, debug: bool = False, port: int | None = None):
+    def __init__(
+        self, *, debug: bool = False, profile: bool = False, port: int | None = None
+    ):
         SharlyChessServerToga.instance = self
         icon_file_name: str | None = None
         web_dir = BASE_DIR / 'src' / 'web'
@@ -307,10 +309,6 @@ class SharlyChessServerToga(toga.App):
         # Use FLATPAK_ID if available to match the sandbox ID
         app_id = FLATPAK_ID or 'com.sharlychess.app'
 
-        # Explicitly request .NET Framework 4.x by setting this variable
-        # (see https://github.com/Sharly-Chess/sharly-chess/pull/2098)
-        os.environ['TOGA_WINFORMS_USE_NETFX'] = '1'
-
         super().__init__(
             formal_name='Sharly Chess',
             app_id=app_id,
@@ -319,6 +317,7 @@ class SharlyChessServerToga(toga.App):
             version=str(SHARLY_CHESS_VERSION),
         )
         self.debug = debug
+        self.profile = profile
         self.port = port
 
         self.gui_loop = asyncio.get_event_loop()
@@ -393,7 +392,7 @@ class SharlyChessServerToga(toga.App):
         self.settings_view: Optional[toga.Box] = None
         self.launch_browser_switch: Optional[toga.Switch] = None
         self.data_path_input: Optional[TextInput] = None
-        self.data_path_edit_button: Optional[toga.Button] = None
+        self.data_path_move_button: Optional[toga.Button] = None
         self.check_beta_switch: Optional[toga.Switch] = None
         self.latest_version_label: Optional[toga.Label] = None
         self.latest_version_btn: Optional[toga.Button] = None
@@ -605,10 +604,10 @@ class SharlyChessServerToga(toga.App):
         if MANUAL_PATH_USED:
             self.data_path_input.enabled = False
         else:
-            self.data_path_edit_button = toga.Button(
-                _('Edit'), on_press=self._handle_data_path_selection
+            self.data_path_move_button = toga.Button(
+                _('Move'), on_press=self._handle_data_path_selection
             )
-            data_path_buttons.append(self.data_path_edit_button)
+            data_path_buttons.append(self.data_path_move_button)
         current_version_message = _('Current version: Sharly Chess {version}').format(
             version=SHARLY_CHESS_VERSION
         )
@@ -760,7 +759,7 @@ class SharlyChessServerToga(toga.App):
             _('Data folder'),
             _('Confirm the new data folder "{folder}"?').format(folder=new_data_dir)
             + '\n'
-            + _('Restarting will be required to apply the change.'),
+            + _('Restarting will be required to complete the move.'),
         )
         if not await self.main_window.dialog(confirm_dialog):
             return
@@ -773,14 +772,14 @@ class SharlyChessServerToga(toga.App):
 
         assert self.settings_view is not None
         assert self.data_path_input is not None
-        assert self.data_path_edit_button is not None
+        assert self.data_path_move_button is not None
         self.data_path_input.enabled = False
-        self.data_path_edit_button.enabled = False
+        self.data_path_move_button.enabled = False
         self.settings_view.index(self.data_path_input)
         self.settings_view.insert(
             self.settings_view.index(self.data_path_input) + 2,
             toga.Label(
-                _('Modified, restart to apply'),
+                _('Restart to complete the move'),
                 color='red',
                 font_weight='bold',
                 text_align='center',
@@ -876,20 +875,19 @@ class SharlyChessServerToga(toga.App):
         searched_at = VersionUpdater.LATEST_VERSION_SEARCHED_AT
         if search_ongoing:
             message = _('Searching for updates...')
-        elif not latest or not searched_at:
+        elif not searched_at:
             message = _('Update search failed (no internet)')
+        elif latest and latest > SHARLY_CHESS_VERSION:
+            message = _('Updates are available!')
+            if self.update_available_box not in self.home_view.children:
+                self.home_view.insert(0, self.update_available_box)
+            if not skip_settings:
+                self.latest_version_label.style.font_weight = 'bold'
+                self.latest_version_btn.text = _('Install')
+                self.latest_version_btn.on_press = self._show_update_dialog
         else:
-            if latest > SHARLY_CHESS_VERSION:
-                message = _('Updates are available!')
-                if self.update_available_box not in self.home_view.children:
-                    self.home_view.insert(0, self.update_available_box)
-                if not skip_settings:
-                    self.latest_version_label.style.font_weight = 'bold'
-                    self.latest_version_btn.text = _('Install')
-                    self.latest_version_btn.on_press = self._show_update_dialog
-            else:
-                message = _('No available update')
-                message += f' ({self._last_search_message(searched_at)})'
+            message = _('No available update')
+            message += f' ({self._last_search_message(searched_at)})'
 
         if not skip_settings:
             self.latest_version_label.text = message
@@ -1192,6 +1190,7 @@ class SharlyChessServerToga(toga.App):
 
         engine = ServerEngine(
             debug=self.debug,
+            profile=self.profile,
             port=self.port,
             loop=loop,
             handle_signals=False,

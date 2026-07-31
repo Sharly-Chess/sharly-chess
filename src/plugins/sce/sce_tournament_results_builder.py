@@ -210,8 +210,8 @@ def _build_players(tournament: Tournament) -> list[dict[str, Any]]:
         }
         if player.first_name:
             p['firstName'] = player.first_name
-        if player.title.value:
-            p['title'] = player.title.value
+        if player.strongest_title.value:
+            p['title'] = player.strongest_title.value
         if player.rating:
             p['rating'] = player.rating
             rating_type_str = SCEPlayerRatingType.get_outer_value(player.rating_type)
@@ -254,7 +254,11 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
 
             entry: dict[str, Any] = {
                 'round': round_,
-                'table': board.standard_number,
+                'table': (
+                    board.number
+                    if not tournament.leave_fixed_board_holes
+                    else board.standard_number
+                ),
                 'board': board.id,
                 'whitePairingNumber': board.white_tournament_player.pairing_number,
                 'blackPairingNumber': black.pairing_number if black else -1,
@@ -265,9 +269,6 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
                     else Result.NO_RESULT.value
                 ),
             }
-            if board.fixed_number:
-                entry['fixedTable'] = board.fixed_number
-
             # TODO (Molrn) Add pairing custom fields to support Handicap games
             pairings.append(entry)
     return pairings

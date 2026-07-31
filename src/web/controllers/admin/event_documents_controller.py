@@ -4,7 +4,7 @@ from typing import Annotated
 
 from litestar import get, post
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template
 
@@ -158,9 +158,9 @@ class EventDocumentsController(BaseEventAdminController):
     async def htmx_documents_modal(
         self,
         request: HTMXRequest,
-        document_id: str | None = None,
-        tournament_id: int | None = None,
-        round: int | None = None,
+        document_id: FromQuery[str | None] = None,
+        tournament_id: FromPath[int | None] = None,
+        round: FromQuery[int | None] = None,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         tournament_ids = web_context.default_tournament_for_print_modal(tournament_id)
@@ -193,7 +193,7 @@ class EventDocumentsController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        event_uniq_id: str,
+        event_uniq_id: FromPath[str],
     ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
         web_context = BaseEventAdminWebContext(request)
@@ -264,8 +264,8 @@ class EventDocumentsController(BaseEventAdminController):
     async def htmx_document_view(
         self,
         request: HTMXRequest,
-        document: str,
-        options: str | None = None,
+        document: FromPath[str],
+        options: FromQuery[str | None] = None,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()

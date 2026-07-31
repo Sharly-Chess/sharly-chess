@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, Hashable, TYPE_CHECKING, Optional
 
 import apluggy as pluggy  # type: ignore
 
@@ -11,6 +11,7 @@ from plugins.utils import (
     NavDataTransferItem,
     PluginData,
     AccountPluginData,
+    TournamentConnectionField,
 )
 from utils.enum import (
     Result,
@@ -51,7 +52,9 @@ if TYPE_CHECKING:
     )
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
+    from data.screens.screen_types import ScreenType
     from data.criteria.player_filters import PlayerFilter
+    from data.criteria.tournament_criteria import TournamentCriterion
     from data.rule_sets import RuleSet
     from data.tie_breaks import TieBreak, TieBreakOption
     from data.tie_breaks.system_sets import SystemTieBreakSet
@@ -65,6 +68,7 @@ if TYPE_CHECKING:
     )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
+    from web.admin.collection import AdminCollectionSpec
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
     from data.columns.column import ColumnUsage, Column
 
@@ -91,6 +95,15 @@ class AppHookSpecs:
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
         """Provide additional template context for AdminWebContext"""
+
+    @hookspec
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: Optional['Event'],
+    ):
+        """Extend a request-scoped admin card/list collection."""
 
     # ---------------------------------------------------------------------------------
     # Input-Output
@@ -154,10 +167,13 @@ class AppHookSpecs:
         """Validate the additional player form fields. Add the errors to the *errors* dict."""
 
     @hookspec
-    def are_players_duplicates(
-        self, stored_player: 'StoredPlayer', player: 'Player'
-    ) -> bool:
-        """Check if the stored player is a duplicate of the other."""
+    def get_player_duplicate_key(
+        self, stored_player: 'StoredPlayer'
+    ) -> tuple[str, Hashable] | None:
+        """Return a namespaced key used to detect plugin-specific duplicates.
+
+        The first item is the plugin ID. Return ``None`` when no key applies.
+        """
 
     @hookspec
     async def augment_player_after_search(
@@ -293,12 +309,13 @@ class AppHookSpecs:
         """Get the context used for the templates provided for the tournament page."""
 
     @hookspec
-    def get_tournament_card_connexion_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
-        """Add a template path for a connexion to display on the tournament cards.
-        These templates are displayed in priority in the card.
-        Return None if the connexion is undefined."""
+    ) -> TournamentConnectionField | None:
+        """Describe a tournament's connection to an external service.
+
+        These fields are grouped in the tournament card and list Transfer
+        section. Return None if the connection is undefined."""
 
     @hookspec
     def get_tournament_card_fields_template(self) -> str:
@@ -331,6 +348,13 @@ class AppHookSpecs:
         self, tournament: 'Tournament'
     ) -> str | None:
         """Warning message for the pairing settings of a tournament."""
+
+    @hookspec(firstresult=True)
+    def leave_fixed_board_holes(self, tournament: 'Tournament') -> bool | None:
+        """Whether a fixed board number should leave the table it displaces
+        empty (and duplicate the number it lands on) instead of numbering the
+        round compactly, to stay compatible with the reference file format.
+        ``None`` when the plugin has no opinion."""
 
     @hookspec
     def get_prohibited_pairing_dimensions(
@@ -377,6 +401,12 @@ class AppHookSpecs:
     def load_tournament_check_in_data(self, tournament: 'Tournament'):
         """Load the check-in data of a tournament."""
 
+    @hookspec
+    def insert_tournament_criteria_types(
+        self, criteria_types: list[type['TournamentCriterion']]
+    ):
+        """Provide additional tournament criteria types."""
+
     # ---------------------------------------------------------------------------------
     # Upload
     # ---------------------------------------------------------------------------------
@@ -406,6 +436,15 @@ class AppHookSpecs:
     @hookspec(firstresult=True)
     def get_default_players_screen_columns(self) -> int | None:
         """Return default number of columns of the Players Screens."""
+
+    @hookspec
+    def insert_screen_types(self, screen_types: list[type['ScreenType']]):
+        """Provide extra screen types."""
+
+    @hookspec
+    def get_screen_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin screen values.
+        Also provide the ID of the plugin."""
 
     # ---------------------------------------------------------------------------------
     # Printing

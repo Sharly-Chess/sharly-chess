@@ -2,7 +2,7 @@
     class="
         player-cell
         {% if (
-            is_input and
+            screen.screen_type.allows_check_in and
             last_check_in_updated and
             last_check_in_updated.expiration > now and
             last_check_in_updated.tournament_id == tournament.id and
@@ -35,5 +35,5 @@
     {% endif %}
 >
     <i class="{% if player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"></i>
-    {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }}
+    {% if player.display_title %}{{ player.display_title }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }}
 </div>

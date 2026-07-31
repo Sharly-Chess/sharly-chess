@@ -168,8 +168,8 @@ class PlayerColumnHandler:
                 pt.GenderColumn,
                 pt.FederationColumn,
                 pt.ClubColumn,
-                pt.PointsColumn,
-            ],
+                pt.PrizeMetricColumn,
+            ]
         )
 
 
@@ -194,6 +194,7 @@ class BoardColumnHandler:
         round_: int,
         result_column_type: type[BoardColumn],
         show_illegal_moves: bool = False,
+        show_federation: bool = False,
     ) -> list[BoardColumn]:
         show_real_points = tournament.print_real_points(round_)
         column_types: list[Callable[[ColumnUsage], BoardColumn]] = [
@@ -208,8 +209,10 @@ class BoardColumnHandler:
             bt.WhiteTitleColumn,
             bt.WhiteNameColumn,
             bt.WhiteRatingColumn,
-            result_column_type,
         ]
+        if show_federation:
+            column_types.append(bt.WhiteFederationColumn)
+        column_types.append(result_column_type)
         if show_illegal_moves:
             column_types.append(bt.BlackIllegalMovesColumn)
         column_types += [
@@ -217,6 +220,8 @@ class BoardColumnHandler:
             bt.BlackNameColumn,
             bt.BlackRatingColumn,
         ]
+        if show_federation:
+            column_types.append(bt.BlackFederationColumn)
         if show_real_points:
             column_types.append(bt.BlackRealPointsColumn)
         column_types.append(bt.BlackPointsColumn)
@@ -321,6 +326,7 @@ class PlayerDatasheetColumnHandler:
     def _base_columns(self) -> list[DatasheetColumn]:
         columns: list[DatasheetColumn] = [
             pds.TitleColumn(),
+            pds.WomenTitleColumn(),
             pds.LastNameColumn(),
             pds.FirstNameColumn(),
             pds.DateOfBirthColumn(),

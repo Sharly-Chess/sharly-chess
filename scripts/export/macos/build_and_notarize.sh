@@ -20,6 +20,11 @@ set -e
 # Parse command line arguments
 BUILD_ONLY=false
 SIGN_ONLY=false
+# --submit-only: build, sign, create+sign the DMG, then submit to the Apple
+# notary WITHOUT --wait, save the submission id, and exit. Apple's queue can take
+# hours; a later job awaits + staples so build minutes don't stack on the wait
+# and the 6h runner cap is spent on Apple alone.
+SUBMIT_ONLY=false
 while [[ $# -gt 0 ]]; do
     case $1 in
         --build-only)
@@ -28,9 +33,12 @@ while [[ $# -gt 0 ]]; do
         --sign-only)
             SIGN_ONLY=true
             ;;
+        --submit-only)
+            SUBMIT_ONLY=true
+            ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--build-only|--sign-only]"
+            echo "Usage: $0 [--build-only|--sign-only|--submit-only]"
             exit 1
             ;;
     esac
@@ -41,6 +49,8 @@ if [ "$BUILD_ONLY" = true ]; then
     echo "=== macOS Build Script (Build Only Mode - Sign but Skip Notarization) ==="
 elif [ "$SIGN_ONLY" = true ]; then
     echo "=== macOS Sign Script (Sign Only Mode) ==="
+elif [ "$SUBMIT_ONLY" = true ]; then
+    echo "=== macOS Sign & Async-Submit Script (submit to notary, don't wait) ==="
 else
     echo "=== macOS Sign & Notarize Script (using Environment Variables) ==="
 fi
@@ -197,7 +207,18 @@ fi
 echo "Certificate imported successfully."
 
 echo "--- Section 5: Signing Application Files ---"
-APP_SIGNING_IDENTITY="Developer ID Application"
+# Resolve the exact identity by its SHA-1 hash. The keychain may hold more than
+# one "Developer ID Application" cert (an expired/previous team, a renewal), and
+# signing by the generic name is ambiguous — codesign then refuses. Match the
+# team's org name to pick the right one, and sign by hash so it is unambiguous.
+SIGNING_MATCH="${MACOS_SIGNING_IDENTITY_MATCH:-Sharly Chess}"
+APP_SIGNING_IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" \
+    | grep "Developer ID Application" | grep "$SIGNING_MATCH" | head -1 | awk '{print $2}')
+if [ -z "$APP_SIGNING_IDENTITY" ]; then
+    echo "✗ No Developer ID Application identity matching '$SIGNING_MATCH' found in $KEYCHAIN_PATH"
+    security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+    exit 1
+fi
 echo "Using signing identity: $APP_SIGNING_IDENTITY"
 
 ENTITLEMENTS_FILE="scripts/export/macos/entitlements.plist"
@@ -349,31 +370,49 @@ else
     echo "Signing the DMG..."
     codesign --force --timestamp --options=runtime --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$DMG_PATH" --verbose=2
 
-    echo "Notarizing the DMG... (this may take a while)"
-    NOTARY_RESULT=$(xcrun notarytool submit "$DMG_PATH" \
-        --apple-id "$APPLE_ID" \
-        --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-        --team-id "$APPLE_TEAM_ID" \
-        --wait 2>&1)
-
-    echo "$NOTARY_RESULT"
-
-    if echo "$NOTARY_RESULT" | grep -q "status: Accepted"; then
-        echo "Notarization successful. Stapling ticket..."
-        xcrun stapler staple "$DMG_PATH"
-        echo "Stapling complete."
-    else
-        echo "Error: Notarization failed!"
-        # Extract submission ID to get detailed logs
-        SUBMISSION_ID=$(echo "$NOTARY_RESULT" | grep "id:" | head -1 | awk '{print $2}')
-        if [ -n "$SUBMISSION_ID" ]; then
-            echo "Getting detailed notarization logs..."
-            xcrun notarytool log "$SUBMISSION_ID" \
-                --apple-id "$APPLE_ID" \
-                --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-                --team-id "$APPLE_TEAM_ID"
+    if [ "$SUBMIT_ONLY" = true ]; then
+        # Async: hand the DMG to Apple and leave. A later job awaits + staples.
+        echo "Submitting the DMG to the notary service (no wait)..."
+        SUBMIT_RESULT=$(xcrun notarytool submit "$DMG_PATH" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" 2>&1)
+        echo "$SUBMIT_RESULT"
+        SUBMISSION_ID=$(echo "$SUBMIT_RESULT" | grep "id:" | head -1 | awk '{print $2}')
+        if [ -z "$SUBMISSION_ID" ]; then
+            echo "Error: could not parse a submission id from notarytool output."
+            exit 1
         fi
-        exit 1
+        echo "$SUBMISSION_ID" > "dist/notary-submission-id.txt"
+        echo "Submitted. Submission id: $SUBMISSION_ID (saved to dist/notary-submission-id.txt)"
+        echo "A later job will await acceptance and staple the ticket."
+    else
+        echo "Notarizing the DMG... (this may take a while)"
+        NOTARY_RESULT=$(xcrun notarytool submit "$DMG_PATH" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait 2>&1)
+
+        echo "$NOTARY_RESULT"
+
+        if echo "$NOTARY_RESULT" | grep -q "status: Accepted"; then
+            echo "Notarization successful. Stapling ticket..."
+            xcrun stapler staple "$DMG_PATH"
+            echo "Stapling complete."
+        else
+            echo "Error: Notarization failed!"
+            # Extract submission ID to get detailed logs
+            SUBMISSION_ID=$(echo "$NOTARY_RESULT" | grep "id:" | head -1 | awk '{print $2}')
+            if [ -n "$SUBMISSION_ID" ]; then
+                echo "Getting detailed notarization logs..."
+                xcrun notarytool log "$SUBMISSION_ID" \
+                    --apple-id "$APPLE_ID" \
+                    --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+                    --team-id "$APPLE_TEAM_ID"
+            fi
+            exit 1
+        fi
     fi
 fi
 echo
@@ -394,7 +433,8 @@ echo "Cleanup complete."
 echo
 
 # --- 9. Final Verification ---
-if [ "$BUILD_ONLY" = false ]; then
+# Skip in submit-only mode: the ticket isn't stapled yet (a later job does that).
+if [ "$BUILD_ONLY" = false ] && [ "$SUBMIT_ONLY" = false ]; then
     echo "--- Section 9: Final Verification ---"
     echo "Verifying stapled ticket..."
     xcrun stapler validate "$DMG_PATH"
@@ -405,6 +445,8 @@ fi
 echo "=== Summary ==="
 if [ "$BUILD_ONLY" = true ]; then
     echo "Build process finished successfully (signed but not notarized)!"
+elif [ "$SUBMIT_ONLY" = true ]; then
+    echo "Build + submit finished successfully (submitted to notary, not yet stapled)!"
 else
     echo "Process finished successfully!"
 fi
@@ -413,6 +455,8 @@ echo "  - Standard layout: SharlyChess.app, an arrow, and an Applications link"
 echo "    (plus a Licenses folder); drag the app onto Applications to install"
 if [ "$BUILD_ONLY" = true ]; then
     echo "  - Note: This app is signed but NOT notarized (build-only mode)"
+elif [ "$SUBMIT_ONLY" = true ]; then
+    echo "  - Note: This app is signed and submitted to the notary but NOT yet stapled"
 else
     echo "  - This app is fully signed and notarized for distribution"
 fi

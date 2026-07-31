@@ -39,6 +39,7 @@ from database.sqlite.event.event_store import (
     StoredTeamRoundLineupEntry,
     StoredTournament,
     StoredTournamentPlayer,
+    set_stored_fields,
 )
 from plugins.manager import plugin_manager
 from utils.enum import (
@@ -221,7 +222,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     else:
                         board_id = next_board_id
                         next_board_id += 1
-                        stored_board.id = board_id
+                        set_stored_fields(stored_board, id=board_id)
                         stored_boards_by_round[round_nb].append(stored_board)
                         if trf_game.opponent_id:
                             board_id_by_player_id_by_round[round_nb][
@@ -776,8 +777,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                             if match_board.id in assigned_board_ids:
                                 continue
                             assert match_board.id is not None
-                            match_board.index = slot
-                            match_board.team_board_id = stb.id
+                            set_stored_fields(
+                                match_board, index=slot, team_board_id=stb.id
+                            )
                             database.update_stored_board(match_board)
                             assigned_board_ids.add(match_board.id)
                             continue
@@ -801,7 +803,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                             index=slot,
                             team_board_id=stb.id,
                         )
-                        hole_board.id = database.add_stored_board(hole_board)
+                        set_stored_fields(
+                            hole_board, id=database.add_stored_board(hole_board)
+                        )
                         pairing = pairing_by_player_round.get((player_id, round_))
                         if pairing is not None:
                             pairing.board_id = hole_board.id
@@ -832,8 +836,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     if pab_board is None or pab_board.id in assigned_board_ids:
                         continue
                     assert pab_board.id is not None
-                    pab_board.index = slot
-                    pab_board.team_board_id = stb.id
+                    set_stored_fields(pab_board, index=slot, team_board_id=stb.id)
                     database.update_stored_board(pab_board)
                     assigned_board_ids.add(pab_board.id)
 
@@ -1108,6 +1111,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 if re.match(r'^\d{4}/00/00$', trf_player.birth_date):
                     year_of_birth = int(trf_player.birth_date.split('/')[0])
 
+        trf_title = TrfPlayerTitle.get_core_object(trf_player.title)
         stored_player = StoredPlayer(
             id=trf_player.id,
             last_name=trf_player.name.split(',')[0].strip().upper(),
@@ -1118,7 +1122,8 @@ class TrfTournamentImporter(FileTournamentImporter):
                 else None
             ),
             gender=TrfPlayerGender.get_core_object(trf_player.gender).value,
-            title=TrfPlayerTitle.get_core_object(trf_player.title).value,
+            title=trf_title.open_value,
+            women_title=trf_title.women_value,
             fide_id=trf_player.fide_id,
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,

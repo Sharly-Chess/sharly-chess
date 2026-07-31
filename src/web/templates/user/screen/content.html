@@ -1,0 +1,34 @@
+{% import '/common/macros.j2' as macros with context %}
+<div
+    id="user-screen-content"
+    class="content user-content user-screen-content"
+    style="--font-size: {{ screen.font_size or 100 }};"
+>
+    {% set screen_type = screen.screen_type %}
+    {% if screen_type.set_template %}
+        <div class="screen {{ screen_type.value }}-screen">
+            {% for screen_set in screen.sorted_screen_sets %}
+                {% set tournament = screen_set.tournament %}
+                {% set data = screen_type.set_context(screen_set) %}
+                {% include screen_type.set_template %}
+            {% endfor %}
+        </div>
+    {% elif screen_type.content_template %}
+        {% set data = screen_type.content_context(screen) %}
+        {% include screen_type.content_template %}
+    {% endif %}
+    {% if request.htmx %}
+        <script>
+            (() => {
+                const refresher = document.querySelector(
+                    '.screen-refresher, .display-controller-refresher'
+                );
+                if (!refresher) return;
+                const headers = JSON.parse(refresher.getAttribute('hx-headers') || '{}');
+                headers['If-Modified-Since'] = '{{ now_http_date }}';
+                headers['X-Sharly-Chess-If-Modified-Since'] = '{{ now }}';
+                refresher.setAttribute('hx-headers', JSON.stringify(headers));
+            })();
+        </script>
+    {% endif %}
+</div>

@@ -2,19 +2,10 @@ import copy
 from functools import partial
 from typing import Any, Annotated
 
-
-from data.criteria.player_filter_options import (
-    MinRatingOption,
-    MaxRatingOption,
-    GenderOption,
-    MinAgeCategoryOption,
-    MaxAgeCategoryOption,
-)
-from data.loader import Event
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXRequest, HTMXTemplate
@@ -23,19 +14,27 @@ from common.exception import OptionError
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
-from data.player_categories import NoCategory, PlayerCategory
-from data.print_documents.documents import (
-    PrizeAssignmentPrintDocument,
-    PrizeListPrintDocument,
-)
-from data.prize.managers import PrizeSharingManager, PrizeTypeManager
 from data.criteria.managers import PrizePlayerFilterManager, PlayerFilterOptionManager
+from data.criteria.player_filter_options import (
+    MinRatingOption,
+    MaxRatingOption,
+    GenderOption,
+    MinAgeCategoryOption,
+    MaxAgeCategoryOption,
+)
 from data.criteria.player_filters import (
     PlayerFilter,
     RatingPlayerFilter,
     AgePlayerFilter,
     GenderPlayerFilter,
 )
+from data.loader import Event
+from data.player_categories import NoCategory, PlayerCategory
+from data.print_documents.documents import (
+    PrizeAssignmentPrintDocument,
+    PrizeListPrintDocument,
+)
+from data.prize.managers import PrizeSharingManager, PrizeTypeManager
 from data.prize.prize import Prize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_criterion import PrizeCriterion
@@ -50,7 +49,7 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
 )
 from utils import Utils
-from utils.enum import FormAction, PlayerGender
+from utils.enum import FormAction, PlayerGender, PrizeCategoryRankingBasis
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -229,9 +228,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prizes_tab(
         self,
         request: HTMXRequest,
-        tournament_id: int | None,
-        prize_group_id: int | None,
-        show_details: bool | None,
+        tournament_id: FromPath[int | None],
+        prize_group_id: FromQuery[int | None],
+        show_details: FromQuery[bool | None],
     ) -> Template:
         if show_details is not None:
             SessionPrizesShowDetails(request).set(show_details)
@@ -255,9 +254,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_players_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -294,7 +293,9 @@ class PrizeAdminController(BaseEventAdminController):
         guards=manage_guards,
     )
     async def htmx_admin_prize_group_create(
-        self, request: HTMXRequest, tournament_id: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id)
 
@@ -339,8 +340,8 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str] | None,
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
 
@@ -366,8 +367,8 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_group_delete(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
 
@@ -382,7 +383,9 @@ class PrizeAdminController(BaseEventAdminController):
         name='admin-prize-groups-modal',
     )
     async def htmx_admin_prize_groups_modal(
-        self, request: HTMXRequest, tournament_id: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -400,8 +403,8 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_group_delete_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(request, tournament_id, prize_group_id),
@@ -429,6 +432,14 @@ class PrizeAdminController(BaseEventAdminController):
                 used_names.remove(prize_category.name)
             if name in used_names:
                 errors[field] = _('This name is already used.')
+        field = 'ranking_basis'
+        ranking_basis = WebContext.form_data_to_str(data, field)
+        if ranking_basis:
+            try:
+                PrizeCategoryRankingBasis(ranking_basis)
+            except ValueError:
+                errors[field] = _('Invalid value.')
+                logger.error('Unknown prize category ranking basis [%s]', ranking_basis)
         is_main = WebContext.form_data_to_bool(data, 'is_main')
         share_prizes = WebContext.form_data_to_bool(data, 'share_prizes')
         if not is_main and share_prizes:
@@ -512,6 +523,7 @@ class PrizeAdminController(BaseEventAdminController):
                     'share_prizes': False,
                     'sharing_threshold': '',
                     'prize_sharing': AveragePrizeSharing.static_id(),
+                    'ranking_basis': PrizeCategoryRankingBasis.FINAL_STANDING.value,
                 }
             )
             if action == FormAction.CREATE:
@@ -528,6 +540,7 @@ class PrizeAdminController(BaseEventAdminController):
             'modal': 'prize_category',
             'action': action,
             'prize_sharing_options': prize_sharing_options,
+            'ranking_basis_options': PrizeCategoryRankingBasis.options(),
             'age_category_options': {
                 category.id: category.name
                 for category in event.player_categories
@@ -562,8 +575,8 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
         prize_group = web_context.get_admin_prize_group()
@@ -592,6 +605,12 @@ class PrizeAdminController(BaseEventAdminController):
                 data['prize_sharing'] if share_prizes else NoPrizeSharing.static_id()
             ),
             index=len(prize_group.categories),
+            ranking_basis=(
+                PrizeCategoryRankingBasis.FINAL_STANDING.value
+                if WebContext.form_data_to_bool(data, 'is_main')
+                else WebContext.form_data_to_str(data, 'ranking_basis')
+                or PrizeCategoryRankingBasis.FINAL_STANDING.value
+            ),
         )
         if current_main_category and stored_category.is_main:
             current_stored_category = current_main_category.stored_prize_category
@@ -674,9 +693,9 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -703,6 +722,12 @@ class PrizeAdminController(BaseEventAdminController):
             WebContext.form_data_to_float(data, 'sharing_threshold')
             if share_prizes
             else None
+        )
+        stored_category.ranking_basis = (
+            PrizeCategoryRankingBasis.FINAL_STANDING.value
+            if stored_category.is_main
+            else WebContext.form_data_to_str(data, 'ranking_basis')
+            or PrizeCategoryRankingBasis.FINAL_STANDING.value
         )
         prize_category.update()
         if not was_main and prize_category.is_main:
@@ -736,9 +761,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_category_delete(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -767,9 +792,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_category_duplicate(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -991,8 +1016,8 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_categories_generate_age_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
         return self._render_generate_age_modal(web_context)
@@ -1012,8 +1037,8 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
         event = web_context.get_admin_event()
@@ -1064,8 +1089,8 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_categories_generate_rating_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
         return self._render_generate_rating_modal(web_context)
@@ -1085,8 +1110,8 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
         tournament = web_context.get_admin_tournament()
@@ -1170,8 +1195,8 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, list[int]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
 
@@ -1189,8 +1214,8 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_category_create_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
         return self._render_prize_category_modal(web_context, action=FormAction.CREATE)
@@ -1205,9 +1230,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_category_update_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -1221,6 +1246,7 @@ class PrizeAdminController(BaseEventAdminController):
                 'is_main': prize_category.is_main,
                 'sharing_threshold': prize_category.sharing_threshold,
                 'share_prizes': share_prizes,
+                'ranking_basis': prize_category.ranking_basis.value,
             }
         )
         if share_prizes:
@@ -1241,9 +1267,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_category_delete_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
@@ -1345,9 +1371,9 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -1399,10 +1425,10 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-        prize_criterion_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
+        prize_criterion_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
@@ -1443,10 +1469,10 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_criterion_delete(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-        prize_criterion_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
+        prize_criterion_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
@@ -1470,9 +1496,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_criteria_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
@@ -1491,9 +1517,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_criterion_create_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -1516,10 +1542,10 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_criterion_update_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-        prize_criterion_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
+        prize_criterion_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
@@ -1658,9 +1684,9 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -1720,10 +1746,10 @@ class PrizeAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-        prize_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
+        prize_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
@@ -1765,10 +1791,10 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_delete(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-        prize_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
+        prize_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request,
@@ -1792,9 +1818,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prizes_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         return self._admin_event_prizes_render(
             PrizeAdminWebContext(
@@ -1816,9 +1842,9 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_create_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
@@ -1839,10 +1865,10 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prize_update_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
-        prize_group_id: int,
-        prize_category_id: int,
-        prize_id: int,
+        tournament_id: FromPath[int],
+        prize_group_id: FromPath[int],
+        prize_category_id: FromPath[int],
+        prize_id: FromPath[int],
     ) -> Template:
         web_context = PrizeAdminWebContext(
             request,

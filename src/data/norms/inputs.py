@@ -121,8 +121,9 @@ class NormInputs:
                 fid_count += 1
             else:
                 feds[opponent.federation] += 1
-            if opponent.title in TitleNorm.TITLE_HOLDERS:
-                titles[opponent.title] += 1
+            for title in opponent.held_titles:
+                if title in TitleNorm.TITLE_HOLDERS:
+                    titles[title] += 1
 
         return NormInputs(
             played_games=len(kept_idx),

@@ -107,7 +107,7 @@
         {{ index }}
     </td>
     <td class="text-end compact-col">
-        {{ player.title.short_name }}
+        {{ player.display_title }}
     </td>
     {% for column in visible_columns %}
         {% set value = tournament_player if column.is_tournament_column else player %}

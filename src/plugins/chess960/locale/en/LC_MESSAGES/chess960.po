@@ -1,0 +1,37 @@
+msgid "Adds a screen showing the Chess960 start position."
+msgstr ""
+
+msgid "All Chess960 positions"
+msgstr ""
+
+msgid "Chess960"
+msgstr ""
+
+msgid "Chess960 positions"
+msgstr ""
+
+msgid "Chess960 screens hold a Chess960 start position that can be displayed to the players."
+msgstr ""
+
+#, python-format
+msgid "Position #%(number)d"
+msgstr ""
+
+msgid "Position not set"
+msgstr ""
+
+msgid "Position not set yet, please wait…"
+msgstr ""
+
+msgid "Randomize"
+msgstr ""
+
+msgid "See all Chess960 positions"
+msgstr ""
+
+msgid "Start position number:"
+msgstr ""
+
+msgid "The number of the Chess960 start position to display (1-960)."
+msgstr ""
+

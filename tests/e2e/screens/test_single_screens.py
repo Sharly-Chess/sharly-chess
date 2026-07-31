@@ -5,8 +5,8 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
-from tests.test_config import TestUtils
-from utils.enum import Result, ScreenType
+from tests.test_config import ScreenType, TestUtils
+from utils.enum import Result
 
 
 EVENT_ID = 'event-test-single-screen'
@@ -57,13 +57,17 @@ class TestSingleScreensFunctionality:
         modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
 
-        page.get_by_test_id('accordion-screen-type-input').click()
-        card = page.locator(f"div.card:has-text('{name}')")
-        expect(card).to_be_visible()
-        button = card.locator('button[hx-get*="delete"]')
+        screen_type_section = page.get_by_test_id('accordion-screen-type-input')
+        if screen_type_section.get_attribute('aria-expanded') == 'false':
+            screen_type_section.click()
+        item = page.get_by_test_id('screens-item').filter(has_text=name)
+        expect(item).to_be_visible()
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
+        expect(
+            page.get_by_test_id('screens-item').filter(has_text=name)
+        ).not_to_be_attached()
 
     def test_check_in_screen(
         self,
@@ -156,6 +160,8 @@ class TestSingleScreensFunctionality:
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(8)
+        unchanged_row = rows.filter(has_text='IRINA')
+        unchanged_row.evaluate('element => window.__unchangedResultEntryRow = element')
 
         another_lan_page = lan_context.new_page()
         another_lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
@@ -181,6 +187,9 @@ class TestSingleScreensFunctionality:
 
             # Test that the page is updated
             expect(row.locator('div.score')).to_contain_text(str(player['result']))
+            assert unchanged_row.evaluate(
+                'element => element === window.__unchangedResultEntryRow'
+            )
 
             # That the other page is refreshed
             another_lan_page.bring_to_front()
@@ -189,6 +198,7 @@ class TestSingleScreensFunctionality:
                 str(player['result'])
             )
 
+        another_lan_page.close()
         TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
 
     def test_boards_screen(

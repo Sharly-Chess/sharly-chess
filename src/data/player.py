@@ -43,6 +43,7 @@ if TYPE_CHECKING:
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
     from data.team import Team
+    from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.input_output.trf.trf_data import TrfPlayer
 
@@ -157,7 +158,57 @@ class Player:
 
     @property
     def title(self) -> PlayerTitle:
+        """The player's open title (GM, IM, FM, CM or NONE)."""
         return PlayerTitle(self.stored_player.title)
+
+    @property
+    def women_title(self) -> PlayerTitle:
+        """The player's women title (WGM, WIM, WFM, WCM or NONE)."""
+        return PlayerTitle(self.stored_player.women_title)
+
+    @property
+    def strongest_title(self) -> PlayerTitle:
+        """The single most prestigious title held (open or women), by rank.
+        Used wherever exactly one title is required — imports, exports,
+        sorting and title-holder logic."""
+        return max(self.title, self.women_title, key=lambda title: title.sort_index)
+
+    @property
+    def display_title(self) -> str:
+        """Human-readable title(s) for display. Shows the women title next
+        to the open title unless the open title outranks it on the combined
+        FIDE ladder: GM hides WGM and IM hides WIM (redundant), but an
+        equal or lower open title is shown alongside — e.g. FM + WIM renders
+        as "FM/WIM" because FM does not supersede WIM."""
+        open_title, women_title = self.title, self.women_title
+        if women_title == PlayerTitle.NONE:
+            return open_title.short_name
+        if open_title == PlayerTitle.NONE:
+            return women_title.short_name
+        if open_title.fide_tier > women_title.fide_tier:
+            return open_title.short_name
+        return f'{open_title.short_name}/{women_title.short_name}'
+
+    @property
+    def held_titles(self) -> frozenset[PlayerTitle]:
+        """The player's held titles (open and/or women), excluding NONE.
+
+        Norm checks test membership against both titles: a player can hold
+        an open title and a women title at once (e.g. IM + WIM), and either
+        may satisfy a title requirement."""
+        return frozenset(
+            title
+            for title in (self.title, self.women_title)
+            if title != PlayerTitle.NONE
+        )
+
+    def title_on_norm_ladder(self, title_norm: TitleNorm) -> PlayerTitle:
+        """The player's title on the same ladder as `title_norm`: the women
+        title for women norms (WIM, WGM), the open title for open norms (IM,
+        GM). Open and women titles are separate ladders, so a norm is only
+        "already held" when the matching-ladder title outranks it — an FM
+        with no women title can still be chasing a WIM norm."""
+        return self.women_title if title_norm.player_title.is_women else self.title
 
     @cached_property
     def category(self) -> PlayerCategory:
@@ -414,6 +465,11 @@ class TournamentPlayer(Player):
         self.time_control_modified: bool | None = None
         self.tie_break_variables: dict[str, Any] = {}
         self.transient_plugin_data: dict[str, object] = {}
+        # Per-round sums cached only during a guarded computation pass.
+        self._compute_cache: dict[Any, float] = {}
+
+    def clear_compute_caches(self) -> None:
+        self._compute_cache.clear()
 
     @property
     def tournament(self) -> 'Tournament':
@@ -646,11 +702,20 @@ class TournamentPlayer(Player):
         # NOTE(Amaras) if you were to include the current round
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
-        return sum(
+        caching = self.tournament._compute_caching_enabled
+        key = ('points_before', before_round, only_played)
+        if caching:
+            cached = self._compute_cache.get(key)
+            if cached is not None:
+                return cached
+        value = sum(
             pairing.result.points(self.point_values)
             for round_, pairing in self.pairings.items()
             if round_ < before_round and (pairing.played or not only_played)
         )
+        if caching:
+            self._compute_cache[key] = value
+        return value
 
     def points_after(self, after_round: int) -> float:
         # NOTE(Amaras) this does not rely on the fact that insertion order
@@ -659,11 +724,20 @@ class TournamentPlayer(Player):
         # NOTE(Amaras) if you were to include the current round
         # in the computation, boards regularly change their ordering
         # during the current round as results are added
-        return sum(
+        caching = self.tournament._compute_caching_enabled
+        key = ('points_after', after_round)
+        if caching:
+            cached = self._compute_cache.get(key)
+            if cached is not None:
+                return cached
+        value = sum(
             pairing.result.points(self.point_values)
             for round_index, pairing in self.pairings.items()
             if round_index <= after_round
         )
+        if caching:
+            self._compute_cache[key] = value
+        return value
 
     # Standard W/D/L values for the TRF26 team-mode "standard score".
     # Tournament-level ``game_points`` overrides intentionally don't apply
@@ -773,7 +847,7 @@ class TournamentPlayer(Player):
                 f'{self.last_name}{f", {self.first_name}" if self.first_name else ""}'
             )[:32],
             gender=TrfPlayerGender.get_outer_value(self.gender) or '',
-            title=TrfPlayerTitle.get_outer_value(self.title) or '',
+            title=TrfPlayerTitle.get_outer_value(self.strongest_title) or '',
             rating=self.fide_rating_value or 0,
             federation=self.federation.name,
             fide_id=self.fide_id,
@@ -937,7 +1011,14 @@ class TournamentPlayer(Player):
             if self.tournament.tie_breaks[tie_break_index].is_used_for_team_ranking
         ]
 
-    def compute_tie_break_values(self, *, after_round: int):
+    def compute_tie_break_values(
+        self,
+        *,
+        after_round: int,
+        tie_breaks: list['TieBreak'] | None = None,
+    ):
+        if tie_breaks is None:
+            tie_breaks = self.tournament.tie_breaks
         self._tie_break_values = [
             TieBreakValue(
                 tie_break,
@@ -945,7 +1026,7 @@ class TournamentPlayer(Player):
                 if tie_break.is_computed_per_player
                 else 0,
             )
-            for tie_break in self.tournament.tie_breaks
+            for tie_break in tie_breaks
         ]
 
     @property
@@ -1058,6 +1139,43 @@ class TournamentPlayer(Player):
     @property
     def has_played_games(self) -> bool:
         return any(pairing.played for pairing in self.pairings.values())
+
+    def round_performance(self, round_index: int) -> float | None:
+        """Single-round performance indicator: the Elo rating change (K=20)
+        for the game played in ``round_index``, based on the opponent's rating
+        and the result. ``None`` when that round was not played against an
+        opponent (unplayed, bye or forfeit)."""
+        pairing = self.pairings.get(round_index)
+        if pairing is None or not pairing.opponent_id or not pairing.played:
+            return None
+        opponent = self.tournament.tournament_players_by_id[pairing.opponent_id]
+        expected_score = 1 / (1 + 10 ** ((opponent.rating - self.rating) / 400))
+        return 20 * (pairing.result.points() - expected_score)
+
+    @property
+    def round_performances(self) -> list[float]:
+        """The per-round performance indicators of every game actually played."""
+        return [
+            performance
+            for round_index in self.pairings
+            if (performance := self.round_performance(round_index)) is not None
+        ]
+
+    @property
+    def average_round_performance(self) -> float | None:
+        """Average of the per-round performance indicators, ``None`` when the
+        player has played no game."""
+        performances = self.round_performances
+        if not performances:
+            return None
+        return sum(performances) / len(performances)
+
+    @property
+    def best_round_performance(self) -> float | None:
+        """Best of the per-round performance indicators, ``None`` when the
+        player has played no game."""
+        performances = self.round_performances
+        return max(performances) if performances else None
 
     @property
     def has_been_paired(self) -> bool:

@@ -543,7 +543,7 @@
                             </td>
                             <td><input class="center" size="5" value="{{ opp.rating }}"  /></td>
                             <td><input class="center" size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
-                            <td><input class="center" size="4" value="{% if opp is not none %}{{ opp.title.value if opp.title in [
+                            <td><input class="center" size="4" value="{% if opp is not none %}{{ opp.strongest_title.value if opp.strongest_title in [
                                 PlayerTitle.GRANDMASTER,
                                 PlayerTitle.INTERNATIONAL_MASTER,
                                 PlayerTitle.WOMAN_GRANDMASTER,

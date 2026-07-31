@@ -8,6 +8,22 @@ EVENT_ID = 'test-event-e2e'
 
 @pytest.mark.e2e
 class TestEventFunctionality:
+    def test_sce_oauth_callback_accepts_standard_query_parameter_names(
+        self, api_request_context: APIRequestContext
+    ):
+        response = api_request_context.get(
+            '/sce/oauth/callback/import-event',
+            params={
+                'code': 'test-code',
+                'state': 'unknown-state',
+                'event_id': 'test-event-id',
+            },
+            max_redirects=0,
+        )
+
+        assert response.status == 302
+        assert response.headers['location'] == '/'
+
     def test_create_and_delete_event(self, page: Page):
         page.goto('/')
         TestUtils.button_by_text(page, 'Create an event').click()
@@ -19,9 +35,9 @@ class TestEventFunctionality:
         expect(page).to_have_url(f'/event/{EVENT_ID}/tournaments')
 
         page.goto('/current_events')
-        card = page.locator(f"div.card:has-text('Unique ID: {EVENT_ID}')")
-        expect(card).to_be_visible()
-        button = card.locator('button[hx-get*="delete"]')
+        item = page.get_by_test_id('events-item').filter(has_text=EVENT_ID)
+        expect(item).to_be_visible()
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
 
         modal = page.locator('.modal-dialog')
@@ -29,8 +45,8 @@ class TestEventFunctionality:
         modal.locator('#archive').check()
         modal.locator('button[type=submit]').click()
         page.goto('/event/current_events')
-        card = page.locator(f"div.card:has-text('Unique ID: {EVENT_ID}')")
-        expect(card).not_to_be_attached()
+        item = page.get_by_test_id('events-item').filter(has_text=EVENT_ID)
+        expect(item).not_to_be_attached()
 
     def test_rename_event(self, page: Page, api_request_context: APIRequestContext):
         new_uniq_id = EVENT_ID + '-2'

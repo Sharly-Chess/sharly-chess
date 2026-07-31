@@ -171,6 +171,7 @@ class DomainLocaleInfo(Domain):
                 for flag in msg.flags:
                     if flag not in [
                         'python-format',
+                        'python-brace-format',
                         'error',
                     ]:
                         if flag not in self.flagged_messages:

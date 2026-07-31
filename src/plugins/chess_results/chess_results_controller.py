@@ -4,7 +4,7 @@ from typing import Any, Annotated
 from litestar import get, post, patch
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
+from litestar.params import Body, FromPath
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
@@ -20,6 +20,10 @@ from plugins.utils import PluginUtils
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
+)
+from web.controllers.admin.tournament_admin_controller import (
+    TournamentAdminController,
+    TournamentAdminWebContext,
 )
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, TournamentActionGuard, ActionGuard
@@ -116,7 +120,7 @@ class ChessResultsController(BaseEventAdminController):
     async def htmx_admin_chess_results_upload_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = CRWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
@@ -159,7 +163,7 @@ class ChessResultsController(BaseEventAdminController):
     async def htmx_chess_results_update_tournament_auto_upload(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -193,7 +197,7 @@ class ChessResultsController(BaseEventAdminController):
     async def htmx_ffe_upload_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = CRWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
@@ -209,4 +213,6 @@ class ChessResultsController(BaseEventAdminController):
         else:
             Message.success(request, _('Tournament successfully uploaded.'))
 
-        return self.render_messages(request)
+        return TournamentAdminController._admin_event_tournaments_render(
+            TournamentAdminWebContext(request)
+        )

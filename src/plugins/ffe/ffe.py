@@ -136,6 +136,7 @@ from plugins.utils import (
     PluginUtils,
     PluginData,
     AccountPluginData,
+    TournamentConnectionField,
 )
 from utils.enum import (
     EventType,
@@ -143,6 +144,7 @@ from utils.enum import (
     Result,
     TournamentRating,
 )
+from web.admin.collection import ListColumn
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
 
@@ -153,6 +155,7 @@ if TYPE_CHECKING:
     from data.rule_sets import RuleSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
+    from web.admin.collection import AdminCollectionSpec
 
 
 class FfePluginHooks:
@@ -221,6 +224,10 @@ class FfePlugin(Plugin):
     @property
     def event_form_script_template(self) -> str:
         return '/ffe_event_form_script.js'
+
+    @property
+    def event_form_fields_template(self) -> str:
+        return '/ffe_event_form_fields.html'
 
     def used_by_stored_tournament(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
@@ -410,15 +417,14 @@ class FfePlugin(Plugin):
             ).format(ffe_licence_number=ffe_licence_number)
 
     @hookimpl
-    def are_players_duplicates(
-        self, stored_player: StoredPlayer, player: Player
-    ) -> bool:
-        licence_number = self.get_data(stored_player.plugin_data, 'ffe_licence_number')
-        return (
-            licence_number
-            and FFEUtils.get_player_plugin_data(player).ffe_licence_number
-            == licence_number
-        )
+    def get_player_duplicate_key(
+        self, stored_player: StoredPlayer
+    ) -> tuple[str, str] | None:
+        if licence_number := self.get_data(
+            stored_player.plugin_data, 'ffe_licence_number'
+        ):
+            return self.id, licence_number
+        return None
 
     @hookimpl
     async def augment_player_after_search(
@@ -673,6 +679,10 @@ class FfePlugin(Plugin):
         return self.id, FfeEventPluginData
 
     @hookimpl
+    def leave_fixed_board_holes(self, tournament: 'Tournament') -> bool:
+        return FFEUtils.get_event_plugin_data(tournament.event).leave_fixed_board_holes
+
+    @hookimpl
     def get_default_prize_currency(self) -> str:
         return 'EUR'
 
@@ -691,16 +701,31 @@ class FfePlugin(Plugin):
         # The FFE upload pipeline is Papi-based — individual events only.
         if stored_event.event_type == EventType.TEAM:
             return
-        # This hook being called in most database writes, it needs to be optimized
+        # Defer the event reload so result entry does not wait for it.
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
         ):
             return
-        event = EventLoader().load_event(stored_event.uniq_id)
+
+        from threading import Thread
+
+        from common.logger import get_logger
+
+        uniq_id = stored_event.uniq_id
         tournament_id = stored_tournament.id
         assert tournament_id is not None
-        tournament = event.tournaments_by_id[tournament_id]
-        FfeBackgroundUploader.schedule_upload(tournament)
+
+        def _reload_and_schedule() -> None:
+            try:
+                event = EventLoader().load_event(uniq_id)
+                tournament = event.tournaments_by_id[tournament_id]
+                FfeBackgroundUploader.schedule_upload(tournament)
+            except Exception:
+                get_logger().exception(
+                    'FFE auto-upload scheduling failed for event [%s]', uniq_id
+                )
+
+        Thread(target=_reload_and_schedule, daemon=True).start()
 
     @hookimpl
     def get_tournament_form_fields_template_and_data(
@@ -731,14 +756,31 @@ class FfePlugin(Plugin):
         return {'ffe_utils': FFEUtils}
 
     @hookimpl
-    def get_tournament_card_connexion_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
+    ) -> TournamentConnectionField | None:
         if tournament.event.is_team_event:
             return None
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
-        return '/ffe_tournament_card_connexion.html'
+        return TournamentConnectionField(
+            label=_('FFE'),
+            template='/ffe_tournament_connection_value.html',
+        )
+
+    @hookimpl
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: Optional['Event'],
+    ) -> None:
+        if collection_key != 'tournaments':
+            return
+        collection_spec.ensure_list_column(
+            ListColumn('transfer', label=_('Transfer')),
+            before='actions',
+        )
 
     @hookimpl
     def get_tournament_card_action_menu_items_template(self) -> str:

@@ -36,6 +36,8 @@ class Pairing:
             tournament_player
         )
         self.stored_pairing = stored_pairing
+        self._result_value = stored_pairing.result
+        self._result = Result(self._result_value)
 
         # NOTE (Molrn) Flag indicating if the stored object exists in the database or not.
         # Pre-big move, the unpaired rounds had their own *Pairing* objects in the DB
@@ -61,7 +63,10 @@ class Pairing:
 
     @property
     def result(self) -> Result:
-        return Result(self.stored_pairing.result)
+        if self._result_value != self.stored_pairing.result:
+            self._result_value = self.stored_pairing.result
+            self._result = Result(self._result_value)
+        return self._result
 
     @property
     def points(self) -> float:
@@ -255,8 +260,7 @@ class Pairing:
     def color(self) -> BoardColor | None:
         if not (board := self.board):
             return None
-        white_tp = board.optional_white_tournament_player
-        if white_tp is not None and white_tp.id == self.tournament_player.id:
+        if board.stored_board.white_player_id == self.tournament_player.id:
             return BoardColor.WHITE
         return BoardColor.BLACK
 
@@ -265,7 +269,7 @@ class Pairing:
         board = self.board
         if not board:
             return None
-        if self.color == BoardColor.WHITE:
+        if board.stored_board.white_player_id == self.tournament_player.id:
             return board.black_tournament_player
         return board.optional_white_tournament_player
 
@@ -346,8 +350,12 @@ class Pairing:
 
     @property
     def opponent_id(self) -> int | None:
-        opponent = self.opponent
-        return opponent.id if opponent else None
+        board = self.board
+        if not board:
+            return None
+        if board.stored_board.white_player_id == self.tournament_player.id:
+            return board.stored_board.black_player_id
+        return board.stored_board.white_player_id
 
     def __str__(self):
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'

@@ -21,6 +21,59 @@ class Extension(StrEnum):
     TEMPLATE = 'template'
 
 
+class PrizeCategoryRankingBasis(StrEnum):
+    """How a prize category orders its eligible players before prizes are
+    assigned: by the tournament final standing (points + tie-breaks), by the
+    players' average per-round performance indicator, or by their best
+    single-round performance indicator. Non-standing bases let a category
+    reward performance rather than final position."""
+
+    FINAL_STANDING = 'final_standing'
+    AVERAGE_PERFORMANCE = 'average_performance'
+    BEST_ROUND_PERFORMANCE = 'best_round_performance'
+
+    @property
+    def name(self) -> str:
+        match self:
+            case PrizeCategoryRankingBasis.FINAL_STANDING:
+                return _('By final standing')
+            case PrizeCategoryRankingBasis.AVERAGE_PERFORMANCE:
+                return _('By average performance')
+            case PrizeCategoryRankingBasis.BEST_ROUND_PERFORMANCE:
+                return _('By best single-round performance')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @classmethod
+    def options(cls) -> dict[str, str]:
+        """Value → translated label, for form selects (final standing first)."""
+        return {basis.value: basis.name for basis in cls}
+
+
+class BoardSelectionMode(StrEnum):
+    """How a board screen selects and orders its boards: by first/last pairing
+    position (fixed boards keep their pairing slot), by first/last board
+    number, or by an explicit list of board numbers."""
+
+    PAIRING = 'pairing'
+    BOARD_NUMBER = 'board'
+    SPECIFIC = 'specific'
+
+    @classmethod
+    def options(cls, *, include_specific: bool = True) -> dict[str, str]:
+        """Value → translated label, for form selects (default first).
+        ``include_specific`` is False for families (no board-numbers field)."""
+        options: dict[str, str] = {
+            cls.PAIRING: _(
+                'By first / last pairing (fixed boards keep their pairing position)'
+            ),
+            cls.BOARD_NUMBER: _('By first / last board number'),
+        }
+        if include_specific:
+            options[cls.SPECIFIC] = _('By specific board numbers')
+        return options
+
+
 class Result(IntEnum):
     """An enum representing the results in the database. Should be subclassed if the point value is not the default."""
 
@@ -704,6 +757,50 @@ class PlayerTitle(StrEnum):
             return cls.NONE
 
     @property
+    def is_women(self) -> bool:
+        """True for the women-only titles (WCM, WFM, WIM, WGM)."""
+        return self in (
+            PlayerTitle.WOMAN_CANDIDATE_MASTER,
+            PlayerTitle.WOMAN_FIDE_MASTER,
+            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            PlayerTitle.WOMAN_GRANDMASTER,
+        )
+
+    @classmethod
+    def open_titles(cls) -> list['PlayerTitle']:
+        """NONE + the open titles (CM, FM, IM, GM), weakest-to-strongest."""
+        return [title for title in cls if not title.is_women]
+
+    @classmethod
+    def women_titles(cls) -> list['PlayerTitle']:
+        """NONE + the women titles (WCM, WFM, WIM, WGM), weakest-to-strongest."""
+        return [cls.NONE] + [title for title in cls if title.is_women]
+
+    @property
+    def fide_tier(self) -> int:
+        """Rank on the combined FIDE ladder, where each women title sits at
+        the same tier as the open title one letter below it (WGM≈IM, WIM≈FM,
+        WFM≈CM). Used to decide whether an open title outranks a women title
+        for display: an open title with a strictly higher tier makes the
+        women title redundant (GM hides WGM, IM hides WIM), while equal tiers
+        (FM and WIM) are shown together."""
+        match self:
+            case PlayerTitle.NONE:
+                return 0
+            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
+                return 1
+            case PlayerTitle.WOMAN_FIDE_MASTER | PlayerTitle.CANDIDATE_MASTER:
+                return 2
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER | PlayerTitle.FIDE_MASTER:
+                return 3
+            case PlayerTitle.WOMAN_GRANDMASTER | PlayerTitle.INTERNATIONAL_MASTER:
+                return 4
+            case PlayerTitle.GRANDMASTER:
+                return 5
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
@@ -753,6 +850,19 @@ class PlayerTitle(StrEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+    @property
+    def open_value(self) -> str:
+        """This title's stored value for the open-title slot — empty when it
+        is a women title. Lets a single source title be routed into the
+        separate `title` / `women_title` fields."""
+        return PlayerTitle.NONE.value if self.is_women else self.value
+
+    @property
+    def women_value(self) -> str:
+        """This title's stored value for the women-title slot — empty when it
+        is an open title."""
+        return self.value if self.is_women else PlayerTitle.NONE.value
 
 
 class FideArbiterTitle(StrEnum):
@@ -1138,104 +1248,6 @@ class TeamByeType(StrEnum):
         return (cls.HPB, cls.FPB, cls.ZPB)
 
 
-class ScreenType(StrEnum):
-    CHECK_IN = 'check-in'
-    INPUT = 'input'
-    BOARDS = 'boards'
-    PLAYERS = 'players'
-    RESULTS = 'results'
-    RANKING = 'ranking'
-    IMAGE = 'image'
-
-    @classmethod
-    def screen_types(cls) -> tuple[Self, ...]:
-        return tuple(cls(st) for st in cls)
-
-    def supports_event_type(self, event_type: 'EventType') -> bool:
-        """Whether screens of this type can be created in an event of
-        *event_type*. Pairings-by-player has no team counterpart (team
-        events pair matches, not individual players)."""
-        if self == ScreenType.PLAYERS:
-            return event_type == EventType.INDIVIDUAL
-        return True
-
-    @property
-    def name(self) -> str:
-        match self:
-            case ScreenType.BOARDS:
-                return _('Pairings by board')
-            case ScreenType.CHECK_IN:
-                return _('Check-in')
-            case ScreenType.INPUT:
-                return _('Results entry')
-            case ScreenType.PLAYERS:
-                return _('Pairings by player')
-            case ScreenType.RESULTS:
-                return _('Last results')
-            case ScreenType.RANKING:
-                return _('Ranking')
-            case ScreenType.IMAGE:
-                return _('Image')
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    def __str__(self) -> str:
-        return self.name
-
-    @property
-    def icon_str(self) -> str:
-        match self:
-            case self.BOARDS:
-                return 'bi-card-list'
-            case self.CHECK_IN:
-                return 'bi-check-square'
-            case self.INPUT:
-                return 'bi-pencil'
-            case self.PLAYERS:
-                return 'bi-people'
-            case self.RESULTS:
-                return 'bi-1-square'
-            case self.RANKING:
-                return 'bi-trophy'
-            case self.IMAGE:
-                return 'bi-image'
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    @property
-    def tooltip_text(self) -> str:
-        match self:
-            case self.BOARDS:
-                return _('Boards screens show pairings by board number.')
-            case self.CHECK_IN:
-                return _('Check-in screens allow players to check-in or out.')
-            case self.INPUT:
-                return _(
-                    'Input screens show pairings by board number and allow people to enter results.'
-                )
-            case self.PLAYERS:
-                return _('Players screens show pairings by alphabetical order.')
-            case self.RESULTS:
-                return _('Results screens show the last results (most recent first).')
-            case self.RANKING:
-                return _('Ranking screens show the players by rank.')
-            case self.IMAGE:
-                return _('Image screens show an image (local or remote).')
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    @property
-    def families_allowed(self) -> bool:
-        """Returns True if the screen type can be used for families, False otherwise."""
-        match self:
-            case self.BOARDS | self.INPUT | self.PLAYERS | self.RANKING | self.CHECK_IN:
-                return True
-            case self.RESULTS | self.IMAGE:
-                return False
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-
 class MenuSubmenuMode(StrEnum):
     """How a menu presents its multi-screens (families) in the navigation
     bar: automatically, always as a dropdown submenu, or always expanded
@@ -1332,7 +1344,7 @@ class PlayersScreenPlayerFormat(IntEnum):
         player: 'TournamentPlayer',
     ) -> str:
         return self.format_string.format(
-            title=player.title.short_name,
+            title=player.display_title,
             full_name=player.full_name,
             rating=player.rating,
             rating_type=player.rating_type.short_name,
@@ -1462,7 +1474,7 @@ class PlayersScreenOpponentFormat(IntEnum):
         tournament_player: 'TournamentPlayer',
     ) -> str:
         return self.format_string.format(
-            title=tournament_player.title.short_name,
+            title=tournament_player.display_title,
             full_name=tournament_player.full_name,
             rating=tournament_player.rating,
             rating_type=tournament_player.rating_type.short_name,

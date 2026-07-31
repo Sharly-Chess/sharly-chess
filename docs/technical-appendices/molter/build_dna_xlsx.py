@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """Build the DNA Molter reference workbook.
 
-This workbook is intentionally narrower than the development audit workbooks.
-It contains the public reference range requested for software reuse:
+By default this workbook contains the public reference range requested for
+software reuse:
 
     N = 3..15 teams
     P = 2, 4, 6, 8, 10, 12 players per team
     R = 2..N-1 rounds
 
 That written range contains 546 tables.
+
+Pass ``--all-recipes`` to write every recipe present in the selected artifact.
+This is useful for comparing complete old and new artifacts while retaining the
+README, filterable quality index, hyperlinks, and one sheet per team count.
 """
 
 from __future__ import annotations
@@ -36,7 +40,7 @@ import build_xlsx as molter_xlsx  # noqa: E402
 from data.pairings.molter_verifier import verify_molter_table  # noqa: E402
 
 
-TEAM_COUNTS = tuple(range(3, 16))
+DNA_TEAM_COUNTS = tuple(range(3, 16))
 PLAYER_COUNTS = (2, 4, 6, 8, 10, 12)
 
 
@@ -56,13 +60,34 @@ class CaseIndexRow:
     i5: int
 
 
-def _iter_cases() -> list[tuple[int, int, int]]:
+def _iter_dna_cases() -> list[tuple[int, int, int]]:
     return [
         (team_count, players_per_team, rounds)
-        for team_count in TEAM_COUNTS
+        for team_count in DNA_TEAM_COUNTS
         for players_per_team in PLAYER_COUNTS
         for rounds in range(2, team_count)
     ]
+
+
+def _iter_all_recipe_cases() -> list[tuple[int, int, int]]:
+    return sorted(molter_xlsx._RECIPE_BY_KEY)
+
+
+def _scope_text(cases: list[tuple[int, int, int]], *, all_recipes: bool) -> str:
+    if not all_recipes:
+        return (
+            'N = 3 a 15 equipes; P = 2, 4, 6, 8, 10, 12 joueurs par equipe; '
+            'R = 2 a N-1 rondes.'
+        )
+    team_counts = sorted({team_count for team_count, _players, _rounds in cases})
+    players = sorted({players for _team_count, players, _rounds in cases})
+    rounds = sorted({rounds for _team_count, _players, rounds in cases})
+    return (
+        "Toutes les recettes presentes dans l'artefact: "
+        f'N = {team_counts[0]} a {team_counts[-1]} equipes; '
+        f'P = {", ".join(str(player) for player in players)} joueurs par equipe; '
+        f'R = {rounds[0]} a {rounds[-1]} rondes selon N.'
+    )
 
 
 def _format_url_sheet(sheet_name: str, anchor_cell: str) -> str:
@@ -99,7 +124,13 @@ def _make_formats(wb) -> dict[str, object]:
     }
 
 
-def _write_readme_sheet(wb, formats: dict[str, object], case_count: int) -> None:
+def _write_readme_sheet(
+    wb,
+    formats: dict[str, object],
+    cases: list[tuple[int, int, int]],
+    *,
+    all_recipes: bool,
+) -> None:
     ws = wb.add_worksheet('README')
     ws.set_column(0, 0, 24)
     ws.set_column(1, 1, 100)
@@ -107,10 +138,9 @@ def _write_readme_sheet(wb, formats: dict[str, object], case_count: int) -> None
     rows = [
         (
             'Perimetre',
-            'N = 3 a 15 equipes; P = 2, 4, 6, 8, 10, 12 joueurs par equipe; '
-            'R = 2 a N-1 rondes.',
+            _scope_text(cases, all_recipes=all_recipes),
         ),
-        ('Nombre de tableaux', str(case_count)),
+        ('Nombre de tableaux', str(len(cases))),
         (
             'Reutilisation',
             "Les concepteurs de logiciels d'appariements par equipe sont "
@@ -261,11 +291,14 @@ def _write_case_block(
 
 
 def _write_team_sheet(
-    wb, formats: dict[str, object], team_count: int
+    wb,
+    formats: dict[str, object],
+    team_count: int,
+    cases: list[tuple[int, int, int]],
 ) -> list[CaseIndexRow]:
     sheet_name = f'N={team_count}'
     ws = wb.add_worksheet(sheet_name)
-    max_rounds = team_count - 1
+    max_rounds = max(rounds for _team_count, _players, rounds in cases)
     marker_start_col = max_rounds + 3
     ws.set_column(0, 0, 10)
     ws.set_column(1, max_rounds, 18)
@@ -286,53 +319,57 @@ def _write_team_sheet(
     )
     row = 3
     index_rows: list[CaseIndexRow] = []
-    for players_per_team in PLAYER_COUNTS:
-        for rounds in range(2, team_count):
-            table = molter_xlsx._generate_table(team_count, players_per_team, rounds)
-            report = verify_molter_table(table)
-            if not report.ok:
-                details = '; '.join(report.errors)
-                raise ValueError(
-                    f'Invalid Molter table N={team_count} P={players_per_team} '
-                    f'R={rounds}: {details}'
-                )
-            row, anchor_cell = _write_case_block(
-                ws,
-                row=row,
+    for _team_count, players_per_team, rounds in cases:
+        table = molter_xlsx._generate_table(team_count, players_per_team, rounds)
+        report = verify_molter_table(table)
+        if not report.ok:
+            details = '; '.join(report.errors)
+            raise ValueError(
+                f'Invalid Molter table N={team_count} P={players_per_team} '
+                f'R={rounds}: {details}'
+            )
+        row, anchor_cell = _write_case_block(
+            ws,
+            row=row,
+            team_count=team_count,
+            players_per_team=players_per_team,
+            rounds=rounds,
+            table=table,
+            formats=formats,
+            marker_start_col=marker_start_col,
+        )
+        i1, i1_prefix_deficit, i2, i3, i4, i5 = molter_xlsx._measures(table, team_count)
+        index_rows.append(
+            CaseIndexRow(
                 team_count=team_count,
                 players_per_team=players_per_team,
                 rounds=rounds,
-                table=table,
-                formats=formats,
-                marker_start_col=marker_start_col,
+                sheet_name=sheet_name,
+                anchor_cell=anchor_cell,
+                board_count=team_count * players_per_team // 2,
+                i1=i1,
+                i1_prefix_deficit=i1_prefix_deficit,
+                i2=i2,
+                i3=i3,
+                i4=i4,
+                i5=i5,
             )
-            i1, i1_prefix_deficit, i2, i3, i4, i5 = molter_xlsx._measures(
-                table, team_count
-            )
-            index_rows.append(
-                CaseIndexRow(
-                    team_count=team_count,
-                    players_per_team=players_per_team,
-                    rounds=rounds,
-                    sheet_name=sheet_name,
-                    anchor_cell=anchor_cell,
-                    board_count=team_count * players_per_team // 2,
-                    i1=i1,
-                    i1_prefix_deficit=i1_prefix_deficit,
-                    i2=i2,
-                    i3=i3,
-                    i4=i4,
-                    i5=i5,
-                )
-            )
+        )
     ws.freeze_panes(3, 1)
     return index_rows
 
 
-def build(output: Path, recipe_file: Path | None = None) -> int:
+def build(
+    output: Path,
+    recipe_file: Path | None = None,
+    *,
+    all_recipes: bool = False,
+) -> int:
     recipe_source = recipe_file or DEFAULT_RECIPE_FILE
     molter_xlsx._load_recipe_file(str(recipe_source))
-    expected_cases = _iter_cases()
+    expected_cases = _iter_all_recipe_cases() if all_recipes else _iter_dna_cases()
+    if not expected_cases:
+        raise ValueError(f'No supported recipes found in {recipe_source}.')
     missing = [
         case for case in expected_cases if case not in molter_xlsx._RECIPE_BY_KEY
     ]
@@ -343,11 +380,20 @@ def build(output: Path, recipe_file: Path | None = None) -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
     wb = xlsxwriter.Workbook(str(output))
     formats = _make_formats(wb)
-    _write_readme_sheet(wb, formats, len(expected_cases))
+    _write_readme_sheet(
+        wb,
+        formats,
+        expected_cases,
+        all_recipes=all_recipes,
+    )
     index_sheet = wb.add_worksheet('Index')
     all_index_rows: list[CaseIndexRow] = []
-    for team_count in TEAM_COUNTS:
-        all_index_rows.extend(_write_team_sheet(wb, formats, team_count))
+    team_counts = sorted(
+        {team_count for team_count, _players, _rounds in expected_cases}
+    )
+    for team_count in team_counts:
+        team_cases = [case for case in expected_cases if case[0] == team_count]
+        all_index_rows.extend(_write_team_sheet(wb, formats, team_count, team_cases))
     _write_index_sheet(index_sheet, formats, all_index_rows)
     wb.close()
     return len(all_index_rows)
@@ -368,12 +414,24 @@ def _parse_args() -> argparse.Namespace:
         default=DEFAULT_RECIPE_FILE,
         help=f'Recipe artifact to replay (default: {DEFAULT_RECIPE_FILE}).',
     )
+    parser.add_argument(
+        '--all-recipes',
+        action='store_true',
+        help=(
+            'Write every supported recipe in the selected artifact instead of '
+            'the fixed N=3..15, R=2..N-1 DNA reference range.'
+        ),
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = _parse_args()
-    count = build(args.output, args.recipe_file)
+    count = build(
+        args.output,
+        args.recipe_file,
+        all_recipes=args.all_recipes,
+    )
     print(f'Written: {args.output}')
     print(f'Tables: {count}')
 

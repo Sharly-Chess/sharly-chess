@@ -63,9 +63,17 @@ def _is_present_at_round(player: 'TournamentPlayer', round_: int) -> bool:
 def _missed_rounds(player: 'TournamentPlayer') -> int:
     """Count of rounds the player neither played nor received a PAB / RG /
     forfeit-win for. ≤ 1 keeps the player eligible for both 1.4.3d and
-    1.5.6a tournament-wide checks."""
+    1.5.6a tournament-wide checks.
+
+    A round with no result yet (game in progress, or not paired) is not a
+    recorded absence, so it is not counted; otherwise a running round would
+    drop players from the eligible set and skew the counts of the already
+    completed rounds until every result is entered.
+    """
     missed = 0
     for pairing in player.pairings_by_round.values():
+        if pairing.result == Result.NO_RESULT:
+            continue
         if pairing.unplayed and pairing.result not in (
             Result.FORFEIT_WIN,
             Result.PAIRING_ALLOCATED_BYE,
@@ -112,7 +120,9 @@ def _round_counts_143d(
         foreigners=len(present_foreign),
         federations=len({p.federation for p in present_foreign}),
         titled_foreigners=sum(
-            1 for p in present_foreign if p.title in TitleNorm.MASTER_TITLES
+            1
+            for p in present_foreign
+            if any(title in TitleNorm.MASTER_TITLES for title in p.held_titles)
         ),
     )
 

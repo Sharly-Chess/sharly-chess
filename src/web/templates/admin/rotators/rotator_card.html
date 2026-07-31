@@ -80,7 +80,7 @@
                             {% if client.can_manage_screens %}
                                 {{ macros.screen_visibility_icon(screen, 'pe-1') }}
                             {% endif %}
-                            {{ macros.screen_type_icon(screen.type, true) }}
+                            {{ macros.screen_type_icon(screen.screen_type, true) }}
                         </span>
                         {{ screen.name }}
                     </div>
@@ -95,7 +95,7 @@
                             {% if client.can_manage_screens %}
                                 {{ admin_macros.family_visibility_icon(family, 'pe-1') }}
                             {% endif %}
-                            {{ macros.screen_type_icon(family.type, true) }}
+                            {{ macros.screen_type_icon(family.screen_type, true) }}
                         </span>
                         {{ family.display_name }}
                         {% if family.screens_by_uniq_id %}

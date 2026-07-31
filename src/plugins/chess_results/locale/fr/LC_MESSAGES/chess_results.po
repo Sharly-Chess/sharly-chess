@@ -4,9 +4,13 @@ msgstr "Mise en ligne automatique désactivée"
 msgid "Auto-upload enabled"
 msgstr "Mise en ligne automatique activée"
 
+msgid "Chess-Results"
+msgstr "Chess-Results"
+
 msgid "Chess-Results.com"
 msgstr "Chess-Results.com"
 
+#, python-brace-format
 msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
 msgstr "Chess-Results.com n'affiche que {max} départages. Cependant, le classement reste le même  que dans Sharly Chess."
 
@@ -28,6 +32,7 @@ msgstr "Échec"
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
 
+#, python-brace-format
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
@@ -37,6 +42,7 @@ msgstr "Modifié"
 msgid "Never uploaded"
 msgstr "Jamais mis en ligne"
 
+#, python-brace-format
 msgid "No Chess-Results ID defined for tournament [{tournament}]."
 msgstr "Pas d'identifiant Chess-Results défini pour le tournoi [{tournament}]."
 
@@ -73,10 +79,6 @@ msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
 msgid "Tournament is currently being uploaded."
 msgstr "Le tournoi est en cours de mise en ligne."
 
-#, python-format
-msgid "Tournament number: %(tnr)s"
-msgstr "Numéro de tournoi : %(tnr)s"
-
 msgid "Tournament on Chess-Results.com"
 msgstr "Tournoi sur le site Chess-Results.com"
 
@@ -88,6 +90,9 @@ msgstr "La mise en ligne du tournoi a échoué, consultez la modale Chess-Result
 
 msgid "Tournament upload has been planned."
 msgstr "La mise en ligne du tournoi a été planifiée."
+
+msgid "Transfer"
+msgstr "Transfert"
 
 msgid "Up to date"
 msgstr "À jour"

@@ -32,6 +32,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
+    set_stored_fields,
 )
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_mappers import (
@@ -338,7 +339,7 @@ class PapiConverter:
                     else:
                         board_id = next_board_id
                         next_board_id += 1
-                        stored_board.id = board_id
+                        set_stored_fields(stored_board, id=board_id)
                         stored_boards_by_round[round_nb].append(stored_board)
                         if papi_round and papi_round.opponent is not None:
                             board_id_by_player_id_by_round[round_nb][
@@ -565,7 +566,8 @@ class PapiConverter:
             comment=papi_player.comment,
             owed=float(papi_player.owed or 0),
             paid=float(papi_player.paid or 0),
-            title=title.value,
+            title=title.open_value,
+            women_title=title.women_value,
             ratings=ratings,
             fide_id=fide_id,
             federation=papi_player.federation,
@@ -986,7 +988,9 @@ class PapiConverter:
             comment=tournament_player.comment,
             owed=tournament_player.owed if tournament_player.owed != 0 else None,
             paid=tournament_player.paid if tournament_player.paid != 0 else None,
-            fideTitle=PapiPlayerTitle.get_outer_value(tournament_player.title),
+            fideTitle=PapiPlayerTitle.get_outer_value(
+                tournament_player.strongest_title
+            ),
             fideCode=str(tournament_player.fide_id)
             if tournament_player.fide_id
             else None,

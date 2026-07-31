@@ -35,10 +35,11 @@
 
 {% block card_text %}
     {% if show_details %}
+        {% set screen_types = menu.screen_type_objects %}
         <div class="d-flex flex-column gap-1">
-            {% if menu.screen_types %}
+            {% if screen_types %}
                 {{ _('Screen types:') }}
-                {% for screen_type in menu.screen_types %}
+                {% for screen_type in screen_types %}
                     <div>
                         <span class="pe-1">
                             {{ macros.screen_type_icon(screen_type, true) }}
@@ -56,7 +57,7 @@
                             {% if client.can_manage_screens %}
                                 {{ macros.screen_visibility_icon(screen, 'pe-1') }}
                             {% endif %}
-                            {{ macros.screen_type_icon(screen.type, true) }}
+                            {{ macros.screen_type_icon(screen.screen_type, true) }}
                         </span>
                         {{ screen.name }}
                     </div>
@@ -71,7 +72,7 @@
                             {% if client.can_manage_screens %}
                                 {{ admin_macros.family_visibility_icon(family, 'pe-1') }}
                             {% endif %}
-                            {{ macros.screen_type_icon(family.type, true) }}
+                            {{ macros.screen_type_icon(family.screen_type, true) }}
                         </span>
                         {{ family.display_name }}
                     </div>

@@ -4,7 +4,7 @@ from typing import Any, Annotated
 from litestar import get, post, patch
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
+from litestar.params import Body, FromPath
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
@@ -165,7 +165,7 @@ class FfeUploadController(BaseEventAdminController):
     async def htmx_ffe_modal_upload_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = FfeWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
@@ -181,7 +181,7 @@ class FfeUploadController(BaseEventAdminController):
     async def htmx_ffe_modal_make_visible(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = FfeWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
@@ -289,7 +289,7 @@ class FfeUploadController(BaseEventAdminController):
     async def htmx_ffe_update_tournament_auto_upload(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),

@@ -109,7 +109,7 @@ class PairingEngine(ABC):
             ]
             available_indexes = tournament.get_available_board_indexes(round_)
             for board in sorted(boards, reverse=True):
-                board.stored_board.index = available_indexes.pop(0)
+                board.index = available_indexes.pop(0)
         tournament.create_boards(stored_boards, round_, self.pab_result)
         return ''
 

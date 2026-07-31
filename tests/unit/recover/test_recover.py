@@ -5,8 +5,8 @@ from unittest import TestCase
 import pytest
 from packaging.version import Version, InvalidVersion
 
+from common.data_recovery import DataRecovery
 from common.logger import get_logger
-from common.updaters.version_updater import VersionUpdater
 from data.event import Event
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
@@ -36,11 +36,7 @@ class RecoverTestCase(TestCase):
                 events_folder.glob(f'*.{Extension.LEGACY_EVENT_DB}')
             )
             logger.info('Recovering version [%s]...', version)
-            VersionUpdater.recover_version_pre_v5(
-                version,
-                version_dir,
-                files,
-            )
+            DataRecovery._recover_legacy_version(version, version_dir)
             for file in files:
                 event_uniq_id: str = file.stem
                 logger.info('Loading event [%s]...', event_uniq_id)

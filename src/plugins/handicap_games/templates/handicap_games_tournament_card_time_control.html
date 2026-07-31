@@ -1,6 +1,6 @@
 {% set plugin_data=handicap_game_utils.get_tournament_plugin_data(tournament) %}
 <div class="text-start">
-    {{ _('Time control:') }}
+    <span>{{ _('Time control:') }}</span>
     <span class="tc-human" data-trf="{{ tournament.time_control_trf25|e }}"></span>
     {% if plugin_data.penalty_value and plugin_data.penalty_step %}
         <br/>

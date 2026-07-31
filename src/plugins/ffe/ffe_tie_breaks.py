@@ -161,15 +161,19 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         max_possible_points = tournament.win_points * after_round
 
         # Only points from played games should be counted
+        points_by_player_id = {
+            player.id: self._points_after(player, after_round)
+            for player in tournament.players
+        }
         players = sorted(
             tournament.players,
-            key=lambda player: self._points_after(player, after_round),
+            key=lambda player: points_by_player_id[player.id],
         )
         players_by_points: dict[float, list[TournamentPlayer]] = {
             points: list(group)
             for points, group in groupby(
                 players,
-                key=lambda player: self._points_after(player, after_round),
+                key=lambda player: points_by_player_id[player.id],
             )
         }
 
@@ -528,26 +532,35 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
+        caching = tournament._compute_caching_enabled
+        cache_key = ('ffe_papi_adjusted_score', after_round)
+        if caching:
+            cached = player._compute_cache.get(cache_key)
+            if cached is not None:
+                return cached
         if tournament.pairing_system == RoundRobinPairingSystem():
-            return player.points_after(after_round)
-        score = 0.0
-        for round_index, pairing in player.pairings.items():
-            if round_index > after_round:
-                continue
-            if pairing.unplayed:
-                score += tournament.draw_points
-                continue
-            if pairing.requested_bye:
-                if all(
-                    p.voluntary_unplayed
-                    for index, p in player.pairings.items()
-                    if round_index < index <= after_round
-                ):
+            score = player.points_after(after_round)
+        else:
+            score = 0.0
+            for round_index, pairing in player.pairings.items():
+                if round_index > after_round:
+                    continue
+                if pairing.unplayed:
                     score += tournament.draw_points
+                    continue
+                if pairing.requested_bye:
+                    if all(
+                        p.voluntary_unplayed
+                        for index, p in player.pairings.items()
+                        if round_index < index <= after_round
+                    ):
+                        score += tournament.draw_points
+                    else:
+                        score += pairing.result.points(tournament.point_values)
                 else:
                     score += pairing.result.points(tournament.point_values)
-            else:
-                score += pairing.result.points(tournament.point_values)
+        if caching:
+            player._compute_cache[cache_key] = score
         return score
 
     @staticmethod

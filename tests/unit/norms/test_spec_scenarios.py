@@ -32,6 +32,24 @@ from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
 from utils.types import Federation, NormCheckResult
 
 
+def _player_ns(**kwargs) -> SimpleNamespace:
+    """SimpleNamespace player/opponent double that also exposes the
+    derived title attributes/methods the norm code reads (`held_titles`,
+    `strongest_title`, `title_on_norm_ladder`), computed from `title` /
+    `women_title`."""
+    title = kwargs.get('title', PlayerTitle.NONE)
+    women = kwargs.get('women_title', PlayerTitle.NONE)
+    kwargs.setdefault('women_title', women)
+    kwargs['strongest_title'] = max(title, women, key=lambda t: t.sort_index)
+    kwargs['held_titles'] = frozenset(
+        t for t in (title, women) if t != PlayerTitle.NONE
+    )
+    kwargs['title_on_norm_ladder'] = lambda title_norm: (
+        women if title_norm.player_title.is_women else title
+    )
+    return SimpleNamespace(**kwargs)
+
+
 # ===========================================================================
 # 1.4.1c — 8 played + 1 PAB credited as 9-game norm
 # ===========================================================================
@@ -681,6 +699,7 @@ def _player_with_pairings(
     *,
     federation: str = 'FRA',
     title: PlayerTitle = PlayerTitle.NONE,
+    women_title: PlayerTitle = PlayerTitle.NONE,
     gender=None,
     rounds: int,
     pairings: dict[int, tuple[FakeOpponent | None, Result]],
@@ -700,10 +719,15 @@ def _player_with_pairings(
     fake_pairings = {
         rnd: _fake_pairing(result, opp) for rnd, (opp, result) in pairings.items()
     }
+    open_title = PlayerTitle(title)
+    women = PlayerTitle(women_title)
     player = SimpleNamespace(
         federation=Federation(federation),
         gender=gender or PlayerGender.MAN,
-        title=PlayerTitle(title),
+        title=open_title,
+        women_title=women,
+        strongest_title=max(open_title, women, key=lambda t: t.sort_index),
+        held_titles=frozenset(t for t in (open_title, women) if t != PlayerTitle.NONE),
         event=SimpleNamespace(federation=federation),
         tournament=SimpleNamespace(
             rounds=rounds,
@@ -834,14 +858,14 @@ class TestRule_1_4_2a_FID_nuance:
         players = {}
         for i in range(1, 5):
             fed = ['USA', 'USA', 'USA', 'FID'][i - 1]
-            players[i] = SimpleNamespace(
+            players[i] = _player_ns(
                 rating_type=PlayerRatingType.FIDE,
                 federation=Federation(fed),
                 title=PlayerTitle.GRANDMASTER,
                 pairings_by_round={r: _round_pairing() for r in range(1, 10)},
             )
         # Add a host-federation player (excluded by 1.4.3d's host-fed filter).
-        players[5] = SimpleNamespace(
+        players[5] = _player_ns(
             rating_type=PlayerRatingType.FIDE,
             federation=Federation('FRA'),
             title=PlayerTitle.GRANDMASTER,
@@ -1176,7 +1200,7 @@ class TestRule_1_5_6a:
 
         players = {}
         for i, rating in enumerate(ratings, start=1):
-            players[i] = SimpleNamespace(
+            players[i] = _player_ns(
                 rating_type=PlayerRatingType.FIDE,
                 federation=Federation('USA'),  # all foreign (irrelevant here)
                 title=PlayerTitle.NONE,
@@ -1234,7 +1258,7 @@ class TestRule_1_5_6a:
             pairings = {
                 r: _round_pairing(missed=(i == 1 and r in (1, 2))) for r in range(1, 10)
             }
-            players[i] = SimpleNamespace(
+            players[i] = _player_ns(
                 rating_type=PlayerRatingType.FIDE,
                 federation=Federation('USA'),
                 title=PlayerTitle.NONE,
@@ -1249,6 +1273,58 @@ class TestRule_1_5_6a:
         )
         # Player 1 missed >1 round → excluded → 39 eligible players → fails.
         assert compute_high_level_tournament(tournament) is False
+
+    def test_in_progress_round_keeps_completed_rounds_correct(self):
+        """A round whose results are still pending must not count as a missed
+        round. Otherwise a player who already missed one round would reach two
+        misses, drop out of the eligible set, and corrupt the counts of the
+        already-completed rounds until every result is entered."""
+        from data.norms import compute_high_level_tournament_trail
+        from data.pairings.systems import SwissPairingSystem
+
+        def _pairing(result):
+            return SimpleNamespace(
+                result=result,
+                opponent=None,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        players = {}
+        for i in range(1, 41):
+            pairings = {}
+            for r in range(1, 10):
+                if r == 9:
+                    result = Result.NO_RESULT  # round 9 in progress
+                elif i == 1 and r == 3:
+                    result = Result.ZERO_POINT_BYE  # player 1's single miss
+                else:
+                    result = Result.DRAW
+                pairings[r] = _pairing(result)
+            players[i] = _player_ns(
+                rating_type=PlayerRatingType.FIDE,
+                federation=Federation('USA'),
+                title=PlayerTitle.NONE,
+                rating=2200,
+                pairings_by_round=pairings,
+            )
+        tournament = SimpleNamespace(
+            event=SimpleNamespace(federation='FRA'),
+            rounds=9,
+            pairing_system=SwissPairingSystem(),
+            tournament_players_by_id=players,
+        )
+        present_by_round = {
+            row.round_: row.fide_rated_present
+            for row in compute_high_level_tournament_trail(tournament)
+        }
+        # Player 1 (one bye) stays eligible despite the pending round 9, so the
+        # completed rounds still count all 40 eligible players (round 3 shows 39
+        # only because player 1 is absent that round).
+        assert present_by_round[1] == 40
+        assert present_by_round[8] == 40
+        assert present_by_round[3] == 39
+        assert present_by_round[9] == 0
 
     def test_not_high_level_for_round_robin(self):
         """1.5.6a is Swiss-only. A 40-player Round-Robin that would pass
@@ -1285,7 +1361,7 @@ class TestRule_1_5_6a:
                 )
                 for r in range(1, 10)
             }
-            players[i] = SimpleNamespace(
+            players[i] = _player_ns(
                 rating_type=PlayerRatingType.FIDE,
                 federation=Federation('USA'),
                 title=PlayerTitle.NONE,
@@ -1406,7 +1482,7 @@ class TestRule_1_4_3d_eligibility:
                 played=not missed,
             )
 
-        return SimpleNamespace(
+        return _player_ns(
             rating_type=PlayerRatingType.FIDE,
             federation=Federation(federation),
             title=PlayerTitle.GRANDMASTER,
@@ -1466,6 +1542,51 @@ class TestRule_1_4_3d_eligibility:
         # The doomed player contributes to NO round. Every round has 11.
         assert exemption.foreigners == 11
 
+    def test_in_progress_round_keeps_completed_rounds_correct(self):
+        """A round whose results are still pending must not count as a missed
+        round, so a player with one bye stays eligible and the completed
+        rounds keep their full counts while the current round is played."""
+        from data.norms import compute_big_tournament_exemption_trail
+
+        def _pairing(result):
+            return SimpleNamespace(
+                result=result,
+                opponent=None,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        def _player(federation, bye_round=None):
+            pairings = {}
+            for r in range(1, 10):
+                if r == 9:
+                    result = Result.NO_RESULT  # round 9 in progress
+                elif r == bye_round:
+                    result = Result.ZERO_POINT_BYE
+                else:
+                    result = Result.DRAW
+                pairings[r] = _pairing(result)
+            return _player_ns(
+                rating_type=PlayerRatingType.FIDE,
+                federation=Federation(federation),
+                title=PlayerTitle.GRANDMASTER,
+                rating=2500,
+                pairings_by_round=pairings,
+            )
+
+        players = [_player('USA') for _ in range(3)]
+        players.append(_player('USA', bye_round=3))  # one bye → still eligible
+        players += [_player('GER') for _ in range(4)]
+        players += [_player('ESP') for _ in range(4)]
+        foreigners_by_round = {
+            row.round_: row.foreigners
+            for row in compute_big_tournament_exemption_trail(self._tournament(players))
+        }
+        assert foreigners_by_round[1] == 12
+        assert foreigners_by_round[8] == 12
+        assert foreigners_by_round[3] == 11  # bye player absent that round
+        assert foreigners_by_round[9] == 0
+
     def test_pab_does_not_count_as_missed_round(self):
         """Spec: "players will be counted only if they miss at most one
         round (excluding pairing allocated byes)" — PAB rounds aren't
@@ -1486,7 +1607,7 @@ class TestRule_1_4_3d_eligibility:
             )
 
         # One player has 3 PABs (way over 1) plus all-played → still eligible.
-        special = SimpleNamespace(
+        special = _player_ns(
             rating_type=PlayerRatingType.FIDE,
             federation=Federation('USA'),
             title=PlayerTitle.GRANDMASTER,
@@ -1515,6 +1636,8 @@ def _forecaster_with_pairings(
     pairings: dict,
     federation: str = 'FRA',
     title: PlayerTitle = PlayerTitle.NONE,
+    women_title: PlayerTitle = PlayerTitle.NONE,
+    gender=None,
     pairing_system=None,
 ):
     """Build a fake TournamentPlayer + TitleNormForecaster from pairings.
@@ -1534,10 +1657,11 @@ def _forecaster_with_pairings(
     fake_pairings = {
         rnd: _fake_pairing(result, opp) for rnd, (opp, result) in pairings.items()
     }
-    player = SimpleNamespace(
+    player = _player_ns(
         federation=Federation(federation),
-        gender=PlayerGender.MAN,
+        gender=gender or PlayerGender.MAN,
         title=PlayerTitle(title),
+        women_title=PlayerTitle(women_title),
         event=SimpleNamespace(federation=federation),
         tournament=SimpleNamespace(
             rounds=rounds,
@@ -1552,6 +1676,47 @@ def _forecaster_with_pairings(
         pairings_by_round=fake_pairings,
     )
     return TitleNormForecaster(player)
+
+
+class TestForecasterTitleLadders:
+    """Open (CM<FM<IM<GM) and women (WCM<WFM<WIM<WGM) titles are separate
+    ladders. A women norm is chased against the women title, an open norm
+    against the open title — so an FM with no women title can still chase
+    WIM, and a WGM can still chase IM."""
+
+    def test_fm_woman_uses_women_title_for_women_norms(self):
+        fc = _forecaster_with_pairings(
+            rounds=9, pairings={}, title=PlayerTitle.FIDE_MASTER
+        )
+        # Women ladder: she holds no women title.
+        assert fc._current_ladder_title(TitleNorm.WIM) == PlayerTitle.NONE
+        assert fc._current_ladder_title(TitleNorm.WGM) == PlayerTitle.NONE
+        # A WIM norm is therefore still above her → chaseable-eligible.
+        assert (
+            TitleNorm.WIM.player_title.sort_index
+            > fc._current_ladder_title(TitleNorm.WIM).sort_index
+        )
+        # Open ladder still sees her FM for open norms.
+        assert fc._current_ladder_title(TitleNorm.IM) == PlayerTitle.FIDE_MASTER
+        assert fc._current_ladder_title(TitleNorm.GM) == PlayerTitle.FIDE_MASTER
+
+    def test_wgm_woman_open_norms_use_open_title(self):
+        fc = _forecaster_with_pairings(
+            rounds=9,
+            pairings={},
+            women_title=PlayerTitle.WOMAN_GRANDMASTER,
+        )
+        # Women ladder: WGM already held → WIM/WGM are not above her.
+        assert (
+            TitleNorm.WIM.player_title.sort_index
+            <= fc._current_ladder_title(TitleNorm.WIM).sort_index
+        )
+        # Open ladder: no open title → IM is above her → chaseable-eligible.
+        assert fc._current_ladder_title(TitleNorm.IM) == PlayerTitle.NONE
+        assert (
+            TitleNorm.IM.player_title.sort_index
+            > fc._current_ladder_title(TitleNorm.IM).sort_index
+        )
 
 
 class TestForecasterCanForecastRound:
@@ -2122,7 +2287,7 @@ class TestCalculationDetailsHooks:
         from data.pairings.systems import SwissPairingSystem
         from utils.enum import PlayerGender
 
-        player = SimpleNamespace(
+        player = _player_ns(
             federation=Federation('FRA'),
             gender=PlayerGender.MAN,
             title=PlayerTitle.NONE,
@@ -2368,7 +2533,7 @@ class TestRule_1_4_3abc_EndToEnd:
 
         from utils.types import BigTournamentExemption as _Btx
 
-        player = SimpleNamespace(
+        player = _player_ns(
             federation=Federation('FRA'),
             gender=PlayerGender.MAN,
             title=PlayerTitle.NONE,
@@ -2466,7 +2631,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
         }
         pairings_dict[9] = _fake_pairing(Result.FORFEIT_WIN, geo_opp)
 
-        player = SimpleNamespace(
+        player = _player_ns(
             federation=Federation('FRA'),  # not in any opponent's fed
             gender=PlayerGender.MAN,
             title=PlayerTitle.NONE,

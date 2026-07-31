@@ -36,6 +36,11 @@ class NumberColumn(BoardColumn):
     def get_cell_content(self, board: Board) -> Any:
         return board.number_str
 
+    def get_cell_classes(self, board: Board) -> str:
+        if board.fixed_number:
+            return f'{self.shared_classes} text-decoration-underline'
+        return self.shared_classes
+
     @property
     def shared_classes(self) -> str:
         return 'text-end'
@@ -101,7 +106,7 @@ class WhiteTitleColumn(BoardColumn):
 
     def get_cell_content(self, board: Board) -> Any:
         wtp = board.optional_white_tournament_player
-        return wtp.title.short_name if wtp else ''
+        return wtp.display_title if wtp else ''
 
 
 class WhiteNameColumn(BoardColumn):
@@ -146,6 +151,20 @@ class WhiteRatingColumn(BoardColumn):
     @property
     def shared_classes(self) -> str:
         return 'text-end'
+
+
+class WhiteFederationColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        wtp = board.optional_white_tournament_player
+        return wtp.federation.name if wtp else ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
 
 
 class ResultColumn(BoardColumn):
@@ -200,7 +219,7 @@ class BlackTitleColumn(BoardColumn):
         tournament_player = board.black_tournament_player
         if not tournament_player:
             return ''
-        return tournament_player.title.short_name
+        return tournament_player.display_title
 
 
 class BlackNameColumn(BoardColumn):
@@ -247,6 +266,20 @@ class BlackRatingColumn(BoardColumn):
     @property
     def shared_classes(self) -> str:
         return 'text-end'
+
+
+class BlackFederationColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        black = board.black_tournament_player
+        return black.federation.name if black else ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
 
 
 class BlackRealPointsColumn(BoardColumn):

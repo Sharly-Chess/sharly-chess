@@ -81,7 +81,10 @@ class ChessResultsSession(Session):
         """Initializes a session on Chess-Results.com
         Return sid on success, False otherwise."""
         url = CHESS_RESULTS_URL
-        params = {'key1': 'GETSID', 'source': CHESS_RESULTS_SOURCE}
+        params: dict[str, str | int] = {
+            'key1': 'GETSID',
+            'source': CHESS_RESULTS_SOURCE,
+        }
 
         response = requests.get(url, params=params)
         response.raise_for_status()  # Raise an error if the request failed
@@ -295,7 +298,7 @@ class ChessResultsSession(Session):
                     'lastname': p.last_name,
                     'firstname': p.first_name or '',
                     'atitle': '',
-                    'title': p.title.short_name,
+                    'title': p.strongest_title.short_name,
                     'rtg': str(p.rating),
                     'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                     'rtgnat': str(getattr(ratings, 'national', '') or ''),
@@ -326,13 +329,18 @@ class ChessResultsSession(Session):
             tournament.compute_tournament_player_ranks(after_round=round_)
             last_board_id = 0
             boards = tournament.get_round_boards(round_)
+            # In compact numbering the display number carries the fixed table
+            # (and is a clean bijection); in hole mode it can duplicate, so keep
+            # the positional id there.
+            compact_numbering = not tournament.leave_fixed_board_holes
             for board in boards:
+                table_number = board.number if compact_numbering else board.board_id
                 ET.SubElement(
                     ppair,
                     'playerpairing',
                     {
                         'round': str(round_),
-                        'pairing': str(board.board_id),
+                        'pairing': str(table_number),
                         'board': '1',
                         'whiteno': str(board.white_tournament_player.pairing_number),
                         'blackno': str(
@@ -351,7 +359,7 @@ class ChessResultsSession(Session):
                         'forfeit': _forfeit_code(board.result),
                     },
                 )
-                last_board_id = board.board_id
+                last_board_id = max(last_board_id, table_number)
 
             for player in tournament.get_unpaired_tournament_players(boards):
                 last_board_id += 1
@@ -450,7 +458,7 @@ class ChessResultsSession(Session):
                         'lastname': player.last_name,
                         'firstname': player.first_name or '',
                         'atitle': '',
-                        'title': player.title.short_name,
+                        'title': player.strongest_title.short_name,
                         'rtg': str(member_tp.rating if member_tp else ''),
                         'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                         'rtgnat': str(getattr(ratings, 'national', '') or ''),

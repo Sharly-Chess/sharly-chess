@@ -37,7 +37,7 @@ msgid "Authorization failed, consult the logs for more details."
 msgstr "Autorisation échouée, consultez les logs pour plus de détails."
 
 msgid "Authorization failed, possible CSRF attack!"
-msgstr "Autorisation échouée, possible attaque CSRF !"
+msgstr "Autorisation échouée, possible attaque CSRF !"
 
 msgid "Auto-synchronisation"
 msgstr "Synchronisation automatique"
@@ -112,17 +112,21 @@ msgstr "Activer le pointage des joueur·euses depuis Sharly-Chess.com."
 msgid "End"
 msgstr "Fin"
 
+#, python-brace-format
 msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
 msgstr "Erreur lors de la mise en ligne du tournoi [{tournament}], consultez les logs pour plus de détails."
 
+#, python-brace-format
 msgid "Event [{event}] is not connected to a Sharly-Chess.com event."
 msgstr "L'évènement [{event}] n'est pas connecté à un évènement Sharly-Chess.com."
 
+#, python-brace-format
 msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
 msgstr "L'évènement [{event}] a été connecté avec succès à Sharly-Chess.com !"
 
+#, python-brace-format
 msgid "Event [{event}] successfully imported!"
-msgstr "L'évènement [{event}] a été importé avec succès !"
+msgstr "L'évènement [{event}] a été importé avec succès !"
 
 msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified."
 msgstr "L'évènement a été archivé sur Sharly-Chess.com, il ne peut plus être modifié."
@@ -166,6 +170,7 @@ msgstr "Nom"
 msgid "Last synchronisation"
 msgstr "Dernière synchronisation"
 
+#, python-brace-format
 msgid "Last synchronisation attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr "La dernière tentative de synchronisation a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
@@ -175,6 +180,7 @@ msgstr "La dernière tentative de synchronisation s'est exécutée avec succès.
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
 
+#, python-brace-format
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
@@ -226,9 +232,11 @@ msgstr "En attente"
 msgid "Phone"
 msgstr "Téléphone"
 
+#, python-brace-format
 msgid "Player [{player}] could not be deleted from Sharly-Chess.com."
 msgstr "Le·la joueur·euse [{player}] n'a pas pu être supprimé·e de Sharly-Chess.com."
 
+#, python-brace-format
 msgid "Player [{player}] deleted."
 msgstr "Joueur·euse [{player}] supprimé·e."
 
@@ -296,6 +304,9 @@ msgstr "Scannez pour accéder au tournoi sur le site Sharly-Chess.com."
 msgid "Schedule"
 msgstr "Horaires"
 
+msgid "Sharly-Chess.com"
+msgstr "Sharly-Chess.com"
+
 msgid "Sharly-Chess.com authorization canceled."
 msgstr "Authorisation Sharly-Chess.com annulée."
 
@@ -314,9 +325,6 @@ msgstr "Conflits de joueur·euses Sharly-Chess.com"
 msgid "Sharly-Chess.com players"
 msgstr "Joueur·euses Sharly-Chess.com"
 
-msgid "Sharly-Chess.com tournament"
-msgstr "Tournoi Sharly-Chess.com"
-
 msgid "Sharly-Chess.com tournament conflicts"
 msgstr "Conflits de tournois Sharly-Chess.com"
 
@@ -329,6 +337,7 @@ msgstr "Statuts"
 msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
 msgstr "Les conflits de synchronisation se produisent lorsque les mêmes données ont été modifiées à la fois dans l'application locale et dans Sharly-Chess.com. Pour les résoudre, vous devez soit mettre à jour les données manuellement, soit choisir une version des données à appliquer partout."
 
+#, python-brace-format
 msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
 msgstr "Synchronisation interrompue le {last_attempt_date} à {last_attempt_time}, conflits de tournois détectés."
 
@@ -357,9 +366,11 @@ msgstr "Titre"
 msgid "Tournament"
 msgstr "Tournoi"
 
+#, python-brace-format
 msgid "Tournament [{tournament}] is not connected to a Sharly-Chess.com tournament."
 msgstr "Le tournoi [{tournament}] n'est pas connecté à un tournoi Sharly-Chess.com."
 
+#, python-brace-format
 msgid "Tournament [{tournament}] successfully uploaded."
 msgstr "Le tournoi [{tournament}] a été mis en ligne avec succès."
 
@@ -383,6 +394,9 @@ msgstr "Le tournoi a été importé avec succès."
 
 msgid "Tournament upload has been planned."
 msgstr "La mise en ligne du tournoi a été planifiée."
+
+msgid "Transfer"
+msgstr "Transfert"
 
 msgid "Type"
 msgstr "Type"
@@ -427,6 +441,7 @@ msgstr "ré-autorisation requise"
 msgid "tournament not found, most likely deleted"
 msgstr "tournoi non trouvé, probablement supprimé"
 
+#, python-brace-format
 msgid "{count} duplicated player detected."
 msgid_plural "{count} duplicated players detected."
 msgstr[0] "{count} doublon de joueur·euses détecté."
