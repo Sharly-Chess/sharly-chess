@@ -85,9 +85,9 @@ class CategoryPlayerSplitter(PlayerSplitter):
         ordered_keys = [category.name for category in event.player_categories]
         return sorted(
             split_keys,
-            key=lambda key: ordered_keys.index(key)
-            if key in ordered_keys
-            else len(ordered_keys),
+            key=lambda key: (
+                ordered_keys.index(key) if key in ordered_keys else len(ordered_keys)
+            ),
         )
 
 
