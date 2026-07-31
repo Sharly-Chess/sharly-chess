@@ -181,6 +181,12 @@ msgstr "à configurer"
 msgid "To be configured"
 msgstr "À configurer"
 
+msgid "Edit document"
+msgstr "Modifier le document"
+
+msgid "Edit the document."
+msgstr "Modifier le document."
+
 #~ msgid "Custom Upload"
 #~ msgstr "Mise en ligne personnalisée"
 

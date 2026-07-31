@@ -6,7 +6,7 @@
         <div class="modal-header">
             <div class="modal-title">
                 <h2 class="mb-4">
-                    {{ _('Custom location') }} - {{ _('Add document') }}
+                    {{ _('Custom location') }} - {{ _('Edit document') if edit_index is not none else _('Add document') }}
                 </h2>
                 <h3>
                     {{ _('Tournament:') }} {{ admin_tournament.name }}
@@ -25,6 +25,9 @@
                 {% for name, value in config_data.items() %}
                     <input type="hidden" name="{{ name }}" value="{{ value }}">
                 {% endfor %}
+                {% if edit_index is not none %}
+                    <input type="hidden" name="edit_index" value="{{ edit_index }}">
+                {% endif %}
 
                 {% include '/admin/event/_document_picker_fields.html' %}
             </form>
@@ -54,8 +57,13 @@
                     form="modal-form"
                     class="text-nowrap white btn btn-primary"
                 >
-                    <i class="bi-plus-circle pe-1"></i>
-                    {{ _('Add to list') }}
+                    {% if edit_index is not none %}
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Save') }}
+                    {% else %}
+                        <i class="bi-plus-circle pe-1"></i>
+                        {{ _('Add to list') }}
+                    {% endif %}
                 </button>
             </span>
         </div>

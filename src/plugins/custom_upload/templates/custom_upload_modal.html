@@ -6,6 +6,12 @@
             <h2 class="modal-title">
                 {{ _('Custom upload') }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
             <h4 class="mb-4"> {{ _('Connection:') }} {{ connection_host or _('to be configured') }}
@@ -55,17 +61,6 @@
                     {{ _('Upload all tournaments') }}
                 </button>
             </div>
-        </div>
-
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

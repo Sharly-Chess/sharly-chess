@@ -195,12 +195,25 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             after='settle',
         )
 
+    @staticmethod
+    def _options_to_form_data(options: str) -> dict[str, str]:
+        """Expand a stored ``id=value|id=value`` options string back into picker
+        form data, so the picker can be pre-filled when editing a document."""
+        form_data: dict[str, str] = {}
+        if options:
+            for part in options.split('|'):
+                if '=' in part:
+                    key, value = part.split('=', 1)
+                    form_data[key] = value
+        return form_data
+
     def _render_document_picker(
         self,
         web_context: TournamentAdminWebContext,
         tournament_plugin_data: CustomUploadTournamentPluginData,
         picker_data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        edit_index: int | None = None,
     ) -> Template:
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
@@ -223,6 +236,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 ),
                 'config_data': tournament_plugin_data.to_form_data(),
                 'data': data,
+                'edit_index': edit_index,
                 'errors': errors or {},
             },
             re_target='#modal-wrapper',
@@ -268,6 +282,37 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         return self._render_document_picker(web_context, tournament_plugin_data)
 
     @post(
+        path='/custom-upload/edit-document/{event_uniq_id:str}/{tournament_id:int}/{document_index:int}',
+        name='edit-document',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_custom_upload_edit_document(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+        tournament_id: int,
+        document_index: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(data)
+        if not 0 <= document_index < len(tournament_plugin_data.documents):
+            return self._render_tournament_config_modal(
+                web_context, tournament_plugin_data
+            )
+        document = tournament_plugin_data.documents[document_index]
+        picker_data = {'document': document.document_id} | self._options_to_form_data(
+            document.options
+        )
+        return self._render_document_picker(
+            web_context,
+            tournament_plugin_data,
+            picker_data=picker_data,
+            edit_index=document_index,
+        )
+
+    @post(
         path='/custom-upload/add-document-confirm/{event_uniq_id:str}/{tournament_id:int}',
         name='custom-upload-add-document-confirm',
         guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
@@ -287,6 +332,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(
             flat_data
         )
+        edit_index_raw = flat_data.get('edit_index')
+        edit_index = int(edit_index_raw) if edit_index_raw else None
         document_id, options_string, errors = (
             EventDocumentsController.build_document_options(
                 event, web_context.client, flat_data
@@ -298,10 +345,15 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 tournament_plugin_data,
                 picker_data=flat_data,
                 errors=errors,
+                edit_index=edit_index,
             )
-        tournament_plugin_data.documents.append(
-            ConfiguredDocument(document_id=document_id, options=options_string)
-        )
+        document = ConfiguredDocument(document_id=document_id, options=options_string)
+        if edit_index is not None and 0 <= edit_index < len(
+            tournament_plugin_data.documents
+        ):
+            tournament_plugin_data.documents[edit_index] = document
+        else:
+            tournament_plugin_data.documents.append(document)
         return self._render_tournament_config_modal(web_context, tournament_plugin_data)
 
     @post(

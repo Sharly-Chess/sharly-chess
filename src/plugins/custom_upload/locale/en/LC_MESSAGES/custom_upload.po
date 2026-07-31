@@ -181,6 +181,12 @@ msgstr ""
 msgid "To be configured"
 msgstr ""
 
+msgid "Edit document"
+msgstr ""
+
+msgid "Edit the document."
+msgstr ""
+
 #~ msgid "Custom Upload"
 #~ msgstr ""
 
