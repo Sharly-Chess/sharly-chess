@@ -689,16 +689,15 @@ class TrfTournamentImporter(FileTournamentImporter):
         database: EventDatabase,
     ) -> None:
         """Re-create per-round ``StoredTeamBoard`` envelopes plus
-        per-round lineups using OOdO records as the source of truth.
+        per-round lineups from 001 games, with 300 OOdO records as
+        explicit lineup overrides.
 
-        For each round, the OOdO data tells us which team played which
-        opponent and which slot each player occupied. We then place
-        each ``StoredBoard`` (from the 001 game records) into the
-        matching team-match envelope. Lone boards (PAB-style entries
-        with no opponent) are attached to the team's real match for
-        that round when one exists — that's how the source TRF
-        represents an empty board slot (e.g. a team that fielded fewer
-        than ``team_player_count`` players)."""
+        Reciprocal 001 opponent records identify ordinary matches even
+        when both teams followed their 310 roster order and therefore
+        correctly have no 300 record. A 300 record supplies the exact
+        slots when a team played out of order or with an unoccupied
+        board. Lone boards (PAB-style entries with no opponent) are
+        attached to the team's real match when one exists."""
 
         color_pattern = stored_tournament.color_pattern or ''
         # ``(player_id, round)`` → its pairing, so a synthesised
@@ -708,12 +707,19 @@ class TrfTournamentImporter(FileTournamentImporter):
             for sp in stp.stored_pairings:
                 pairing_by_player_round[(stp.player_id, sp.round_)] = sp
 
+        # A future-round 240 bye or a boardless 320 PAB still needs a
+        # team envelope, so reconstruction cannot be limited to rounds
+        # that happen to contain individual board records.
+        reconstruction_rounds = set(stored_tournament.stored_boards_by_round)
+        reconstruction_rounds.update(round_ for round_, _ in oodo_by_round_team)
+        reconstruction_rounds.update(round_ for round_, _ in oodo_orientation)
+        reconstruction_rounds.update(pab_team_id_by_round)
+        reconstruction_rounds.update(round_ for round_, _ in manual_byes_by_round_team)
+
         # Pre-index all stored_boards by player so we can look up the
         # board for a given (slot's player) cheaply.
-        for (
-            round_,
-            stored_boards,
-        ) in stored_tournament.stored_boards_by_round.items():
+        for round_ in sorted(reconstruction_rounds):
+            stored_boards = stored_tournament.stored_boards_by_round.get(round_, [])
             boards_by_player_id: dict[int, StoredBoard] = {}
             for board in stored_boards:
                 if board.white_player_id is not None:
@@ -721,22 +727,115 @@ class TrfTournamentImporter(FileTournamentImporter):
                 if board.black_player_id is not None:
                     boards_by_player_id.setdefault(board.black_player_id, board)
 
-            # Distinct match-pairs for this round. Display order is
-            # fixed later by ``_reorder_tournament_boards`` (sorts by
-            # primary score at start of round), so the order here is
-            # only for stable iteration during construction.
-            real_matches: list[tuple[int, int]] = []
-            seen_pairs: set[frozenset[int]] = set()
+            # Start with the explicit OOdO / forfeit orientations.
+            # Then add ordinary default-order matches directly from
+            # reciprocal 001 boards: TRF26 says 300 must be omitted when
+            # the 310 order was followed.
+            orientation_by_pair: dict[frozenset[int], tuple[int, int]] = {}
             for (
                 orientation_round,
                 pair,
             ), (team_a_id, team_b_id) in oodo_orientation.items():
                 if orientation_round != round_:
                     continue
-                if pair in seen_pairs:
+                orientation_by_pair.setdefault(pair, (team_a_id, team_b_id))
+
+            boards_by_team_pair: dict[frozenset[int], list[StoredBoard]] = defaultdict(
+                list
+            )
+            for board in stored_boards:
+                if board.white_player_id is None or board.black_player_id is None:
                     continue
-                seen_pairs.add(pair)
-                real_matches.append((team_a_id, team_b_id))
+                white_team_id = team_id_by_player_id.get(board.white_player_id)
+                black_team_id = team_id_by_player_id.get(board.black_player_id)
+                if (
+                    white_team_id is None
+                    or black_team_id is None
+                    or white_team_id == black_team_id
+                ):
+                    continue
+                pair = frozenset({white_team_id, black_team_id})
+                boards_by_team_pair[pair].append(board)
+
+            # For teams without 300, the selected players appear in 310
+            # order with any non-nominated roster members skipped. Their
+            # compressed order is therefore the board-slot order.
+            default_lineup_by_team_pair: dict[
+                tuple[frozenset[int], int], dict[int, int]
+            ] = {}
+            for pair, pair_boards in boards_by_team_pair.items():
+                for team_id in pair:
+                    player_ids = {
+                        player_id
+                        for board in pair_boards
+                        for player_id in (
+                            board.white_player_id,
+                            board.black_player_id,
+                        )
+                        if player_id is not None
+                        and team_id_by_player_id.get(player_id) == team_id
+                    }
+                    ordered_player_ids = sorted(
+                        player_ids,
+                        key=lambda player_id: (
+                            team_index_by_player_id.get(player_id, 10**9),
+                            player_id,
+                        ),
+                    )
+                    default_lineup_by_team_pair[(pair, team_id)] = {
+                        player_id: slot
+                        for slot, player_id in enumerate(ordered_player_ids)
+                    }
+
+                if pair in orientation_by_pair:
+                    continue
+                sample_board = min(
+                    pair_boards,
+                    key=lambda board: min(
+                        default_lineup_by_team_pair[(pair, team_id)].get(
+                            player_id, 10**9
+                        )
+                        for team_id in pair
+                        for player_id in (
+                            board.white_player_id,
+                            board.black_player_id,
+                        )
+                        if player_id is not None
+                        and team_id_by_player_id.get(player_id) == team_id
+                    ),
+                )
+                assert sample_board.white_player_id is not None
+                assert sample_board.black_player_id is not None
+                white_team_id = team_id_by_player_id[sample_board.white_player_id]
+                black_team_id = team_id_by_player_id[sample_board.black_player_id]
+                white_slot = default_lineup_by_team_pair[(pair, white_team_id)].get(
+                    sample_board.white_player_id, 0
+                )
+                if white_slot < len(color_pattern):
+                    team_a_is_white = color_pattern[white_slot].upper() == 'W'
+                else:
+                    team_a_is_white = white_slot % 2 == 0
+                orientation_by_pair[pair] = (
+                    (white_team_id, black_team_id)
+                    if team_a_is_white
+                    else (black_team_id, white_team_id)
+                )
+
+            # Display order is fixed later by ``_reorder_tournament_boards``;
+            # sorting here merely makes reconstruction deterministic.
+            real_matches = sorted(
+                orientation_by_pair.values(),
+                key=lambda match: (
+                    min(
+                        pairing_number_by_team_id.get(match[0], match[0]),
+                        pairing_number_by_team_id.get(match[1], match[1]),
+                    ),
+                    max(
+                        pairing_number_by_team_id.get(match[0], match[0]),
+                        pairing_number_by_team_id.get(match[1], match[1]),
+                    ),
+                ),
+            )
 
             # Teams that participate in a real match this round don't
             # also get a lone (team, None) PAB envelope — their empty
@@ -819,8 +918,24 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
                     bye_envelopes.append((inferred_team_id, None))
 
+            # TRF26 makes a team Z record in 240 optional: once a round
+            # has actual matches or a 320 PAB, any otherwise unaccounted
+            # team is a ZPB by exclusion. Do not apply this merely because
+            # future-round 240 pre-marks exist; those rounds are not paired
+            # yet and the other teams remain eligible.
+            if real_matches or any(bye_type is None for _, bye_type in bye_envelopes):
+                accounted_team_ids = teams_in_real_match | {
+                    team_id for team_id, _ in bye_envelopes
+                }
+                for absent_team_id in sorted(
+                    set(pairing_number_by_team_id) - accounted_team_ids,
+                    key=lambda team_id: pairing_number_by_team_id[team_id],
+                ):
+                    bye_envelopes.append((absent_team_id, TeamByeType.ZPB))
+
             match_index = 0
             assigned_board_ids: set[int] = set()
+            lineup_by_team: dict[int, dict[int, int]] = {}
             for team_a_id, team_b_id in real_matches:
                 stb = StoredTeamBoard(
                     id=None,
@@ -832,8 +947,17 @@ class TrfTournamentImporter(FileTournamentImporter):
                 )
                 stb.id = database.add_stored_team_board(stb)
                 match_index += 1
-                slot_a = oodo_by_round_team.get((round_, team_a_id), {})
-                slot_b = oodo_by_round_team.get((round_, team_b_id), {})
+                pair = frozenset({team_a_id, team_b_id})
+                slot_a = oodo_by_round_team.get(
+                    (round_, team_a_id),
+                    default_lineup_by_team_pair.get((pair, team_a_id), {}),
+                )
+                slot_b = oodo_by_round_team.get(
+                    (round_, team_b_id),
+                    default_lineup_by_team_pair.get((pair, team_b_id), {}),
+                )
+                lineup_by_team[team_a_id] = slot_a
+                lineup_by_team[team_b_id] = slot_b
                 for is_team_a, slot_map in ((True, slot_a), (False, slot_b)):
                     for player_id, slot in slot_map.items():
                         match_board = boards_by_player_id.get(player_id)
@@ -904,12 +1028,14 @@ class TrfTournamentImporter(FileTournamentImporter):
                     database.update_stored_board(pab_board)
                     assigned_board_ids.add(pab_board.id)
 
-            # Persist per-round lineups for every team that has OOdO
-            # data this round; ``effective_round_lineup`` then returns
-            # the historical roster instead of the 310 default.
+            # Persist every reconstructed lineup. For OOdO teams this is
+            # the explicit 300 order; for default-order teams it is the
+            # selected subset of the 310 roster recovered from 001.
             for (oodo_round, team_id), slot_map in oodo_by_round_team.items():
                 if oodo_round != round_:
                     continue
+                lineup_by_team.setdefault(team_id, slot_map)
+            for team_id, slot_map in lineup_by_team.items():
                 ordered = sorted(slot_map.items(), key=lambda item: item[1])
                 lineup_entries = [
                     StoredTeamRoundLineupEntry(
