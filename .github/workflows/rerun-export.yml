@@ -1,0 +1,41 @@
+name: Re-run failed export jobs
+
+# The notarize-macos job can hit its timeout-minutes ceiling (Apple's notary
+# queue occasionally takes most of a day) or die on a transient API error. A
+# within-job retry can't help: the ceiling is the 6h hosted-runner limit. So
+# when the export workflow fails, re-run just its failed jobs on a fresh runner.
+# The submission id lives in an uploaded artifact, so the retried notarize job
+# resumes polling the same submission rather than re-submitting.
+#
+# Each attempt polls for up to ~5.5h (the notarize job's deadline, bounded by
+# the 6h hosted-runner ceiling). To keep retrying for ~3 days we allow up to 15
+# attempts: 15 x ~5.5h ~= 82h of coverage.
+
+on:
+  workflow_run:
+    workflows: ["Sharly-Chess export"]
+    types:
+      - completed
+
+permissions:
+  actions: write
+
+jobs:
+  rerun:
+    if: >
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.run_attempt < 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Re-run failed jobs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run_id = context.payload.workflow_run.id;
+            const attempt = context.payload.workflow_run.run_attempt;
+            core.info(`Export run ${run_id} failed on attempt ${attempt}; re-running failed jobs.`);
+            await github.rest.actions.reRunWorkflowFailedJobs({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id,
+            });
