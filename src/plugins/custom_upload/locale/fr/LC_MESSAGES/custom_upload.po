@@ -71,6 +71,9 @@ msgstr "Modifier le document"
 msgid "Edit the document."
 msgstr "Modifier le document."
 
+msgid "FTP (unsecured)"
+msgstr "FTP (non sécurisé)"
+
 msgid "FTP credentials are not defined"
 msgstr "Les identifiants FTP ne sont pas définis"
 
@@ -82,6 +85,9 @@ msgstr "Mot de passe FTP :"
 
 msgid "FTP username:"
 msgstr "Identifiant FTP :"
+
+msgid "FTPS (FTP with TLS/SSL)"
+msgstr "FTPS (FTP avec TLS/SSL)"
 
 msgid "Failed to connect to server."
 msgstr "Échec de la connexion au serveur distant."
@@ -146,6 +152,9 @@ msgstr "Protocole :"
 
 msgid "Remove the document from the upload list."
 msgstr "Retirer le document de la liste de mise en ligne."
+
+msgid "SFTP (FTP over SSH)"
+msgstr "SFTP (FTP sur SSH)"
 
 msgid "Save"
 msgstr "Enregistrer"

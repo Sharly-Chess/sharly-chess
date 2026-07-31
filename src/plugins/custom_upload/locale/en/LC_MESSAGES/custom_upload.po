@@ -71,6 +71,9 @@ msgstr ""
 msgid "Edit the document."
 msgstr ""
 
+msgid "FTP (unsecured)"
+msgstr ""
+
 msgid "FTP credentials are not defined"
 msgstr ""
 
@@ -81,6 +84,9 @@ msgid "FTP password:"
 msgstr ""
 
 msgid "FTP username:"
+msgstr ""
+
+msgid "FTPS (FTP with TLS/SSL)"
 msgstr ""
 
 msgid "Failed to connect to server."
@@ -145,6 +151,9 @@ msgid "Protocol:"
 msgstr ""
 
 msgid "Remove the document from the upload list."
+msgstr ""
+
+msgid "SFTP (FTP over SSH)"
 msgstr ""
 
 msgid "Save"
