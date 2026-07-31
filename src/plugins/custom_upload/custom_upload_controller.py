@@ -539,7 +539,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                         ftp_username,
                         ftp_password,
                         default_server_path,
-                        transfer_protocol == TransferProtocol.SFTP,
+                        transfer_protocol,
                         transfer_port,
                     )
                     auth_valid = True

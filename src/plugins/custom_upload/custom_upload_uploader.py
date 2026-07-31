@@ -125,7 +125,7 @@ class CustomUploadUploader:
         username: str,
         password: str,
         target_path: str,
-        is_sftp: bool,
+        protocol: TransferProtocol,
         port: int,
     ) -> None:
         """Connection attempt to the FTP/SFTP server.
@@ -134,12 +134,16 @@ class CustomUploadUploader:
 
         target_path = cls.normalize_server_path(target_path)
         logger.info('Testing connection for [%s]...', host)
-        if is_sftp:
-            logger.info('Connection attempt via SFTP')
-            cls._sftp_auth_check(host, username, password, port, target_path)
-        else:
-            logger.info('Connection attempt via FTP')
-            cls._ftp_auth_check(host, username, password, port, target_path)
+        match protocol:
+            case TransferProtocol.SFTP:
+                logger.info('Connection attempt via SFTP.')
+                cls._sftp_auth_check(host, username, password, port, target_path)
+            case TransferProtocol.FTP:
+                logger.info('Connection attempt via FTP.')
+                cls._ftp_auth_check(host, username, password, port, target_path)
+            case TransferProtocol.FTPS:
+                logger.info('Connection attempt via FTPS.')
+                cls._ftps_auth_check(host, username, password, port, target_path)
         logger.info('Connection succeeded.')
 
     @classmethod
@@ -324,9 +328,17 @@ class CustomUploadUploader:
         host = event_plugin_data.ftp_host
         username = event_plugin_data.ftp_username
         password = event_plugin_data.ftp_password
+        transfer_protocol = event_plugin_data.transfer_protocol
+        port = event_plugin_data.transfer_port
 
         try:
-            with ftplib.FTP(host, username, password) as ftp_client:
+            ftp_client_type: type[ftplib.FTP] = ftplib.FTP
+            if transfer_protocol == TransferProtocol.FTPS:
+                ftp_client_type = ftplib.FTP_TLS
+
+            with ftp_client_type() as ftp_client:
+                ftp_client.connect(host, port, timeout=5)
+                ftp_client.login(username, password)
                 server_path = tournament_plugin_data.server_path
                 if not server_path:
                     server_path = event_plugin_data.default_server_path
@@ -510,16 +522,38 @@ class CustomUploadUploader:
         host: str, username: str, password: str, port: int, target_path: str
     ) -> None:
         with ftplib.FTP() as ftp_client:
-            try:
-                ftp_client.connect(host, port, timeout=5)
-                ftp_client.login(username, password)
-                if not CustomUploadUploader._does_remote_path_exist_ftp(
-                    ftp_client, target_path
-                ):
-                    raise FileNotFoundError(f'Remote path not found: {target_path}')
-            except FileNotFoundError:
-                raise
-            except ftplib.error_perm:
-                raise PermissionError(f'Authentication failed for {host}')
-            except ftplib.all_errors:
-                raise ConnectionError(f'Cannot connect to {host}')
+            CustomUploadUploader._ftplib_auth_check(
+                host, username, password, port, target_path, ftp_client
+            )
+
+    @staticmethod
+    def _ftps_auth_check(
+        host: str, username: str, password: str, port: int, target_path: str
+    ) -> None:
+        with ftplib.FTP_TLS() as ftp_client:
+            CustomUploadUploader._ftplib_auth_check(
+                host, username, password, port, target_path, ftp_client
+            )
+
+    @staticmethod
+    def _ftplib_auth_check(
+        host: str,
+        username: str,
+        password: str,
+        port: int,
+        target_path: str,
+        ftp_client: ftplib.FTP,
+    ):
+        try:
+            ftp_client.connect(host, port, timeout=5)
+            ftp_client.login(username, password)
+            if not CustomUploadUploader._does_remote_path_exist_ftp(
+                ftp_client, target_path
+            ):
+                raise FileNotFoundError(f'Remote path not found: {target_path}')
+        except FileNotFoundError:
+            raise
+        except ftplib.error_perm:
+            raise PermissionError(f'Authentication failed for {host}')
+        except ftplib.all_errors:
+            raise ConnectionError(f'Cannot connect to {host}')

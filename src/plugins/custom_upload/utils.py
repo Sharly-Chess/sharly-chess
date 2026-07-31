@@ -35,6 +35,7 @@ from web.controllers.base_controller import WebContext
 class TransferProtocol(StrEnum):
     SFTP = 'SFTP'
     FTP = 'FTP'
+    FTPS = 'FTPS'
 
     @classmethod
     def parse(cls, value: str | None) -> 'TransferProtocol':
