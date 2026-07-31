@@ -184,6 +184,9 @@ msgstr ""
 msgid "Edit the document."
 msgstr ""
 
+msgid "could not connect to the server, check the host, credentials and protocol"
+msgstr ""
+
 #~ msgid "Custom Upload"
 #~ msgstr ""
 

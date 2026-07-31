@@ -154,6 +154,18 @@ class FailureCustomUploadStatus(CustomUploadStatus, ABC):
         )
 
 
+class ConnectionFailureCustomUploadStatus(FailureCustomUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'CONNECTION_FAILURE'
+
+    @property
+    def details(self) -> str:
+        return _(
+            'could not connect to the server, check the host, credentials and protocol'
+        )
+
+
 class TargetLocationNotFoundCustomUploadStatus(FailureCustomUploadStatus):
     @staticmethod
     def static_id() -> str:

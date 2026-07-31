@@ -29,6 +29,7 @@ from data.loader import EventLoader
 from data.tournament import Tournament
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_status import (
+    ConnectionFailureCustomUploadStatus,
     UnexpectedFailureCustomUploadStatus,
     TargetLocationNotFoundCustomUploadStatus,
     FailureCustomUploadStatus,
@@ -234,6 +235,7 @@ class CustomUploadUploader:
 
         with paramiko.SSHClient() as ssh_client:
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            sftp_client: Optional[SFTPClient] = None
             try:
                 ssh_client.connect(host, username=username, password=password)
                 sftp_client = ssh_client.open_sftp()
@@ -264,11 +266,19 @@ class CustomUploadUploader:
                     )
                     logger.info('Uploaded document file [%s]', file_name)
                     temporary_document_file.close()
+            except (SSHException, EOFError, OSError):
+                logger.warning(
+                    'Could not connect to [%s] to upload tournament [%s]',
+                    host,
+                    tournament.name,
+                )
+                failure_status = ConnectionFailureCustomUploadStatus()
             except Exception:
                 logger.exception('Error uploading tournament [%s]', tournament.name)
                 failure_status = UnexpectedFailureCustomUploadStatus()
             finally:
-                sftp_client.close()
+                if sftp_client is not None:
+                    sftp_client.close()
                 cls.ongoing_result_ids.discard(result_id)
                 now = datetime.now()
                 if failure_status:
@@ -325,6 +335,13 @@ class CustomUploadUploader:
                     )
                     logger.info('Uploaded document file [%s]', file_name)
                     temporary_document_file.close()
+        except ftplib.all_errors:
+            logger.warning(
+                'Could not connect to [%s] to upload tournament [%s]',
+                host,
+                tournament.name,
+            )
+            failure_status = ConnectionFailureCustomUploadStatus()
         except Exception:
             logger.exception('Error uploading tournament [%s]', tournament.name)
             failure_status = UnexpectedFailureCustomUploadStatus()

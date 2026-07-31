@@ -184,6 +184,9 @@ msgstr "Modifier le document"
 msgid "Edit the document."
 msgstr "Modifier le document."
 
+msgid "could not connect to the server, check the host, credentials and protocol"
+msgstr "impossible de se connecter au serveur, vérifiez l'hôte, les identifiants et le protocole"
+
 #~ msgid "Custom Upload"
 #~ msgstr "Mise en ligne personnalisée"
 
