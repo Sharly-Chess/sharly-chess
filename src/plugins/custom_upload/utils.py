@@ -35,6 +35,13 @@ class TransferProtocol(StrEnum):
     SFTP = 'SFTP'
     FTP = 'FTP'
 
+    @classmethod
+    def parse(cls, value: str | None) -> 'TransferProtocol':
+        try:
+            return cls(value)
+        except ValueError:
+            return cls.SFTP
+
 
 class CustomUploadUtils:
     @staticmethod
@@ -271,8 +278,8 @@ class CustomUploadEventPluginData(PluginData):
             default_server_path=stored_value.get('default_server_path', None),
             ftp_username=stored_value.get('ftp_username', None),
             ftp_password=stored_value.get('ftp_password', None),
-            transfer_protocol=TransferProtocol(
-                stored_value.get('transfer_protocol', TransferProtocol.SFTP.value)
+            transfer_protocol=TransferProtocol.parse(
+                stored_value.get('transfer_protocol')
             ),
         )
 
@@ -292,9 +299,8 @@ class CustomUploadEventPluginData(PluginData):
             ),
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
-            transfer_protocol=TransferProtocol(
+            transfer_protocol=TransferProtocol.parse(
                 WebContext.form_data_to_str(data, 'transfer_protocol')
-                or TransferProtocol.SFTP.value
             ),
         )
 
