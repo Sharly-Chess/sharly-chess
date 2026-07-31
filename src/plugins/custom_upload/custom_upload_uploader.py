@@ -3,7 +3,6 @@ import re
 import time
 from datetime import datetime
 from ftplib import error_perm
-from functools import partial
 from io import BytesIO
 from pathlib import PurePosixPath
 from threading import Thread, Timer
@@ -27,7 +26,6 @@ from data.access_levels.client import Client
 from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
-from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_status import (
     AuthenticationFailureCustomUploadStatus,
     ConnectionFailureCustomUploadStatus,
@@ -41,13 +39,11 @@ from plugins.custom_upload.utils import (
     CustomUploadEventPluginData,
     TransferProtocol,
 )
-from plugins.utils import PluginUtils
 from utils import Utils
 from web.channels import channels_plugin
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 
 logger = get_logger()
-get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class CustomUploadUploader:
@@ -434,7 +430,7 @@ class CustomUploadUploader:
     def upload_event_tournaments(
         cls, tournaments: list[Tournament], http_client: Client
     ):
-        """Upload all eligible SCE tournaments for an event in a background thread."""
+        """Upload all eligible tournaments for an event in a background thread."""
         eligible_tournaments = [
             tournament
             for tournament in tournaments
