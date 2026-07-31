@@ -1,6 +1,9 @@
 msgid "Add document"
 msgstr "Ajouter un document"
 
+msgid "Add to list"
+msgstr "Ajouter à la liste"
+
 msgid "Back"
 msgstr "Retour"
 
@@ -28,20 +31,11 @@ msgstr "Mise en ligne personnalisée"
 msgid "Default server path:"
 msgstr "Chemin sur le serveur par défaut :"
 
-msgid "Document URL:"
-msgstr "URL du document :"
+msgid "Defaults to:"
+msgstr "Par défaut :"
 
 msgid "Documents"
 msgstr "Documents"
-
-msgid "E.g.: tournaments"
-msgstr "Exemple : tournois"
-
-msgid "E.g.: tournaments/my_tournament"
-msgstr "Exemple : tournois/mon_tournoi"
-
-msgid "Defaults to:"
-msgstr "Par défaut :"
 
 msgid "E.g.: ftp.example.com"
 msgstr "Exemple : ftp.exemple.com"
@@ -52,11 +46,23 @@ msgstr "Exemple : mon_mot_de_passe"
 msgid "E.g.: my_username"
 msgstr "Exemple : mon_identifiant"
 
+msgid "E.g.: tournaments"
+msgstr "Exemple : tournois"
+
+msgid "E.g.: tournaments/my_tournament"
+msgstr "Exemple : tournois/mon_tournoi"
+
 msgid "Edit configuration"
 msgstr "Modifier la configuration"
 
 msgid "Edit connection"
 msgstr "Modifier la connexion"
+
+msgid "Edit document"
+msgstr "Modifier le document"
+
+msgid "Edit the document."
+msgstr "Modifier le document."
 
 msgid "FTP credentials are not defined"
 msgstr "Les identifiants FTP ne sont pas définis"
@@ -82,9 +88,13 @@ msgstr "Hôte et identifiant FTP sont requis"
 msgid "Host:"
 msgstr "Hôte :"
 
+msgid "Invalid credentials."
+msgstr "Identifiants invalides."
+
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
 
+#, python-brace-format
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
@@ -102,9 +112,6 @@ msgstr "Aucun document configuré"
 
 msgid "No configured documents yet."
 msgstr "Aucun document encore configuré."
-
-msgid "No document type is matching input."
-msgstr "Aucun type de document ne correspond à la saisie."
 
 msgid "No internet connection detected."
 msgstr "Aucune connexion internet détectée."
@@ -135,9 +142,6 @@ msgstr "Chemin sur le serveur :"
 
 msgid "Status"
 msgstr "Status"
-
-msgid "There should be no more than one unescaped '?' character"
-msgstr "Il ne doit pas y avoir plus d'un caractère '?' non échappé"
 
 msgid "Tournament"
 msgstr "Tournoi"
@@ -172,27 +176,15 @@ msgstr "Mise en ligne de documents sur un serveur personnel"
 msgid "consult the logs"
 msgstr "consulter les logs"
 
-msgid "target server path not found"
-msgstr "le chemin sur le serveur n'a pas pu être trouvé"
-
-msgid "to be configured"
-msgstr "à configurer"
-
-msgid "Edit document"
-msgstr "Modifier le document"
-
-msgid "Edit the document."
-msgstr "Modifier le document."
-
 msgid "could not connect to the server, check the host, credentials and protocol"
 msgstr "impossible de se connecter au serveur, vérifiez l'hôte, les identifiants et le protocole"
 
 msgid "invalid credentials, check the username and password"
 msgstr "identifiants invalides, vérifiez le nom d'utilisateur et le mot de passe"
 
-msgid "Invalid credentials."
-msgstr "Identifiants invalides."
+msgid "target server path not found"
+msgstr "le chemin sur le serveur n'a pas pu être trouvé"
 
-#~ msgid "Custom Upload"
-#~ msgstr "Mise en ligne personnalisée"
+msgid "to be configured"
+msgstr "à configurer"
 

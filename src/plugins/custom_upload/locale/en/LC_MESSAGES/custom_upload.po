@@ -1,6 +1,9 @@
 msgid "Add document"
 msgstr ""
 
+msgid "Add to list"
+msgstr ""
+
 msgid "Back"
 msgstr ""
 
@@ -28,19 +31,10 @@ msgstr ""
 msgid "Default server path:"
 msgstr ""
 
-msgid "Document URL:"
+msgid "Defaults to:"
 msgstr ""
 
 msgid "Documents"
-msgstr ""
-
-msgid "E.g.: tournaments"
-msgstr ""
-
-msgid "E.g.: tournaments/my_tournament"
-msgstr ""
-
-msgid "Defaults to:"
 msgstr ""
 
 msgid "E.g.: ftp.example.com"
@@ -52,10 +46,22 @@ msgstr ""
 msgid "E.g.: my_username"
 msgstr ""
 
+msgid "E.g.: tournaments"
+msgstr ""
+
+msgid "E.g.: tournaments/my_tournament"
+msgstr ""
+
 msgid "Edit configuration"
 msgstr ""
 
 msgid "Edit connection"
+msgstr ""
+
+msgid "Edit document"
+msgstr ""
+
+msgid "Edit the document."
 msgstr ""
 
 msgid "FTP credentials are not defined"
@@ -82,9 +88,13 @@ msgstr ""
 msgid "Host:"
 msgstr ""
 
+msgid "Invalid credentials."
+msgstr ""
+
 msgid "Last upload"
 msgstr ""
 
+#, python-brace-format
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
@@ -101,9 +111,6 @@ msgid "No configured documents"
 msgstr ""
 
 msgid "No configured documents yet."
-msgstr ""
-
-msgid "No document type is matching input."
 msgstr ""
 
 msgid "No internet connection detected."
@@ -134,9 +141,6 @@ msgid "Server path:"
 msgstr ""
 
 msgid "Status"
-msgstr ""
-
-msgid "There should be no more than one unescaped '?' character"
 msgstr ""
 
 msgid "Tournament"
@@ -172,30 +176,15 @@ msgstr ""
 msgid "consult the logs"
 msgstr ""
 
-msgid "target server path not found"
-msgstr ""
-
-msgid "to be configured"
-msgstr ""
-
-msgid "Edit document"
-msgstr ""
-
-msgid "Edit the document."
-msgstr ""
-
 msgid "could not connect to the server, check the host, credentials and protocol"
 msgstr ""
 
 msgid "invalid credentials, check the username and password"
 msgstr ""
 
-msgid "Invalid credentials."
+msgid "target server path not found"
 msgstr ""
 
-#~ msgid "Custom Upload"
-#~ msgstr ""
-
-#~ msgid "No internet connection."
-#~ msgstr ""
+msgid "to be configured"
+msgstr ""
 
