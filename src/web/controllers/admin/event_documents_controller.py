@@ -157,7 +157,7 @@ class EventDocumentsController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         document_id: FromQuery[str | None] = None,
-        tournament_id: FromQuery[int | None] = None,
+        tournament_id: FromPath[int | None] = None,
         round: FromQuery[int | None] = None,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
