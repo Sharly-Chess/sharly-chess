@@ -232,7 +232,7 @@ class CustomUploadEventPluginData(PluginData):
             ftp_username=stored_value.get('ftp_username', None),
             ftp_password=stored_value.get('ftp_password', None),
             transfer_protocol=TransferProtocol(
-                stored_value.get('transfer_protocol', 'SFTP')
+                stored_value.get('transfer_protocol', TransferProtocol.SFTP.value)
             ),
         )
 
@@ -253,7 +253,7 @@ class CustomUploadEventPluginData(PluginData):
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
             transfer_protocol=TransferProtocol(
-                WebContext.form_data_to_str(data, 'transfer_protocol') or 'SFTP'
+                WebContext.form_data_to_str(data, 'transfer_protocol') or TransferProtocol.SFTP.value
             ),
         )
 
