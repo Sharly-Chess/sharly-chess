@@ -125,12 +125,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             context=web_context.template_context
             | {
                 'data': custom_upload_data.to_form_data(),
-                'transfer_protocol_options': {
-                    WebContext.value_to_form_data(
-                        transfer_protocol.value
-                    ): transfer_protocol.name
-                    for transfer_protocol in TransferProtocol
-                },
+                'transfer_protocol_options': TransferProtocol.form_options(),
                 'errors': {},
             },
             re_target='#modal-wrapper',
@@ -570,12 +565,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     'ftp_password': data['ftp_password'],
                     'transfer_protocol': data['transfer_protocol'],
                 },
-                'transfer_protocol_options': {
-                    WebContext.value_to_form_data(
-                        transfer_protocol.value
-                    ): transfer_protocol.name
-                    for transfer_protocol in TransferProtocol
-                },
+                'transfer_protocol_options': TransferProtocol.form_options(),
                 'ftp_password_visible': data.get('ftp_password_visible') == 'true',
                 'custom_upload_auth_valid': auth_valid,
                 'custom_upload_path_valid': path_valid,

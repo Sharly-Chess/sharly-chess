@@ -43,6 +43,13 @@ class TransferProtocol(StrEnum):
         except ValueError:
             return cls.SFTP
 
+    @classmethod
+    def form_options(cls) -> dict[str, str]:
+        return {
+            WebContext.value_to_form_data(protocol.value): protocol.name
+            for protocol in cls
+        }
+
 
 class CustomUploadUtils:
     @staticmethod
