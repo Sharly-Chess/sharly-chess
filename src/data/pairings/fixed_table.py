@@ -302,6 +302,13 @@ class FixedTablePairingEngine(PairingEngine):
             tournament, at_round
         ):
             return message
+        teams = self._teams_for_tournament(tournament)
+        if not any(
+            player is not None
+            for team in teams
+            for player in team.effective_round_slots(at_round)
+        ):
+            return _('Pairings generation disabled if there are no players to pair.')
         if any(
             not tournament.is_round_finished(round_) for round_ in range(1, at_round)
         ):
