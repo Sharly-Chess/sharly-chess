@@ -2,7 +2,7 @@ from typing import Any, Annotated
 
 from litestar import get, post, patch
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
@@ -248,7 +248,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     async def htmx_admin_custom_upload_tournament_configuration_modal(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -270,7 +270,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(data)
@@ -287,8 +287,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
-        document_index: int,
+        tournament_id: FromPath[int],
+        document_index: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(data)
@@ -319,7 +319,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         flat_data = WebContext.flatten_list_data(data)
@@ -362,7 +362,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(data)
@@ -379,8 +379,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
-        document_index: int,
+        tournament_id: FromPath[int],
+        document_index: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament_plugin_data = CustomUploadTournamentPluginData.from_form_data(data)
@@ -469,7 +469,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         return self._update_tournament_configuration(web_context, data)
@@ -494,7 +494,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     async def htmx_admin_custom_upload_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -517,11 +517,11 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        ftp_host: str = WebContext.form_data_to_str(data, 'ftp_host', '')
-        ftp_username: str = WebContext.form_data_to_str(data, 'ftp_username', '')
-        ftp_password: str = WebContext.form_data_to_str(data, 'ftp_password', '')
-        default_server_path: str = WebContext.form_data_to_str(
-            data, 'default_server_path', '/'
+        ftp_host: str = WebContext.form_data_to_str(data, 'ftp_host') or ''
+        ftp_username: str = WebContext.form_data_to_str(data, 'ftp_username') or ''
+        ftp_password: str = WebContext.form_data_to_str(data, 'ftp_password') or ''
+        default_server_path: str = (
+            WebContext.form_data_to_str(data, 'default_server_path') or '/'
         )
         transfer_protocol: TransferProtocol = TransferProtocol(
             WebContext.form_data_to_str(data, 'transfer_protocol', 'SFTP')
