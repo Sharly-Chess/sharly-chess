@@ -179,13 +179,21 @@ class Team:
         and flat fixed-table boards (Molter), where each roster player
         gets an individual board with no team envelope. Check both, or
         a Molter-paired team would look unpaired and could be wrongly
-        reassigned — orphaning its boards."""
+        reassigned — orphaning its boards. Standalone manual byes do not
+        count as pairings, just as a player's boardless bye does not."""
         tournament = self.tournament
         if tournament is None:
             return False
+        manual_bye_types = TeamByeType.manual_bye_types()
         if any(
-            tb.stored_team_board.team_a_id == self.id
-            or tb.stored_team_board.team_b_id == self.id
+            (
+                tb.stored_team_board.team_a_id == self.id
+                or tb.stored_team_board.team_b_id == self.id
+            )
+            and not (
+                tb.stored_team_board.team_b_id is None
+                and tb.stored_team_board.bye_type in manual_bye_types
+            )
             for tb in tournament.team_boards_by_id.values()
         ):
             return True
@@ -418,18 +426,85 @@ class Team:
     def update(self, database: EventDatabase):
         database.update_stored_team(self.stored_team)
 
+    def _delete_boardless_player_pairings(
+        self,
+        tournament: 'Tournament',
+        database: EventDatabase,
+    ) -> None:
+        """Delete boardless player records when leaving ``tournament``.
+
+        Player pairing records are scoped to their tournament. A movable
+        team has no player attached to a real board, so its old boardless
+        records must not remain behind after its tournament assignment
+        changes.
+        """
+        for player in self.players:
+            tournament_player = tournament.tournament_players_by_id.get(player.id)
+            if tournament_player is None:
+                continue
+            stored_pairings = tournament_player.stored_tournament_player.stored_pairings
+            kept_pairings = []
+            for stored_pairing in stored_pairings:
+                if stored_pairing.board_id is None:
+                    database.delete_stored_pairing(stored_pairing)
+                else:
+                    kept_pairings.append(stored_pairing)
+            tournament_player.stored_tournament_player.stored_pairings = kept_pairings
+            tournament_player.__dict__.pop('pairings_by_round', None)
+
     def set_tournament(self, tournament_id: int | None, database: EventDatabase):
+        old_tournament = self.tournament
+        if self.stored_team.tournament_id == tournament_id:
+            return
+
+        # Standalone team byes are not pairings and therefore do not prevent
+        # a tournament move. Remove those old-tournament envelopes before
+        # changing the assignment. Also discard any boardless player records
+        # left by older team-TRF imports; player round records are scoped to
+        # the tournament the team is leaving.
+        if old_tournament is not None:
+            manual_bye_types = TeamByeType.manual_bye_types()
+            for round_, round_list in list(
+                old_tournament.stored_tournament.stored_team_boards_by_round.items()
+            ):
+                kept = []
+                for stored_team_board in round_list:
+                    is_own_manual_bye = (
+                        stored_team_board.team_a_id == self.id
+                        and stored_team_board.team_b_id is None
+                        and stored_team_board.bye_type in manual_bye_types
+                    )
+                    if is_own_manual_bye:
+                        if stored_team_board.id is not None:
+                            database.delete_stored_team_board(stored_team_board.id)
+                    else:
+                        kept.append(stored_team_board)
+                if kept:
+                    old_tournament.stored_tournament.stored_team_boards_by_round[
+                        round_
+                    ] = kept
+                else:
+                    old_tournament.stored_tournament.stored_team_boards_by_round.pop(
+                        round_, None
+                    )
+
+            self._delete_boardless_player_pairings(old_tournament, database)
+            old_tournament.clear_team_cache()
+
         # Pairing numbers are scoped to a tournament; moving a team to
         # a different tournament invalidates whatever number it had
         # (and worse, can silently collide with an existing team's
         # pairing number on the new side — TRF26 export then emits
         # duplicate TPNs and downstream records become ambiguous).
         # Clear it on every transition.
-        if self.stored_team.tournament_id != tournament_id:
-            self.stored_team.pairing_number = None
-            database.set_team_pairing_number(self.id, None)
+        self.stored_team.pairing_number = None
+        database.set_team_pairing_number(self.id, None)
         self.stored_team.tournament_id = tournament_id
         database.set_team_tournament(self.id, tournament_id)
+        if tournament_id is not None:
+            new_tournament = self.event.tournaments_by_id.get(tournament_id)
+            if new_tournament is not None:
+                new_tournament.clear_team_cache()
 
     def set_pairing_number(self, pairing_number: int | None, database: EventDatabase):
         self.stored_team.pairing_number = pairing_number
