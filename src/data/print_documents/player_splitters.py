@@ -83,7 +83,12 @@ class CategoryPlayerSplitter(PlayerSplitter):
     @staticmethod
     def sorted_split_keys(event: Event, split_keys: Iterable[str]) -> list[str]:
         ordered_keys = [category.name for category in event.player_categories]
-        return sorted(split_keys, key=lambda key: ordered_keys.index(key))
+        return sorted(
+            split_keys,
+            key=lambda key: ordered_keys.index(key)
+            if key in ordered_keys
+            else len(ordered_keys),
+        )
 
 
 class ClubPlayerSplitter(PlayerSplitter):
