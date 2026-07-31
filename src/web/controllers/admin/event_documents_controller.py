@@ -73,13 +73,14 @@ class EventDocumentsController(BaseEventAdminController):
         cls,
         web_context: BaseEventAdminWebContext,
         data: dict[str, str],
+        auth_action: AuthAction = AuthAction.GENERATE_DOCUMENTS,
     ) -> dict[str, Any]:
         """Context required to render the shared document picker fields
         (`event/_document_picker_fields.html`)."""
         event = web_context.get_admin_event()
         print_options = PrintDocumentOptionManager(event).objects()
         allowed_tournaments = web_context.client.allowed_tournaments_for_action(
-            AuthAction.GENERATE_DOCUMENTS
+            auth_action
         )
         document_ids_by_option_id: dict[str, list[str]] = defaultdict(list[str])
         containers_by_document: dict[str, list[str]] = {'': []}

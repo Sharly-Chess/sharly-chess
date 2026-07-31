@@ -217,7 +217,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         )
         data = default_data | (picker_data or {})
         picker_context = EventDocumentsController.document_picker_context(
-            web_context, data
+            web_context, data, auth_action=AuthAction.PUBLISH_RESULTS
         )
         return HTMXTemplate(
             template_name='custom_upload_document_picker.html',
