@@ -40,7 +40,7 @@ class TransferProtocol(StrEnum):
     @classmethod
     def parse(cls, value: str | None) -> 'TransferProtocol':
         try:
-            return cls(value)
+            return cls(value or '')
         except ValueError:
             return cls.SFTP
 

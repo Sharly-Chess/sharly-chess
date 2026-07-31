@@ -530,7 +530,8 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             WebContext.form_data_to_str(data, 'default_server_path') or '/'
         )
         transfer_protocol: TransferProtocol = TransferProtocol(
-            WebContext.form_data_to_str(data, 'transfer_protocol', 'SFTP')
+            WebContext.form_data_to_str(data, 'transfer_protocol')
+            or TransferProtocol.SFTP.value
         )
         transfer_port: int | None = WebContext.form_data_to_int(data, 'transfer_port')
 

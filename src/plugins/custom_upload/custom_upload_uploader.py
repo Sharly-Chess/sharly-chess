@@ -277,6 +277,7 @@ class CustomUploadUploader:
                     host, username=username, password=password, port=port
                 )
                 sftp_client = ssh_client.open_sftp()
+                assert sftp_client is not None
 
                 if not CustomUploadUploader._does_remote_path_exist_sftp(
                     sftp_client, target_path
@@ -347,6 +348,7 @@ class CustomUploadUploader:
         result_id: str,
         temporary_files: list[tuple[BytesIO, str]],
     ):
+        failure_status: FailureCustomUploadStatus | None = None
         try:
             ftp_client_type: type[ftplib.FTP] = ftplib.FTP
             if tls_enabled:
