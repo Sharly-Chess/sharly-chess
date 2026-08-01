@@ -11,6 +11,9 @@ msgstr ""
 msgid "Add to list"
 msgstr ""
 
+msgid "All the tournaments"
+msgstr ""
+
 msgid "Back"
 msgstr ""
 
@@ -198,7 +201,4 @@ msgstr ""
 
 msgid "to be configured"
 msgstr ""
-
-#~ msgid "Filename"
-#~ msgstr ""
 

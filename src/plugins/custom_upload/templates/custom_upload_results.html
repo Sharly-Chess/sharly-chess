@@ -71,9 +71,13 @@
                         <a href="{{ document_url }}" target="_blank">
                             {{ _(custom_upload_utils.document_name(admin_event, document)) }}
                         </a>
-                        {% if document_tournaments %}
+                        {% if document_tournaments is not none %}
                             <small class="text-muted d-block">
-                                {{ document_tournaments | map(attribute='name') | join(', ') }}
+                                {% if document_tournaments | length in (0, admin_event.tournaments | length) %}
+                                    {{ _('All the tournaments') }}
+                                {% else %}
+                                    {{ document_tournaments | map(attribute='name') | join(', ') }}
+                                {% endif %}
                             </small>
                         {% endif %}
                     </td>

@@ -11,6 +11,9 @@ msgstr "Ajouter un document"
 msgid "Add to list"
 msgstr "Ajouter à la liste"
 
+msgid "All the tournaments"
+msgstr "Tous les tournois"
+
 msgid "Back"
 msgstr "Retour"
 
@@ -198,7 +201,4 @@ msgstr "le dossier sur le serveur n'a pas pu être trouvé"
 
 msgid "to be configured"
 msgstr "à configurer"
-
-#~ msgid "Filename"
-#~ msgstr "Nom du fichier"
 
