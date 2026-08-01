@@ -43,7 +43,7 @@ from web.controllers.admin.event_documents_controller import EventDocumentsContr
 logger = get_logger()
 
 # Minimum delay, in minutes, between two automatic uploads of the same document.
-CUSTOM_UPLOAD_DELAY = 3
+CUSTOM_UPLOAD_DELAY = 1
 
 
 class CustomUploadUploader:
