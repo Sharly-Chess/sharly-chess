@@ -27,7 +27,7 @@ from data.player_categories import (
 from data.screens.rotator import Rotator
 from data.menu import Menu
 from data.screens.screen import Screen
-from data.team import Team, TeamGroup
+from data.teams.team import Team, TeamGroup
 from data.screens.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -54,7 +54,7 @@ from database.sqlite.event.event_store import (
 )
 
 if TYPE_CHECKING:
-    from data.team_affiliation import TeamAffiliationSource
+    from data.teams.team_affiliation import TeamAffiliationSource
     from data.screens.screen_types import ScreenType
 
 logger: Logger = get_logger()
@@ -702,7 +702,7 @@ class Event:
     def team_affiliation_sources(self) -> 'list[TeamAffiliationSource]':
         """The ways a team's affiliation can be derived from its players —
         core (the players' common club) plus any contributed by plugins."""
-        from data.team_affiliation import core_team_affiliation_sources
+        from data.teams.team_affiliation import core_team_affiliation_sources
         from plugins.manager import plugin_manager
 
         sources = list(core_team_affiliation_sources())

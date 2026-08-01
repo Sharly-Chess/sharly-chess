@@ -81,7 +81,6 @@ from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
-    from database.sqlite.event.event_store import StoredTournament
     from data.tournament import Tournament
 
 logger = get_logger()
@@ -197,7 +196,7 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def get_team_affiliation_sources(self):
-        from data.team_affiliation import (
+        from data.teams.team_affiliation import (
             TeamAffiliationSource,
             team_shared_player_value,
         )

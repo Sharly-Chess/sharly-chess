@@ -35,8 +35,8 @@ from utils.enum import (
 )
 
 if TYPE_CHECKING:
-    from data.team import Team
-    from data.team_board import TeamBoard
+    from data.teams.team import Team
+    from data.teams.team_board import TeamBoard
     from database.sqlite.event.event_store import StoredTournament
 
 

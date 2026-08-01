@@ -24,7 +24,7 @@ from utils import Utils
 from utils.enum import BoardColor, Result, TeamByeType
 
 if TYPE_CHECKING:
-    from data.team import Team
+    from data.teams.team import Team
     from data.tournament import Tournament
 
 logger = get_logger()
