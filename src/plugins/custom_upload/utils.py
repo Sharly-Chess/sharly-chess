@@ -1,5 +1,4 @@
-import json
-import re
+import secrets
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
@@ -94,80 +93,113 @@ class CustomUploadUtils:
         return '/'.join(path_parts)
 
     @staticmethod
-    def get_tournament_plugin_data(
-        tournament: Tournament,
-    ) -> 'CustomUploadTournamentPluginData':
-        plugin_data = tournament.plugin_data[PLUGIN_NAME]
-        assert isinstance(plugin_data, CustomUploadTournamentPluginData)
-        return plugin_data
-
-    @staticmethod
     def get_event_plugin_data(event: Event) -> 'CustomUploadEventPluginData':
         plugin_data = event.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, CustomUploadEventPluginData)
         return plugin_data
 
     @staticmethod
-    def custom_upload_configuration_verification_message(
-        tournament: Tournament,
-    ) -> str | None:
-        event_plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
-        tournament_plugin_data = CustomUploadUtils.get_tournament_plugin_data(
-            tournament
-        )
+    def event_connection_message(event: Event) -> str | None:
+        """Return a message describing why the connection can't be used, or
+        ``None`` when host and credentials are set."""
+        event_plugin_data = CustomUploadUtils.get_event_plugin_data(event)
         if not event_plugin_data.ftp_host:
             return _('FTP host is not defined')
         if not event_plugin_data.ftp_username:
             return _('FTP credentials are not defined')
-        if not tournament_plugin_data.documents:
-            return _('No configured documents')
         return None
 
     @staticmethod
-    def update_tournament_plugin_data(
-        tournament: Tournament,
-        plugin_data: 'CustomUploadTournamentPluginData',
-    ):
-        tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
-            plugin_data.to_stored_value()
-        )
-        tournament.plugin_data[PLUGIN_NAME] = plugin_data
-        with EventDatabase(tournament.event.uniq_id, write=True) as database:
-            database.execute(
-                'UPDATE tournament SET plugin_data = '
-                f"json_set(plugin_data,'$.{PLUGIN_NAME}', json(?)) WHERE id = ?",
-                (json.dumps(plugin_data.to_stored_value()), tournament.id),
+    def get_document(event: Event, document_id: str) -> 'ConfiguredDocument | None':
+        for document in CustomUploadUtils.get_event_plugin_data(event).documents:
+            if document.id == document_id:
+                return document
+        return None
+
+    @staticmethod
+    def document_tournaments(
+        event: Event, document: 'ConfiguredDocument'
+    ) -> list[Tournament]:
+        """The tournament(s) targeted by a document, resolved from the
+        ``tournament``/``tournaments`` values stored in its options."""
+        tournaments: list[Tournament] = []
+        for tournament_id in document.tournament_ids():
+            tournament = event.tournaments_by_id.get(tournament_id)
+            if tournament:
+                tournaments.append(tournament)
+        return tournaments
+
+    @staticmethod
+    def tournament_server_paths(event: Event, tournament: Tournament) -> list[str]:
+        """Distinct server paths of the documents targeting a tournament,
+        falling back to the event default path."""
+        event_data = CustomUploadUtils.get_event_plugin_data(event)
+        paths: list[str] = []
+        for document in event_data.documents:
+            if tournament.id in document.tournament_ids():
+                path = document.server_path or event_data.default_server_path or ''
+                if path not in paths:
+                    paths.append(path)
+        return paths
+
+    @staticmethod
+    def document_name(event: Event, document: 'ConfiguredDocument') -> str:
+        from data.print_documents import PrintDocumentManager
+
+        try:
+            return (
+                PrintDocumentManager(event).get_type(document.document_id).static_name()
             )
+        except KeyError:
+            return document.document_id
+
+    @staticmethod
+    def save_event_plugin_data(
+        event: Event, plugin_data: 'CustomUploadEventPluginData'
+    ):
+        event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+        event.plugin_data[PLUGIN_NAME] = plugin_data
+        with EventDatabase(event.uniq_id, write=True) as database:
+            database.update_stored_event(event.stored_event)
 
     @classmethod
-    def resolve_tournament_upload_statuses(
-        cls, tournament: Tournament
+    def update_document_state(cls, event_uniq_id: str, document: 'ConfiguredDocument'):
+        """Persist the upload state of a single document, reloading the event's
+        plugin data first so concurrent uploads of other documents aren't lost."""
+        with EventDatabase(event_uniq_id, write=True) as database:
+            stored_event = database.load_stored_event()
+            event_data = CustomUploadEventPluginData.from_stored_value(
+                stored_event.plugin_data.get(PLUGIN_NAME, {})
+            )
+            for index, existing in enumerate(event_data.documents):
+                if existing.id == document.id:
+                    event_data.documents[index] = document
+                    break
+            stored_event.plugin_data[PLUGIN_NAME] = event_data.to_stored_value()
+            database.update_stored_event(stored_event)
+
+    @classmethod
+    def resolve_document_upload_statuses(
+        cls, event: Event, document: 'ConfiguredDocument'
     ) -> list[CustomUploadStatus]:
         from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
 
-        custom_upload_event_plugin_data = cls.get_event_plugin_data(tournament.event)
-
-        if (
-            not custom_upload_event_plugin_data.ftp_host
-            or not custom_upload_event_plugin_data.ftp_username
-        ):
+        if cls.event_connection_message(event):
             return [NotConfiguredCustomUploadStatus()]
 
-        custom_upload_tournament_plugin_data = cls.get_tournament_plugin_data(
-            tournament
-        )
         statuses: list[CustomUploadStatus] = []
 
         # Last upload failure
-        if custom_upload_tournament_plugin_data.upload_failure_id:
-            status = CustomUploadFailureStatusManager().get_object(
-                custom_upload_tournament_plugin_data.upload_failure_id
+        if document.upload_failure_id:
+            statuses.append(
+                CustomUploadFailureStatusManager().get_object(
+                    document.upload_failure_id
+                )
             )
-            statuses.append(status)
 
-        is_modified = CustomUploadUploader.custom_upload_needed(tournament)
+        is_modified = CustomUploadUploader.custom_upload_needed(event, document)
         # Current data status
-        if not custom_upload_tournament_plugin_data.last_upload_at:
+        if not document.last_upload_at:
             statuses.append(NeverUploadedCustomUploadStatus())
         elif is_modified:
             statuses.append(ModifiedCustomUploadStatus())
@@ -175,11 +207,11 @@ class CustomUploadUtils:
             statuses.append(UpToDateCustomUploadStatus())
 
         # Next upload status
-        if CustomUploadUploader.is_upload_ongoing(tournament):
+        if CustomUploadUploader.is_upload_ongoing(event.uniq_id, document.id):
             statuses.append(OngoingCustomUploadStatus())
         elif CustomUploadUploader.is_upload_queued(
-            tournament
-        ) or CustomUploadUploader.is_upload_scheduled(tournament):
+            event.uniq_id, document.id
+        ) or CustomUploadUploader.is_upload_scheduled(event.uniq_id, document.id):
             statuses.append(PendingCustomUploadStatus())
         return statuses
 
@@ -198,12 +230,77 @@ class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus])
 class ConfiguredDocument:
     """A document configured for upload: a print-document id and the
     `id=value|id=value` options string consumed by the document-view endpoint.
-    target_filename is the selected name for the document on the server,
-    defaults to concatenation of document id and options."""
+    ``server_path`` overrides the event default server path, ``target_filename``
+    the name of the document on the server. ``id`` is a stable handle used to
+    track the document's upload state across background threads."""
 
     document_id: str
     options: str = ''
     target_filename: str = ''
+    server_path: str | None = None
+    id: str = field(default_factory=lambda: secrets.token_hex(8))
+    last_upload_at: datetime | None = None
+    last_upload_attempt_at: datetime | None = None
+    upload_failure_id: str | None = None
+
+    @property
+    def last_upload_at_str(self) -> str:
+        if not self.last_upload_at:
+            return '-'
+        return format_datetime(self.last_upload_at)
+
+    def tournament_ids(self) -> list[int]:
+        """Tournament id(s) this document targets, parsed from the
+        ``tournament``/``tournaments`` values in its options string."""
+        tournament_ids: list[int] = []
+        for part in self.options.split('|'):
+            if '=' not in part:
+                continue
+            key, value = part.split('=', 1)
+            raw_ids: list[str] = []
+            if key == 'tournament' and value:
+                raw_ids = [value]
+            elif key == 'tournaments' and value:
+                raw_ids = value.split(';')
+            for raw_id in raw_ids:
+                try:
+                    tournament_ids.append(int(raw_id))
+                except ValueError:
+                    continue
+        return tournament_ids
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> 'ConfiguredDocument':
+        return cls(
+            document_id=stored_value['document_id'],
+            options=stored_value.get('options', ''),
+            target_filename=stored_value.get('target_filename', ''),
+            server_path=stored_value.get('server_path'),
+            id=stored_value.get('id') or secrets.token_hex(8),
+            last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload_at')
+            ),
+            last_upload_attempt_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload_attempt_at')
+            ),
+            upload_failure_id=stored_value.get('upload_failure_id'),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'document_id': self.document_id,
+            'options': self.options,
+            'target_filename': self.target_filename,
+            'server_path': self.server_path,
+            'id': self.id,
+            'last_upload_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload_at
+            ),
+            'last_upload_attempt_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload_attempt_at
+            ),
+            'upload_failure_id': self.upload_failure_id,
+        }
 
 
 @dataclass
@@ -214,6 +311,7 @@ class CustomUploadEventPluginData(PluginData):
     ftp_password: str | None = None
     transfer_protocol: TransferProtocol = TransferProtocol.SFTP
     transfer_port: int | None = None
+    documents: list[ConfiguredDocument] = field(default_factory=list)
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -226,6 +324,10 @@ class CustomUploadEventPluginData(PluginData):
                 stored_value.get('transfer_protocol')
             ),
             transfer_port=stored_value.get('transfer_port', None),
+            documents=[
+                ConfiguredDocument.from_stored_value(document)
+                for document in stored_value.get('documents', [])
+            ],
         )
 
     @classmethod
@@ -237,6 +339,11 @@ class CustomUploadEventPluginData(PluginData):
     ) -> Self:
         if action == FormAction.UPDATE and previous_object:
             return previous_object
+        # The connection form never carries documents; keep the ones already
+        # configured on the event (dropped only when creating from scratch).
+        documents: list[ConfiguredDocument] = (
+            previous_object.documents if previous_object else []
+        )
         default_server_path: str = CustomUploadUtils.normalize_server_path(
             WebContext.form_data_to_str(data, 'default_server_path')
         )
@@ -250,6 +357,7 @@ class CustomUploadEventPluginData(PluginData):
                 WebContext.form_data_to_str(data, 'transfer_protocol')
             ),
             transfer_port=WebContext.form_data_to_int(data, 'transfer_port'),
+            documents=documents,
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -260,6 +368,7 @@ class CustomUploadEventPluginData(PluginData):
             'ftp_password': self.ftp_password,
             'transfer_protocol': self.transfer_protocol.value,
             'transfer_port': self.transfer_port,
+            'documents': [document.to_stored_value() for document in self.documents],
         }
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
@@ -271,126 +380,5 @@ class CustomUploadEventPluginData(PluginData):
             'transfer_protocol': self.transfer_protocol.value,
             'transfer_port': self.transfer_port,
         }
-
-        return WebContext.values_dict_to_form_data(form_data)
-
-
-@dataclass
-class CustomUploadTournamentPluginData(PluginData):
-    server_path: str | None = None
-    last_upload_at: datetime | None = None
-    last_upload_attempt_at: datetime | None = None
-    upload_failure_id: str | None = None
-    documents: list[ConfiguredDocument] = field(default_factory=list)
-
-    @property
-    def last_upload_at_str(self) -> str:
-        if not self.last_upload_at:
-            return '-'
-        return format_datetime(self.last_upload_at)
-
-    @classmethod
-    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
-        return cls(
-            server_path=stored_value.get('server_path', None),
-            last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
-                stored_value.get('last_upload_at')
-            ),
-            last_upload_attempt_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
-                stored_value.get('last_upload_attempt_at')
-            ),
-            upload_failure_id=stored_value.get('upload_failure_id'),
-            documents=[
-                ConfiguredDocument(
-                    document_id=document['document_id'],
-                    options=document.get('options', ''),
-                    target_filename=document.get('target_filename', ''),
-                )
-                for document in stored_value.get('documents', [])
-            ],
-        )
-
-    def to_stored_value(self) -> dict[str, Any]:
-        return {
-            'server_path': self.server_path,
-            'last_upload_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
-                self.last_upload_at
-            ),
-            'last_upload_attempt_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
-                self.last_upload_attempt_at
-            ),
-            'upload_failure_id': self.upload_failure_id,
-            'documents': [
-                {
-                    'document_id': document.document_id,
-                    'options': document.options,
-                    'target_filename': document.target_filename,
-                }
-                for document in self.documents
-            ],
-        }
-
-    @staticmethod
-    def documents_from_form_data(data: dict[str, str]) -> list[ConfiguredDocument]:
-        """Rebuild the configured documents from the ``document_{i}_id`` /
-        ``document_{i}_options`` hidden fields carried by the configuration form."""
-        indices = sorted(
-            {
-                int(match.group(1))
-                for key in data
-                if (match := re.fullmatch(r'document_(\d+)_id', key))
-            }
-        )
-        documents: list[ConfiguredDocument] = []
-        for index in indices:
-            document_id = (data.get(f'document_{index}_id') or '').strip()
-            if not document_id:
-                continue
-            documents.append(
-                ConfiguredDocument(
-                    document_id=document_id,
-                    options=data.get(f'document_{index}_options') or '',
-                    target_filename=data.get(f'document_{index}_target_filename') or '',
-                )
-            )
-        return documents
-
-    @classmethod
-    def from_form_data(
-        cls,
-        data: dict[str, str],
-        previous_object: Self | None = None,
-        action: str | None = None,
-    ) -> Self:
-        if action == FormAction.UPDATE and previous_object:
-            return previous_object
-        last_upload_at: datetime | None = None
-        last_upload_attempt_at: datetime | None = None
-        upload_failure_id: str | None = None
-        if previous_object and action != FormAction.CLONE:
-            last_upload_at = previous_object.last_upload_at
-            last_upload_attempt_at = previous_object.last_upload_attempt_at
-            upload_failure_id = previous_object.upload_failure_id
-
-        server_path: str = CustomUploadUtils.normalize_server_path(
-            WebContext.form_data_to_str(data, 'server_path')
-        )
-        data['server_path'] = server_path
-        return cls(
-            server_path=server_path,
-            last_upload_at=last_upload_at,
-            last_upload_attempt_at=last_upload_attempt_at,
-            upload_failure_id=upload_failure_id,
-            documents=cls.documents_from_form_data(data),
-        )
-
-    def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        form_data = {
-            'server_path': self.server_path,
-        }
-        for index, document in enumerate(self.documents):
-            form_data[f'document_{index}_id'] = document.document_id
-            form_data[f'document_{index}_options'] = document.options
-            form_data[f'document_{index}_target_filename'] = document.target_filename
 
         return WebContext.values_dict_to_form_data(form_data)

@@ -6,35 +6,40 @@
     hx-trigger="ws:upload-event from:body"
     hx-swap="outerHTML"
 >
-    {% for tournament in allowed_tournaments %}
-        {% set configuration_verification_message = custom_upload_utils.custom_upload_configuration_verification_message(tournament) %}
-        {% set plugin_data = tournament.plugin_data.custom_upload %}
+    {% if not documents %}
+        <tr>
+            <td colspan="6" class="text-center text-muted py-3">
+                {{ _('No documents configured yet.') }}
+            </td>
+        </tr>
+    {% endif %}
+    {% for document in documents %}
+        {% set document_tournaments = custom_upload_utils.document_tournaments(admin_event, document) %}
+        {% set document_url = url_for('document-view', event_uniq_id=admin_event.uniq_id, document=document.document_id) %}
+        {% if document.options %}
+            {% set document_url = document_url ~ '?options=' ~ (document.options | urlencode) %}
+        {% endif %}
         <tr>
             <td style="width: 0;" class="text-nowrap">
-                {{ tournament.name }}
+                <a href="{{ document_url }}" target="_blank">
+                    {{ _(custom_upload_utils.document_name(admin_event, document)) }}
+                </a>
+                {% if document_tournaments %}
+                    <small class="text-muted d-block">
+                        {{ document_tournaments | map(attribute='name') | join(', ') }}
+                    </small>
+                {% endif %}
             </td>
-            <td class="text-center">
-                {% for document in documents_by_tournament[tournament.id] %}
-                    {% set configured_document = document[0] %}
-                    {% set document_type = document[1] %}
-                    {% set document_url = url_for('document-view', event_uniq_id=admin_event.uniq_id, document=configured_document.document_id) %}
-                    {% if configured_document.options %}
-                        {% set document_url = document_url ~ '?options=' ~ (configured_document.options | urlencode) %}
-                    {% endif %}
-                    <span
-                        class="badge rounded-pill message-debug"
-                        style="height: 20px"
-                    >
-                        <a href="{{ document_url }}" target="_blank">
-                            {{ document_type and _(document_type.static_name()) or configured_document.document_id }}
-                        </a>
-                    </span>
-                {% endfor %}
+            <td class="text-center text-nowrap">
+                {{ document.target_filename or '—' }}
             </td>
-            <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
-                {% set tournament_statuses = custom_upload_utils.resolve_tournament_upload_statuses(tournament) %}
-                {% for status in tournament_statuses %}
-                    {% set tooltip_message = status.tooltip_message(tournament) %}
+            <td class="text-center text-nowrap">
+                {{ document.server_path or connection_default_server_path or '—' }}
+            </td>
+            <td id="document-upload-statuses-{{ document.id }}" class="text-center">
+                {% set document_statuses = custom_upload_utils.resolve_document_upload_statuses(admin_event, document) %}
+                {% for status in document_statuses %}
+                    {% set tooltip_message = status.tooltip_message(admin_event, document) %}
                     <span
                         class="badge rounded-pill {{ status.css_classes }}"
                         style="height: 20px"
@@ -47,29 +52,41 @@
                 {% endfor %}
             </td>
             <td class="text-center text-nowrap">
-                {{ plugin_data.last_upload_at_str }}
+                {{ document.last_upload_at_str }}
             </td>
             <td class="d-flex gap-2 align-items-center">
                 <div class="flex-grow-1"></div>
-                <span {{ macros.tooltip_attributes('', _('Edit configuration')) }}>
+                <span {{ macros.tooltip_attributes('', _('Edit document')) }}>
                     <button
                         type="button"
                         class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                        hx-get="{{ url_for('custom-upload-tournament-configuration-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                        hx-target="body"
+                        hx-get="{{ url_for('custom-upload-edit-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
+                        hx-target="#modal-wrapper"
                         hx-indicator="#please-wait"
                     >
                         <i class="bi-pencil-fill lh-1"></i>
                     </button>
                 </span>
-                <span {{ macros.tooltip_attributes('', configuration_verification_message or _('Upload')) }}>
+                <span {{ macros.tooltip_attributes('', _('Remove document')) }}>
+                    <button
+                        type="button"
+                        class="btn btn-outline-danger btn-sm d-flex h-100 align-items-center"
+                        hx-post="{{ url_for('custom-upload-remove-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
+                        hx-target="#upload-results"
+                        hx-swap="outerHTML"
+                        hx-confirm="{{ _('Remove this document from the upload list?') }}"
+                    >
+                        <i class="bi-trash-fill lh-1"></i>
+                    </button>
+                </span>
+                <span {{ macros.tooltip_attributes('', connection_message or _('Upload')) }}>
                     <button
                         type="button"
                         class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                        hx-post="{{ url_for('custom-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        hx-post="{{ url_for('custom-upload-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
                         hx-target="#upload-results"
                         hx-swap="outerHTML"
-                        {% if configuration_verification_message %}
+                        {% if connection_message %}
                             disabled
                         {% endif %}
                     >

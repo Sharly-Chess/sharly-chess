@@ -27,15 +27,32 @@
                     </button>
                 </span>
             </h4>
+
+            <div class="d-flex justify-content-end mb-2">
+                <button
+                    type="button"
+                    class="btn btn-primary text-nowrap"
+                    hx-get="{{ url_for('custom-upload-add-document', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="#modal-wrapper"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="bi-plus-square pe-1"></i>
+                    {{ _('Add document') }}
+                </button>
+            </div>
+
             <table
                 class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
             >
                 <thead>
                     <th>
-                        {{ _('Tournament') }}
+                        {{ _('Document') }}
                     </th>
-                    <th class="text-center">
-                        {{ _('Documents') }}
+                    <th class="text-center text-nowrap">
+                        {{ _('Filename') }}
+                    </th>
+                    <th class="text-center text-nowrap">
+                        {{ _('Server path') }}
                     </th>
                     <th class="text-center">
                         {{ _('Status') }}
@@ -55,9 +72,12 @@
                     hx-target="#upload-results"
                     hx-swap="outerHTML"
                     class="text-nowrap white btn btn-outline-primary"
+                    {% if connection_message or not documents %}
+                        disabled
+                    {% endif %}
                 >
                     <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
-                    {{ _('Upload all tournaments') }}
+                    {{ _('Upload all documents') }}
                 </button>
             </div>
         </div>

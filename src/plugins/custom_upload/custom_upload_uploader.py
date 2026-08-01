@@ -25,7 +25,6 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.client import Client
 from data.event import Event
 from data.loader import EventLoader
-from data.tournament import Tournament
 from plugins.custom_upload.custom_upload_status import (
     AuthenticationFailureCustomUploadStatus,
     ConnectionFailureCustomUploadStatus,
@@ -34,8 +33,8 @@ from plugins.custom_upload.custom_upload_status import (
     FailureCustomUploadStatus,
 )
 from plugins.custom_upload.utils import (
+    ConfiguredDocument,
     CustomUploadUtils,
-    CustomUploadTournamentPluginData,
     TransferProtocol,
 )
 from utils import Utils
@@ -51,49 +50,39 @@ class CustomUploadUploader:
     ongoing_result_ids: set[str] = set()
 
     @classmethod
-    def result_id(cls, event_uniq_id: str, tournament_id: int) -> str:
-        return f'{event_uniq_id}:{tournament_id}'
+    def result_id(cls, event_uniq_id: str, document_id: str) -> str:
+        return f'{event_uniq_id}:{document_id}'
 
     @classmethod
-    def tournament_result_id(cls, tournament: Tournament) -> str:
-        return cls.result_id(tournament.event.uniq_id, tournament.id)
+    def is_upload_ongoing(cls, event_uniq_id: str, document_id: str) -> bool:
+        """Return True if a background upload is currently running for this document."""
+        return cls.result_id(event_uniq_id, document_id) in cls.ongoing_result_ids
 
     @classmethod
-    def is_upload_ongoing(cls, tournament: Tournament) -> bool:
-        """Return True if a background upload is currently running for this tournament."""
-        key = cls.tournament_result_id(tournament)
-        return key in cls.ongoing_result_ids
-
-    @classmethod
-    def is_upload_scheduled(cls, tournament: Tournament) -> bool:
-        """Return True if a background upload is scheduled for this tournament."""
-        key = cls.tournament_result_id(tournament)
-        thread = cls.timeout_threads.get(key)
+    def is_upload_scheduled(cls, event_uniq_id: str, document_id: str) -> bool:
+        """Return True if a background upload is scheduled for this document."""
+        thread = cls.timeout_threads.get(cls.result_id(event_uniq_id, document_id))
         return bool(thread and thread.is_alive())
 
     @classmethod
-    def is_upload_queued(cls, tournament: Tournament) -> bool:
-        """Return True if a background upload is queued for this tournament."""
-        key = cls.tournament_result_id(tournament)
-        return key in cls.queued_result_ids
+    def is_upload_queued(cls, event_uniq_id: str, document_id: str) -> bool:
+        """Return True if a background upload is queued for this document."""
+        return cls.result_id(event_uniq_id, document_id) in cls.queued_result_ids
 
     @classmethod
-    def remove_scheduled_upload(cls, tournament: Tournament):
-        key = cls.tournament_result_id(tournament)
-        thread = cls.timeout_threads.get(key)
-        if thread and thread.is_alive():
-            thread.cancel()
-
-    @classmethod
-    def custom_last_upload(cls, tournament: Tournament) -> datetime | None:
-        plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
-        return plugin_data.last_upload_at
-
-    @classmethod
-    def custom_upload_needed(cls, tournament: Tournament) -> bool:
-        last_upload = cls.custom_last_upload(tournament)
-        return not last_upload or Utils.tournament_results_modified_since(
-            tournament, last_upload
+    def custom_upload_needed(cls, event: Event, document: ConfiguredDocument) -> bool:
+        """A document must be re-uploaded when it has never been uploaded or when
+        the results of one of its tournaments changed since the last upload."""
+        last_upload = document.last_upload_at
+        if not last_upload:
+            return True
+        tournaments = CustomUploadUtils.document_tournaments(event, document)
+        if not tournaments:
+            # No tournament tie (event-wide document): re-upload on any change.
+            tournaments = list(event.tournaments_by_id.values())
+        return any(
+            Utils.tournament_results_modified_since(tournament, last_upload)
+            for tournament in tournaments
         )
 
     @classmethod
@@ -136,15 +125,15 @@ class CustomUploadUploader:
                 )
 
     @classmethod
-    def upload_tournament(
+    def upload_document(
         cls,
         event_uniq_id: str,
-        tournament_id: int,
+        document_id: str,
         http_client: Client,
     ):
-        """Upload a tournament to a custom location."""
+        """Upload a single configured document to its custom location."""
 
-        result_id: str = cls.result_id(event_uniq_id, tournament_id)
+        result_id: str = cls.result_id(event_uniq_id, document_id)
         cls.ongoing_result_ids.add(result_id)
         cls.queued_result_ids.discard(result_id)
 
@@ -154,55 +143,43 @@ class CustomUploadUploader:
             # triggered by the `upload-event` web socket are treated as one
             time.sleep(0.5)
 
-            # We refetch the latest event and tournament
+            # We refetch the latest event and document
             loader = EventLoader()
             if event_uniq_id not in loader.event_uniq_ids:
                 # The event has been deleted
                 return
             event = loader.load_event(event_uniq_id)
 
-            tournament = event.tournaments_by_id.get(tournament_id, None)
-            if not tournament:
-                # The tournament has been deleted
+            document = CustomUploadUtils.get_document(event, document_id)
+            if not document:
+                # The document has been removed
                 return
 
-            if CustomUploadUtils.custom_upload_configuration_verification_message(
-                tournament
-            ):
-                # Skip this tournament if configuration is invalid
+            if CustomUploadUtils.event_connection_message(event):
+                # Skip if the connection is not configured
                 return
 
             if not NetworkMonitor.connected():
                 # The network is offline, we can't upload
                 return
 
-            logger.info('Generating documents for tournament [%s]...', tournament.name)
+            logger.info('Generating document [%s]...', document.document_id)
 
-            event_plugin_data = CustomUploadUtils.get_event_plugin_data(
-                tournament.event
-            )
-            tournament_plugin_data = CustomUploadUtils.get_tournament_plugin_data(
-                tournament
-            )
+            event_plugin_data = CustomUploadUtils.get_event_plugin_data(event)
 
             try:
-                temporary_files = cls._generate_documents_in_memory(
-                    event, tournament_plugin_data, http_client
+                temporary_file, file_name = cls._generate_document_in_memory(
+                    event, document, http_client
                 )
-                logger.info('Generated %d documents.', len(temporary_files))
             except Exception as error:
                 logger.exception(
-                    'Error while generating documents for tournament [%s]: %s.',
-                    tournament.name,
+                    'Error while generating document [%s]: %s.',
+                    document.document_id,
                     error,
                 )
-                tournament_plugin_data.upload_failure_id = (
-                    UnexpectedFailureCustomUploadStatus().id
-                )
-                tournament_plugin_data.last_upload_attempt_at = datetime.now()
-                CustomUploadUtils.update_tournament_plugin_data(
-                    tournament, tournament_plugin_data
-                )
+                document.upload_failure_id = UnexpectedFailureCustomUploadStatus().id
+                document.last_upload_attempt_at = datetime.now()
+                CustomUploadUtils.update_document_state(event_uniq_id, document)
                 return
 
             host = event_plugin_data.ftp_host
@@ -216,23 +193,21 @@ class CustomUploadUploader:
                 return
 
             target_path = (
-                tournament_plugin_data.server_path
-                or event_plugin_data.default_server_path
-                or ''
+                document.server_path or event_plugin_data.default_server_path or ''
             )
             base_target_path = os.path.dirname(target_path)
             port = port or transfer_protocol.default_port
 
             logger.info(
-                'Uploading tournament [%s] to [%s:********@%s:%d/%s] via [%s]...',
-                tournament.name,
+                'Uploading document [%s] to [%s:********@%s:%d/%s] via [%s]...',
+                document.document_id,
                 username,
                 host,
                 port,
                 target_path,
-                event_plugin_data.transfer_protocol,
+                transfer_protocol,
             )
-            if event_plugin_data.transfer_protocol == TransferProtocol.SFTP:
+            if transfer_protocol == TransferProtocol.SFTP:
                 cls._sftp_upload(
                     host,
                     username,
@@ -241,10 +216,11 @@ class CustomUploadUploader:
                     transfer_protocol,
                     target_path,
                     base_target_path,
-                    tournament_plugin_data,
-                    tournament,
+                    event_uniq_id,
+                    document,
                     result_id,
-                    temporary_files,
+                    temporary_file,
+                    file_name,
                 )
             else:
                 cls._ftp_upload(
@@ -255,10 +231,11 @@ class CustomUploadUploader:
                     transfer_protocol,
                     target_path,
                     base_target_path,
-                    tournament_plugin_data,
-                    tournament,
+                    event_uniq_id,
+                    document,
                     result_id,
-                    temporary_files,
+                    temporary_file,
+                    file_name,
                 )
         finally:
             cls.ongoing_result_ids.discard(result_id)
@@ -274,13 +251,14 @@ class CustomUploadUploader:
         transfer_protocol: TransferProtocol,
         target_path: str,
         base_target_path: str,
-        tournament_plugin_data: CustomUploadTournamentPluginData,
-        tournament: Tournament,
+        event_uniq_id: str,
+        document: ConfiguredDocument,
         result_id: str,
-        temporary_files: list[tuple[BytesIO, str]],
+        temporary_file: BytesIO,
+        file_name: str,
     ):
         failure_status: FailureCustomUploadStatus | None = None
-        error_message: str = f'Uploading documents for tournament [{tournament.name}] to [{host}:{transfer_port}/{target_path}] via [{transfer_protocol.name}] failed: %s.'
+        error_message: str = f'Uploading document [{document.document_id}] to [{host}:{transfer_port}/{target_path}] via [{transfer_protocol.name}] failed: %s.'
 
         with paramiko.SSHClient() as ssh_client:
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -308,15 +286,11 @@ class CustomUploadUploader:
                     # In this case, it means only subfolder is missing. Let's create it.
                     sftp_client.mkdir(target_path)
 
-                for (
-                    temporary_document_file,
-                    file_name,
-                ) in temporary_files:
-                    sftp_client.putfo(
-                        temporary_document_file,
-                        (PurePosixPath(target_path) / file_name).as_posix(),
-                    )
-                    logger.info('Uploaded document file [%s].', file_name)
+                sftp_client.putfo(
+                    temporary_file,
+                    (PurePosixPath(target_path) / file_name).as_posix(),
+                )
+                logger.info('Uploaded document file [%s].', file_name)
             except AuthenticationException as error:
                 logger.error(
                     error_message,
@@ -338,20 +312,9 @@ class CustomUploadUploader:
             finally:
                 if sftp_client is not None:
                     sftp_client.close()
-                for temporary_document_file, _ in temporary_files:
-                    temporary_document_file.close()
+                temporary_file.close()
                 cls.ongoing_result_ids.discard(result_id)
-                now = datetime.now()
-                if failure_status:
-                    tournament_plugin_data.upload_failure_id = failure_status.id
-                else:
-                    tournament_plugin_data.upload_failure_id = None
-                    tournament_plugin_data.last_upload_at = now
-                tournament_plugin_data.last_upload_attempt_at = now
-                CustomUploadUtils.update_tournament_plugin_data(
-                    tournament, tournament_plugin_data
-                )
-                cls.publish_upload_event()
+                cls._record_upload_result(event_uniq_id, document, failure_status)
 
     @classmethod
     def _ftp_upload(
@@ -363,13 +326,14 @@ class CustomUploadUploader:
         transfer_protocol: TransferProtocol,
         target_path: str,
         base_target_path: str,
-        tournament_plugin_data: CustomUploadTournamentPluginData,
-        tournament: Tournament,
+        event_uniq_id: str,
+        document: ConfiguredDocument,
         result_id: str,
-        temporary_files: list[tuple[BytesIO, str]],
+        temporary_file: BytesIO,
+        file_name: str,
     ):
         failure_status: FailureCustomUploadStatus | None = None
-        error_message: str = f'Uploading documents for tournament [{tournament.name}] to [{host}:{transfer_port}/{target_path}] via [{transfer_protocol.name}] failed: %s.'
+        error_message: str = f'Uploading document [{document.document_id}] to [{host}:{transfer_port}/{target_path}] via [{transfer_protocol.name}] failed: %s.'
 
         try:
             ftp_client_type: type[ftplib.FTP] = ftplib.FTP
@@ -396,15 +360,11 @@ class CustomUploadUploader:
                     # In this case, it means only subfolder is missing. Let's create it.
                     ftp_client.mkd(target_path)
 
-                for (
-                    temporary_document_file,
-                    file_name,
-                ) in temporary_files:
-                    ftp_client.storbinary(
-                        f'STOR {file_name}',
-                        temporary_document_file,
-                    )
-                    logger.info('Uploaded document file [%s]', file_name)
+                ftp_client.storbinary(
+                    f'STOR {(PurePosixPath(target_path) / file_name).as_posix()}',
+                    temporary_file,
+                )
+                logger.info('Uploaded document file [%s]', file_name)
         except ftplib.error_perm as error:
             logger.error(
                 error_message,
@@ -424,108 +384,101 @@ class CustomUploadUploader:
             )
             failure_status = UnexpectedFailureCustomUploadStatus()
         finally:
-            for temporary_document_file, _ in temporary_files:
-                temporary_document_file.close()
+            temporary_file.close()
             cls.ongoing_result_ids.discard(result_id)
-            now = datetime.now()
-            if failure_status:
-                tournament_plugin_data.upload_failure_id = failure_status.id
-            else:
-                tournament_plugin_data.upload_failure_id = None
-                tournament_plugin_data.last_upload_at = now
-            tournament_plugin_data.last_upload_attempt_at = now
-            CustomUploadUtils.update_tournament_plugin_data(
-                tournament, tournament_plugin_data
-            )
-            cls.publish_upload_event()
+            cls._record_upload_result(event_uniq_id, document, failure_status)
 
     @classmethod
-    def _generate_documents_in_memory(
+    def _record_upload_result(
+        cls,
+        event_uniq_id: str,
+        document: ConfiguredDocument,
+        failure_status: FailureCustomUploadStatus | None,
+    ):
+        now = datetime.now()
+        if failure_status:
+            document.upload_failure_id = failure_status.id
+        else:
+            document.upload_failure_id = None
+            document.last_upload_at = now
+        document.last_upload_attempt_at = now
+        CustomUploadUtils.update_document_state(event_uniq_id, document)
+        cls.publish_upload_event()
+
+    @classmethod
+    def _generate_document_in_memory(
         cls,
         event: Event,
-        tournament_plugin_data: CustomUploadTournamentPluginData,
+        document: ConfiguredDocument,
         http_client: Client,
-    ) -> list[tuple[BytesIO, str]]:
-        temporary_files_with_name: list[tuple[BytesIO, str]] = []
-        for configured_document in tournament_plugin_data.documents:
-            document_htmx_template = EventDocumentsController.document_view(
-                http_client,
-                event,
-                configured_document.document_id,
-                configured_document.options or None,
-            )
-            html_content = parse_jinja_template(
-                document_htmx_template.template_name, document_htmx_template.context
-            )
-            temporary_document_file = BytesIO(html_content.encode())
+    ) -> tuple[BytesIO, str]:
+        document_htmx_template = EventDocumentsController.document_view(
+            http_client,
+            event,
+            document.document_id,
+            document.options or None,
+        )
+        html_content = parse_jinja_template(
+            document_htmx_template.template_name, document_htmx_template.context
+        )
+        temporary_file = BytesIO(html_content.encode())
 
-            normalized_filename = configured_document.target_filename.strip()
-            file_name: str
-            if normalized_filename:
-                file_name = normalized_filename
-            else:
-                options_suffix = re.sub(
-                    r'[^A-Za-z0-9]+', '_', configured_document.options
-                ).strip('_')
-                file_name = (
-                    f'{"_".join(event.name.split())}_{configured_document.document_id}'
-                )
-                if options_suffix:
-                    file_name += f'_{options_suffix}'
-            file_name += '.html'
-            temporary_files_with_name.append((temporary_document_file, file_name))
-        return temporary_files_with_name
+        normalized_filename = document.target_filename.strip()
+        file_name: str
+        if normalized_filename:
+            file_name = normalized_filename
+        else:
+            options_suffix = re.sub(r'[^A-Za-z0-9]+', '_', document.options).strip('_')
+            file_name = f'{"_".join(event.name.split())}_{document.document_id}'
+            if options_suffix:
+                file_name += f'_{options_suffix}'
+        file_name += '.html'
+        return temporary_file, file_name
 
     @classmethod
-    def schedule_upload(cls, tournament, http_client: Client):
-        """Schedule the upload of a tournament."""
-        if CustomUploadUtils.custom_upload_configuration_verification_message(
-            tournament
-        ):
+    def schedule_upload(
+        cls, event: Event, document: ConfiguredDocument, http_client: Client
+    ):
+        """Schedule the upload of a single document."""
+        if CustomUploadUtils.event_connection_message(event):
             return
 
-        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
+        event_uniq_id = event.uniq_id
+        result_id = cls.result_id(event_uniq_id, document.id)
 
         def _run():
             set_locale(SharlyChessConfig().locale)
-            cls.upload_tournament(tournament.event.uniq_id, tournament.id, http_client)
+            cls.upload_document(event_uniq_id, document.id, http_client)
 
         timer = Timer(0.1, _run)
         cls.timeout_threads[result_id] = timer
         timer.start()
 
     @classmethod
-    def upload_event_tournaments(
-        cls, tournaments: list[Tournament], http_client: Client
+    def upload_event_documents(
+        cls, event: Event, documents: list[ConfiguredDocument], http_client: Client
     ):
-        """Upload all eligible tournaments for an event in a background thread."""
-        eligible_tournaments = [
-            tournament
-            for tournament in tournaments
-            if not CustomUploadUtils.custom_upload_configuration_verification_message(
-                tournament
-            )
-            and cls.tournament_result_id(tournament) not in cls.ongoing_result_ids
+        """Upload all eligible documents of an event in a background thread."""
+        if CustomUploadUtils.event_connection_message(event):
+            return
+
+        event_uniq_id = event.uniq_id
+        updated_documents: list[ConfiguredDocument] = [
+            document
+            for document in documents
+            if cls.result_id(event_uniq_id, document.id) not in cls.ongoing_result_ids
+            and cls.custom_upload_needed(event, document)
         ]
-        if not eligible_tournaments:
+        if not updated_documents:
             return
 
-        event_uniq_id = eligible_tournaments[0].event.uniq_id
-        updated_tournaments: list[Tournament] = []
-        for tournament in eligible_tournaments:
-            if cls.custom_upload_needed(tournament):
-                updated_tournaments.append(tournament)
-
-        if not updated_tournaments:
-            return
-
-        for tournament in updated_tournaments:
-            cls.queued_result_ids.add(cls.tournament_result_id(tournament))
+        for document in updated_documents:
+            cls.queued_result_ids.add(cls.result_id(event_uniq_id, document.id))
 
         def _run():
             set_locale(SharlyChessConfig().locale)
-            for tournament in updated_tournaments:
-                cls.upload_tournament(event_uniq_id, tournament.id, http_client)
+            for document in updated_documents:
+                cls.upload_document(event_uniq_id, document.id, http_client)
 
         Thread(target=_run, daemon=True).start()
 

@@ -10,7 +10,6 @@ from plugins.custom_upload.custom_upload_controller import (
     CustomUploadAdminEventController,
 )
 from plugins.custom_upload.utils import (
-    CustomUploadTournamentPluginData,
     CustomUploadUtils,
     CustomUploadEventPluginData,
 )
@@ -81,35 +80,27 @@ class CustomUploadPlugin(Plugin):
             stored_event.plugin_data.get(PLUGIN_NAME, {})
         )
         event_plugin_data.ftp_password = None
+        for document in event_plugin_data.documents:
+            document.last_upload_at = None
+            document.last_upload_attempt_at = None
+            document.upload_failure_id = None
         stored_event.plugin_data[PLUGIN_NAME] = event_plugin_data.to_stored_value()
         event_database.update_stored_event(stored_event)
-
-        for stored_tournament in event_database.load_stored_tournaments():
-            old_plugin_data = CustomUploadTournamentPluginData.from_stored_value(
-                stored_tournament.plugin_data.get(PLUGIN_NAME, {})
-            )
-            new_plugin_data = CustomUploadTournamentPluginData(
-                server_path=old_plugin_data.server_path,
-                documents=old_plugin_data.documents,
-            )
-            stored_tournament.plugin_data[PLUGIN_NAME] = (
-                new_plugin_data.to_stored_value()
-            )
-            event_database.update_stored_tournament(stored_tournament)
 
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
-        return self.id, CustomUploadTournamentPluginData
-
-    @hookimpl
     def get_tournament_connection_field(
         self, tournament: 'Tournament'
     ) -> TournamentConnectionField | None:
-        if not CustomUploadUtils.get_tournament_plugin_data(tournament).documents:
+        event_plugin_data = CustomUploadUtils.get_event_plugin_data(tournament.event)
+        targets_tournament = any(
+            tournament.id in document.tournament_ids()
+            for document in event_plugin_data.documents
+        )
+        if not targets_tournament:
             return None
         return TournamentConnectionField(
             label=_('Custom location'),
@@ -125,8 +116,8 @@ class CustomUploadPlugin(Plugin):
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
         has_upload_error = any(
-            CustomUploadUtils.get_tournament_plugin_data(tournament).upload_failure_id
-            for tournament in event.tournaments
+            document.upload_failure_id
+            for document in CustomUploadUtils.get_event_plugin_data(event).documents
         )
 
         return [
