@@ -35,11 +35,20 @@ msgstr "Serveur personnel"
 msgid "Custom upload"
 msgstr "Mise en ligne personnalisée"
 
+msgid "Data has been modified since the last upload."
+msgstr "Les données ont été modifiées depuis la dernière mise en ligne."
+
 msgid "Default server path:"
 msgstr "Chemin sur le serveur par défaut :"
 
-msgid "Documents"
-msgstr "Documents"
+msgid "Document"
+msgstr "Document"
+
+msgid "Document is currently being uploaded."
+msgstr "Le document est en cours de mise en ligne."
+
+msgid "Document upload has been planned."
+msgstr "La mise en ligne du document est planifiée."
 
 msgid "E.g.: ftp.example.com (mandatory)"
 msgstr "Exemple : ftp.example.fr"
@@ -50,23 +59,14 @@ msgstr "Exemple : m0t_de_p@sse (vide par défaut)"
 msgid "E.g.: my_username (mandatory)"
 msgstr "Exemple : mon_nom (obligatoire)"
 
-msgid "E.g.: pairings_myTournament_round_1"
-msgstr "Exemple : appariements_monTournoi_ronde_1"
-
-msgid "E.g.: tournaments/my_tournament (optional)"
-msgstr "Exemple : tournois/mon_tournoi (facultatif)"
-
-msgid "Edit configuration"
-msgstr "Modifier la configuration"
+msgid "E.g.: pairings_myTournament_round_1 (optional)"
+msgstr "Exemple : appariements_monTournoi_ronde_1 (facultatif)"
 
 msgid "Edit connection"
 msgstr "Modifier la connexion"
 
 msgid "Edit document"
 msgstr "Modifier le document"
-
-msgid "Edit the document."
-msgstr "Modifier le document."
 
 msgid "Empty by default (login folder)"
 msgstr "Vide par défaut (répertoire de connexion)"
@@ -94,6 +94,9 @@ msgstr "Échec de la connexion au serveur distant."
 
 msgid "Failure"
 msgstr "Échec"
+
+msgid "Filename"
+msgstr "Nom du fichier"
 
 msgid "Filename on server:"
 msgstr "Nom du fichier sur le serveur :"
@@ -123,11 +126,8 @@ msgstr "Jamais mis en ligne"
 msgid "No changes detected since the last upload."
 msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 
-msgid "No configured documents"
-msgstr "Aucun document configuré"
-
-msgid "No configured documents yet."
-msgstr "Aucun document encore configuré."
+msgid "No documents configured yet."
+msgstr "Aucun document configuré pour le moment."
 
 msgid "No internet connection detected."
 msgstr "Aucune connexion internet détectée."
@@ -150,8 +150,11 @@ msgstr "Port :"
 msgid "Protocol:"
 msgstr "Protocole :"
 
-msgid "Remove the document from the upload list."
-msgstr "Retirer le document de la liste de mise en ligne."
+msgid "Remove document"
+msgstr "Supprimer le document"
+
+msgid "Remove this document from the upload list?"
+msgstr "Supprimer ce document de la liste de mise en ligne ?"
 
 msgid "SFTP (FTP over SSH)"
 msgstr "SFTP (FTP sur SSH)"
@@ -159,29 +162,14 @@ msgstr "SFTP (FTP sur SSH)"
 msgid "Save"
 msgstr "Enregistrer"
 
+msgid "Server path"
+msgstr "Chemin sur le serveur"
+
 msgid "Server path:"
 msgstr "Chemin sur le serveur :"
 
 msgid "Status"
 msgstr "Status"
-
-msgid "Tournament"
-msgstr "Tournoi"
-
-msgid "Tournament configuration"
-msgstr "Configuration de tournoi"
-
-msgid "Tournament has been modified since the last upload."
-msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
-
-msgid "Tournament is currently being uploaded."
-msgstr "Le tournoi est en cours de mise en ligne."
-
-msgid "Tournament upload has been planned."
-msgstr "La mise en ligne du tournoi a été planifiée."
-
-msgid "Tournament:"
-msgstr "Tournoi :"
 
 msgid "Up to date"
 msgstr "À jour"
@@ -189,8 +177,12 @@ msgstr "À jour"
 msgid "Upload"
 msgstr "Mettre en ligne"
 
-msgid "Upload all tournaments"
-msgstr "Mettre en ligne tous les tournois"
+msgid "Upload all documents"
+msgstr "Mettre en ligne tous les documents"
+
+#, python-format
+msgid "Upload automatically every %(delay)d minutes."
+msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
 
 msgid "Upload tournament documents to custom location"
 msgstr "Mise en ligne de documents sur un serveur personnel"
@@ -209,4 +201,3 @@ msgstr "le chemin sur le serveur n'a pas pu être trouvé"
 
 msgid "to be configured"
 msgstr "à configurer"
-

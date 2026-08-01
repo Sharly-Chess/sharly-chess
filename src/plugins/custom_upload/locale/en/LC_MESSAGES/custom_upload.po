@@ -35,10 +35,19 @@ msgstr ""
 msgid "Custom upload"
 msgstr ""
 
+msgid "Data has been modified since the last upload."
+msgstr ""
+
 msgid "Default server path:"
 msgstr ""
 
-msgid "Documents"
+msgid "Document"
+msgstr ""
+
+msgid "Document is currently being uploaded."
+msgstr ""
+
+msgid "Document upload has been planned."
 msgstr ""
 
 msgid "E.g.: ftp.example.com (mandatory)"
@@ -50,22 +59,13 @@ msgstr ""
 msgid "E.g.: my_username (mandatory)"
 msgstr ""
 
-msgid "E.g.: pairings_myTournament_round_1"
-msgstr ""
-
-msgid "E.g.: tournaments/my_tournament (optional)"
-msgstr ""
-
-msgid "Edit configuration"
+msgid "E.g.: pairings_myTournament_round_1 (optional)"
 msgstr ""
 
 msgid "Edit connection"
 msgstr ""
 
 msgid "Edit document"
-msgstr ""
-
-msgid "Edit the document."
 msgstr ""
 
 msgid "Empty by default (login folder)"
@@ -93,6 +93,9 @@ msgid "Failed to connect to server."
 msgstr ""
 
 msgid "Failure"
+msgstr ""
+
+msgid "Filename"
 msgstr ""
 
 msgid "Filename on server:"
@@ -123,10 +126,7 @@ msgstr ""
 msgid "No changes detected since the last upload."
 msgstr ""
 
-msgid "No configured documents"
-msgstr ""
-
-msgid "No configured documents yet."
+msgid "No documents configured yet."
 msgstr ""
 
 msgid "No internet connection detected."
@@ -150,7 +150,10 @@ msgstr ""
 msgid "Protocol:"
 msgstr ""
 
-msgid "Remove the document from the upload list."
+msgid "Remove document"
+msgstr ""
+
+msgid "Remove this document from the upload list?"
 msgstr ""
 
 msgid "SFTP (FTP over SSH)"
@@ -159,28 +162,13 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
+msgid "Server path"
+msgstr ""
+
 msgid "Server path:"
 msgstr ""
 
 msgid "Status"
-msgstr ""
-
-msgid "Tournament"
-msgstr ""
-
-msgid "Tournament configuration"
-msgstr ""
-
-msgid "Tournament has been modified since the last upload."
-msgstr ""
-
-msgid "Tournament is currently being uploaded."
-msgstr ""
-
-msgid "Tournament upload has been planned."
-msgstr ""
-
-msgid "Tournament:"
 msgstr ""
 
 msgid "Up to date"
@@ -189,7 +177,11 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
-msgid "Upload all tournaments"
+msgid "Upload all documents"
+msgstr ""
+
+#, python-format
+msgid "Upload automatically every %(delay)d minutes."
 msgstr ""
 
 msgid "Upload tournament documents to custom location"
@@ -209,4 +201,3 @@ msgstr ""
 
 msgid "to be configured"
 msgstr ""
-
