@@ -1,4 +1,5 @@
 import ftplib
+import os.path
 import re
 import time
 from datetime import datetime
@@ -219,6 +220,7 @@ class CustomUploadUploader:
                 or event_plugin_data.default_server_path
                 or ''
             )
+            base_target_path = os.path.dirname(target_path)
             port = port or transfer_protocol.default_port
 
             logger.info(
@@ -238,6 +240,7 @@ class CustomUploadUploader:
                     port,
                     transfer_protocol,
                     target_path,
+                    base_target_path,
                     tournament_plugin_data,
                     tournament,
                     result_id,
@@ -251,6 +254,7 @@ class CustomUploadUploader:
                     port,
                     transfer_protocol,
                     target_path,
+                    base_target_path,
                     tournament_plugin_data,
                     tournament,
                     result_id,
@@ -269,6 +273,7 @@ class CustomUploadUploader:
         transfer_port: int,
         transfer_protocol: TransferProtocol,
         target_path: str,
+        base_target_path: str,
         tournament_plugin_data: CustomUploadTournamentPluginData,
         tournament: Tournament,
         result_id: str,
@@ -288,14 +293,20 @@ class CustomUploadUploader:
                 assert sftp_client is not None
 
                 if not CustomUploadUploader._does_remote_path_exist_sftp(
-                    sftp_client, target_path
+                    sftp_client, base_target_path
                 ):
                     logger.error(
                         error_message,
-                        f"path [{target_path}] doesn't target a valid location",
+                        f"path [{base_target_path}] doesn't target a valid location",
                     )
                     failure_status = TargetLocationNotFoundCustomUploadStatus()
                     return
+
+                if not CustomUploadUploader._does_remote_path_exist_sftp(
+                    sftp_client, target_path
+                ):
+                    # In this case, it means only subfolder is missing. Let's create it.
+                    sftp_client.mkdir(target_path)
 
                 for (
                     temporary_document_file,
@@ -351,6 +362,7 @@ class CustomUploadUploader:
         transfer_port: int,
         transfer_protocol: TransferProtocol,
         target_path: str,
+        base_target_path: str,
         tournament_plugin_data: CustomUploadTournamentPluginData,
         tournament: Tournament,
         result_id: str,
@@ -369,14 +381,20 @@ class CustomUploadUploader:
                 ftp_client.login(username, password)
 
                 if not CustomUploadUploader._does_remote_path_exist_ftp(
-                    ftp_client, target_path
+                    ftp_client, base_target_path
                 ):
                     logger.error(
                         error_message,
-                        f"path [{target_path}] doesn't target a valid location",
+                        f"path [{base_target_path}] doesn't target a valid location",
                     )
                     failure_status = TargetLocationNotFoundCustomUploadStatus()
                     return
+
+                if not CustomUploadUploader._does_remote_path_exist_ftp(
+                    ftp_client, target_path
+                ):
+                    # In this case, it means only subfolder is missing. Let's create it.
+                    ftp_client.mkd(target_path)
 
                 for (
                     temporary_document_file,
@@ -522,10 +540,11 @@ class CustomUploadUploader:
     @staticmethod
     def _does_remote_path_exist_ftp(ftp_client: ftplib.FTP, remote_path: str) -> bool:
         try:
-            ftp_client.cwd(remote_path)
+            if 'type=dir;' in ftp_client.sendcmd(f'MLST {remote_path}'):
+                return True
         except error_perm:
             return False
-        return True
+        return False
 
     @staticmethod
     def _sftp_auth_check(
