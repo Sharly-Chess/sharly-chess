@@ -194,7 +194,18 @@ fi
 echo "Certificate imported successfully."
 
 echo "--- Section 5: Signing Application Files ---"
-APP_SIGNING_IDENTITY="Developer ID Application"
+# Resolve the exact identity by its SHA-1 hash. The keychain may hold more than
+# one "Developer ID Application" cert (an expired/previous team, a renewal), and
+# signing by the generic name is ambiguous — codesign then refuses. Match the
+# right cert by team name and pass codesign the unambiguous hash.
+SIGNING_MATCH="${MACOS_SIGNING_IDENTITY_MATCH:-Sharly Chess}"
+APP_SIGNING_IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" \
+    | grep "Developer ID Application" | grep "$SIGNING_MATCH" | head -1 | awk '{print $2}')
+if [ -z "$APP_SIGNING_IDENTITY" ]; then
+    echo "✗ No Developer ID Application identity matching '$SIGNING_MATCH' found in $KEYCHAIN_PATH"
+    security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+    exit 1
+fi
 echo "Using signing identity: $APP_SIGNING_IDENTITY"
 
 ENTITLEMENTS_FILE="scripts/export/macos/entitlements.plist"
