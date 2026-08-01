@@ -33,7 +33,7 @@
                 </div>
             </th>
             <th>{{ _('Document') }}</th>
-            <th class="text-center text-nowrap">{{ _('Destination') }}</th>
+            <th class="text-start text-nowrap">{{ _('Destination') }}</th>
             <th class="text-center">{{ _('Status') }}</th>
             <th class="text-center text-nowrap">{{ _('Last upload') }}</th>
             <th></th>
@@ -81,7 +81,7 @@
                             </small>
                         {% endif %}
                     </td>
-                    <td class="text-center text-nowrap">
+                    <td class="text-start text-nowrap">
                         {% set tooltip_message = (document.server_path or connection_default_server_path or '') ~ '/' ~ (document.upload_filename(admin_event)) %}
                         <span
                             {{ macros.tooltip_attributes('', tooltip_message, 'bottom') }}
