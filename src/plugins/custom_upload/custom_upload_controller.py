@@ -297,6 +297,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
         flat_data = WebContext.flatten_list_data(data)
+        flat_data['target_filename'] = CustomUploadUtils.sanitize_filename(
+            flat_data['target_filename']
+        )
         edit_id = flat_data.get('edit_id') or None
 
         document_id, options_string, target_filename, errors = (
@@ -312,7 +315,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 edit_id=edit_id,
             )
 
-        server_path = CustomUploadUtils.normalize_server_path(
+        server_path = CustomUploadUtils.sanitize_server_path(
             WebContext.form_data_to_str(flat_data, 'server_path')
         )
         plugin_data = CustomUploadUtils.get_event_plugin_data(event)

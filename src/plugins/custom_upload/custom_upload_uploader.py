@@ -5,7 +5,7 @@ import time
 from datetime import datetime, timedelta
 from ftplib import error_perm
 from io import BytesIO
-from pathlib import PurePosixPath
+from pathlib import PurePosixPath, Path
 from threading import Thread, Timer
 
 import paramiko.client
@@ -435,7 +435,8 @@ class CustomUploadUploader:
             file_name = f'{"_".join(event.name.split())}_{document.document_id}'
             if options_suffix:
                 file_name += f'_{options_suffix}'
-        file_name += '.html'
+        if Path(file_name).suffix.lower() not in ('htm', 'html'):
+            file_name += '.html'
         return temporary_file, file_name
 
     @classmethod

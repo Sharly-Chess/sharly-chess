@@ -78,7 +78,7 @@ class TransferProtocol(StrEnum):
 
 class CustomUploadUtils:
     @staticmethod
-    def normalize_server_path(server_path: str | None) -> str:
+    def sanitize_server_path(server_path: str | None) -> str:
         """Clean a user-provided server path. Leading/trailing slashes
         and invalid parts are removed, path is always relative to the
         login directory."""
@@ -91,6 +91,12 @@ class CustomUploadUtils:
             if sanitized_part not in ('', '..', '.'):
                 path_parts.append(path_part)
         return '/'.join(path_parts)
+
+    @staticmethod
+    def sanitize_filename(filename: str | None) -> str:
+        """Clean a user-provided filename. Slashes are removed."""
+        # remove all slashes
+        return f'{(filename or "").replace("/", "")}'
 
     @staticmethod
     def get_event_plugin_data(event: Event) -> 'CustomUploadEventPluginData':
@@ -347,7 +353,7 @@ class CustomUploadEventPluginData(PluginData):
         documents: list[ConfiguredDocument] = (
             previous_object.documents if previous_object else []
         )
-        default_server_path: str = CustomUploadUtils.normalize_server_path(
+        default_server_path: str = CustomUploadUtils.sanitize_server_path(
             WebContext.form_data_to_str(data, 'default_server_path')
         )
         data['default_server_path'] = default_server_path
