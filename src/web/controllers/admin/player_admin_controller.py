@@ -40,7 +40,7 @@ from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
 from data.print_documents.documents import (
     PlayerListPrintDocument,
 )
-from data.team import RosterFullError
+from data.teams.team import RosterFullError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (

@@ -322,7 +322,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_team_affiliation_sources(self):
-        from data.team_affiliation import (
+        from data.teams.team_affiliation import (
             TeamAffiliationSource,
             team_shared_player_value,
         )

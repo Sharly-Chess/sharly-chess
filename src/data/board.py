@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.pairing import Pairing
     from data.player import TournamentPlayer
-    from data.team_board import TeamBoard
+    from data.teams.team_board import TeamBoard
     from data.tournament import Tournament
 
 

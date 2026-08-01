@@ -24,8 +24,8 @@ from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
 from data.screens.screen import Screen
-from data.team_board import TeamBoard
-from data.team_pairing_block import TeamPairingBlock
+from data.teams.team_board import TeamBoard
+from data.teams.team_pairing_block import TeamPairingBlock
 from data.tie_breaks import (
     TeamTieBreak,
     TieBreak,
@@ -92,7 +92,7 @@ if TYPE_CHECKING:
         RoundProhibitedPairingGroup,
     )
     from data.pairings import PairingVariation, PairingSystem
-    from data.team import Team
+    from data.teams.team import Team
     from data.tie_breaks.team_records import TeamRecord
     from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
 

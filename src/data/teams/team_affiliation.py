@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any
 from common.i18n import _
 
 if TYPE_CHECKING:
-    from data.team import Team
+    from data.teams.team import Team
 
 
 @dataclass(frozen=True)

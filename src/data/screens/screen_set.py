@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from data.event import Event
     from data.screens.screen import Screen
     from data.screens.family import Family
-    from data.team_board import TeamBoard
+    from data.teams.team_board import TeamBoard
     from data.tournament import Tournament
     from data.screens.screen_types import ScreenType
     from database.sqlite.event.event_store import StoredScreen, StoredFamily

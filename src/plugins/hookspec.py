@@ -25,16 +25,16 @@ if TYPE_CHECKING:
     from data.account import Account
     from data.columns.player_datasheet import DatasheetColumn
     from data.columns.board_table import BoardColumn
+    from data.columns.column import ColumnUsage, Column
     from data.columns.player_table import TournamentPlayerTableColumn
     from data.columns.players_tab import PlayersTabColumn
+    from data.criteria.player_filter_options import PlayerFilterOption
+    from data.criteria.player_filters import PlayerFilter
+    from data.criteria.tournament_criteria import TournamentCriterion
+    from data.event import Event
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.input_output.trf.trf_data import TrfNationalPlayer
     from data.pairings.systems import PairingSystem
-    from data.prohibited_pairings import (
-        ProhibitedPairingDimension,
-        RoundProhibitedPairingGroup,
-    )
-    from data.team_affiliation import TeamAffiliationSource
     from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import (
         Player,
@@ -43,6 +43,7 @@ if TYPE_CHECKING:
         PlayerRatingType,
         PlayerCategory,
     )
+    from plugins.migration import PluginMigrationManager
     from data.print_documents import (
         PrintDocument,
         PrintOption,
@@ -51,15 +52,16 @@ if TYPE_CHECKING:
         IndividualTeamType,
     )
     from data.print_documents.place_cards.data import PlaceCardPlayer
-    from data.criteria.player_filter_options import PlayerFilterOption
-    from data.screens.screen_types import ScreenType
-    from data.criteria.player_filters import PlayerFilter
-    from data.criteria.tournament_criteria import TournamentCriterion
+    from data.prohibited_pairings import (
+        ProhibitedPairingDimension,
+        RoundProhibitedPairingGroup,
+    )
     from data.rule_sets import RuleSet
+    from data.screens.screen_types import ScreenType
+    from data.teams.team_affiliation import TeamAffiliationSource
     from data.tie_breaks import TieBreak, TieBreakOption
     from data.tie_breaks.system_sets import SystemTieBreakSet
     from data.tournament import Tournament
-    from data.event import Event
     from database.sqlite.event.event_store import StoredPlayer
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import (
@@ -67,10 +69,8 @@ if TYPE_CHECKING:
         StoredTournament,
     )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
-    from plugins.migration import PluginMigrationManager
     from web.admin.collection import AdminCollectionSpec
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
-    from data.columns.column import ColumnUsage, Column
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)

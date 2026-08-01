@@ -36,7 +36,7 @@ from utils.enum import Result
 from database.sqlite.event.event_store import StoredBoard
 
 if TYPE_CHECKING:
-    from data.team import Team
+    from data.teams.team import Team
     from data.tournament import Tournament
 
 
