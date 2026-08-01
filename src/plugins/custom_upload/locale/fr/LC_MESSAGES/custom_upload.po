@@ -39,7 +39,10 @@ msgid "Data has been modified since the last upload."
 msgstr "Les données ont été modifiées depuis la dernière mise en ligne."
 
 msgid "Default server path:"
-msgstr "Chemin sur le serveur par défaut :"
+msgstr "Dossier sur le serveur par défaut :"
+
+msgid "Destination"
+msgstr "Destination"
 
 msgid "Document"
 msgstr "Document"
@@ -95,9 +98,6 @@ msgstr "Échec de la connexion au serveur distant."
 msgid "Failure"
 msgstr "Échec"
 
-msgid "Filename"
-msgstr "Nom du fichier"
-
 msgid "Filename on server:"
 msgstr "Nom du fichier sur le serveur :"
 
@@ -139,7 +139,7 @@ msgid "Ongoing"
 msgstr "En cours"
 
 msgid "Path does not exist or is inaccessible."
-msgstr "Le chemin n'existe pas ou est inaccessible."
+msgstr "Le dossier n'existe pas ou est inaccessible."
 
 msgid "Pending"
 msgstr "En attente"
@@ -162,11 +162,8 @@ msgstr "SFTP (FTP sur SSH)"
 msgid "Save"
 msgstr "Enregistrer"
 
-msgid "Server path"
-msgstr "Chemin sur le serveur"
-
 msgid "Server path:"
-msgstr "Chemin sur le serveur :"
+msgstr "Dossier sur le serveur :"
 
 msgid "Status"
 msgstr "Status"
@@ -197,7 +194,11 @@ msgid "invalid credentials, check the username and password"
 msgstr "identifiants invalides, vérifiez le nom d'utilisateur et le mot de passe"
 
 msgid "target server path not found"
-msgstr "le chemin sur le serveur n'a pas pu être trouvé"
+msgstr "le dossier sur le serveur n'a pas pu être trouvé"
 
 msgid "to be configured"
 msgstr "à configurer"
+
+#~ msgid "Filename"
+#~ msgstr "Nom du fichier"
+

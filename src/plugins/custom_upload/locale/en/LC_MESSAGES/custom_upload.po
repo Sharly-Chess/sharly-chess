@@ -41,6 +41,9 @@ msgstr ""
 msgid "Default server path:"
 msgstr ""
 
+msgid "Destination"
+msgstr ""
+
 msgid "Document"
 msgstr ""
 
@@ -93,9 +96,6 @@ msgid "Failed to connect to server."
 msgstr ""
 
 msgid "Failure"
-msgstr ""
-
-msgid "Filename"
 msgstr ""
 
 msgid "Filename on server:"
@@ -162,9 +162,6 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Server path"
-msgstr ""
-
 msgid "Server path:"
 msgstr ""
 
@@ -201,3 +198,7 @@ msgstr ""
 
 msgid "to be configured"
 msgstr ""
+
+#~ msgid "Filename"
+#~ msgstr ""
+
