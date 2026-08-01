@@ -1,7 +1,9 @@
+import re
 import secrets
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import StrEnum
+from pathlib import Path
 from typing import Any, Self
 
 from common.i18n import _
@@ -275,6 +277,27 @@ class ConfiguredDocument:
                 except ValueError:
                     continue
         return tournament_ids
+
+    def upload_filename(
+        self,
+        event: Event,
+    ) -> str:
+        file_name: str = self.target_filename
+        if not file_name:
+            file_name = f'e={event.uniq_id}|d={self.document_id}'
+            tournament_ids: list[int] = self.tournament_ids()
+            if len(tournament_ids) not in (0, len(event.tournaments)):
+                file_name += f'|t={",".join(map(str, tournament_ids))}'
+            for option in self.options.split('|'):
+                if option:
+                    option_name, option_value = option.split('=', maxsplit=2)
+                    option_name = re.sub(r'[^A-Za-z0-9]+', '_', option_name).strip('_')
+                    if option_name in ('tournament', 'tournaments'):
+                        continue
+                    file_name += f'|{option_name}={re.sub(r"[^A-Za-z0-9]+", "_", option_value).strip("_")}'
+        if Path(file_name).suffix.lower() not in ('htm', 'html'):
+            file_name += '.html'
+        return file_name
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> 'ConfiguredDocument':

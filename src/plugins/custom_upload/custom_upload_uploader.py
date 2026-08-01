@@ -1,11 +1,10 @@
 import ftplib
 import os.path
-import re
 import time
 from datetime import datetime, timedelta
 from ftplib import error_perm
 from io import BytesIO
-from pathlib import PurePosixPath, Path
+from pathlib import PurePosixPath
 from threading import Thread, Timer
 
 import paramiko.client
@@ -166,7 +165,7 @@ class CustomUploadUploader:
                 # The network is offline, we can't upload
                 return
 
-            logger.info('Generating document [%s]...', document.document_id)
+            logger.info('Generating document [%s]...', document.upload_filename(event))
 
             event_plugin_data = CustomUploadUtils.get_event_plugin_data(event)
 
@@ -177,7 +176,7 @@ class CustomUploadUploader:
             except Exception as error:
                 logger.exception(
                     'Error while generating document [%s]: %s.',
-                    document.document_id,
+                    document.upload_filename(event),
                     error,
                 )
                 document.upload_failure_id = UnexpectedFailureCustomUploadStatus().id
@@ -202,12 +201,12 @@ class CustomUploadUploader:
             port = port or transfer_protocol.default_port
 
             logger.info(
-                'Uploading document [%s] to [%s:********@%s:%d/%s] via [%s]...',
-                document.document_id,
+                'Uploading document to [%s:********@%s:%d/%s/%s] via [%s]...',
                 username,
                 host,
                 port,
                 target_path,
+                file_name,
                 transfer_protocol,
             )
             if transfer_protocol == TransferProtocol.SFTP:
@@ -261,7 +260,7 @@ class CustomUploadUploader:
         file_name: str,
     ):
         failure_status: FailureCustomUploadStatus | None = None
-        error_message: str = f'Uploading document [{document.document_id}] to [{host}:{transfer_port}/{target_path}] via [{transfer_protocol.name}] failed: %s.'
+        error_message: str = f'Uploading document to [{host}:{transfer_port}/{target_path}/{file_name}] via [{transfer_protocol.name}] failed: %s.'
 
         with paramiko.SSHClient() as ssh_client:
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -336,7 +335,7 @@ class CustomUploadUploader:
         file_name: str,
     ):
         failure_status: FailureCustomUploadStatus | None = None
-        error_message: str = f'Uploading document [{document.document_id}] to [{host}:{transfer_port}/{target_path}] via [{transfer_protocol.name}] failed: %s.'
+        error_message: str = f'Uploading document to [{host}:{transfer_port}/{target_path}/{file_name}] via [{transfer_protocol.name}] failed: %s.'
 
         try:
             ftp_client_type: type[ftplib.FTP] = ftplib.FTP
@@ -367,7 +366,7 @@ class CustomUploadUploader:
                     f'STOR {(PurePosixPath(target_path) / file_name).as_posix()}',
                     temporary_file,
                 )
-                logger.info('Uploaded document file [%s]', file_name)
+                logger.info('Uploaded document file [%s].', file_name)
         except ftplib.error_perm as error:
             logger.error(
                 error_message,
@@ -426,18 +425,7 @@ class CustomUploadUploader:
         )
         temporary_file = BytesIO(html_content.encode())
 
-        normalized_filename = document.target_filename.strip()
-        file_name: str
-        if normalized_filename:
-            file_name = normalized_filename
-        else:
-            options_suffix = re.sub(r'[^A-Za-z0-9]+', '_', document.options).strip('_')
-            file_name = f'{"_".join(event.name.split())}_{document.document_id}'
-            if options_suffix:
-                file_name += f'_{options_suffix}'
-        if Path(file_name).suffix.lower() not in ('htm', 'html'):
-            file_name += '.html'
-        return temporary_file, file_name
+        return temporary_file, document.upload_filename(event)
 
     @classmethod
     def remove_scheduled_upload(cls, event_uniq_id: str, document_id: str):
