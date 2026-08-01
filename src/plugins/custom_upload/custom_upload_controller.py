@@ -7,6 +7,7 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common.i18n import _
+from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
 from data.print_documents import PrintDocument, PrintDocumentManager
@@ -31,6 +32,8 @@ from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard, TournamentActionGuard
 
 type DocumentMetadata = tuple[ConfiguredDocument, type[PrintDocument] | None]
+
+logger = get_logger()
 
 
 class CustomUploadAdminEventController(BaseEventAdminController):
@@ -523,24 +526,31 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        ftp_host: str = WebContext.form_data_to_str(data, 'ftp_host') or ''
-        ftp_username: str = WebContext.form_data_to_str(data, 'ftp_username') or ''
-        ftp_password: str = WebContext.form_data_to_str(data, 'ftp_password') or ''
-        default_server_path: str = (
-            WebContext.form_data_to_str(data, 'default_server_path') or '/'
+        plugin_data: CustomUploadEventPluginData = (
+            CustomUploadEventPluginData.from_form_data(data)
         )
-        transfer_protocol: TransferProtocol = TransferProtocol(
-            WebContext.form_data_to_str(data, 'transfer_protocol')
-            or TransferProtocol.SFTP.value
-        )
-        transfer_port: int | None = WebContext.form_data_to_int(data, 'transfer_port')
+        ftp_host: str = plugin_data.ftp_host or ''
+        ftp_username: str = plugin_data.ftp_username or ''
+        ftp_password: str = plugin_data.ftp_password or ''
+        default_server_path: str = plugin_data.default_server_path or ''
+        transfer_protocol: TransferProtocol = plugin_data.transfer_protocol
+        transfer_port: int = plugin_data.transfer_port or transfer_protocol.default_port
 
         errors = {}
         auth_valid = False
         path_valid = False
         if NetworkMonitor.connected():
             if ftp_host and ftp_username:
+                log_message: str | None = None
                 try:
+                    logger.info(
+                        'Attempting connection to [%s:********@%s:%d/%s] via [%s]...',
+                        ftp_username,
+                        ftp_host,
+                        transfer_port,
+                        default_server_path,
+                        transfer_protocol.name,
+                    )
                     CustomUploadUploader.test_file_transfer_connection(
                         ftp_host,
                         ftp_username,
@@ -551,17 +561,38 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     )
                     auth_valid = True
                     path_valid = True
-                except PermissionError:
-                    errors['ftp_username'] = _('Invalid credentials.')
-                except ConnectionError:
-                    errors['ftp_host'] = _('Failed to connect to server.')
-                except FileNotFoundError:
+                    logger.info('Connection succeeded.')
+                except PermissionError as error:
+                    message = _('Invalid credentials.')
+                    errors['ftp_username'] = message
+                    errors['ftp_password'] = message
+                    log_message = str(error)
+                except ConnectionError as error:
+                    message = _('Failed to connect to server.')
+                    errors['ftp_host'] = message
+                    errors['transfer_protocol'] = message
+                    errors['transfer_port'] = message
+                    log_message = str(error)
+                except FileNotFoundError as error:
                     auth_valid = True
-                    errors['default_server_path'] = _(
-                        'Path does not exist or is inaccessible.'
+                    message = _('Path does not exist or is inaccessible.')
+                    errors['default_server_path'] = message
+                    log_message = str(error)
+                if log_message:
+                    logger.warning(
+                        'Connection test to [%s:%d/%s] via [%s] failed: %s.',
+                        ftp_host,
+                        transfer_port,
+                        default_server_path,
+                        transfer_protocol.name,
+                        log_message,
                     )
         else:
-            errors['ftp_host'] = _('No internet connection detected.')
+            message: str = _('No internet connection detected.')
+            errors['ftp_host'] = message
+            errors['transfer_protocol'] = message
+            errors['transfer_port'] = message
+            logger.warning(message)
 
         return HTMXTemplate(
             template_name='custom_upload_auth_fields.html',

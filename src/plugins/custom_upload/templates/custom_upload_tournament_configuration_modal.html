@@ -22,7 +22,12 @@
             >
                 <div>
                     {% if default_server_path %}
-                        {% set server_path_placeholder = _('Defaults to:') ~ ' ' ~ default_server_path %}
+                        {% set server_path_placeholder = _(
+                            '%(default_server_path)s by default', default_server_path=default_server_path
+                        ) if default_server_path else _(
+                            'Empty by default (login folder)'
+                        )
+                        %}
                     {% else %}
                         {% set server_path_placeholder = _('E.g.: tournaments/my_tournament (optional)') %}
                     {% endif %}

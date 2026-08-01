@@ -66,8 +66,33 @@ class TransferProtocol(StrEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    @property
+    def default_port(self) -> int:
+        match self:
+            case TransferProtocol.SFTP:
+                return DEFAULT_SFTP_PORT
+            case TransferProtocol.FTPS | TransferProtocol.FTP:
+                return DEFAULT_FTP_PORT
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
 
 class CustomUploadUtils:
+    @staticmethod
+    def normalize_server_path(server_path: str | None) -> str:
+        """Clean a user-provided server path. Leading/trailing slashes
+        and invalid parts are removed, path is always relative to the
+        login directory."""
+        # remove leading and trailing slashes
+        path = f'{(server_path or "").strip(" /")}'
+        # remove empty and invalid parts
+        path_parts: list[str] = []
+        for path_part in path.split('/'):
+            sanitized_part: str = path_part.strip()
+            if sanitized_part not in ('', '..', '.'):
+                path_parts.append(path_part)
+        return '/'.join(path_parts)
+
     @staticmethod
     def get_tournament_plugin_data(
         tournament: Tournament,
@@ -212,11 +237,13 @@ class CustomUploadEventPluginData(PluginData):
     ) -> Self:
         if action == FormAction.UPDATE and previous_object:
             return previous_object
+        default_server_path: str = CustomUploadUtils.normalize_server_path(
+            WebContext.form_data_to_str(data, 'default_server_path')
+        )
+        data['default_server_path'] = default_server_path
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
-            default_server_path=WebContext.form_data_to_str(
-                data, 'default_server_path'
-            ),
+            default_server_path=default_server_path,
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
             transfer_protocol=TransferProtocol.parse(
@@ -345,8 +372,12 @@ class CustomUploadTournamentPluginData(PluginData):
             last_upload_attempt_at = previous_object.last_upload_attempt_at
             upload_failure_id = previous_object.upload_failure_id
 
+        server_path: str = CustomUploadUtils.normalize_server_path(
+            WebContext.form_data_to_str(data, 'server_path')
+        )
+        data['server_path'] = server_path
         return cls(
-            server_path=WebContext.form_data_to_str(data, 'server_path'),
+            server_path=server_path,
             last_upload_at=last_upload_at,
             last_upload_attempt_at=last_upload_attempt_at,
             upload_failure_id=upload_failure_id,

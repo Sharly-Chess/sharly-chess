@@ -1,5 +1,6 @@
-msgid "/ by default (root folder)"
-msgstr "/ par défaut (dossier racine)"
+#, python-format
+msgid "%(default_server_path)s by default"
+msgstr "%(default_server_path)s par défaut"
 
 msgid "22 by default for SFTP, 21 for FTP/FTPS (optional)"
 msgstr "22 par défaut pour SFTP, 21 pour FTP/FTPS (facultatif)"
@@ -37,9 +38,6 @@ msgstr "Mise en ligne personnalisée"
 msgid "Default server path:"
 msgstr "Chemin sur le serveur par défaut :"
 
-msgid "Defaults to:"
-msgstr "Par défaut :"
-
 msgid "Documents"
 msgstr "Documents"
 
@@ -69,6 +67,9 @@ msgstr "Modifier le document"
 
 msgid "Edit the document."
 msgstr "Modifier le document."
+
+msgid "Empty by default (login folder)"
+msgstr "Vide par défaut (répertoire de connexion)"
 
 msgid "FTP (unsecured)"
 msgstr "FTP (non sécurisé)"
