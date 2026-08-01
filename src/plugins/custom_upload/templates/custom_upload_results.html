@@ -33,8 +33,7 @@
                 </div>
             </th>
             <th>{{ _('Document') }}</th>
-            <th class="text-center text-nowrap">{{ _('Filename') }}</th>
-            <th class="text-center text-nowrap">{{ _('Server path') }}</th>
+            <th class="text-center text-nowrap">{{ _('Destination') }}</th>
             <th class="text-center">{{ _('Status') }}</th>
             <th class="text-center text-nowrap">{{ _('Last upload') }}</th>
             <th></th>
@@ -79,10 +78,7 @@
                         {% endif %}
                     </td>
                     <td class="text-center text-nowrap">
-                        {{ document.target_filename or '—' }}
-                    </td>
-                    <td class="text-center text-nowrap">
-                        {{ document.server_path or connection_default_server_path or '—' }}
+                        {{ document.server_path or connection_default_server_path or '' }}/{{ document.target_filename or '' }}
                     </td>
                     <td id="document-upload-statuses-{{ document.id }}" class="text-center">
                         {% set document_statuses = custom_upload_utils.resolve_document_upload_statuses(admin_event, document) %}
