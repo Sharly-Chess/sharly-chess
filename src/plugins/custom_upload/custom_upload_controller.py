@@ -155,7 +155,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 document_type = document_manager.get_type(
                     configured_document.document_id
                 )
-                name = _(document_type.static_name())
+                name = document_type.static_name()
             except KeyError:
                 name = configured_document.document_id
             documents_display.append(
