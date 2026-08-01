@@ -35,6 +35,7 @@ dependencies = [
   "jinja2 ~= 3.1.6",
   "litestar ~= 2.24.0",
   "packaging ~= 26.2",
+  "paramiko >= 5.0.0",
   "pathvalidate ~= 3.3.1",
   "pefile == 2024.8.26",
   "pluggy ~= 1.6.0",
@@ -58,11 +59,11 @@ dependencies = [
 
 [project.optional-dependencies]
 lint = [
+  "mypy >= 2.2.0",
+  "pipdeptree",
+  "pre-commit",
   "ruff ~= 0.15.21",
   "validate-pyproject",
-  "pipdeptree",
-  "mypy >= 2.2.0",
-  "pre-commit",
 ]
 
 translate = [

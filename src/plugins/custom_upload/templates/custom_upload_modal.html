@@ -1,0 +1,63 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div class="modal-dialog modal-dialog-scrollable admin-event-edit-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Custom upload') }}
+            </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
+        </div>
+        <div class="modal-body">
+            <h4 class="mb-4"> {{ _('Connection:') }} {{ connection_host or _('to be configured') }}
+                <span {{ macros.tooltip_attributes('', _('Edit connection')) }}>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm h-100 align-items-center ms-2"
+                        hx-get="{{ url_for('custom-upload-event-configuration-modal', action='update', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <i class="bi bi-pencil-fill lh-1"></i>
+                    </button>
+                </span>
+            </h4>
+
+            <div class="d-flex justify-content-end mb-2">
+                <button
+                    type="button"
+                    class="btn btn-primary text-nowrap"
+                    hx-get="{{ url_for('custom-upload-add-document', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="#modal-wrapper"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="bi-plus-square pe-1"></i>
+                    {{ _('Add document') }}
+                </button>
+            </div>
+
+            {% include 'custom_upload_results.html' %}
+
+            <div class="text-center mt-4 mb-1">
+                <button
+                    type="button"
+                    hx-post="{{ url_for('custom-upload', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="#upload-results"
+                    hx-swap="outerHTML"
+                    class="text-nowrap white btn btn-outline-primary"
+                    {% if connection_message or not documents %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
+                    {{ _('Upload all documents') }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

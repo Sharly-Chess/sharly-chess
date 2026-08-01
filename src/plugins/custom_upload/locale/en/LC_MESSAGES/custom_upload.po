@@ -1,0 +1,204 @@
+#, python-format
+msgid "%(default_server_path)s by default"
+msgstr ""
+
+msgid "22 by default for SFTP, 21 for FTP/FTPS (optional)"
+msgstr ""
+
+msgid "Add document"
+msgstr ""
+
+msgid "Add to list"
+msgstr ""
+
+msgid "All the tournaments"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Connection configuration"
+msgstr ""
+
+msgid "Connection test"
+msgstr ""
+
+msgid "Connection:"
+msgstr ""
+
+msgid "Custom location"
+msgstr ""
+
+msgid "Custom upload"
+msgstr ""
+
+msgid "Data has been modified since the last upload."
+msgstr ""
+
+msgid "Default server path:"
+msgstr ""
+
+msgid "Destination"
+msgstr ""
+
+msgid "Document"
+msgstr ""
+
+msgid "Document is currently being uploaded."
+msgstr ""
+
+msgid "Document upload has been planned."
+msgstr ""
+
+msgid "E.g.: ftp.example.com (mandatory)"
+msgstr ""
+
+msgid "E.g.: my_p@ssw0rd (empty by default)"
+msgstr ""
+
+msgid "E.g.: my_username (mandatory)"
+msgstr ""
+
+msgid "E.g.: pairings_myTournament_round_1 (optional)"
+msgstr ""
+
+msgid "Edit connection"
+msgstr ""
+
+msgid "Edit document"
+msgstr ""
+
+msgid "Empty by default (login folder)"
+msgstr ""
+
+msgid "FTP (unsecured)"
+msgstr ""
+
+msgid "FTP credentials are not defined"
+msgstr ""
+
+msgid "FTP host is not defined"
+msgstr ""
+
+msgid "FTP password:"
+msgstr ""
+
+msgid "FTP username:"
+msgstr ""
+
+msgid "FTPS (FTP with TLS/SSL)"
+msgstr ""
+
+msgid "Failed to connect to server."
+msgstr ""
+
+msgid "Failure"
+msgstr ""
+
+msgid "Filename on server:"
+msgstr ""
+
+msgid "Host and FTP username are required."
+msgstr ""
+
+msgid "Host:"
+msgstr ""
+
+msgid "Invalid credentials."
+msgstr ""
+
+msgid "Last upload"
+msgstr ""
+
+#, python-brace-format
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+msgstr ""
+
+msgid "Modified"
+msgstr ""
+
+msgid "Never uploaded"
+msgstr ""
+
+msgid "No changes detected since the last upload."
+msgstr ""
+
+msgid "No documents configured yet."
+msgstr ""
+
+msgid "No internet connection detected."
+msgstr ""
+
+msgid "Not configured"
+msgstr ""
+
+msgid "Ongoing"
+msgstr ""
+
+msgid "Path does not exist or is inaccessible."
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Port:"
+msgstr ""
+
+msgid "Protocol:"
+msgstr ""
+
+msgid "Remove document"
+msgstr ""
+
+msgid "Remove this document from the upload list?"
+msgstr ""
+
+msgid "SFTP (FTP over SSH)"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Server path:"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Up to date"
+msgstr ""
+
+msgid "Upload"
+msgstr ""
+
+msgid "Upload all documents"
+msgstr ""
+
+#, python-format
+msgid "Upload automatically every %(delay)d minutes."
+msgstr ""
+
+msgid "Upload tournament documents to custom location"
+msgstr ""
+
+msgid "consult the logs"
+msgstr ""
+
+msgid "could not connect to the server, check the host, credentials and protocol"
+msgstr ""
+
+msgid "invalid credentials, check the username and password"
+msgstr ""
+
+msgid "target server path not found"
+msgstr ""
+
+msgid "to be configured"
+msgstr ""
+

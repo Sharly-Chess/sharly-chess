@@ -76,7 +76,6 @@ class FfeBackgroundUploader:
     ) -> datetime | None:
         plugin_data: FfeTournamentPluginData
         if isinstance(tournament, Tournament):
-            assert isinstance(tournament, Tournament)
             plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
         else:
             raw_plugin_data = tournament.plugin_data.get(PLUGIN_NAME, {})

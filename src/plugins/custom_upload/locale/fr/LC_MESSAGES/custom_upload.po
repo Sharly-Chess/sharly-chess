@@ -1,0 +1,204 @@
+#, python-format
+msgid "%(default_server_path)s by default"
+msgstr "%(default_server_path)s par défaut"
+
+msgid "22 by default for SFTP, 21 for FTP/FTPS (optional)"
+msgstr "22 par défaut pour SFTP, 21 pour FTP/FTPS (facultatif)"
+
+msgid "Add document"
+msgstr "Ajouter un document"
+
+msgid "Add to list"
+msgstr "Ajouter à la liste"
+
+msgid "All the tournaments"
+msgstr "Tous les tournois"
+
+msgid "Back"
+msgstr "Retour"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Connection configuration"
+msgstr "Configuration de la connexion"
+
+msgid "Connection test"
+msgstr "Tester la connexion"
+
+msgid "Connection:"
+msgstr "Connexion :"
+
+msgid "Custom location"
+msgstr "Serveur personnel"
+
+msgid "Custom upload"
+msgstr "Mise en ligne personnalisée"
+
+msgid "Data has been modified since the last upload."
+msgstr "Les données ont été modifiées depuis la dernière mise en ligne."
+
+msgid "Default server path:"
+msgstr "Dossier sur le serveur par défaut :"
+
+msgid "Destination"
+msgstr "Destination"
+
+msgid "Document"
+msgstr "Document"
+
+msgid "Document is currently being uploaded."
+msgstr "Le document est en cours de mise en ligne."
+
+msgid "Document upload has been planned."
+msgstr "La mise en ligne du document est planifiée."
+
+msgid "E.g.: ftp.example.com (mandatory)"
+msgstr "Exemple : ftp.example.fr"
+
+msgid "E.g.: my_p@ssw0rd (empty by default)"
+msgstr "Exemple : m0t_de_p@sse (vide par défaut)"
+
+msgid "E.g.: my_username (mandatory)"
+msgstr "Exemple : mon_nom (obligatoire)"
+
+msgid "E.g.: pairings_myTournament_round_1 (optional)"
+msgstr "Exemple : appariements_monTournoi_ronde_1 (facultatif)"
+
+msgid "Edit connection"
+msgstr "Modifier la connexion"
+
+msgid "Edit document"
+msgstr "Modifier le document"
+
+msgid "Empty by default (login folder)"
+msgstr "Vide par défaut (répertoire de connexion)"
+
+msgid "FTP (unsecured)"
+msgstr "FTP (non sécurisé)"
+
+msgid "FTP credentials are not defined"
+msgstr "Les identifiants FTP ne sont pas définis"
+
+msgid "FTP host is not defined"
+msgstr "L'hôte FTP n'est pas défini"
+
+msgid "FTP password:"
+msgstr "Mot de passe FTP :"
+
+msgid "FTP username:"
+msgstr "Identifiant FTP :"
+
+msgid "FTPS (FTP with TLS/SSL)"
+msgstr "FTPS (FTP avec TLS/SSL)"
+
+msgid "Failed to connect to server."
+msgstr "Échec de la connexion au serveur distant."
+
+msgid "Failure"
+msgstr "Échec"
+
+msgid "Filename on server:"
+msgstr "Nom du fichier sur le serveur :"
+
+msgid "Host and FTP username are required."
+msgstr "Hôte et identifiant FTP sont requis"
+
+msgid "Host:"
+msgstr "Hôte :"
+
+msgid "Invalid credentials."
+msgstr "Identifiants invalides."
+
+msgid "Last upload"
+msgstr "Dernière mise en ligne"
+
+#, python-brace-format
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
+
+msgid "Modified"
+msgstr "Modifié"
+
+msgid "Never uploaded"
+msgstr "Jamais mis en ligne"
+
+msgid "No changes detected since the last upload."
+msgstr "Aucun changement détecté depuis la dernière mise en ligne."
+
+msgid "No documents configured yet."
+msgstr "Aucun document configuré pour le moment."
+
+msgid "No internet connection detected."
+msgstr "Aucune connexion internet détectée."
+
+msgid "Not configured"
+msgstr "Non configuré"
+
+msgid "Ongoing"
+msgstr "En cours"
+
+msgid "Path does not exist or is inaccessible."
+msgstr "Le dossier n'existe pas ou est inaccessible."
+
+msgid "Pending"
+msgstr "En attente"
+
+msgid "Port:"
+msgstr "Port :"
+
+msgid "Protocol:"
+msgstr "Protocole :"
+
+msgid "Remove document"
+msgstr "Supprimer le document"
+
+msgid "Remove this document from the upload list?"
+msgstr "Supprimer ce document de la liste de mise en ligne ?"
+
+msgid "SFTP (FTP over SSH)"
+msgstr "SFTP (FTP sur SSH)"
+
+msgid "Save"
+msgstr "Enregistrer"
+
+msgid "Server path:"
+msgstr "Dossier sur le serveur :"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Up to date"
+msgstr "À jour"
+
+msgid "Upload"
+msgstr "Mettre en ligne"
+
+msgid "Upload all documents"
+msgstr "Mettre en ligne tous les documents"
+
+#, python-format
+msgid "Upload automatically every %(delay)d minutes."
+msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
+
+msgid "Upload tournament documents to custom location"
+msgstr "Mise en ligne de documents sur un serveur personnel"
+
+msgid "consult the logs"
+msgstr "consulter les logs"
+
+msgid "could not connect to the server, check the host, credentials and protocol"
+msgstr "impossible de se connecter au serveur, vérifiez l'hôte, les identifiants et le protocole"
+
+msgid "invalid credentials, check the username and password"
+msgstr "identifiants invalides, vérifiez le nom d'utilisateur et le mot de passe"
+
+msgid "target server path not found"
+msgstr "le dossier sur le serveur n'a pas pu être trouvé"
+
+msgid "to be configured"
+msgstr "à configurer"
+
