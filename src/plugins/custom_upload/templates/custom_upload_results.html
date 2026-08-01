@@ -82,7 +82,12 @@
                         {% endif %}
                     </td>
                     <td class="text-center text-nowrap">
-                        {{ document.server_path or connection_default_server_path or '' }}/{{ document.target_filename or '' }}
+                        {% set tooltip_message = (document.server_path or connection_default_server_path or '') ~ '/' ~ (document.upload_filename(admin_event)) %}
+                        <span
+                            {{ macros.tooltip_attributes('', tooltip_message, 'bottom') }}
+                        >
+                            {{ document.server_path or connection_default_server_path or '' }}/{{ document.target_filename or '' }}
+                        </span>
                     </td>
                     <td id="document-upload-statuses-{{ document.id }}" class="text-center">
                         {% set document_statuses = custom_upload_utils.resolve_document_upload_statuses(admin_event, document) %}
