@@ -1,99 +1,147 @@
 {% import '/common/macros.j2' as macros with context %}
 
-<tbody
+<div
     id="upload-results"
     hx-get="{{ url_for('custom-upload-results', event_uniq_id=admin_event.uniq_id) }}"
     hx-trigger="ws:upload-event from:body"
     hx-swap="outerHTML"
 >
-    {% if not documents %}
-        <tr>
-            <td colspan="6" class="text-center text-muted py-3">
-                {{ _('No documents configured yet.') }}
-            </td>
-        </tr>
-    {% endif %}
-    {% for document in documents %}
-        {% set document_tournaments = custom_upload_utils.document_tournaments(admin_event, document) %}
-        {% set document_url = url_for('document-view', event_uniq_id=admin_event.uniq_id, document=document.document_id) %}
-        {% if document.options %}
-            {% set document_url = document_url ~ '?options=' ~ (document.options | urlencode) %}
-        {% endif %}
-        <tr>
-            <td style="width: 0;" class="text-nowrap">
-                <a href="{{ document_url }}" target="_blank">
-                    {{ _(custom_upload_utils.document_name(admin_event, document)) }}
-                </a>
-                {% if document_tournaments %}
-                    <small class="text-muted d-block">
-                        {{ document_tournaments | map(attribute='name') | join(', ') }}
-                    </small>
+    {% set all_auto = documents and documents | rejectattr('auto_upload') | list | length == 0 %}
+    <table class="table prominent table-sm w-100 bg-light mx-auto justify-content-center">
+        <thead>
+            <th class="text-center">
+                <div
+                    class="form-check blue-checkbox form-switch d-inline-block"
+                    {{ macros.tooltip_attributes('', _(
+                        'Upload automatically every %(delay)d minutes.',
+                        delay=custom_upload_delay,
+                    )) }}
+                >
+                    <input
+                        id="auto-upload-all"
+                        name="auto_upload_all"
+                        class="form-check-input blue-checkbox"
+                        type="checkbox"
+                        value="on"
+                        hx-patch="{{ url_for('custom-upload-auto-upload', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="#upload-results"
+                        hx-swap="outerHTML"
+                        {% if not documents %}disabled{% endif %}
+                        {% if all_auto %}checked{% endif %}
+                    />
+                    <i class="bi-arrow-repeat"></i>
+                </div>
+            </th>
+            <th>{{ _('Document') }}</th>
+            <th class="text-center text-nowrap">{{ _('Filename') }}</th>
+            <th class="text-center text-nowrap">{{ _('Server path') }}</th>
+            <th class="text-center">{{ _('Status') }}</th>
+            <th class="text-center text-nowrap">{{ _('Last upload') }}</th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% if not documents %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-3">
+                        {{ _('No documents configured yet.') }}
+                    </td>
+                </tr>
+            {% endif %}
+            {% for document in documents %}
+                {% set document_tournaments = custom_upload_utils.document_tournaments(admin_event, document) %}
+                {% set document_url = url_for('document-view', event_uniq_id=admin_event.uniq_id, document=document.document_id) %}
+                {% if document.options %}
+                    {% set document_url = document_url ~ '?options=' ~ (document.options | urlencode) %}
                 {% endif %}
-            </td>
-            <td class="text-center text-nowrap">
-                {{ document.target_filename or '—' }}
-            </td>
-            <td class="text-center text-nowrap">
-                {{ document.server_path or connection_default_server_path or '—' }}
-            </td>
-            <td id="document-upload-statuses-{{ document.id }}" class="text-center">
-                {% set document_statuses = custom_upload_utils.resolve_document_upload_statuses(admin_event, document) %}
-                {% for status in document_statuses %}
-                    {% set tooltip_message = status.tooltip_message(admin_event, document) %}
-                    <span
-                        class="badge rounded-pill {{ status.css_classes }}"
-                        style="height: 20px"
-                        {% if tooltip_message %}
-                            {{ macros.tooltip_attributes('', tooltip_message) }}
+                <tr>
+                    <td class="text-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input
+                                name="auto_upload_{{ document.id }}"
+                                class="form-check-input blue-checkbox mt-2"
+                                type="checkbox"
+                                value="on"
+                                hx-patch="{{ url_for('custom-upload-document-auto-upload', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
+                                hx-target="#upload-results"
+                                hx-swap="outerHTML"
+                                {% if document.auto_upload %}checked{% endif %}
+                            />
+                        </div>
+                    </td>
+                    <td style="width: 0;" class="text-nowrap">
+                        <a href="{{ document_url }}" target="_blank">
+                            {{ _(custom_upload_utils.document_name(admin_event, document)) }}
+                        </a>
+                        {% if document_tournaments %}
+                            <small class="text-muted d-block">
+                                {{ document_tournaments | map(attribute='name') | join(', ') }}
+                            </small>
                         {% endif %}
-                    >
-                        {{ status.name }}
-                    </span>
-                {% endfor %}
-            </td>
-            <td class="text-center text-nowrap">
-                {{ document.last_upload_at_str }}
-            </td>
-            <td class="d-flex gap-2 align-items-center">
-                <div class="flex-grow-1"></div>
-                <span {{ macros.tooltip_attributes('', _('Edit document')) }}>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                        hx-get="{{ url_for('custom-upload-edit-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
-                        hx-target="#modal-wrapper"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-pencil-fill lh-1"></i>
-                    </button>
-                </span>
-                <span {{ macros.tooltip_attributes('', _('Remove document')) }}>
-                    <button
-                        type="button"
-                        class="btn btn-outline-danger btn-sm d-flex h-100 align-items-center"
-                        hx-post="{{ url_for('custom-upload-remove-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
-                        hx-target="#upload-results"
-                        hx-swap="outerHTML"
-                        hx-confirm="{{ _('Remove this document from the upload list?') }}"
-                    >
-                        <i class="bi-trash-fill lh-1"></i>
-                    </button>
-                </span>
-                <span {{ macros.tooltip_attributes('', connection_message or _('Upload')) }}>
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
-                        hx-post="{{ url_for('custom-upload-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
-                        hx-target="#upload-results"
-                        hx-swap="outerHTML"
-                        {% if connection_message %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi-cloud-arrow-up-fill lh-1"></i>
-                    </button>
-                </span>
-            </td>
-        </tr>
-    {% endfor %}
-</tbody>
+                    </td>
+                    <td class="text-center text-nowrap">
+                        {{ document.target_filename or '—' }}
+                    </td>
+                    <td class="text-center text-nowrap">
+                        {{ document.server_path or connection_default_server_path or '—' }}
+                    </td>
+                    <td id="document-upload-statuses-{{ document.id }}" class="text-center">
+                        {% set document_statuses = custom_upload_utils.resolve_document_upload_statuses(admin_event, document) %}
+                        {% for status in document_statuses %}
+                            {% set tooltip_message = status.tooltip_message(admin_event, document) %}
+                            <span
+                                class="badge rounded-pill {{ status.css_classes }}"
+                                style="height: 20px"
+                                {% if tooltip_message %}
+                                    {{ macros.tooltip_attributes('', tooltip_message) }}
+                                {% endif %}
+                            >
+                                {{ status.name }}
+                            </span>
+                        {% endfor %}
+                    </td>
+                    <td class="text-center text-nowrap">
+                        {{ document.last_upload_at_str }}
+                    </td>
+                    <td class="d-flex gap-2 align-items-center">
+                        <div class="flex-grow-1"></div>
+                        <span {{ macros.tooltip_attributes('', _('Edit document')) }}>
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                hx-get="{{ url_for('custom-upload-edit-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
+                                hx-target="#modal-wrapper"
+                                hx-indicator="#please-wait"
+                            >
+                                <i class="bi-pencil-fill lh-1"></i>
+                            </button>
+                        </span>
+                        <span {{ macros.tooltip_attributes('', _('Remove document')) }}>
+                            <button
+                                type="button"
+                                class="btn btn-outline-danger btn-sm d-flex h-100 align-items-center"
+                                hx-post="{{ url_for('custom-upload-remove-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
+                                hx-target="#upload-results"
+                                hx-swap="outerHTML"
+                                hx-confirm="{{ _('Remove this document from the upload list?') }}"
+                            >
+                                <i class="bi-trash-fill lh-1"></i>
+                            </button>
+                        </span>
+                        <span {{ macros.tooltip_attributes('', connection_message or _('Upload')) }}>
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                hx-post="{{ url_for('custom-upload-document', event_uniq_id=admin_event.uniq_id, document_id=document.id) }}"
+                                hx-target="#upload-results"
+                                hx-swap="outerHTML"
+                                {% if connection_message %}disabled{% endif %}
+                            >
+                                <i class="bi-cloud-arrow-up-fill lh-1"></i>
+                            </button>
+                        </span>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

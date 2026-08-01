@@ -41,29 +41,7 @@
                 </button>
             </div>
 
-            <table
-                class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
-            >
-                <thead>
-                    <th>
-                        {{ _('Document') }}
-                    </th>
-                    <th class="text-center text-nowrap">
-                        {{ _('Filename') }}
-                    </th>
-                    <th class="text-center text-nowrap">
-                        {{ _('Server path') }}
-                    </th>
-                    <th class="text-center">
-                        {{ _('Status') }}
-                    </th>
-                    <th class="text-center text-nowrap">
-                        {{ _('Last upload') }}
-                    </th>
-                    <th></th>
-                </thead>
-                {% include 'custom_upload_results.html' %}
-            </table>
+            {% include 'custom_upload_results.html' %}
 
             <div class="text-center mt-4 mb-1">
                 <button

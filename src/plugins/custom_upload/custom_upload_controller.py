@@ -11,7 +11,10 @@ from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
 from data.event import Event
-from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
+from plugins.custom_upload.custom_upload_uploader import (
+    CUSTOM_UPLOAD_DELAY,
+    CustomUploadUploader,
+)
 from plugins.custom_upload.utils import (
     ConfiguredDocument,
     CustomUploadEventPluginData,
@@ -69,6 +72,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             'connection_default_server_path': event_plugin_data.default_server_path,
             'connection_message': CustomUploadUtils.event_connection_message(event),
             'documents': event_plugin_data.documents,
+            'custom_upload_delay': CUSTOM_UPLOAD_DELAY,
         }
 
     @get(
@@ -390,6 +394,79 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         if document:
             CustomUploadUploader.schedule_upload(event, document, web_context.client)
         return self._render_upload_results(web_context)
+
+    # ---------------------------------------------------------------------------------
+    # Auto-upload
+    # ---------------------------------------------------------------------------------
+
+    def _apply_auto_upload(
+        self,
+        web_context: BaseEventAdminWebContext,
+        event: Event,
+        documents: list[ConfiguredDocument],
+    ):
+        """Schedule or cancel the automatic upload of documents after their
+        auto-upload flag changed."""
+        for document in documents:
+            if document.auto_upload:
+                if CustomUploadUploader.should_schedule_document_upload(
+                    event, document
+                ):
+                    CustomUploadUploader.schedule_upload(
+                        event, document, web_context.client
+                    )
+            else:
+                CustomUploadUploader.remove_scheduled_upload(event.uniq_id, document.id)
+
+    @patch(
+        path='/custom-upload/document-auto-upload/{event_uniq_id:str}/{document_id:str}',
+        name='custom-upload-document-auto-upload',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_custom_upload_document_auto_upload(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+        document_id: FromPath[str],
+    ) -> Template:
+        web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
+        document = CustomUploadUtils.get_document(event, document_id)
+        if document:
+            document.auto_upload = WebContext.form_data_to_bool(
+                data, f'auto_upload_{document_id}'
+            )
+            CustomUploadUtils.save_event_plugin_data(
+                event, CustomUploadUtils.get_event_plugin_data(event)
+            )
+            self._apply_auto_upload(web_context, event, [document])
+        reloaded_web_context = BaseEventAdminWebContext(request, reload_event=True)
+        return self._render_upload_results(reloaded_web_context)
+
+    @patch(
+        path='/custom-upload/auto-upload/{event_uniq_id:str}',
+        name='custom-upload-auto-upload',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_custom_upload_auto_upload(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+    ) -> Template:
+        web_context = BaseEventAdminWebContext(request)
+        event = web_context.get_admin_event()
+        enabled = WebContext.form_data_to_bool(data, 'auto_upload_all')
+        plugin_data = CustomUploadUtils.get_event_plugin_data(event)
+        for document in plugin_data.documents:
+            document.auto_upload = enabled
+        CustomUploadUtils.save_event_plugin_data(event, plugin_data)
+        self._apply_auto_upload(web_context, event, plugin_data.documents)
+        reloaded_web_context = BaseEventAdminWebContext(request, reload_event=True)
+        return self._render_upload_results(reloaded_web_context)
 
     # ---------------------------------------------------------------------------------
     # Connection test

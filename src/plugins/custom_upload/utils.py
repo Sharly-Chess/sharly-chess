@@ -238,6 +238,7 @@ class ConfiguredDocument:
     options: str = ''
     target_filename: str = ''
     server_path: str | None = None
+    auto_upload: bool = False
     id: str = field(default_factory=lambda: secrets.token_hex(8))
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
@@ -276,6 +277,7 @@ class ConfiguredDocument:
             options=stored_value.get('options', ''),
             target_filename=stored_value.get('target_filename', ''),
             server_path=stored_value.get('server_path'),
+            auto_upload=stored_value.get('auto_upload', False),
             id=stored_value.get('id') or secrets.token_hex(8),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload_at')
@@ -292,6 +294,7 @@ class ConfiguredDocument:
             'options': self.options,
             'target_filename': self.target_filename,
             'server_path': self.server_path,
+            'auto_upload': self.auto_upload,
             'id': self.id,
             'last_upload_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_upload_at

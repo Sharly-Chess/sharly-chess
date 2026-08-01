@@ -2,7 +2,7 @@ import ftplib
 import os.path
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from ftplib import error_perm
 from io import BytesIO
 from pathlib import PurePosixPath
@@ -42,6 +42,9 @@ from web.channels import channels_plugin
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 
 logger = get_logger()
+
+# Minimum delay, in minutes, between two automatic uploads of the same document.
+CUSTOM_UPLOAD_DELAY = 3
 
 
 class CustomUploadUploader:
@@ -436,21 +439,61 @@ class CustomUploadUploader:
         return temporary_file, file_name
 
     @classmethod
+    def remove_scheduled_upload(cls, event_uniq_id: str, document_id: str):
+        """Cancel a pending scheduled upload for a document, if any."""
+        thread = cls.timeout_threads.get(cls.result_id(event_uniq_id, document_id))
+        if thread and thread.is_alive():
+            thread.cancel()
+
+    @classmethod
+    def should_schedule_document_upload(
+        cls, event: Event, document: ConfiguredDocument
+    ) -> bool:
+        """Whether an automatic upload should be scheduled for a document: it is
+        enabled for auto-upload, the connection is set, it has changed since its
+        last upload, and no upload is already scheduled or running for it."""
+        if not document.auto_upload:
+            return False
+        if CustomUploadUtils.event_connection_message(event):
+            return False
+        if cls.is_upload_scheduled(event.uniq_id, document.id) or cls.is_upload_ongoing(
+            event.uniq_id, document.id
+        ):
+            return False
+        return cls.custom_upload_needed(event, document)
+
+    @classmethod
     def schedule_upload(
-        cls, event: Event, document: ConfiguredDocument, http_client: Client
+        cls,
+        event: Event,
+        document: ConfiguredDocument,
+        http_client: Client,
+        force: bool = False,
     ):
-        """Schedule the upload of a single document."""
+        """Schedule the upload of a single document. Unless ``force`` is set, the
+        upload is throttled so a document is not re-uploaded more than once every
+        ``CUSTOM_UPLOAD_DELAY`` minutes."""
         if CustomUploadUtils.event_connection_message(event):
             return
 
         event_uniq_id = event.uniq_id
         result_id = cls.result_id(event_uniq_id, document.id)
 
+        wait_time = 0.1
+        last_upload = document.last_upload_at
+        if (
+            not force
+            and last_upload
+            and datetime.now() < last_upload + timedelta(minutes=CUSTOM_UPLOAD_DELAY)
+        ):
+            elapsed = (datetime.now() - last_upload).total_seconds()
+            wait_time = max(CUSTOM_UPLOAD_DELAY * 60 - elapsed, 0.1)
+
         def _run():
             set_locale(SharlyChessConfig().locale)
             cls.upload_document(event_uniq_id, document.id, http_client)
 
-        timer = Timer(0.1, _run)
+        timer = Timer(wait_time, _run)
         cls.timeout_threads[result_id] = timer
         timer.start()
 

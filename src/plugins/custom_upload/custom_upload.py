@@ -87,6 +87,63 @@ class CustomUploadPlugin(Plugin):
         stored_event.plugin_data[PLUGIN_NAME] = event_plugin_data.to_stored_value()
         event_database.update_stored_event(stored_event)
 
+    @hookimpl
+    def on_tournament_data_updated(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ):
+        """Schedule an automatic upload of the documents targeting a tournament
+        whose data just changed, for documents that have auto-upload enabled."""
+        event_plugin_data = CustomUploadEventPluginData.from_stored_value(
+            stored_event.plugin_data.get(PLUGIN_NAME, {})
+        )
+        if not (event_plugin_data.ftp_host and event_plugin_data.ftp_username):
+            return
+        tournament_id = stored_tournament.id
+        has_auto_document = any(
+            document.auto_upload
+            and (
+                not document.tournament_ids()
+                or tournament_id in document.tournament_ids()
+            )
+            for document in event_plugin_data.documents
+        )
+        if not has_auto_document:
+            return
+
+        from threading import Thread
+
+        from common.logger import get_logger
+        from data.access_levels.client import Client
+        from data.loader import EventLoader
+        from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
+
+        uniq_id = stored_event.uniq_id
+
+        def _reload_and_schedule() -> None:
+            try:
+                event = EventLoader().load_event(uniq_id)
+                http_client = Client.for_event_administrator(event)
+                for document in CustomUploadUtils.get_event_plugin_data(
+                    event
+                ).documents:
+                    document_tournament_ids = document.tournament_ids()
+                    if document_tournament_ids and tournament_id not in (
+                        document_tournament_ids
+                    ):
+                        continue
+                    if CustomUploadUploader.should_schedule_document_upload(
+                        event, document
+                    ):
+                        CustomUploadUploader.schedule_upload(
+                            event, document, http_client
+                        )
+            except Exception:
+                get_logger().exception(
+                    'Custom upload auto-scheduling failed for event [%s]', uniq_id
+                )
+
+        Thread(target=_reload_and_schedule, daemon=True).start()
+
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
