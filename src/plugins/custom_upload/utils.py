@@ -284,7 +284,9 @@ class ConfiguredDocument:
     ) -> str:
         file_name: str = self.target_filename
         if not file_name:
-            file_name = f'e={event.uniq_id}|d={self.document_id}'
+            file_name = (
+                f'e={event.uniq_id}|d={re.sub(r"[^A-Za-z0-9]+", "_", self.document_id)}'
+            )
             tournament_ids: list[int] = self.tournament_ids()
             if len(tournament_ids) not in (0, len(event.tournaments)):
                 file_name += f'|t={",".join(map(str, tournament_ids))}'
