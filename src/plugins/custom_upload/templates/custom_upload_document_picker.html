@@ -25,14 +25,6 @@
 
                 <div class="row gy-2 gx-3 mt-1">
                     <div class="col-12">
-                        {{ admin_macros.text_input(
-                        name='target_filename',
-                        label=_('Filename on server:'),
-                        placeholder=_('E.g.: pairings_myTournament_round_1 (optional)'),
-                        data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12">
                         {% set server_path_placeholder = _(
                             '%(default_server_path)s by default', default_server_path=default_server_path
                         ) if default_server_path else _('Empty by default (login folder)') %}
@@ -41,6 +33,14 @@
                         label=_('Server path:'),
                         placeholder=server_path_placeholder,
                         hx_indicator="unset",
+                        data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                        name='target_filename',
+                        label=_('Filename on server:'),
+                        placeholder=_('E.g.: pairings_myTournament_round_1 (optional)'),
                         data=data, errors=errors
                         ) }}
                     </div>
