@@ -68,6 +68,16 @@ class ProgramVar(StrEnum):
                 return os.getenv(name)
         return None
 
+    def read_path_value(self) -> Path | None:
+        value = self.read_value()
+        if not value:
+            return None
+        if sys.platform == 'win32':
+            # Take Windows path variables into account (ex: %USERPROFILE%)
+            # InnoSetup can use those variables on some windows distributions
+            value = str(os.path.expandvars(value))
+        return Path(value)
+
     def clear_value(self):
         name = self.stored_name
         match sys.platform:

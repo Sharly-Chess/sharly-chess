@@ -122,9 +122,9 @@ def _app_data_dir() -> Path:
         return TEST_DATA_DIR
     if MANUAL_PATH_USED:
         return Path()
-    data_dir_val = ProgramVar.DATA_DIR.read_value()
-    if data_dir_val:
-        return Path(data_dir_val)
+    data_dir = ProgramVar.DATA_DIR.read_path_value()
+    if data_dir:
+        return data_dir
     default = _default_data_dir()
     ProgramVar.DATA_DIR.write_value(str(default))
     return default
@@ -179,9 +179,8 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 if not os.access(DATA_DIR, os.W_OK):
     raise SharlyChessException(f'Data path [{DATA_DIR.absolute()}] is not writable.')
 
-previous_dir_val = ProgramVar.PREVIOUS_DATA_DIR.read_value()
-if previous_dir_val and not MANUAL_PATH_USED:
-    previous_dir = Path(previous_dir_val)
+previous_dir = ProgramVar.PREVIOUS_DATA_DIR.read_path_value()
+if previous_dir and not MANUAL_PATH_USED:
     if previous_dir.exists() and not any(DATA_DIR.iterdir()):
         # The data dir changed: move the previous content over
         try:
