@@ -200,10 +200,13 @@ end;
 procedure AddDefenderPathException(Path: string);
 var
   ResultCode: Integer;
+  ExpandedPath: String;
 begin
+  ExpandedPath := GetExpandedPath(Path);
+  Log('Adding Defender Path: ' + ExpandedPath);
   Exec(
     'cmd.exe',
-    '/C powershell -Command "Add-MpPreference -ExclusionPath """'+ Path + '""" -Force"',
+    '/C powershell -Command "Add-MpPreference -ExclusionPath """'+ ExpandedPath + '""" -Force"',
     '',
     SW_HIDE,
     ewWaitUntilTerminated,
