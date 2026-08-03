@@ -166,11 +166,25 @@ begin
   end;
 end;
 
+function ExpandEnvStrings(lpSrc: PAnsiChar; lpDst: PAnsiChar; nSize: Cardinal): Cardinal;
+external 'ExpandEnvironmentStringsA@kernel32.dll stdcall';
+
+function GetExpandedPath(const Path: String): String;
+var
+  Buffer: AnsiString;
+begin
+  SetLength(Buffer, 1024);
+  if ExpandEnvStrings(PAnsiChar(AnsiString(Path)), PAnsiChar(Buffer), 1024) > 0 then
+    Result := Buffer
+  else
+    Result := Path; // Fallback if expansion fails
+end;
+
 function GetDataDir(Param: string) : string;
 begin
   if DataDirExists() then
     Result := DataDir;
-  Result := DataDirPage.Values[0];
+  Result := GetExpandedPath(DataDirPage.Values[0]);
 end;
 
 function GetActiveLanguage(Param: string) : string;
