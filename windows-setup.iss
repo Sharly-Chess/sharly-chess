@@ -113,7 +113,7 @@ var
 
 function DataDirExists() : Boolean;
 begin
-  Result := DataDir = '';
+  Result := DataDir <> '';
 end;
 
 procedure InitIsDefenderActive;
@@ -166,25 +166,12 @@ begin
   end;
 end;
 
-function ExpandEnvStrings(lpSrc: PAnsiChar; lpDst: PAnsiChar; nSize: Cardinal): Cardinal;
-external 'ExpandEnvironmentStringsA@kernel32.dll stdcall';
-
-function GetExpandedPath(const Path: String): String;
-var
-  Buffer: AnsiString;
-begin
-  SetLength(Buffer, 1024);
-  if ExpandEnvStrings(PAnsiChar(AnsiString(Path)), PAnsiChar(Buffer), 1024) > 0 then
-    Result := Buffer
-  else
-    Result := Path; // Fallback if expansion fails
-end;
-
 function GetDataDir(Param: string) : string;
 begin
   if DataDirExists() then
-    Result := DataDir;
-  Result := GetExpandedPath(DataDirPage.Values[0]);
+    Result := DataDir
+  else
+    Result := DataDirPage.Values[0];
 end;
 
 function GetActiveLanguage(Param: string) : string;
@@ -200,18 +187,20 @@ end;
 procedure AddDefenderPathException(Path: string);
 var
   ResultCode: Integer;
-  ExpandedPath: String;
 begin
-  ExpandedPath := GetExpandedPath(Path);
-  Log('Adding Defender Path: ' + ExpandedPath);
-  Exec(
-    'cmd.exe',
-    '/C powershell -Command "Add-MpPreference -ExclusionPath """'+ ExpandedPath + '""" -Force"',
-    '',
-    SW_HIDE,
-    ewWaitUntilTerminated,
-    ResultCode
-  );
+  Log('Adding Defender exclusion: ' + Path);
+  try
+    Exec(
+      'cmd.exe',
+      '/C powershell -Command "Add-MpPreference -ExclusionPath """'+ Path + '""" -Force"',
+      '',
+      SW_HIDE,
+      ewWaitUntilTerminated,
+      ResultCode
+    );
+  except
+    MsgBox(FmtMessage(CustomMessage('DefenderError'), [Path]), mbError, MB_OK);
+  end;
  end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -294,3 +283,6 @@ fr.DefenderProgram=Ajouter le dossier du programme
 
 en.DefenderData=Add the data folder
 fr.DefenderData=Ajouter le dossier des données
+
+en.DefenderError=Failed to add "%1" to the Microsoft Defender exception list.
+fr.DefenderError=Echec de l'ajout de "%1" à la liste d'exclusions Microsoft Defender.
