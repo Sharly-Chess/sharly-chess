@@ -7302,6 +7302,9 @@ msgstr "Équipes du n°%(first)d au n°%(last)d"
 msgid "Teams from %(first)s to %(last)s"
 msgstr "Équipes de %(first)s à %(last)s"
 
+msgid "Teams not assigned to a tournament"
+msgstr "Équipes non assignées à un tournoi"
+
 #, python-format
 msgid "Teams will be paired at round %(pairing_round)d and marked as present for the following rounds."
 msgstr "Les équipes vont être appariées à la ronde %(pairing_round)d et marquées présentes pour les rondes suivantes."
@@ -8340,9 +8343,6 @@ msgstr "Ukraine"
 
 msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
 msgstr "Non assignée"
-
-msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
-msgstr "Non assignées"
 
 msgid "Unavailable before the tournament start."
 msgstr "Non disponible avant le début du tournoi."
@@ -9625,4 +9625,7 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+#~ msgstr "Non assignées"
 
