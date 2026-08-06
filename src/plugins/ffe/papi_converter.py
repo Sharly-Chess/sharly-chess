@@ -631,9 +631,14 @@ class PapiConverter:
         return None
 
     @classmethod
-    def check_tiebreaks_warning(cls, tie_breaks: list[TieBreak]) -> str | None:
+    def check_tiebreaks_warning(
+        cls,
+        tie_breaks: list[TieBreak],
+        three_points_for_a_win: bool = False,
+    ) -> str | None:
         if len(tie_breaks) <= 3 and all(
-            PapiTieBreak.get_outer_value(tie_break) for tie_break in tie_breaks
+            PapiTieBreak.get_outer_value(tie_break, three_points_for_a_win)
+            for tie_break in tie_breaks
         ):
             return None
         return '<br/>'.join(
@@ -691,7 +696,10 @@ class PapiConverter:
 
     @classmethod
     def papi_export_warning(cls, tournament: Tournament) -> str | None:
-        if warning := cls.check_tiebreaks_warning(tournament.tie_breaks):
+        if warning := cls.check_tiebreaks_warning(
+            tournament.tie_breaks,
+            three_points_for_a_win=tournament.win_points == 3.0,
+        ):
             return warning
         if warning := cls.check_pairing_variation_warning(tournament.pairing_variation):
             return warning
