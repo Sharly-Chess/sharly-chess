@@ -846,7 +846,9 @@ class PapiConverter:
         for index, tiebreak in enumerate(tournament.tie_breaks):
             if tiebreak == ManualTieBreak():
                 manual_index = index
-            papi_tiebreak = PapiTieBreak.get_outer_value(tiebreak)
+            papi_tiebreak = PapiTieBreak.get_outer_value(
+                tiebreak, three_points_for_a_win=tournament.win_points == 3.0
+            )
             if index > 2 or not papi_tiebreak:
                 use_manual = True
                 break
