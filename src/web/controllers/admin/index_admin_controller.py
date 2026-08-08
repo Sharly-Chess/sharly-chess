@@ -17,6 +17,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common import (
     BASE_DIR,
+    check_rgb_str,
     is_http_url,
     is_valid_email,
 )
@@ -33,17 +34,20 @@ from data.access_levels.actions import AuthAction
 from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
+from data.event_metadata import EventMetadata
 from data.loader import ArchiveLoader, EventLoader
 from data.player_categories import (
     SELECTABLE_JUNIOR_CATEGORIES,
     SELECTABLE_SENIOR_CATEGORIES,
     PlayerCategory,
 )
+from data.tag import DEFAULT_TAG_COLOR
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
     StoredPlayerCategorySet,
     StoredPlugin,
+    StoredTag,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -79,6 +83,8 @@ from web.guards import ActionGuard
 from web.messages import Message
 from web.session import (
     SessionEventsShowDetails,
+    SessionTagsAddOtherActive,
+    SessionEventsTags,
     SessionUserAccountId,
     SessionUserAccountPasswordHash,
 )
@@ -167,6 +173,41 @@ class IndexAdminController(BaseAdminController):
             for event in current_events + coming_events
             if event.are_all_plugins_enabled
         ]
+        # The tag filter narrows the event lists only: the home page is a
+        # landing page and carries no filter control. Tags deleted since the
+        # filter was set are dropped from it.
+        all_tags = SharlyChessConfig().tags
+        tag_filter = SessionEventsTags(web_context.request).get() & {
+            tag.id for tag in all_tags
+        }
+        # Tabs stay enabled on their unfiltered content, otherwise filtering a
+        # tab down to nothing would disable it and bounce the user elsewhere.
+        has_passed_events = bool(passed_events)
+        has_current_events = bool(current_events)
+        has_coming_events = bool(coming_events)
+
+        def _tagged(events: list[EventMetadata]) -> list[EventMetadata]:
+            """The events carrying every selected tag."""
+            return [event for event in events if tag_filter <= set(event.tag_ids)]
+
+        def _tag_counts(events: list[EventMetadata]) -> dict[int, int]:
+            """Per tag, how many events would remain were it added to the
+            selection — the number shown on its filter badge, and 0 for the
+            ones the badge disables."""
+            return {
+                tag.id: sum(
+                    1 for event in events if tag_filter | {tag.id} <= set(event.tag_ids)
+                )
+                for tag in all_tags
+            }
+
+        passed_tag_counts = _tag_counts(passed_events)
+        current_tag_counts = _tag_counts(current_events)
+        coming_tag_counts = _tag_counts(coming_events)
+        if tag_filter:
+            passed_events = _tagged(passed_events)
+            current_events = _tagged(current_events)
+            coming_events = _tagged(coming_events)
         nav_tabs: dict[str, dict[str, Any]] = {
             'home': {
                 'title': _('Home'),
@@ -186,8 +227,11 @@ class IndexAdminController(BaseAdminController):
                     ),
                     'template': 'index/events_tab.html',
                     'events': current_events,
-                    'disabled': not current_events,
-                    'empty_str': _('No current events.'),
+                    'tag_counts': current_tag_counts,
+                    'disabled': not has_current_events,
+                    'empty_str': _('No current event carries the selected tags.')
+                    if tag_filter
+                    else _('No current events.'),
                     'icon_class': 'bi-calendar indented',
                     'page_title': _('Current events'),
                     'divider': True,
@@ -198,8 +242,11 @@ class IndexAdminController(BaseAdminController):
                     ),
                     'template': 'index/events_tab.html',
                     'events': coming_events,
-                    'disabled': not coming_events,
-                    'empty_str': _('No upcoming events.'),
+                    'tag_counts': coming_tag_counts,
+                    'disabled': not has_coming_events,
+                    'empty_str': _('No upcoming event carries the selected tags.')
+                    if tag_filter
+                    else _('No upcoming events.'),
                     'icon_class': 'bi-calendar-check indented',
                     'page_title': _('Upcoming events'),
                 },
@@ -207,8 +254,11 @@ class IndexAdminController(BaseAdminController):
                     'title': _('Passed ({num})').format(num=len(passed_events) or '-'),
                     'template': 'index/events_tab.html',
                     'events': passed_events,
-                    'disabled': not passed_events,
-                    'empty_str': _('No passed events.'),
+                    'tag_counts': passed_tag_counts,
+                    'disabled': not has_passed_events,
+                    'empty_str': _('No passed event carries the selected tags.')
+                    if tag_filter
+                    else _('No passed events.'),
                     'icon_class': 'bi-calendar-minus indented',
                     'page_title': _('Passed events'),
                 },
@@ -263,6 +313,8 @@ class IndexAdminController(BaseAdminController):
                 'format_date': format_date,
                 'nav_tabs': nav_tabs,
                 'svg_logo': svg_logo,
+                'all_tags': all_tags,
+                'admin_events_tag_filter': tag_filter,
                 'show_details': SessionEventsShowDetails(request).get(),
                 'plugin_event_create_button_templates': (
                     plugin_manager.hook.create_event_button_template()
@@ -286,11 +338,23 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
         admin_tab: FromPath[str],
         show_details: FromQuery[bool | None] = None,
+        filter_tags: FromQuery[str | None] = None,
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
 
         if show_details is not None:
             SessionEventsShowDetails(request).set(show_details)
+
+        # A ';'-separated list of tag ids; empty clears the filter, absent
+        # leaves it untouched.
+        if filter_tags is not None:
+            SessionEventsTags(request).set(
+                {
+                    int(value)
+                    for value in filter_tags.split(';')
+                    if value.strip().isdigit()
+                }
+            )
 
         return self._admin_render(web_context=web_context)
 
@@ -328,6 +392,42 @@ class IndexAdminController(BaseAdminController):
             'data': default_data | data,
         }
 
+    @staticmethod
+    def _tags_form_context(
+        data: dict[str, str],
+        errors: dict[str, str] | None = None,
+        container_state: Literal['hidden', 'list', 'form'] = 'hidden',
+        edited_tag_id: int | None = None,
+    ) -> dict[str, Any]:
+        """The context of the tags form of the event modal. The tags
+        themselves are global to the installation, the form only picks
+        which ones the event carries."""
+        tags = SharlyChessConfig().tags
+        event_counts_by_tag_id: dict[int, int] = defaultdict(int)
+        # Counting reopens every event database, so it is only done when the
+        # manager panel — the only place showing the counts — is open.
+        if container_state != 'hidden':
+            for event_metadata in EventLoader.get_events_metadata():
+                for tag_id in event_metadata.tag_ids:
+                    event_counts_by_tag_id[tag_id] += 1
+        default_data = WebContext.values_dict_to_form_data(
+            {
+                'tag_name': '',
+                'tag_color': DEFAULT_TAG_COLOR,
+                'tags': [],
+            }
+        )
+        return {
+            'tags_container_state': container_state,
+            'tag_options': {str(tag.id): tag.name for tag in tags},
+            'all_tags': tags,
+            'tag_event_counts': event_counts_by_tag_id,
+            'edited_tag_id': edited_tag_id,
+            'default_tag_color': DEFAULT_TAG_COLOR,
+            'errors': errors or {},
+            'data': default_data | data,
+        }
+
     @classmethod
     def _prepare_event_modal_data(
         cls,
@@ -352,6 +452,7 @@ class IndexAdminController(BaseAdminController):
             organiser_home_page: str | None = None
             organiser_email: str | None = None
             organiser_director: str | None = None
+            tag_ids: list[int] = []
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             event_enabled_plugins = [
                 plugin
@@ -379,6 +480,7 @@ class IndexAdminController(BaseAdminController):
             organiser_home_page = stored_event.organiser_home_page
             organiser_email = stored_event.organiser_email
             organiser_director = stored_event.organiser_director
+            tag_ids = stored_event.tag_ids
             player_rating_type = stored_event.player_rating_type
             event_type = stored_event.event_type.value
             stored_plugin_data = stored_event.plugin_data
@@ -417,6 +519,7 @@ class IndexAdminController(BaseAdminController):
                     'age_category_base_date': age_category_base_date,
                     'age_category_change_month': age_category_change_month,
                     'age_categories': age_categories,
+                    'tags': tag_ids,
                 }
             )
             | plugin_form_data
@@ -509,6 +612,19 @@ class IndexAdminController(BaseAdminController):
             data, 'allow_multi_tournament_players'
         )
 
+        # Only tags that still exist are kept: a tag deleted while the event
+        # referenced it is silently dropped the next time the event is saved.
+        known_tag_ids = config.tags_by_id
+        tag_ids = [
+            tag_id
+            for tag_id in (
+                int(value)
+                for value in WebContext.form_data_to_list_str(data, 'tags')
+                if value.isdigit()
+            )
+            if tag_id in known_tag_ids
+        ]
+
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
             [
                 plugin
@@ -553,6 +669,7 @@ class IndexAdminController(BaseAdminController):
             age_category_base_date=age_category_base_date,
             age_category_change_month=age_category_change_month,
             age_categories=age_categories,
+            tag_ids=tag_ids,
             player_rating_type=player_rating_type,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
@@ -633,7 +750,11 @@ class IndexAdminController(BaseAdminController):
             'data': data,
             'errors': errors,
         }
-        return template_context | self._age_category_sets_form_context(data, errors)
+        age_categories_context = self._age_category_sets_form_context(data, errors)
+        # Chained on the data already completed above, so that neither form's
+        # defaults are dropped.
+        tags_context = self._tags_form_context(age_categories_context['data'], errors)
+        return template_context | age_categories_context | tags_context
 
     @get(
         path=[
@@ -898,6 +1019,70 @@ class IndexAdminController(BaseAdminController):
             )
         return ClientRedirect(redirect_to=admin_event_url(request, new_uniq_id))
 
+    @classmethod
+    def _render_age_category_sets_modal(
+        cls,
+        web_context: AdminWebContext,
+        data: dict[str, str],
+        errors: dict[str, str] | None = None,
+        container_state: Literal['hidden', 'list', 'form'] = 'list',
+    ) -> Template:
+        """``data`` is the event modal's in-progress form, carried through so
+        that Back can restore it."""
+        return cls._admin_render(
+            web_context=web_context,
+            template_context=(
+                cls._age_category_sets_form_context(
+                    data, errors, sets_container_state=container_state
+                )
+                | {
+                    'modal': 'event-age-category-sets',
+                    'event_form_data': data,
+                }
+            ),
+        )
+
+    @post(
+        path='/age-category-sets/manager',
+        name='age-category-sets-manager',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_age_category_sets_manager(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        """Open the category-set manager, carrying the event modal's form."""
+        web_context = AdminWebContext(request)
+        return self._render_age_category_sets_modal(
+            web_context, WebContext.flatten_list_data(data)
+        )
+
+    @post(
+        path='/age-category-sets/add-form',
+        name='age-category-set-add-form',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_age_category_set_add_form(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        flat_data = WebContext.flatten_list_data(data) | {
+            'category_set_name': '',
+            'category_set_categories': '',
+        }
+        return self._render_age_category_sets_modal(
+            web_context, flat_data, container_state='form'
+        )
+
     @post(
         path='/player-category-set/create',
         name='player-category-set-create',
@@ -932,51 +1117,286 @@ class IndexAdminController(BaseAdminController):
                 PlayerCategory.from_id(category)
             except ValueError:
                 errors[field] = f'Unknown category [{category}].'
-        if not errors:
-            with ConfigDatabase(True) as database:
-                database.add_stored_player_category_set(
-                    StoredPlayerCategorySet(id=None, name=name, categories=category_ids)
-                )
-            SharlyChessConfig().load_and_set_env()
-            flat_data = {'age_categories': flat_data.get('age_categories', '')}
-        return HTMXTemplate(
-            template_name='/admin/event/event_age_categories_form.html',
-            context=(
-                web_context.template_context
-                | self._age_category_sets_form_context(
-                    flat_data,
-                    errors,
-                    sets_container_state='form' if errors else 'list',
-                )
-            ),
-        )
+        if errors:
+            return self._render_age_category_sets_modal(
+                web_context, flat_data, errors, container_state='form'
+            )
+        with ConfigDatabase(True) as database:
+            database.add_stored_player_category_set(
+                StoredPlayerCategorySet(id=None, name=name, categories=category_ids)
+            )
+        SharlyChessConfig().load_and_set_env()
+        flat_data |= {'category_set_name': '', 'category_set_categories': ''}
+        return self._render_age_category_sets_modal(web_context, flat_data)
 
-    @delete(
+    @post(
+        # A POST, not a DELETE: see tag-delete.
         path='/player-category-set/delete/{player_category_set_id:int}',
         name='player-category-set-delete',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
-        status_code=HTTP_200_OK,
     )
     async def htmx_admin_delete_player_category_set(
         self,
         request: HTMXRequest,
         player_category_set_id: FromPath[int],
-        age_categories: FromQuery[list[str] | None] = None,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
     ) -> Template:
         web_context = AdminWebContext(request)
         with ConfigDatabase(True) as database:
             database.delete_stored_player_category_set(player_category_set_id)
         SharlyChessConfig().load_and_set_env()
-        data = WebContext.flatten_list_data({'age_categories': age_categories or []})
-        return HTMXTemplate(
-            template_name='/admin/event/event_age_categories_form.html',
-            context=(
-                web_context.template_context
-                | self._age_category_sets_form_context(
-                    data, sets_container_state='list'
+        return self._render_age_category_sets_modal(
+            web_context, WebContext.flatten_list_data(data)
+        )
+
+    @classmethod
+    def _render_tags_modal(
+        cls,
+        web_context: AdminWebContext,
+        data: dict[str, str],
+        errors: dict[str, str] | None = None,
+        container_state: Literal['hidden', 'list', 'form'] = 'list',
+        edited_tag_id: int | None = None,
+    ) -> Template:
+        """``data`` is the event modal's in-progress form, carried through so
+        that Back can restore it."""
+        return cls._admin_render(
+            web_context=web_context,
+            template_context=(
+                cls._tags_form_context(
+                    data,
+                    errors,
+                    container_state=container_state,
+                    edited_tag_id=edited_tag_id,
                 )
+                | {
+                    'modal': 'event-tags',
+                    'event_form_data': data,
+                    'add_other_active': SessionTagsAddOtherActive(
+                        web_context.request
+                    ).get(),
+                }
             ),
         )
+
+    @staticmethod
+    def _read_tag_form_data(
+        data: dict[str, str], ignore_tag_id: int | None = None
+    ) -> tuple[str, str, dict[str, str]]:
+        """The name and colour of the tag being created or updated, together
+        with the validation errors."""
+        errors: dict[str, str] = {}
+        name = WebContext.form_data_to_str(data, field := 'tag_name') or ''
+        if not name:
+            errors[field] = _('This field is required.')
+        elif any(
+            tag.name.lower() == name.lower() and tag.id != ignore_tag_id
+            for tag in SharlyChessConfig().tags
+        ):
+            errors[field] = _('This name is already used.')
+        color = DEFAULT_TAG_COLOR
+        try:
+            color = check_rgb_str(
+                WebContext.form_data_to_str(data, field := 'tag_color')
+                or DEFAULT_TAG_COLOR
+            )
+        except ValueError:
+            errors[field] = _('Please choose a valid colour.')
+        return name, color, errors
+
+    @post(
+        path='/tag/create',
+        name='tag-create',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_create_tag(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        flat_data = WebContext.flatten_list_data(data)
+        add_other = WebContext.resolve_add_other(
+            flat_data, SessionTagsAddOtherActive(request)
+        )
+        name, color, errors = self._read_tag_form_data(flat_data)
+        if errors:
+            return self._render_tags_modal(
+                web_context, flat_data, errors, container_state='form'
+            )
+        with ConfigDatabase(True) as database:
+            tag_id = database.add_stored_tag(StoredTag(id=None, name=name, color=color))
+        SharlyChessConfig().load_and_set_env()
+        # A tag created from an event is meant for that event: select it.
+        selected_tag_ids = WebContext.form_data_to_list_str(flat_data, 'tags')
+        selected_tag_ids.append(str(tag_id))
+        flat_data['tags'] = ';'.join(selected_tag_ids)
+        if add_other:
+            flat_data |= {'tag_name': '', 'tag_color': DEFAULT_TAG_COLOR}
+            return self._render_tags_modal(
+                web_context, flat_data, container_state='form'
+            )
+        return self._render_tags_modal(web_context, flat_data)
+
+    @post(
+        path=[
+            '/{admin_tab:str}/event-modal-restore/{action:str}',
+            '/{admin_tab:str}/event-modal-restore/{action:str}/{event_uniq_id:str}',
+            '/event-modal-restore/{action:str}/{event_uniq_id:str}',
+        ],
+        name='admin-event-modal-restore',
+        guards=[ActionGuard(AuthAction.VIEW_EVENT_CONFIG)],
+    )
+    async def htmx_admin_event_modal_restore(
+        self,
+        request: HTMXRequest,
+        action: FromPath[FormAction],
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        admin_tab: FromPath[str | None] = None,
+    ) -> Template:
+        """Re-open the event modal on the form the tag manager was opened
+        from, so leaving to manage tags doesn't discard unsaved edits."""
+        web_context = AdminWebContext(request, admin_tab=admin_tab)
+        flat_data = WebContext.flatten_list_data(data)
+        template_context = self._event_modal_context(web_context, action, flat_data)
+        return self._admin_render(
+            web_context=web_context, template_context=template_context
+        )
+
+    @post(
+        path='/tag/manager',
+        name='tag-manager',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_tag_manager(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        """Open the tag manager, carrying the event modal's in-progress form."""
+        web_context = AdminWebContext(request)
+        return self._render_tags_modal(web_context, WebContext.flatten_list_data(data))
+
+    @post(
+        path='/tag/add-form',
+        name='tag-add-form',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_tag_add_form(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        flat_data = WebContext.flatten_list_data(data) | {
+            'tag_name': '',
+            'tag_color': DEFAULT_TAG_COLOR,
+        }
+        return self._render_tags_modal(web_context, flat_data, container_state='form')
+
+    @post(
+        path='/tag/update-form/{tag_id:int}',
+        name='tag-update-form',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_tag_update_form(
+        self,
+        request: HTMXRequest,
+        tag_id: FromPath[int],
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        tag = SharlyChessConfig().tags_by_id.get(tag_id)
+        if tag is None:
+            raise NotFoundException(f'Unknown tag [{tag_id}].')
+        flat_data = WebContext.flatten_list_data(data) | {
+            'tag_name': tag.name,
+            'tag_color': tag.color,
+        }
+        return self._render_tags_modal(
+            web_context, flat_data, container_state='form', edited_tag_id=tag_id
+        )
+
+    @patch(
+        path='/tag/update/{tag_id:int}',
+        name='tag-update',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_update_tag(
+        self,
+        request: HTMXRequest,
+        tag_id: FromPath[int],
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        if tag_id not in SharlyChessConfig().tags_by_id:
+            raise NotFoundException(f'Unknown tag [{tag_id}].')
+        flat_data = WebContext.flatten_list_data(data)
+        name, color, errors = self._read_tag_form_data(flat_data, ignore_tag_id=tag_id)
+        if errors:
+            return self._render_tags_modal(
+                web_context,
+                flat_data,
+                errors,
+                container_state='form',
+                edited_tag_id=tag_id,
+            )
+        with ConfigDatabase(True) as database:
+            database.update_stored_tag(StoredTag(id=tag_id, name=name, color=color))
+        SharlyChessConfig().load_and_set_env()
+        return self._render_tags_modal(web_context, flat_data)
+
+    @post(
+        # A POST, not a DELETE: htmx sends DELETE parameters in the URL, and
+        # the event form carried by the modal belongs in the body.
+        path='/tag/delete/{tag_id:int}',
+        name='tag-delete',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_delete_tag(
+        self,
+        request: HTMXRequest,
+        tag_id: FromPath[int],
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        with ConfigDatabase(True) as database:
+            database.delete_stored_tag(tag_id)
+        SharlyChessConfig().load_and_set_env()
+        # The events that carried the tag keep the id, which no longer
+        # resolves and is therefore ignored (and dropped when next saved).
+        flat_data = WebContext.flatten_list_data(data)
+        selected_tag_ids = [
+            value
+            for value in WebContext.form_data_to_list_str(flat_data, 'tags')
+            if value != str(tag_id)
+        ]
+        flat_data['tags'] = ';'.join(selected_tag_ids)
+        return self._render_tags_modal(web_context, flat_data)
 
     @classmethod
     def _enable_missing_plugins(cls, request: HTMXRequest, event_uniq_id: str):
@@ -1105,6 +1525,9 @@ class IndexAdminController(BaseAdminController):
         with EventDatabase(
             file_path=Path(temp_file.name), write=True, check_dirty_tournaments=False
         ) as tmp_event_database:
+            # Tag ids are local to this installation, they would be
+            # meaningless (or worse, wrong) anywhere else.
+            tmp_event_database.delete_all_tags()
             if include_players != 'on':
                 tmp_event_database.delete_all_stored_players()
             elif include_private_player_data != 'on':

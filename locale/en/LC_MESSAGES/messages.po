@@ -101,6 +101,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d event"
+msgid_plural "%(num)d events"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d informative *** COLUMNS, SINGULAR"
 msgid_plural "%(num)d informative *** COLUMNS, PLURAL"
 msgstr[0] "%(num)d informative"
@@ -1721,6 +1727,9 @@ msgstr ""
 msgid "Clear result"
 msgstr ""
 
+msgid "Clear the tag filter."
+msgstr ""
+
 msgid "Click and drag to select balanced groups."
 msgstr ""
 
@@ -1864,6 +1873,9 @@ msgid "Configure prohibited pairings for this round."
 msgstr ""
 
 msgid "Configure the category sets, which are available for all events."
+msgstr ""
+
+msgid "Configure the tags, which are available for all events."
 msgstr ""
 
 msgid "Configure the tie-breaks of the tournament."
@@ -2420,6 +2432,9 @@ msgstr ""
 msgid "Deletes all the criteria of this category."
 msgstr ""
 
+msgid "Deleting a tag removes it from the events that use it."
+msgstr ""
+
 msgid "Deletion date"
 msgstr ""
 
@@ -2770,6 +2785,9 @@ msgid "E.g.: Teams %%f to %%l"
 msgstr ""
 
 msgid "E.g.: World championship"
+msgstr ""
+
+msgid "E.g.: Youth"
 msgstr ""
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
@@ -3365,6 +3383,9 @@ msgid "Fr *** FRIDAY"
 msgstr "Fr"
 
 msgid "France"
+msgstr ""
+
+msgid "Free labels used to organise and filter the list of events. Tags are shared by all the events of this installation, and are removed when an event is exported or imported."
 msgstr ""
 
 msgid "From the rule set"
@@ -4719,6 +4740,9 @@ msgstr ""
 msgid "New rotator"
 msgstr ""
 
+msgid "New tag"
+msgstr ""
+
 msgid "New timer"
 msgstr ""
 
@@ -4768,6 +4792,9 @@ msgid "No criteria for the main category."
 msgstr ""
 
 msgid "No criteria."
+msgstr ""
+
+msgid "No current event carries the selected tags."
 msgstr ""
 
 msgid "No current events."
@@ -4871,6 +4898,9 @@ msgid "No pairings for this round yet."
 msgstr ""
 
 msgid "No pairings."
+msgstr ""
+
+msgid "No passed event carries the selected tags."
 msgstr ""
 
 msgid "No passed events."
@@ -4978,6 +5008,12 @@ msgstr ""
 msgid "No tables available for {t} teams."
 msgstr ""
 
+msgid "No tag"
+msgstr ""
+
+msgid "No tag has been created yet."
+msgstr ""
+
 msgid "No team pairings for this round yet."
 msgstr ""
 
@@ -5003,6 +5039,9 @@ msgid "No tournaments."
 msgstr ""
 
 msgid "No unassigned players available. Remove a player from another team first."
+msgstr ""
+
+msgid "No upcoming event carries the selected tags."
 msgstr ""
 
 msgid "No upcoming events."
@@ -5889,6 +5928,9 @@ msgid "Please choose a name for the set."
 msgstr ""
 
 msgid "Please choose a player."
+msgstr ""
+
+msgid "Please choose a valid colour."
 msgstr ""
 
 msgid "Please choose the document."
@@ -7239,6 +7281,9 @@ msgstr ""
 msgid "Table numbers:"
 msgstr ""
 
+msgid "Tags"
+msgstr ""
+
 msgid "Tajikistan"
 msgstr ""
 
@@ -7857,6 +7902,12 @@ msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
 msgid "These sets are saved per pairing system and shared across events."
+msgstr ""
+
+msgid "These sets are shared by every event of this installation."
+msgstr ""
+
+msgid "These tags are shared by every event of this installation."
 msgstr ""
 
 msgid "These tournaments are already included for this account by a higher access level."
@@ -8592,6 +8643,9 @@ msgid "Update results"
 msgstr ""
 
 msgid "Update search failed (no internet)"
+msgstr ""
+
+msgid "Update tag"
 msgstr ""
 
 msgid "Update the players' information from an external data source."
@@ -9711,3 +9765,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+#~ msgstr "Unassigned"
+

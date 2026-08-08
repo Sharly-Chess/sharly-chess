@@ -330,6 +330,12 @@ class SessionTieBreakAddOtherActive(BoolSessionVariable):
         return 'tie_break_add_other_active'
 
 
+class SessionTagsAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'tags_add_other_active'
+
+
 class SessionPairingsShowWithoutResults(BoolSessionVariable):
     @property
     def key(self) -> str:
@@ -363,6 +369,25 @@ class SessionScreensScreenTypes(SessionVariable[set[str]]):
         return set(super().get())
 
     def set(self, value: set[str]):
+        self.request.session[self.key] = list(value)
+
+
+class SessionEventsTags(SessionVariable[set[int]]):
+    """The ids of the tags the event lists are filtered on. An empty set
+    shows every event."""
+
+    @property
+    def key(self) -> str:
+        return 'events_tags'
+
+    @property
+    def default_value(self) -> set[int]:
+        return set()
+
+    def get(self) -> set[int]:
+        return set(super().get())
+
+    def set(self, value: set[int]):
         self.request.session[self.key] = list(value)
 
 

@@ -1,0 +1,176 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{# The category-set registry, opened from the event modal. That modal's
+   in-progress fields ride along as hidden inputs, so Back restores a
+   half-filled form rather than re-reading the stored event. #}
+<div
+    id="event-age-category-sets-modal"
+    class="modal-dialog modal-dialog-scrollable admin-event-edit-modal"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Category sets') }}
+                <i
+                    class="bi-info-circle-fill"
+                    style="font-size: 70%"
+                    {{ macros.tooltip_attributes('', _(
+                        'These sets are shared by every event of this installation.'
+                    )) }}
+                ></i>
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="age-category-sets-modal-form"
+                {% if age_category_sets_container_state == 'form' %}
+                    hx-post="{{ url_for('player-category-set-create') }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                {% endif %}
+            >
+                {% for field_name, field_value in event_form_data.items() %}
+                    {% if field_name not in ('category_set_name', 'category_set_categories') %}
+                        <input type="hidden" name="{{ field_name }}" value="{{ field_value }}">
+                    {% endif %}
+                {% endfor %}
+                {% if age_category_sets_container_state == 'form' %}
+                    <h4>{{ _('Create category set') }}</h4>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-4">
+                            {{ admin_macros.text_input(
+                                name='category_set_name',
+                                label=_('%(string)s:', string=_('Name')),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-8">
+                            {{ admin_macros.select_input(
+                                name='category_set_categories',
+                                label=_('Categories'),
+                                placeholder=_('Choose at least one value.'),
+                                select_options=player_category_options,
+                                multiple_select=true,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="d-flex flex-column gap-2">
+                        {% for category_set in player_category_sets %}
+                            <div class="border border-secondary bg-body-tertiary">
+                                <div class="p-2 d-flex align-items-center gap-4">
+                                    <div class="text-start flex-grow-1 min-width-0">
+                                        <b>{{ category_set.name }}</b>
+                                        (<i>{{ category_set.categories_str }}</i>)
+                                    </div>
+                                    <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                        <div
+                                            {% if category_set.is_default %}
+                                                {{ macros.tooltip_attributes(
+                                                    'warning', _('Default sets can\'t be deleted.'), 'top'
+                                                ) }}
+                                            {% endif %}
+                                        >
+                                            <button
+                                                class="btn btn-sm btn-outline-danger text-nowrap"
+                                                type="button"
+                                                {% if category_set.is_default %}
+                                                    disabled
+                                                {% else %}
+                                                    hx-post="{{ url_for(
+                                                        'player-category-set-delete',
+                                                        player_category_set_id=category_set.id,
+                                                    ) }}"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                    data-bs-target="#modal-wrapper"
+                                                {% endif %}
+                                            >
+                                                <i class="bi-trash-fill"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                class="btn btn-secondary text-nowrap me-auto"
+                type="button"
+                hx-post="{{ event_form_data.get('event_return_url') }}"
+                hx-include="#age-category-sets-modal-form"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+            {% if age_category_sets_container_state == 'form' %}
+                <button
+                    class="btn btn-outline-secondary text-nowrap"
+                    type="button"
+                    hx-post="{{ url_for('age-category-sets-manager') }}"
+                    hx-include="#age-category-sets-modal-form"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-x-circle pe-1"></i>
+                    {{ _('Cancel') }}
+                </button>
+                <button
+                    class="btn btn-primary text-nowrap"
+                    type="submit"
+                    form="age-category-sets-modal-form"
+                >
+                    <i class="bi-plus-circle pe-1"></i>
+                    {{ _('Create') }}
+                </button>
+            {% else %}
+                <button
+                    class="btn btn-primary text-nowrap"
+                    type="button"
+                    hx-post="{{ url_for('age-category-set-add-form') }}"
+                    hx-include="#age-category-sets-modal-form"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-circle pe-1"></i>
+                    {{ _('Add') }}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if age_category_sets_container_state == 'form' %}
+    <script>
+        // Choosing an existing set in the category picker replaces the
+        // selection with that set's own categories, as it does on the event
+        // modal's picker.
+        (function () {
+            const valuesByKey = {
+                {% for category_set in player_category_sets %}
+                    '{{ category_set.form_key }}': {{ category_set.category_ids|tojson }},
+                {% endfor %}
+            };
+            $('#category-set-categories').change(function () {
+                ($(this).val() || []).forEach((selected) => {
+                    if (!(selected in valuesByKey)) return;
+                    $(this).val(valuesByKey[selected]);
+                    $(this).trigger('change');
+                    $(this).select2('close');
+                });
+            });
+        })();
+    </script>
+{% endif %}

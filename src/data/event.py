@@ -54,6 +54,7 @@ from database.sqlite.event.event_store import (
 )
 
 if TYPE_CHECKING:
+    from data.tag import Tag
     from data.teams.team_affiliation import TeamAffiliationSource
     from data.screens.screen_types import ScreenType
 
@@ -205,6 +206,15 @@ class Event:
             for category in self.player_categories
             if isinstance(category, SeniorCategory)
         ]
+
+    @property
+    def tag_ids(self) -> list[int]:
+        return self.stored_event.tag_ids
+
+    @property
+    def tags(self) -> list['Tag']:
+        """The tags of the event; unknown ids are ignored (see data.tag)."""
+        return SharlyChessConfig().resolve_tags(self.stored_event.tag_ids)
 
     @property
     def age_category_base_date(self) -> date | None:
