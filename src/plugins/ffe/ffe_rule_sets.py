@@ -161,10 +161,12 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     def event_type(self) -> EventType:
         return EventType.TEAM
 
-    @property
     @override
-    def forced_team_sort_mode(self) -> str | None:
-        # FFE cups order teams by the round-1 lineup's average Elo.
+    def forced_team_sort_mode(self, pairing_system_id: str | None = None) -> str | None:
+        # Swiss only: teams are ordered by their round-1 lineup's average
+        # Elo. The table-driven systems draw their team letters by lot.
+        if pairing_system_id != 'TEAM_SWISS':
+            return None
         return TeamSortMode.LINEUP_AVERAGE_RATING.value
 
     @property

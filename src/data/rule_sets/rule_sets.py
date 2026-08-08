@@ -117,12 +117,13 @@ class RuleSet(IdentifiableEntity, ABC):
         leaves the configuration free."""
         return None
 
-    @property
-    def forced_team_sort_mode(self) -> str | None:
+    def forced_team_sort_mode(self, pairing_system_id: str | None = None) -> str | None:
         """When set, locks the tournament's team-sort mode to this
         :class:`~utils.enum.TeamSortMode` value — the teams tab shows
         it but won't let the arbiter change it. ``None`` (default)
-        leaves the choice free."""
+        leaves the choice free. Regulations usually prescribe an order
+        only for the systems that need seeding, hence the pairing system
+        id — ``None`` when it can't be resolved."""
         return None
 
     def rounds_for_pairing(
