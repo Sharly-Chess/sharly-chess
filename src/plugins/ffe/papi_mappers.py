@@ -92,6 +92,21 @@ class PapiTieBreak(CoreMapper[str, TieBreak]):
             'Manuel': tie_breaks.ManualTieBreak(),
         }
 
+    @classmethod
+    def get_outer_value(
+        cls,
+        core_object: TieBreak,
+        three_points_for_a_win: bool = False,
+    ) -> str | None:
+        if (
+            core_object.id == tie_breaks.SonnebornBergerTieBreak().id
+            and three_points_for_a_win
+        ):
+            # Three points for a win is not taken into account for Sonneborn Berger
+            # in Papi, so in those cases it needs to be overridden with the SC ranking
+            return None
+        return super().get_outer_value(core_object)
+
 
 class PapiTournamentRating(CoreMapper[str, TournamentRating]):
     @staticmethod
