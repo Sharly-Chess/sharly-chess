@@ -164,12 +164,14 @@ class TrfEncodedType:
     @staticmethod
     def get_team_score_config(
         encoded_type: str,
-    ) -> tuple[ScoreType, ScoreType] | None:
+    ) -> tuple[ScoreType, ScoreType | None] | None:
         """Decode a ``FIDE_TEAM_TYPE<A|B>_<primary>[_<secondary>]``
         team-Swiss code into ``(primary_score, secondary_score)``.
         Returns ``None`` for codes that don't carry score config
-        (non-team or unparseable). MP-only / GP-only codes echo the
-        primary as the secondary."""
+        (non-team or unparseable). The secondary is ``None`` for the
+        MP-only / GP-only codes: they are how the TRF spells "the
+        secondary score is not used for colour allocation" (FIDE Swiss
+        Team Pairing System §1.2.1)."""
         suffix = TrfEncodedType._team_code_suffix(encoded_type)
         if suffix is None:
             return None
@@ -179,10 +181,13 @@ class TrfEncodedType:
             return None
         primary = score_by_code[parts[0]]
         if len(parts) == 1:
-            return primary, primary
+            return primary, None
         if parts[1] not in score_by_code:
             return None
-        return primary, score_by_code[parts[1]]
+        secondary = score_by_code[parts[1]]
+        # A code naming the same score twice says nothing more than the
+        # primary-only form does.
+        return primary, secondary if secondary != primary else None
 
     @staticmethod
     def get_team_colour_type(encoded_type: str) -> TeamColourType | None:

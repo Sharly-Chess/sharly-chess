@@ -1774,9 +1774,6 @@ msgstr "La couleur n°2 est utilisée {delay_2} minutes avant le début des rond
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "La couleur n°3 est utilisée à partir du début des rondes et pendant {delay_3} minutes (délai n°3)."
 
-msgid "Colour allocation:"
-msgstr "Attribution des couleurs :"
-
 msgid "Colour history"
 msgstr "Couleurs"
 
@@ -3043,6 +3040,12 @@ msgstr "Joueur·euses existant·es"
 
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
+
+msgid "Expand all"
+msgstr "Tout déplier"
+
+msgid "Expand or collapse every match."
+msgstr "Déplier ou replier toutes les rencontres."
 
 msgid "Expand or collapse the details of every item."
 msgstr "Développer ou réduire les détails de tous les éléments."
@@ -6621,9 +6624,6 @@ msgstr "Score"
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr "Score calculé en ajoutant, pour chaque ronde, la valeur obtenue en multipliant le score de l'adversaire par le nombre de points obtenus."
 
-msgid "Score used for colour allocation when pairing."
-msgstr "Score utilisé pour l'attribution des couleurs lors de l'appariement."
-
 msgid "Scores + Schedule Strength (SSSC)"
 msgstr "Scores + force du parcours (SSSC)"
 
@@ -8561,6 +8561,12 @@ msgstr "Par défaut – {option}"
 msgid "Use dropdowns"
 msgstr "Utiliser des menus déroulants"
 
+msgid "Use game points for colour allocation"
+msgstr "Utiliser les points de parties pour l'attribution des couleurs"
+
+msgid "Use match points for colour allocation"
+msgstr "Utiliser les points de match pour l'attribution des couleurs"
+
 #, python-brace-format
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
 msgstr "Utiliser uniquement les caractères « {w} » et « {b} » (ou laisser vide pour la valeur par défaut)."
@@ -8794,6 +8800,9 @@ msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipul
 
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
 msgstr "Quand plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix, partager leurs prix."
+
+msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
+msgstr "Lorsque deux équipes ont le même score, celle qui a le meilleur score secondaire voit sa préférence de couleur appliquée en premier."
 
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
 msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye."

@@ -295,7 +295,7 @@ class TournamentAdminController(BaseEventAdminController):
             game_points: dict[int, float] | None = None
             match_points: dict[int, float] | None = None
             primary_score: str | None = None
-            secondary_score: str | None = None
+            secondary_score_for_colours: bool = True
             team_colour_type: str | None = None
             enforce_roster_order: bool = False
             rule_set: str | None = None
@@ -309,7 +309,6 @@ class TournamentAdminController(BaseEventAdminController):
                 if admin_event.is_team_event:
                     team_player_count = 4
                     primary_score = ScoreType.MATCH_POINTS.value
-                    secondary_score = ScoreType.GAME_POINTS.value
                     team_colour_type = TeamColourType.A.value
             else:
                 admin_tournament = web_context.get_admin_tournament()
@@ -341,8 +340,8 @@ class TournamentAdminController(BaseEventAdminController):
                 primary_score = (
                     stored_tournament.primary_score or ScoreType.MATCH_POINTS.value
                 )
-                secondary_score = (
-                    stored_tournament.secondary_score or ScoreType.GAME_POINTS.value
+                secondary_score_for_colours = (
+                    stored_tournament.secondary_score_for_colours
                 )
                 team_colour_type = (
                     stored_tournament.team_colour_type or TeamColourType.A.value
@@ -446,7 +445,9 @@ class TournamentAdminController(BaseEventAdminController):
                         else None
                     ),
                     'primary_score': primary_score,
-                    'secondary_score': secondary_score,
+                    'secondary_score_for_colours': (
+                        'on' if secondary_score_for_colours else ''
+                    ),
                     'team_colour_type': team_colour_type,
                     'enforce_roster_order': 'on' if enforce_roster_order else '',
                     'rule_set': rule_set,
@@ -761,12 +762,15 @@ class TournamentAdminController(BaseEventAdminController):
         color_pattern: str | None = None
         match_points: dict[int, float] | None = None
         primary_score: str | None = None
-        secondary_score: str | None = None
+        secondary_score_for_colours = True
         team_colour_type: str | None = None
         enforce_roster_order = False
         if event.is_team_event:
             enforce_roster_order = WebContext.form_data_to_bool(
                 data, 'enforce_roster_order'
+            )
+            secondary_score_for_colours = WebContext.form_data_to_bool(
+                data, 'secondary_score_for_colours'
             )
             team_player_count = WebContext.form_data_to_int(
                 data, field := 'team_player_count'
@@ -790,22 +794,16 @@ class TournamentAdminController(BaseEventAdminController):
                     'The roster cap cannot be smaller than the team-match size.'
                 )
 
-            for field_name, default_value in (
-                ('primary_score', ScoreType.MATCH_POINTS.value),
-                ('secondary_score', ScoreType.GAME_POINTS.value),
-            ):
-                raw_score = (
-                    WebContext.form_data_to_str(data, field_name) or default_value
-                )
-                try:
-                    valid = ScoreType(raw_score).value
-                except ValueError:
-                    errors[field_name] = f'Invalid score type value [{raw_score}].'
-                    valid = default_value
-                if field_name == 'primary_score':
-                    primary_score = valid
-                else:
-                    secondary_score = valid
+            field_name = 'primary_score'
+            raw_score = (
+                WebContext.form_data_to_str(data, field_name)
+                or ScoreType.MATCH_POINTS.value
+            )
+            try:
+                primary_score = ScoreType(raw_score).value
+            except ValueError:
+                errors[field_name] = f'Invalid score type value [{raw_score}].'
+                primary_score = ScoreType.MATCH_POINTS.value
 
             raw_colour_type = (
                 WebContext.form_data_to_str(data, 'team_colour_type')
@@ -970,7 +968,7 @@ class TournamentAdminController(BaseEventAdminController):
             match_points=match_points,
             color_pattern=color_pattern,
             primary_score=primary_score,
-            secondary_score=secondary_score,
+            secondary_score_for_colours=secondary_score_for_colours,
             team_colour_type=team_colour_type,
             enforce_roster_order=enforce_roster_order,
             rule_set=rule_set_id,

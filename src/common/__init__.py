@@ -28,7 +28,16 @@ SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 # We also consider Flatpak as a non-development environment.
 FLATPAK_ID = os.environ.get('FLATPAK_ID')
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False) and not FLATPAK_ID
-TEST_ENV: bool = os.getenv('TEST_ENV') == 'true' or Path(sys.argv[0]).stem == 'pytest'
+# ``PYTEST_VERSION`` is set by pytest itself for the whole run, so this
+# holds however the suite was started — ``pytest`` puts its own name in
+# argv[0], but ``python -m pytest`` puts pytest's __main__.py there, and
+# missing the difference means the tests run against the real data
+# directory instead of tests/tmp.
+TEST_ENV: bool = (
+    os.getenv('TEST_ENV') == 'true'
+    or os.getenv('PYTEST_VERSION') is not None
+    or Path(sys.argv[0]).stem == 'pytest'
+)
 
 # True when experimental features are enabled, False otherwise.
 _EXPERIMENTAL_FEATURES_ENABLED: bool = False
