@@ -3041,6 +3041,12 @@ msgstr ""
 msgid "Exit button:"
 msgstr ""
 
+msgid "Expand all"
+msgstr ""
+
+msgid "Expand or collapse every match."
+msgstr ""
+
 msgid "Expand or collapse the details of every item."
 msgstr ""
 
@@ -9633,3 +9639,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+

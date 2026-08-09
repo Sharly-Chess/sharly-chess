@@ -3041,6 +3041,12 @@ msgstr "Joueur·euses existant·es"
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
 
+msgid "Expand all"
+msgstr "Tout déplier"
+
+msgid "Expand or collapse every match."
+msgstr "Déplier ou replier toutes les rencontres."
+
 msgid "Expand or collapse the details of every item."
 msgstr "Développer ou réduire les détails de tous les éléments."
 
@@ -9635,3 +9641,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
