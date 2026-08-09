@@ -3223,7 +3223,6 @@ msgstr "Valeur [{value}] non valide."
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr "Date de naissance invalide (attendue : {min} - {max})"
 
-#, python-brace-format
 msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
 msgstr "Classement {rating_type} [{rating}] invalide (attendu dans la plage [{min}-{max}])."
 
