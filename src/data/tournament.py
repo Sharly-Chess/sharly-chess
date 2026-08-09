@@ -592,12 +592,20 @@ class Tournament:
 
     @property
     def secondary_score(self) -> 'ScoreType':
-        """Score basis used as secondary (e.g. for colour allocation).
-        Default: game points."""
-        raw = self.stored_tournament.secondary_score
-        if raw:
-            return ScoreType(raw)
-        return ScoreType.GAME_POINTS
+        """The score basis that isn't the primary — derived, not chosen:
+        "The rules of the competition shall state which, between 'match
+        points' and 'game points', is called 'primary score'" (FIDE Swiss
+        Team Pairing System §1.2.1), the other one being the secondary."""
+        if self.primary_score == ScoreType.MATCH_POINTS:
+            return ScoreType.GAME_POINTS
+        return ScoreType.MATCH_POINTS
+
+    @property
+    def secondary_score_for_colours(self) -> bool:
+        """Whether the secondary score breaks ties when deciding which
+        team is the "first team" for colour allocation (§1.2.1, §4.3).
+        Default: on, per §1.2.2."""
+        return bool(self.stored_tournament.secondary_score_for_colours)
 
     @property
     def team_colour_type(self) -> TeamColourType:
@@ -702,7 +710,8 @@ class Tournament:
 
     def team_standings(self, *, after_round: int | None = None) -> list[dict[str, Any]]:
         """Compute team standings for this tournament, sorted by
-        primary_score then secondary_score then team name.
+        primary_score then the configured tie-breaks — the secondary score
+        is not implicit, see :func:`base_key` below.
         Each entry: {team, mp, gp, played, wins, draws, losses, rank}.
 
         ``after_round`` bounds which rounds count: only matches up to
@@ -3513,16 +3522,17 @@ class Tournament:
         codes table. ``X`` is the colour-preference rule (A or B);
         when ``TeamColourType.NONE`` is selected the ``TYPE<X>_``
         infix is dropped, matching the FIDE convention for events that
-        opt out of colour preferences. MP-only / GP-only codes echo
-        the primary as the secondary."""
+        opt out of colour preferences. The primary-only code is what
+        "the secondary score is not used for colour allocation" looks
+        like on the wire."""
         primary = 'MP' if self.primary_score == ScoreType.MATCH_POINTS else 'GP'
-        secondary = 'MP' if self.secondary_score == ScoreType.MATCH_POINTS else 'GP'
         colour_type = self.team_colour_type
         infix = (
             f'TYPE{colour_type.value}_' if colour_type != TeamColourType.NONE else ''
         )
-        if primary == secondary:
+        if not self.secondary_score_for_colours:
             return f'FIDE_TEAM_{infix}{primary}'
+        secondary = 'MP' if self.secondary_score == ScoreType.MATCH_POINTS else 'GP'
         return f'FIDE_TEAM_{infix}{primary}_{secondary}'
 
     def _trf_round_byes(self) -> list['TrfRoundBye']:

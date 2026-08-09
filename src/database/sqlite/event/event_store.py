@@ -298,7 +298,7 @@ class StoredTournament:
     match_points: dict[int, float] | None = None
     color_pattern: str | None = None
     primary_score: str | None = None
-    secondary_score: str | None = None
+    secondary_score_for_colours: bool = True
     team_colour_type: str | None = None
     enforce_roster_order: bool = False
     team_sort_mode: str = 'MANUAL'
