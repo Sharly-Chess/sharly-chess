@@ -397,9 +397,10 @@ class Tournament:
         if not rule_set_id:
             return None
         try:
-            return RuleSetManager(self.event).get_object(rule_set_id)
+            rule_set_type = RuleSetManager(self.event).get_type(rule_set_id)
         except KeyError:
             return None
+        return rule_set_type(self.stored_tournament.rule_set_config)
 
     @property
     def roster_max_size(self) -> int | None:

@@ -41,7 +41,8 @@ from data.pairings.systems import (
     TeamSwissPairingSystem,
 )
 from data.player import TournamentPlayer
-from data.rule_sets import RuleSetManager
+from data.rule_sets import RuleSet, RuleSetManager
+from data.rule_sets.rule_sets import RuleSetField, rule_set_config_key
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tie_breaks.sets import (
     TieBreakSetSource,
@@ -298,6 +299,7 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type: str | None = None
             enforce_roster_order: bool = False
             rule_set: str | None = None
+            rule_set_config: dict[str, Any] = {}
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             if action == 'create':
                 rounds = 7
@@ -347,6 +349,7 @@ class TournamentAdminController(BaseEventAdminController):
                 )
                 enforce_roster_order = stored_tournament.enforce_roster_order
                 rule_set = stored_tournament.rule_set
+                rule_set_config = stored_tournament.rule_set_config
                 for criterion in tournament_criteria:
                     if criterion.id in stored_tournament.criteria:
                         value = criterion.value_from_stored_value(
@@ -367,6 +370,18 @@ class TournamentAdminController(BaseEventAdminController):
             criteria_form_data: dict[str, str] = {}
             for criterion in tournament_criteria:
                 criterion.add_to_form_data(criteria_form_data)
+
+            # Every rule set's own fields are rendered (the picker switches
+            # between them client-side), so seed them all with their
+            # defaults and the selected one with the stored values.
+            rule_set_config_form_data: dict[str, str] = {}
+            for rs in RuleSetManager(admin_event).objects():
+                stored_values = rule_set_config if rs.id == rule_set else {}
+                for config_field in rs.config_fields:
+                    value = stored_values.get(config_field.id, config_field.default)
+                    rule_set_config_form_data[config_field.form_field_name(rs.id)] = (
+                        cls._rule_set_config_form_value(config_field, value)
+                    )
 
             round_datetimes: dict[int, datetime | None] = {}
             if action in ('update', 'clone'):
@@ -444,6 +459,7 @@ class TournamentAdminController(BaseEventAdminController):
                 | plugin_form_data
                 | schedule_form_data
                 | criteria_form_data
+                | rule_set_config_form_data
             )
             stored_tournament, errors = cls._admin_get_validated_tournament_data(
                 action, web_context, data
@@ -493,22 +509,47 @@ class TournamentAdminController(BaseEventAdminController):
         # modal JS prefers the variation entry, falling back to the system
         # then '', so defaults can differ between variations of one system
         # (e.g. single vs double round-robin round counts).
-        rule_set_defaults: dict[str, dict[str, dict[str, str]]] = {}
+        # …and, one level up, by the values of the rule set's own fields
+        # that declare ``affects_defaults`` ('' = the rule set has none).
+        rule_set_defaults: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
         rule_set_lock_titles: dict[str, str] = {}
+        # Serialisable description of each rule set's own fields, shared
+        # by the rendering loop and the modal JS.
+        rule_set_config_fields: dict[str, list[dict[str, Any]]] = {}
         for rs in rule_sets:
             rule_set_options[rs.id] = rs.name
             rule_set_managed_fields[rs.id] = sorted(rs.managed_fields)
-            defaults_by_pairing: dict[str, dict[str, str]] = {
-                '': dict(rs.form_defaults()),
-            }
-            for system in pairing_systems:
-                defaults_by_pairing[system.id] = dict(rs.form_defaults(system.id))
-                for variation in system.variation_manager(admin_event).entity_types():
-                    variation_id = variation.static_id()
-                    defaults_by_pairing[variation_id] = dict(
-                        rs.form_defaults(system.id, variation_id)
+            rule_set_config_fields[rs.id] = [
+                {
+                    'id': config_field.id,
+                    'name': config_field.form_field_name(rs.id),
+                    'label': config_field.label,
+                    'kind': config_field.kind,
+                    'help_text': config_field.help_text,
+                    'choices': {value: label for value, label in config_field.choices},
+                    'affects_defaults': config_field.affects_defaults,
+                    'locked_once_paired': config_field.locked_once_paired,
+                }
+                for config_field in rs.config_fields
+            ]
+            defaults_by_config: dict[str, dict[str, dict[str, str]]] = {}
+            for config in rs.config_combinations() or [{}]:
+                configured = type(rs)(config)
+                defaults_by_pairing: dict[str, dict[str, str]] = {
+                    '': dict(configured.form_defaults()),
+                }
+                for system in pairing_systems:
+                    defaults_by_pairing[system.id] = dict(
+                        configured.form_defaults(system.id)
                     )
-            rule_set_defaults[rs.id] = defaults_by_pairing
+                    variation_manager = system.variation_manager(admin_event)
+                    for variation in variation_manager.entity_types():
+                        variation_id = variation.static_id()
+                        defaults_by_pairing[variation_id] = dict(
+                            configured.form_defaults(system.id, variation_id)
+                        )
+                defaults_by_config[rule_set_config_key(config)] = defaults_by_pairing
+            rule_set_defaults[rs.id] = defaults_by_config
             rule_set_lock_titles[rs.id] = _('Set by rule set "{name}".').format(
                 name=rs.name
             )
@@ -521,6 +562,7 @@ class TournamentAdminController(BaseEventAdminController):
             'rule_set_managed_fields': rule_set_managed_fields,
             'rule_set_defaults': rule_set_defaults,
             'rule_set_lock_titles': rule_set_lock_titles,
+            'rule_set_config_fields': rule_set_config_fields,
             'plugin_form_fields_templates': plugin_form_fields_templates,
             'admin_tournament': None
             if action == 'clone'
@@ -835,12 +877,18 @@ class TournamentAdminController(BaseEventAdminController):
                 errors['mp_draw'] = _('Match points must satisfy loss ≤ draw ≤ win.')
 
         rule_set_id = WebContext.form_data_to_str(data, field := 'rule_set') or None
+        rule_set_type: type['RuleSet'] | None = None
         if rule_set_id:
             try:
-                RuleSetManager(event).get_type(rule_set_id)
+                rule_set_type = RuleSetManager(event).get_type(rule_set_id)
             except KeyError:
                 errors[field] = _('Unknown rule set [{id}].').format(id=rule_set_id)
                 rule_set_id = None
+        rule_set_config = (
+            cls._read_rule_set_config(rule_set_type(), data, errors)
+            if rule_set_type is not None
+            else {}
+        )
 
         stored_criteria: dict[str, Any] = {}
         for criterion in TournamentCriterionManager(event).objects():
@@ -926,23 +974,62 @@ class TournamentAdminController(BaseEventAdminController):
             team_colour_type=team_colour_type,
             enforce_roster_order=enforce_roster_order,
             rule_set=rule_set_id,
+            rule_set_config=rule_set_config,
             plugin_data=plugin_data,
             round_datetimes=round_datetimes,
             criteria=stored_criteria,
         )
         # When a rule set is attached, let it override the form's
         # scoring / format defaults. The user can edit later to deviate.
-        if rule_set_id and not errors:
-            try:
-                rule_set = RuleSetManager(event).get_object(rule_set_id)
-            except KeyError:
-                rule_set = None
-            if rule_set is not None:
-                system_id = cls._resolve_pairing_system_id(
-                    event, stored_tournament.pairing
-                )
-                rule_set.apply_defaults(stored_tournament, system_id)
+        if rule_set_type is not None and not errors:
+            system_id = cls._resolve_pairing_system_id(event, stored_tournament.pairing)
+            rule_set_type(rule_set_config).apply_defaults(stored_tournament, system_id)
         return stored_tournament, errors
+
+    @staticmethod
+    def _rule_set_config_form_value(config_field: RuleSetField, value: Any) -> str:
+        """Render one rule-set config value as form data (the checkbox
+        macro reads 'on' / absent)."""
+        if config_field.kind == 'bool':
+            return 'on' if value else ''
+        return '' if value is None else str(value)
+
+    @staticmethod
+    def _read_rule_set_config(
+        rule_set: 'RuleSet', data: dict[str, str], errors: dict[str, str]
+    ) -> dict[str, Any]:
+        """Read the values of the fields the rule set adds to the form,
+        keyed by field id. Types and ``select`` choices are checked here;
+        anything beyond that is the rule set's own business."""
+        values: dict[str, Any] = {}
+        value: Any
+        for config_field in rule_set.config_fields:
+            name = config_field.form_field_name(rule_set.id)
+            match config_field.kind:
+                case 'bool':
+                    values[config_field.id] = WebContext.form_data_to_bool(data, name)
+                    continue
+                case 'int':
+                    try:
+                        value = WebContext.form_data_to_int(data, name)
+                    except ValueError:
+                        errors[name] = _('An integer is expected.')
+                        continue
+                case _:
+                    value = WebContext.form_data_to_str(data, name)
+            if value is None or value == '':
+                values[config_field.id] = config_field.default
+                continue
+            if config_field.kind == 'select' and value not in config_field.values():
+                errors[name] = _('Unexpected value [{value}].').format(value=value)
+                continue
+            values[config_field.id] = value
+        fields_by_id = {f.id: f for f in rule_set.config_fields}
+        for field_id, message in rule_set.validate_config(values).items():
+            invalid_field = fields_by_id.get(field_id)
+            if invalid_field is not None:
+                errors[invalid_field.form_field_name(rule_set.id)] = message
+        return values
 
     @staticmethod
     def _resolve_pairing_system_id(event: 'Event', variation_id: str) -> str | None:
@@ -973,9 +1060,10 @@ class TournamentAdminController(BaseEventAdminController):
         if not rule_set_id or stored_tournament.id is None:
             return
         try:
-            rule_set = RuleSetManager(event).get_object(rule_set_id)
+            rule_set_type = RuleSetManager(event).get_type(rule_set_id)
         except KeyError:
             return
+        rule_set = rule_set_type(stored_tournament.rule_set_config)
         # ``stored_tournament.pairing`` is the pairing VARIATION id;
         # rule sets key their overrides by pairing SYSTEM id (e.g.
         # ``TEAM_SWISS``) — resolve the variation to find the system.

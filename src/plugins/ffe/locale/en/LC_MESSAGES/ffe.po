@@ -24,6 +24,9 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
+msgid "A single team qualifies"
+msgstr ""
+
 msgid "All the players with no FFE licence A"
 msgstr ""
 
@@ -110,6 +113,12 @@ msgstr "Cut"
 msgid "DD/MM/YYYY"
 msgstr ""
 
+msgid "Departmental phase"
+msgstr ""
+
+msgid "Division"
+msgstr ""
+
 msgid "Download fees"
 msgstr ""
 
@@ -162,9 +171,6 @@ msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team ma
 msgstr ""
 
 msgid "FFE Women championship (N1F / N2F)"
-msgstr ""
-
-msgid "FFE Women championship (N1F / N2F) (no round-3 protection)"
 msgstr ""
 
 msgid "FFE arbiter title"
@@ -234,6 +240,9 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+msgid "Final"
+msgstr ""
+
 #, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
@@ -276,6 +285,9 @@ msgstr ""
 msgid "Incompatible"
 msgstr ""
 
+msgid "Inter-departmental zone phase"
+msgstr ""
+
 msgid "Invalid FFE certification number or password."
 msgstr ""
 
@@ -299,9 +311,6 @@ msgid "JSON file (papi-converter format)"
 msgstr ""
 
 msgid "Jean-Claude Loubatière Cup"
-msgstr ""
-
-msgid "Jean-Claude Loubatière Cup (no round-3 protection)"
 msgstr ""
 
 msgid "Last upload"
@@ -374,9 +383,6 @@ msgstr ""
 msgid "Mixed Cup"
 msgstr ""
 
-msgid "Mixed Cup (no round-3 protection)"
-msgstr ""
-
 msgid "Modified"
 msgstr ""
 
@@ -384,6 +390,15 @@ msgid "N - Expired *** FFE licence"
 msgstr "N - Expired"
 
 msgid "Name"
+msgstr ""
+
+msgid "Nationale 1 Féminine"
+msgstr ""
+
+msgid "Nationale 2 Féminine, inter-departmental zone phase"
+msgstr ""
+
+msgid "Nationale 2 Féminine, second phase"
 msgstr ""
 
 #, python-brace-format
@@ -426,6 +441,9 @@ msgstr ""
 msgid "Ongoing"
 msgstr ""
 
+msgid "Only phase 2 varies its number of qualifying places."
+msgstr ""
+
 msgid "Open Arbiter (level 1)"
 msgstr ""
 
@@ -449,6 +467,18 @@ msgid "Papi file"
 msgstr ""
 
 msgid "Pending"
+msgstr ""
+
+msgid "Phase"
+msgstr ""
+
+msgid "Phase 2"
+msgstr ""
+
+msgid "Phase 2 only: tick when the Coupe direction gives this group one qualifying place instead of two. The round-3 pairing restriction is then dropped."
+msgstr ""
+
+msgid "Phase 3"
 msgstr ""
 
 #, python-brace-format
@@ -504,6 +534,15 @@ msgid "Select the trainee"
 msgstr ""
 
 msgid "Select the writer"
+msgstr ""
+
+msgid "Sets the number of rounds and the round-3 pairing restriction."
+msgstr ""
+
+msgid "Sets the number of rounds."
+msgstr ""
+
+msgid "Sets whether the Swiss complementary rules apply — only the N2F zone phase plays with them."
 msgstr ""
 
 msgid "Some of the tie-break values will not appear in the results on the FFE website."
@@ -719,4 +758,13 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "Jean-Claude Loubatière Cup (no round-3 protection)"
+#~ msgstr ""
+
+#~ msgid "Mixed Cup (no round-3 protection)"
+#~ msgstr ""
+
+#~ msgid "FFE Women championship (N1F / N2F) (no round-3 protection)"
+#~ msgstr ""
 
