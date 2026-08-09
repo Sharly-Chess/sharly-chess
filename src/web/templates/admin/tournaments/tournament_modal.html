@@ -144,6 +144,50 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
+                        {# Every rule set's own fields are rendered here;
+                           the JS below enables the selected one's and
+                           disables the rest, so only they are submitted. #}
+                        {% for rs in rule_sets %}
+                            {% for config_field in rule_set_config_fields[rs.id] %}
+                                {% set field_name = config_field.name %}
+                                <div
+                                    class="col-12 col-md-6"
+                                    data-rule-set-config="{{ rs.id }}"
+                                    hidden
+                                >
+                                    {% if config_field.kind == 'bool' %}
+                                        {{ admin_macros.checkbox_input(
+                                            name=field_name,
+                                            placeholder=config_field.label,
+                                            help_text=config_field.help_text,
+                                            data=data, errors=errors
+                                        ) }}
+                                    {% elif config_field.kind == 'int' %}
+                                        {{ admin_macros.number_input(
+                                            name=field_name,
+                                            label=config_field.label,
+                                            help_text=config_field.help_text,
+                                            data=data, errors=errors
+                                        ) }}
+                                    {% elif config_field.kind == 'text' %}
+                                        {{ admin_macros.text_input(
+                                            name=field_name,
+                                            label=config_field.label,
+                                            help_text=config_field.help_text,
+                                            data=data, errors=errors
+                                        ) }}
+                                    {% else %}
+                                        {{ admin_macros.select_input(
+                                            name=field_name,
+                                            label=config_field.label,
+                                            help_text=config_field.help_text,
+                                            select_options=config_field.choices,
+                                            data=data, errors=errors
+                                        ) }}
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
                     </div>
                 {% endif %}
 
@@ -723,13 +767,36 @@
                             // system id, or '' (no context). The variation
                             // entry wins so variations of one system can
                             // differ (e.g. single vs double round-robin rounds).
+                            // Defaults are nested one level higher by the
+                            // values of the rule set's own fields (see
+                            // configKey), '' when it declares none.
                             const RULE_SET_DEFAULTS = {{ rule_set_defaults|tojson }};
                             const RULE_SET_LOCK_TITLES = {{ rule_set_lock_titles|tojson }};
+                            const RULE_SET_CONFIG_FIELDS = {{ rule_set_config_fields|tojson }};
                             const $ruleSet = $('#rule-set');
                             const $pairingSystem = $('#pairing-system');
 
+                            // Mirrors rule_set_config_key() on the server.
+                            function configKey(ruleId) {
+                                const fields = (RULE_SET_CONFIG_FIELDS[ruleId] || [])
+                                    .filter(function(f) { return f.affects_defaults; })
+                                    .sort(function(a, b) {
+                                        return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
+                                    });
+                                return fields.map(function(f) {
+                                    const $input = $('#' + inputId(f.name));
+                                    const value = f.kind === 'bool'
+                                        ? ($input.prop('checked') ? 'true' : 'false')
+                                        : ($input.val() || '');
+                                    return f.id + '=' + value;
+                                }).join('&');
+                            }
+
                             function currentDefaults(ruleId) {
-                                const byPairing = RULE_SET_DEFAULTS[ruleId] || {};
+                                const byConfig = RULE_SET_DEFAULTS[ruleId] || {};
+                                const byPairing = byConfig[configKey(ruleId)]
+                                    || byConfig['']
+                                    || {};
                                 const systemId = $pairingSystem.val() || '';
                                 let variationId = '';
                                 if (systemId) {
@@ -815,13 +882,32 @@
                                 });
                             }
 
+                            // Only the selected rule set's own fields are
+                            // shown; the others stay disabled so they are
+                            // left out of the submitted form.
+                            function showConfigFields(ruleId) {
+                                $('[data-rule-set-config]').each(function() {
+                                    const $block = $(this);
+                                    const mine = $block.attr('data-rule-set-config') === ruleId;
+                                    $block.prop('hidden', !mine)
+                                          .find('input, select')
+                                          .prop('disabled', !mine)
+                                          .filter('select')
+                                          .trigger('change.select2');
+                                });
+                            }
+
                             function refresh() {
                                 unlockAll();
                                 const id = $ruleSet.val();
+                                showConfigFields(id);
                                 if (id) lockForRuleSet(id);
                             }
 
                             $ruleSet.on('change', refresh);
+                            // A rule set's own fields can drive its defaults
+                            // (a phase setting the round count, say).
+                            $('[data-rule-set-config]').on('change', 'input, select', refresh);
                             // Pairing-system and variation changes flip the
                             // locked values (different scoring / round counts
                             // per system or variation), so re-apply on both.

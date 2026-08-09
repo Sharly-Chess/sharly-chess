@@ -12,7 +12,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
-from data.menu import Menu
+from data.screens.menu import Menu
 from data.screens.manager import ScreenTypeManager
 from database.sqlite.event.event_store import StoredMenu
 from utils.enum import FormAction, MenuSubmenuMode

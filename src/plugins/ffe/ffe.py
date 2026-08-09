@@ -75,11 +75,8 @@ from plugins.ffe.ffe_entity import (
     FfeLeagueIndividualTeamType,
 )
 from plugins.ffe.ffe_rule_sets import (
-    ChampionnatFemininN1N2NoR3RuleSet,
     ChampionnatFemininN1N2RuleSet,
-    CoupeDeLaPariteNoR3RuleSet,
     CoupeDeLaPariteRuleSet,
-    CoupeJeanClaudeLoubatiereNoR3RuleSet,
     CoupeJeanClaudeLoubatiereRuleSet,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
@@ -985,11 +982,8 @@ class FfePlugin(Plugin):
     @hookimpl
     def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
         rule_sets.append(CoupeJeanClaudeLoubatiereRuleSet)
-        rule_sets.append(CoupeJeanClaudeLoubatiereNoR3RuleSet)
         rule_sets.append(CoupeDeLaPariteRuleSet)
-        rule_sets.append(CoupeDeLaPariteNoR3RuleSet)
         rule_sets.append(ChampionnatFemininN1N2RuleSet)
-        rule_sets.append(ChampionnatFemininN1N2NoR3RuleSet)
 
     @hookimpl
     def insert_swiss_system_tie_break_sets(

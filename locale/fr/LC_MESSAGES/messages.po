@@ -956,6 +956,9 @@ msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 msgid "An integer greater than 1 is expected."
 msgstr "Un entier supérieur à 1 est attendu."
 
+msgid "An integer is expected."
+msgstr "Un nombre entier est attendu."
+
 msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
 msgstr "Une erreur inattendue s'est produite lors de la lecture du fichier CSV. Consultez les logs pour plus de détails."
 
@@ -8355,6 +8358,10 @@ msgstr "Non définis"
 
 msgid "Undefined *** SINGULAR"
 msgstr "Non défini"
+
+#, python-brace-format
+msgid "Unexpected value [{value}]."
+msgstr "Valeur inattendue [{value}]."
 
 #, python-brace-format
 msgid "Unhandled file type [{suffix}] (expected: {expected})."

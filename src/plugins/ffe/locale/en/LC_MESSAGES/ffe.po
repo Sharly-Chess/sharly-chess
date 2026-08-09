@@ -110,6 +110,12 @@ msgstr "Cut"
 msgid "DD/MM/YYYY"
 msgstr ""
 
+msgid "Departmental phase"
+msgstr ""
+
+msgid "Division"
+msgstr ""
+
 msgid "Download fees"
 msgstr ""
 
@@ -162,9 +168,6 @@ msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team ma
 msgstr ""
 
 msgid "FFE Women championship (N1F / N2F)"
-msgstr ""
-
-msgid "FFE Women championship (N1F / N2F) (no round-3 protection)"
 msgstr ""
 
 msgid "FFE arbiter title"
@@ -234,6 +237,9 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+msgid "Final"
+msgstr ""
+
 #, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
@@ -276,6 +282,9 @@ msgstr ""
 msgid "Incompatible"
 msgstr ""
 
+msgid "Inter-departmental zone phase"
+msgstr ""
+
 msgid "Invalid FFE certification number or password."
 msgstr ""
 
@@ -299,9 +308,6 @@ msgid "JSON file (papi-converter format)"
 msgstr ""
 
 msgid "Jean-Claude Loubatière Cup"
-msgstr ""
-
-msgid "Jean-Claude Loubatière Cup (no round-3 protection)"
 msgstr ""
 
 msgid "Last upload"
@@ -374,9 +380,6 @@ msgstr ""
 msgid "Mixed Cup"
 msgstr ""
 
-msgid "Mixed Cup (no round-3 protection)"
-msgstr ""
-
 msgid "Modified"
 msgstr ""
 
@@ -384,6 +387,15 @@ msgid "N - Expired *** FFE licence"
 msgstr "N - Expired"
 
 msgid "Name"
+msgstr ""
+
+msgid "Nationale 1 Féminine"
+msgstr ""
+
+msgid "Nationale 2 Féminine, inter-departmental zone phase"
+msgstr ""
+
+msgid "Nationale 2 Féminine, second phase"
 msgstr ""
 
 #, python-brace-format
@@ -451,6 +463,21 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+msgid "Phase"
+msgstr ""
+
+msgid "Phase 2"
+msgstr ""
+
+msgid "Phase 2 (a single team qualifies)"
+msgstr ""
+
+msgid "Phase 2 (two teams qualify)"
+msgstr ""
+
+msgid "Phase 3"
+msgstr ""
+
 #, python-brace-format
 msgid "Player rating above {cap}: {names}."
 msgstr ""
@@ -504,6 +531,9 @@ msgid "Select the trainee"
 msgstr ""
 
 msgid "Select the writer"
+msgstr ""
+
+msgid "Sets whether the Swiss complementary rules apply — only the N2F zone phase plays with them."
 msgstr ""
 
 msgid "Some of the tie-break values will not appear in the results on the FFE website."
@@ -719,4 +749,3 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
-
