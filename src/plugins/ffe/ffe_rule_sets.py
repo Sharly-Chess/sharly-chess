@@ -23,7 +23,7 @@ from typing import override, TYPE_CHECKING
 from common.i18n import _, ngettext
 from data.pairings.fixed_table import FixedPairingTable, TablePairing as P
 from data.rule_sets import RuleSet
-from data.rule_sets.rule_sets import PointAdjustment
+from data.rule_sets.rule_sets import PointAdjustment, RuleSetField
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.enum import (
     EventType,
@@ -161,10 +161,12 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     def event_type(self) -> EventType:
         return EventType.TEAM
 
-    @property
     @override
-    def forced_team_sort_mode(self) -> str | None:
-        # FFE cups order teams by the round-1 lineup's average Elo.
+    def forced_team_sort_mode(self, pairing_system_id: str | None = None) -> str | None:
+        # Swiss only: teams are ordered by their round-1 lineup's average
+        # Elo. The table-driven systems draw their team letters by lot.
+        if pairing_system_id != 'TEAM_SWISS':
+            return None
         return TeamSortMode.LINEUP_AVERAGE_RATING.value
 
     @property
@@ -177,9 +179,9 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     @property
     def round3_winner_protection(self) -> bool:
         """Two teams that have won both of their first two matches are not
-        paired together in round 3 (FFE cup regulations). On by default; the
-        explicit no-protection variant turns it off, for the case where there
-        is a single qualifying place for the N1F."""
+        paired together in round 3 (FFE cup regulations). On by default;
+        each competition turns it off for the phases its regulations
+        exempt, from its own fields."""
         return True
 
     @property
@@ -258,17 +260,26 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'MOLTER': _FFE_MOLTER_TIE_BREAKS,
         }
 
+    @property
+    def is_final_phase(self) -> bool:
+        """Whether this tournament is the competition's final, per the
+        cup's own phase field. Cups that declare no phase never are."""
+        return False
+
     @override
     def rounds_for_pairing(
         self,
         pairing_system_id: str,
         pairing_variation_id: str | None = None,
     ) -> int | None:
-        # Phase rounds (Loubatière / Parité): Swiss / Molter / single
-        # round-robin run 3 rounds; the aller-retour (double round-robin,
-        # a 2-team home-and-away) runs 2.
+        # Phase rounds (Loubatière / Parité): the final runs 5 rounds
+        # whatever the system — the team-count table that picks the system
+        # only covers the qualifying phases, which run 3, apart from the
+        # aller-retour (double round-robin, a 2-team home-and-away) at 2.
         from data.pairings.variations import DoubleBergerTeamRoundRobinVariation
 
+        if self.is_final_phase:
+            return 5
         if pairing_variation_id == DoubleBergerTeamRoundRobinVariation.static_id():
             return 2
         return {
@@ -546,13 +557,80 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         return defaults
 
 
+_LOUBATIERE_PHASE_DEPARTMENTAL = 'departmental'
+_LOUBATIERE_PHASE_2 = 'phase-2'
+_LOUBATIERE_PHASE_3 = 'phase-3'
+_LOUBATIERE_PHASE_FINAL = 'final'
+
+
+def _loubatiere_phase_choices() -> tuple[tuple[str, str], ...]:
+    """Built on each call: ``_()`` translates eagerly, so a module-level
+    tuple would freeze the labels in whichever locale happened to be
+    active when the module was first imported."""
+    return (
+        (_LOUBATIERE_PHASE_DEPARTMENTAL, _('Departmental phase')),
+        (_LOUBATIERE_PHASE_2, _('Phase 2')),
+        (_LOUBATIERE_PHASE_3, _('Phase 3')),
+        (_LOUBATIERE_PHASE_FINAL, _('Final')),
+    )
+
+
 class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
-    """FFE *Coupe Jean-Claude Loubatière* (C03) — 4-board team cup."""
+    """FFE *Coupe Jean-Claude Loubatière* (C03) — 4-board team cup.
+
+    The cup runs in four phases, which the arbiter picks in the
+    tournament form: the phase sets the round count and whether the
+    round-3 pairing restriction applies."""
 
     # Players ≤1800 Elo for phase 1; later phases let phase-1 alumni
     # back in regardless of rating. Surfaced as a warning so the
     # arbiter judges case by case.
     PLAYER_RATING_CAP = 1800
+
+    @property
+    @override
+    def config_fields(self) -> tuple[RuleSetField, ...]:
+        return (
+            RuleSetField(
+                id='phase',
+                label=_('Phase'),
+                kind='select',
+                default=_LOUBATIERE_PHASE_DEPARTMENTAL,
+                choices=_loubatiere_phase_choices(),
+                affects_defaults=True,
+                locked_once_paired=True,
+            ),
+        )
+
+    @property
+    def phase(self) -> str:
+        return self.config_value('phase')
+
+    @property
+    @override
+    def round3_winner_protection(self) -> bool:
+        # Two teams on 2/2 are kept apart in round 3, except in a phase
+        # qualifying a single team and in the final (C03 §3.2). Phase 3
+        # always qualifies one team per group (§1.2), and the earlier
+        # phases only reach a single qualifying place below 5 teams,
+        # where the pairing system is never Swiss — so the exception is
+        # exactly "phase 3 or final".
+        #
+        # That last step rests on §1.2 qualifying a team per 4 entered
+        # (a per-5 scale would hold too: the smallest Swiss group, 6
+        # teams, still earns 2 places). Should the scale ever reach one
+        # place per 6, a 6-team Swiss would qualify a single team unless
+        # the 10% women-and-girls bonus adds one — and the arbiter would
+        # have to say, as they do for the Parité.
+        return self.phase in (
+            _LOUBATIERE_PHASE_DEPARTMENTAL,
+            _LOUBATIERE_PHASE_2,
+        )
+
+    @property
+    @override
+    def is_final_phase(self) -> bool:
+        return self.phase == _LOUBATIERE_PHASE_FINAL
 
     @override
     def team_point_adjustment(
@@ -589,6 +667,20 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
         )
 
 
+_FEMININ_N1F = 'n1f'
+_FEMININ_N2F_ZONE = 'n2f-zone'
+_FEMININ_N2F_PHASE_2 = 'n2f-phase-2'
+
+
+def _feminin_division_choices() -> tuple[tuple[str, str], ...]:
+    """Built on each call — see :func:`_loubatiere_phase_choices`."""
+    return (
+        (_FEMININ_N1F, _('Nationale 1 Féminine')),
+        (_FEMININ_N2F_ZONE, _('Nationale 2 Féminine, inter-departmental zone phase')),
+        (_FEMININ_N2F_PHASE_2, _('Nationale 2 Féminine, second phase')),
+    )
+
+
 class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     """FFE *Championnat de France Féminin des Clubs*, divisions
     Nationale 1 (N1F) and Nationale 2 (N2F).
@@ -599,12 +691,59 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     place the roster must consist entirely of women players —
     enforced as a soft warning so the arbiter can override.
 
+    Only the N2F zone phase pairs "with the Swiss complementary rules"
+    (F01 §1.2.c), so the division the arbiter picks decides whether the
+    round-3 restriction and the same-club avoidance apply at all. The
+    Top 12F is out of scope: it is a 12-team round-robin with
+    semi-finals, not this format.
+
     No Suisse / round-robin tie-breaks are imposed: the official
     departage (differential → points pour → per-board differential)
     is defined for the *whole competition* across multiple phases,
     which Sharly Chess doesn't aggregate — the arbiter picks per-phase
     tie-breaks if they need any.
     """
+
+    @property
+    @override
+    def config_fields(self) -> tuple[RuleSetField, ...]:
+        return (
+            RuleSetField(
+                id='division',
+                label=_('Division'),
+                kind='select',
+                default=_FEMININ_N1F,
+                choices=_feminin_division_choices(),
+                help_text=_(
+                    'Sets whether the Swiss complementary rules apply — only '
+                    'the N2F zone phase plays with them.'
+                ),
+            ),
+        )
+
+    @property
+    def division(self) -> str:
+        return self.config_value('division')
+
+    @property
+    @override
+    def round3_winner_protection(self) -> bool:
+        # N1F and the N2F second phase are paired "sans application des
+        # règles complémentaires relatives au système Suisse" (F01 §1.2.b,
+        # §1.2.c), which is where this rule lives. The zone phase's own
+        # single-qualifying-place exception can never change a pairing:
+        # it applies below 4 teams, where the group is either a 2-team
+        # Swiss (one possible pairing) or an odd Molter (a fixed table).
+        return self.division == _FEMININ_N2F_ZONE
+
+    @property
+    @override
+    def forced_prohibited_pairing(self) -> tuple[str, bool] | None:
+        # Same-club avoidance is complementary rule 3, so it rides along
+        # with the division rather than applying throughout.
+        if self.division != _FEMININ_N2F_ZONE:
+            return None
+        return super().forced_prohibited_pairing
 
     @property
     @override
@@ -663,8 +802,69 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
         return msgs
 
 
+_PARITE_PHASE_ZONE = 'zone'
+_PARITE_PHASE_2 = 'phase-2'
+_PARITE_PHASE_2_SINGLE = 'phase-2-single'
+_PARITE_PHASE_FINAL = 'final'
+
+# Phase 2 qualifies "the first or the first two of each group, as the Coupe
+# direction allocates" (C04 §1.2) — the only thing that varies with it is
+# the round-3 restriction, so it rides in the phase list rather than in a
+# second field that would be meaningless in the other phases.
+_PARITE_PHASES_WITH_ROUND_3_PROTECTION = (_PARITE_PHASE_ZONE, _PARITE_PHASE_2)
+
+
+def _parite_phase_choices() -> tuple[tuple[str, str], ...]:
+    """Built on each call — see :func:`_loubatiere_phase_choices`."""
+    return (
+        (_PARITE_PHASE_ZONE, _('Inter-departmental zone phase')),
+        (_PARITE_PHASE_2, _('Phase 2 (two teams qualify)')),
+        (_PARITE_PHASE_2_SINGLE, _('Phase 2 (a single team qualifies)')),
+        (_PARITE_PHASE_FINAL, _('Final')),
+    )
+
+
 class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
-    """FFE *Coupe de la Parité* (C04) — 2 men + 2 women per match."""
+    """FFE *Coupe de la Parité* (C04) — 2 men + 2 women per match.
+
+    The cup runs in three phases, which the arbiter picks in the
+    tournament form. Phase 2 offers two entries: how many teams it
+    qualifies is the Coupe direction's call, and nothing in the
+    tournament reveals it."""
+
+    @property
+    @override
+    def config_fields(self) -> tuple[RuleSetField, ...]:
+        return (
+            RuleSetField(
+                id='phase',
+                label=_('Phase'),
+                kind='select',
+                default=_PARITE_PHASE_ZONE,
+                choices=_parite_phase_choices(),
+                affects_defaults=True,
+                locked_once_paired=True,
+            ),
+        )
+
+    @property
+    def phase(self) -> str:
+        return self.config_value('phase')
+
+    @property
+    @override
+    def is_final_phase(self) -> bool:
+        return self.phase == _PARITE_PHASE_FINAL
+
+    @property
+    @override
+    def round3_winner_protection(self) -> bool:
+        # Two teams on 2/2 are kept apart in round 3, except in a phase
+        # qualifying a single team and in the final (C04 §3.2). The zone
+        # phase only reaches a single qualifying place below 4 teams,
+        # where the pairing system is never Swiss (§1.2, §3.2), so it
+        # always protects.
+        return self.phase in _PARITE_PHASES_WITH_ROUND_3_PROTECTION
 
     @property
     @override
@@ -760,52 +960,3 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
             'FFE mixed team cup. 6-player roster (3M + 3W), per-match '
             'lineup must field 2 men and 2 women, team Elo capped at 8000.'
         )
-
-
-# Each cup ships a second variant that drops the round-3 winner-protection
-# rule — used when a single qualifying place for the N1F means the two
-# leaders *should* meet in round 3.
-class _NoRound3ProtectionMixin:
-    @property
-    def round3_winner_protection(self) -> bool:
-        return False
-
-
-class CoupeJeanClaudeLoubatiereNoR3RuleSet(
-    _NoRound3ProtectionMixin, CoupeJeanClaudeLoubatiereRuleSet
-):
-    @staticmethod
-    @override
-    def static_id() -> str:
-        return 'ffe-coupe-jean-claude-loubatiere-no-r3'
-
-    @staticmethod
-    @override
-    def static_name() -> str:
-        return _('Jean-Claude Loubatière Cup (no round-3 protection)')
-
-
-class ChampionnatFemininN1N2NoR3RuleSet(
-    _NoRound3ProtectionMixin, ChampionnatFemininN1N2RuleSet
-):
-    @staticmethod
-    @override
-    def static_id() -> str:
-        return 'ffe-championnat-feminin-n1-n2-no-r3'
-
-    @staticmethod
-    @override
-    def static_name() -> str:
-        return _('FFE Women championship (N1F / N2F) (no round-3 protection)')
-
-
-class CoupeDeLaPariteNoR3RuleSet(_NoRound3ProtectionMixin, CoupeDeLaPariteRuleSet):
-    @staticmethod
-    @override
-    def static_id() -> str:
-        return 'ffe-coupe-de-la-parite-no-r3'
-
-    @staticmethod
-    @override
-    def static_name() -> str:
-        return _('Mixed Cup (no round-3 protection)')

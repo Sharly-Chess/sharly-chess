@@ -662,6 +662,9 @@ class EventDatabase(MigrationDatabase):
             ),
             team_sort_mode=row['team_sort_mode'],
             rule_set=row['rule_set'],
+            rule_set_config=cls.load_json_from_database_field(
+                row['rule_set_config'], {}
+            ),
             prohibited_pairing_dimension=row['prohibited_pairing_dimension'],
             prohibited_pairing_dimension_is_hard=cls.load_bool_from_database_field(
                 row['prohibited_pairing_dimension_is_hard']
@@ -769,6 +772,9 @@ class EventDatabase(MigrationDatabase):
                 stored_tournament.round_datetimes
             ),
             'criteria': cls.dump_to_json_database_field(stored_tournament.criteria),
+            'rule_set_config': cls.dump_to_json_database_field(
+                stored_tournament.rule_set_config, {}
+            ),
             'game_points': cls.dump_to_json_database_field(
                 stored_tournament.game_points
             ),
