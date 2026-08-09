@@ -174,6 +174,16 @@ class TeamBoard:
         _, b_adj = tournament.effective_point_adjustment(stb.team_b_id, self.round)
         return a_gp + a_adj, b_gp + b_adj
 
+    @property
+    def no_games_played(self) -> bool:
+        """Returns True if no game of the team board is already played."""
+        return all(board.no_result for board in self.boards)
+
+    @property
+    def all_games_played(self) -> bool:
+        """Returns True if all the games of the team board have been played."""
+        return not any(board.no_result for board in self.boards)
+
     def team_all_forfeit(self, team_id: int) -> bool:
         """True when every board this team is on was forfeited — its player
         absent (a hole) or holding a forfeit-loss result — so the team's
