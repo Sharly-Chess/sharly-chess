@@ -2,6 +2,9 @@
 msgid "%(string)s:"
 msgstr "%(string)s :"
 
+msgid "Academic phase"
+msgstr "Phase académique"
+
 msgid "Add"
 msgstr "Ajouter"
 
@@ -29,6 +32,9 @@ msgstr "Ville"
 msgid "Code"
 msgstr "Code"
 
+msgid "Compares the number of games won on board 1; if equal, on board 2, then board 3, and so on down the boards (French school championship, art. 5.3.3)."
+msgstr "Compare le nombre de gains au 1er échiquier ; à égalité, au 2e, puis au 3e, et ainsi de suite en descendant les échiquiers (championnat de France scolaire, art. 5.3.3)."
+
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -39,8 +45,18 @@ msgstr "Metre à jour l'établissement scolaire sélectionné."
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
+msgid "FFE 8-board school team championship. Roster of 8 to 10 pupils with at least 2 girls and 2 boys, draws are not counted in the score, 9-round Swiss for the national final."
+msgstr "Championnat scolaire FFE par équipes sur 8 échiquiers. Liste de 8 à 10 élèves dont au moins 2 filles et 2 garçons, les nulles ne sont pas comptabilisées dans le score, système suisse en 9 rondes pour la finale nationale."
+
 msgid "FFE Scholar Championship"
 msgstr "Classement championnat scolaire FFE"
+
+#, python-brace-format
+msgid "FIDE-rated player listed after an unrated one: {names}."
+msgstr "Joueur·euse au classement FIDE placé·e après un joueur ou une joueuse sans classement FIDE : {names}."
+
+msgid "French School Championship"
+msgstr "Championnat de France scolaire"
 
 msgid "French School Competitions"
 msgstr "Compétitions scolaires françaises"
@@ -70,6 +86,9 @@ msgstr "Format invalide (attendu : {format})."
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
 
+msgid "Match lost by forfeit, counted as 0 match points."
+msgstr "Match perdu par forfait, compté 0 point de match."
+
 msgid "Max. teams per school:"
 msgstr "Max. d'équipes par établissement :"
 
@@ -81,6 +100,27 @@ msgstr "Filles manquantes"
 
 msgid "Name"
 msgstr "Nom"
+
+msgid "National final"
+msgstr "Finale nationale"
+
+#, python-brace-format
+msgid "Need at least {min} boys on the roster ({n} listed)."
+msgstr "Il faut au moins {min} garçons dans la liste ({n} inscrits)."
+
+#, python-brace-format
+msgid "Need at least {min} girls on the roster ({n} listed)."
+msgstr "Il faut au moins {min} filles dans la liste ({n} inscrites)."
+
+msgid "Negative game-point total brought back to 0."
+msgstr "Total de points de parties négatif ramené à 0."
+
+msgid "Phase"
+msgstr "Phase"
+
+#, python-brace-format
+msgid "Player without an A or B FFE licence: {names}."
+msgstr "Joueur·euse sans licence FFE A ou B : {names}."
 
 msgid "Please validate the French school to continue."
 msgstr "Merci de valider l'établissement scolaire avant de continuer."
@@ -144,9 +184,21 @@ msgstr "Les codes UAI sont nécessaires pour distinguer les établissements avec
 msgid "Update the school [%(school_name)s]"
 msgstr "Mettre à jour l'établissement [%(school_name)s]"
 
+msgid "Wins by board order"
+msgstr "Gains par ordre d'échiquier"
+
 #, python-brace-format
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"
 msgstr[0] "{count} établissement représenté"
 msgstr[1] "{count} établissements représentés"
+
+#, python-brace-format
+msgid "{n} board forfeited above a board on which a game was played, counted as -1."
+msgid_plural "{n} boards forfeited above a board on which a game was played, counted as -1 each."
+msgstr[0] "{n} échiquier forfait au-dessus d'un échiquier sur lequel une partie a été jouée, compté -1."
+msgstr[1] "{n} échiquiers forfaits au-dessus d'un échiquier sur lequel une partie a été jouée, comptés -1 chacun."
+
+#~ msgid "The national final is a 9-round Swiss; the academic phase follows the number of entered teams, so its rounds are left free."
+#~ msgstr "La finale nationale se joue au système suisse en 9 rondes ; la phase académique dépend du nombre d'équipes engagées, son nombre de rondes reste donc libre."
 

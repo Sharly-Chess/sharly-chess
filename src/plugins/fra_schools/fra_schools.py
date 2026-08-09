@@ -81,6 +81,8 @@ from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
+    from data.rule_sets import RuleSet
+    from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
 
 logger = get_logger()
@@ -392,6 +394,22 @@ class FRASchoolsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
     # Tie-breaks
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+        from plugins.fra_schools.fra_schools_rule_sets import (
+            ChampionnatScolaireRuleSet,
+        )
+
+        rule_sets.append(ChampionnatScolaireRuleSet)
+
+    @hookimpl
+    def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]):
+        from plugins.fra_schools.fra_schools_tie_breaks import (
+            BoardOrderWinsTieBreak,
+        )
+
+        tie_break_types.append(BoardOrderWinsTieBreak)
 
     @hookimpl(trylast=True)
     def insert_swiss_system_tie_break_sets(
