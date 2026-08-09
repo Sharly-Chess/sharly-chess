@@ -24,9 +24,6 @@ msgstr "Une chaîne de caractères non vide est attendue"
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
-msgid "A single team qualifies"
-msgstr "Une seule équipe qualifiée"
-
 msgid "All the players with no FFE licence A"
 msgstr "Tou·tes les joueur·euses sans licence A"
 
@@ -441,9 +438,6 @@ msgstr "Non configuré"
 msgid "Ongoing"
 msgstr "En cours"
 
-msgid "Only phase 2 varies its number of qualifying places."
-msgstr "Seule la phase 2 fait varier son nombre de places qualificatives."
-
 msgid "Open Arbiter (level 1)"
 msgstr "Arbitre Fédéral Open 1"
 
@@ -475,8 +469,11 @@ msgstr "Phase"
 msgid "Phase 2"
 msgstr "Phase 2"
 
-msgid "Phase 2 only: tick when the Coupe direction gives this group one qualifying place instead of two. The round-3 pairing restriction is then dropped."
-msgstr "Phase 2 uniquement : à cocher lorsque la direction de la Coupe n'attribue qu'une place qualificative à ce groupe au lieu de deux. La restriction d'appariement de la ronde 3 est alors levée."
+msgid "Phase 2 (a single team qualifies)"
+msgstr "Phase 2 (une seule équipe qualifiée)"
+
+msgid "Phase 2 (two teams qualify)"
+msgstr "Phase 2 (deux équipes qualifiées)"
 
 msgid "Phase 3"
 msgstr "Phase 3"
@@ -535,12 +532,6 @@ msgstr "Sélectionner le·la stagiaire"
 
 msgid "Select the writer"
 msgstr "Sélectionner le·la rédacteur·ice"
-
-msgid "Sets the number of rounds and the round-3 pairing restriction."
-msgstr "Détermine le nombre de rondes et la restriction d'appariement de la ronde 3."
-
-msgid "Sets the number of rounds."
-msgstr "Détermine le nombre de rondes."
 
 msgid "Sets whether the Swiss complementary rules apply — only the N2F zone phase plays with them."
 msgstr "Détermine si les règles complémentaires du système suisse s'appliquent : seule la phase zone interdépartementale de N2F les applique."

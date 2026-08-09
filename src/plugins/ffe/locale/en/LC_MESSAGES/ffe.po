@@ -24,9 +24,6 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
-msgid "A single team qualifies"
-msgstr ""
-
 msgid "All the players with no FFE licence A"
 msgstr ""
 
@@ -441,9 +438,6 @@ msgstr ""
 msgid "Ongoing"
 msgstr ""
 
-msgid "Only phase 2 varies its number of qualifying places."
-msgstr ""
-
 msgid "Open Arbiter (level 1)"
 msgstr ""
 
@@ -475,7 +469,10 @@ msgstr ""
 msgid "Phase 2"
 msgstr ""
 
-msgid "Phase 2 only: tick when the Coupe direction gives this group one qualifying place instead of two. The round-3 pairing restriction is then dropped."
+msgid "Phase 2 (a single team qualifies)"
+msgstr ""
+
+msgid "Phase 2 (two teams qualify)"
 msgstr ""
 
 msgid "Phase 3"
@@ -534,12 +531,6 @@ msgid "Select the trainee"
 msgstr ""
 
 msgid "Select the writer"
-msgstr ""
-
-msgid "Sets the number of rounds and the round-3 pairing restriction."
-msgstr ""
-
-msgid "Sets the number of rounds."
 msgstr ""
 
 msgid "Sets whether the Swiss complementary rules apply — only the N2F zone phase plays with them."

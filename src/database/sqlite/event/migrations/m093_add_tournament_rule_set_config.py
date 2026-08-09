@@ -17,7 +17,7 @@ _NO_R3_REPLACEMENTS: tuple[tuple[str, str, dict], ...] = (
     (
         'ffe-coupe-de-la-parite-no-r3',
         'ffe-coupe-de-la-parite',
-        {'phase': 'phase-2', 'single_qualifier': True},
+        {'phase': 'phase-2-single'},
     ),
     (
         'ffe-championnat-feminin-n1-n2-no-r3',

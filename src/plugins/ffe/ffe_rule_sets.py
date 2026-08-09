@@ -18,7 +18,7 @@ future phases.
 """
 
 from abc import ABC
-from typing import Any, override, TYPE_CHECKING
+from typing import override, TYPE_CHECKING
 
 from common.i18n import _, ngettext
 from data.pairings.fixed_table import FixedPairingTable, TablePairing as P
@@ -597,9 +597,6 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
                 kind='select',
                 default=_LOUBATIERE_PHASE_DEPARTMENTAL,
                 choices=_loubatiere_phase_choices(),
-                help_text=_(
-                    'Sets the number of rounds and the round-3 pairing restriction.'
-                ),
                 affects_defaults=True,
                 locked_once_paired=True,
             ),
@@ -807,14 +804,22 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
 
 _PARITE_PHASE_ZONE = 'zone'
 _PARITE_PHASE_2 = 'phase-2'
+_PARITE_PHASE_2_SINGLE = 'phase-2-single'
 _PARITE_PHASE_FINAL = 'final'
+
+# Phase 2 qualifies "the first or the first two of each group, as the Coupe
+# direction allocates" (C04 §1.2) — the only thing that varies with it is
+# the round-3 restriction, so it rides in the phase list rather than in a
+# second field that would be meaningless in the other phases.
+_PARITE_PHASES_WITH_ROUND_3_PROTECTION = (_PARITE_PHASE_ZONE, _PARITE_PHASE_2)
 
 
 def _parite_phase_choices() -> tuple[tuple[str, str], ...]:
     """Built on each call — see :func:`_loubatiere_phase_choices`."""
     return (
         (_PARITE_PHASE_ZONE, _('Inter-departmental zone phase')),
-        (_PARITE_PHASE_2, _('Phase 2')),
+        (_PARITE_PHASE_2, _('Phase 2 (two teams qualify)')),
+        (_PARITE_PHASE_2_SINGLE, _('Phase 2 (a single team qualifies)')),
         (_PARITE_PHASE_FINAL, _('Final')),
     )
 
@@ -823,9 +828,9 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
     """FFE *Coupe de la Parité* (C04) — 2 men + 2 women per match.
 
     The cup runs in three phases, which the arbiter picks in the
-    tournament form. Phase 2 qualifies either one or two teams per group
-    depending on how the Coupe direction split them, which nothing in the
-    tournament reveals — hence the second field."""
+    tournament form. Phase 2 offers two entries: how many teams it
+    qualifies is the Coupe direction's call, and nothing in the
+    tournament reveals it."""
 
     @property
     @override
@@ -837,20 +842,8 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
                 kind='select',
                 default=_PARITE_PHASE_ZONE,
                 choices=_parite_phase_choices(),
-                help_text=_('Sets the number of rounds.'),
                 affects_defaults=True,
                 locked_once_paired=True,
-            ),
-            RuleSetField(
-                id='single_qualifier',
-                label=_('A single team qualifies'),
-                kind='bool',
-                default=False,
-                help_text=_(
-                    'Phase 2 only: tick when the Coupe direction gives this '
-                    'group one qualifying place instead of two. The round-3 '
-                    'pairing restriction is then dropped.'
-                ),
             ),
         )
 
@@ -869,24 +862,9 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
         # Two teams on 2/2 are kept apart in round 3, except in a phase
         # qualifying a single team and in the final (C04 §3.2). The zone
         # phase only reaches a single qualifying place below 4 teams,
-        # where the pairing system is never Swiss (§1.2, §3.2); phase 2
-        # qualifies "the first or the first two of each group, as the
-        # Coupe direction allocates", which only the arbiter knows.
-        if self.phase == _PARITE_PHASE_ZONE:
-            return True
-        if self.phase == _PARITE_PHASE_2:
-            return not self.config_value('single_qualifier')
-        return False
-
-    @override
-    def validate_config(self, values: dict[str, Any]) -> dict[str, str]:
-        if values.get('single_qualifier') and values.get('phase') != _PARITE_PHASE_2:
-            return {
-                'single_qualifier': _(
-                    'Only phase 2 varies its number of qualifying places.'
-                )
-            }
-        return {}
+        # where the pairing system is never Swiss (§1.2, §3.2), so it
+        # always protects.
+        return self.phase in _PARITE_PHASES_WITH_ROUND_3_PROTECTION
 
     @property
     @override
