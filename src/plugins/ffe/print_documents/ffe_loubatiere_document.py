@@ -18,21 +18,12 @@ from data.print_documents.options import (
 )
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_DIR
-from plugins.ffe.ffe_rule_sets import (
-    CoupeJeanClaudeLoubatiereNoR3RuleSet,
-    CoupeJeanClaudeLoubatiereRuleSet,
-)
+from plugins.ffe.ffe_rule_sets import CoupeJeanClaudeLoubatiereRuleSet
 from plugins.ffe.utils import FFEUtils
 from utils.enum import Result
 from utils.file import image_file_inline_url, ttf_file_inline_url
 
-# Both the standard cup and its no-round-3-protection variant use this sheet.
-_LOUBATIERE_RULE_SET_IDS = frozenset(
-    {
-        CoupeJeanClaudeLoubatiereRuleSet.static_id(),
-        CoupeJeanClaudeLoubatiereNoR3RuleSet.static_id(),
-    }
-)
+_LOUBATIERE_RULE_SET_IDS = frozenset({CoupeJeanClaudeLoubatiereRuleSet.static_id()})
 
 # Per-player round results shown as 1 / 0 / X (draw); blank for anything else
 # (unplayed, bye, no result).

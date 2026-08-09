@@ -397,9 +397,10 @@ class Tournament:
         if not rule_set_id:
             return None
         try:
-            return RuleSetManager(self.event).get_object(rule_set_id)
+            rule_set_type = RuleSetManager(self.event).get_type(rule_set_id)
         except KeyError:
             return None
+        return rule_set_type(self.stored_tournament.rule_set_config)
 
     @property
     def roster_max_size(self) -> int | None:
@@ -417,13 +418,26 @@ class Tournament:
         return bool(self.stored_tournament.enforce_roster_order)
 
     @property
+    def rule_set_forced_team_sort_mode(self) -> str | None:
+        """The team-sort mode the rule set imposes for the tournament's
+        pairing system, or ``None`` when it leaves the choice free."""
+        rule_set = self.rule_set
+        if rule_set is None:
+            return None
+        try:
+            system_id = self.pairing_system.id
+        except KeyError:
+            system_id = None
+        return rule_set.forced_team_sort_mode(system_id)
+
+    @property
     def team_sort_mode(self) -> TeamSortMode:
         """Effective team-ordering mode. A rule set may force a value
         (locking the choice); otherwise the stored mode applies."""
-        rule_set = self.rule_set
-        if rule_set is not None and rule_set.forced_team_sort_mode is not None:
+        forced = self.rule_set_forced_team_sort_mode
+        if forced is not None:
             try:
-                return TeamSortMode(rule_set.forced_team_sort_mode)
+                return TeamSortMode(forced)
             except ValueError:
                 pass
         try:
@@ -457,9 +471,9 @@ class Tournament:
     def team_sort_mode_locked(self) -> bool:
         """True iff a rule set forces the team-sort mode (UI read-only),
         or the tournament is already paired (mode can no longer change)."""
-        rule_set = self.rule_set
-        forced = rule_set is not None and rule_set.forced_team_sort_mode is not None
-        return forced or self._has_stored_pairings
+        return (
+            self.rule_set_forced_team_sort_mode is not None or self._has_stored_pairings
+        )
 
     def resort_teams(self, database: 'EventDatabase') -> None:
         """Re-assign team pairing numbers per the effective sort mode.

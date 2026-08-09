@@ -115,3 +115,6 @@ init-credentials-local.py
 
 # Generated Molter workbooks (rebuild with build_xlsx*.py)
 /docs/technical-appendices/molter/*.xlsx
+
+# Claude Code settings
+/.claude/
