@@ -736,7 +736,7 @@ class _TeamPairingBase(PairingEngine, ABC):
                 - 0. 0 for PAB, 1 otherwise
                 - 1. the higher primary score
                 - 2. the lower primary score
-                - 3. the highest pairing number
+                - 3. the lowest pairing number of the high ranked team
                 """
                 a_id, b_id = pair
                 if b_id is None:
