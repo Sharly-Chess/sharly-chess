@@ -198,7 +198,3 @@ msgid "{n} board forfeited above a board on which a game was played, counted as 
 msgid_plural "{n} boards forfeited above a board on which a game was played, counted as -1 each."
 msgstr[0] "{n} échiquier forfait au-dessus d'un échiquier sur lequel une partie a été jouée, compté -1."
 msgstr[1] "{n} échiquiers forfaits au-dessus d'un échiquier sur lequel une partie a été jouée, comptés -1 chacun."
-
-#~ msgid "The national final is a 9-round Swiss; the academic phase follows the number of entered teams, so its rounds are left free."
-#~ msgstr "La finale nationale se joue au système suisse en 9 rondes ; la phase académique dépend du nombre d'équipes engagées, son nombre de rondes reste donc libre."
-

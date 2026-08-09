@@ -758,13 +758,3 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "Jean-Claude Loubatière Cup (no round-3 protection)"
-#~ msgstr ""
-
-#~ msgid "Mixed Cup (no round-3 protection)"
-#~ msgstr ""
-
-#~ msgid "FFE Women championship (N1F / N2F) (no round-3 protection)"
-#~ msgstr ""
-
