@@ -64,12 +64,34 @@
                 <div class="col-12 col-lg-3"></div>
             {% endif %}
             <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} d-flex gap-2 align-items-end">
-                <div class="flex-grow-1">
+                <div class="flex-grow-1 d-flex align-items-center gap-3">
                     {% if safety_mode != 'SAFE' %}
                         <i
                             class="text-danger bi bi-exclamation-triangle-fill fs-4"
                             {{ macros.tooltip_attributes('warning', _('You are in an unsafe editing mode. Change the round to exit this mode.'), 'right') }}
                         ></i>
+                    {% endif %}
+                    {# Team blocks only exist for the systems that pair team
+                       against team; a flat system like Molter has no headers
+                       to expand. #}
+                    {% if is_team_paired_mode and not display_rankings and admin_team_boards %}
+                        <div
+                            class="form-check form-switch mb-1 flex-shrink-0"
+                            {{ macros.tooltip_attributes('info', _('Expand or collapse every match.'), 'top') }}
+                        >
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="expand-all-team-blocks"
+                                checked
+                            />
+                            <label
+                                class="form-check-label text-nowrap"
+                                for="expand-all-team-blocks"
+                            >
+                                {{ _('Expand all') }}
+                            </label>
+                        </div>
                     {% endif %}
                 </div>
                 {% if not display_rankings %}
@@ -560,6 +582,31 @@
                 $(this).find(".team-block-chevron")
                     .toggleClass("team-block-chevron-collapsed", !isExpanded);
             });
+            syncExpandAllSwitch();
+        }
+
+        // The "Expand all" switch reads as "at least one block is open", so
+        // collapsing the last one by hand turns it off and vice versa.
+        function syncExpandAllSwitch() {
+            const $toggle = $("#expand-all-team-blocks");
+            if (!$toggle.length) return;
+            const expanded = $("tr.team-block-header").filter(function () {
+                return this.getAttribute("aria-expanded") === "true";
+            }).length;
+            $toggle.prop("checked", expanded > 0);
+        }
+
+        function setAllTeamBlocks(collapsed) {
+            $("tr.team-block-header").each(function () {
+                const el = document.getElementById($(this).data("block-id"));
+                if (!el) return;
+                el.classList.toggle("team-block-body-collapsed", collapsed);
+                const key = String($(this).data("collapse-key"));
+                window.collapsedTeamBlocks[collapsed ? "add" : "delete"](key);
+                this.setAttribute("aria-expanded", collapsed ? "false" : "true");
+                $(this).find(".team-block-chevron")
+                    .toggleClass("team-block-chevron-collapsed", collapsed);
+            });
         }
 
         function afterSwapHandler(e) {
@@ -648,7 +695,17 @@
                 this.setAttribute("aria-expanded", willCollapse ? "false" : "true");
                 $(this).find(".team-block-chevron")
                     .toggleClass("team-block-chevron-collapsed", willCollapse);
+                syncExpandAllSwitch();
             });
+
+            $(document).off("change.expand-all-team-blocks");
+            $(document).on(
+                "change.expand-all-team-blocks",
+                "#expand-all-team-blocks",
+                function () {
+                    setAllTeamBlocks(!this.checked);
+                }
+            );
             restoreLineupEditState();
         });
     </script>

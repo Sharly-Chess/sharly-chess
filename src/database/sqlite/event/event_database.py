@@ -655,7 +655,9 @@ class EventDatabase(MigrationDatabase):
             match_points=cls._load_int_keyed_float_dict_from_db(row['match_points']),
             color_pattern=row['color_pattern'],
             primary_score=row['primary_score'],
-            secondary_score=row['secondary_score'],
+            secondary_score_for_colours=cls.load_bool_from_database_field(
+                row['secondary_score_for_colours']
+            ),
             team_colour_type=row['team_colour_type'],
             enforce_roster_order=cls.load_bool_from_database_field(
                 row['enforce_roster_order']
@@ -753,7 +755,7 @@ class EventDatabase(MigrationDatabase):
                 'roster_max_size',
                 'color_pattern',
                 'primary_score',
-                'secondary_score',
+                'secondary_score_for_colours',
                 'team_colour_type',
                 'enforce_roster_order',
                 'team_sort_mode',
