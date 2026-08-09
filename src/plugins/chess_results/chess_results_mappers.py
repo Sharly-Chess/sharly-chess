@@ -200,6 +200,12 @@ class ChessResultsTieBreak:
                     param1=cls.primary_score_param(tournament),
                     param2=cls.played_param(tie_break),
                 )
+            case ttb.BoardCountTieBreak:
+                return cls(78)
+            case ttb.TopBoardResultsTieBreak:
+                return cls(89)
+            case ttb.BottomBoardEliminationTieBreak:
+                return cls(90)
             case ffe_tb.BerlinTieBreak:
                 return cls(71)
             case ffe_tb.GamePointsForTieBreak:

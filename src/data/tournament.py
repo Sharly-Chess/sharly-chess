@@ -1456,6 +1456,7 @@ class Tournament:
             loss_mp=match_points.get(Result.LOSS, 0.0),
             team_player_count=team_size,
             draw_gp=team_size * self.draw_points,
+            predetermined_pairings=self.pairing_system.predetermined_pairings,
         )
 
     def _team_board_scores_for(

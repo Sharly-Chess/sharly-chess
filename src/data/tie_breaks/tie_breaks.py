@@ -975,7 +975,11 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
         if top_cut + bottom_cut >= after_round:
             return 0.0
         score_type = self._team_score_type()
-        played_modifier = self.played_modifier
+        # Art. 15.2: with pre-determined pairings, forfeits count as
+        # regular matches — the treatment the /P flag asks for.
+        played_modifier = (
+            self.played_modifier or tournament_context.predetermined_pairings
+        )
         scores: list[float] = []
         vur: list[float] = []
         for match in team_record.matches:
@@ -1048,9 +1052,14 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
 
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
+        # Art. 15.2: with pre-determined pairings, forfeits count as
+        # regular games — the treatment the /P flag asks for.
+        played_modifier = (
+            self.played_modifier or tournament.pairing_system.predetermined_pairings
+        )
         for round_index, pairing in pairings.items():
-            should_add_dummy = (pairing.unplayed and not self.played_modifier) or (
-                self.played_modifier
+            should_add_dummy = (pairing.unplayed and not played_modifier) or (
+                played_modifier
                 and pairing.result
                 in (
                     Result.HALF_POINT_BYE,
@@ -1204,7 +1213,11 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
         if top_cut + bottom_cut >= after_round:
             return 0.0
         score_type = self._team_score_type()
-        played_modifier = self.played_modifier
+        # Art. 15.2: with pre-determined pairings, forfeits count as
+        # regular matches — the treatment the /P flag asks for.
+        played_modifier = (
+            self.played_modifier or tournament_context.predetermined_pairings
+        )
         scores: list[float] = []
         vur: list[float] = []
         for match in team_record.matches:

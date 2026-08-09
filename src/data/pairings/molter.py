@@ -54,6 +54,12 @@ class MolterPairingSystem(FixedTablePairingSystem):
         # Molter pairs everyone straight from the fixed table.
         return False
 
+    @property
+    @override
+    def predetermined_pairings(self) -> bool:
+        # Every board of every round comes from the published table.
+        return True
+
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return SwissPairingSystem().permission_handler
