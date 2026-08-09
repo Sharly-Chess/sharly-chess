@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from itertools import product
+from typing import TYPE_CHECKING, Any, Literal
 
 from utils.entity import IdentifiableEntity
 from utils.enum import EventType
@@ -22,6 +23,64 @@ class PointAdjustment:
     explanation: str = ''
 
 
+@dataclass(frozen=True)
+class RuleSetField:
+    """One configuration input a rule set contributes to the tournament
+    form. The rule set is the only code that knows what the field means:
+    the core renders it, stores its value and hands it back through
+    :attr:`RuleSet.config`.
+
+    ``affects_defaults`` marks a field the rule set's ``form_defaults``
+    depend on — the modal pre-computes defaults for every combination of
+    those, so they must have a finite domain (``select`` / ``bool``).
+    ``locked_once_paired`` freezes the field as soon as a round is
+    paired, for values (a round count, a scoring scheme) that can't move
+    mid-tournament."""
+
+    id: str
+    label: str
+    kind: Literal['select', 'bool', 'int', 'text'] = 'select'
+    default: Any = None
+    help_text: str = ''
+    # ``select`` only: the (value, label) pairs offered, in display order.
+    choices: tuple[tuple[str, str], ...] = ()
+    affects_defaults: bool = False
+    locked_once_paired: bool = False
+
+    def form_field_name(self, rule_set_id: str) -> str:
+        """Name of the HTML input holding this field's value. Namespaced
+        by rule set: the modal renders every rule set's fields and only
+        enables the selected one's."""
+        return f'rule_set_config_{rule_set_id}_{self.id}'
+
+    def values(self) -> tuple[Any, ...]:
+        """The field's finite domain, for enumerating default
+        combinations. Empty when the domain is open (int / text)."""
+        match self.kind:
+            case 'select':
+                return tuple(value for value, __ in self.choices)
+            case 'bool':
+                return (False, True)
+            case _:
+                return ()
+
+
+def rule_set_config_key(config: dict[str, Any]) -> str:
+    """Canonical key for a set of config values, used to look up
+    pre-computed form defaults. Mirrored by the tournament modal's JS,
+    so keep both sides in step."""
+    return '&'.join(
+        f'{field_id}={_config_key_value(value)}'
+        for field_id, value in sorted(config.items())
+    )
+
+
+def _config_key_value(value: Any) -> str:
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
+    return '' if value is None else str(value)
+
+
 class RuleSet(IdentifiableEntity, ABC):
     """An official rule set (e.g. a national federation cup) that
     pre-configures a tournament for a specific competition format.
@@ -36,7 +95,14 @@ class RuleSet(IdentifiableEntity, ABC):
     variation (Swiss / Molter / round-robin) themselves and creates one
     tournament per phase / group. The rule set just supplies the right
     defaults (match-point system, tie-break list, game-point overrides)
-    when the tournament is created or its rule-set choice is changed."""
+    when the tournament is created or its rule-set choice is changed.
+
+    A rule set may also declare :attr:`config_fields` — inputs of its
+    own the tournament form renders, whose values come back in
+    :attr:`config` (stored per tournament in ``rule_set_config``)."""
+
+    def __init__(self, config: dict[str, Any] | None = None):
+        self.config: dict[str, Any] = dict(config or {})
 
     @staticmethod
     @abstractmethod
@@ -59,6 +125,45 @@ class RuleSet(IdentifiableEntity, ABC):
         """Which event type this rule set targets — controls picker
         visibility (the picker filters down to the current event's
         type and is hidden when nothing matches)."""
+
+    @property
+    def config_fields(self) -> tuple[RuleSetField, ...]:
+        """Inputs this rule set adds to the tournament form. The core
+        renders them, round-trips their values and stores them; only the
+        rule set interprets them. Default: none."""
+        return ()
+
+    def config_value(self, field_id: str) -> Any:
+        """Value stored for one of the rule set's own fields, falling
+        back to the field's default when unset or unknown."""
+        for config_field in self.config_fields:
+            if config_field.id == field_id:
+                value = self.config.get(field_id)
+                return config_field.default if value is None else value
+        return None
+
+    def validate_config(self, values: dict[str, Any]) -> dict[str, str]:
+        """Check the submitted values of :attr:`config_fields` and return
+        the errors, keyed by field id. The core already checks types and
+        that a ``select`` value is one of its choices; this is for rules
+        that span several fields. Default: no error."""
+        return {}
+
+    def config_combinations(self) -> list[dict[str, Any]]:
+        """Every combination of the ``affects_defaults`` fields' values.
+        The tournament modal pre-computes :meth:`form_defaults` for each
+        so it can apply them client-side as the arbiter changes them."""
+        fields = [
+            config_field
+            for config_field in self.config_fields
+            if config_field.affects_defaults and config_field.values()
+        ]
+        if not fields:
+            return []
+        return [
+            dict(zip((f.id for f in fields), values))
+            for values in product(*(f.values() for f in fields))
+        ]
 
     def apply_defaults(
         self,
@@ -117,12 +222,13 @@ class RuleSet(IdentifiableEntity, ABC):
         leaves the configuration free."""
         return None
 
-    @property
-    def forced_team_sort_mode(self) -> str | None:
+    def forced_team_sort_mode(self, pairing_system_id: str | None = None) -> str | None:
         """When set, locks the tournament's team-sort mode to this
         :class:`~utils.enum.TeamSortMode` value — the teams tab shows
         it but won't let the arbiter change it. ``None`` (default)
-        leaves the choice free."""
+        leaves the choice free. Regulations usually prescribe an order
+        only for the systems that need seeding, hence the pairing system
+        id — ``None`` when it can't be resolved."""
         return None
 
     def rounds_for_pairing(

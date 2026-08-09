@@ -145,8 +145,7 @@
                                     {{ macros.tooltip_attributes(
                                         'info',
                                         _('The rule set fixes the team sort order.')
-                                        if tournament.rule_set
-                                            and tournament.rule_set.forced_team_sort_mode
+                                        if tournament.rule_set_forced_team_sort_mode
                                         else _('The team sort order is fixed once the first round is paired.'),
                                         'top'
                                     ) }}

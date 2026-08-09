@@ -19,7 +19,7 @@ from database.sqlite.event.event_store import StoredScreen
 if TYPE_CHECKING:
     from data.event import Event
     from data.screens.family import Family
-    from data.menu import Menu, MenuNavEntry
+    from data.screens.menu import Menu, MenuNavEntry
     from data.screens.screen_types import ScreenType
 
 
@@ -277,7 +277,7 @@ class Screen:
         first, last = self.sorted_screen_sets[0].range_bounds(abbreviated=True)
         return format_range(first, last)
 
-    def _menu_and_screens(self, admin: bool) -> "tuple['Menu | None', list['Screen']]":
+    def _menu_and_screens(self, admin: bool) -> tuple['Menu | None', list['Screen']]:
         """The menu this screen belongs to and the screens it navigates to. A
         screen belongs to at most one menu; the menu is only displayed when it
         holds more than one screen visible to the viewer."""
@@ -303,7 +303,7 @@ class Screen:
         return self._menu_screens(True)
 
     def _menu_nav_entries(self, admin: bool) -> list['MenuNavEntry']:
-        from data.menu import group_menu_nav_entries
+        from data.screens.menu import group_menu_nav_entries
 
         menu, screens = self._menu_and_screens(admin)
         return group_menu_nav_entries(screens, menu, current_screen=self)

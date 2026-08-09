@@ -303,6 +303,7 @@ class StoredTournament:
     enforce_roster_order: bool = False
     team_sort_mode: str = 'MANUAL'
     rule_set: str | None = None
+    rule_set_config: dict[str, Any] = field(default_factory=dict[str, Any])
     prohibited_pairing_dimension: str | None = None
     prohibited_pairing_dimension_is_hard: bool = True
     stored_tie_breaks: list[StoredTieBreak] = field(
