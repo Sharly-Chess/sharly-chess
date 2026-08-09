@@ -158,13 +158,30 @@ def dummy_opponent_score(
     *,
     after_round: int,
     rounds: int,
-    win_mp: float,
+    draw_value: float,
+    opponent_adjusted: float | None = None,
+    legacy: bool = False,
 ) -> float:
     """Score attributed to the virtual opponent when our team had an
-    unplayed match (Art. 16.4). Equals the team's own actual total,
-    capped at the maximum primary score (``rounds × win_mp`` for MP).
-    For GP there is no FIDE-defined hard cap; the own total stands."""
+    unplayed match (Art. 16.4): the team's own total, capped.
+
+    The cap depends on the category of the unplayed round, and the two
+    are alternatives, not cumulative:
+
+      - a forfeit (Art. 16.2.2 / 16.2.4) caps at the scheduled
+        opponent's adjusted score, passed in as ``opponent_adjusted``
+        (Art. 16.4.1);
+      - every other unplayed round — pairing-allocated and requested
+        byes — caps at the draw value times the number of rounds
+        (Art. 16.4.2). For teams that value is read per score type,
+        the closing note of Art. 16 defining "points" as match points
+        and game points alike.
+
+    ``legacy`` restores the 2024 wording, which capped nothing.
+    """
     own_total = own_record.total(score_type)
-    if score_type == ScoreType.MATCH_POINTS:
-        return min(own_total, rounds * win_mp)
-    return own_total
+    if legacy:
+        return own_total
+    if opponent_adjusted is not None:
+        return min(own_total, opponent_adjusted)
+    return min(own_total, rounds * draw_value)

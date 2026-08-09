@@ -36,6 +36,7 @@ from data.tie_breaks.categories import (
 from data.tie_breaks.cutters import TieBreakCutter
 from data.tie_breaks.options import (
     CutterTieBreakOption,
+    LegacyMarch2026TieBreakOption,
     TieBreakOption,
     ForeModifierTieBreakOption,
     NormalizationFactorOverrideTieBreakOption,
@@ -215,6 +216,15 @@ class TeamTieBreak(TieBreak, ABC):
         keyed by team_id and contains every team that participated."""
 
     @property
+    def _legacy_march_2026(self) -> bool:
+        """True when the tie-break opts out of the March 2026 rules —
+        used here for the Art. 16.4 dummy-opponent caps, which earlier
+        editions did not have."""
+        with suppress(KeyError):
+            return bool(self._get_option(LegacyMarch2026TieBreakOption).value)
+        return False
+
+    @property
     def is_computed_per_team(self) -> bool:
         """True if the tie-break is a scalar function of a single team.
         False for group-level tie-breaks (e.g. EDE) which inspect every
@@ -319,13 +329,19 @@ def _dummy_opponent_score(
     context: TeamTieBreakContext,
     *,
     after_round: int,
+    opponent_adjusted: float | None = None,
+    legacy: bool = False,
 ) -> float:
     return dummy_opponent_score(
         own_record,
         score_type,
         after_round=after_round,
         rounds=context.rounds,
-        win_mp=context.win_mp,
+        draw_value=(
+            context.draw_mp if score_type == ScoreType.MATCH_POINTS else context.draw_gp
+        ),
+        opponent_adjusted=opponent_adjusted,
+        legacy=legacy,
     )
 
 
@@ -409,7 +425,11 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
-        return [ESBVariantTieBreakOption, ESBCutterTieBreakOption]
+        return [
+            ESBVariantTieBreakOption,
+            ESBCutterTieBreakOption,
+            LegacyMarch2026TieBreakOption,
+        ]
 
     @cached_property
     def variant(self) -> ESBVariant:
@@ -510,11 +530,24 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
             if match.unplayed and not (
                 forfeits_are_played and match.opponent_id is not None
             ):
+                # Art. 16.4.1: a forfeit caps the dummy at the scheduled
+                # opponent's adjusted score; a bye caps at draw points ×
+                # rounds (16.4.2).
+                opponent_adjusted = None
+                if not match.is_bye and match.opponent_id is not None:
+                    opponent_adjusted = _adjust_opponent_total(
+                        all_records[match.opponent_id],
+                        opp_score_type,
+                        tournament_context,
+                        after_round=after_round,
+                    )
                 opp_total = _dummy_opponent_score(
                     team_record,
                     opp_score_type,
                     tournament_context,
                     after_round=after_round,
+                    opponent_adjusted=opponent_adjusted,
+                    legacy=self._legacy_march_2026,
                 )
             else:
                 assert match.opponent_id is not None
@@ -589,6 +622,7 @@ class ScoresAndScheduleStrengthCombinationTieBreak(TeamTieBreak):
             PlayedModifierTieBreakOption,
             ForeModifierTieBreakOption,
             NormalizationFactorOverrideTieBreakOption,
+            LegacyMarch2026TieBreakOption,
         ]
 
     @property
@@ -637,6 +671,10 @@ class ScoresAndScheduleStrengthCombinationTieBreak(TeamTieBreak):
                 sub_options.append(played)
         except KeyError:
             pass
+        with suppress(KeyError):
+            legacy = self._get_option(LegacyMarch2026TieBreakOption)
+            if legacy.value:
+                sub_options.append(legacy)
         fore = False
         try:
             fore_opt = self._get_option(ForeModifierTieBreakOption)

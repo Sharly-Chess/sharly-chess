@@ -309,13 +309,17 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         adjust_fore: bool = False,
         opponent: TournamentPlayer | None = None,
     ) -> float:
+        # Art. 16.4 offers two caps and they are alternatives: a forfeit
+        # (the only unplayed round with a scheduled opponent) caps at
+        # that opponent's adjusted score (16.4.1), every other unplayed
+        # round at the draw value times the rounds (16.4.2).
         if opponent:
             opponent_score = cls.adjusted_score(
                 opponent,
                 after_round=after_round,
                 adjust_fore=adjust_fore,
             )
-            dummy_score = min(dummy_score, opponent_score)
+            return min(dummy_score, opponent_score)
         return min(dummy_score, tournament.rounds * tournament.draw_points)
 
     @cached_property
@@ -994,12 +998,30 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
                 played_modifier and is_bye
             )
             if should_add_dummy:
+                # Art. 16.4.1: a forfeit caps the dummy at the
+                # scheduled opponent's adjusted score; every other
+                # unplayed round caps at draw points × rounds (16.4.2).
+                opponent_adjusted = None
+                if not is_bye and match.opponent_id is not None:
+                    opponent_adjusted = adjust_opponent_total(
+                        all_records[match.opponent_id],
+                        score_type,
+                        after_round=after_round,
+                        draw_mp=tournament_context.draw_mp,
+                        draw_gp=tournament_context.draw_gp,
+                    )
                 value = dummy_opponent_score(
                     team_record,
                     score_type,
                     after_round=after_round,
                     rounds=tournament_context.rounds,
-                    win_mp=tournament_context.win_mp,
+                    draw_value=(
+                        tournament_context.draw_mp
+                        if score_type == ScoreType.MATCH_POINTS
+                        else tournament_context.draw_gp
+                    ),
+                    opponent_adjusted=opponent_adjusted,
+                    legacy=self.legacy_03_2026,
                 )
                 if match.voluntary_unplayed:
                     vur.append(value)
@@ -1232,12 +1254,30 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
                 played_modifier and is_bye
             )
             if should_add_dummy:
+                # Art. 16.4.1: a forfeit caps the dummy at the
+                # scheduled opponent's adjusted score; every other
+                # unplayed round caps at draw points × rounds (16.4.2).
+                opponent_adjusted = None
+                if not is_bye and match.opponent_id is not None:
+                    opponent_adjusted = adjust_opponent_total(
+                        all_records[match.opponent_id],
+                        score_type,
+                        after_round=after_round,
+                        draw_mp=tournament_context.draw_mp,
+                        draw_gp=tournament_context.draw_gp,
+                    )
                 value = dummy_opponent_score(
                     team_record,
                     score_type,
                     after_round=after_round,
                     rounds=tournament_context.rounds,
-                    win_mp=tournament_context.win_mp,
+                    draw_value=(
+                        tournament_context.draw_mp
+                        if score_type == ScoreType.MATCH_POINTS
+                        else tournament_context.draw_gp
+                    ),
+                    opponent_adjusted=opponent_adjusted,
+                    legacy=self.legacy_03_2026,
                 )
                 if match.voluntary_unplayed:
                     vur.append(value)

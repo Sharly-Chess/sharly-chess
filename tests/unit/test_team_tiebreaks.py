@@ -9,13 +9,23 @@ the tournament regulations on PDF page 9:
   PAB / HPB → 1 match point, 2 game points (a draw against a dummy)
   ZPB / -F  → 0 / 0
   +F        → 2 match points, 4 game points
+
+Those exercises predate the March 2026 edition, which added the Art.
+16.4 caps on the dummy opponent's score. The tie-breaks reproducing
+their published values therefore carry the legacy option; the tests
+written against the current rules build their own fixtures.
 """
 
 from unittest import TestCase
 
 import pytest
 
-from data.tie_breaks.team_records import TeamMatchRecord, TeamMatchType, TeamRecord
+from data.tie_breaks.team_records import (
+    TeamMatchRecord,
+    TeamMatchType,
+    TeamRecord,
+    dummy_opponent_score,
+)
 from data.tie_breaks.team_tie_breaks import (
     BoardCountTieBreak,
     EDEKnockoutTieBreakOption,
@@ -34,6 +44,7 @@ from data.tie_breaks.tie_breaks import StandardBuchholzTieBreak
 from data.tie_breaks.options import (
     CutterTieBreakOption,
     CutterWithMedianTieBreakOption,
+    LegacyMarch2026TieBreakOption,
     PlayedModifierTieBreakOption,
     TeamScoreTieBreakOption,
 )
@@ -294,8 +305,12 @@ def _cut1_option() -> CutterTieBreakOption:
 
 
 def _bh(team_score: str, cut1: bool = False) -> StandardBuchholzTieBreak:
-    """FIDE MTB26 BH:<team_score> [/C1] for the TEC fixture."""
-    opts: list = [TeamScoreTieBreakOption(team_score)]
+    """FIDE MTB26 BH:<team_score> [/C1] for the TEC fixture, in legacy
+    mode — see the module docstring on the Art. 16.4 caps."""
+    opts: list = [
+        TeamScoreTieBreakOption(team_score),
+        LegacyMarch2026TieBreakOption(True),
+    ]
     if cut1:
         opts.append(CutterWithMedianTieBreakOption(Cut1TieBreakCutter.static_id()))
     return StandardBuchholzTieBreak(opts)
@@ -462,7 +477,10 @@ class TecTeamTieBreakTestCase(TestCase):
     EX38_EMMSB_C1 = {1: 74, 2: 64, 3: 66, 4: 64, 5: 66}
 
     def _esb(self, variant: ESBVariant, cut1: bool = False):
-        opts: list = [ESBVariantTieBreakOption(variant.value)]
+        opts: list = [
+            ESBVariantTieBreakOption(variant.value),
+            LegacyMarch2026TieBreakOption(True),
+        ]
         if cut1:
             from data.tie_breaks.team_tie_breaks import ESBCutterTieBreakOption
 
@@ -701,7 +719,9 @@ class TecTeamTieBreakTestCase(TestCase):
         self.assertEqual(factor, 3)
 
     def test_ex49_sssc_all_teams(self):
-        tb = ScoresAndScheduleStrengthCombinationTieBreak([])
+        tb = ScoresAndScheduleStrengthCombinationTieBreak(
+            [LegacyMarch2026TieBreakOption(True)]
+        )
         for team_id, expected in self.EX49_SSSC.items():
             value = tb.compute_team_value(
                 self.records[team_id],
@@ -1523,23 +1543,56 @@ class PredeterminedPairingsTestCase(TestCase):
         self.assertFalse(_board_context().predetermined_pairings)
 
     def test_esb_also_counts_the_forfeited_match(self):
-        # A forfeit *win* gives team 1 a non-zero own score for the
-        # round, so the opponent side of the ESB product is visible:
-        # the real opponent's total under Art. 15.2 against the dummy
-        # under Art. 16.
-        records = _board_records(forfeit_round=2, forfeit_win=True)
+        # Art. 16.4.1 caps a forfeit's dummy at the scheduled opponent's
+        # adjusted score, so the Art. 16 and Art. 15.2 treatments only
+        # part company when the forfeiting team's own score is the lower
+        # of the two. Team 1 loses twice, then wins round 3 by forfeit
+        # against a team that has won everything else.
+        def _record(team_id: int, matches: list[TeamMatchRecord]) -> TeamRecord:
+            return TeamRecord(
+                team_id=team_id,
+                name=f'Team {team_id}',
+                total_mp=sum(m.own_mp for m in matches),
+                total_gp=sum(m.own_gp for m in matches),
+                matches=matches,
+            )
+
+        records = {
+            1: _record(
+                1,
+                [
+                    TeamMatchRecord(1, 3, 0.0, 1.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 3, 0.0, 1.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(3, 2, 2.0, 4.0, TeamMatchType.FORFEIT_WIN),
+                ],
+            ),
+            2: _record(
+                2,
+                [
+                    TeamMatchRecord(1, 3, 2.0, 3.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 3, 2.0, 3.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(3, 1, 0.0, 0.0, TeamMatchType.FORFEIT_LOSS),
+                ],
+            ),
+            3: _record(
+                3,
+                [
+                    TeamMatchRecord(1, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                ],
+            ),
+        }
+        context = _board_context(rounds=3)
+        predetermined = _board_context(rounds=3, predetermined=True)
         esb = ExtendedSonnebornBergerTeamTieBreak([])
-        swiss = esb.compute_team_value(
-            records[1], records, _board_context(), after_round=2
-        )
+        swiss = esb.compute_team_value(records[1], records, context, after_round=3)
         round_robin = esb.compute_team_value(
-            records[1], records, _board_context(predetermined=True), after_round=2
+            records[1], records, predetermined, after_round=3
         )
-        self.assertNotEqual(swiss, round_robin)
-        # Round 1 contributes the same either way; round 2 differs by
-        # (opponent total − dummy) × own score, with own score 2 MP.
-        dummy = min(records[1].total_mp, 2 * 2.0)
-        self.assertEqual(round_robin - swiss, (records[2].total_mp - dummy) * 2.0)
+        # Own total 2 MP against the opponent's 4, so the dummy is 2
+        # while the real opponent counts 4 — a difference of 2 × the
+        # 2 MP team 1 scored in that round.
+        self.assertEqual(round_robin - swiss, 4.0)
 
     def test_ede_counts_forfeits_with_predetermined_pairings(self):
         # Art. 6.1.1 excludes only forfeits "not covered by Article
@@ -1696,3 +1749,110 @@ class EDEKnockoutVariantTestCase(TestCase):
                 [EDEKnockoutTieBreakOption(variant.value)]
             )
             self.assertEqual(tie_break.base_acronym, variant.acronym)
+
+
+@pytest.mark.unit
+class DummyOpponentCapTestCase(TestCase):
+    """FIDE Art. 16.4: the dummy opponent takes the team's own score,
+    capped — at the scheduled opponent's adjusted score for a forfeit
+    (16.4.1), at draw points × rounds for a bye (16.4.2). The two are
+    alternatives, and the 2024 edition had neither."""
+
+    @staticmethod
+    def _record(team_id: int, matches: list[TeamMatchRecord]) -> TeamRecord:
+        return TeamRecord(
+            team_id=team_id,
+            name=f'Team {team_id}',
+            total_mp=sum(m.own_mp for m in matches),
+            total_gp=sum(m.own_gp for m in matches),
+            matches=matches,
+        )
+
+    def test_forfeit_caps_at_the_opponent_score_not_at_the_draw_total(self):
+        # Own 6 MP over 4 rounds, forfeit against an opponent on 5 MP.
+        # 16.4.1 gives 5; capping at draw × rounds as well would give 4.
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(4, 2, 0.0, 0.0, TeamMatchType.FORFEIT_LOSS),
+            ],
+        )
+        opponent = self._record(
+            2,
+            [
+                TeamMatchRecord(1, 1, 1.0, 2.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(4, 1, 0.0, 0.0, TeamMatchType.FORFEIT_WIN),
+            ],
+        )
+        self.assertEqual(own.total_mp, 6.0)
+        self.assertEqual(opponent.total_mp, 5.0)
+        value = dummy_opponent_score(
+            own,
+            ScoreType.MATCH_POINTS,
+            after_round=4,
+            rounds=4,
+            draw_value=1.0,
+            opponent_adjusted=opponent.total_mp,
+        )
+        self.assertEqual(value, 5.0)
+
+    def test_bye_caps_at_draw_points_times_rounds(self):
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, None, 2.0, 2.0, TeamMatchType.PAB),
+            ],
+        )
+        value = dummy_opponent_score(
+            own,
+            ScoreType.MATCH_POINTS,
+            after_round=3,
+            rounds=3,
+            draw_value=1.0,
+        )
+        # Own 6 MP, capped at 3 rounds × 1 draw point.
+        self.assertEqual(value, 3.0)
+
+    def test_game_points_are_capped_too(self):
+        # The closing note of Art. 16 makes "points" mean match points
+        # and game points alike, so the GP dummy caps at draw_gp × rounds.
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 4.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, None, 2.0, 2.0, TeamMatchType.PAB),
+            ],
+        )
+        value = dummy_opponent_score(
+            own,
+            ScoreType.GAME_POINTS,
+            after_round=2,
+            rounds=2,
+            draw_value=2.0,
+        )
+        self.assertEqual(value, 4.0)
+
+    def test_legacy_mode_caps_nothing(self):
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, None, 2.0, 2.0, TeamMatchType.PAB),
+            ],
+        )
+        value = dummy_opponent_score(
+            own,
+            ScoreType.MATCH_POINTS,
+            after_round=2,
+            rounds=2,
+            draw_value=1.0,
+            legacy=True,
+        )
+        self.assertEqual(value, own.total_mp)
