@@ -1,20 +1,6 @@
 from database.sqlite.migration import BaseMigration
 
 
-# Screen types seeded as default menus in every event, each grouping all
-# screens of that type. They carry no stored name: their display name is
-# derived from the (translatable) screen type label until an admin renames
-# them. Editable and deletable like any other menu.
-_DEFAULT_MENU_SCREEN_TYPES: list[str] = [
-    'input',
-    'check-in',
-    'boards',
-    'players',
-    'ranking',
-    'results',
-]
-
-
 class Migration(BaseMigration):
     def forward(self):
         self.database.execute(
@@ -43,18 +29,6 @@ class Migration(BaseMigration):
             '   `family`(`id`) ON DELETE CASCADE'
             ')'
         )
-        for screen_type in _DEFAULT_MENU_SCREEN_TYPES:
-            self.database.execute(
-                'INSERT INTO `menu` (`name`, `default_type`) VALUES (NULL, ?)',
-                (screen_type,),
-            )
-            self.database.execute('SELECT last_insert_rowid() AS `id`')
-            menu_id = self.database.fetchone()['id']
-            self.database.execute(
-                'INSERT INTO `menu_item` '
-                '(`menu_id`, `screen_type`, `index`) VALUES (?, ?, 0)',
-                (menu_id, screen_type),
-            )
 
         # Drop the legacy per-screen/family menu configuration (`menu_link`
         # and the `menu` DSL): navigation is now driven by these global menus.
