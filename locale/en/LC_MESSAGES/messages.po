@@ -1774,9 +1774,6 @@ msgstr ""
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr ""
 
-msgid "Colour allocation:"
-msgstr ""
-
 msgid "Colour history"
 msgstr ""
 
@@ -6619,9 +6616,6 @@ msgstr "Score"
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr ""
 
-msgid "Score used for colour allocation when pairing."
-msgstr ""
-
 msgid "Scores + Schedule Strength (SSSC)"
 msgstr ""
 
@@ -8559,6 +8553,12 @@ msgstr ""
 msgid "Use dropdowns"
 msgstr ""
 
+msgid "Use game points for colour allocation"
+msgstr ""
+
+msgid "Use match points for colour allocation"
+msgstr ""
+
 #, python-brace-format
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
 msgstr ""
@@ -8791,6 +8791,9 @@ msgid "When there are unrated players, FIDE rules stipulate that rating-based ti
 msgstr ""
 
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
+msgstr ""
+
+msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
 msgstr ""
 
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
@@ -9630,4 +9633,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-

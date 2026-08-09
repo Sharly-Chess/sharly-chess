@@ -36,14 +36,14 @@ class TestTrfSerializer(TestCase):
         mp = ScoreType.MATCH_POINTS
         gp = ScoreType.GAME_POINTS
         cases = {
-            'FIDE_TEAM_TYPEA_MP': (TeamColourType.A, mp, mp),
-            'FIDE_TEAM_TYPEA_GP': (TeamColourType.A, gp, gp),
+            'FIDE_TEAM_TYPEA_MP': (TeamColourType.A, mp, None),
+            'FIDE_TEAM_TYPEA_GP': (TeamColourType.A, gp, None),
             'FIDE_TEAM_TYPEA_MP_GP': (TeamColourType.A, mp, gp),
             'FIDE_TEAM_TYPEA_GP_MP': (TeamColourType.A, gp, mp),
-            'FIDE_TEAM_TYPEB_MP': (TeamColourType.B, mp, mp),
+            'FIDE_TEAM_TYPEB_MP': (TeamColourType.B, mp, None),
             'FIDE_TEAM_TYPEB_MP_GP': (TeamColourType.B, mp, gp),
             'FIDE_TEAM_TYPEB_GP_MP': (TeamColourType.B, gp, mp),
-            'FIDE_TEAM_MP': (TeamColourType.NONE, mp, mp),
+            'FIDE_TEAM_MP': (TeamColourType.NONE, mp, None),
             'FIDE_TEAM_MP_GP': (TeamColourType.NONE, mp, gp),
             'FIDE_TEAM_GP_MP': (TeamColourType.NONE, gp, mp),
         }
