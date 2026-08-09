@@ -413,7 +413,8 @@ class TrfTournamentImporter(FileTournamentImporter):
             # score config, so leave the tournament's own settings alone.
             primary, secondary = score_config
             stored_tournament.primary_score = primary.value
-            stored_tournament.secondary_score = secondary.value
+            # No secondary in the code means it isn't used for colours.
+            stored_tournament.secondary_score_for_colours = secondary is not None
             colour_type = TrfEncodedType.get_team_colour_type(
                 trf_tournament.encoded_type
             )
