@@ -25,7 +25,7 @@ from data.player_categories import (
     SeniorCategory,
 )
 from data.screens.rotator import Rotator
-from data.menu import Menu
+from data.screens.menu import Menu
 from data.screens.screen import Screen
 from data.teams.team import Team, TeamGroup
 from data.screens.timer import Timer
@@ -478,6 +478,7 @@ class Event:
             self.clear_player_cache()
             for tournament in tournaments:
                 tournament.add_player_to_tournament(stored_player, database)
+        assert stored_player.id is not None
         return stored_player.id
 
     def delete_player(self, player: Player):

@@ -24,7 +24,7 @@ from data.event import Event
 from data.loader import EventLoader
 from data.player import TournamentPlayer, Player
 from data.screens.rotator import Rotator
-from data.menu import Menu
+from data.screens.menu import Menu
 from data.screens.screen import Screen
 from data.teams.team import Team
 from data.tournament import Tournament
