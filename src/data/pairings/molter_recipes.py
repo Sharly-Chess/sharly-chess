@@ -11,9 +11,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import lru_cache
-from pathlib import Path
 from typing import Any
 
+from common import BASE_DIR
 from data.pairings.fixed_table import FixedPairingTable
 from data.pairings.molter_recipe_replay import (
     _emit,
@@ -31,7 +31,9 @@ _SCHEDULE_KINDS_BY_ID = {
     2: 'even_factor_rows',
     3: 'odd_cell_occurrences',
 }
-_DEFAULT_RECIPE_FILE = Path(__file__).with_name('resources') / 'molter_recipes.mrec'
+_DEFAULT_RECIPE_FILE = (
+    BASE_DIR / 'src' / 'data' / 'pairings' / 'resources' / 'molter_recipes.mrec'
+)
 
 _Player = tuple[int, int]
 _Match = tuple[_Player, _Player]
