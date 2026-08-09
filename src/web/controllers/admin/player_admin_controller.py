@@ -1929,6 +1929,24 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 stored_players_by_index[index] = stored_player
 
+        for index, stored_player in stored_players_by_index.items():
+            for tr in TournamentRating:
+                for prt in PlayerRatingType:
+                    ratings = stored_player.ratings[tr.value]
+                    if prt.form_key in ratings:
+                        rating = ratings[prt.form_key]
+                        if rating and not (prt.min_value <= rating <= prt.max_value):
+                            import_errors_by_index[index][
+                                f'{tr.form_key}_{prt.key}'
+                            ] = _(
+                                'Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}]).'
+                            ).format(
+                                rating_type=prt.name,
+                                rating=rating,
+                                min=prt.min_value,
+                                max=prt.max_value,
+                            )
+
         return stored_players_by_index, import_errors_by_index, duplicated_indexes
 
     @classmethod
