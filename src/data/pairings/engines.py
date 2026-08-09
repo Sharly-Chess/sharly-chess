@@ -718,9 +718,9 @@ class _TeamPairingBase(PairingEngine, ABC):
             # Order matches by standings entering the round (exclude any
             # results already entered for the round being paired).
             standings_by_team_id = {
-                row['team'].id: (row['mp'], row['gp'])
-                if tournament.primary_score == ScoreType.MATCH_POINTS
-                else (row['gp'], row['mp'])
+                row['team'].id: row[
+                    'mp' if tournament.primary_score == ScoreType.MATCH_POINTS else 'gp'
+                ]
                 for row in tournament.team_standings(after_round=round_ - 1)
             }
 
@@ -731,20 +731,18 @@ class _TeamPairingBase(PairingEngine, ABC):
 
             def _pair_sort_key(
                 pair: tuple[int, int | None],
-            ) -> tuple[int, float, float, float, float, float]:
+            ) -> tuple[int, float, float, float]:
                 """Returns the sort key to use to sort the pair for table numbering, as a tuple.
                 - 0. 0 for PAB, 1 otherwise
                 - 1. the higher primary score
                 - 2. the lower primary score
-                - 3. the higher secondary score, if defined
-                - 4. the lower secondary score
-                - 5. the highest pairing number
+                - 3. the highest pairing number
                 """
                 a_id, b_id = pair
                 if b_id is None:
-                    return 0, 0.0, 0.0, 0.0, 0.0, -_tpn_or_inf(a_id)
-                a = standings_by_team_id.get(a_id, (0.0, 0.0))
-                b = standings_by_team_id.get(b_id, (0.0, 0.0))
+                    return 0, 0.0, 0.0, -_tpn_or_inf(a_id)
+                a = standings_by_team_id.get(a_id, 0.0)
+                b = standings_by_team_id.get(b_id, 0.0)
                 a_tpn, b_tpn = _tpn_or_inf(a_id), _tpn_or_inf(b_id)
                 # The stronger side has the better standing; on a tie
                 # (e.g. round 1, everyone on 0) the lower TPN is stronger
@@ -758,7 +756,7 @@ class _TeamPairingBase(PairingEngine, ABC):
                     stronger_tpn = b_tpn
                 # Negate TPNs so that ``reverse=True`` (which makes
                 # larger keys come first) puts the lower TPN first.
-                return 1, stronger[0], weaker[0], stronger[1], weaker[1], -stronger_tpn
+                return 1, stronger, weaker, -stronger_tpn
 
             sorted_pairs = sorted(team_pairs, key=_pair_sort_key, reverse=True)
             paired_team_ids = {
