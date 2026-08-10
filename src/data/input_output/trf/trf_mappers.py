@@ -112,6 +112,16 @@ class TrfPointSystemResult(CoreMapper[str, Result]):
 
 
 class TrfEncodedType:
+    #: Codes the tournament-type table defines as meaning another code.
+    ALIASES: dict[str, str] = {
+        'FIDE_TEAM': 'FIDE_TEAM_TYPEA_MP_GP',
+        'FIDE_TEAM_BAKU': 'FIDE_TEAM_TYPEA_MP_GP_BAKU',
+    }
+
+    @classmethod
+    def canonical(cls, encoded_type: str) -> str:
+        return cls.ALIASES.get(encoded_type, encoded_type)
+
     @classmethod
     def get_pairing_variation(cls, encoded_type: str) -> PairingVariation:
         variation = cls.get_supported_pairing_variation(encoded_type)
@@ -123,12 +133,17 @@ class TrfEncodedType:
         assert variation is not None
         return variation
 
-    @staticmethod
-    def get_supported_pairing_variation(encoded_type: str) -> PairingVariation | None:
+    @classmethod
+    def get_supported_pairing_variation(
+        cls, encoded_type: str
+    ) -> PairingVariation | None:
+        encoded_type = cls.canonical(encoded_type)
         match encoded_type:
             case 'FIDE_DUTCH_2025' | 'FIDE_DUTCH_2026' | 'FIDE_DUTCH':
                 return StandardSwissVariation()
-            case 'FIDE_DUTCH_2026_BAKU' | 'FIDE_DUTCH_BAKU':
+            case 'FIDE_DUTCH_2025_BAKU' | 'FIDE_DUTCH_2026_BAKU' | 'FIDE_DUTCH_BAKU':
+                # 2026 is not a code the type table defines; earlier
+                # versions emitted it, so files carrying it still load.
                 return BakuSwissVariation()
             case 'FIDE_ROUNDROBIN' | 'BERGER_ROUNDROBIN' | 'BERGER_ROUNDROBIN_G1':
                 return BergerRoundRobinVariation()
@@ -148,6 +163,11 @@ class TrfEncodedType:
                 | 'OTHER_TEAM_DOUBLEROUNDROBIN'
             ):
                 return DoubleBergerTeamRoundRobinVariation()
+            case _ if encoded_type.endswith('_BAKU'):
+                # Baku acceleration is only implemented for individual
+                # Swiss. Falling through to the plain team system would
+                # drop the acceleration without saying so.
+                return None
             case _ if encoded_type.startswith(
                 ('FIDE_TEAM_TYPEA_', 'FIDE_TEAM_TYPEB_', 'FIDE_TEAM_')
             ):
@@ -197,6 +217,7 @@ class TrfEncodedType:
         (no ``TYPE<A|B>_`` infix) corresponds to ``TeamColourType.NONE``
         — the FIDE convention for events that opt out of colour
         preferences."""
+        encoded_type = TrfEncodedType.canonical(encoded_type)
         if encoded_type.startswith('FIDE_TEAM_TYPEA_'):
             return TeamColourType.A
         if encoded_type.startswith('FIDE_TEAM_TYPEB_'):
@@ -207,6 +228,7 @@ class TrfEncodedType:
 
     @staticmethod
     def _team_code_suffix(encoded_type: str) -> str | None:
+        encoded_type = TrfEncodedType.canonical(encoded_type)
         for prefix in ('FIDE_TEAM_TYPEA_', 'FIDE_TEAM_TYPEB_', 'FIDE_TEAM_'):
             if encoded_type.startswith(prefix):
                 return encoded_type[len(prefix) :]
@@ -214,6 +236,12 @@ class TrfEncodedType:
 
     @classmethod
     def get_not_supported_default_type(cls, encoded_type: str) -> str:
+        encoded_type = cls.canonical(encoded_type)
+        # A team code must not fall back to an individual system.
+        if 'TEAM' in encoded_type:
+            if encoded_type.endswith('_BAKU'):
+                return encoded_type[: -len('_BAKU')]
+            return 'FIDE_TEAM_TYPEA_MP_GP'
         match encoded_type:
             case (
                 'BERGER_ROUNDROBIN_G2'
@@ -234,7 +262,7 @@ class TrfEncodedType:
             case _:
                 if 'ROUNDROBIN' in encoded_type or 'SCHEVENINGEN' in encoded_type:
                     return 'FIDE_ROUNDROBIN'
-                return 'FIDE_DUTCH_2026'
+                return 'FIDE_DUTCH_2025'
 
 
 class TrfColor(CoreMapper[str, BoardColor | None]):  # type: ignore

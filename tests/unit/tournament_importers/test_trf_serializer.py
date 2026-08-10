@@ -19,6 +19,7 @@ from data.input_output.trf.trf_entry import AbnormalPointsAssignmentEntry
 from data.input_output.trf.trf_mappers import TrfEncodedType
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.pairings.variations import (
+    PairingVariation,
     BergerTeamRoundRobinVariation,
     DoubleBergerTeamRoundRobinVariation,
     StandardSwissVariation,
@@ -116,6 +117,72 @@ class TestTrfSerializer(TestCase):
             DoubleBergerTeamRoundRobinVariation().trf_encoded_type,
             'FIDE_TEAM_DOUBLEROUNDROBIN',
         )
+
+    # The Tournament Type Code Table for TRF_CODE 192, verbatim. The
+    # parameterised forms (BERGER_ROUNDROBIN_Gn, FIDE_SCHILLER_TxP,
+    # FIDE_SCHEVENINGEN_Gn) are listed in their documented default form.
+    TOURNAMENT_TYPE_CODES = (
+        'FIDE_DUTCH_2017 FIDE_DUTCH_2025 FIDE_DUTCH FIDE_DUBOV FIDE_BURSTEIN '
+        'FIDE_DUTCH_2017_BAKU FIDE_DUTCH_2025_BAKU FIDE_DUTCH_BAKU '
+        'FIDE_DUBOV_BAKU FIDE_BURSTEIN_BAKU CUSTOM_SWISS FIDE_DOUBLESWISS '
+        'FIDE_DOUBLESWISS_BAKU CUSTOM_DOUBLESWISS BERGER_ROUNDROBIN '
+        'BERGER_DOUBLEROUNDROBIN FIDE_ROUNDROBIN FIDE_DOUBLEROUNDROBIN '
+        'CUSTOM_ROUNDROBIN FIDE_SCHILLER CUSTOM_SCHILLER FIDE_SCHEVENINGEN '
+        'FIDE_DOUBLESCHEVENINGEN CUSTOM_SCHEVENINGEN CUSTOM_KNOCKOUT '
+        'FIDE_TEAM_TYPEA_MP_GP FIDE_TEAM_TYPEA_GP_MP FIDE_TEAM_TYPEA_MP '
+        'FIDE_TEAM_TYPEA_GP FIDE_TEAM_TYPEB_MP_GP FIDE_TEAM_TYPEB_GP_MP '
+        'FIDE_TEAM_TYPEB_MP FIDE_TEAM_TYPEB_GP FIDE_TEAM_MP_GP FIDE_TEAM_GP_MP '
+        'FIDE_TEAM_MP FIDE_TEAM_GP FIDE_TEAM CUSTOM_TEAM_SWISS_MP '
+        'CUSTOM_TEAM_SWISS_GP FIDE_TEAM_TYPEA_MP_GP_BAKU FIDE_TEAM_TYPEA_MP_BAKU '
+        'FIDE_TEAM_TYPEB_MP_GP_BAKU FIDE_TEAM_TYPEB_MP_BAKU FIDE_TEAM_MP_GP_BAKU '
+        'FIDE_TEAM_MP_BAKU FIDE_TEAM_BAKU CUSTOM_TEAM_SWISS '
+        'BERGER_TEAM_ROUNDROBIN BERGER_TEAM_DOUBLEROUNDROBIN '
+        'FIDE_TEAM_ROUNDROBIN FIDE_TEAM_DOUBLEROUNDROBIN CUSTOM_TEAM_ROUNDROBIN '
+        'CUSTOM_TEAM_KNOCKOUT'
+    ).split()
+
+    def test_exported_encoded_types_are_real_codes(self):
+        """Every 192 code we write has to appear in the type table."""
+        import inspect
+
+        from data.pairings import variations
+        from plugins.pairing_acceleration import pairing_variations
+
+        emitted: set[str] = set()
+        for module in (variations, pairing_variations):
+            for _name, obj in vars(module).items():
+                if not inspect.isclass(obj) or not issubclass(obj, PairingVariation):
+                    continue
+                try:
+                    code = obj().trf_encoded_type
+                except Exception:  # abstract / needs arguments
+                    continue
+                if code:
+                    emitted.add(code)
+        self.assertTrue(emitted, 'no encoded types were collected')
+        for code in sorted(emitted):
+            self.assertIn(code, self.TOURNAMENT_TYPE_CODES, f'{code} is not a 192 code')
+
+    def test_every_encoded_type_resolves_to_a_pairing_system(self):
+        """Codes we don't implement fall back with a warning rather than
+        failing, but a team code must never fall back to an individual
+        system, and vice versa."""
+        for code in self.TOURNAMENT_TYPE_CODES:
+            variation = TrfEncodedType.get_pairing_variation(code)
+            self.assertIsNotNone(variation, code)
+            is_team_code = 'TEAM' in code
+            self.assertEqual(
+                isinstance(
+                    variation,
+                    (
+                        StandardTeamSwissVariation,
+                        BergerTeamRoundRobinVariation,
+                        DoubleBergerTeamRoundRobinVariation,
+                    ),
+                ),
+                is_team_code,
+                f'{code} resolved to {type(variation).__name__}',
+            )
 
     def dumped_line(self, tournament: TrfTournament, din: str) -> str:
         for line in TrfSerializer.dumps(tournament).splitlines():
