@@ -93,8 +93,12 @@
         <td class="text-center align-middle">
             {% set _score_text %}
                 {% if team_board.team_b %}
-                    {% set _a_gp, _b_gp = team_board.game_points %}
-                    {{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}
+                    {% if team_board.no_games_played %}
+                        -
+                    {% else %}
+                        {% set _a_gp, _b_gp = team_board.game_points %}
+                        {{ 'F' if team_board.team_all_forfeit(team_board.team_a.id) else '%g'|format(_a_gp) }} – {{ 'F' if team_board.team_all_forfeit(team_board.team_b.id) else '%g'|format(_b_gp) }}
+                    {% endif %}
                 {% else %}
                     {{ '%g'|format(admin_tournament.team_pab_game_points) }} – F
                 {% endif %}
@@ -102,7 +106,7 @@
             {% if admin_tournament.pairing_system.show_unpaired_team_modal %}
                 <button
                     type="button"
-                    class="btn btn-sm btn-outline-primary fw-bold text-nowrap"
+                    class="btn btn-sm btn-outline-primary {% if team_board.all_games_played %}fw-bold{% endif %} text-nowrap"
                     style="width: 4.5rem;"
                     hx-get="{{ url_for(
                         'admin-event-team-pairing-modal',

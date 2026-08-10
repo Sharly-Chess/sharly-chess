@@ -1,9 +1,11 @@
 """Tests for packed Molter recipe replay."""
 
 from types import SimpleNamespace
+from typing import cast
 
 from data.pairings.molter import MolterPairingSystem
 from data.pairings.molter import MolterEngine
+from data.tournament import Tournament
 from data.pairings.molter_recipes import (
     available_molter_recipe_rounds,
     get_molter_recipe_table,
@@ -11,6 +13,12 @@ from data.pairings.molter_recipes import (
     supported_molter_recipe_team_counts,
 )
 from data.pairings.molter_verifier import verify_molter_table
+
+
+def as_tournament(double: SimpleNamespace) -> Tournament:
+    """The engine's signatures name ``Tournament``; these stand-ins carry
+    only the few attributes the code under test reads."""
+    return cast(Tournament, double)
 
 
 def test_molter_recipe_resource_declares_supported_range() -> None:
@@ -50,9 +58,9 @@ def test_molter_recipe_tiled_candidates_respect_round_limit() -> None:
     supported = SimpleNamespace(rounds=19, rule_set=None)
     too_long = SimpleNamespace(rounds=20, rule_set=None)
 
-    assert engine._candidate_player_counts(20, supported)
-    assert engine._candidate_player_counts(20, too_long) == ()
-    assert engine._max_candidate_round_count(20, too_long) == 19
+    assert engine._candidate_player_counts(20, as_tournament(supported))
+    assert engine._candidate_player_counts(20, as_tournament(too_long)) == ()
+    assert engine._max_candidate_round_count(20, as_tournament(too_long)) == 19
 
 
 def test_molter_engine_rejects_more_than_twenty_five_teams() -> None:
@@ -66,7 +74,7 @@ def test_molter_engine_rejects_more_than_twenty_five_teams() -> None:
         team_player_count=12,
     )
 
-    message = MolterEngine().invalid_player_count_message(tournament)
+    message = MolterEngine().invalid_player_count_message(as_tournament(tournament))
 
     assert message is not None
     assert '25' in message
@@ -90,7 +98,9 @@ def test_molter_engine_disables_pairing_when_every_lineup_is_empty() -> None:
         rule_set=None,
     )
 
-    message = MolterEngine().pairings_generation_disabled_message(tournament, 1)
+    message = MolterEngine().pairings_generation_disabled_message(
+        as_tournament(tournament), 1
+    )
 
     assert message == 'Pairings generation disabled if there are no players to pair.'
 
@@ -117,7 +127,9 @@ def test_molter_engine_allows_pairing_with_an_incomplete_roster() -> None:
         rule_set=None,
     )
 
-    message = MolterEngine().pairings_generation_disabled_message(tournament, 1)
+    message = MolterEngine().pairings_generation_disabled_message(
+        as_tournament(tournament), 1
+    )
 
     assert message is None
 

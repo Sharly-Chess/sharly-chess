@@ -94,7 +94,7 @@ class TournamentImporterTestCase(TestCase):
 
         self.assertEqual(len(tournament.players), 16)
         player = tournament.tournament_players_by_pairing_number.get(1)
-        self.assertIsNotNone(player)
+        assert player is not None
         self.assertEqual(player.gender, PlayerGender.MAN)
         self.assertEqual(player.title, PlayerTitle.GRANDMASTER)
         self.assertEqual(player.last_name, 'CARLSEN')
@@ -677,7 +677,7 @@ class TournamentImporterTestCase(TestCase):
         # (2,4) team_board.index 1, (5, None) team_board.index 2.
         round_1_matches = sorted(
             (tb for tb in tournament.team_boards_by_id.values() if tb.round == 1),
-            key=lambda tb: tb.index,
+            key=lambda tb: tb.index or 0,
         )
         pn_pairs = [
             (
@@ -707,8 +707,9 @@ class TournamentImporterTestCase(TestCase):
         )
         round_1_pairing = aubry.pairings[1]
         self.assertEqual(round_1_pairing.result, Result.WIN)
-        self.assertIsNotNone(round_1_pairing.opponent)
-        self.assertEqual(round_1_pairing.opponent.last_name, 'DUBOIS')
+        opponent = round_1_pairing.opponent
+        assert opponent is not None
+        self.assertEqual(opponent.last_name, 'DUBOIS')
 
         # --- round 2 reconstruction ---
         # The source TRF has round 2 with three matches: Lyon vs ERP A
@@ -798,9 +799,9 @@ class TournamentImporterTestCase(TestCase):
                 board.stored_board.black_player_id,
                 f'slot {hole_slot}: hole side should be NULL',
             )
-            present_tp = tournament.tournament_players_by_id[
-                board.stored_board.white_player_id
-            ]
+            present_player_id = board.stored_board.white_player_id
+            assert present_player_id is not None
+            present_tp = tournament.tournament_players_by_id[present_player_id]
             self.assertEqual(
                 present_tp.team_id,
                 lyon.id,
@@ -940,7 +941,11 @@ class TournamentImporterTestCase(TestCase):
                 existing.stored_team_board.bye_type = bye_type
                 db.update_stored_team_board(existing.stored_team_board)
             else:
-                indexes = [tb.stored_team_board.index for tb in round_team_boards]
+                indexes = [
+                    tb.stored_team_board.index
+                    for tb in round_team_boards
+                    if tb.stored_team_board.index is not None
+                ]
                 next_index = max(indexes, default=-1) + 1
                 stb = StoredTeamBoard(
                     id=None,
@@ -1063,25 +1068,24 @@ class TournamentImporterTestCase(TestCase):
         # are dropped and rebuilt with both lineups; results flip to
         # NO_RESULT (each board with at least one present player).
         tb_complete = tournament.create_team_round_pairing(2, team_b.id)
-        self.assertIsNotNone(tb_complete.team_b)
+        complete_team_b = tb_complete.team_b
+        assert complete_team_b is not None
         self.assertEqual(
-            {tb_complete.team_a.id, tb_complete.team_b.id},
+            {tb_complete.team_a.id, complete_team_b.id},
             {team_a.id, team_b.id},
         )
         # Same envelope was mutated, not duplicated.
         self.assertEqual(tb_complete.id, tb_pending.id)
         self.assertEqual(len(tb_complete.boards), n)
         for board in tb_complete.boards:
-            both_present = (
-                board.optional_white_pairing is not None
-                and board.optional_black_pairing is not None
-            )
-            if both_present:
-                self.assertEqual(board.optional_white_pairing.result, Result.NO_RESULT)
-                self.assertEqual(board.optional_black_pairing.result, Result.NO_RESULT)
+            white_pairing = board.optional_white_pairing
+            black_pairing = board.optional_black_pairing
+            if white_pairing is not None and black_pairing is not None:
+                self.assertEqual(white_pairing.result, Result.NO_RESULT)
+                self.assertEqual(black_pairing.result, Result.NO_RESULT)
             else:
                 # Hole on one side → present player has FORFEIT_WIN.
-                present = board.optional_white_pairing or board.optional_black_pairing
+                present = white_pairing or black_pairing
                 if present is not None:
                     self.assertEqual(present.result, Result.FORFEIT_WIN)
 
@@ -1223,9 +1227,8 @@ class TournamentImporterTestCase(TestCase):
                 ),
                 None,
             )
-            self.assertIsNotNone(
-                envelope,
-                f'team pn={pn} should have a bye envelope in round {round_}',
+            assert envelope is not None, (
+                f'team pn={pn} should have a bye envelope in round {round_}'
             )
             self.assertEqual(
                 envelope.stored_team_board.bye_type,

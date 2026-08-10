@@ -71,11 +71,11 @@ class PrizePerformanceTestCase(TestCase):
                 self.assertIsNone(player.average_round_performance)
                 self.assertIsNone(player.best_round_performance)
                 continue
-            self.assertAlmostEqual(
-                player.average_round_performance,
-                sum(performances) / len(performances),
-            )
-            self.assertAlmostEqual(player.best_round_performance, max(performances))
+            average = player.average_round_performance
+            best = player.best_round_performance
+            assert average is not None and best is not None
+            self.assertAlmostEqual(average, sum(performances) / len(performances))
+            self.assertAlmostEqual(best, max(performances))
 
     @staticmethod
     def _prize(prize_id: int, category_id: int, value: float) -> StoredPrize:
@@ -142,7 +142,10 @@ class PrizePerformanceTestCase(TestCase):
                 if player.average_round_performance is not None
                 and player.id not in main_winner_ids
             ),
-            key=lambda player: (-player.average_round_performance, player.rank),
+            key=lambda player: (
+                -(player.average_round_performance or 0.0),
+                player.rank,
+            ),
         )
         self.assertEqual(prize_by_player_id.get(performance_ranked[0].id), 100)
         self.assertEqual(prize_by_player_id.get(performance_ranked[1].id), 50)

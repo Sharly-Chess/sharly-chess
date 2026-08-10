@@ -5,6 +5,9 @@ callback dispatch. Higher-level coverage (HTTP wiring, plugin_data
 mutations) lives in integration tests against a running events platform.
 """
 
+from collections.abc import Callable
+from typing import Any
+
 import pytest
 
 from plugins.sce.sce_batch import SCEBatchBuilder
@@ -92,12 +95,21 @@ class TestSCEBatchBuilder:
         b = SCEBatchBuilder()
         outcomes: list[tuple[str, dict]] = []
 
+        def recorder(label: str, idx: int) -> Callable[[dict[str, Any]], None]:
+            """Bind the loop index; a lambda with a default argument doesn't
+            match the declared single-parameter callback type."""
+
+            def record(response: dict[str, Any]) -> None:
+                outcomes.append((f'{label}-{idx}', response))
+
+            return record
+
         for i in range(3):
             b.add_create(
                 tournament_id='T1',
                 data={'last_name': f'L{i}', 'year_of_birth': 1990},
-                on_success=lambda r, idx=i: outcomes.append((f'ok-{idx}', r)),
-                on_error=lambda r, idx=i: outcomes.append((f'err-{idx}', r)),
+                on_success=recorder('ok', i),
+                on_error=recorder('err', i),
                 log_label=f'P{i}',
             )
 

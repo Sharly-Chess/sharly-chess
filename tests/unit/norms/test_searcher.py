@@ -19,10 +19,13 @@ that returns is_met for specific subsets, verifying:
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from types import SimpleNamespace
+from typing import Any, cast
 from unittest.mock import MagicMock
 
+from data.player import TournamentPlayer
+from data.tournament import Tournament
 from utils.enum import PlayerGender
 
 import pytest
@@ -54,6 +57,8 @@ class FakeOpponent:
     federation: Federation = Federation('FRA')
     title: PlayerTitle = PlayerTitle.NONE
     women_title: PlayerTitle = PlayerTitle.NONE
+    # Set by the tests that need the opponent's own games (1.4.3d).
+    pairings_by_round: dict[int, Any] = field(default_factory=dict)
 
     @property
     def held_titles(self) -> frozenset[PlayerTitle]:
@@ -66,6 +71,19 @@ class FakeOpponent:
     @property
     def strongest_title(self) -> PlayerTitle:
         return max(self.title, self.women_title, key=lambda title: title.sort_index)
+
+
+def as_tournament_player(double: object) -> TournamentPlayer:
+    """Cross a stand-in into a production signature. The norm code reads a
+    handful of attributes off its players and opponents, but its signatures
+    name the concrete class — so the substitution is stated here once
+    instead of being implied at every call site."""
+    return cast(TournamentPlayer, double)
+
+
+def as_tournament(double: object) -> Tournament:
+    """Tournament counterpart of :func:`as_tournament_player`."""
+    return cast(Tournament, double)
 
 
 def make_inputs(
@@ -159,7 +177,7 @@ class TestWithoutRounds:
         )
         # Add a round manually to drop.
         opp = FakeOpponent(1, 2500)
-        inputs.opponents.append(opp)
+        inputs.opponents.append(as_tournament_player(opp))
         inputs.results_list.append(Result.WIN)
         inputs.included_rounds.append(1)
         inputs.played_games = 1
@@ -623,7 +641,9 @@ def _real_searcher(
             high_level_tournament=False,
         ),
     )
-    return TitleNormSubsetSearcher(player, rule_143_exemption=rule_143_exemption)
+    return TitleNormSubsetSearcher(
+        as_tournament_player(player), rule_143_exemption=rule_143_exemption
+    )
 
 
 def _gm(id_: int, rating: int = 2400, federation: str = 'USA') -> FakeOpponent:
@@ -937,7 +957,7 @@ class TestSearcherWithRealEvaluator:
         searcher = _real_searcher(
             rounds=11, federation='USA', rule_143_exemption='1.4.3b'
         )
-        searcher.player.event.federation = 'FRA'
+        setattr(searcher.player.event, 'federation', 'FRA')
         # Re-resolve the exemption against the FRA event federation.
         from data.norms.tournament_checks import resolve_143abc_code
 
@@ -1065,7 +1085,7 @@ class TestSearcherWholeEvaluate:
 
         # Patch collect_inputs to return our hand-built inputs (twice — for
         # baseline and for the 1.4.2c branch, which is None here).
-        searcher.evaluator.collect_inputs = MagicMock(return_value=inputs)
+        setattr(searcher.evaluator, 'collect_inputs', MagicMock(return_value=inputs))
         results_dict = searcher.evaluate()
         assert set(results_dict.keys()) == {
             TitleNorm.GM,

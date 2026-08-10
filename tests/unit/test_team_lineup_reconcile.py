@@ -179,8 +179,10 @@ class TeamLineupReconcileTestCase(TestCase):
 
     def _reconcile(self, team_id: int, slot_values: list[int | None]) -> None:
         team = self._event.teams_by_id[team_id]
+        tournament = team.tournament
+        assert tournament is not None
         TeamAdminController._reconcile_paired_round_lineup(
-            self._event, team.tournament, team, 1, slot_values
+            self._event, tournament, team, 1, slot_values
         )
 
     def _boards_of(self, tournament, player_id: int) -> list[int]:

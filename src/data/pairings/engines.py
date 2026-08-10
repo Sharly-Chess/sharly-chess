@@ -21,7 +21,7 @@ from data.pairings.settings import BergerNumbersSetting
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
 from utils import Utils
-from utils.enum import BoardColor, Result, TeamByeType
+from utils.enum import BoardColor, Result, TeamByeType, ScoreType
 
 if TYPE_CHECKING:
     from data.teams.team import Team
@@ -718,29 +718,31 @@ class _TeamPairingBase(PairingEngine, ABC):
             # Order matches by standings entering the round (exclude any
             # results already entered for the round being paired).
             standings_by_team_id = {
-                row['team'].id: (row['mp'], row['gp'])
+                row['team'].id: row[
+                    'mp' if tournament.primary_score == ScoreType.MATCH_POINTS else 'gp'
+                ]
                 for row in tournament.team_standings(after_round=round_ - 1)
             }
 
             def _tpn_or_inf(team_id: int) -> float:
-                team = tournament.event.teams_by_id.get(team_id)
-                pn = team.pairing_number if team is not None else None
+                team_ = tournament.event.teams_by_id.get(team_id)
+                pn = team_.pairing_number if team_ is not None else None
                 return float(pn) if pn is not None else float('inf')
 
             def _pair_sort_key(
                 pair: tuple[int, int | None],
-            ) -> tuple[int, tuple[float, float], tuple[float, float], float, float]:
+            ) -> tuple[int, float, float, float]:
+                """Returns the sort key to use to sort the pair for table numbering, as a tuple.
+                - 0. 0 for PAB, 1 otherwise
+                - 1. the higher primary score
+                - 2. the lower primary score
+                - 3. the lowest pairing number of the high ranked team
+                """
                 a_id, b_id = pair
                 if b_id is None:
-                    return (
-                        0,
-                        (0.0, 0.0),
-                        (0.0, 0.0),
-                        -_tpn_or_inf(a_id),
-                        -float('inf'),
-                    )
-                a = standings_by_team_id.get(a_id, (0.0, 0.0))
-                b = standings_by_team_id.get(b_id, (0.0, 0.0))
+                    return 0, 0.0, 0.0, -_tpn_or_inf(a_id)
+                a = standings_by_team_id.get(a_id, 0.0)
+                b = standings_by_team_id.get(b_id, 0.0)
                 a_tpn, b_tpn = _tpn_or_inf(a_id), _tpn_or_inf(b_id)
                 # The stronger side has the better standing; on a tie
                 # (e.g. round 1, everyone on 0) the lower TPN is stronger
@@ -748,13 +750,13 @@ class _TeamPairingBase(PairingEngine, ABC):
                 # rank by (standing, -TPN) and compare the full key.
                 if (a, -a_tpn) >= (b, -b_tpn):
                     stronger, weaker = a, b
-                    stronger_tpn, weaker_tpn = a_tpn, b_tpn
+                    stronger_tpn = a_tpn
                 else:
                     stronger, weaker = b, a
-                    stronger_tpn, weaker_tpn = b_tpn, a_tpn
+                    stronger_tpn = b_tpn
                 # Negate TPNs so that ``reverse=True`` (which makes
                 # larger keys come first) puts the lower TPN first.
-                return (1, stronger, weaker, -stronger_tpn, -weaker_tpn)
+                return 1, stronger, weaker, -stronger_tpn
 
             sorted_pairs = sorted(team_pairs, key=_pair_sort_key, reverse=True)
             paired_team_ids = {
