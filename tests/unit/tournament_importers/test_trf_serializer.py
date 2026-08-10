@@ -188,7 +188,7 @@ class TestTrfSerializer(TestCase):
         self.assertEqual(tour.players[114].birth_date, '1993/00/00')
         self.assertEqual(tour.players[81].games[6], TrfGame(56, 'b', '1', 7))
         np = tour.players[13].national_player_by_federation.get('FRA')
-        self.assertIsNotNone(np)
+        assert np is not None
         self.assertEqual(np.player_id, 14)
         self.assertEqual(np.gender, 'm')
         self.assertEqual(np.classification, 'A')

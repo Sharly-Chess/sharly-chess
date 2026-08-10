@@ -6,6 +6,8 @@ batch responses are dispatched back to per-op callbacks.
 out of scope here (tested separately if needed).
 """
 
+from collections.abc import Callable
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -70,11 +72,20 @@ class TestSendBatch:
         builder = SCEBatchBuilder()
         outcomes: list[tuple[str, dict]] = []
 
+        def recorder(label: str, idx: int) -> Callable[[dict[str, Any]], None]:
+            """Bind the loop index; a lambda with a default argument doesn't
+            match the declared single-parameter callback type."""
+
+            def record(response: dict[str, Any]) -> None:
+                outcomes.append((f'{label}-{idx}', response))
+
+            return record
+
         for i in range(3):
             builder.add_delete(
                 registration_id=f'R{i}',
-                on_success=lambda r, idx=i: outcomes.append((f'ok-{idx}', r)),
-                on_error=lambda r, idx=i: outcomes.append((f'err-{idx}', r)),
+                on_success=recorder('ok', i),
+                on_error=recorder('err', i),
                 log_label=f'P{i}',
             )
 

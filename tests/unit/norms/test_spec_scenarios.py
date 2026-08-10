@@ -12,6 +12,7 @@ clause and asserts the verdict matches the spec.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from types import SimpleNamespace
 
 import pytest
@@ -23,11 +24,14 @@ from tests.unit.norms.test_searcher import (
     _im,
     _real_searcher,
     _untitled,
+    as_tournament,
+    as_tournament_player,
     make_inputs,
 )
 from data.norms import (
     TitleNormEvaluator,
 )
+from data.player import TournamentPlayer
 from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
 from utils.types import Federation, NormCheckResult
 
@@ -702,11 +706,11 @@ def _player_with_pairings(
     women_title: PlayerTitle = PlayerTitle.NONE,
     gender=None,
     rounds: int,
-    pairings: dict[int, tuple[FakeOpponent | None, Result]],
+    pairings: Mapping[int, tuple[FakeOpponent | None, Result]],
     pairing_system=None,
     pairing_variation=None,
     tournament_players_by_id: dict | None = None,
-):
+) -> TournamentPlayer:
     """Construct a fake TournamentPlayer-like with controlled pairings.
 
     Used by tests that need to exercise `collect_inputs` filtering logic
@@ -743,7 +747,7 @@ def _player_with_pairings(
         ),
         pairings_by_round=fake_pairings,
     )
-    return player
+    return as_tournament_player(player)
 
 
 # ===========================================================================
@@ -877,7 +881,7 @@ class TestRule_1_4_2a_FID_nuance:
             rounds=9,
             tournament_players_by_id=players,
         )
-        exemption = compute_big_tournament_exemption(tournament)
+        exemption = compute_big_tournament_exemption(as_tournament(tournament))
         # 1.4.2a: FID is accepted but doesn't count as a foreign player.
         # → foreigners excludes BOTH the host-fed (FRA) AND the FID player.
         # Only the 3 USA players qualify.
@@ -1272,7 +1276,7 @@ class TestRule_1_5_6a:
             tournament_players_by_id=players,
         )
         # Player 1 missed >1 round → excluded → 39 eligible players → fails.
-        assert compute_high_level_tournament(tournament) is False
+        assert compute_high_level_tournament(as_tournament(tournament)) is False
 
     def test_in_progress_round_keeps_completed_rounds_correct(self):
         """A round whose results are still pending must not count as a missed
@@ -1316,7 +1320,7 @@ class TestRule_1_5_6a:
         )
         present_by_round = {
             row.round_: row.fide_rated_present
-            for row in compute_high_level_tournament_trail(tournament)
+            for row in compute_high_level_tournament_trail(as_tournament(tournament))
         }
         # Player 1 (one bye) stays eligible despite the pending round 9, so the
         # completed rounds still count all 40 eligible players (round 3 shows 39
@@ -1376,7 +1380,7 @@ class TestRule_1_5_6a:
         )
         # Despite player #40 having a PAB in round 5, every round still
         # has 40 "present" players → 1.5.6a passes.
-        assert compute_high_level_tournament(tournament) is True
+        assert compute_high_level_tournament(as_tournament(tournament)) is True
 
 
 # ===========================================================================
@@ -1675,7 +1679,7 @@ def _forecaster_with_pairings(
         ),
         pairings_by_round=fake_pairings,
     )
-    return TitleNormForecaster(player)
+    return TitleNormForecaster(as_tournament_player(player))
 
 
 class TestForecasterTitleLadders:
@@ -2214,7 +2218,7 @@ class TestRoundAuditTrail:
         inputs.round_audit = [
             RoundAuditEntry(
                 round_=r,
-                opponent=opp,
+                opponent=as_tournament_player(opp),
                 raw_result=res,
                 effective_result=res,
                 decision=RoundDecision.INCLUDED,
@@ -2305,7 +2309,7 @@ class TestCalculationDetailsHooks:
             ),
             pairings_by_round={
                 r: SimpleNamespace(
-                    opponent=opp,
+                    opponent=as_tournament_player(opp),
                     result=res,
                     unplayed=res.is_unplayed,
                     played=not res.is_unplayed,
@@ -2313,7 +2317,7 @@ class TestCalculationDetailsHooks:
                 for r, (opp, res) in pairings.items()
             },
         )
-        evaluator = TitleNormEvaluator(player)
+        evaluator = TitleNormEvaluator(as_tournament_player(player))
         results = evaluator.evaluate()
         # IM is reachable; check whichever norm picked up 1.4.2c.
         for tn, res in results.items():
@@ -2526,7 +2530,7 @@ class TestRule_1_4_3abc_EndToEnd:
         def _fake_pairing(result, opp):
             return SimpleNamespace(
                 result=result,
-                opponent=opp,
+                opponent=as_tournament_player(opp),
                 unplayed=result.is_unplayed,
                 played=not result.is_unplayed,
             )
@@ -2553,7 +2557,7 @@ class TestRule_1_4_3abc_EndToEnd:
 
         # Without exemption → 1.4.3 fails (single foreign fed) → no norm
         # chaseable regardless of round 9 outcome.
-        plain = TitleNormForecaster(player)
+        plain = TitleNormForecaster(as_tournament_player(player))
         chaseable_plain = plain.chaseable_norms(9)
         assert TitleNorm.GM not in chaseable_plain, (
             'Without 1.4.3c, single-foreign-fed mix fails 1.4.3 → no chaseable GM'
@@ -2564,7 +2568,9 @@ class TestRule_1_4_3abc_EndToEnd:
         # whether 1.4.4 also passes — covered by the unit tests in
         # `TestRule_1_4_3abc`. Here we verify the forecaster threads the
         # exemption code into each searcher run.)
-        exempt = TitleNormForecaster(player, rule_143_exemption='1.4.3c')
+        exempt = TitleNormForecaster(
+            as_tournament_player(player), rule_143_exemption='1.4.3c'
+        )
         for outcome_result in exempt.forecast_round(9).values():
             assert outcome_result[TitleNorm.GM].is_143_exempt_via_abc, (
                 'Forecaster must apply rule_143_exemption to every per-outcome result'
@@ -2621,7 +2627,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
         def _fake_pairing(result, opp):
             return SimpleNamespace(
                 result=result,
-                opponent=opp,
+                opponent=as_tournament_player(opp),
                 unplayed=result.is_unplayed,
                 played=not result.is_unplayed,
             )
@@ -2648,7 +2654,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
             pairings_by_round=pairings_dict,
         )
 
-        searcher = TitleNormSubsetSearcher(player)
+        searcher = TitleNormSubsetSearcher(as_tournament_player(player))
         results = searcher.evaluate()
         gm_result = results[TitleNorm.GM]
 

@@ -1,8 +1,10 @@
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any, cast
 
 import pytest
 from jinja2 import DictLoader, Environment
+from litestar.plugins.htmx import HTMXRequest
 
 from web.admin.collection import (
     _SPECS,
@@ -12,6 +14,7 @@ from web.admin.collection import (
     ListColumn,
     get_admin_collection_spec,
 )
+from data.event import Event
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.session import SessionAdminCollectionViewMode
 
@@ -54,7 +57,8 @@ def test_collection_spec_components_exist_in_feature_template(key: str) -> None:
 
 def test_collection_specs_remain_easy_to_extend() -> None:
     spec = get_admin_collection_spec('tournaments')
-    assert not spec.__dataclass_params__.frozen
+    # ``__dataclass_params__`` is generated, so it isn't on the class's type.
+    assert not cast(Any, spec).__dataclass_params__.frozen
 
 
 def test_collection_specs_are_isolated_between_requests() -> None:
@@ -158,7 +162,8 @@ def test_plugin_component_template_renders_with_collection_context() -> None:
 def test_admin_context_applies_collection_plugins_to_a_fresh_spec(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    event = object()
+    # Only identity matters here — the plugin manager is asserted against it.
+    event = cast('Event', object())
 
     class PluginManager:
         def hook_for_event(self, hook_event, hook_name):
@@ -217,7 +222,8 @@ def test_collection_detail_placements_are_additive(key: str) -> None:
 
 
 def test_collection_view_defaults_to_list() -> None:
-    request = SimpleNamespace(session={})
+    # The session variable only reads ``request.session``.
+    request = cast(HTMXRequest, SimpleNamespace(session={}))
     assert (
         SessionAdminCollectionViewMode(request, 'new-collection').get()
         == AdminCollectionViewMode.LIST
