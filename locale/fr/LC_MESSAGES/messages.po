@@ -8347,6 +8347,9 @@ msgstr "Ukraine"
 msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
 msgstr "Non assignée"
 
+msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Non assignées"
+
 msgid "Unavailable before the tournament start."
 msgstr "Non disponible avant le début du tournoi."
 
@@ -9641,7 +9644,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
-#~ msgstr "Non assignées"
 

@@ -854,7 +854,7 @@ class PlayerAdminController(BaseEventAdminController):
                     ):
                         label = tournaments_by_id[team.tournament_id or 0].name
                     else:
-                        label = _('Unassigned')
+                        label = _('Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT')
                     teams_by_tournament_label.setdefault(label, {})[str(team.id)] = (
                         team.name
                     )
