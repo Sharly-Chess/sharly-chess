@@ -58,6 +58,17 @@ if TYPE_CHECKING:
 
 
 class TrfTournamentImporter(FileTournamentImporter):
+    #: TRF26 172 starting-rank methods, mapped to the rating a
+    #: tournament here would be set to. ``HBFN`` / ``LBFN`` (highest /
+    #: lowest of the two) and ``OTHER`` have no equivalent and are
+    #: reported instead.
+    STARTING_RANK_RATING_TYPES: dict[str, PlayerRatingType] = {
+        'FIDE': PlayerRatingType.FIDE,
+        'FIDON': PlayerRatingType.FIDE,
+        'NRO': PlayerRatingType.NATIONAL,
+        'NIDOF': PlayerRatingType.NATIONAL,
+    }
+
     @staticmethod
     def static_id() -> str:
         return 'TRF'
@@ -324,7 +335,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 )
             )
         sr_method = tournament.starting_rank_method
-        if sr_method and sr_method not in ['FIDON', 'NIDOF']:
+        if sr_method and sr_method not in self.STARTING_RANK_RATING_TYPES:
             features.append(
                 _('172 Starting rank method {method}').format(method=sr_method)
             )
@@ -1255,11 +1266,11 @@ class TrfTournamentImporter(FileTournamentImporter):
                 raise ImporterError(
                     _('{string}: {value}').format(string='152', value=message)
                 )
-        sr_method = trf_tournament.starting_rank_method
-        if sr_method == 'FIDON':
-            stored_tournament.player_rating_type = PlayerRatingType.FIDE
-        elif sr_method == 'NIDOF':
-            stored_tournament.player_rating_type = PlayerRatingType.NATIONAL
+        rating_type = cls.STARTING_RANK_RATING_TYPES.get(
+            trf_tournament.starting_rank_method
+        )
+        if rating_type is not None:
+            stored_tournament.player_rating_type = rating_type
         encoded_type = trf_tournament.encoded_type
         # Refuse files whose tournament type can't be honoured exactly: an
         # unknown code (no matching pairing system) or a CUSTOM_* code (a

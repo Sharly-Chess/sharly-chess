@@ -141,6 +141,8 @@ class TrfTournament:
     individuals_point_system: dict[str, float] = field(default_factory=dict)
     teams_point_system: dict[str, float] = field(default_factory=dict)
     starting_rank_method: str = ''
+    #: Federation the 172 method and the NRS records belong to.
+    starting_rank_federation: str = ''
     pairing_controller_id: str = ''
     tie_breaks: list[str] = field(default_factory=list)
     standings_tie_breaks: list[str] = field(default_factory=list)

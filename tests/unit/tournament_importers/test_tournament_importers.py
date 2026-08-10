@@ -10,6 +10,7 @@ from data.input_output import TournamentImporter
 from data.input_output.tournament_importer_options import FileOption
 from data.input_output.trf.trf_data import (
     TrfGame,
+    TrfNationalPlayer,
     TrfPlayer,
     TrfRoundBye,
     TrfTeam,
@@ -154,6 +155,149 @@ class TournamentImporterTestCase(TestCase):
         self.assertEqual(tournament.point_values[Result.DRAW], 1.0)
         self.assertEqual(tournament.point_values[Result.LOSS], 0.0)
         self.assertEqual(tournament.point_values[Result.PAIRING_ALLOCATED_BYE], 3.0)
+
+    def test_trf_national_rating_of_the_event_federation_is_used(self):
+        """TRF26 allows one National Rating Support record per
+        federation. We keep a single national rating, so the event's own
+        federation is the one that counts; the others are dropped, and
+        the import dialog says so."""
+        trf_tournament = TrfTournament(
+            name='National ratings',
+            num_rounds=1,
+            players=[
+                TrfPlayer(
+                    id=1,
+                    name='Player01, Test',
+                    rating=2000,
+                    federation='FRA',
+                    birth_date='1990/01/01',
+                    points=0.0,
+                    rank=1,
+                    games=[],
+                    national_player_by_federation={
+                        'FRA': TrfNationalPlayer(player_id=1, rating=1750),
+                        'BEL': TrfNationalPlayer(player_id=1, rating=1500),
+                    },
+                )
+            ],
+        )
+        with tempfile.NamedTemporaryFile(
+            'w', encoding='utf-8', suffix='.trfx', delete=False
+        ) as fh:
+            fh.write(TrfSerializer.dumps(trf_tournament))
+            trf_path = fh.name
+        try:
+            importer = TrfTournamentImporter([FileOption(Path(trf_path))])
+            features = importer.get_not_importable_features(self.event)
+            tournament = self._import_tournament(importer)
+        finally:
+            Path(trf_path).unlink(missing_ok=True)
+        self.assertEqual(self.event.federation, 'FRA')
+        player = tournament.tournament_players_by_pairing_number[1]
+        self.assertEqual(player.fide_rating_value, 2000)
+        self.assertEqual(player.national_rating_value, 1750)
+        # The Belgian rating is discarded, and that is reported.
+        self.assertEqual(len(features), 1, features)
+        self.assertIn('FRA', features[0])
+
+    def _import_trf(self, trf_tournament: TrfTournament) -> Tournament:
+        with tempfile.NamedTemporaryFile(
+            'w', encoding='utf-8', suffix='.trfx', delete=False
+        ) as fh:
+            fh.write(TrfSerializer.dumps(trf_tournament))
+            trf_path = fh.name
+        try:
+            return self._import_tournament(
+                TrfTournamentImporter([FileOption(Path(trf_path))])
+            )
+        finally:
+            Path(trf_path).unlink(missing_ok=True)
+
+    def _trf_player(self, number: int, **kwargs) -> TrfPlayer:
+        return TrfPlayer(
+            id=number,
+            name=f'Player{number:02d}, Test',
+            federation='FRA',
+            birth_date='1990/01/01',
+            points=0.0,
+            rank=number,
+            games=[],
+            **kwargs,
+        )
+
+    def test_trf_starting_rank_method_reflects_the_ratings_used(self):
+        """TRF26 172 states how the field was actually ranked, so it is
+        derived from the ratings that were used, not from the tournament
+        setting. Estimated ratings cannot be expressed in the format at
+        all, so a field carrying any of them is OTHER."""
+        rated = self._import_trf(
+            TrfTournament(
+                name='FIDE rated',
+                num_rounds=1,
+                starting_rank_federation='FRA',
+                starting_rank_method='FIDE',
+                players=[
+                    self._trf_player(number, rating=2000 + number) for number in (1, 2)
+                ],
+            )
+        )
+        trf = rated.to_trf(after_round=0)
+        self.assertEqual(trf.starting_rank_method, 'FIDE')
+        self.assertEqual(trf.starting_rank_federation, 'FRA')
+
+        unrated = self._import_trf(
+            TrfTournament(
+                name='Unrated',
+                num_rounds=1,
+                starting_rank_federation='FRA',
+                starting_rank_method='FIDE',
+                players=[self._trf_player(number, rating=0) for number in (1, 2)],
+            )
+        )
+        self.assertEqual(unrated.to_trf(after_round=0).starting_rank_method, 'OTHER')
+
+    def test_trf_starting_rank_methods_map_to_a_rating_type(self):
+        """All four methods we can honour set the tournament's rating;
+        the rest are reported rather than silently reinterpreted."""
+        for method, expected in (
+            ('FIDE', PlayerRatingType.FIDE),
+            ('FIDON', PlayerRatingType.FIDE),
+            ('NRO', PlayerRatingType.NATIONAL),
+            ('NIDOF', PlayerRatingType.NATIONAL),
+        ):
+            tournament = self._import_trf(
+                TrfTournament(
+                    name=f'Ranked by {method}',
+                    num_rounds=1,
+                    starting_rank_federation='FRA',
+                    starting_rank_method=method,
+                    players=[self._trf_player(1, rating=2000)],
+                )
+            )
+            self.assertEqual(tournament.player_rating_type, expected, method)
+
+        for method in ('HBFN', 'LBFN', 'OTHER'):
+            trf_tournament = TrfTournament(
+                name=f'Ranked by {method}',
+                num_rounds=1,
+                starting_rank_federation='FRA',
+                starting_rank_method=method,
+                players=[self._trf_player(1, rating=2000)],
+            )
+            with tempfile.NamedTemporaryFile(
+                'w', encoding='utf-8', suffix='.trfx', delete=False
+            ) as fh:
+                fh.write(TrfSerializer.dumps(trf_tournament))
+                trf_path = fh.name
+            try:
+                importer = TrfTournamentImporter([FileOption(Path(trf_path))])
+                features = importer.get_not_importable_features(self.event)
+            finally:
+                Path(trf_path).unlink(missing_ok=True)
+            self.assertTrue(
+                any(method in feature for feature in features),
+                f'{method} should be reported, got {features}',
+            )
 
     def test_trf_unsupported_type_is_rejected(self):
         """TRF files whose 192 tournament type is unknown or CUSTOM_* must

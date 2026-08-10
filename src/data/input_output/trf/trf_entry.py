@@ -139,6 +139,39 @@ class RoundDatesEntry(SingleLineEntry):
         return [s for s in data.strip().split(' ') if s]
 
 
+class StartingRankMethodEntry(TrfEntry):
+    """Record 172. The federation whose National Rating Support records
+    the method refers to sits at 5-7, the method itself at 9-13. The
+    record only means anything alongside NRS records, so it is written
+    only when there are any."""
+
+    FEDERATION_POSITION = 5
+    METHOD_POSITION = 9
+
+    def __init__(self):
+        super().__init__('172')
+
+    def dump(self, fp, tournament: TrfTournament):
+        if not tournament.starting_rank_method:
+            return
+        fp.write(
+            f'{self.din} {tournament.starting_rank_federation[:3]:<3} '
+            f'{tournament.starting_rank_method}\n'
+        )
+
+    def load(self, tournament: TrfTournament, data: str):
+        # Read as tokens rather than by column: files written before the
+        # federation was added (ours included) carry the bare method.
+        parts = data.split()
+        if len(parts) >= 2:
+            tournament.starting_rank_federation, tournament.starting_rank_method = (
+                parts[0],
+                parts[1],
+            )
+        elif parts:
+            tournament.starting_rank_method = parts[0]
+
+
 class PointSystemEntry(SingleLineEntry):
     def format(self, value: Any) -> str:
         return '   '.join(
@@ -714,7 +747,7 @@ ENTRIES = [
     SingleLineIntEntry('142', 'num_rounds'),
     SingleLineEntry('152', 'initial_color'),
     PointSystemEntry('162', 'individuals_point_system'),
-    SingleLineEntry('172', 'starting_rank_method'),
+    StartingRankMethodEntry(),
     SingleLineEntry('182', 'pairing_controller_id'),
     SingleLineEntry('192', 'encoded_type'),
     SingleLineListEntry('202', 'tie_breaks'),

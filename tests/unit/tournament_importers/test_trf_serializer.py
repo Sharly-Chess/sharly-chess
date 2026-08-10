@@ -378,6 +378,30 @@ class TestTrfSerializer(TestCase):
                     f'{din} {label}: expected at columns {start}-{end}',
                 )
 
+    def test_starting_rank_method_columns(self):
+        """TRF26 172: the federation the National Rating Support records
+        belong to at 5-7, the method at 9-13. Files written before the
+        federation was added carry the bare method, and still load."""
+        tournament = TrfTournament(
+            starting_rank_federation='FRA', starting_rank_method='FIDON'
+        )
+        line = self.dumped_line(tournament, '172')
+        self.assertEqual(line[4:7], 'FRA')
+        self.assertEqual(line[8:13], 'FIDON')
+
+        reloaded = TrfSerializer.loads(line)
+        self.assertEqual(reloaded.starting_rank_federation, 'FRA')
+        self.assertEqual(reloaded.starting_rank_method, 'FIDON')
+
+        legacy = TrfSerializer.loads('172 FIDON')
+        self.assertEqual(legacy.starting_rank_federation, '')
+        self.assertEqual(legacy.starting_rank_method, 'FIDON')
+
+        # Only meaningful alongside NRS records, so not written bare.
+        self.assertNotIn(
+            '172', TrfSerializer.dumps(TrfTournament(name='T')).splitlines()
+        )
+
     def test_abnormal_points_assignment_columns(self):
         """TRF26 299. The spec's worked example puts these fields two
         columns to the left of its own field table; the table is what

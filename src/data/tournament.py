@@ -2849,9 +2849,8 @@ class Tournament:
             num_rounds=self.rounds,
             initial_color=seed_setting.get_value(self).value,
             individuals_point_system=self._trf_individuals_point_system(),
-            starting_rank_method=(
-                'FIDON' if self.player_rating_type == PlayerRatingType.FIDE else 'NIDOF'
-            ),
+            starting_rank_method=self._trf_starting_rank_method(),
+            starting_rank_federation=self.event.federation or '',
             pairing_controller_id='Sharly Chess',
             encoded_type=self.pairing_variation.trf_encoded_type,
             standings_tie_breaks=['PTS']
@@ -3067,6 +3066,29 @@ class Tournament:
                     )
                 )
         return assignments
+
+    def _trf_starting_rank_method(self) -> str:
+        """TRF26 172 — how the participants were ranked. Derived from the
+        ratings actually used rather than from the tournament setting:
+        the setting only states a preference, and which fallback fired
+        is what the receiver needs in order to reproduce the ranking.
+
+        Estimated ratings (and the floors a rule set may supply) have no
+        place in the format, so a tournament that used any of them is
+        ranked by a method the TRF cannot express — which is what
+        ``OTHER`` is for."""
+        used = {player.rating_type for player in self.players}
+        if not used:
+            # Nothing to describe yet; state the preference.
+            return 'FIDE' if self.player_rating_type == PlayerRatingType.FIDE else 'NRO'
+        if PlayerRatingType.ESTIMATED in used:
+            return 'OTHER'
+        if used == {PlayerRatingType.FIDE}:
+            return 'FIDE'
+        if used == {PlayerRatingType.NATIONAL}:
+            return 'NRO'
+        # Both were used, so a fallback fired: say which way round.
+        return 'FIDON' if self.player_rating_type == PlayerRatingType.FIDE else 'NIDOF'
 
     def _trf_individuals_point_system(self) -> dict[str, float]:
         """TRF26 162 record — game-point values per result symbol.
