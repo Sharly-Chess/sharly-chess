@@ -1315,6 +1315,15 @@ msgstr ""
 msgid "Board and Color"
 msgstr ""
 
+msgid "Board count"
+msgstr ""
+
+msgid "Board count, then bottom board elimination"
+msgstr ""
+
+msgid "Board count, then top board results"
+msgstr ""
+
 msgid "Board is not the same as the opponent's."
 msgstr ""
 
@@ -1370,6 +1379,9 @@ msgid "Bosnia & Herzegovina"
 msgstr ""
 
 msgid "Botswana"
+msgstr ""
+
+msgid "Bottom board elimination"
 msgstr ""
 
 msgid "Brazil"
@@ -2762,6 +2774,9 @@ msgstr ""
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr ""
 
+msgid "Each board number multiplied by the game points scored on that board, summed over the tournament. The lower the sum, the higher the ranking — it rewards points won on the top boards. Only meaningful between teams on equal game points."
+msgstr ""
+
 msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
@@ -3270,11 +3285,11 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
-msgid "For each round, sum the opponent score multiplied by the team score obtained in that match across all rounds. The four variants (EMMSB / EMGSB / EGMSB / EGGSB) choose which score type — match points or game points — is used on each side; pick one in the variant option below (FIDE Handbook C.07 §13)."
+msgid "For each round, sum the opponent score multiplied by the team score obtained in that match across all rounds. The four variants (EMMSB / EMGSB / EGMSB / EGGSB) choose which score type — match points or game points — is used on each side; pick one in the variant option below (FIDE tie-break regulations, Art. 13.2)."
 msgstr ""
 
 #, python-brace-format
-msgid "For each round, the opponent total {opp} multiplied by the team {own} obtained in that match, summed across all rounds (FIDE Handbook C.07 §13)."
+msgid "For each round, the opponent total {opp} multiplied by the team {own} obtained in that match, summed across all rounds (FIDE tie-break regulations, Art. 13.2)."
 msgstr ""
 
 msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
@@ -5063,6 +5078,9 @@ msgstr ""
 msgid "Notes *** NOTES COLUMN HEADER"
 msgstr "Notes"
 
+msgid "Nothing further — leave the teams tied"
+msgstr ""
+
 msgid "Notification"
 msgstr ""
 
@@ -6712,7 +6730,7 @@ msgstr ""
 msgid "Searching…"
 msgstr ""
 
-msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook C.07 §13)."
+msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook Art. 13.4)."
 msgstr ""
 
 msgid "Sector arbitration"
@@ -7445,6 +7463,12 @@ msgstr ""
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr ""
 
+msgid "The game points scored on board 1 over the tournament; if that leaves the teams level, the next board down decides, and so on."
+msgstr ""
+
+msgid "The game points scored on every board but the bottom one; if that leaves the teams level, the bottom-most board left is excluded in turn until one team is ahead."
+msgstr ""
+
 msgid "The image is too large (max 2 MB)."
 msgstr ""
 
@@ -8172,6 +8196,9 @@ msgstr ""
 msgid "Too much information to display on a single projector?"
 msgstr ""
 
+msgid "Top board results"
+msgstr ""
+
 msgid "Top-40 average"
 msgstr ""
 
@@ -8291,6 +8318,9 @@ msgid "Turkiye"
 msgstr ""
 
 msgid "Turkmenistan"
+msgstr ""
+
+msgid "Two teams still tied"
 msgstr ""
 
 msgid "Type"
@@ -8769,6 +8799,9 @@ msgid "Weekly"
 msgstr ""
 
 msgid "Welcome to Sharly Chess!"
+msgstr ""
+
+msgid "What separates the last two teams when they are level on both match points and game points, judged on the boards of their own encounter."
 msgstr ""
 
 #, python-brace-format
@@ -9630,4 +9663,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
