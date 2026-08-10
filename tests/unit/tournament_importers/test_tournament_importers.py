@@ -120,6 +120,41 @@ class TournamentImporterTestCase(TestCase):
         ]
         self.assertEqual(results, expected_results)
 
+    def test_trf_individual_point_system_is_imported(self):
+        trf_tournament = TrfTournament(
+            name='Football scoring',
+            num_rounds=2,
+            individuals_point_system={'W': 3.0, 'D': 1.0, 'L': 0.0, 'P': 3.0},
+            players=[
+                TrfPlayer(
+                    id=number,
+                    name=f'Player{number:02d}, Test',
+                    rating=2000,
+                    federation='FRA',
+                    birth_date='1990/01/01',
+                    points=0.0,
+                    rank=number,
+                    games=[],
+                )
+                for number in (1, 2)
+            ],
+        )
+        with tempfile.NamedTemporaryFile(
+            'w', encoding='utf-8', suffix='.trfx', delete=False
+        ) as fh:
+            fh.write(TrfSerializer.dumps(trf_tournament))
+            trf_path = fh.name
+        try:
+            importer = TrfTournamentImporter([FileOption(Path(trf_path))])
+            self.assertEqual(importer.get_not_importable_features(self.event), [])
+            tournament = self._import_tournament(importer)
+        finally:
+            Path(trf_path).unlink(missing_ok=True)
+        self.assertEqual(tournament.point_values[Result.WIN], 3.0)
+        self.assertEqual(tournament.point_values[Result.DRAW], 1.0)
+        self.assertEqual(tournament.point_values[Result.LOSS], 0.0)
+        self.assertEqual(tournament.point_values[Result.PAIRING_ALLOCATED_BYE], 3.0)
+
     def test_trf_unsupported_type_is_rejected(self):
         """TRF files whose 192 tournament type is unknown or CUSTOM_* must
         be refused, not silently coerced to another pairing system."""

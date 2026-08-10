@@ -25,6 +25,7 @@ from data.input_output.trf.trf_mappers import (
     TrfResult,
     TrfPlayerTitle,
     TrfEncodedType,
+    TrfPointSystemResult,
 )
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.pairings.settings import ColorSeedSetting
@@ -315,12 +316,13 @@ class TrfTournamentImporter(FileTournamentImporter):
             # Legacy 013 records still aren't read; the 310-format teams
             # introduced in TRF26 are imported below.
             features.append(_('Teams'))
-        if tournament.individuals_point_system and not tournament.teams:
-            # 162 game-point overrides are still ignored for individual
-            # tournaments. In team mode it's just the W/D/L scoresheet
-            # that pairs alongside the 362 match-point system, so the
-            # round-trip is lossless and no warning is needed.
-            features.append(_('162 Point system'))
+        unknown_symbols = self._unknown_point_system_symbols(tournament)
+        if unknown_symbols:
+            features.append(
+                _('162 Point system results: {symbols}').format(
+                    symbols=', '.join(unknown_symbols)
+                )
+            )
         sr_method = tournament.starting_rank_method
         if sr_method and sr_method not in ['FIDON', 'NIDOF']:
             features.append(
@@ -396,6 +398,38 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
 
     @staticmethod
+    def _unknown_point_system_symbols(trf_tournament: TrfTournament) -> list[str]:
+        """162 result symbols with no equivalent here — 'X' (unknown
+        result, e.g. an adjourned game) is the one the spec defines."""
+        unknown: list[str] = []
+        for symbol in trf_tournament.individuals_point_system:
+            try:
+                TrfPointSystemResult.get_core_object(symbol)
+            except KeyError:
+                unknown.append(symbol)
+        return sorted(unknown)
+
+    @staticmethod
+    def _populate_game_points(
+        stored_tournament: StoredTournament,
+        trf_tournament: TrfTournament,
+    ) -> None:
+        """Fill the game-point values from the TRF26 162 record. These
+        apply to individual and team tournaments alike — in team mode
+        they are the per-board scoresheet that sits alongside the 362
+        match points. Read before the team fields, so that an explicit
+        320 team PAB can override the ``P`` value given here."""
+        game_points: dict[int, float] = {}
+        for symbol, value in trf_tournament.individuals_point_system.items():
+            try:
+                outcome = TrfPointSystemResult.get_core_object(symbol)
+            except KeyError:
+                continue
+            game_points[outcome.value] = float(value)
+        if game_points:
+            stored_tournament.game_points = game_points
+
+    @staticmethod
     def _populate_team_fields(
         stored_tournament: StoredTournament,
         trf_tournament: TrfTournament,
@@ -441,19 +475,6 @@ class TrfTournamentImporter(FileTournamentImporter):
                 stored_tournament.game_points[Result.PAIRING_ALLOCATED_BYE.value] = (
                     float(team_pabs.game_points)
                 )
-        game_points_by_symbol = trf_tournament.individuals_point_system
-        if game_points_by_symbol:
-            from data.input_output.trf.trf_mappers import TrfPointSystemResult
-
-            game_points: dict[int, float] = {}
-            for symbol, value in game_points_by_symbol.items():
-                try:
-                    outcome = TrfPointSystemResult.get_core_object(symbol)
-                except KeyError:
-                    continue
-                game_points[outcome.value] = float(value)
-            if game_points:
-                stored_tournament.game_points = game_points
         roster_size = max(
             (len(team.player_ids) for team in trf_tournament.teams), default=0
         )
@@ -1258,6 +1279,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         stored_tournament.pairing = TrfEncodedType.get_pairing_variation(
             encoded_type
         ).id
+        cls._populate_game_points(stored_tournament, trf_tournament)
         cls._populate_team_fields(stored_tournament, trf_tournament)
         trf_tie_breaks = (
             trf_tournament.standings_tie_breaks or ['PTS'] + trf_tournament.tie_breaks
