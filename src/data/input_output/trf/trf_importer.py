@@ -570,6 +570,11 @@ class TrfTournamentImporter(FileTournamentImporter):
                 id=None,
                 name=trf_team.name or trf_team.nickname or f'Team {trf_team.id}',
                 pairing_number=trf_team.id or None,
+                # A team listed in a 310 roster is taking part. Left
+                # checked out it would be given a zero-point bye when
+                # the next round is paired, and a file where every team
+                # is absent has no pairing at all.
+                check_in=True,
             )
             result.append((stored_team, list(trf_team.player_ids)))
         return result
@@ -1352,6 +1357,10 @@ class TrfTournamentImporter(FileTournamentImporter):
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
             federation=trf_player.federation.upper() or 'FID',
+            # Same reasoning as the teams: a player carried by a 001
+            # record is entered, and would otherwise be left out of the
+            # next round's pairing.
+            check_in=True,
         )
         if national_player:
             plugin_manager.hook_for_event(

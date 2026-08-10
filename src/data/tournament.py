@@ -3488,11 +3488,11 @@ class Tournament:
         self, after_round: int
     ) -> dict[int, tuple[float, float]]:
         """Per-team ``(match_points, game_points)`` cumulative through
-        ``after_round``. Returned dict is keyed by ``team.id``; teams
-        with no team_board entries simply get ``(0.0, 0.0)``. PAB
-        (team-level bye) awards the configured PAB match points and
-        the tournament's PAB game points (default behaviour mirrors
-        :meth:`team_standings`)."""
+        ``after_round``, bonus / penalty points included. Returned dict
+        is keyed by ``team.id``; teams with no team_board entries simply
+        get ``(0.0, 0.0)``. PAB (team-level bye) awards the configured
+        PAB match points and the tournament's PAB game points (default
+        behaviour mirrors :meth:`team_standings`)."""
         match_points = self.match_points
         win_mp = match_points.get(Result.WIN, 2.0)
         draw_mp = match_points.get(Result.DRAW, 1.0)
@@ -3537,6 +3537,19 @@ class Tournament:
             else:
                 a_entry[0] += draw_mp
                 b_entry[0] += draw_mp
+        # Bonus / penalty points count towards the standings, and the
+        # 310 record carries the standings — the 299 records emitted
+        # alongside say where the difference from the played results
+        # came from. Without this the totals would contradict the rank
+        # written on the same line, which does include them.
+        for team in self.teams:
+            for round_ in range(1, self._point_adjustment_bound(after_round) + 1):
+                mp_adj, gp_adj = self.effective_point_adjustment(team.id, round_)
+                if not mp_adj and not gp_adj:
+                    continue
+                entry = totals.setdefault(team.id, [0.0, 0.0])
+                entry[0] += mp_adj
+                entry[1] += gp_adj
         return {team_id: (mp, gp) for team_id, (mp, gp) in totals.items()}
 
     def _team_trf_encoded_type(self) -> str:

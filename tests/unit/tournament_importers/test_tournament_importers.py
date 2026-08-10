@@ -299,6 +299,65 @@ class TournamentImporterTestCase(TestCase):
                 f'{method} should be reported, got {features}',
             )
 
+    def test_trf_imported_teams_and_players_are_checked_in(self):
+        """A team or player carried by an imported file is taking part.
+        Left checked out, every team is given a zero-point bye when the
+        next round is paired (TRF26 240), leaving bbpPairings nothing to
+        pair — which surfaces as "pairing is impossible"."""
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        file_path = BASE_PATH / 'trf-team-import-test.trf'
+        tournament = self._import_tournament(
+            TrfTournamentImporter([FileOption(file_path)])
+        )
+        self.assertTrue(tournament.teams)
+        for team in tournament.teams:
+            self.assertTrue(team.check_in, f'{team.name} is checked out')
+        # No team should be flagged absent for the round being paired.
+        trf = tournament.to_trf(after_round=1)
+        absent = [bye for bye in trf.round_byes if bye.type == 'Z' and bye.round == 2]
+        self.assertEqual(absent, [], 'teams flagged absent for the next round')
+
+    def test_trf_point_adjustments_reach_the_310_totals(self):
+        """The 310 record carries the standings, so bonus / penalty
+        points belong in its totals — the 299 records emitted alongside
+        say where the difference from the played results came from.
+        Rank always included them, so leaving the totals out made the
+        two disagree on the same line."""
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        tournament = self._import_tournament(
+            TrfTournamentImporter([FileOption(BASE_PATH / 'trf-team-import-test.trf')])
+        )
+        team = next(t for t in tournament.teams if t.pairing_number == 1)
+        before = tournament.to_trf(after_round=1)
+        earned = next(t for t in before.teams if t.id == 1).match_points
+
+        from database.sqlite.event.event_database import EventDatabase
+
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            tournament.set_manual_point_adjustment(
+                team.id, 1, -3.0, 0.0, 'test penalty', database
+            )
+        self.event = EventLoader().load_event(EVENT_ID)
+        tournament = self.event.tournaments_by_id[tournament.id]
+
+        trf = tournament.to_trf(after_round=1)
+        adjusted = next(t for t in trf.teams if t.id == 1)
+        self.assertEqual(adjusted.match_points, earned - 3.0)
+        # …and the 299 record explains the gap.
+        self.assertEqual(
+            [
+                (a.match_points, a.round, a.pairing_numbers)
+                for a in trf.abnormal_points_assignments
+            ],
+            [(-3.0, 1, [1])],
+        )
+        # The pairing-info groups read the same totals.
+        self.assertEqual(
+            tournament.team_primary_score_before_round(team.id, 2), earned - 3.0
+        )
+
     def test_trf_unsupported_type_is_rejected(self):
         """TRF files whose 192 tournament type is unknown or CUSTOM_* must
         be refused, not silently coerced to another pairing system."""

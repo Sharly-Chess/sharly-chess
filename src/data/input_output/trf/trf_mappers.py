@@ -31,18 +31,36 @@ class TrfPlayerGender(CoreMapper[str, PlayerGender]):
 
 
 class TrfPlayerTitle(CoreMapper[str, PlayerTitle]):
+    """001 positions 11-13. Both TRF16 and TRF26 spell the titles
+    ``GM``, ``IM``, ``WGM`` …, and those are what we write, being first
+    here. The lowercase forms below are a vendor convention (older
+    Swiss-Manager exports and the like, which spell the women's titles
+    both ``gf`` and ``wg``); they are accepted so those files load."""
+
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerTitle]:
         return {
             '': PlayerTitle.NONE,
-            'cf': PlayerTitle.WOMAN_CANDIDATE_MASTER,
-            'c': PlayerTitle.CANDIDATE_MASTER,
-            'ff': PlayerTitle.WOMAN_FIDE_MASTER,
-            'f': PlayerTitle.FIDE_MASTER,
-            'mf': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
-            'm': PlayerTitle.INTERNATIONAL_MASTER,
-            'gf': PlayerTitle.WOMAN_GRANDMASTER,
+            'GM': PlayerTitle.GRANDMASTER,
+            'IM': PlayerTitle.INTERNATIONAL_MASTER,
+            'FM': PlayerTitle.FIDE_MASTER,
+            'CM': PlayerTitle.CANDIDATE_MASTER,
+            'WGM': PlayerTitle.WOMAN_GRANDMASTER,
+            'WIM': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            'WFM': PlayerTitle.WOMAN_FIDE_MASTER,
+            'WCM': PlayerTitle.WOMAN_CANDIDATE_MASTER,
             'g': PlayerTitle.GRANDMASTER,
+            'm': PlayerTitle.INTERNATIONAL_MASTER,
+            'f': PlayerTitle.FIDE_MASTER,
+            'c': PlayerTitle.CANDIDATE_MASTER,
+            'gf': PlayerTitle.WOMAN_GRANDMASTER,
+            'mf': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            'ff': PlayerTitle.WOMAN_FIDE_MASTER,
+            'cf': PlayerTitle.WOMAN_CANDIDATE_MASTER,
+            'wg': PlayerTitle.WOMAN_GRANDMASTER,
+            'wm': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            'wf': PlayerTitle.WOMAN_FIDE_MASTER,
+            'wc': PlayerTitle.WOMAN_CANDIDATE_MASTER,
         }
 
 

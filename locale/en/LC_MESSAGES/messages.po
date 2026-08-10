@@ -1361,6 +1361,10 @@ msgstr ""
 msgid "Bonus / penalty points"
 msgstr ""
 
+#, python-brace-format
+msgid "Bonus / penalty points must be between {min} and {max}."
+msgstr ""
+
 msgid "Bonus / penalty points updated."
 msgstr ""
 
@@ -9640,3 +9644,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
