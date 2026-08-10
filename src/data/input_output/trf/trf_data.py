@@ -113,7 +113,7 @@ class TrfOOdOTeamPairing:
 @dataclass
 class TrfAbnormalPointsAssignment:
     type: str
-    match_points: float
+    match_points: float | None
     game_points: float | None
     round: int | None
     pairing_numbers: list[int | None]

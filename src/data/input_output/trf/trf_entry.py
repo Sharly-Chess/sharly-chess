@@ -126,14 +126,14 @@ class RoundDatesEntry(SingleLineEntry):
     def get_header(self, tournament: TrfTournament) -> str | None:
         if not [date_ for date_ in tournament.round_dates if date_]:
             return None
-        header = ' ' * 86
+        header = ' ' * 85
         num_columns = len(tournament.round_dates)
         for column in range(1, num_columns + 1):
             header += f'  {str(column).rjust(8, "R")}'
         return header
 
     def format(self, value: Any) -> str:
-        return ' ' * 88 + '  '.join(date_.rjust(8) for date_ in value)
+        return ' ' * 87 + '  '.join(date_.rjust(8) for date_ in value)
 
     def parse(self, data: str) -> Any:
         return [s for s in data.strip().split(' ') if s]
@@ -306,16 +306,19 @@ class DeprecatedTeamEntry(MultipleLinesEntry):
         super().__init__('013', 'deprecated_teams')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
-        header = 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN'
+        # The name fills 5-36 and the first player starts at 37: unlike
+        # every other record here, there is no separator between them.
+        header = 'N' * 32
         num_columns = max(len(team.player_ids) for team in tournament.deprecated_teams)
-        for column in range(1, num_columns + 1):
-            header += f' {str(column).rjust(4, "P")}'
+        header += ' '.join(
+            str(column).rjust(4, 'P') for column in range(1, num_columns + 1)
+        )
         return header
 
     def format(self, value: Any) -> str:
         team: TrfDeprecatedTeam = value
         player_ids = ' '.join(f'{s:>4}' for s in team.player_ids)
-        return f'{team.name[:32]:32} {player_ids}'
+        return f'{team.name[:32]:32}{player_ids}'
 
     def parse(self, data: str) -> Any:
         return TrfDeprecatedTeam(name=data[:32], player_ids=split_ints(data[32:], 5))
@@ -601,17 +604,28 @@ class OOdOTeamPairingEntry(MultipleLinesEntry):
 
 
 class AbnormalPointsAssignmentEntry(MultipleLinesEntry):
-    LINE_PATTERN = re.compile(
-        r'^(?P<type>[dwlfhz+\- ]) (?P<match_points>[ \-\d.]{4}) '
-        r'(?P<game_points>[ \-\d.]{4})(?P<round>(\s[ \d]{3})?)(?P<pairing_numbers>( [ \d]{4})*)\s*$',
-        re.IGNORECASE,
-    )
+    """Record 299. ``[-]11.5`` is four columns wide, as everywhere else in
+    the format, holding either a sign or a second integer digit but not
+    both. The worked example in the spec puts the fields two columns to
+    the left of its own field table; the table is what bbpPairings reads,
+    so it wins."""
+
+    TYPES = 'WDLFHZ+- '
+    # 1-based line positions; the payload handed to ``parse`` starts at 5.
+    TYPE_POSITION = 5
+    MATCH_POINTS_POSITION = 8
+    GAME_POINTS_POSITION = 14
+    ROUND_POSITION = 20
+    FIRST_ID_POSITION = 24
+    POINTS_WIDTH = 4
+    ID_WIDTH = 4
+    ID_STRIDE = 5
 
     def __init__(self):
         super().__init__('299', 'abnormal_points_assignments')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
-        header = 'T MMMM GGGG RRR'
+        header = 'T  MMMM  GGGG  RRR'
         num_columns = max(
             len(assignment.pairing_numbers)
             for assignment in tournament.abnormal_points_assignments
@@ -624,24 +638,42 @@ class AbnormalPointsAssignmentEntry(MultipleLinesEntry):
         assignment: TrfAbnormalPointsAssignment = value
         line = (
             f'{assignment.type:1}'
-            f' {float_display(assignment.match_points, 4)}'
-            f' {float_display(assignment.game_points, 4)}'
-            f' {assignment.round or "000":3}'
+            f'  {float_display(assignment.match_points, self.POINTS_WIDTH)}'
+            f'  {float_display(assignment.game_points, self.POINTS_WIDTH)}'
+            f'  {assignment.round or "000":>3}'
         )
         for pairing_number in assignment.pairing_numbers:
             line += f' {pairing_number or "0000":>4}'
         return line
 
     def parse(self, data: str) -> Any:
-        match = self.LINE_PATTERN.fullmatch(data)
-        if match is None:
+        # Read by position rather than by pattern: the trailing fields are
+        # optional and exporters trim the padding that would otherwise
+        # hold them.
+        def field(position: int, width: int) -> str:
+            start = position - self.TYPE_POSITION
+            return data[start : start + width].strip()
+
+        type_ = (data[:1] or ' ').upper()
+        if type_ not in self.TYPES:
             raise self.line_exception(data)
+        pairing_numbers: list[int | None] = []
+        position = self.FIRST_ID_POSITION
+        while field(position, self.ID_WIDTH):
+            pairing_numbers.append(
+                int_or_default(field(position, self.ID_WIDTH)) or None
+            )
+            position += self.ID_STRIDE
         return TrfAbnormalPointsAssignment(
-            type=match.group('type'),
-            match_points=float_or_default(match.group('match_points')),
-            game_points=float_or_default(match.group('game_points')),
-            round=int_or_default(match.group('round')),
-            pairing_numbers=split_optional_ints(match.group('pairing_numbers'), 5),
+            type=type_,
+            match_points=float_or_default(
+                field(self.MATCH_POINTS_POSITION, self.POINTS_WIDTH)
+            ),
+            game_points=float_or_default(
+                field(self.GAME_POINTS_POSITION, self.POINTS_WIDTH)
+            ),
+            round=int_or_default(field(self.ROUND_POSITION, 3)),
+            pairing_numbers=pairing_numbers,
         )
 
 
