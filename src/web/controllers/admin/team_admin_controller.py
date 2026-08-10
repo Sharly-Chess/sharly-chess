@@ -98,7 +98,7 @@ class TeamAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         tournament_options: dict[str, str | SelectOption] = {
-            '': _('— Unassigned —'),
+            '': f'— {_("Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT")} —',
         }
         for tournament in sorted(
             event.tournaments_by_id.values(), key=lambda t: (t.index, t.name)
