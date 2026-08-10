@@ -23,6 +23,15 @@
                         <th scope="col" class="text-start compact-col">{{ _('TPN *** TOURNAMENT PAIRING NUMBER') }}</th>
                         <th scope="col" class="text-start">{{ _('Team') }}</th>
                         <th scope="col" class="text-end compact-col">{{ _('GP *** GAME POINTS') }}</th>
+                        <th scope="col" class="text-center compact-col">{{ _('Colour') }}</th>
+                        <th
+                            scope="col" class="text-center compact-col"
+                            {{ macros.tooltip_attributes('info', _(
+                                'C2: whether the team may take the pairing-allocated '
+                                'bye — a team can only ever receive one.'
+                            )) }}
+                        >{{ _('C2 *** BYE ELIGIBILITY CRITERION') }}</th>
+                        <th scope="col" class="text-start compact-col">{{ _('Pairing') }}</th>
                         {% if history_columns %}
                             <th colspan="{{ history_columns }}" scope="col" class="text-start compact-col">
                                 {{ _('Opponents') }}
@@ -58,6 +67,38 @@
                                 </td>
                                 <td>{{ row.team.name }}</td>
                                 <td class="text-end compact-col">{{ '%g'|format(row.gp) }}</td>
+                                <td class="text-center compact-col">
+                                    {% if row.preference and row.preference.color %}
+                                        {% set pref = 'W' if row.preference.color.value == 'W' else 'B' %}
+                                        {% if row.preference.absolute %}
+                                            <b>{{ pref }}</b>
+                                        {% elif row.preference.strong %}
+                                            ({{ pref }})
+                                        {% else %}
+                                            <span class="text-secondary">{{ pref|lower }}</span>
+                                        {% endif %}
+                                    {% elif row.preference %}
+                                        <span class="text-secondary">·</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center compact-col">
+                                    {% if row.eligible_for_bye is not none %}
+                                        {% if row.eligible_for_bye %}
+                                            <i class="bi-check-lg text-success"></i>
+                                        {% else %}
+                                            <i class="bi-x-lg text-secondary"></i>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td class="text-start compact-col text-nowrap">
+                                    {% if row.has_bye %}
+                                        <span class="text-secondary">{{ _('Bye') }}</span>
+                                    {% elif row.current_opponent %}
+                                        <span {{ macros.tooltip_attributes('info', row.current_opponent.name) }}>
+                                            {{ row.current_opponent.pairing_number or row.current_opponent.id }}{% if row.current_color %} {{ 'W' if row.current_color.value == 'W' else 'B' }}{% endif %}
+                                        </span>
+                                    {% endif %}
+                                </td>
                                 {% for opp_id in row.opponents %}
                                     <td class="text-center compact-col px-1">
                                         {% if opp_id and opp_id in teams_by_id %}
