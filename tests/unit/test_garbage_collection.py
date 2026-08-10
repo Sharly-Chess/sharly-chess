@@ -45,9 +45,12 @@ def test_request_garbage_collection_releases_request_cycles():
 
 def test_request_garbage_collection_ignores_static_requests(monkeypatch):
     collect_calls: list[int] = []
-    monkeypatch.setattr(
-        gc, 'collect', lambda generation: collect_calls.append(generation) or 0
-    )
+
+    def record_collect(generation: int) -> int:
+        collect_calls.append(generation)
+        return 0
+
+    monkeypatch.setattr(gc, 'collect', record_collect)
 
     @get('/static/app.css')
     async def handler() -> str:

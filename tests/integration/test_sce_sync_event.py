@@ -72,6 +72,7 @@ def _install_tournament_plugin_data(uniq_id: str, tournament_name: str) -> int:
             'UPDATE `tournament` SET `plugin_data` = ? WHERE `id` = ?',
             (json.dumps(stored_t.plugin_data), stored_t.id),
         )
+        assert stored_t.id is not None
         return stored_t.id
 
 
@@ -295,6 +296,7 @@ class TestSyncEventLocalMove(TestCase):
                     (json.dumps(stored_t.plugin_data), stored_t.id),
                 )
             t2_id = next(t.id for t in stored_ts if t.name == 'T2')
+            assert t2_id is not None
 
         _install_event_plugin_data(MOVE_EVENT_UNIQ_ID)
 

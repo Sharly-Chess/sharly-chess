@@ -1,5 +1,6 @@
 import gc
 import weakref
+from typing import Any
 
 from jinja2 import DictLoader
 import pytest
@@ -16,7 +17,7 @@ class TemplatePayload:
 
 
 def test_performance_middleware_collects_request_scoped_timings(monkeypatch):
-    log_calls: list[tuple[object, ...]] = []
+    log_calls: list[tuple[Any, ...]] = []
     monkeypatch.setattr(
         performance.logger, 'info', lambda *args: log_calls.append(args)
     )

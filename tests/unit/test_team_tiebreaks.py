@@ -11,6 +11,7 @@ the tournament regulations on PDF page 9:
   +F        → 2 match points, 4 game points
 """
 
+from typing import ClassVar
 from unittest import TestCase
 
 import pytest
@@ -298,6 +299,8 @@ def _bh(team_score: str, cut1: bool = False) -> StandardBuchholzTieBreak:
 @pytest.mark.unit
 class TecTeamTieBreakTestCase(TestCase):
     """Reproduces TEC-2023 Exercises 34-41 using pure TeamRecord input."""
+
+    records: ClassVar[dict[int, TeamRecord]]
 
     @classmethod
     def setUpClass(cls) -> None:

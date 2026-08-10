@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
@@ -169,7 +170,7 @@ class TestSingleScreensFunctionality:
 
         # Test the primary result button
 
-        players = [
+        players: list[dict[str, Any]] = [
             {'name': 'ALYX', 'result': Result.WIN, 'button_text': '1 - 0'},
             {'name': 'BRUNO', 'result': Result.DRAW, 'button_text': '½ - ½'},
             {'name': 'MARIA', 'result': Result.LOSS, 'button_text': '0 - 1'},
