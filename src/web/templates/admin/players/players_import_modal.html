@@ -84,12 +84,22 @@
                     <span
                         id="overwrite-players-container"
                         {{ macros.tooltip_attributes(
-                            '', _('Players can\'t be overwritten once the tournament has started.')
+                            '', _('Players can\'t be overwritten once a tournament has started.')
+                            if admin_event.is_team_event else
+                            _('Players can\'t be overwritten once the tournament has started.')
                         ) }}
                     >
+                        {# A team event imports at the event level — a team,
+                           not a tournament, places its players — so there is
+                           no tournament to clear and the deletion is the
+                           event's. #}
                         {{ admin_macros.switch_input(
                             name='overwrite_players',
-                            placeholder=_('Delete the existing players'),
+                            placeholder=(
+                                _('Delete every player of the event')
+                                if admin_event.is_team_event
+                                else _('Delete the existing players')
+                            ),
                             data=data, errors=errors
                         ) }}
                     </span>
@@ -99,6 +109,11 @@
                         {{ macros.tooltip_attributes(
                             'warning',
                             _(
+                                'Every player of the event will be deleted before '
+                                'importing the ones from the file — a team event '
+                                'places its players by team, not by tournament, so '
+                                'the deletion cannot be limited to one tournament.'
+                            ) if admin_event.is_team_event else _(
                                 'All the players of the selected tournament will '
                                 'be deleted before importing the ones from the file.'
                             ),

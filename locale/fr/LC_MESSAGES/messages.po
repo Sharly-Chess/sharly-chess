@@ -2342,6 +2342,9 @@ msgstr "Supprimer tous les horaires de ce chronomètre et recommencer."
 msgid "Delete display controller"
 msgstr "Supprimer le pilote d'afficheur"
 
+msgid "Delete every player of the event"
+msgstr "Supprimer tou·tes les joueur·euses de l'évènement"
+
 msgid "Delete menu"
 msgstr "Supprimer le menu"
 
@@ -3050,6 +3053,9 @@ msgstr "Évènements"
 #, python-brace-format
 msgid "Events ({num})"
 msgstr "Évènements ({num})"
+
+msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament."
+msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi."
 
 msgid "Exclude"
 msgstr "Exclure"
@@ -5788,6 +5794,9 @@ msgstr "Joueur·euses ({num})"
 #, python-brace-format
 msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>J</u>oueur·euses ({num})"
+
+msgid "Players can't be overwritten once a tournament has started."
+msgstr "Les joueur·euses ne peuvent plus être remplacé·es dès qu'un tournoi a commencé."
 
 msgid "Players can't be overwritten once the tournament has started."
 msgstr "Les joueur·euses ne peuvent être écrasé·es une fois le tournoi démarré."
