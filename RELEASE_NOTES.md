@@ -9,6 +9,7 @@
 
 ## Events
 
+- Custom tags can be created and added to events for easier filtering (5.0.0)
 - Event creation allowed for access level "Organization" (5.0.0)
 
 ## Players
