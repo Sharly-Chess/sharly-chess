@@ -3137,6 +3137,10 @@ msgstr ""
 msgid "FIDE recommendation - Unrated (2019)"
 msgstr ""
 
+#, python-brace-format
+msgid "FIDE {id}"
+msgstr ""
+
 msgid "FIDE-rated present"
 msgstr ""
 
@@ -5227,6 +5231,9 @@ msgid "Open IT1 certificate for this norm"
 msgstr ""
 
 msgid "Open application (browser)"
+msgstr ""
+
+msgid "Open the profile in a new tab."
 msgstr ""
 
 msgid "Open/close check-in"
