@@ -8345,6 +8345,9 @@ msgstr ""
 msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
 msgstr "Unassigned"
 
+msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Unassigned"
+
 msgid "Unavailable before the tournament start."
 msgstr ""
 
@@ -9639,7 +9642,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
-#~ msgstr "Unassigned"
 
