@@ -6727,6 +6727,9 @@ msgstr ""
 msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook C.07 §13)."
 msgstr ""
 
+msgid "Secondary score, used to allocate colours."
+msgstr ""
+
 msgid "Sector arbitration"
 msgstr ""
 
