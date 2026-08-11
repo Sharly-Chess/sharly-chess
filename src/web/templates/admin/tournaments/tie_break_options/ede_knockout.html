@@ -1,13 +1,13 @@
-{# Art. 13.3.2: what to apply when exactly two teams are still tied on
+{# Art. 13.3.2: what to apply when exactly some teams are still tied on
    both match and game points. The knock-out tie-breaks read the boards
-   of those two teams' own encounter, so they can only be chosen here —
+   of those teams' own encounter, so they can only be chosen here —
    listing them separately would weigh the whole tournament instead. #}
 <div class="col-12">
     {{ admin_macros.select_input(
         name=option.id,
-        label=_('%(string)s:', string=_('Two teams still tied')),
+        label=_('%(string)s:', string=_('Teams still tied')),
         tooltip_text=_(
-            'What separates the last two teams when they are level on '
+            'What separates the last teams when they are level on '
             'both match points and game points, judged on the boards of '
             'their own encounter.'
         ),

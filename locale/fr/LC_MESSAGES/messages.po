@@ -7323,6 +7323,9 @@ msgstr "Équipes du n°%(first)d au n°%(last)d"
 msgid "Teams from %(first)s to %(last)s"
 msgstr "Équipes de %(first)s à %(last)s"
 
+msgid "Teams still tied"
+msgstr "Équipes encore à égalité"
+
 #, python-format
 msgid "Teams will be paired at round %(pairing_round)d and marked as present for the following rounds."
 msgstr "Les équipes vont être appariées à la ronde %(pairing_round)d et marquées présentes pour les rondes suivantes."
@@ -8322,9 +8325,6 @@ msgstr "Turquie"
 msgid "Turkmenistan"
 msgstr "Turkménistan"
 
-msgid "Two teams still tied"
-msgstr "Deux équipes encore à égalité"
-
 msgid "Type"
 msgstr "Type"
 
@@ -8803,7 +8803,7 @@ msgstr "Une semaine"
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
-msgid "What separates the last two teams when they are level on both match points and game points, judged on the boards of their own encounter."
+msgid "What separates the last teams when they are level on both match points and game points, judged on the boards of their own encounter."
 msgstr "Ce qui départage les deux dernières équipes lorsqu'elles sont à égalité à la fois aux points de match et aux points de parties, en se fondant sur les échiquiers de leur confrontation."
 
 #, python-brace-format
@@ -9665,3 +9665,4 @@ msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
