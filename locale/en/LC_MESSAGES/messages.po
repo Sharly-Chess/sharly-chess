@@ -9711,7 +9711,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "What separates the last two teams when they are level on both match points and game points, judged on the boards of their own encounter."
-#~ msgstr ""
-

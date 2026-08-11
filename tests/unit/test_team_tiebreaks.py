@@ -1869,3 +1869,179 @@ class DummyOpponentCapTestCase(TestCase):
             legacy=True,
         )
         self.assertEqual(value, own.total_mp)
+
+
+@pytest.mark.unit
+class BoardDifferentialTieBreakTestCase(TestCase):
+    """FFE *Somme des différentiels par échiquier* (F01 §4.4.a): tied
+    teams are compared on their board-1 differential, then board 2, and
+    so on. The value is a within-group rank delta, 0 being the worst of
+    the group."""
+
+    @staticmethod
+    def _context() -> TeamTieBreakContext:
+        return TeamTieBreakContext(
+            primary_score=ScoreType.MATCH_POINTS,
+            secondary_score=ScoreType.GAME_POINTS,
+            rounds=1,
+            win_mp=3.0,
+            draw_mp=2.0,
+            loss_mp=1.0,
+            team_player_count=4,
+            draw_gp=0.0,
+        )
+
+    @staticmethod
+    def _team(team_id: int, name: str, boards: tuple[float, ...], opponent_id: int):
+        return TeamRecord(
+            team_id=team_id,
+            name=name,
+            total_mp=2.0,
+            total_gp=sum(boards),
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=opponent_id,
+                    own_mp=2.0,
+                    own_gp=sum(boards),
+                    match_type=TeamMatchType.PLAYED,
+                    board_scores=boards,
+                )
+            ],
+        )
+
+    def _values(self, *teams: TeamRecord) -> dict[int, float]:
+        from plugins.ffe.ffe_tie_breaks import BoardDifferentialTieBreak
+
+        all_records = {team.team_id: team for team in teams}
+        return BoardDifferentialTieBreak([]).compute_all_team_values(
+            [list(teams)], all_records, self._context(), after_round=1
+        )
+
+    def test_board_one_decides(self):
+        # Both teams drew 2-2, but #1 won on board 1 (+1) and lost the
+        # bottom board, so it takes the tie-break.
+        first = self._team(1, 'A', (1.0, 0.5, 0.5, 0.0), opponent_id=2)
+        second = self._team(2, 'B', (0.0, 0.5, 0.5, 1.0), opponent_id=1)
+        values = self._values(first, second)
+        assert values[1] > values[2]
+        assert min(values.values()) == 0.0
+
+    def test_falls_through_to_the_next_board(self):
+        # Board 1 is level (both drew it), board 2 separates them.
+        first = self._team(1, 'A', (0.5, 1.0, 0.5, 0.0), opponent_id=2)
+        second = self._team(2, 'B', (0.5, 0.0, 0.5, 1.0), opponent_id=1)
+        values = self._values(first, second)
+        assert values[1] > values[2]
+
+    def test_identical_boards_stay_tied(self):
+        first = self._team(1, 'A', (0.5, 0.5, 0.5, 0.5), opponent_id=2)
+        second = self._team(2, 'B', (0.5, 0.5, 0.5, 0.5), opponent_id=1)
+        values = self._values(first, second)
+        assert values[1] == values[2]
+
+    def test_differential_not_own_score(self):
+        from plugins.ffe.ffe_tie_breaks import BoardDifferentialTieBreak
+
+        # #1 scores 1 on board 1 against an opponent who also scored 1
+        # there (a scoring scheme where both can); #2 scores 0.5 against
+        # 0. The differentials are 0 and +0.5, so #2 wins despite the
+        # smaller own score — the criterion is the differential.
+        first = self._team(1, 'A', (1.0, 0.0, 0.0, 0.0), opponent_id=2)
+        second = self._team(2, 'B', (1.0, 0.0, 0.0, 0.0), opponent_id=1)
+        third = self._team(3, 'C', (0.5, 0.0, 0.0, 0.0), opponent_id=4)
+        fourth = self._team(4, 'D', (0.0, 0.0, 0.0, 0.0), opponent_id=3)
+        # #1's board-1 differential is 1 - 1 = 0, #3's is 0.5 - 0 = 0.5.
+        all_records = {team.team_id: team for team in (first, second, third, fourth)}
+        values = BoardDifferentialTieBreak([]).compute_all_team_values(
+            [[first, third]], all_records, self._context(), after_round=1
+        )
+        assert values[3] > values[1]
+
+    def test_rounds_after_the_cutoff_are_ignored(self):
+        from plugins.ffe.ffe_tie_breaks import BoardDifferentialTieBreak
+
+        def team(team_id: int, round_two_boards: tuple[float, ...]) -> TeamRecord:
+            return TeamRecord(
+                team_id=team_id,
+                name=str(team_id),
+                total_mp=4.0,
+                total_gp=4.0,
+                matches=[
+                    TeamMatchRecord(
+                        round_=1,
+                        opponent_id=3 - team_id,
+                        own_mp=2.0,
+                        own_gp=2.0,
+                        match_type=TeamMatchType.PLAYED,
+                        board_scores=(0.5, 0.5, 0.5, 0.5),
+                    ),
+                    TeamMatchRecord(
+                        round_=2,
+                        opponent_id=3 - team_id,
+                        own_mp=2.0,
+                        own_gp=sum(round_two_boards),
+                        match_type=TeamMatchType.PLAYED,
+                        board_scores=round_two_boards,
+                    ),
+                ],
+            )
+
+        first = team(1, (1.0, 0.5, 0.5, 0.0))
+        second = team(2, (0.0, 0.5, 0.5, 1.0))
+        all_records = {1: first, 2: second}
+        tie_break = BoardDifferentialTieBreak([])
+        # Round 1 alone leaves them level; round 2 separates them.
+        after_one = tie_break.compute_all_team_values(
+            [[first, second]], all_records, self._context(), after_round=1
+        )
+        after_two = tie_break.compute_all_team_values(
+            [[first, second]], all_records, self._context(), after_round=2
+        )
+        assert after_one[1] == after_one[2]
+        assert after_two[1] > after_two[2]
+
+    def test_bye_contributes_nothing(self):
+        from plugins.ffe.ffe_tie_breaks import BoardDifferentialTieBreak
+
+        # A bye awards match-level points with no board scores, so it
+        # must not shift any board's differential.
+        played = TeamMatchRecord(
+            round_=1,
+            opponent_id=2,
+            own_mp=2.0,
+            own_gp=2.0,
+            match_type=TeamMatchType.PLAYED,
+            board_scores=(0.5, 0.5, 0.5, 0.5),
+        )
+        bye = TeamMatchRecord(
+            round_=2,
+            opponent_id=None,
+            own_mp=3.0,
+            own_gp=2.0,
+            match_type=TeamMatchType.PAB,
+            board_scores=(),
+        )
+        first = TeamRecord(
+            team_id=1, name='A', total_mp=5.0, total_gp=4.0, matches=[played, bye]
+        )
+        second = TeamRecord(
+            team_id=2,
+            name='B',
+            total_mp=2.0,
+            total_gp=2.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=1,
+                    own_mp=2.0,
+                    own_gp=2.0,
+                    match_type=TeamMatchType.PLAYED,
+                    board_scores=(0.5, 0.5, 0.5, 0.5),
+                )
+            ],
+        )
+        values = BoardDifferentialTieBreak([]).compute_all_team_values(
+            [[first, second]], {1: first, 2: second}, self._context(), after_round=2
+        )
+        assert values[1] == values[2]
