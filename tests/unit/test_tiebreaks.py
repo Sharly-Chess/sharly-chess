@@ -14,7 +14,7 @@ from data.tie_breaks.options import (
     LegacyMarch2026TieBreakOption,
 )
 from data.tournament import Tournament
-from data.player import Player
+from data.player import TournamentPlayer
 from plugins.ffe import ffe_tie_breaks
 from plugins.ffe.ffe_tie_breaks import (
     PapiBuchholzTypeOption,
@@ -56,7 +56,7 @@ class TieBreakTestCase(TestCase, ABC):
 
     def get_player_values(
         self,
-        compute_player_value: Callable[[Player], Any],
+        compute_player_value: Callable[[TournamentPlayer], Any],
         exclude_ids: list[int] | None = None,
         only_ids: list[int] | None = None,
     ) -> dict[int, Any]:

@@ -474,8 +474,9 @@ msgstr "1.5.6a exige que chaque ronde compte au moins 40 joueur·euses classé·
 msgid "1/3 of %(n)s opponents, min 3"
 msgstr "1/3 de %(n)s adversaires, min 3"
 
-msgid "162 Point system"
-msgstr "162 Système de points"
+#, python-brace-format
+msgid "162 Point system results: {symbols}"
+msgstr "162 résultats du système de points : {symbols}"
 
 #, python-brace-format
 msgid "172 Starting rank method {method}"
@@ -1369,6 +1370,10 @@ msgstr "Bonus / pénalité"
 msgid "Bonus / penalty points"
 msgstr "Points de bonus/pénalité"
 
+#, python-brace-format
+msgid "Bonus / penalty points must be between {min} and {max}."
+msgstr "Les points de bonus / pénalité doivent être compris entre {min} et {max}."
+
 msgid "Bonus / penalty points updated."
 msgstr "Les points de bonus/pénalité ont été mis à jour."
 
@@ -1476,6 +1481,15 @@ msgstr "Les byes des rondes précédentes peuvent être modifiés depuis la page
 
 msgid "Byes will not be impacted."
 msgstr "Les forfaits et les byes ne seront pas impactés."
+
+msgid "C2 *** BYE ELIGIBILITY CRITERION"
+msgstr "C2"
+
+msgid "C2: whether the player may take the pairing-allocated bye — a player can only ever receive one."
+msgstr "C2 : si le·la joueur·euse peut être exempt·e — un·e joueur·euse ne peut l'être qu'une fois."
+
+msgid "C2: whether the team may take the pairing-allocated bye — a team can only ever receive one."
+msgstr "C2 : si l'équipe peut être exempte — une équipe ne peut l'être qu'une seule fois."
 
 msgid "CA"
 msgstr "ARB"
@@ -1770,6 +1784,9 @@ msgstr "La couleur [{color}] ne peut être utilisée sans adversaire"
 msgid "Colors and delays"
 msgstr "Couleurs et délais"
 
+msgid "Colour"
+msgstr "Couleur"
+
 #, python-format
 msgid "Colour #%(num)d:"
 msgstr "Couleur n°%(num)d :"
@@ -1785,9 +1802,6 @@ msgstr "La couleur n°2 est utilisée {delay_2} minutes avant le début des rond
 #, python-brace-format
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr "La couleur n°3 est utilisée à partir du début des rondes et pendant {delay_3} minutes (délai n°3)."
-
-msgid "Colour allocation:"
-msgstr "Attribution des couleurs :"
 
 msgid "Colour history"
 msgstr "Couleurs"
@@ -3059,6 +3073,12 @@ msgstr "Joueur·euses existant·es"
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
 
+msgid "Expand all"
+msgstr "Tout déplier"
+
+msgid "Expand or collapse every match."
+msgstr "Déplier ou replier toutes les rencontres."
+
 msgid "Expand or collapse the details of every item."
 msgstr "Développer ou réduire les détails de tous les éléments."
 
@@ -3148,6 +3168,10 @@ msgstr "Recommendation FIDE (2019)"
 
 msgid "FIDE recommendation - Unrated (2019)"
 msgstr "Recommendation FIDE - Non classé·es (2019)"
+
+#, python-brace-format
+msgid "FIDE {id}"
+msgstr "FIDE {id}"
 
 msgid "FIDE-rated present"
 msgstr "Joueur·euses classé·es FIDE présent·es"
@@ -5246,6 +5270,9 @@ msgstr "Ouvrir le certificat IT1 pour cette norme"
 msgid "Open application (browser)"
 msgstr "Ouvrir l'application (navigateur)"
 
+msgid "Open the profile in a new tab."
+msgstr "Ouvrir la fiche dans un nouvel onglet."
+
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"
 
@@ -6639,9 +6666,6 @@ msgstr "Score"
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr "Score calculé en ajoutant, pour chaque ronde, la valeur obtenue en multipliant le score de l'adversaire par le nombre de points obtenus."
 
-msgid "Score used for colour allocation when pairing."
-msgstr "Score utilisé pour l'attribution des couleurs lors de l'appariement."
-
 msgid "Scores + Schedule Strength (SSSC)"
 msgstr "Scores + force du parcours (SSSC)"
 
@@ -6734,6 +6758,9 @@ msgstr "Recherche en cours…"
 
 msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook Art. 13.4)."
 msgstr "Le score secondaire plus le Buchholz d'équipe sur le score primaire divisé par le facteur de normalisation (Handbook FIDE, art. 13.4)."
+
+msgid "Secondary score, used to allocate colours."
+msgstr "Score secondaire, utilisé pour l'attribution des couleurs."
 
 msgid "Sector arbitration"
 msgstr "Arbitrage de secteur"
@@ -7322,6 +7349,9 @@ msgstr "Équipes du n°%(first)d au n°%(last)d"
 #, python-format
 msgid "Teams from %(first)s to %(last)s"
 msgstr "Équipes de %(first)s à %(last)s"
+
+msgid "Teams not assigned to a tournament"
+msgstr "Équipes non assignées à un tournoi"
 
 msgid "Teams still tied"
 msgstr "Équipes encore à égalité"
@@ -8371,8 +8401,11 @@ msgstr "Ouganda"
 msgid "Ukraine"
 msgstr "Ukraine"
 
-msgid "Unassigned"
-msgstr "Non assigné·e"
+msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Non assignée"
+
+msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Non assignées"
 
 msgid "Unavailable before the tournament start."
 msgstr "Non disponible avant le début du tournoi."
@@ -8590,6 +8623,12 @@ msgstr "Par défaut – {option}"
 
 msgid "Use dropdowns"
 msgstr "Utiliser des menus déroulants"
+
+msgid "Use game points for colour allocation"
+msgstr "Utiliser les points de parties pour l'attribution des couleurs"
+
+msgid "Use match points for colour allocation"
+msgstr "Utiliser les points de match pour l'attribution des couleurs"
 
 #, python-brace-format
 msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
@@ -8827,6 +8866,9 @@ msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipul
 
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
 msgstr "Quand plusieurs joueur·euses avec le même nombre de points sont éligibles pour un prix, partager leurs prix."
+
+msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
+msgstr "Lorsque deux équipes ont le même score, celle qui a le meilleur score secondaire voit sa préférence de couleur appliquée en premier."
 
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
 msgstr "Lorsque les joueur·euses non apparié·es ne sont pas affiché·es, il n'est pas possible de distinguer les joueur·euses forfait (absent·es) de celles·ceux qui bénéficient d'un bye."
@@ -9659,9 +9701,6 @@ msgstr "{title} {full_name} {rating}{rating_type} [{points}]"
 
 msgid "—"
 msgstr "—"
-
-msgid "— Unassigned —"
-msgstr "— Non assigné·e —"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"

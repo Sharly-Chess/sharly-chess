@@ -31,18 +31,36 @@ class TrfPlayerGender(CoreMapper[str, PlayerGender]):
 
 
 class TrfPlayerTitle(CoreMapper[str, PlayerTitle]):
+    """001 positions 11-13. Both TRF16 and TRF26 spell the titles
+    ``GM``, ``IM``, ``WGM`` …, and those are what we write, being first
+    here. The lowercase forms below are a vendor convention (older
+    Swiss-Manager exports and the like, which spell the women's titles
+    both ``gf`` and ``wg``); they are accepted so those files load."""
+
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerTitle]:
         return {
             '': PlayerTitle.NONE,
-            'cf': PlayerTitle.WOMAN_CANDIDATE_MASTER,
-            'c': PlayerTitle.CANDIDATE_MASTER,
-            'ff': PlayerTitle.WOMAN_FIDE_MASTER,
-            'f': PlayerTitle.FIDE_MASTER,
-            'mf': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
-            'm': PlayerTitle.INTERNATIONAL_MASTER,
-            'gf': PlayerTitle.WOMAN_GRANDMASTER,
+            'GM': PlayerTitle.GRANDMASTER,
+            'IM': PlayerTitle.INTERNATIONAL_MASTER,
+            'FM': PlayerTitle.FIDE_MASTER,
+            'CM': PlayerTitle.CANDIDATE_MASTER,
+            'WGM': PlayerTitle.WOMAN_GRANDMASTER,
+            'WIM': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            'WFM': PlayerTitle.WOMAN_FIDE_MASTER,
+            'WCM': PlayerTitle.WOMAN_CANDIDATE_MASTER,
             'g': PlayerTitle.GRANDMASTER,
+            'm': PlayerTitle.INTERNATIONAL_MASTER,
+            'f': PlayerTitle.FIDE_MASTER,
+            'c': PlayerTitle.CANDIDATE_MASTER,
+            'gf': PlayerTitle.WOMAN_GRANDMASTER,
+            'mf': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            'ff': PlayerTitle.WOMAN_FIDE_MASTER,
+            'cf': PlayerTitle.WOMAN_CANDIDATE_MASTER,
+            'wg': PlayerTitle.WOMAN_GRANDMASTER,
+            'wm': PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            'wf': PlayerTitle.WOMAN_FIDE_MASTER,
+            'wc': PlayerTitle.WOMAN_CANDIDATE_MASTER,
         }
 
 
@@ -112,6 +130,16 @@ class TrfPointSystemResult(CoreMapper[str, Result]):
 
 
 class TrfEncodedType:
+    #: Codes the tournament-type table defines as meaning another code.
+    ALIASES: dict[str, str] = {
+        'FIDE_TEAM': 'FIDE_TEAM_TYPEA_MP_GP',
+        'FIDE_TEAM_BAKU': 'FIDE_TEAM_TYPEA_MP_GP_BAKU',
+    }
+
+    @classmethod
+    def canonical(cls, encoded_type: str) -> str:
+        return cls.ALIASES.get(encoded_type, encoded_type)
+
     @classmethod
     def get_pairing_variation(cls, encoded_type: str) -> PairingVariation:
         variation = cls.get_supported_pairing_variation(encoded_type)
@@ -123,12 +151,17 @@ class TrfEncodedType:
         assert variation is not None
         return variation
 
-    @staticmethod
-    def get_supported_pairing_variation(encoded_type: str) -> PairingVariation | None:
+    @classmethod
+    def get_supported_pairing_variation(
+        cls, encoded_type: str
+    ) -> PairingVariation | None:
+        encoded_type = cls.canonical(encoded_type)
         match encoded_type:
             case 'FIDE_DUTCH_2025' | 'FIDE_DUTCH_2026' | 'FIDE_DUTCH':
                 return StandardSwissVariation()
-            case 'FIDE_DUTCH_2026_BAKU' | 'FIDE_DUTCH_BAKU':
+            case 'FIDE_DUTCH_2025_BAKU' | 'FIDE_DUTCH_2026_BAKU' | 'FIDE_DUTCH_BAKU':
+                # 2026 is not a code the type table defines; earlier
+                # versions emitted it, so files carrying it still load.
                 return BakuSwissVariation()
             case 'FIDE_ROUNDROBIN' | 'BERGER_ROUNDROBIN' | 'BERGER_ROUNDROBIN_G1':
                 return BergerRoundRobinVariation()
@@ -148,6 +181,11 @@ class TrfEncodedType:
                 | 'OTHER_TEAM_DOUBLEROUNDROBIN'
             ):
                 return DoubleBergerTeamRoundRobinVariation()
+            case _ if encoded_type.endswith('_BAKU'):
+                # Baku acceleration is only implemented for individual
+                # Swiss. Falling through to the plain team system would
+                # drop the acceleration without saying so.
+                return None
             case _ if encoded_type.startswith(
                 ('FIDE_TEAM_TYPEA_', 'FIDE_TEAM_TYPEB_', 'FIDE_TEAM_')
             ):
@@ -164,12 +202,14 @@ class TrfEncodedType:
     @staticmethod
     def get_team_score_config(
         encoded_type: str,
-    ) -> tuple[ScoreType, ScoreType] | None:
+    ) -> tuple[ScoreType, ScoreType | None] | None:
         """Decode a ``FIDE_TEAM_TYPE<A|B>_<primary>[_<secondary>]``
         team-Swiss code into ``(primary_score, secondary_score)``.
         Returns ``None`` for codes that don't carry score config
-        (non-team or unparseable). MP-only / GP-only codes echo the
-        primary as the secondary."""
+        (non-team or unparseable). The secondary is ``None`` for the
+        MP-only / GP-only codes: they are how the TRF spells "the
+        secondary score is not used for colour allocation" (FIDE Swiss
+        Team Pairing System §1.2.1)."""
         suffix = TrfEncodedType._team_code_suffix(encoded_type)
         if suffix is None:
             return None
@@ -179,10 +219,13 @@ class TrfEncodedType:
             return None
         primary = score_by_code[parts[0]]
         if len(parts) == 1:
-            return primary, primary
+            return primary, None
         if parts[1] not in score_by_code:
             return None
-        return primary, score_by_code[parts[1]]
+        secondary = score_by_code[parts[1]]
+        # A code naming the same score twice says nothing more than the
+        # primary-only form does.
+        return primary, secondary if secondary != primary else None
 
     @staticmethod
     def get_team_colour_type(encoded_type: str) -> TeamColourType | None:
@@ -192,6 +235,7 @@ class TrfEncodedType:
         (no ``TYPE<A|B>_`` infix) corresponds to ``TeamColourType.NONE``
         — the FIDE convention for events that opt out of colour
         preferences."""
+        encoded_type = TrfEncodedType.canonical(encoded_type)
         if encoded_type.startswith('FIDE_TEAM_TYPEA_'):
             return TeamColourType.A
         if encoded_type.startswith('FIDE_TEAM_TYPEB_'):
@@ -202,6 +246,7 @@ class TrfEncodedType:
 
     @staticmethod
     def _team_code_suffix(encoded_type: str) -> str | None:
+        encoded_type = TrfEncodedType.canonical(encoded_type)
         for prefix in ('FIDE_TEAM_TYPEA_', 'FIDE_TEAM_TYPEB_', 'FIDE_TEAM_'):
             if encoded_type.startswith(prefix):
                 return encoded_type[len(prefix) :]
@@ -209,6 +254,12 @@ class TrfEncodedType:
 
     @classmethod
     def get_not_supported_default_type(cls, encoded_type: str) -> str:
+        encoded_type = cls.canonical(encoded_type)
+        # A team code must not fall back to an individual system.
+        if 'TEAM' in encoded_type:
+            if encoded_type.endswith('_BAKU'):
+                return encoded_type[: -len('_BAKU')]
+            return 'FIDE_TEAM_TYPEA_MP_GP'
         match encoded_type:
             case (
                 'BERGER_ROUNDROBIN_G2'
@@ -229,7 +280,7 @@ class TrfEncodedType:
             case _:
                 if 'ROUNDROBIN' in encoded_type or 'SCHEVENINGEN' in encoded_type:
                     return 'FIDE_ROUNDROBIN'
-                return 'FIDE_DUTCH_2026'
+                return 'FIDE_DUTCH_2025'
 
 
 class TrfColor(CoreMapper[str, BoardColor | None]):  # type: ignore

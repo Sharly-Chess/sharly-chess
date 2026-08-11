@@ -55,14 +55,18 @@ _GOLDEN_3x4 = [
 
 
 def test_generator_reference_is_stable() -> None:
-    from molter_recipe_generator import generate_molter_table
+    from molter_recipe_generator import (  # type: ignore[import-not-found]
+        generate_molter_table,
+    )
 
     assert _serialise(generate_molter_table(3, 4)) == _GOLDEN_3x4
 
 
 def test_standard_generator_rejects_three_team_three_round_compromise() -> None:
-    from molter_recipe_generator import MolterGenerationError
-    from molter_recipe_generator import generate_molter_table
+    from molter_recipe_generator import (  # type: ignore[import-not-found]
+        MolterGenerationError,
+        generate_molter_table,
+    )
 
     with pytest.raises(MolterGenerationError):
         generate_molter_table(3, 4, rounds=3)

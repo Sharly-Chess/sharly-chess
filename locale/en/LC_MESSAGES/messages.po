@@ -474,7 +474,8 @@ msgstr ""
 msgid "1/3 of %(n)s opponents, min 3"
 msgstr ""
 
-msgid "162 Point system"
+#, python-brace-format
+msgid "162 Point system results: {symbols}"
 msgstr ""
 
 #, python-brace-format
@@ -1369,6 +1370,10 @@ msgstr ""
 msgid "Bonus / penalty points"
 msgstr ""
 
+#, python-brace-format
+msgid "Bonus / penalty points must be between {min} and {max}."
+msgstr ""
+
 msgid "Bonus / penalty points updated."
 msgstr ""
 
@@ -1475,6 +1480,15 @@ msgid "Byes for past rounds can be edited from the pairings page for that round.
 msgstr ""
 
 msgid "Byes will not be impacted."
+msgstr ""
+
+msgid "C2 *** BYE ELIGIBILITY CRITERION"
+msgstr "C2"
+
+msgid "C2: whether the player may take the pairing-allocated bye — a player can only ever receive one."
+msgstr ""
+
+msgid "C2: whether the team may take the pairing-allocated bye — a team can only ever receive one."
 msgstr ""
 
 msgid "CA"
@@ -1770,6 +1784,9 @@ msgstr ""
 msgid "Colors and delays"
 msgstr ""
 
+msgid "Colour"
+msgstr ""
+
 #, python-format
 msgid "Colour #%(num)d:"
 msgstr ""
@@ -1784,9 +1801,6 @@ msgstr ""
 
 #, python-brace-format
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
-msgstr ""
-
-msgid "Colour allocation:"
 msgstr ""
 
 msgid "Colour history"
@@ -3059,6 +3073,12 @@ msgstr ""
 msgid "Exit button:"
 msgstr ""
 
+msgid "Expand all"
+msgstr ""
+
+msgid "Expand or collapse every match."
+msgstr ""
+
 msgid "Expand or collapse the details of every item."
 msgstr ""
 
@@ -3147,6 +3167,10 @@ msgid "FIDE recommendation (2019)"
 msgstr ""
 
 msgid "FIDE recommendation - Unrated (2019)"
+msgstr ""
+
+#, python-brace-format
+msgid "FIDE {id}"
 msgstr ""
 
 msgid "FIDE-rated present"
@@ -5244,6 +5268,9 @@ msgstr ""
 msgid "Open application (browser)"
 msgstr ""
 
+msgid "Open the profile in a new tab."
+msgstr ""
+
 msgid "Open/close check-in"
 msgstr ""
 
@@ -6637,9 +6664,6 @@ msgstr "Score"
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr ""
 
-msgid "Score used for colour allocation when pairing."
-msgstr ""
-
 msgid "Scores + Schedule Strength (SSSC)"
 msgstr ""
 
@@ -6731,6 +6755,9 @@ msgid "Searching…"
 msgstr ""
 
 msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook Art. 13.4)."
+msgstr ""
+
+msgid "Secondary score, used to allocate colours."
 msgstr ""
 
 msgid "Sector arbitration"
@@ -7319,6 +7346,9 @@ msgstr ""
 
 #, python-format
 msgid "Teams from %(first)s to %(last)s"
+msgstr ""
+
+msgid "Teams not assigned to a tournament"
 msgstr ""
 
 msgid "Teams still tied"
@@ -8369,8 +8399,11 @@ msgstr ""
 msgid "Ukraine"
 msgstr ""
 
-msgid "Unassigned"
-msgstr ""
+msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Unassigned"
+
+msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Unassigned"
 
 msgid "Unavailable before the tournament start."
 msgstr ""
@@ -8587,6 +8620,12 @@ msgid "Use default - {option}"
 msgstr ""
 
 msgid "Use dropdowns"
+msgstr ""
+
+msgid "Use game points for colour allocation"
+msgstr ""
+
+msgid "Use match points for colour allocation"
 msgstr ""
 
 #, python-brace-format
@@ -8824,6 +8863,9 @@ msgid "When there are unrated players, FIDE rules stipulate that rating-based ti
 msgstr ""
 
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
+msgstr ""
+
+msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
 msgstr ""
 
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
@@ -9656,9 +9698,6 @@ msgid "{title} {full_name} {rating}{rating_type} [{points}]"
 msgstr ""
 
 msgid "—"
-msgstr ""
-
-msgid "— Unassigned —"
 msgstr ""
 
 msgid "← Back to IT1 certificate"

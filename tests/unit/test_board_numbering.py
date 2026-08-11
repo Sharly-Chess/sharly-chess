@@ -1,4 +1,8 @@
+from typing import cast
+
 from data.board import Board, compute_round_board_numbers
+from data.tournament import Tournament
+from database.sqlite.event.event_store import StoredBoard
 
 
 class FakePlayer:
@@ -29,7 +33,9 @@ def board_with(white_fixed, black_fixed, index=0, board_id=1):
     black = FakePlayer(2, black_fixed)
     tournament = FakeTournament([white, black])
     stored = FakeStoredBoard(board_id, index, white.id, black.id)
-    board = Board(tournament, 1, stored)
+    # ``Board`` names the concrete types; these stand-ins carry only the
+    # handful of attributes the numbering code reads.
+    board = Board(cast(Tournament, tournament), 1, cast(StoredBoard, stored))
     return board, (tournament, white, black)
 
 

@@ -592,12 +592,20 @@ class Tournament:
 
     @property
     def secondary_score(self) -> 'ScoreType':
-        """Score basis used as secondary (e.g. for colour allocation).
-        Default: game points."""
-        raw = self.stored_tournament.secondary_score
-        if raw:
-            return ScoreType(raw)
-        return ScoreType.GAME_POINTS
+        """The score basis that isn't the primary — derived, not chosen:
+        "The rules of the competition shall state which, between 'match
+        points' and 'game points', is called 'primary score'" (FIDE Swiss
+        Team Pairing System §1.2.1), the other one being the secondary."""
+        if self.primary_score == ScoreType.MATCH_POINTS:
+            return ScoreType.GAME_POINTS
+        return ScoreType.MATCH_POINTS
+
+    @property
+    def secondary_score_for_colours(self) -> bool:
+        """Whether the secondary score breaks ties when deciding which
+        team is the "first team" for colour allocation (§1.2.1, §4.3).
+        Default: on, per §1.2.2."""
+        return bool(self.stored_tournament.secondary_score_for_colours)
 
     @property
     def team_colour_type(self) -> TeamColourType:
@@ -702,7 +710,8 @@ class Tournament:
 
     def team_standings(self, *, after_round: int | None = None) -> list[dict[str, Any]]:
         """Compute team standings for this tournament, sorted by
-        primary_score then secondary_score then team name.
+        primary_score then the configured tie-breaks — the secondary score
+        is not implicit, see :func:`base_key` below.
         Each entry: {team, mp, gp, played, wins, draws, losses, rank}.
 
         ``after_round`` bounds which rounds count: only matches up to
@@ -2841,9 +2850,8 @@ class Tournament:
             num_rounds=self.rounds,
             initial_color=seed_setting.get_value(self).value,
             individuals_point_system=self._trf_individuals_point_system(),
-            starting_rank_method=(
-                'FIDON' if self.player_rating_type == PlayerRatingType.FIDE else 'NIDOF'
-            ),
+            starting_rank_method=self._trf_starting_rank_method(),
+            starting_rank_federation=self.event.federation or '',
             pairing_controller_id='Sharly Chess',
             encoded_type=self.pairing_variation.trf_encoded_type,
             standings_tie_breaks=['PTS']
@@ -3059,6 +3067,29 @@ class Tournament:
                     )
                 )
         return assignments
+
+    def _trf_starting_rank_method(self) -> str:
+        """TRF26 172 — how the participants were ranked. Derived from the
+        ratings actually used rather than from the tournament setting:
+        the setting only states a preference, and which fallback fired
+        is what the receiver needs in order to reproduce the ranking.
+
+        Estimated ratings (and the floors a rule set may supply) have no
+        place in the format, so a tournament that used any of them is
+        ranked by a method the TRF cannot express — which is what
+        ``OTHER`` is for."""
+        used = {player.rating_type for player in self.players}
+        if not used:
+            # Nothing to describe yet; state the preference.
+            return 'FIDE' if self.player_rating_type == PlayerRatingType.FIDE else 'NRO'
+        if PlayerRatingType.ESTIMATED in used:
+            return 'OTHER'
+        if used == {PlayerRatingType.FIDE}:
+            return 'FIDE'
+        if used == {PlayerRatingType.NATIONAL}:
+            return 'NRO'
+        # Both were used, so a fallback fired: say which way round.
+        return 'FIDON' if self.player_rating_type == PlayerRatingType.FIDE else 'NIDOF'
 
     def _trf_individuals_point_system(self) -> dict[str, float]:
         """TRF26 162 record — game-point values per result symbol.
@@ -3458,11 +3489,11 @@ class Tournament:
         self, after_round: int
     ) -> dict[int, tuple[float, float]]:
         """Per-team ``(match_points, game_points)`` cumulative through
-        ``after_round``. Returned dict is keyed by ``team.id``; teams
-        with no team_board entries simply get ``(0.0, 0.0)``. PAB
-        (team-level bye) awards the configured PAB match points and
-        the tournament's PAB game points (default behaviour mirrors
-        :meth:`team_standings`)."""
+        ``after_round``, bonus / penalty points included. Returned dict
+        is keyed by ``team.id``; teams with no team_board entries simply
+        get ``(0.0, 0.0)``. PAB (team-level bye) awards the configured
+        PAB match points and the tournament's PAB game points (default
+        behaviour mirrors :meth:`team_standings`)."""
         match_points = self.match_points
         win_mp = match_points.get(Result.WIN, 2.0)
         draw_mp = match_points.get(Result.DRAW, 1.0)
@@ -3507,6 +3538,19 @@ class Tournament:
             else:
                 a_entry[0] += draw_mp
                 b_entry[0] += draw_mp
+        # Bonus / penalty points count towards the standings, and the
+        # 310 record carries the standings — the 299 records emitted
+        # alongside say where the difference from the played results
+        # came from. Without this the totals would contradict the rank
+        # written on the same line, which does include them.
+        for team in self.teams:
+            for round_ in range(1, self._point_adjustment_bound(after_round) + 1):
+                mp_adj, gp_adj = self.effective_point_adjustment(team.id, round_)
+                if not mp_adj and not gp_adj:
+                    continue
+                entry = totals.setdefault(team.id, [0.0, 0.0])
+                entry[0] += mp_adj
+                entry[1] += gp_adj
         return {team_id: (mp, gp) for team_id, (mp, gp) in totals.items()}
 
     def _team_trf_encoded_type(self) -> str:
@@ -3514,16 +3558,17 @@ class Tournament:
         codes table. ``X`` is the colour-preference rule (A or B);
         when ``TeamColourType.NONE`` is selected the ``TYPE<X>_``
         infix is dropped, matching the FIDE convention for events that
-        opt out of colour preferences. MP-only / GP-only codes echo
-        the primary as the secondary."""
+        opt out of colour preferences. The primary-only code is what
+        "the secondary score is not used for colour allocation" looks
+        like on the wire."""
         primary = 'MP' if self.primary_score == ScoreType.MATCH_POINTS else 'GP'
-        secondary = 'MP' if self.secondary_score == ScoreType.MATCH_POINTS else 'GP'
         colour_type = self.team_colour_type
         infix = (
             f'TYPE{colour_type.value}_' if colour_type != TeamColourType.NONE else ''
         )
-        if primary == secondary:
+        if not self.secondary_score_for_colours:
             return f'FIDE_TEAM_{infix}{primary}'
+        secondary = 'MP' if self.secondary_score == ScoreType.MATCH_POINTS else 'GP'
         return f'FIDE_TEAM_{infix}{primary}_{secondary}'
 
     def _trf_round_byes(self) -> list['TrfRoundBye']:

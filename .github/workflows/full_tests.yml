@@ -44,7 +44,7 @@ jobs:
 
             - name: Run Mypy
               run: |
-                mypy src
+                mypy src tests
 
             - name: Install Playwright browsers
               run: |

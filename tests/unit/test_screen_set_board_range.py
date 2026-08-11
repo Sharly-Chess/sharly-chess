@@ -45,7 +45,9 @@ def make_screen_set(
 
 
 def selected_numbers(screen_set: ScreenSet) -> list[int]:
-    return [board.number for board in chain.from_iterable(screen_set.items_lists)]
+    items_lists = screen_set.items_lists
+    assert items_lists is not None
+    return [board.number for board in chain.from_iterable(items_lists)]
 
 
 # --- PAIRING mode (default): order and range are the pairing/standings order ---
@@ -139,4 +141,6 @@ def test_non_board_range_still_uses_position():
 
     screen_set._extract_data(items=items, extract_boards=False)
 
-    assert list(chain.from_iterable(screen_set.items_lists)) == ['a', 'b']
+    items_lists = screen_set.items_lists
+    assert items_lists is not None
+    assert list(chain.from_iterable(items_lists)) == ['a', 'b']

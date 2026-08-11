@@ -1,4 +1,5 @@
 import weakref
+from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
 from typing import TYPE_CHECKING, Any
@@ -49,6 +50,19 @@ if TYPE_CHECKING:
 
 MIN_YOB = 1900
 MAX_YOB = date.today().year
+
+
+@dataclass
+class PlayerProfileLink:
+    """A federation's identifier for a player, shown on the identity line
+    of the record modal and linking to that federation's profile page."""
+
+    #: Short label, e.g. ``FIDE 653055225``.
+    label: str
+    #: ``None`` when the federation's identifier is known but the one its
+    #: profile page is keyed on is not — the label still tells the arbiter
+    #: something, so it is shown unlinked.
+    url: str | None = None
 
 
 class Player:
@@ -226,6 +240,27 @@ class Player:
     @property
     def fide_id(self) -> int | None:
         return self.stored_player.fide_id
+
+    @property
+    def fide_profile_url(self) -> str | None:
+        if not self.fide_id:
+            return None
+        return f'https://ratings.fide.com/profile/{self.fide_id}'
+
+    @cached_property
+    def profile_links(self) -> list[PlayerProfileLink]:
+        """The federation identifiers shown on the record modal's identity
+        line. FIDE first, then whatever the enabled plugins contribute for
+        their own federation."""
+        links: list[PlayerProfileLink] = []
+        if (url := self.fide_profile_url) is not None:
+            links.append(
+                PlayerProfileLink(label=_('FIDE {id}').format(id=self.fide_id), url=url)
+            )
+        plugin_manager.hook_for_event(self.event, 'insert_player_profile_links')(
+            player=self, links=links
+        )
+        return links
 
     @property
     def federation(self) -> Federation:

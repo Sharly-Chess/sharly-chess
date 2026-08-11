@@ -16,6 +16,7 @@ their published values therefore carry the legacy option; the tests
 written against the current rules build their own fixtures.
 """
 
+from typing import ClassVar
 from unittest import TestCase
 
 import pytest
@@ -319,6 +320,8 @@ def _bh(team_score: str, cut1: bool = False) -> StandardBuchholzTieBreak:
 @pytest.mark.unit
 class TecTeamTieBreakTestCase(TestCase):
     """Reproduces TEC-2023 Exercises 34-41 using pure TeamRecord input."""
+
+    records: ClassVar[dict[int, TeamRecord]]
 
     @classmethod
     def setUpClass(cls) -> None:

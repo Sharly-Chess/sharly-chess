@@ -25,6 +25,7 @@ from data.input_output.trf.trf_mappers import (
     TrfResult,
     TrfPlayerTitle,
     TrfEncodedType,
+    TrfPointSystemResult,
 )
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.pairings.settings import ColorSeedSetting
@@ -42,6 +43,7 @@ from database.sqlite.event.event_store import (
     set_stored_fields,
 )
 from plugins.manager import plugin_manager
+from utils import Utils
 from utils.enum import (
     TournamentRating,
     Result,
@@ -57,6 +59,17 @@ if TYPE_CHECKING:
 
 
 class TrfTournamentImporter(FileTournamentImporter):
+    #: TRF26 172 starting-rank methods, mapped to the rating a
+    #: tournament here would be set to. ``HBFN`` / ``LBFN`` (highest /
+    #: lowest of the two) and ``OTHER`` have no equivalent and are
+    #: reported instead.
+    STARTING_RANK_RATING_TYPES: dict[str, PlayerRatingType] = {
+        'FIDE': PlayerRatingType.FIDE,
+        'FIDON': PlayerRatingType.FIDE,
+        'NRO': PlayerRatingType.NATIONAL,
+        'NIDOF': PlayerRatingType.NATIONAL,
+    }
+
     @staticmethod
     def static_id() -> str:
         return 'TRF'
@@ -315,14 +328,15 @@ class TrfTournamentImporter(FileTournamentImporter):
             # Legacy 013 records still aren't read; the 310-format teams
             # introduced in TRF26 are imported below.
             features.append(_('Teams'))
-        if tournament.individuals_point_system and not tournament.teams:
-            # 162 game-point overrides are still ignored for individual
-            # tournaments. In team mode it's just the W/D/L scoresheet
-            # that pairs alongside the 362 match-point system, so the
-            # round-trip is lossless and no warning is needed.
-            features.append(_('162 Point system'))
+        unknown_symbols = self._unknown_point_system_symbols(tournament)
+        if unknown_symbols:
+            features.append(
+                _('162 Point system results: {symbols}').format(
+                    symbols=', '.join(unknown_symbols)
+                )
+            )
         sr_method = tournament.starting_rank_method
-        if sr_method and sr_method not in ['FIDON', 'NIDOF']:
+        if sr_method and sr_method not in self.STARTING_RANK_RATING_TYPES:
             features.append(
                 _('172 Starting rank method {method}').format(method=sr_method)
             )
@@ -396,6 +410,38 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
 
     @staticmethod
+    def _unknown_point_system_symbols(trf_tournament: TrfTournament) -> list[str]:
+        """162 result symbols with no equivalent here — 'X' (unknown
+        result, e.g. an adjourned game) is the one the spec defines."""
+        unknown: list[str] = []
+        for symbol in trf_tournament.individuals_point_system:
+            try:
+                TrfPointSystemResult.get_core_object(symbol)
+            except KeyError:
+                unknown.append(symbol)
+        return sorted(unknown)
+
+    @staticmethod
+    def _populate_game_points(
+        stored_tournament: StoredTournament,
+        trf_tournament: TrfTournament,
+    ) -> None:
+        """Fill the game-point values from the TRF26 162 record. These
+        apply to individual and team tournaments alike — in team mode
+        they are the per-board scoresheet that sits alongside the 362
+        match points. Read before the team fields, so that an explicit
+        320 team PAB can override the ``P`` value given here."""
+        game_points: dict[int, float] = {}
+        for symbol, value in trf_tournament.individuals_point_system.items():
+            try:
+                outcome = TrfPointSystemResult.get_core_object(symbol)
+            except KeyError:
+                continue
+            game_points[outcome.value] = float(value)
+        if game_points:
+            stored_tournament.game_points = game_points
+
+    @staticmethod
     def _populate_team_fields(
         stored_tournament: StoredTournament,
         trf_tournament: TrfTournament,
@@ -413,7 +459,8 @@ class TrfTournamentImporter(FileTournamentImporter):
             # score config, so leave the tournament's own settings alone.
             primary, secondary = score_config
             stored_tournament.primary_score = primary.value
-            stored_tournament.secondary_score = secondary.value
+            # No secondary in the code means it isn't used for colours.
+            stored_tournament.secondary_score_for_colours = secondary is not None
             colour_type = TrfEncodedType.get_team_colour_type(
                 trf_tournament.encoded_type
             )
@@ -440,19 +487,6 @@ class TrfTournamentImporter(FileTournamentImporter):
                 stored_tournament.game_points[Result.PAIRING_ALLOCATED_BYE.value] = (
                     float(team_pabs.game_points)
                 )
-        game_points_by_symbol = trf_tournament.individuals_point_system
-        if game_points_by_symbol:
-            from data.input_output.trf.trf_mappers import TrfPointSystemResult
-
-            game_points: dict[int, float] = {}
-            for symbol, value in game_points_by_symbol.items():
-                try:
-                    outcome = TrfPointSystemResult.get_core_object(symbol)
-                except KeyError:
-                    continue
-                game_points[outcome.value] = float(value)
-            if game_points:
-                stored_tournament.game_points = game_points
         roster_size = max(
             (len(team.player_ids) for team in trf_tournament.teams), default=0
         )
@@ -537,6 +571,11 @@ class TrfTournamentImporter(FileTournamentImporter):
                 id=None,
                 name=trf_team.name or trf_team.nickname or f'Team {trf_team.id}',
                 pairing_number=trf_team.id or None,
+                # A team listed in a 310 roster is taking part. Left
+                # checked out it would be given a zero-point bye when
+                # the next round is paired, and a file where every team
+                # is absent has no pairing at all.
+                check_in=True,
             )
             result.append((stored_team, list(trf_team.player_ids)))
         return result
@@ -566,15 +605,22 @@ class TrfTournamentImporter(FileTournamentImporter):
         team_index_by_internal_player_id: dict[int, int] = {}
         pairing_number_by_team_id: dict[int, int] = {}
         team_id_by_tpn: dict[int, int] = {}
-        # Team names are unique event-wide: reuse an existing team with the
-        # same name (e.g. a re-import, or the same club already created)
-        # instead of inserting a duplicate. New teams are registered as we
-        # go so a name repeated within this file also reuses the first.
+        # Reuse an existing team with the same name instead of inserting a
+        # duplicate — but only within the tournament being imported into.
+        # A team belongs to one tournament, so reusing one from another
+        # would attach the imported players to *that* tournament and leave
+        # this one empty. New teams are registered as we go so a name
+        # repeated within this file also reuses the first.
+        stored_teams = database.load_stored_teams()
         existing_team_id_by_name: dict[str, int] = {
             team.name: team.id
-            for team in database.load_stored_teams()
-            if team.id is not None
+            for team in stored_teams
+            if team.id is not None and team.tournament_id == tournament_id
         }
+        # Teams can be moved between tournaments, so their names are kept
+        # unique across the whole event; a name already taken by another
+        # tournament's team is suffixed, as tournament names are.
+        used_team_names: set[str] = {team.name for team in stored_teams}
         for stored_team, trf_player_ids in self._pending_teams:
             reused_team_id = existing_team_id_by_name.get(stored_team.name)
             if reused_team_id is not None:
@@ -582,6 +628,10 @@ class TrfTournamentImporter(FileTournamentImporter):
                 stored_team.id = team_id
             else:
                 stored_team.tournament_id = tournament_id
+                stored_team.name = Utils.get_unused_item_name(
+                    stored_team.name, used_team_names
+                )
+                used_team_names.add(stored_team.name)
                 team_id = database.add_stored_team(stored_team)
                 stored_team.id = team_id
                 existing_team_id_by_name[stored_team.name] = team_id
@@ -1233,11 +1283,11 @@ class TrfTournamentImporter(FileTournamentImporter):
                 raise ImporterError(
                     _('{string}: {value}').format(string='152', value=message)
                 )
-        sr_method = trf_tournament.starting_rank_method
-        if sr_method == 'FIDON':
-            stored_tournament.player_rating_type = PlayerRatingType.FIDE
-        elif sr_method == 'NIDOF':
-            stored_tournament.player_rating_type = PlayerRatingType.NATIONAL
+        rating_type = cls.STARTING_RANK_RATING_TYPES.get(
+            trf_tournament.starting_rank_method
+        )
+        if rating_type is not None:
+            stored_tournament.player_rating_type = rating_type
         encoded_type = trf_tournament.encoded_type
         # Refuse files whose tournament type can't be honoured exactly: an
         # unknown code (no matching pairing system) or a CUSTOM_* code (a
@@ -1257,6 +1307,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         stored_tournament.pairing = TrfEncodedType.get_pairing_variation(
             encoded_type
         ).id
+        cls._populate_game_points(stored_tournament, trf_tournament)
         cls._populate_team_fields(stored_tournament, trf_tournament)
         trf_tie_breaks = (
             trf_tournament.standings_tie_breaks or ['PTS'] + trf_tournament.tie_breaks
@@ -1318,6 +1369,10 @@ class TrfTournamentImporter(FileTournamentImporter):
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
             federation=trf_player.federation.upper() or 'FID',
+            # Same reasoning as the teams: a player carried by a 001
+            # record is entered, and would otherwise be left out of the
+            # next round's pairing.
+            check_in=True,
         )
         if national_player:
             plugin_manager.hook_for_event(

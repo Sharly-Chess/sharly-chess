@@ -451,13 +451,17 @@
                             </script>
                         </div>
                         <div id="team-secondary-score-cell" class="col-12 col-md-6">
-                            {{ admin_macros.select_input(
-                                name='secondary_score',
-                                label=_('Colour allocation:'),
+                            {# The placeholder names the secondary score, which
+                               is whichever score isn't the primary — the JS
+                               below rewrites it when the primary changes. #}
+                            {{ admin_macros.switch_input(
+                                name='secondary_score_for_colours',
+                                placeholder=_('Use game points for colour allocation'),
                                 tooltip_text=_(
-                                    'Score used for colour allocation when pairing.'
+                                    'When two teams have the same score, the one '
+                                    'with the better secondary score has its colour '
+                                    'preference applied first.'
                                 ),
-                                select_options=score_type_options,
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -521,8 +525,31 @@
                                 // from the table, so hide it there.
                                 $colourPattern.toggle(isSwiss || isRR);
                             }
+                            // The secondary score is whichever score isn't the
+                            // primary, so the switch names a different one
+                            // depending on the primary — keyed by primary here.
+                            const SECONDARY_LABELS = {
+                                'MATCH_POINTS': {{ _('Use game points for colour allocation')|tojson }},
+                                'GAME_POINTS': {{ _('Use match points for colour allocation')|tojson }},
+                            };
+                            const secondaryInput =
+                                $('#secondary-score-for-colours').get(0);
+                            function syncSecondaryLabel() {
+                                if (!secondaryInput) return;
+                                const label =
+                                    SECONDARY_LABELS[$('#primary-score').val()];
+                                if (!label) return;
+                                // The macro renders the placeholder as a bare
+                                // text node right after the input.
+                                const node = secondaryInput.nextSibling;
+                                if (node && node.nodeType === 3) {
+                                    node.nodeValue = ' ' + label;
+                                }
+                            }
                             $('#pairing-system').on('change', sync);
+                            $('#primary-score').on('change', syncSecondaryLabel);
                             sync();
+                            syncSecondaryLabel();
                         })();
                     </script>
                 {% endif %}

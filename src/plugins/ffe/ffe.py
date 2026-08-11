@@ -29,7 +29,13 @@ from data.input_output.data_source import FideDataSource
 from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
-from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
+from data.player import (
+    Player,
+    PlayerProfileLink,
+    PlayerRating,
+    PlayerRatingAndType,
+    TournamentPlayer,
+)
 from data.player_categories import PlayerCategory, JuniorCategory
 from data.print_documents import (
     PlayerSplitter,
@@ -515,6 +521,32 @@ class FfePlugin(Plugin):
             place_card_player,
             'ffe_league',
             FFEUtils.get_player_plugin_data(tournament_player).league,
+        )
+
+    @hookimpl
+    def insert_player_profile_links(
+        self,
+        player: Player,
+        links: list[PlayerProfileLink],
+    ):
+        plugin_data = FFEUtils.get_player_plugin_data(player)
+        # The licence number is what an arbiter recognises; the profile page
+        # is keyed on the numeric FFE id, which only players coming from an
+        # FFE source carry. Show whichever we have, link when we have both.
+        label = plugin_data.ffe_licence_number or (
+            str(plugin_data.ffe_id) if plugin_data.ffe_id else None
+        )
+        if not label:
+            return
+        links.append(
+            PlayerProfileLink(
+                label=_('FFE {id}').format(id=label),
+                url=(
+                    FFEUtils.player_url(plugin_data.ffe_id)
+                    if plugin_data.ffe_id
+                    else None
+                ),
+            )
         )
 
     @hookimpl
