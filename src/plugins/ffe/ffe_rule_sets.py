@@ -734,6 +734,12 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
         return self.config_value('division')
 
     @property
+    def is_nationale_2(self) -> bool:
+        """Whether the chosen division is one of the two Nationale 2
+        phases, the Nationale 1 being the only other option."""
+        return self.division in (_FEMININ_N2F_ZONE, _FEMININ_N2F_PHASE_2)
+
+    @property
     @override
     def round3_winner_protection(self) -> bool:
         # N1F and the N2F second phase are paired "sans application des

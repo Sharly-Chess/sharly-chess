@@ -213,6 +213,9 @@ msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tourn
 msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
 msgstr "Coupe de la parité FFE. Effectif de 6 joueur·euses (3F + 3H), 2 femmes et 2 hommes alignés à chaque ronde, Elo total de l'équipe plafonné à 8000."
 
+msgid "FFE pairing sheet"
+msgstr "Fiche d'appariement FFE"
+
 msgid "FFE password not defined."
 msgstr "Mot de passe FFE non défini."
 
@@ -362,9 +365,6 @@ msgstr "Types de licence"
 
 msgid "Licence:"
 msgstr "Licence :"
-
-msgid "Loubatière pairing sheet"
-msgstr "Fiche d'appariement Loubatière"
 
 msgid "Lowest own average rating"
 msgstr "Plus faible moyenne Elo"
@@ -759,4 +759,3 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] "{n} partie perdue par forfait, comptée -1."
 msgstr[1] "{n} parties perdues par forfait, comptées -1."
-

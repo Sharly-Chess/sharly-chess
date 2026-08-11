@@ -213,6 +213,9 @@ msgstr ""
 msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
 msgstr ""
 
+msgid "FFE pairing sheet"
+msgstr ""
+
 msgid "FFE password not defined."
 msgstr ""
 
@@ -361,9 +364,6 @@ msgid "Licence types"
 msgstr ""
 
 msgid "Licence:"
-msgstr ""
-
-msgid "Loubatière pairing sheet"
 msgstr ""
 
 msgid "Lowest own average rating"
