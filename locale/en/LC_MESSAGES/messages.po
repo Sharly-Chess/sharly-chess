@@ -3061,9 +3061,6 @@ msgstr ""
 msgid "Expand all"
 msgstr ""
 
-msgid "Expand or collapse every match."
-msgstr ""
-
 msgid "Expand or collapse the details of every item."
 msgstr ""
 
@@ -6933,6 +6930,9 @@ msgid "Show unmodified players"
 msgstr ""
 
 msgid "Show warnings"
+msgstr ""
+
+msgid "Show/hide all individual games."
 msgstr ""
 
 msgid "Show/hide the round lineups on the cards."
