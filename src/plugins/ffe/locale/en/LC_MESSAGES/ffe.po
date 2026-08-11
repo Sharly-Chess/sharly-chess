@@ -68,6 +68,9 @@ msgstr ""
 msgid "Black pairings are supposed to have an opponent"
 msgstr ""
 
+msgid "Board differentials"
+msgstr ""
+
 msgid "Buchholz"
 msgstr ""
 
@@ -96,6 +99,9 @@ msgid "Close"
 msgstr ""
 
 msgid "Club Arbiter"
+msgstr ""
+
+msgid "Compares the tied teams on the sum of their differentials on board 1; those still level are then compared on board 2, and so on down the boards (FFE rules §4.4.a)."
 msgstr ""
 
 msgid "Connection French Chess Federation"

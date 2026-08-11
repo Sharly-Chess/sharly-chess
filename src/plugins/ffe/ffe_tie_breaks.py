@@ -898,6 +898,147 @@ class GamePointsForTieBreak(TeamTieBreak):
         )
 
 
+class BoardDifferentialTieBreak(TeamTieBreak):
+    """FFE *Somme des différentiels par échiquier* (Championnat de France
+    Féminin des Clubs, règlement F01 §4.4.a).
+
+    The last step of the official departage: once match points, the
+    overall differential and the points "pour" have all left teams
+    level, the tied teams are compared on the sum of their board-1
+    differentials, then — for those still level — on board 2, and so on
+    down the boards.
+
+    A board's differential for one match is the team's own score on that
+    board minus the opponent's on the same board, so it is unaffected by
+    the match-level flooring :class:`GamePointsDifferentialTieBreak`
+    applies. A round with no opponent (bye, exemption) has nothing to
+    subtract; such rounds award match-level points rather than board
+    scores, so in practice they contribute nothing.
+
+    This compares tied teams against one another rather than producing a
+    scalar, so the value is a within-group rank delta (0 = worst of the
+    group, larger = better), as for Extended Direct Encounter.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-BOARD-DIFFERENTIAL'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Board differentials')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'dEch'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_BOARD_DIFF'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Compares the tied teams on the sum of their differentials on '
+            'board 1; those still level are then compared on board 2, and '
+            'so on down the boards (FFE rules §4.4.a).'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    @property
+    def is_computed_per_team(self) -> bool:
+        return False
+
+    @property
+    def display_rank_delta(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        return 0.0
+
+    def compute_all_team_values(
+        self,
+        tied_groups: list[list[TeamRecord]],
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> dict[int, float]:
+        values: dict[int, float] = {}
+        for group in tied_groups:
+            differentials = {
+                record.team_id: self._board_differentials(
+                    record, all_records, tournament_context, after_round
+                )
+                for record in group
+            }
+            # Ascending, so the worst of the group lands on 0; teams whose
+            # board differentials match all the way down stay level.
+            ordered = sorted(group, key=lambda record: differentials[record.team_id])
+            rank = 0
+            previous: tuple[float, ...] | None = None
+            for index, record in enumerate(ordered):
+                current = differentials[record.team_id]
+                if previous is not None and current != previous:
+                    rank = index
+                values[record.team_id] = float(rank)
+                previous = current
+        return values
+
+    @staticmethod
+    def _board_differentials(
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        after_round: int,
+    ) -> tuple[float, ...]:
+        """Sum of (own board score − opponent board score) for each
+        board, board 1 first — the tuple the tied teams are compared on."""
+        boards = tournament_context.team_player_count
+        totals = [0.0] * boards
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            opponent_scores: tuple[float, ...] = ()
+            if match.played and match.opponent_id is not None:
+                opponent = all_records.get(match.opponent_id)
+                if opponent is not None:
+                    opponent_match = opponent.match_at(match.round_)
+                    if opponent_match is not None:
+                        opponent_scores = opponent_match.board_scores
+            for board_index in range(boards):
+                own = (
+                    match.board_scores[board_index]
+                    if board_index < len(match.board_scores)
+                    else 0.0
+                )
+                against = (
+                    opponent_scores[board_index]
+                    if board_index < len(opponent_scores)
+                    else 0.0
+                )
+                totals[board_index] += own - against
+        return tuple(totals)
+
+
 class LowestOwnAverageRatingTieBreak(TeamTieBreak):
     """FFE *Moyenne des derniers Elo diffusés (au prorata des
     participations), la plus basse* (Règlement Coupe Loubatière /
