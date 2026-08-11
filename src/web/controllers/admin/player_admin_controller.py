@@ -838,22 +838,32 @@ class PlayerAdminController(BaseEventAdminController):
             # Group teams by tournament so the picker matches the
             # team-admin layout. Teams not yet attached to a tournament
             # land under "Unassigned".
-            teams_by_tournament_label: dict[str, dict[str, str]] = {}
             tournaments_by_id = event.tournaments_by_id
-            for team in event.sorted_teams:
-                if (
-                    team.tournament_id is not None
-                    and team.tournament_id in tournaments_by_id
-                ):
-                    label = tournaments_by_id[team.tournament_id].name
-                else:
-                    label = _('Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT')
-                teams_by_tournament_label.setdefault(label, {})[str(team.id)] = (
-                    team.name
-                )
-            # Sorted alphabetically so the order is stable across renders.
-            for label in sorted(teams_by_tournament_label):
-                team_options[label] = teams_by_tournament_label[label]
+            unassigned_teams_found: bool = any(
+                team.tournament_id is None
+                or team.tournament_id not in tournaments_by_id
+                for team in event.sorted_teams
+            )
+            multi_labels: bool = len(tournaments_by_id) > 1 or unassigned_teams_found
+            if multi_labels:
+                teams_by_tournament_label: dict[str, dict[str, str]] = {}
+                for team in event.sorted_teams:
+                    if (
+                        team.tournament_id is not None
+                        and team.tournament_id in tournaments_by_id
+                    ):
+                        label = tournaments_by_id[team.tournament_id or 0].name
+                    else:
+                        label = _('Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT')
+                    teams_by_tournament_label.setdefault(label, {})[str(team.id)] = (
+                        team.name
+                    )
+                # Sorted alphabetically so the order is stable across renders.
+                for label in sorted(teams_by_tournament_label):
+                    team_options[label] = teams_by_tournament_label[label]
+            else:
+                for team in event.sorted_teams:
+                    team_options[str(team.id)] = team.name
         plugin_templates_by_section: dict[str, list[str]] = defaultdict(list)
         plugin_manager.hook_for_event(event, 'insert_player_form_fields_template')(
             templates_by_section=plugin_templates_by_section

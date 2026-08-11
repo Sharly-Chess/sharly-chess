@@ -38,6 +38,7 @@ if TYPE_CHECKING:
     from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import (
         Player,
+        PlayerProfileLink,
         TournamentPlayer,
         PlayerRatingAndType,
         PlayerRatingType,
@@ -191,6 +192,14 @@ class AppHookSpecs:
         place_card_player: 'PlaceCardPlayer',
     ):
         """Add plugin specific data to a player before printing place cards."""
+
+    @hookspec
+    def insert_player_profile_links(
+        self,
+        player: 'Player',
+        links: list['PlayerProfileLink'],
+    ):
+        """Add federation identifiers to the identity line of a player's"""
 
     @hookspec(firstresult=True)
     def get_player_rating(

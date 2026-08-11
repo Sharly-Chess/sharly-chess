@@ -225,6 +225,10 @@ msgstr "impossible d'accéder au site FFE"
 msgid "FFE website could not be reached."
 msgstr "Impossible d'accéder au site FFE."
 
+#, python-brace-format
+msgid "FFE {id}"
+msgstr "FFE {id}"
+
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 

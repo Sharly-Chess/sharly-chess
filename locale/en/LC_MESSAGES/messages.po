@@ -474,7 +474,8 @@ msgstr ""
 msgid "1/3 of %(n)s opponents, min 3"
 msgstr ""
 
-msgid "162 Point system"
+#, python-brace-format
+msgid "162 Point system results: {symbols}"
 msgstr ""
 
 #, python-brace-format
@@ -1358,6 +1359,10 @@ msgid "Bonus / penalty"
 msgstr ""
 
 msgid "Bonus / penalty points"
+msgstr ""
+
+#, python-brace-format
+msgid "Bonus / penalty points must be between {min} and {max}."
 msgstr ""
 
 msgid "Bonus / penalty points updated."
@@ -3147,6 +3152,10 @@ msgid "FIDE recommendation (2019)"
 msgstr ""
 
 msgid "FIDE recommendation - Unrated (2019)"
+msgstr ""
+
+#, python-brace-format
+msgid "FIDE {id}"
 msgstr ""
 
 msgid "FIDE-rated present"
@@ -5239,6 +5248,9 @@ msgid "Open IT1 certificate for this norm"
 msgstr ""
 
 msgid "Open application (browser)"
+msgstr ""
+
+msgid "Open the profile in a new tab."
 msgstr ""
 
 msgid "Open/close check-in"
@@ -8360,6 +8372,9 @@ msgstr ""
 msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
 msgstr "Unassigned"
 
+msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Unassigned"
+
 msgid "Unavailable before the tournament start."
 msgstr ""
 
@@ -9654,7 +9669,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
-#~ msgstr "Unassigned"
 

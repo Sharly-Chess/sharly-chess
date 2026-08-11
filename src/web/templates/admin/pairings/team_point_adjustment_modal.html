@@ -59,7 +59,7 @@
                                 <label class="form-label small mb-0">{{ _('MP *** MATCH POINTS') }}</label>
                                 <input
                                     class="form-control form-control-sm"
-                                    type="number" step="0.5"
+                                    type="number" step="0.5" min="-9.5" max="99.5"
                                     name="mp"
                                     value="{{ '%g'|format(adj.mp) if adj.mp else '' }}"
                                 >
@@ -69,7 +69,7 @@
                             <label class="form-label small mb-0">{{ _('GP *** GAME POINTS') }}</label>
                             <input
                                 class="form-control form-control-sm"
-                                type="number" step="0.5"
+                                type="number" step="0.5" min="-9.5" max="99.5"
                                 name="gp"
                                 value="{{ '%g'|format(adj.gp) if adj.gp else '' }}"
                             >

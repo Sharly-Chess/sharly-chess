@@ -63,6 +63,14 @@ from web.session import (
 
 logger = get_logger()
 
+# Bonus / penalty points are exported in the TRF26 299 record, whose
+# point fields are ``[-]11.5``: four columns holding either a sign or a
+# second integer digit, never both. Rounded inwards to a multiple of the
+# form's 0.5 step, which is anchored on the minimum — an unaligned bound
+# would make ordinary values like -1 unenterable.
+MIN_POINT_ADJUSTMENT = -9.5
+MAX_POINT_ADJUSTMENT = 99.5
+
 
 class PairingsAdminWebContext(BaseEventAdminWebContext):
     def __init__(
@@ -671,6 +679,23 @@ class PairingsAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         mp_delta = WebContext.form_data_to_float(data, 'mp') or 0.0
         gp_delta = WebContext.form_data_to_float(data, 'gp') or 0.0
+        # These travel in the TRF26 299 record, whose point fields are
+        # ``[-]11.5`` — four columns, so a sign costs an integer digit.
+        # A wider value would overflow the field and shift the rest of
+        # the line, corrupting the file the pairing engine reads.
+        if not all(
+            MIN_POINT_ADJUSTMENT <= delta <= MAX_POINT_ADJUSTMENT
+            for delta in (mp_delta, gp_delta)
+        ):
+            Message.error(
+                request,
+                _('Bonus / penalty points must be between {min} and {max}.').format(
+                    min=f'{MIN_POINT_ADJUSTMENT:g}', max=f'{MAX_POINT_ADJUSTMENT:g}'
+                ),
+            )
+            return self._admin_event_pairings_render(
+                PairingsAdminWebContext(request, tournament_id, round)
+            )
         reason = WebContext.form_data_to_str(data, 'reason') or None
         with EventDatabase(event.uniq_id, write=True) as database:
             tournament.set_manual_point_adjustment(
