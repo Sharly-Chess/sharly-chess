@@ -37,7 +37,7 @@ from data.print_documents.documents import (
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from utils.enum import CheckInStatus, Result, TeamByeType
+from utils.enum import CheckInStatus, Result, ScoreType, TeamByeType
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -2917,12 +2917,23 @@ class PairingsAdminController(BaseEventAdminController):
         # round-robin ones pair from a fixed table and are reconstructed
         # below.
         history = cls._team_pairing_checklist(tournament, round)
+        # Round-robin team engines don't run bbpPairings and never use a
+        # secondary score for colours, so the reconstruction below leaves
+        # the column hidden too.
+        show_secondary = False
         if history is not None:
             team_by_tpn = {
                 team.pairing_number: team
                 for team in tournament.teams
                 if team.pairing_number is not None
             }
+            # The engine only reports a secondary score when the
+            # tournament uses one for colour allocation (C.04.6 §4.2.2).
+            # This modal explains the pairing, so rather than substituting
+            # a figure the engine ignored, the column is dropped.
+            show_secondary = any(
+                entry.secondary_points is not None for entry in history.teams
+            )
             for entry in history.teams:
                 team = team_by_tpn.get(entry.id)
                 if team is None:
@@ -2933,9 +2944,7 @@ class PairingsAdminController(BaseEventAdminController):
                         'team': team,
                         'tpn': entry.id,
                         'mp': entry.points,
-                        'gp': entry.secondary_points
-                        if entry.secondary_points is not None
-                        else 0.0,
+                        'gp': entry.secondary_points,
                         'rank': None,
                         'opponents': [
                             getattr(team_by_tpn.get(tpn or 0), 'id', None)
@@ -2986,6 +2995,10 @@ class PairingsAdminController(BaseEventAdminController):
             {
                 'modal': 'team_pairing_info',
                 'team_info_groups': grouped,
+                'show_secondary': show_secondary,
+                'primary_is_game_points': (
+                    tournament.primary_score == ScoreType.GAME_POINTS
+                ),
                 'teams_by_id': teams_by_id,
                 'history_columns': max((len(r['opponents']) for r in rows), default=0),
             },

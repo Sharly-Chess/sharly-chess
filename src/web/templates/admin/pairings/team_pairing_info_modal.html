@@ -22,7 +22,17 @@
                     <tr>
                         <th scope="col" class="text-start compact-col">{{ _('TPN *** TOURNAMENT PAIRING NUMBER') }}</th>
                         <th scope="col" class="text-start">{{ _('Team') }}</th>
-                        <th scope="col" class="text-end compact-col">{{ _('GP *** GAME POINTS') }}</th>
+                        {# The secondary score is only reported when the
+                           pairing consults it for colours (C.04.6 §4.2.2),
+                           and it is whichever score the primary is not. #}
+                        {% if show_secondary %}
+                            <th
+                                scope="col" class="text-end compact-col"
+                                {{ macros.tooltip_attributes('info', _(
+                                    'Secondary score, used to allocate colours.'
+                                ), 'top') }}
+                            >{{ _('MP *** MATCH POINTS') if primary_is_game_points else _('GP *** GAME POINTS') }}</th>
+                        {% endif %}
                         <th scope="col" class="text-center compact-col">{{ _('Colour') }}</th>
                         <th
                             scope="col" class="text-center compact-col"
@@ -50,7 +60,7 @@
                                     '%(num).1f %(unit)s group',
                                     '%(num).1f %(unit)s group',
                                     mp,
-                                    unit=_('MP *** MATCH POINTS'),
+                                    unit=_('GP *** GAME POINTS') if primary_is_game_points else _('MP *** MATCH POINTS'),
                                 ) }}
                                 -
                                 {{ ngettext(
@@ -66,7 +76,9 @@
                                     {% if row.tpn %}#{{ row.tpn }}{% endif %}
                                 </td>
                                 <td>{{ row.team.name }}</td>
-                                <td class="text-end compact-col">{{ '%g'|format(row.gp) }}</td>
+                                {% if show_secondary %}
+                                    <td class="text-end compact-col">{% if row.gp is not none %}{{ '%g'|format(row.gp) }}{% endif %}</td>
+                                {% endif %}
                                 <td class="text-center compact-col">
                                     {% if row.preference and row.preference.color %}
                                         {% set pref = 'W' if row.preference.color.value == 'W' else 'B' %}
