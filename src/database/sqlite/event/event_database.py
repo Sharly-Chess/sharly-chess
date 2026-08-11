@@ -809,6 +809,32 @@ class EventDatabase(MigrationDatabase):
         )
 
     def delete_stored_tournament(self, tournament_id: int):
+        # Teams cascade with the tournament (see the `team` foreign key).
+        # Players don't: they belong to the event, so only those no other
+        # tournament holds are removed — and they have to be found before
+        # the tournament goes, while the rows that tie them to it exist.
+        self.execute(
+            # Both ways a player is held: a `tournament_player` row, or
+            # membership of one of the tournament's teams. Team
+            # tournaments store no rows at all — the loader synthesises
+            # them — so the second branch is the only one that finds a
+            # team roster here. Kept when another tournament holds them.
+            'DELETE FROM `player` WHERE `id` IN ('
+            '   SELECT `player_id` FROM `tournament_player` WHERE `tournament_id` = ? '
+            '   UNION '
+            '   SELECT `player`.`id` FROM `player` '
+            '   JOIN `team` ON `team`.`id` = `player`.`team_id` '
+            '   WHERE `team`.`tournament_id` = ?'
+            ') AND `id` NOT IN ('
+            '   SELECT `player_id` FROM `tournament_player` WHERE `tournament_id` <> ?'
+            ') AND `id` NOT IN ('
+            '   SELECT `player`.`id` FROM `player` '
+            '   JOIN `team` ON `team`.`id` = `player`.`team_id` '
+            '   WHERE `team`.`tournament_id` IS NOT NULL '
+            '   AND `team`.`tournament_id` <> ?'
+            ')',
+            (tournament_id, tournament_id, tournament_id, tournament_id),
+        )
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
     def set_tournament_check_in_open(self, tournament_id: int, check_in_open: bool):
