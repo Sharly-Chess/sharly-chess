@@ -24,6 +24,14 @@
                 <i class="bi-flag-fill pe-1"></i>
             {% endif %}
             {{ team.name }}
+            {# The card shows this in its body; the list has no body, so
+               the warning rides along with the name instead. #}
+            {% if view == 'list' and show_roster and team.roster_warning_message %}
+                <i
+                    class="bi-exclamation-triangle-fill text-warning ms-1"
+                    {{ macros.tooltip_attributes('warning', team.roster_warning_message, 'top') }}
+                ></i>
+            {% endif %}
         </div>
         {% if view == 'card' and team.group %}
             <div
