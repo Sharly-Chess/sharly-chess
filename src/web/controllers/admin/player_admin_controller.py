@@ -2281,6 +2281,11 @@ class PlayerAdminController(BaseEventAdminController):
                 for team in event.teams:
                     team_id_by_name.setdefault(team.name, team.id)
                     next_team_index[team.id] = len(team.players)
+                if overwrite_players and tournament is not None:
+                    # The import is about to empty this tournament's
+                    # teams, so their board order restarts from the top.
+                    for team in tournament.teams:
+                        next_team_index[team.id] = 0
             with EventDatabase(event.uniq_id, True) as database:
                 if overwrite_players and tournament is not None:
                     database.delete_players_in_tournament(tournament.id)

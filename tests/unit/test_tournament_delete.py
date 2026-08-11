@@ -168,3 +168,98 @@ class TournamentDeleteTestCase(TestCase):
         self._delete_doomed(ids)
         remaining = set(self._load_event().players_by_id)
         assert not announced & remaining
+
+
+@pytest.mark.unit
+class ClearTournamentPlayersTestCase(TestCase):
+    """Importing players "and delete the existing ones" empties the
+    tournament but keeps its teams, ready to be filled again."""
+
+    def setUp(self) -> None:
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        for name in (DOOMED, SURVIVOR):
+            TestUtils.create_tournament(
+                EVENT_ID,
+                name,
+                overrides={
+                    'rounds': 3,
+                    'team_player_count': 1,
+                    'pairing': 'TEAM_SWISS_STANDARD',
+                },
+            )
+
+    def tearDown(self) -> None:
+        TestUtils.delete_event(EVENT_ID)
+
+    def _load_event(self):
+        try:
+            EventLoader.unload_event(EVENT_ID)
+        except KeyError:
+            pass
+        return EventLoader().load_event(EVENT_ID)
+
+    def _build(self) -> dict[str, int]:
+        with EventDatabase(EVENT_ID, write=True) as database:
+            ids = {
+                tournament.name: tournament.id
+                for tournament in database.load_stored_tournaments()
+                if tournament.id is not None
+            }
+            cleared_team = database.add_stored_team(
+                StoredTeam(id=None, name='Cleared', tournament_id=ids[DOOMED])
+            )
+            other_team = database.add_stored_team(
+                StoredTeam(id=None, name='Other', tournament_id=ids[SURVIVOR])
+            )
+            return {
+                'tournament': ids[DOOMED],
+                'other_tournament': ids[SURVIVOR],
+                'cleared_team': cleared_team,
+                'other_team': other_team,
+                'cleared_player': database.add_stored_player(
+                    StoredPlayer(
+                        id=None, last_name='Cleared', team_id=cleared_team, team_index=0
+                    )
+                ),
+                'other_player': database.add_stored_player(
+                    StoredPlayer(
+                        id=None, last_name='Other', team_id=other_team, team_index=0
+                    )
+                ),
+            }
+
+    def test_team_players_are_deleted(self):
+        ids = self._build()
+        with EventDatabase(EVENT_ID, write=True) as database:
+            database.delete_players_in_tournament(ids['tournament'])
+        event = self._load_event()
+        assert ids['cleared_player'] not in event.players_by_id
+
+    def test_the_teams_themselves_are_kept(self):
+        # The import re-attaches the new players to them by name.
+        ids = self._build()
+        with EventDatabase(EVENT_ID, write=True) as database:
+            database.delete_players_in_tournament(ids['tournament'])
+        event = self._load_event()
+        assert ids['cleared_team'] in event.teams_by_id
+
+    def test_other_tournaments_are_untouched(self):
+        ids = self._build()
+        with EventDatabase(EVENT_ID, write=True) as database:
+            database.delete_players_in_tournament(ids['tournament'])
+        event = self._load_event()
+        assert ids['other_player'] in event.players_by_id
+        assert ids['other_team'] in event.teams_by_id
+
+    def test_a_player_of_two_tournaments_only_loses_this_one(self):
+        ids = self._build()
+        with EventDatabase(EVENT_ID, write=True) as database:
+            database.add_stored_tournament_player(
+                StoredTournamentPlayer(
+                    tournament_id=ids['other_tournament'],
+                    player_id=ids['cleared_player'],
+                )
+            )
+            database.delete_players_in_tournament(ids['tournament'])
+        event = self._load_event()
+        assert ids['cleared_player'] in event.players_by_id
