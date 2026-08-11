@@ -20,6 +20,7 @@
 - Clarify actions on absent players if over half absent players (4.2.1)
 - Remove trailing spaces from club names (4.2.4)
 - Fixed `Withdraw from tournament` button absent from the record modal (4.2.4)
+- Prevent from adding and importing players with invalid ratings (4.2.8)
 
 ## Documents
 
@@ -53,4 +54,4 @@
 - Clarified the rules upload (4.2.0)
 - Fixed import of Papi tie-breaks in TRF26 (4.2.1)
 - Fixed export of fixed tables in Papi on not started tournaments (4.2.2)
-- Fixed export of the Sonneborn Berger tie break on 3 points for a win tournaments (4.2.8)
+- Fixed export of the Sonneborn-Berger tie-break on 3 points for a win tournaments (4.2.8)

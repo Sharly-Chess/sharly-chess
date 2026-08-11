@@ -160,6 +160,7 @@ class WebContext:
         field: str,
         empty_value: int | None = None,
         minimum: int | None = None,
+        maximum: int | None = None,
     ) -> int | None:
         """Transforms `data`'s value in `field` into a base-10 integer.
         If the value is empty, returns `empty_value`.
@@ -177,6 +178,8 @@ class WebContext:
         int_val = int(data[field])
         if minimum is not None and int_val < minimum:
             raise ValueError(f'{int_val} < {minimum}')
+        if maximum is not None and int_val > maximum:
+            raise ValueError(f'{int_val} > {maximum}')
         return int_val
 
     @staticmethod
