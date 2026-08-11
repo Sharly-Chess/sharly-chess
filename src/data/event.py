@@ -542,11 +542,11 @@ class Event:
             None,
         )
 
-    def get_player_identity_keys(self, stored_player: StoredPlayer) -> set[object]:
+    def get_player_identity_keys(self, stored_player: StoredPlayer) -> set[tuple]:
         """The keys identifying a player as the same person elsewhere —
         in another tournament, or in another event, where they are stored
         as a distinct player with a different id."""
-        keys: set[object] = set()
+        keys: set[tuple] = set()
         if stored_player.date_of_birth and stored_player.first_name:
             keys.add(
                 (

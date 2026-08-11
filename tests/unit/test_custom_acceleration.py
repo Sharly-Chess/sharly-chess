@@ -48,7 +48,7 @@ class StubStoredTournament:
 class StubTournament:
     rounds: int = 9
     player_count: int = 80
-    tournament_players: list['StubPlayer'] = field(default_factory=list)
+    tournament_players: list[Any] = field(default_factory=list)
     event: Any = None
     stored_tournament: StubStoredTournament = field(
         default_factory=StubStoredTournament
@@ -66,7 +66,23 @@ class StubPlayer:
     stored_player: Any = None
 
 
-def tournament_with(rules: list[AccelerationRule], **kwargs) -> StubTournament:
+def stub_tournament(**kwargs) -> Any:
+    """Typed as Any: the stub carries only the handful of attributes these
+    units read, not the whole Tournament surface."""
+    return StubTournament(**kwargs)
+
+
+def stub_player(pairing_number: int | None, **kwargs) -> Any:
+    return StubPlayer(pairing_number, **kwargs)
+
+
+def stored_rules(tournament: Any) -> list[AccelerationRule]:
+    rules = VARIATION._stored_rules(tournament)
+    assert rules is not None
+    return rules
+
+
+def tournament_with(rules: list[AccelerationRule], **kwargs) -> Any:
     tournament = StubTournament(**kwargs)
     tournament.stored_tournament.pairing_settings[SETTING.id] = (
         CustomAccelerationSetting.to_stored_value(rules)
@@ -74,7 +90,7 @@ def tournament_with(rules: list[AccelerationRule], **kwargs) -> StubTournament:
     return tournament
 
 
-def tournament_with_scores(scores: dict[int, float], **kwargs) -> StubTournament:
+def tournament_with_scores(scores: dict[int, float], **kwargs) -> Any:
     tournament = StubTournament(**kwargs)
     tournament.stored_tournament.pairing_settings[SCORE_SETTING.id] = (
         InitialPairingScoreSetting.to_stored_value(scores)
@@ -110,16 +126,16 @@ class TestCustomAccelerationSetting:
         assert SETTING.from_form_data(data) == RULES
 
     def test_valid_rules_have_no_errors(self):
-        assert SETTING.get_data_errors(StubTournament(), form_data()) == {}
+        assert SETTING.get_data_errors(stub_tournament(), form_data()) == {}
 
     def test_round_out_of_range(self):
         data = form_data(**{SETTING.field(0, 'last_round'): '12'})
-        errors = SETTING.get_data_errors(StubTournament(rounds=9), data)
+        errors = SETTING.get_data_errors(stub_tournament(rounds=9), data)
         assert SETTING.field(0, 'last_round') in errors
 
     def test_pairing_number_out_of_range(self):
         data = form_data(**{SETTING.field(0, 'last_number'): '999'})
-        errors = SETTING.get_data_errors(StubTournament(player_count=80), data)
+        errors = SETTING.get_data_errors(stub_tournament(player_count=80), data)
         assert SETTING.field(0, 'last_number') in errors
 
     def test_inverted_range(self):
@@ -129,7 +145,7 @@ class TestCustomAccelerationSetting:
                 SETTING.field(0, 'last_round'): '2',
             }
         )
-        errors = SETTING.get_data_errors(StubTournament(), data)
+        errors = SETTING.get_data_errors(stub_tournament(), data)
         assert SETTING.field(0, 'last_round') in errors
 
     def test_overlapping_rules(self):
@@ -143,7 +159,7 @@ class TestCustomAccelerationSetting:
                 SETTING.field(2, 'last_number'): '50',
             }
         )
-        errors = SETTING.get_data_errors(StubTournament(), data)
+        errors = SETTING.get_data_errors(stub_tournament(), data)
         assert SETTING.field(2, 'first_number') in errors
 
     def test_adjacent_rules_do_not_overlap(self):
@@ -158,22 +174,22 @@ class TestCustomAccelerationSetting:
                 SETTING.field(2, 'last_number'): '80',
             }
         )
-        assert SETTING.get_data_errors(StubTournament(), data) == {}
+        assert SETTING.get_data_errors(stub_tournament(), data) == {}
 
     @pytest.mark.parametrize('vpoints', ['-1', '100', 'abc', ''])
     def test_rejected_vpoints(self, vpoints: str):
         data = form_data(**{SETTING.field(0, 'vpoints'): vpoints})
-        errors = SETTING.get_data_errors(StubTournament(), data)
+        errors = SETTING.get_data_errors(stub_tournament(), data)
         assert SETTING.field(0, 'vpoints') in errors
 
     def test_vpoints_limited_to_one_decimal(self):
         # The TRF26 250 points field only holds one decimal.
         data = form_data(**{SETTING.field(0, 'vpoints'): '1.25'})
-        errors = SETTING.get_data_errors(StubTournament(), data)
+        errors = SETTING.get_data_errors(stub_tournament(), data)
         assert SETTING.field(0, 'vpoints') in errors
 
     def test_check_value_accepts_valid_rules(self):
-        assert CustomAccelerationSetting.check_value(StubTournament(), RULES)
+        assert CustomAccelerationSetting.check_value(stub_tournament(), RULES)
 
     @pytest.mark.parametrize(
         'rule',
@@ -186,7 +202,7 @@ class TestCustomAccelerationSetting:
         ],
     )
     def test_check_value_rejects_broken_rules(self, rule: AccelerationRule):
-        assert not CustomAccelerationSetting.check_value(StubTournament(), [rule])
+        assert not CustomAccelerationSetting.check_value(stub_tournament(), [rule])
 
     def test_get_value_falls_back_when_stored_rules_do_not_fit(self):
         # A tournament shrunk below the stored ranges must not silently
@@ -214,14 +230,14 @@ class TestCustomAccelerationVariation:
     )
     def test_virtual_points(self, pairing_number: int, at_round: int, expected: float):
         tournament = tournament_with(RULES)
-        player = StubPlayer(pairing_number=pairing_number)
+        player = stub_player(pairing_number=pairing_number)
         assert (
             VARIATION.compute_virtual_points(tournament, player, at_round) == expected
         )
 
     def test_no_virtual_points_without_a_pairing_number(self):
         tournament = tournament_with(RULES)
-        player = StubPlayer(pairing_number=None)
+        player = stub_player(pairing_number=None)
         assert VARIATION.compute_virtual_points(tournament, player, 1) == 0.0
 
     @pytest.mark.parametrize(
@@ -238,7 +254,7 @@ class TestCustomAccelerationVariation:
         # follow to keep accelerating the same players.
         tournament = tournament_with(RULES, player_count=79)
         assert VARIATION.update_settings_from_deleted_pairing_numbers(tournament, [5])
-        assert [rule.number_range for rule in VARIATION._stored_rules(tournament)] == [
+        assert [rule.number_range for rule in stored_rules(tournament)] == [
             (1, 39),
             (1, 39),
         ]
@@ -250,21 +266,21 @@ class TestCustomAccelerationVariation:
         assert not VARIATION.update_settings_from_deleted_pairing_numbers(
             tournament, [50]
         )
-        assert VARIATION._stored_rules(tournament)[0].number_range == (10, 20)
+        assert stored_rules(tournament)[0].number_range == (10, 20)
 
     def test_deleted_pairing_number_inside_the_rule(self):
         tournament = tournament_with(
             [AccelerationRule(1.0, 1, 3, number_range=(10, 20))], player_count=79
         )
         assert VARIATION.update_settings_from_deleted_pairing_numbers(tournament, [15])
-        assert VARIATION._stored_rules(tournament)[0].number_range == (10, 19)
+        assert stored_rules(tournament)[0].number_range == (10, 19)
 
     def test_emptied_rule_is_dropped(self):
         tournament = tournament_with(
             [AccelerationRule(1.0, 1, 3, number_range=(10, 10))], player_count=79
         )
         assert VARIATION.update_settings_from_deleted_pairing_numbers(tournament, [10])
-        assert VARIATION._stored_rules(tournament) == []
+        assert stored_rules(tournament) == []
 
     @pytest.mark.parametrize(
         ('added', 'expected'),
@@ -281,10 +297,10 @@ class TestCustomAccelerationVariation:
             [AccelerationRule(1.0, 1, 3, number_range=(10, 20))], player_count=81
         )
         VARIATION.update_settings_from_added_pairing_number(tournament, added)
-        assert VARIATION._stored_rules(tournament)[0].number_range == expected
+        assert stored_rules(tournament)[0].number_range == expected
 
     def test_nothing_to_shift_without_rules(self):
-        tournament = StubTournament()
+        tournament = stub_tournament()
         assert not VARIATION.update_settings_from_deleted_pairing_numbers(
             tournament, [1]
         )
@@ -327,23 +343,23 @@ class TestInitialPairingScoreSetting:
     def test_rejected_scores(self, score: str):
         data = {SCORE_SETTING.player_field(11): score}
         assert SCORE_SETTING.player_field(11) in SCORE_SETTING.get_data_errors(
-            StubTournament(), data
+            stub_tournament(), data
         )
 
     def test_score_limited_to_one_decimal(self):
         data = {SCORE_SETTING.player_field(11): '6.25'}
         assert SCORE_SETTING.player_field(11) in SCORE_SETTING.get_data_errors(
-            StubTournament(), data
+            stub_tournament(), data
         )
 
     def test_blank_score_is_not_an_error(self):
         data = {SCORE_SETTING.player_field(11): ''}
-        assert SCORE_SETTING.get_data_errors(StubTournament(), data) == {}
+        assert SCORE_SETTING.get_data_errors(stub_tournament(), data) == {}
 
     def test_scores_of_departed_players_do_not_invalidate_the_setting(self):
         # Player 99 has left the tournament; the arbiter's other values
         # must survive rather than being reset to nothing.
-        tournament = StubTournament()
+        tournament = stub_tournament()
         tournament.stored_tournament.pairing_settings[SCORE_SETTING.id] = (
             InitialPairingScoreSetting.to_stored_value(SCORES | {99: 1.0})
         )
@@ -354,13 +370,13 @@ class TestInitialPairingScoreSetting:
 class TestInitialScoreVariation:
     def test_virtual_points_apply_to_every_round(self):
         tournament = tournament_with_scores(SCORES)
-        player = StubPlayer(pairing_number=1, id=11)
+        player = stub_player(pairing_number=1, id=11)
         assert SCORE_VARIATION.compute_virtual_points(tournament, player, 1) == 6.5
         assert SCORE_VARIATION.compute_virtual_points(tournament, player, 9) == 6.5
 
     def test_no_virtual_points_without_a_score(self):
         tournament = tournament_with_scores(SCORES)
-        player = StubPlayer(pairing_number=3, id=13)
+        player = stub_player(pairing_number=3, id=13)
         assert SCORE_VARIATION.compute_virtual_points(tournament, player, 1) == 0.0
 
     def test_print_real_points(self):
@@ -370,9 +386,9 @@ class TestInitialScoreVariation:
     def test_one_trf_rule_per_scored_player(self):
         tournament = tournament_with_scores(SCORES)
         tournament.tournament_players = [
-            StubPlayer(pairing_number=2, id=12),
-            StubPlayer(pairing_number=1, id=11),
-            StubPlayer(pairing_number=3, id=13),  # no score → no record
+            stub_player(pairing_number=2, id=12),
+            stub_player(pairing_number=1, id=11),
+            stub_player(pairing_number=3, id=13),  # no score → no record
         ]
         assert SCORE_VARIATION.get_tournament_accelerated_rules(tournament) == [
             AccelerationRule(6.5, 1, 9, number_range=(1, 1)),
@@ -381,7 +397,7 @@ class TestInitialScoreVariation:
 
     def test_players_without_a_pairing_number_are_skipped(self):
         tournament = tournament_with_scores(SCORES)
-        tournament.tournament_players = [StubPlayer(pairing_number=None, id=11)]
+        tournament.tournament_players = [stub_player(pairing_number=None, id=11)]
         assert SCORE_VARIATION.get_tournament_accelerated_rules(tournament) == []
 
 
@@ -427,15 +443,15 @@ class StubEvent:
         return keys
 
 
-def make_fill_case() -> tuple[StubTournament, dict[str, str]]:
+def make_fill_case() -> tuple[Any, dict[str, str]]:
     """A tournament whose three players are, in an earlier tournament of
     the same event, three *different* player records — matched by FIDE ID
     for two of them and by name + birth date for the third."""
     birth = date(2001, 2, 3)
     target_players = [
-        StubPlayer(pairing_number=1, id=11),
-        StubPlayer(pairing_number=2, id=12),
-        StubPlayer(pairing_number=3, id=13),
+        stub_player(pairing_number=1, id=11),
+        stub_player(pairing_number=2, id=12),
+        stub_player(pairing_number=3, id=13),
     ]
     target_players[0].stored_player = StubStoredPlayer(id=11, fide_id=500)
     target_players[1].stored_player = StubStoredPlayer(
@@ -443,7 +459,7 @@ def make_fill_case() -> tuple[StubTournament, dict[str, str]]:
     )
     target_players[2].stored_player = StubStoredPlayer(id=13, fide_id=502)
 
-    source = StubTournament()
+    source = stub_tournament()
     source.tournament_players = [
         # Different ids from the target players on purpose.
         StubSourcePlayer(91, StubStoredPlayer(id=91, fide_id=500), 6.5),
@@ -456,7 +472,7 @@ def make_fill_case() -> tuple[StubTournament, dict[str, str]]:
         ),
     ]
 
-    tournament = StubTournament(tournament_players=target_players)
+    tournament = stub_tournament(tournament_players=target_players)
     tournament.event = StubEvent(uniq_id='ev', tournaments_by_id={7: source})
     data = {
         SCORE_SETTING.source_event_field: 'ev',
@@ -525,3 +541,19 @@ class TestInitialScoreFill:
             tournament, data | {SCORE_SETTING.source_tournament_field: '999'}
         )
         assert SCORE_SETTING.from_form_data(filled) == {}
+
+
+@pytest.mark.unit
+class TestCommaDecimals:
+    """The form helpers accept a comma as the decimal separator, which
+    French arbiters type. Validation and reading must agree on it."""
+
+    def test_custom_rule_accepts_a_comma(self):
+        data = form_data(**{SETTING.field(0, 'vpoints'): '1,5'})
+        assert SETTING.get_data_errors(stub_tournament(), data) == {}
+        assert SETTING.from_form_data(data)[0].vpoints == 1.5
+
+    def test_initial_score_accepts_a_comma(self):
+        data = {SCORE_SETTING.player_field(11): '6,5'}
+        assert SCORE_SETTING.get_data_errors(stub_tournament(), data) == {}
+        assert SCORE_SETTING.from_form_data(data) == {11: 6.5}

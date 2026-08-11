@@ -7,10 +7,30 @@ from typing import TYPE_CHECKING, Any
 
 from common.i18n import _
 from data.pairings.settings import PairingSetting
+from web.controllers.base_controller import WebContext
 from plugins.pairing_acceleration import PLUGIN_NAME
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
+
+
+def _form_int(data: dict[str, str], field: str) -> int | None:
+    """The field as an integer, or None when it is empty or malformed.
+    :class:`WebContext` raises on malformed input; pairing settings report
+    it as a form error instead, so the exception is turned into None."""
+    try:
+        return WebContext.form_data_to_int(data, field)
+    except ValueError:
+        return None
+
+
+def _form_float(data: dict[str, str], field: str) -> float | None:
+    """As :func:`_form_int`, for a decimal field. Note that it accepts a
+    comma as the decimal separator, and normalises the value in *data*."""
+    try:
+        return WebContext.form_data_to_float(data, field)
+    except ValueError:
+        return None
 
 
 class AccelerationGroup(StrEnum):
@@ -266,12 +286,12 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
     def from_form_data(self, data: dict[str, str]) -> list[AccelerationRule]:
         return [
             AccelerationRule(
-                vpoints=float(data[self.field(index, 'vpoints')]),
-                first_round=int(data[self.field(index, 'first_round')]),
-                last_round=int(data[self.field(index, 'last_round')]),
+                vpoints=_form_float(data, self.field(index, 'vpoints')) or 0.0,
+                first_round=_form_int(data, self.field(index, 'first_round')) or 0,
+                last_round=_form_int(data, self.field(index, 'last_round')) or 0,
                 number_range=(
-                    int(data[self.field(index, 'first_number')]),
-                    int(data[self.field(index, 'last_number')]),
+                    _form_int(data, self.field(index, 'first_number')) or 0,
+                    _form_int(data, self.field(index, 'last_number')) or 0,
                 ),
             )
             for index in self.row_indexes(data)
@@ -384,7 +404,7 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
         self, errors: dict[str, str], data: dict[str, str], index: int
     ):
         field = self.field(index, 'vpoints')
-        vpoints = self._parse_float(data.get(field))
+        vpoints = _form_float(data, field)
         if vpoints is None or not 0 <= vpoints <= self.MAX_VPOINTS:
             errors[field] = _('A value between 0 and {max} is expected.').format(
                 max=f'{self.MAX_VPOINTS:g}'
@@ -403,8 +423,8 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
     ) -> tuple[int, int] | None:
         first_field = self.field(index, f'first_{name}')
         last_field = self.field(index, f'last_{name}')
-        first = self._parse_int(data.get(first_field))
-        last = self._parse_int(data.get(last_field))
+        first = _form_int(data, first_field)
+        last = _form_int(data, last_field)
         for field, value in ((first_field, first), (last_field, last)):
             if value is None or not 1 <= value <= max_value:
                 errors[field] = message
@@ -427,20 +447,6 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
             for round_ in range(round_range[0], round_range[1] + 1)
             for number in range(number_range[0], number_range[1] + 1)
         }
-
-    @staticmethod
-    def _parse_int(value: str | None) -> int | None:
-        try:
-            return int(value)
-        except (TypeError, ValueError):
-            return None
-
-    @staticmethod
-    def _parse_float(value: str | None) -> float | None:
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            return None
 
 
 class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
@@ -483,7 +489,7 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
     def from_form_data(self, data: dict[str, str]) -> dict[int, float]:
         scores: dict[int, float] = {}
         for field in self._player_fields(data):
-            score = self._parse_float(data[field])
+            score = _form_float(data, field)
             if score:
                 player_id = int(field[len(self.player_field_base) :])
                 scores[player_id] = score
@@ -523,7 +529,7 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
             value = data[field]
             if not value:
                 continue
-            score = self._parse_float(value)
+            score = _form_float(data, field)
             if score is None or not 0 <= score <= self.MAX_SCORE:
                 errors[field] = _('A value between 0 and {max} is expected.').format(
                     max=f'{self.MAX_SCORE:g}'
@@ -624,7 +630,7 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
         if data.get(self.action_field) != self.ACTION_FILL:
             return data
         scores_by_key = self._get_source_scores(tournament, data)
-        coefficient = self._parse_float(data.get(self.coefficient_field))
+        coefficient = _form_float(data, self.coefficient_field)
         if coefficient is None:
             coefficient = 1.0
         add = data.get(self.mode_field) == 'add'
@@ -646,7 +652,7 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
                     updated[field] = ''
                 continue
             matched += 1
-            current = (self._parse_float(updated.get(field)) or 0.0) if add else 0.0
+            current = (_form_float(updated, field) or 0.0) if add else 0.0
             # One decimal: the TRF26 250 points field holds no more. Round
             # half up rather than to even, which reads as arbitrary here.
             filled = floor((current + score * coefficient) * 10 + 0.5) / 10
@@ -658,17 +664,17 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
 
     def _get_source_scores(
         self, tournament: 'Tournament', data: dict[str, str]
-    ) -> dict[object, float]:
+    ) -> dict[tuple, float]:
         """Final score of each player of the chosen tournament, keyed by
         every identity key that player can be recognised by."""
         source_event = self._get_source_event(tournament, data)
-        source_id = self._parse_int(data.get(self.source_tournament_field))
+        source_id = _form_int(data, self.source_tournament_field)
         if source_event is None or source_id is None:
             return {}
         source = source_event.tournaments_by_id.get(source_id)
         if source is None:
             return {}
-        scores_by_key: dict[object, float] = {}
+        scores_by_key: dict[tuple, float] = {}
         for source_player in source.tournament_players:
             score = source_player.points_total()
             for key in source_event.get_player_identity_keys(
@@ -689,13 +695,6 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
             return None
         return EventLoader().load_event(uniq_id)
 
-    @staticmethod
-    def _parse_int(value: str | None) -> int | None:
-        try:
-            return int(value)
-        except (TypeError, ValueError):
-            return None
-
     def _player_fields(self, data: dict[str, str]) -> list[str]:
         return [
             field
@@ -703,10 +702,3 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
             if field.startswith(self.player_field_base)
             and field[len(self.player_field_base) :].isdigit()
         ]
-
-    @staticmethod
-    def _parse_float(value: str | None) -> float | None:
-        try:
-            return float(value)
-        except (TypeError, ValueError):
-            return None

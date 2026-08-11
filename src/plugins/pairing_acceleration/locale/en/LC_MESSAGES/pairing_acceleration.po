@@ -171,7 +171,3 @@ msgstr ""
 #, python-brace-format
 msgid "{matched} players filled, {missing} not found in that tournament"
 msgstr ""
-
-#~ msgid "{matched} players filled, {missing} not in that tournament"
-#~ msgstr ""
-

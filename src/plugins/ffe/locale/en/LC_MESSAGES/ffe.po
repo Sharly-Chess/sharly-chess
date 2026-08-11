@@ -763,7 +763,3 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "Papi export does not support the [{variation}] pairing system, whose virtual points the format cannot represent."
-#~ msgstr ""
-

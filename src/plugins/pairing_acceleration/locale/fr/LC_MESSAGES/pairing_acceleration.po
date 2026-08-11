@@ -171,7 +171,3 @@ msgstr "points"
 #, python-brace-format
 msgid "{matched} players filled, {missing} not found in that tournament"
 msgstr "{matched} joueur·euses renseigné·es, {missing} introuvable·s dans ce tournoi"
-
-#~ msgid "{matched} players filled, {missing} not in that tournament"
-#~ msgstr "{matched} joueur·euses renseigné·es, {missing} absent·es de ce tournoi"
-
