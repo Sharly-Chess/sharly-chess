@@ -460,6 +460,9 @@ msgstr "PAPI"
 msgid "Page of the tournament on the FFE website."
 msgstr "Page du tournoi sur le site FFE."
 
+msgid "Papi export does not support bonus / penalty points, which this tournament uses."
+msgstr "L'export Papi ne prend pas en charge les points de bonus / pénalité, utilisés par ce tournoi."
+
 msgid "Papi export is not available for team events."
 msgstr "L'export Papi n'est pas possible pour les évènements par équipe."
 

@@ -739,12 +739,6 @@ class TournamentPlayer(Player):
         return self.tournament.point_values
 
     def points_before(self, before_round: int, only_played: bool = False) -> float:
-        # NOTE(Amaras) this does not rely on the fact that insertion order
-        # is preserved in 3.6+ dict, because I can't be sure insertion order
-        # is the correct (increasing) round order
-        # NOTE(Amaras) if you were to include the current round
-        # in the computation, boards regularly change their ordering
-        # during the current round as results are added
         caching = self.tournament._compute_caching_enabled
         key = ('points_before', before_round, only_played)
         if caching:
@@ -756,17 +750,19 @@ class TournamentPlayer(Player):
             for round_, pairing in self.pairings.items()
             if round_ < before_round and (pairing.played or not only_played)
         )
+        # Bonus / penalty points are part of the score, so they belong in
+        # the figure the pairings table shows and sorts on. Excluded from
+        # the played-games-only variant, which measures games rather than
+        # standing.
+        if not only_played:
+            value += self.tournament.player_point_adjustment_total(
+                self.id, before_round - 1
+            )
         if caching:
             self._compute_cache[key] = value
         return value
 
     def points_after(self, after_round: int) -> float:
-        # NOTE(Amaras) this does not rely on the fact that insertion order
-        # is preserved in 3.6+ dict, because I can't be sure insertion order
-        # is the correct (increasing) round order
-        # NOTE(Amaras) if you were to include the current round
-        # in the computation, boards regularly change their ordering
-        # during the current round as results are added
         caching = self.tournament._compute_caching_enabled
         key = ('points_after', after_round)
         if caching:
@@ -778,6 +774,10 @@ class TournamentPlayer(Player):
             for round_index, pairing in self.pairings.items()
             if round_index <= after_round
         )
+        # Manual bonus / penalty points count towards the score, so they
+        # reach the score groups the pairing engine works from — which is
+        # what the TRF26 299 record they are exported as is for.
+        value += self.tournament.player_point_adjustment_total(self.id, after_round)
         if caching:
             self._compute_cache[key] = value
         return value
@@ -898,7 +898,11 @@ class TournamentPlayer(Player):
             points=(
                 self.team_trf_standard_points_after(after_round)
                 if self.tournament.is_team_tournament
-                else self.points_after(after_round)
+                # The 001 points field is ``11.5`` — unsigned — so a
+                # penalty that takes a player below zero cannot be
+                # written. bbpPairings floors the recomputed score the
+                # same way, so the two still agree.
+                else max(0.0, self.points_after(after_round))
             ),
             rank=self.rank,
             games=games,

@@ -626,6 +626,93 @@ class PairingsAdminController(BaseEventAdminController):
             ),
         }
 
+    @staticmethod
+    def _player_point_adjustment_context(
+        tournament: 'Tournament', player: 'TournamentPlayer', round_: int
+    ) -> dict[str, Any]:
+        """The player's current manual delta and reason for the round.
+        Individual tournaments have no match points and no rule-set
+        contribution, so this is simpler than the team counterpart."""
+        adjustment = tournament.stored_player_point_adjustment(player.id, round_)
+        return {
+            'player': player,
+            'delta': adjustment.delta if adjustment else 0.0,
+            'reason': (adjustment.reason if adjustment else '') or '',
+        }
+
+    @get(
+        path='/player-point-adjustment/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
+        name='admin-player-point-adjustment-modal',
+    )
+    async def htmx_admin_player_point_adjustment_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        player = tournament.tournament_players_by_id.get(player_id)
+        if player is None:
+            raise NotFoundException(f'Player {player_id} not found.')
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'player-point-adjustment',
+                'pa_round': round,
+                'pa_adjustment': self._player_point_adjustment_context(
+                    tournament, player, round
+                ),
+            },
+        )
+
+    @patch(
+        path='/player-point-adjustment/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}',
+        name='admin-player-point-adjustment-set',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+        data=Body(media_type=RequestEncodingType.URL_ENCODED),
+    )
+    async def htmx_admin_player_point_adjustment_set(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        player_id: FromPath[int],
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        player = tournament.tournament_players_by_id.get(player_id)
+        if player is None:
+            raise NotFoundException(f'Player {player_id} not found.')
+        event = web_context.get_admin_event()
+        delta = WebContext.form_data_to_float(data, 'delta') or 0.0
+        # Same TRF26 299 field limit as the team adjustments.
+        if not MIN_POINT_ADJUSTMENT <= delta <= MAX_POINT_ADJUSTMENT:
+            Message.error(
+                request,
+                _('Bonus / penalty points must be between {min} and {max}.').format(
+                    min=f'{MIN_POINT_ADJUSTMENT:g}', max=f'{MAX_POINT_ADJUSTMENT:g}'
+                ),
+            )
+            return self._admin_event_pairings_render(
+                PairingsAdminWebContext(request, tournament_id, round)
+            )
+        reason = WebContext.form_data_to_str(data, 'reason') or None
+        with EventDatabase(event.uniq_id, write=True) as database:
+            tournament.set_manual_player_point_adjustment(
+                player.id, round, delta, reason, database
+            )
+        Message.success(request, _('Bonus / penalty points updated.'))
+        return self._admin_event_pairings_render(
+            PairingsAdminWebContext(request, tournament_id, round, reload_event=True)
+        )
+
     @get(
         path='/team-point-adjustment/'
         '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_id:int}',

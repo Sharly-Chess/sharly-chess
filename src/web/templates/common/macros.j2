@@ -45,6 +45,15 @@
 {{- lines|join('<br>') -}}
 {% endmacro %}
 
+{% macro player_point_adjustment_tooltip(tournament, player_id, round_) %}
+{%- set manual = tournament.stored_player_point_adjustment(player_id, round_) -%}
+{%- if manual and manual.delta -%}
+    {%- set line = '<strong>' ~ '%+g'|format(manual.delta) ~ ' ' ~ _('Points') ~ '</strong>' -%}
+    {%- if manual.reason -%}{%- set line = line ~ ': ' ~ manual.reason -%}{%- endif -%}
+    {{- line -}}
+{%- endif -%}
+{% endmacro %}
+
 {% macro click_to_copy_attributes(value, tooltip_placement='top', copied_value='', warning=false, wide=false) %}
     {{ tooltip_attributes(
         '',

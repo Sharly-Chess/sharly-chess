@@ -1,0 +1,83 @@
+{% import '/common/macros.j2' as macros with context %}
+{# Per-player bonus/penalty modal, keyed by (player, round). Opened from
+   the badge on the pairings tab and from the player-record modal.
+   Requires: ``pa_adjustment`` (see _player_point_adjustment_context) and
+   ``pa_round``.
+
+   The team counterpart also carries match points and a rule-set section;
+   individual tournaments have neither, so this is the same dialog with a
+   single field. #}
+{% set adj = pa_adjustment %}
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(95vw, 460px);"
+>
+    <div class="modal-content">
+        <div class="modal-header d-flex flex-column">
+            <h2 class="modal-title fs-5 fw-bold w-100">
+                {{ _('Bonus / penalty points') }}
+            </h2>
+            <div class="text-muted small w-100">
+                {{ adj.player.full_name }} — {{ _('Round #%(round)d', round=pa_round) }}
+            </div>
+        </div>
+        <div class="modal-body">
+            {% if client.can_update_results(admin_tournament.id) %}
+                <form
+                    id="modal-form"
+                    hx-patch="{{ url_for(
+                        'admin-player-point-adjustment-set',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=pa_round,
+                        player_id=adj.player.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    hx-trigger="submit, enterKeypressFromModal"
+                >
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <label class="form-label small mb-0">{{ _('Points') }}</label>
+                            <input
+                                class="form-control form-control-sm"
+                                type="number" step="0.5" min="-9.5" max="99.5"
+                                name="delta"
+                                value="{{ '%g'|format(adj.delta) if adj.delta else '' }}"
+                            >
+                        </div>
+                        <div class="col-8">
+                            <label class="form-label small mb-0">{{ _('Reason') }}</label>
+                            <input
+                                class="form-control form-control-sm"
+                                type="text"
+                                name="reason"
+                                value="{{ adj.reason }}"
+                            >
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+            {% if client.can_update_results(admin_tournament.id) %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="btn btn-primary text-nowrap"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Save points') }}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>

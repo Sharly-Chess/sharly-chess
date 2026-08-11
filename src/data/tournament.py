@@ -39,6 +39,7 @@ from database.sqlite.event.event_store import (
     StoredBoard,
     StoredTeamBoard,
     StoredTeamPointAdjustment,
+    StoredPlayerPointAdjustment,
     StoredProhibitedPairingGroup,
     StoredTournamentPlayer,
     StoredPairing,
@@ -688,6 +689,69 @@ class Tournament:
                     round_=round_,
                     mp_delta=mp_delta,
                     gp_delta=gp_delta,
+                    reason=reason,
+                )
+            )
+
+    def stored_player_point_adjustment(
+        self, player_id: int, round_: int
+    ) -> 'StoredPlayerPointAdjustment | None':
+        """The stored manual adjustment row for (player, round), or None."""
+        for adjustment in self.stored_tournament.stored_player_point_adjustments:
+            if adjustment.player_id == player_id and adjustment.round_ == round_:
+                return adjustment
+        return None
+
+    def player_point_adjustment(self, player_id: int, round_: int) -> float:
+        """Manual bonus / penalty points for (player, round) in an
+        individual tournament. Team events adjust whole teams instead, so
+        this is always zero there.
+
+        Unlike the team counterpart there is no rule-set contribution:
+        rule sets award match points, which individual tournaments don't
+        have."""
+        if self.is_team_tournament:
+            return 0.0
+        adjustment = self.stored_player_point_adjustment(player_id, round_)
+        return adjustment.delta if adjustment else 0.0
+
+    def player_point_adjustment_total(self, player_id: int, after_round: int) -> float:
+        """Every adjustment for the player through ``after_round``."""
+        if self.is_team_tournament:
+            return 0.0
+        return sum(
+            adjustment.delta
+            for adjustment in self.stored_tournament.stored_player_point_adjustments
+            if adjustment.player_id == player_id and adjustment.round_ <= after_round
+        )
+
+    def set_manual_player_point_adjustment(
+        self,
+        player_id: int,
+        round_: int,
+        delta: float,
+        reason: str | None,
+        database: 'EventDatabase',
+    ) -> None:
+        """Upsert the manual adjustment for (player, round) and keep the
+        in-memory stored list in sync."""
+        database.set_stored_player_point_adjustment(
+            self.id, player_id, round_, delta, reason
+        )
+        adjustments = self.stored_tournament.stored_player_point_adjustments
+        adjustments[:] = [
+            adjustment
+            for adjustment in adjustments
+            if not (adjustment.player_id == player_id and adjustment.round_ == round_)
+        ]
+        if delta or reason:
+            adjustments.append(
+                StoredPlayerPointAdjustment(
+                    id=None,
+                    tournament_id=self.id,
+                    player_id=player_id,
+                    round_=round_,
+                    delta=delta,
                     reason=reason,
                 )
             )
@@ -2990,6 +3054,10 @@ class Tournament:
                 after_round=after_round,
                 next_round_pairings_as_zpb=next_round_pairings_as_zpb,
             )
+        else:
+            trf.abnormal_points_assignments = (
+                self._individual_abnormal_points_assignments(after_round)
+            )
         trf.prohibited_pairings = (
             prohibited_pairing_override
             if prohibited_pairing_override is not None
@@ -3156,6 +3224,35 @@ class Tournament:
         trf.abnormal_points_assignments = self._team_abnormal_points_assignments(
             after_round=after_round, tpn_by_team_id=tpn_map
         )
+
+    def _individual_abnormal_points_assignments(
+        self, after_round: int
+    ) -> 'list[TrfAbnormalPointsAssignment]':
+        """TRF26 299 records for an individual tournament: one blank-type
+        line per (player, round) carrying a bonus / penalty, keyed on the
+        pairing number. Only the game-points field applies — 8-11 is for
+        teams — and the 001 points already include the delta, which is
+        what a reader recomputing the score from the results expects."""
+        from data.input_output.trf.trf_data import TrfAbnormalPointsAssignment
+
+        assignments: list[TrfAbnormalPointsAssignment] = []
+        for player in self.tournament_players_by_pairing_number.values():
+            if player.pairing_number is None:
+                continue
+            for round_ in range(1, after_round + 1):
+                delta = self.player_point_adjustment(player.id, round_)
+                if not delta:
+                    continue
+                assignments.append(
+                    TrfAbnormalPointsAssignment(
+                        type=' ',
+                        match_points=None,
+                        game_points=delta,
+                        round=round_,
+                        pairing_numbers=[player.pairing_number],
+                    )
+                )
+        return assignments
 
     def _team_abnormal_points_assignments(
         self, *, after_round: int, tpn_by_team_id: dict[int, int]
