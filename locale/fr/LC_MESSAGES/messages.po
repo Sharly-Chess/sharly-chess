@@ -474,8 +474,9 @@ msgstr "1.5.6a exige que chaque ronde compte au moins 40 joueur·euses classé·
 msgid "1/3 of %(n)s opponents, min 3"
 msgstr "1/3 de %(n)s adversaires, min 3"
 
-msgid "162 Point system"
-msgstr "162 Système de points"
+#, python-brace-format
+msgid "162 Point system results: {symbols}"
+msgstr "162 résultats du système de points : {symbols}"
 
 #, python-brace-format
 msgid "172 Starting rank method {method}"
@@ -1359,6 +1360,10 @@ msgstr "Bonus / pénalité"
 
 msgid "Bonus / penalty points"
 msgstr "Points de bonus/pénalité"
+
+#, python-brace-format
+msgid "Bonus / penalty points must be between {min} and {max}."
+msgstr "Les points de bonus / pénalité doivent être compris entre {min} et {max}."
 
 msgid "Bonus / penalty points updated."
 msgstr "Les points de bonus/pénalité ont été mis à jour."

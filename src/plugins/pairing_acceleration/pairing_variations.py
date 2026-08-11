@@ -332,7 +332,7 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
 
     @property
     def trf_encoded_type(self) -> str:
-        return 'FIDE_DUTCH_2026_BAKU'
+        return 'FIDE_DUTCH_2025_BAKU'
 
     @property
     def include_accelerated_rules_in_trf(self) -> bool:

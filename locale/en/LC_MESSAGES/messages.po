@@ -474,7 +474,8 @@ msgstr ""
 msgid "1/3 of %(n)s opponents, min 3"
 msgstr ""
 
-msgid "162 Point system"
+#, python-brace-format
+msgid "162 Point system results: {symbols}"
 msgstr ""
 
 #, python-brace-format
@@ -1358,6 +1359,10 @@ msgid "Bonus / penalty"
 msgstr ""
 
 msgid "Bonus / penalty points"
+msgstr ""
+
+#, python-brace-format
+msgid "Bonus / penalty points must be between {min} and {max}."
 msgstr ""
 
 msgid "Bonus / penalty points updated."
