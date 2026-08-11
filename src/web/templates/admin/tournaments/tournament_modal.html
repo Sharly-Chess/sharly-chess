@@ -165,21 +165,21 @@
                                     {% elif config_field.kind == 'int' %}
                                         {{ admin_macros.number_input(
                                             name=field_name,
-                                            label=config_field.label,
+                                            label=_('%(string)s:', string=config_field.label),
                                             help_text=config_field.help_text,
                                             data=data, errors=errors
                                         ) }}
                                     {% elif config_field.kind == 'text' %}
                                         {{ admin_macros.text_input(
                                             name=field_name,
-                                            label=config_field.label,
+                                            label=_('%(string)s:', string=config_field.label),
                                             help_text=config_field.help_text,
                                             data=data, errors=errors
                                         ) }}
                                     {% else %}
                                         {{ admin_macros.select_input(
                                             name=field_name,
-                                            label=config_field.label,
+                                            label=_('%(string)s:', string=config_field.label),
                                             help_text=config_field.help_text,
                                             select_options=config_field.choices,
                                             data=data, errors=errors
