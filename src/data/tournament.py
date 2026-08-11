@@ -2295,7 +2295,7 @@ class Tournament:
     def print_real_points(self, round_: int | None = None) -> bool:
         if round_ is None:
             round_ = self.current_round
-        return self.pairing_variation.print_real_points(round_, self.rounds)
+        return self.pairing_variation.print_real_points(self, round_)
 
     @cached_property
     def point_values(self) -> dict[Result, float]:
@@ -3751,14 +3751,27 @@ class Tournament:
         if not variation.include_accelerated_rules_in_trf:
             return []
         rounds = self.rounds
-        acceleration_rules = variation.get_tournament_accelerated_rules(
-            rounds, self.draw_points, self.win_points
-        )
+        acceleration_rules = variation.get_tournament_accelerated_rules(self)
         tpn_range_by_group = variation.get_acceleration_number_range_by_group(self)
-        accelerated_rounds: list[TrfAcceleratedRound] = []
+        accelerated_rounds: list[TrfAcceleratedRound] = [
+            TrfAcceleratedRound(
+                match_points=None,
+                game_points=rule.vpoints,
+                first_round=rule.first_round,
+                last_round=rule.last_round,
+                first_id=rule.number_range[0],
+                last_id=rule.number_range[1],
+            )
+            for rule in acceleration_rules
+            if rule.number_range is not None
+        ]
         players_by_tpn = self.tournament_players_by_pairing_number
         for group, (min_tpn, max_tpn) in tpn_range_by_group.items():
-            group_rules = [rule for rule in acceleration_rules if rule.group == group]
+            group_rules = [
+                rule
+                for rule in acceleration_rules
+                if rule.number_range is None and rule.group == group
+            ]
             if not any(rule.points_threshold for rule in group_rules):
                 accelerated_rounds += [
                     TrfAcceleratedRound(

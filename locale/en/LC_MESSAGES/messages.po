@@ -502,6 +502,10 @@ msgstr ""
 msgid "250 Accelerated rounds"
 msgstr ""
 
+#, python-brace-format
+msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
+msgstr ""
+
 msgid "299 Abnormal assignment points"
 msgstr ""
 

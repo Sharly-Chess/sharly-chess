@@ -136,8 +136,11 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
         )
 
     def get_tournament_accelerated_rules(
-        self, rounds: int, draw_points: float, win_points: float
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
+        rounds = tournament.rounds
+        draw_points = tournament.draw_points
+        win_points = tournament.win_points
         rules: list[AccelerationRule] = []
         # Starting points: Group A - 2, Group B - 1, Group C - 0
         starting_vpoints_by_group = {

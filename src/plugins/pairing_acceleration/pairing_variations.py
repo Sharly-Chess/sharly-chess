@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from copy import copy
+from dataclasses import replace
 from functools import cache, partial
 from math import ceil
 from typing import Callable, Iterable
@@ -18,19 +19,18 @@ from plugins.pairing_acceleration.pairing_settings import (
     GroupB3GroupsSetting,
     GroupC3GroupsSetting,
     AccelerationRule,
+    CustomAccelerationSetting,
 )
 from utils import Utils
 
 
-class AccelerationSwissVariation(SwissVariation, ABC):
+class PluginSwissVariation(SwissVariation, ABC):
+    """Accelerated Swiss variations provided by the plugin. Their IDs are
+    namespaced so that they can't collide with the core ones."""
+
     @classmethod
     def static_id(cls) -> str:
         return f'{PLUGIN_NAME}-{super().static_id()}'
-
-    @abstractmethod
-    def get_tournament_accelerated_rules(
-        self, rounds: int, draw_points: float, win_points: float
-    ) -> list[AccelerationRule]: ...
 
     @property
     def include_accelerated_rules_in_trf(self) -> bool:
@@ -39,6 +39,16 @@ class AccelerationSwissVariation(SwissVariation, ABC):
     @property
     def vpoints_use_pairing_numbers(self) -> bool:
         return True
+
+
+class AccelerationSwissVariation(PluginSwissVariation, ABC):
+    """Accelerations whose virtual points follow from the group a player
+    falls in, the groups being ranges of pairing numbers."""
+
+    @abstractmethod
+    def get_tournament_accelerated_rules(
+        self, tournament: Tournament
+    ) -> list[AccelerationRule]: ...
 
     @property
     def are_groups_editable(self) -> bool:
@@ -344,8 +354,8 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         return False
 
     @classmethod
-    def print_real_points(cls, current_round, rounds):
-        return current_round <= cls.accelerated_rounds(rounds)
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
+        return current_round <= cls.accelerated_rounds(tournament.rounds)
 
     @staticmethod
     def accelerated_rounds(rounds: int) -> int:
@@ -374,8 +384,11 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
                 return 0
 
     def get_tournament_accelerated_rules(
-        self, rounds: int, draw_points: float, win_points: float
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
+        rounds = tournament.rounds
+        draw_points = tournament.draw_points
+        win_points = tournament.win_points
         return [
             AccelerationRule(
                 vpoints=win_points,
@@ -423,11 +436,11 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
         return _('Haley system')
 
     def get_tournament_accelerated_rules(
-        self, rounds: int, draw_points: float, win_points: float
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         return [
             AccelerationRule(
-                vpoints=win_points,
+                vpoints=tournament.win_points,
                 first_round=1,
                 last_round=2,
                 group=AccelerationGroup.A,
@@ -463,8 +476,8 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
                 return tournament.win_points
         return 0.0
 
-    @staticmethod
-    def print_real_points(current_round: int, rounds: int) -> bool:
+    @classmethod
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         return current_round <= 2
 
 
@@ -478,17 +491,17 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
         return _('Soft Haley system')
 
     def get_tournament_accelerated_rules(
-        self, rounds: int, draw_points: float, win_points: float
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
         return [
             AccelerationRule(
-                vpoints=win_points,
+                vpoints=tournament.win_points,
                 first_round=1,
                 last_round=2,
                 group=AccelerationGroup.A,
             ),
             AccelerationRule(
-                vpoints=draw_points,
+                vpoints=tournament.draw_points,
                 first_round=2,
                 last_round=2,
                 group=AccelerationGroup.B,
@@ -533,8 +546,8 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
                 return tournament.draw_points
         return 0.0
 
-    @staticmethod
-    def print_real_points(current_round: int, rounds: int) -> bool:
+    @classmethod
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         return current_round <= 2
 
 
@@ -548,8 +561,11 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
         return _('Progressive accelerated system')
 
     def get_tournament_accelerated_rules(
-        self, rounds: int, draw_points: float, win_points: float
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
+        rounds = tournament.rounds
+        draw_points = tournament.draw_points
+        win_points = tournament.win_points
         rules: list[AccelerationRule] = []
         # Starting points: Group A - 2, Group B - 1, Group C - 0
         starting_vpoints_by_group = {
@@ -677,6 +693,132 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
         # Players cannot have more than 2 virtual points
         return min(2 * win_points, vpoints)
 
+    @classmethod
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
+        return current_round <= tournament.rounds - 2
+
+
+class CustomAccelerationSwissVariation(PluginSwissVariation):
+    """Acceleration defined rule by rule by the arbiter rather than
+    derived from a published system, mirroring the TRF26 250 records:
+    virtual points granted to a range of pairing numbers over a range of
+    rounds."""
+
     @staticmethod
-    def print_real_points(current_round: int, rounds: int) -> bool:
-        return current_round <= rounds - 2
+    def variation_id() -> str:
+        return 'CUSTOM'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Custom accelerated system')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return super().settings + [CustomAccelerationSetting()]
+
+    def get_tournament_accelerated_rules(
+        self, tournament: Tournament
+    ) -> list[AccelerationRule]:
+        return CustomAccelerationSetting.get_value(tournament)
+
+    @classmethod
+    def compute_virtual_points(
+        cls,
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
+        at_round: int,
+    ) -> float:
+        rule = cls._get_rule(tournament, tournament_player.pairing_number, at_round)
+        return rule.vpoints if rule else 0.0
+
+    @classmethod
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
+        return any(
+            rule.first_round <= current_round <= rule.last_round
+            for rule in CustomAccelerationSetting.get_value(tournament)
+        )
+
+    @staticmethod
+    def _get_rule(
+        tournament: Tournament, pairing_number: int | None, at_round: int
+    ) -> AccelerationRule | None:
+        """The rule accelerating *pairing_number* at *at_round*, if any.
+        Rules are validated not to overlap, so at most one applies."""
+        if pairing_number is None:
+            return None
+        for rule in CustomAccelerationSetting.get_value(tournament):
+            assert rule.number_range is not None
+            first_number, last_number = rule.number_range
+            if (
+                rule.first_round <= at_round <= rule.last_round
+                and first_number <= pairing_number <= last_number
+            ):
+                return rule
+        return None
+
+    def update_settings_from_deleted_pairing_numbers(
+        self,
+        tournament: Tournament,
+        pairing_numbers: Iterable[int],
+    ) -> bool:
+        """Shift the rules down so that the players they accelerate keep
+        being accelerated once the deleted numbers are reattributed."""
+        deleted = list(pairing_numbers)
+        stored_rules = self._stored_rules(tournament)
+        if not deleted or not stored_rules:
+            return False
+        rules: list[AccelerationRule] = []
+        for rule in stored_rules:
+            assert rule.number_range is not None
+            first_number, last_number = rule.number_range
+            first_number -= sum(1 for number in deleted if number < first_number)
+            last_number -= sum(1 for number in deleted if number <= last_number)
+            last_number = min(last_number, tournament.player_count)
+            if first_number <= last_number:
+                rules.append(replace(rule, number_range=(first_number, last_number)))
+        return self._store_rules(tournament, rules)
+
+    def update_settings_from_added_pairing_number(
+        self, tournament: Tournament, pairing_number: int
+    ) -> bool:
+        stored_rules = self._stored_rules(tournament)
+        if not stored_rules:
+            return False
+        rules: list[AccelerationRule] = []
+        for rule in stored_rules:
+            assert rule.number_range is not None
+            first_number, last_number = rule.number_range
+            rules.append(
+                replace(
+                    rule,
+                    number_range=(
+                        first_number + (1 if pairing_number <= first_number else 0),
+                        last_number + (1 if pairing_number <= last_number else 0),
+                    ),
+                )
+            )
+        return self._store_rules(tournament, rules)
+
+    @staticmethod
+    def _stored_rules(tournament: Tournament) -> list[AccelerationRule] | None:
+        """The stored rules, read without the validity fallback of
+        ``get_value``: the numbers are shifted precisely when a deletion
+        has left the stored ranges outside the tournament."""
+        setting_id = CustomAccelerationSetting.static_id()
+        if setting_id not in tournament.stored_pairing_settings:
+            return None
+        return CustomAccelerationSetting.from_stored_value(
+            tournament.stored_pairing_settings[setting_id]
+        )
+
+    @staticmethod
+    def _store_rules(tournament: Tournament, rules: list[AccelerationRule]) -> bool:
+        setting = CustomAccelerationSetting()
+        stored_value = CustomAccelerationSetting.to_stored_value(rules)
+        if (
+            tournament.stored_tournament.pairing_settings.get(setting.id)
+            == stored_value
+        ):
+            return False
+        tournament.stored_tournament.pairing_settings |= {setting.id: stored_value}
+        return True

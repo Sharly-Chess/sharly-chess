@@ -2,7 +2,22 @@
 msgid "%(string)s:"
 msgstr ""
 
+#, python-brace-format
+msgid "A pairing number between 1 and {max} is expected."
+msgstr ""
+
+#, python-brace-format
+msgid "A round between 1 and {max} is expected."
+msgstr ""
+
+#, python-brace-format
+msgid "A value between 0 and {max} is expected."
+msgstr ""
+
 msgid "Accelerated pairings"
+msgstr ""
+
+msgid "Accelerated rounds"
 msgstr ""
 
 msgid "Accelerated variations of the swiss pairing system."
@@ -11,7 +26,22 @@ msgstr ""
 msgid "Acceleration groups"
 msgstr ""
 
+msgid "Add accelerated rounds"
+msgstr ""
+
+msgid "At most one decimal is expected."
+msgstr ""
+
 msgid "Baku acceleration system"
+msgstr ""
+
+msgid "Custom accelerated system"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
 msgstr ""
 
 #, python-brace-format
@@ -45,6 +75,12 @@ msgstr ""
 msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
 msgstr ""
 
+msgid "Pairing numbers"
+msgstr ""
+
+msgid "Points"
+msgstr ""
+
 msgid "Positive values are expected."
 msgstr ""
 
@@ -56,10 +92,20 @@ msgid "Round {round}"
 msgstr ""
 
 #, python-brace-format
+msgid "Round {round} of pairing number {number} is already accelerated."
+msgstr ""
+
+msgid "Rounds"
+msgstr ""
+
+#, python-brace-format
 msgid "Rounds {min_round}-{max_round}"
 msgstr ""
 
 msgid "Soft Haley system"
+msgstr ""
+
+msgid "The end of the range must not precede its start."
 msgstr ""
 
 msgid "Virtual points"

@@ -29,6 +29,11 @@
 - Duplication prize categories are now added immediately after the original (5.0.0)
 - Duplicate prizes when duplicating a tournament (5.0.0)
 
+## Pairings
+
+- A new **Custom accelerated system** lets the arbiter define the acceleration rule by rule — a number of virtual points granted to a range of pairing numbers over a range of rounds — instead of choosing a published system (5.0.0)
+- Tournaments using it export their rules as TRF26 250 records, and a TRF file carrying 250 records is now imported as a custom accelerated tournament (the **Accelerated pairings** plugin must be enabled) (5.0.0)
+
 ## Fixed tables
 
 The handling of fixed tables has been improved in several ways:

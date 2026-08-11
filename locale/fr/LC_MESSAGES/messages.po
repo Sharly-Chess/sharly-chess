@@ -502,6 +502,10 @@ msgstr "212 Départages avec PTS pas en première position"
 msgid "250 Accelerated rounds"
 msgstr "250 Rondes accélérées"
 
+#, python-brace-format
+msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
+msgstr "250 Rondes accélérées (activez le plugin [{plugin}] pour les importer)"
+
 msgid "299 Abnormal assignment points"
 msgstr "299 Attribution de points anormaux"
 
