@@ -13,19 +13,30 @@
         admin_tournament.dependent_screens
         or admin_tournament.dependent_families
         or admin_tournament.prize_groups
-        or admin_tournament.tournament_players
+        or admin_tournament.exclusive_player_ids
+        or admin_tournament.teams
     ) %}
         <p class="mt-3">{{ _('All the dependant objects will also be deleted:') }}</p>
         <ul>
-            {% if admin_tournament.tournament_players %}
-                {# TODO (Molrn - multi-tournament) replace by the players only playing in this tournament #}
+            {# Only the players left playing in no other tournament are
+               deleted; the rest keep their place in the event. #}
+            {% if admin_tournament.exclusive_player_ids %}
                 <li>
                    {{ ngettext(
                        '%(num)d player',
                        '%(num)d players',
-                       admin_tournament.tournament_players|length
+                       admin_tournament.exclusive_player_ids|length
                    ) }}
                </li>
+            {% endif %}
+            {% if admin_tournament.teams %}
+                <li>
+                    {{ ngettext(
+                        '%(num)d team',
+                        '%(num)d teams',
+                        admin_tournament.teams|length
+                    ) }}
+                </li>
             {% endif %}
             {% if admin_tournament.dependent_screens %}
                <li>

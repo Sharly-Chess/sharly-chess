@@ -808,7 +808,40 @@ class EventDatabase(MigrationDatabase):
             tuple(fields.values()) + (stored_tournament.id,),
         )
 
+    def _delete_exclusive_players(self, tournament_id: int):
+        """Delete the players a tournament holds that no other tournament
+        holds too. Players belong to the event, so one entered in several
+        tournaments has to survive losing this one.
+
+        A player is held either by a `tournament_player` row or by
+        belonging to one of the tournament's teams. Team tournaments
+        store no `tournament_player` rows at all — the loader synthesises
+        them from team membership — so for a team roster only the second
+        branch finds anything.
+        """
+        self.execute(
+            'DELETE FROM `player` WHERE `id` IN ('
+            '   SELECT `player_id` FROM `tournament_player` WHERE `tournament_id` = ? '
+            '   UNION '
+            '   SELECT `player`.`id` FROM `player` '
+            '   JOIN `team` ON `team`.`id` = `player`.`team_id` '
+            '   WHERE `team`.`tournament_id` = ?'
+            ') AND `id` NOT IN ('
+            '   SELECT `player_id` FROM `tournament_player` WHERE `tournament_id` <> ?'
+            ') AND `id` NOT IN ('
+            '   SELECT `player`.`id` FROM `player` '
+            '   JOIN `team` ON `team`.`id` = `player`.`team_id` '
+            '   WHERE `team`.`tournament_id` IS NOT NULL '
+            '   AND `team`.`tournament_id` <> ?'
+            ')',
+            (tournament_id, tournament_id, tournament_id, tournament_id),
+        )
+
     def delete_stored_tournament(self, tournament_id: int):
+        # Teams cascade with the tournament (see the `team` foreign key).
+        # The players have to be found first, while the rows tying them
+        # to the tournament still exist.
+        self._delete_exclusive_players(tournament_id)
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
     def set_tournament_check_in_open(self, tournament_id: int, check_in_open: bool):
@@ -1208,6 +1241,16 @@ class EventDatabase(MigrationDatabase):
         )
 
     def delete_players_in_tournament(self, tournament_id: int):
+        """Empty a tournament of its players, keeping its teams — what
+        importing "and delete the existing players" asks for.
+
+        Dropping the `tournament_player` rows alone wouldn't do it: it
+        leaves the player records in the event, and a team tournament has
+        no such rows to drop in the first place. So the players it alone
+        holds are deleted outright, and any it shares with another
+        tournament merely lose their place in this one.
+        """
+        self._delete_exclusive_players(tournament_id)
         self.execute(
             'DELETE FROM `tournament_player` WHERE `tournament_id` = ?',
             (tournament_id,),

@@ -2050,6 +2050,22 @@ class Tournament:
         return len(self.tournament_players_by_id)
 
     @cached_property
+    def exclusive_player_ids(self) -> set[int]:
+        """The players this tournament would take with it if deleted:
+        those it holds and no other tournament of the event does. Players
+        are event-level, so one entered in several tournaments stays.
+
+        Team rosters count: a team tournament stores no
+        ``tournament_player`` rows, but the loader synthesises them from
+        team membership, so ``tournament_players_by_id`` holds them all.
+        """
+        other_player_ids: set[int] = set()
+        for tournament in self.event.tournaments_by_id.values():
+            if tournament.id != self.id:
+                other_player_ids |= set(tournament.tournament_players_by_id)
+        return set(self.tournament_players_by_id) - other_player_ids
+
+    @cached_property
     def tournament_players_by_fide_id(self) -> dict[int, TournamentPlayer]:
         return {
             tournament_player.fide_id: tournament_player

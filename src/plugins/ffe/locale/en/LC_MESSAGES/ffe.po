@@ -68,6 +68,9 @@ msgstr ""
 msgid "Black pairings are supposed to have an opponent"
 msgstr ""
 
+msgid "Board differentials"
+msgstr ""
+
 msgid "Buchholz"
 msgstr ""
 
@@ -96,6 +99,9 @@ msgid "Close"
 msgstr ""
 
 msgid "Club Arbiter"
+msgstr ""
+
+msgid "Compares the tied teams on the sum of their differentials on board 1; those still level are then compared on board 2, and so on down the boards (FFE rules §4.4.a)."
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -205,6 +211,9 @@ msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tourna
 msgstr ""
 
 msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
+msgstr ""
+
+msgid "FFE pairing sheet"
 msgstr ""
 
 msgid "FFE password not defined."
@@ -355,9 +364,6 @@ msgid "Licence types"
 msgstr ""
 
 msgid "Licence:"
-msgstr ""
-
-msgid "Loubatière pairing sheet"
 msgstr ""
 
 msgid "Lowest own average rating"

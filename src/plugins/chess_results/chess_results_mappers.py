@@ -213,6 +213,7 @@ class ChessResultsTieBreak:
             case (
                 ffe_tb.GamePointsDifferentialTieBreak
                 | ffe_tb.LowestOwnAverageRatingTieBreak
+                | ffe_tb.BoardDifferentialTieBreak
             ):
                 # No Chess-Results codes for these; ``5`` (manual /
                 # informative) keeps the export valid with our values.

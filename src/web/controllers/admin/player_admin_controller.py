@@ -1991,14 +1991,22 @@ class PlayerAdminController(BaseEventAdminController):
         tournament = web_context.admin_tournament
         data_source = web_context.admin_data_source
         unique_values_by_column_id: dict[str, list[str]] = defaultdict(list)
-        check_duplicate_players: list[TournamentPlayer] = []
-        for player in event.tournament_players:
-            if tournament is not None and player.tournament.id == tournament.id:
-                if overwrite_players:
+        check_duplicate_players: list[Player] = []
+        if tournament is not None:
+            for tournament_player in event.tournament_players:
+                same_tournament = tournament_player.tournament.id == tournament.id
+                if same_tournament and overwrite_players:
+                    # Deleted by the import before its own rows land.
                     continue
-            elif event.allow_multi_tournament_players:
-                continue
-            check_duplicate_players.append(player)
+                if not same_tournament and event.allow_multi_tournament_players:
+                    continue
+                check_duplicate_players.append(tournament_player)
+        elif not overwrite_players:
+            # A team event imports at the event level, so a clash is with
+            # the event's players. Not `event.tournament_players`: a team
+            # places its players and need not belong to a tournament, so
+            # that list misses everyone in an unassigned team.
+            check_duplicate_players = list(event.players)
         name_keys: list[tuple] = [
             (player.last_name, player.first_name, player.date_of_birth)
             for player in check_duplicate_players
@@ -2281,9 +2289,24 @@ class PlayerAdminController(BaseEventAdminController):
                 for team in event.teams:
                     team_id_by_name.setdefault(team.name, team.id)
                     next_team_index[team.id] = len(team.players)
+                if overwrite_players:
+                    # The import is about to empty those teams, so their
+                    # board order restarts from the top.
+                    emptied = (
+                        tournament.teams if tournament is not None else event.teams
+                    )
+                    for team in emptied:
+                        next_team_index[team.id] = 0
             with EventDatabase(event.uniq_id, True) as database:
-                if overwrite_players and tournament is not None:
-                    database.delete_players_in_tournament(tournament.id)
+                if overwrite_players:
+                    if tournament is not None:
+                        database.delete_players_in_tournament(tournament.id)
+                    else:
+                        # A team event imports at the event level — its
+                        # players are placed by team, not by tournament —
+                        # so there is no tournament to clear and "delete
+                        # the existing players" means the event's.
+                        database.delete_all_stored_players()
                 for stored_player in stored_players:
                     player_id = database.add_stored_player(stored_player)
                     if not team_mode:
@@ -2361,8 +2384,14 @@ class PlayerAdminController(BaseEventAdminController):
         assert file_path is not None
         row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
         overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
-        if overwrite_players and tournament is not None and tournament.started:
-            raise ClientException('Overwrite is forbidden on started tournaments.')
+        if overwrite_players:
+            started = (
+                [tournament]
+                if tournament is not None
+                else list(event.tournaments_by_id.values())
+            )
+            if any(candidate.started for candidate in started):
+                raise ClientException('Overwrite is forbidden on started tournaments.')
         columns = PlayerDatasheetColumnHandler(event, data_source).columns
         content_by_column_id = self._read_csv_file(file_path)
         used_columns = [
