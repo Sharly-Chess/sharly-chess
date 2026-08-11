@@ -83,6 +83,16 @@ _FFE_SUISSE_TIE_BREAKS: list[tuple[str, dict]] = [
     ('ffe-OWN-AVG-ELO', {}),
 ]
 
+# Championnat Féminin (F01 §4.4.a), Suisse / round-robin phases:
+# differential, then points "pour", then the per-board differentials.
+# Unlike Loubatière there is no lowest-Elo step — F01 keeps that for
+# Molter only (§4.4.b).
+_FFE_FEMININ_SUISSE_TIE_BREAKS: list[tuple[str, dict]] = [
+    ('ffe-GP-DIFFERENTIAL', {}),
+    ('ffe-GP-FOR', {}),
+    ('ffe-BOARD-DIFFERENTIAL', {}),
+]
+
 # Molter phases: Berlin then lowest own avg Elo.
 _FFE_MOLTER_TIE_BREAKS: list[tuple[str, dict]] = [
     ('ffe-BERLIN', {}),
@@ -697,11 +707,9 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     Top 12F is out of scope: it is a 12-team round-robin with
     semi-finals, not this format.
 
-    No Suisse / round-robin tie-breaks are imposed: the official
-    departage (differential → points pour → per-board differential)
-    is defined for the *whole competition* across multiple phases,
-    which Sharly Chess doesn't aggregate — the arbiter picks per-phase
-    tie-breaks if they need any.
+    The Suisse / round-robin departage of F01 §4.4.a is applied:
+    differential, then points "pour", then the sum of the differentials
+    on board 1, board 2 and so on.
     """
 
     @property
@@ -724,6 +732,12 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     @property
     def division(self) -> str:
         return self.config_value('division')
+
+    @property
+    def is_nationale_2(self) -> bool:
+        """Whether the chosen division is one of the two Nationale 2
+        phases, the Nationale 1 being the only other option."""
+        return self.division in (_FEMININ_N2F_ZONE, _FEMININ_N2F_PHASE_2)
 
     @property
     @override
@@ -753,7 +767,11 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     @property
     @override
     def tie_break_overrides_by_pairing(self) -> dict[str, list[tuple[str, dict]]]:
-        return {'MOLTER': _FFE_MOLTER_TIE_BREAKS}
+        return {
+            'TEAM_SWISS': _FFE_FEMININ_SUISSE_TIE_BREAKS,
+            'TEAM_ROUND_ROBIN': _FFE_FEMININ_SUISSE_TIE_BREAKS,
+            'MOLTER': _FFE_MOLTER_TIE_BREAKS,
+        }
 
     @override
     def team_point_adjustment(
