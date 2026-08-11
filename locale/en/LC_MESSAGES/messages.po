@@ -1470,6 +1470,15 @@ msgstr ""
 msgid "Byes will not be impacted."
 msgstr ""
 
+msgid "C2 *** BYE ELIGIBILITY CRITERION"
+msgstr "C2"
+
+msgid "C2: whether the player may take the pairing-allocated bye — a player can only ever receive one."
+msgstr ""
+
+msgid "C2: whether the team may take the pairing-allocated bye — a team can only ever receive one."
+msgstr ""
+
 msgid "CA"
 msgstr ""
 
@@ -1761,6 +1770,9 @@ msgid "Color [{color}] can't be used without an opponent."
 msgstr ""
 
 msgid "Colors and delays"
+msgstr ""
+
+msgid "Colour"
 msgstr ""
 
 #, python-format
@@ -6725,6 +6737,9 @@ msgid "Searching…"
 msgstr ""
 
 msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook C.07 §13)."
+msgstr ""
+
+msgid "Secondary score, used to allocate colours."
 msgstr ""
 
 msgid "Sector arbitration"

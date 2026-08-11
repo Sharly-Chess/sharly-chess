@@ -7,7 +7,12 @@ import tempfile
 from typing import TextIO, TYPE_CHECKING
 
 from common import TMP_DIR
-from data.pairings.bbp_history import TournamentHistory, parse_bbp_checklist_text
+from data.pairings.bbp_history import (
+    TeamTournamentHistory,
+    TournamentHistory,
+    parse_bbp_checklist_text,
+    parse_bbp_team_checklist_text,
+)
 from typing_extensions import override
 
 from common.exception import SharlyChessException
@@ -1007,6 +1012,52 @@ class TeamSwissEngine(_TeamPairingBase):
             used.add(next_tpn)
             next_tpn += 1
         return result
+
+    def get_team_history(
+        self, tournament: 'Tournament', round_: int
+    ) -> TeamTournamentHistory:
+        """The engine's own checklist for the round being paired: the score
+        groups, colour preferences and bye eligibility it worked from, and
+        the match it gave each team.
+
+        Read from bbpPairings rather than recomputed here, so that what the
+        arbiter is shown cannot drift from what the engine actually did —
+        the individual modal has always worked this way.
+        """
+        from data.input_output.trf.trf_serializer import TrfSerializer
+
+        trf_tournament = tournament.to_trf(after_round=round_ - 1)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pairings_dir = Path(tmpdir)
+            trf_path = pairings_dir / 'team-pairings-input.trfx'
+            out_path = pairings_dir / 'team-pairings-output.txt'
+            checklist_path = pairings_dir / 'team-checklist-output.txt'
+            with open(trf_path, 'w', encoding='utf-8') as file:
+                TrfSerializer.dump(file, trf_tournament)
+            result = Utils.run_process(
+                [
+                    self.executable_path,
+                    '--team',
+                    trf_path,
+                    # The checklist is only written when a round is paired.
+                    '-p',
+                    out_path,
+                    '-l',
+                    checklist_path,
+                ],
+                capture_output=True,
+                encoding='utf-8',
+            )
+            if not checklist_path.exists():
+                raise SharlyChessException(
+                    f'{tournament.log_prefix}round {round_} - Team pairing '
+                    f'history from BbpPairings failed with status '
+                    f'{result.returncode}.\n'
+                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                )
+            return parse_bbp_team_checklist_text(
+                checklist_path.read_text(encoding='utf-8')
+            )
 
     def _run_team_bbp(
         self,

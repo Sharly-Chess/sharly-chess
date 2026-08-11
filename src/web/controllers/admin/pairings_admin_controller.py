@@ -10,7 +10,8 @@ from typing import Annotated, Any, Optional
 
 from data.access_levels.actions import AuthAction
 from data.input_output import DataSourceManager
-from data.pairings.engines import BbpPairings
+from data.pairings.bbp_history import TeamTournamentHistory
+from data.pairings.engines import BbpPairings, TeamSwissEngine
 from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
 from litestar.plugins.htmx import HTMXRequest
@@ -36,7 +37,7 @@ from data.print_documents.documents import (
 from data.safety_mode import RoundStatus, SafetyMode, PairingAction
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from utils.enum import CheckInStatus, Result, TeamByeType
+from utils.enum import CheckInStatus, Result, ScoreType, TeamByeType
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -2871,6 +2872,27 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @classmethod
+    def _team_pairing_checklist(
+        cls, tournament: 'Tournament', round_: int
+    ) -> 'TeamTournamentHistory | None':
+        """The engine's checklist for *round_*, or ``None`` when it can't
+        supply one — the round-robin team engines pair from a fixed table
+        and never run bbpPairings, and a round that cannot be paired has
+        no checklist to show."""
+        engine = tournament.pairing_variation.engine
+        if not isinstance(engine, TeamSwissEngine):
+            return None
+        try:
+            return engine.get_team_history(tournament, round_)
+        except SharlyChessException as exception:
+            logger.warning(
+                'Could not read the team pairing checklist for round %s: %s',
+                round_,
+                exception,
+            )
+            return None
+
+    @classmethod
     def _team_pairings_info_modal(
         cls,
         web_context: PairingsAdminWebContext,
@@ -2913,22 +2935,80 @@ class PairingsAdminController(BaseEventAdminController):
                     hist.append(None)
                     colors_by_team.setdefault(tid, []).append(None)
         teams_by_id = tournament.event.teams_by_id
-        rows = []
-        # Standings as they stand entering this round (the modal shows
-        # the accumulated MP/GP "at the start of round").
-        for row in tournament.team_standings(after_round=round - 1):
-            team = row['team']
-            rows.append(
-                {
-                    'team': team,
-                    'tpn': team.pairing_number,
-                    'mp': tournament.team_primary_score_before_round(team.id, round),
-                    'gp': row['gp'],
-                    'rank': row['rank'],
-                    'opponents': opponents_by_team.get(team.id, []),
-                    'colors': colors_by_team.get(team.id, []),
-                }
+        rows: list[dict[str, Any]] = []
+        # Prefer the engine's own checklist: it is what the pairing was
+        # actually decided on, so nothing shown here can drift from it.
+        # Only the team-Swiss engine goes through bbpPairings; the
+        # round-robin ones pair from a fixed table and are reconstructed
+        # below.
+        history = cls._team_pairing_checklist(tournament, round)
+        # Round-robin team engines don't run bbpPairings and never use a
+        # secondary score for colours, so the reconstruction below leaves
+        # the column hidden too.
+        show_secondary = False
+        if history is not None:
+            team_by_tpn = {
+                team.pairing_number: team
+                for team in tournament.teams
+                if team.pairing_number is not None
+            }
+            # The engine only reports a secondary score when the
+            # tournament uses one for colour allocation (C.04.6 §4.2.2).
+            # This modal explains the pairing, so rather than substituting
+            # a figure the engine ignored, the column is dropped.
+            show_secondary = any(
+                entry.secondary_points is not None for entry in history.teams
             )
+            for entry in history.teams:
+                team = team_by_tpn.get(entry.id)
+                if team is None:
+                    continue
+                opponent = team_by_tpn.get(entry.current_opponent or 0)
+                rows.append(
+                    {
+                        'team': team,
+                        'tpn': entry.id,
+                        'mp': entry.points,
+                        'gp': entry.secondary_points,
+                        'rank': None,
+                        'opponents': [
+                            getattr(team_by_tpn.get(tpn or 0), 'id', None)
+                            for tpn in entry.previous_opponents
+                        ],
+                        'colors': [
+                            color.value if color else None
+                            for color in entry.color_history
+                        ],
+                        'preference': entry.color_preference,
+                        'eligible_for_bye': entry.eligible_for_bye,
+                        'current_opponent': opponent,
+                        'current_color': entry.current_color,
+                        'has_bye': entry.has_bye,
+                    }
+                )
+        else:
+            # Standings as they stand entering this round (the modal shows
+            # the accumulated MP/GP "at the start of round").
+            for row in tournament.team_standings(after_round=round - 1):
+                team = row['team']
+                rows.append(
+                    {
+                        'team': team,
+                        'tpn': team.pairing_number,
+                        'mp': tournament.team_primary_score_before_round(
+                            team.id, round
+                        ),
+                        'gp': row['gp'],
+                        'rank': row['rank'],
+                        'opponents': opponents_by_team.get(team.id, []),
+                        'colors': colors_by_team.get(team.id, []),
+                        'preference': None,
+                        'eligible_for_bye': None,
+                        'current_opponent': None,
+                        'current_color': None,
+                        'has_bye': False,
+                    }
+                )
         buckets: dict[float, list[dict[str, Any]]] = defaultdict(list)
         for row in rows:
             buckets[row['mp']].append(row)
@@ -2940,6 +3020,10 @@ class PairingsAdminController(BaseEventAdminController):
             {
                 'modal': 'team_pairing_info',
                 'team_info_groups': grouped,
+                'show_secondary': show_secondary,
+                'primary_is_game_points': (
+                    tournament.primary_score == ScoreType.GAME_POINTS
+                ),
                 'teams_by_id': teams_by_id,
                 'history_columns': max((len(r['opponents']) for r in rows), default=0),
             },

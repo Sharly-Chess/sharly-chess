@@ -1470,6 +1470,15 @@ msgstr "Les byes des rondes précédentes peuvent être modifiés depuis la page
 msgid "Byes will not be impacted."
 msgstr "Les forfaits et les byes ne seront pas impactés."
 
+msgid "C2 *** BYE ELIGIBILITY CRITERION"
+msgstr "C2"
+
+msgid "C2: whether the player may take the pairing-allocated bye — a player can only ever receive one."
+msgstr "C2 : si le·la joueur·euse peut être exempt·e — un·e joueur·euse ne peut l'être qu'une fois."
+
+msgid "C2: whether the team may take the pairing-allocated bye — a team can only ever receive one."
+msgstr "C2 : si l'équipe peut être exempte — une équipe ne peut l'être qu'une seule fois."
+
 msgid "CA"
 msgstr "ARB"
 
@@ -1762,6 +1771,9 @@ msgstr "La couleur [{color}] ne peut être utilisée sans adversaire"
 
 msgid "Colors and delays"
 msgstr "Couleurs et délais"
+
+msgid "Colour"
+msgstr "Couleur"
 
 #, python-format
 msgid "Colour #%(num)d:"
@@ -6728,6 +6740,9 @@ msgstr "Recherche en cours…"
 
 msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook C.07 §13)."
 msgstr "Le score secondaire plus le Buchholz d'équipe sur le score primaire divisé par le facteur de normalisation (Handbook FIDE C.07 §13)."
+
+msgid "Secondary score, used to allocate colours."
+msgstr "Score secondaire, utilisé pour l'attribution des couleurs."
 
 msgid "Sector arbitration"
 msgstr "Arbitrage de secteur"
