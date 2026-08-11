@@ -891,9 +891,7 @@ class PlayerAdminController(BaseEventAdminController):
                 },
             },
             'rating_type_labels': {
-                'fide': PlayerRatingType.FIDE.short_name,
-                'national': PlayerRatingType.NATIONAL.short_name,
-                'estimated': PlayerRatingType.ESTIMATED.short_name,
+                prt.form_key: prt.short_name for prt in PlayerRatingType
             },
             'title_options': {
                 str(t.value): f'{t.short_name} - {t.name}'
@@ -1214,6 +1212,24 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
+        for tr in TournamentRating:
+            for prt in PlayerRatingType:
+                try:
+                    WebContext.form_data_to_int(
+                        data,
+                        field := f'{tr.form_key}_rating_{prt.form_key}',
+                        minimum=prt.min_value,
+                        maximum=prt.max_value,
+                    )
+                except ValueError:
+                    errors[field] = _(
+                        'Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}]).'
+                    ).format(
+                        rating_type=prt.name,
+                        rating=data[field],
+                        min=prt.min_value,
+                        max=prt.max_value,
+                    )
         plugin_manager.hook_for_event(event, 'validate_player_form_fields')(
             data=data, errors=errors
         )
@@ -2135,6 +2151,24 @@ class PlayerAdminController(BaseEventAdminController):
                         tournament, stored_player, value
                     )
                 stored_players_by_index[index] = stored_player
+
+        for index, stored_player in stored_players_by_index.items():
+            for tr in TournamentRating:
+                for prt in PlayerRatingType:
+                    ratings = stored_player.ratings[tr.value]
+                    if prt.form_key in ratings:
+                        rating = ratings[prt.form_key]
+                        if rating and not (prt.min_value <= rating <= prt.max_value):
+                            import_errors_by_index[index][
+                                f'{tr.form_key}_{prt.key}'
+                            ] = _(
+                                'Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}]).'
+                            ).format(
+                                rating_type=prt.name,
+                                rating=rating,
+                                min=prt.min_value,
+                                max=prt.max_value,
+                            )
 
         return stored_players_by_index, import_errors_by_index, duplicated_indexes
 
