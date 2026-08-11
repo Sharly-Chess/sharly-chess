@@ -346,7 +346,7 @@ class PlayerAdminController(BaseEventAdminController):
         disabled_column_ids = [
             column.id
             for column in handler.columns
-            if not column.is_enabled_for_tournaments(allowed_tournaments)
+            if not column.is_enabled_for_event(event, allowed_tournaments)
             or not column.is_enabled_for_players(allowed_players)
         ]
         SessionPlayersDisabledColumns(request, event).set(disabled_column_ids)

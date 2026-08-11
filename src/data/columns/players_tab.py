@@ -71,12 +71,15 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
     def is_enabled_for_players(self, players: list[Player]) -> bool:
         """Defines if the column is enabled for the given players.
         Disabled columns do not appear in the interface.
-        If this can be determined at tournament level,
-        use is_enabled_for_tournaments instead."""
+        If this can be determined at event or tournament level,
+        use is_enabled_for_event instead."""
         return True
 
-    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
-        """Defines if the column is enabled for the given tournaments."""
+    def is_enabled_for_event(self, event: Event, tournaments: list[Tournament]) -> bool:
+        """Defines if the column is enabled for the event and the given
+        tournaments. The event is passed separately because it has one
+        even when it holds no tournament yet — teams and their players
+        exist before any tournament does."""
         return True
 
     @abstractmethod
@@ -284,10 +287,8 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
     def get_filter_row_tooltip(self, value: Any) -> str:
         return CheckInStatus(int(value)).description
 
-    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
-        if tournaments and tournaments[0].event.is_team_event:
-            return False
-        return True
+    def is_enabled_for_event(self, event: Event, tournaments: list[Tournament]) -> bool:
+        return not event.is_team_event
 
 
 class RatingPlayersTabColumn(PlayersTabColumn):
@@ -671,8 +672,8 @@ class TournamentPlayersTabColumn(FilterPlayersTabColumn):
     def _get_sort_key(self, player: Player) -> tuple:
         return (player.single_tournament.index,)
 
-    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
-        if tournaments and tournaments[0].event.is_team_event:
+    def is_enabled_for_event(self, event: Event, tournaments: list[Tournament]) -> bool:
+        if event.is_team_event:
             return False
         return len(tournaments) > 1
 
@@ -714,8 +715,8 @@ class TeamPlayersTabColumn(FilterPlayersTabColumn):
         team = player.team
         return (team.name.lower() if team is not None else '~~~',)
 
-    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
-        return bool(tournaments and tournaments[0].event.is_team_event)
+    def is_enabled_for_event(self, event: Event, tournaments: list[Tournament]) -> bool:
+        return event.is_team_event
 
 
 class CommentPlayersTabColumn(PlayersTabColumn):
