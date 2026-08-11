@@ -1,10 +1,19 @@
-"""'Fiche d'appariement' for the FFE *Coupe Jean-Claude Loubatière*.
+"""'Fiche d'appariement' for the FFE team cups.
 
 One page per team: the team's identity, its roster and the per-round
-match summary, laid out like the official FFE form. Only offered for team
-events that have a tournament using the Loubatière rule set.
+match summary, laid out like the official FFE form. The Coupe
+Jean-Claude Loubatière, the Coupe de la Parité and the Championnat
+Féminin (N1F / N2F) all run 4-board matches scored the same way and use
+the same form, so one document serves the three — only the competition
+logo differs. Rosters vary in size (5 for the Loubatière and the
+Championnat Féminin, 6 for the Parité); the sheet lists whatever the
+team holds.
+
+Only offered for team events that have a tournament using one of those
+rule sets.
 """
 
+from pathlib import Path
 from typing import Any
 
 from common import BASE_DIR
@@ -12,18 +21,29 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents import PrintOption
 from data.print_documents.documents import PrintDocument
+from data.rule_sets import RuleSet
 from data.print_documents.options import (
     OptionalTeamsPrintOption,
     TournamentPrintOption,
 )
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_DIR
-from plugins.ffe.ffe_rule_sets import CoupeJeanClaudeLoubatiereRuleSet
+from plugins.ffe.ffe_rule_sets import (
+    ChampionnatFemininN1N2RuleSet,
+    CoupeDeLaPariteRuleSet,
+    CoupeJeanClaudeLoubatiereRuleSet,
+)
 from plugins.ffe.utils import FFEUtils
 from utils.enum import Result
 from utils.file import image_file_inline_url, ttf_file_inline_url
 
-_LOUBATIERE_RULE_SET_IDS = frozenset({CoupeJeanClaudeLoubatiereRuleSet.static_id()})
+_PAIRING_SHEET_RULE_SET_IDS = frozenset(
+    {
+        CoupeJeanClaudeLoubatiereRuleSet.static_id(),
+        CoupeDeLaPariteRuleSet.static_id(),
+        ChampionnatFemininN1N2RuleSet.static_id(),
+    }
+)
 
 # Per-player round results shown as 1 / 0 / X (draw); blank for anything else
 # (unplayed, bye, no result).
@@ -48,26 +68,42 @@ def _ordinal_fr(rank: int) -> str:
 
 _FONT_FILE = BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
 _FFE_LOGO_FILE = PLUGIN_DIR / 'static/images/ffe-text.png'
-# The Coupe Jean-Claude Loubatière cup logo. Rendered only when present, so
-# the document still prints without it.
-_LOUBATIERE_LOGO_FILE = PLUGIN_DIR / 'static/images/loubatiere.svg'
+_IMAGES_DIR = PLUGIN_DIR / 'static/images'
 
 
-class FfeLoubatierePairingSheetDocument(PrintDocument):
-    """One-page-per-team Loubatière pairing sheet (FFE *Fiche
-    d'appariement*). Gated to team events with a Loubatière tournament."""
+def _competition_logo_file(rule_set: RuleSet | None) -> Path | None:
+    """The logo of the competition a tournament runs, or None when there
+    is none to print.
+
+    The Championnat Féminin covers both Nationale 1 and Nationale 2 but
+    the artwork on file is the Nationale 2 one, so N1F prints without a
+    logo rather than with the wrong division's.
+    """
+    match rule_set:
+        case CoupeJeanClaudeLoubatiereRuleSet():
+            return _IMAGES_DIR / 'loubatiere.svg'
+        case CoupeDeLaPariteRuleSet():
+            return _IMAGES_DIR / 'parite.jpg'
+        case ChampionnatFemininN1N2RuleSet() if rule_set.is_nationale_2:
+            return _IMAGES_DIR / 'championnat-feminin.jpg'
+    return None
+
+
+class FfePairingSheetDocument(PrintDocument):
+    """One-page-per-team FFE *Fiche d'appariement*. Gated to team events
+    with a tournament running one of the FFE team cups."""
 
     @staticmethod
     def static_id() -> str:
-        return 'ffe-loubatiere-pairing-sheet'
+        return 'ffe-pairing-sheet'
 
     @staticmethod
     def static_name() -> str:
-        return _('Loubatière pairing sheet')
+        return _('FFE pairing sheet')
 
     @property
     def title(self) -> str:
-        return _('Loubatière pairing sheet')
+        return _('FFE pairing sheet')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -79,13 +115,13 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
             return False
         return any(
             tournament.event.is_team_event
-            and tournament.rule_set_id in _LOUBATIERE_RULE_SET_IDS
+            and tournament.rule_set_id in _PAIRING_SHEET_RULE_SET_IDS
             for tournament in allowed_tournaments
         )
 
     @property
     def template_name(self) -> str:
-        return '/print/ffe_loubatiere_pairing_sheet.html'
+        return '/print/ffe_pairing_sheet.html'
 
     def _team_round_colour(
         self, team: Any, round_: int, team_boards_by_round: dict[int, list[Any]]
@@ -213,6 +249,14 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
             'classement': f'{_ordinal_fr(rank)} / {team_count}' if rank else '',
         }
 
+    def _competition_logo_url(self) -> str | None:
+        logo_file = _competition_logo_file(self.tournament.rule_set)
+        # Rendered only when the file is there, so a competition whose
+        # logo hasn't been added yet still prints — just without it.
+        if logo_file is None or not logo_file.is_file():
+            return None
+        return image_file_inline_url(logo_file)
+
     @property
     def template_context(self) -> dict[str, Any]:
         tournament = self.tournament
@@ -250,9 +294,10 @@ class FfeLoubatierePairingSheetDocument(PrintDocument):
             'font_family': _FONT_FILE.stem,
             'font_url': ttf_file_inline_url(_FONT_FILE),
             'ffe_logo_url': image_file_inline_url(_FFE_LOGO_FILE),
-            'loubatiere_logo_url': image_file_inline_url(_LOUBATIERE_LOGO_FILE)
-            if _LOUBATIERE_LOGO_FILE.is_file()
-            else None,
+            'competition_logo_url': self._competition_logo_url(),
+            'competition_name': rule_set.name
+            if (rule_set := tournament.rule_set)
+            else '',
             'tournament': tournament,
             'rounds': rounds,
             'teams': [
