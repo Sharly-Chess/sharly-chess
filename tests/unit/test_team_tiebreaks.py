@@ -1354,6 +1354,9 @@ class TecBoardTieBreakTestCase(TestCase):
     KOALAS = (1.0, 0.5, 0.5, 0.0)
     NARWHALS = (0.0, 0.5, 0.5, 1.0)
 
+    records: ClassVar[dict[int, TeamRecord]]
+    context: ClassVar[TeamTieBreakContext]
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.records = {}
@@ -1415,6 +1418,8 @@ class TecBoardTieBreakTestCase(TestCase):
 class BoardTieBreakTestCase(TestCase):
     """BC / TBR / BBE over more than one round, where the three
     tie-breaks are made to disagree with each other."""
+
+    records: ClassVar[dict[int, TeamRecord]]
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -1514,6 +1519,8 @@ class PredeterminedPairingsTestCase(TestCase):
     """With pre-determined pairings (round-robin, Molter), a forfeit is
     a regular match, so opponent-based tie-breaks count the opponent's
     real total instead of the Art. 16 dummy."""
+
+    records: ClassVar[dict[int, TeamRecord]]
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -1665,6 +1672,9 @@ class EDEKnockoutVariantTestCase(TestCase):
     # tournament #11 reaches 7.5 against #14's 7.0 and so ranks second,
     # the opposite of the encounter-only verdict.
     ELSEWHERE = {11: (0.0, 0.0, 0.0, 1.0), 14: (0.5, 0.0, 0.0, 0.0)}
+
+    records: ClassVar[dict[int, TeamRecord]]
+    context: ClassVar[TeamTieBreakContext]
 
     @classmethod
     def setUpClass(cls) -> None:
