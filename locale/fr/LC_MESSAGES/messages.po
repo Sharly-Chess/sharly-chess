@@ -1316,6 +1316,15 @@ msgstr "Appariements par échiquier"
 msgid "Board and Color"
 msgstr "Échiquier et couleur"
 
+msgid "Board count"
+msgstr "Nombre d'échiquiers"
+
+msgid "Board count, then bottom board elimination"
+msgstr "Nombre d'échiquiers, puis élimination du dernier échiquier"
+
+msgid "Board count, then top board results"
+msgstr "Nombre d'échiquiers, puis résultats des premiers échiquiers"
+
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
 
@@ -1376,6 +1385,9 @@ msgstr "Bosnie-Herzégovine"
 
 msgid "Botswana"
 msgstr "Botswana"
+
+msgid "Bottom board elimination"
+msgstr "Élimination du dernier échiquier"
 
 msgid "Brazil"
 msgstr "Brésil"
@@ -2776,6 +2788,9 @@ msgstr "EXEMPTÉ (1.4.3d)"
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr "EXEMPT·E (déjà reçu à la ronde n°%(round)d)"
 
+msgid "Each board number multiplied by the game points scored on that board, summed over the tournament. The lower the sum, the higher the ranking — it rewards points won on the top boards. Only meaningful between teams on equal game points."
+msgstr "Le numéro de chaque échiquier multiplié par les points de parties marqués sur cet échiquier, additionnés sur l'ensemble du tournoi. Plus la somme est faible, meilleur est le classement : cela récompense les points gagnés sur les premiers échiquiers. N'a de sens qu'entre équipes à égalité de points de parties."
+
 msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
 
@@ -3291,12 +3306,12 @@ msgstr "Miroir (recto-verso)"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-msgid "For each round, sum the opponent score multiplied by the team score obtained in that match across all rounds. The four variants (EMMSB / EMGSB / EGMSB / EGGSB) choose which score type — match points or game points — is used on each side; pick one in the variant option below (FIDE Handbook C.07 §13)."
-msgstr "Pour chaque ronde, faire la somme du score de l'adversaire multiplié par le score obtenu par l'équipe lors de ce match, pour toutes les rondes. Les quatre variantes (EMMSB / EMGSB / EGMSB / EGGSB) déterminent le type de score utilisé pour chaque équipe : points de match ou points de partie ; choisissez-en une ci-dessous (Handbook FIDE C.07 §13)."
+msgid "For each round, sum the opponent score multiplied by the team score obtained in that match across all rounds. The four variants (EMMSB / EMGSB / EGMSB / EGGSB) choose which score type — match points or game points — is used on each side; pick one in the variant option below (FIDE tie-break regulations, Art. 13.2)."
+msgstr "Pour chaque ronde, faire la somme du score de l'adversaire multiplié par le score obtenu par l'équipe lors de ce match, pour toutes les rondes. Les quatre variantes (EMMSB / EMGSB / EGMSB / EGGSB) déterminent le type de score utilisé pour chaque équipe : points de match ou points de parties ; choisissez-en une ci-dessous (règlement FIDE sur les départages, art. 13.2)."
 
 #, python-brace-format
-msgid "For each round, the opponent total {opp} multiplied by the team {own} obtained in that match, summed across all rounds (FIDE Handbook C.07 §13)."
-msgstr "Pour chaque ronde, le total des {opp} de l'adversaire multiplié les {own} obtenu par l'équipe dans le match, additionnés sur l'ensemble des rondes (FIDE Handbook C.07 §13)."
+msgid "For each round, the opponent total {opp} multiplied by the team {own} obtained in that match, summed across all rounds (FIDE tie-break regulations, Art. 13.2)."
+msgstr "Pour chaque ronde, le total des {opp} de l'adversaire multiplié par les {own} obtenus par l'équipe dans le match, additionnés sur l'ensemble des rondes (règlement FIDE sur les départages, art. 13.2)."
 
 msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
 msgstr "Pour les joueur·euses n'ayant pas de classement FIDE en rapide ou en blitz, utiliser à la place leur classement FIDE standard."
@@ -5084,6 +5099,9 @@ msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>termi
 msgid "Notes *** NOTES COLUMN HEADER"
 msgstr "Notes"
 
+msgid "Nothing further — leave the teams tied"
+msgstr "Rien de plus — laisser les équipes à égalité"
+
 msgid "Notification"
 msgstr "Notification"
 
@@ -6735,8 +6753,8 @@ msgstr "Recherche de mises à jour…"
 msgid "Searching…"
 msgstr "Recherche en cours…"
 
-msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook C.07 §13)."
-msgstr "Le score secondaire plus le Buchholz d'équipe sur le score primaire divisé par le facteur de normalisation (Handbook FIDE C.07 §13)."
+msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook Art. 13.4)."
+msgstr "Le score secondaire plus le Buchholz d'équipe sur le score primaire divisé par le facteur de normalisation (Handbook FIDE, art. 13.4)."
 
 msgid "Secondary score, used to allocate colours."
 msgstr "Score secondaire, utilisé pour l'attribution des couleurs."
@@ -7335,6 +7353,9 @@ msgstr "Équipes de %(first)s à %(last)s"
 msgid "Teams not assigned to a tournament"
 msgstr "Équipes non assignées à un tournoi"
 
+msgid "Teams still tied"
+msgstr "Équipes encore à égalité"
+
 #, python-format
 msgid "Teams will be paired at round %(pairing_round)d and marked as present for the following rounds."
 msgstr "Les équipes vont être appariées à la ronde %(pairing_round)d et marquées présentes pour les rondes suivantes."
@@ -7476,6 +7497,12 @@ msgstr "Les fonctionnalités suivant ne seront pas importées :"
 
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
+
+msgid "The game points scored on board 1 over the tournament; if that leaves the teams level, the next board down decides, and so on."
+msgstr "Les points de parties marqués au 1er échiquier sur l'ensemble du tournoi ; si les équipes restent à égalité, l'échiquier suivant départage, et ainsi de suite."
+
+msgid "The game points scored on every board but the bottom one; if that leaves the teams level, the bottom-most board left is excluded in turn until one team is ahead."
+msgstr "Les points de parties marqués sur tous les échiquiers sauf le dernier ; si les équipes restent à égalité, le dernier échiquier restant est exclu à son tour jusqu'à ce qu'une équipe prenne l'avantage."
 
 msgid "The image is too large (max 2 MB)."
 msgstr "L'image est trop volumineuse (max. 2 Mo)."
@@ -8204,6 +8231,9 @@ msgstr "Trop de byes pour le joueur [{player_name}]."
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 
+msgid "Top board results"
+msgstr "Résultats des premiers échiquiers"
+
 msgid "Top-40 average"
 msgstr "Moyenne des 40 meilleur·es"
 
@@ -8811,6 +8841,9 @@ msgstr "Une semaine"
 
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
+
+msgid "What separates the last teams when they are level on both match points and game points, judged on the boards of their own encounter."
+msgstr "Ce qui départage les deux dernières équipes lorsqu'elles sont à égalité à la fois aux points de match et aux points de parties, en se fondant sur les échiquiers de leur confrontation."
 
 #, python-brace-format
 msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."

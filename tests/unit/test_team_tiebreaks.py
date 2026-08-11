@@ -9,6 +9,11 @@ the tournament regulations on PDF page 9:
   PAB / HPB → 1 match point, 2 game points (a draw against a dummy)
   ZPB / -F  → 0 / 0
   +F        → 2 match points, 4 game points
+
+Those exercises predate the March 2026 edition, which added the Art.
+16.4 caps on the dummy opponent's score. The tie-breaks reproducing
+their published values therefore carry the legacy option; the tests
+written against the current rules build their own fixtures.
 """
 
 from typing import ClassVar
@@ -16,8 +21,17 @@ from unittest import TestCase
 
 import pytest
 
-from data.tie_breaks.team_records import TeamMatchRecord, TeamMatchType, TeamRecord
+from data.tie_breaks.team_records import (
+    TeamMatchRecord,
+    TeamMatchType,
+    TeamRecord,
+    dummy_opponent_score,
+)
 from data.tie_breaks.team_tie_breaks import (
+    BoardCountTieBreak,
+    EDEKnockoutTieBreakOption,
+    EDEKnockoutVariant,
+    BottomBoardEliminationTieBreak,
     ESBVariant,
     ESBVariantTieBreakOption,
     ExtendedDirectEncounterTieBreak,
@@ -25,11 +39,14 @@ from data.tie_breaks.team_tie_breaks import (
     MatchPointsVsGamePointsTieBreak,
     ScoresAndScheduleStrengthCombinationTieBreak,
     TeamTieBreakContext,
+    TopBoardResultsTieBreak,
 )
 from data.tie_breaks.tie_breaks import StandardBuchholzTieBreak
 from data.tie_breaks.options import (
     CutterTieBreakOption,
     CutterWithMedianTieBreakOption,
+    LegacyMarch2026TieBreakOption,
+    PlayedModifierTieBreakOption,
     TeamScoreTieBreakOption,
 )
 from data.tie_breaks.cutters import Cut1TieBreakCutter
@@ -289,8 +306,12 @@ def _cut1_option() -> CutterTieBreakOption:
 
 
 def _bh(team_score: str, cut1: bool = False) -> StandardBuchholzTieBreak:
-    """FIDE MTB26 BH:<team_score> [/C1] for the TEC fixture."""
-    opts: list = [TeamScoreTieBreakOption(team_score)]
+    """FIDE MTB26 BH:<team_score> [/C1] for the TEC fixture, in legacy
+    mode — see the module docstring on the Art. 16.4 caps."""
+    opts: list = [
+        TeamScoreTieBreakOption(team_score),
+        LegacyMarch2026TieBreakOption(True),
+    ]
     if cut1:
         opts.append(CutterWithMedianTieBreakOption(Cut1TieBreakCutter.static_id()))
     return StandardBuchholzTieBreak(opts)
@@ -459,7 +480,10 @@ class TecTeamTieBreakTestCase(TestCase):
     EX38_EMMSB_C1 = {1: 74, 2: 64, 3: 66, 4: 64, 5: 66}
 
     def _esb(self, variant: ESBVariant, cut1: bool = False):
-        opts: list = [ESBVariantTieBreakOption(variant.value)]
+        opts: list = [
+            ESBVariantTieBreakOption(variant.value),
+            LegacyMarch2026TieBreakOption(True),
+        ]
         if cut1:
             from data.tie_breaks.team_tie_breaks import ESBCutterTieBreakOption
 
@@ -644,9 +668,22 @@ class TecTeamTieBreakTestCase(TestCase):
     }
 
     def test_ex45_ede_five_teams_resolved_via_secondary(self):
-        """All five played each other; sub-MP is tied 4-4-4-4-4 so the
-        algorithm falls back to GP and produces the published order
-        #4, #2, #1, #3, #5."""
+        """The fallback to the secondary score — and, decisively, which
+        score a subgroup uses afterwards.
+
+        All five teams played each other and their sub-crosstable match
+        points are tied 4-4-4-4-4, so the primary score splits nothing
+        and EDE falls back to game points: 8.5 for team 4, 8.0 for
+        teams 1-3, 7.5 for team 5.
+
+        The subgroup {1, 2, 3} then decides the question, because its
+        own sub-crosstable ranks differently under each score — 2, 1, 3
+        by game points (5.5 / 5.0 / 1.5) but 1, 2, 3 by match points
+        (4 / 2 / 0). The published answer is #4, #2, #1, #3, #5, i.e.
+        game points, and the exercise spells out why: the subgroup is
+        judged "still using the GP because we are still within the same
+        application of the tie-break, as indicated by [6], endnote".
+        """
         ede = ExtendedDirectEncounterTieBreak([])
         group = [self.records[i] for i in (1, 2, 3, 4, 5)]
         values = ede.compute_all_team_values(
@@ -685,7 +722,9 @@ class TecTeamTieBreakTestCase(TestCase):
         self.assertEqual(factor, 3)
 
     def test_ex49_sssc_all_teams(self):
-        tb = ScoresAndScheduleStrengthCombinationTieBreak([])
+        tb = ScoresAndScheduleStrengthCombinationTieBreak(
+            [LegacyMarch2026TieBreakOption(True)]
+        )
         for team_id, expected in self.EX49_SSSC.items():
             value = tb.compute_team_value(
                 self.records[team_id],
@@ -1218,3 +1257,615 @@ class LowestOwnAverageRatingTieBreakTestCase(TestCase):
             tb.compute_team_value(team, {1: team}, self._context(), after_round=1),
             0.0,
         )
+
+
+# ---------------------------------------------------------------------------
+# Art. 12 board tie-breaks (BC / TBR / BBE)
+# ---------------------------------------------------------------------------
+
+# Two rounds of 4-board matches, chosen so the three tie-breaks disagree:
+# A and B are level on boards 1 and 2, A is ahead on board 3 and B on
+# board 4. TBR therefore favours A (board 3 decides), while BC favours A
+# too (B's points sit on the cheapest board), and C is level with A on
+# every board total but with its points on different boards.
+_BOARD_SCORES: dict[int, list[tuple[float, ...]]] = {
+    1: [(1.0, 0.0, 1.0, 0.5), (0.5, 1.0, 0.0, 0.0)],  # A → 1.5, 1, 1, .5
+    2: [(0.5, 1.0, 0.0, 1.0), (1.0, 0.0, 0.5, 0.5)],  # B → 1.5, 1, .5, 1.5
+    3: [(0.5, 0.5, 1.0, 1.0), (1.0, 0.5, 0.0, 0.0)],  # C → 1.5, 1, 1, 1
+}
+
+
+def _board_records(
+    forfeit_round: int | None = None,
+    forfeit_win: bool = False,
+) -> dict[int, TeamRecord]:
+    """Records carrying per-board scores. ``forfeit_round`` marks that
+    round as a forfeit for team 1 — a loss, or a win when
+    ``forfeit_win`` — so the /P flag and Art. 15.2 can be tested.
+
+    Every team always faces the next one round after round, which keeps
+    the expected tie-break values easy to state.
+    """
+    records: dict[int, TeamRecord] = {}
+    for team_id, rounds in _BOARD_SCORES.items():
+        matches = []
+        for round_index, boards in enumerate(rounds, start=1):
+            forfeited = team_id == 1 and round_index == forfeit_round
+            if not forfeited:
+                match_type = TeamMatchType.PLAYED
+                own_mp = 1.0
+            elif forfeit_win:
+                match_type = TeamMatchType.FORFEIT_WIN
+                own_mp = 2.0
+            else:
+                match_type = TeamMatchType.FORFEIT_LOSS
+                own_mp = 0.0
+            matches.append(
+                TeamMatchRecord(
+                    round_=round_index,
+                    opponent_id=(team_id % 3) + 1,
+                    own_mp=own_mp,
+                    own_gp=sum(boards),
+                    match_type=match_type,
+                    board_scores=boards,
+                )
+            )
+        records[team_id] = TeamRecord(
+            team_id=team_id,
+            name=f'Team {team_id}',
+            total_mp=sum(m.own_mp for m in matches),
+            total_gp=sum(m.own_gp for m in matches),
+            matches=matches,
+        )
+    return records
+
+
+def _board_context(rounds: int = 2, predetermined: bool = False) -> TeamTieBreakContext:
+    return TeamTieBreakContext(
+        primary_score=ScoreType.MATCH_POINTS,
+        secondary_score=ScoreType.GAME_POINTS,
+        rounds=rounds,
+        win_mp=2.0,
+        draw_mp=1.0,
+        loss_mp=0.0,
+        team_player_count=4,
+        draw_gp=2.0,
+        predetermined_pairings=predetermined,
+    )
+
+
+_BOARD_CONTEXT = _board_context()
+
+
+@pytest.mark.unit
+class TecBoardTieBreakTestCase(TestCase):
+    """TEC-2023 Exercises 46-48: BC, TBR and BBE applied to the round-3
+    match between teams #11 (Koalas) and #14 (Narwhals), which the
+    exercises resolve from the published line-up
+
+        board 1  1-0    board 2  ½-½    board 3  ½-½    board 4  0-1
+
+    Those exercises weigh only the head-to-head match, matching the
+    2023 wording of Art. 12; the 2024 and 2026 editions weigh "all
+    games played by the team in the tournament". The two readings
+    coincide for a single match, which is what this fixture is.
+    """
+
+    KOALAS = (1.0, 0.5, 0.5, 0.0)
+    NARWHALS = (0.0, 0.5, 0.5, 1.0)
+
+    records: ClassVar[dict[int, TeamRecord]]
+    context: ClassVar[TeamTieBreakContext]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.records = {}
+        for team_id, boards in ((11, cls.KOALAS), (14, cls.NARWHALS)):
+            match = TeamMatchRecord(
+                round_=1,
+                opponent_id=14 if team_id == 11 else 11,
+                own_mp=1.0,
+                own_gp=sum(boards),
+                match_type=TeamMatchType.PLAYED,
+                board_scores=boards,
+            )
+            cls.records[team_id] = TeamRecord(
+                team_id=team_id,
+                name='Koalas' if team_id == 11 else 'Narwhals',
+                total_mp=1.0,
+                total_gp=sum(boards),
+                matches=[match],
+            )
+        cls.context = _board_context(rounds=1)
+
+    def _value(self, tie_break, team_id: int) -> float:
+        return tie_break.compute_team_value(
+            self.records[team_id], self.records, self.context, after_round=1
+        )
+
+    def test_ex46_board_count(self):
+        # BC (#11) = 1×1 + ½×2 + ½×3 + 0×4 = 3.5
+        # BC (#14) = 0×1 + ½×2 + ½×3 + 1×4 = 6.5
+        # "the value for team #14 is higher, determining the precedence
+        # of team #11" — we negate so that higher always ranks first.
+        tb = BoardCountTieBreak()
+        self.assertEqual(self._value(tb, 11), -3.5)
+        self.assertEqual(self._value(tb, 14), -6.5)
+        self.assertGreater(self._value(tb, 11), self._value(tb, 14))
+
+    def test_ex47_top_board_results(self):
+        # "On the first board, team #11 won, thus prevailing over the
+        # opponent" — decided without needing the lower boards.
+        tb = TopBoardResultsTieBreak()
+        self.assertGreater(self._value(tb, 11), self._value(tb, 14))
+        totals_11 = tb._board_totals(self.records[11], 4, 1, self.context)
+        totals_14 = tb._board_totals(self.records[14], 4, 1, self.context)
+        self.assertEqual((totals_11[0], totals_14[0]), (1.0, 0.0))
+
+    def test_ex48_bottom_board_elimination(self):
+        # BBE (#11) = 1 + ½ + ½ = 2 ; BBE (#14) = 0 + ½ + ½ = 1.
+        tb = BottomBoardEliminationTieBreak()
+        self.assertGreater(self._value(tb, 11), self._value(tb, 14))
+        self.assertEqual(
+            sum(tb._board_totals(self.records[11], 4, 1, self.context)[:3]), 2.0
+        )
+        self.assertEqual(
+            sum(tb._board_totals(self.records[14], 4, 1, self.context)[:3]), 1.0
+        )
+
+
+@pytest.mark.unit
+class BoardTieBreakTestCase(TestCase):
+    """BC / TBR / BBE over more than one round, where the three
+    tie-breaks are made to disagree with each other."""
+
+    records: ClassVar[dict[int, TeamRecord]]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.records = _board_records()
+
+    def _value(self, tie_break, team_id: int, records=None) -> float:
+        return tie_break.compute_team_value(
+            (records or self.records)[team_id],
+            records or self.records,
+            _BOARD_CONTEXT,
+            after_round=2,
+        )
+
+    def test_board_count_sums_board_number_times_points(self):
+        tb = BoardCountTieBreak()
+        # A: 1×1.5 + 2×1 + 3×1 + 4×0.5 = 8.5 ; B: 1×1.5 + 2×1 + 3×0.5 +
+        # 4×1.5 = 11 ; C: 1×1.5 + 2×1 + 3×1 + 4×1 = 10.5. Negated,
+        # because Art. 12.1 ranks the *lower* sum higher.
+        self.assertEqual(self._value(tb, 1), -8.5)
+        self.assertEqual(self._value(tb, 2), -11.0)
+        self.assertEqual(self._value(tb, 3), -10.5)
+
+    def test_board_count_ranks_the_lower_sum_first(self):
+        tb = BoardCountTieBreak()
+        values = {team_id: self._value(tb, team_id) for team_id in (1, 2, 3)}
+        self.assertEqual(max(values, key=lambda k: values[k]), 1)
+        self.assertLess(values[2], values[3])
+
+    def test_top_board_results_compares_boards_from_the_top(self):
+        tb = TopBoardResultsTieBreak()
+        # A and B are level on boards 1 (1.5) and 2 (1.0); board 3
+        # separates them, 1.0 against 0.5.
+        self.assertGreater(self._value(tb, 1), self._value(tb, 2))
+        # C matches A down to board 3 and is ahead on board 4.
+        self.assertGreater(self._value(tb, 3), self._value(tb, 1))
+
+    def test_top_board_results_is_not_the_plain_total(self):
+        tb = TopBoardResultsTieBreak()
+        # B has the higher game-point total (4.5 against A's 4) yet
+        # ranks below: the top boards decide, not the sum.
+        self.assertGreater(self.records[2].total_gp, self.records[1].total_gp)
+        self.assertGreater(self._value(tb, 1), self._value(tb, 2))
+
+    def test_bottom_board_elimination_drops_the_last_board_first(self):
+        tb = BottomBoardEliminationTieBreak()
+        # Excluding board 4: A has 3.5, B has 3.0, C has 3.5. A and C
+        # are then separated by the next exclusion (boards 1-2: both
+        # 2.5) and finally board 1 alone (both 1.5) — so they stay tied.
+        self.assertGreater(self._value(tb, 1), self._value(tb, 2))
+        self.assertEqual(self._value(tb, 1), self._value(tb, 3))
+
+    def test_forfeited_match_counts_only_when_asked(self):
+        with_forfeit = _board_records(forfeit_round=2)
+        tb = TopBoardResultsTieBreak()
+        # Round 2 no longer counts for team 1: board 1 drops to 1.0.
+        self.assertLess(self._value(tb, 1, with_forfeit), self._value(tb, 1))
+        played = TopBoardResultsTieBreak([PlayedModifierTieBreakOption(True)])
+        self.assertEqual(
+            played.compute_team_value(
+                with_forfeit[1], with_forfeit, _BOARD_CONTEXT, after_round=2
+            ),
+            self._value(tb, 1),
+        )
+
+    def test_forfeited_match_always_counts_with_predetermined_pairings(self):
+        # Art. 15.2 — and "individual forfeits are considered equivalent
+        # to actually played matches" (TEC-2023 §12).
+        with_forfeit = _board_records(forfeit_round=2)
+        tb = TopBoardResultsTieBreak()
+        self.assertEqual(
+            tb.compute_team_value(
+                with_forfeit[1],
+                with_forfeit,
+                _board_context(predetermined=True),
+                after_round=2,
+            ),
+            self._value(tb, 1),
+        )
+
+    def test_after_round_bounds_the_boards_counted(self):
+        tb = BoardCountTieBreak()
+        first_round_only = tb.compute_team_value(
+            self.records[1], self.records, _BOARD_CONTEXT, after_round=1
+        )
+        # Round 1 alone: 1×1 + 2×0 + 3×1 + 4×0.5 = 6.
+        self.assertEqual(first_round_only, -6.0)
+        self.assertNotEqual(first_round_only, self._value(tb, 1))
+
+
+# ---------------------------------------------------------------------------
+# Art. 15.2: forfeits in tournaments with pre-determined pairings
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+class PredeterminedPairingsTestCase(TestCase):
+    """With pre-determined pairings (round-robin, Molter), a forfeit is
+    a regular match, so opponent-based tie-breaks count the opponent's
+    real total instead of the Art. 16 dummy."""
+
+    records: ClassVar[dict[int, TeamRecord]]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.records = _board_records(forfeit_round=2)
+
+    def _buchholz(self, predetermined: bool) -> float:
+        return StandardBuchholzTieBreak(
+            [TeamScoreTieBreakOption(TeamScoreTieBreakOption.VALUE_MP)]
+        ).compute_team_value(
+            self.records[1],
+            self.records,
+            _board_context(predetermined=predetermined),
+            after_round=2,
+        )
+
+    def test_forfeit_uses_the_real_opponent_when_pairings_are_predetermined(self):
+        # Team 1 plays team 2 in both rounds and forfeited round 2.
+        # Art. 15.2 counts that match as regular, so Buchholz is twice
+        # team 2's real total; Art. 16 substitutes a dummy built from
+        # team 1's own score for the forfeited round.
+        opponent_total = self.records[2].total_mp
+        own_total = self.records[1].total_mp
+        self.assertEqual(self._buchholz(predetermined=True), 2 * opponent_total)
+        self.assertEqual(
+            self._buchholz(predetermined=False), opponent_total + own_total
+        )
+        self.assertNotEqual(own_total, opponent_total)
+
+    def test_default_context_keeps_the_swiss_treatment(self):
+        self.assertFalse(_board_context().predetermined_pairings)
+
+    def test_esb_also_counts_the_forfeited_match(self):
+        # Art. 16.4.1 caps a forfeit's dummy at the scheduled opponent's
+        # adjusted score, so the Art. 16 and Art. 15.2 treatments only
+        # part company when the forfeiting team's own score is the lower
+        # of the two. Team 1 loses twice, then wins round 3 by forfeit
+        # against a team that has won everything else.
+        def _record(team_id: int, matches: list[TeamMatchRecord]) -> TeamRecord:
+            return TeamRecord(
+                team_id=team_id,
+                name=f'Team {team_id}',
+                total_mp=sum(m.own_mp for m in matches),
+                total_gp=sum(m.own_gp for m in matches),
+                matches=matches,
+            )
+
+        records = {
+            1: _record(
+                1,
+                [
+                    TeamMatchRecord(1, 3, 0.0, 1.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 3, 0.0, 1.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(3, 2, 2.0, 4.0, TeamMatchType.FORFEIT_WIN),
+                ],
+            ),
+            2: _record(
+                2,
+                [
+                    TeamMatchRecord(1, 3, 2.0, 3.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 3, 2.0, 3.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(3, 1, 0.0, 0.0, TeamMatchType.FORFEIT_LOSS),
+                ],
+            ),
+            3: _record(
+                3,
+                [
+                    TeamMatchRecord(1, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                ],
+            ),
+        }
+        context = _board_context(rounds=3)
+        predetermined = _board_context(rounds=3, predetermined=True)
+        esb = ExtendedSonnebornBergerTeamTieBreak([])
+        swiss = esb.compute_team_value(records[1], records, context, after_round=3)
+        round_robin = esb.compute_team_value(
+            records[1], records, predetermined, after_round=3
+        )
+        # Own total 2 MP against the opponent's 4, so the dummy is 2
+        # while the real opponent counts 4 — a difference of 2 × the
+        # 2 MP team 1 scored in that round.
+        self.assertEqual(round_robin - swiss, 4.0)
+
+    def test_ede_counts_forfeits_with_predetermined_pairings(self):
+        # Art. 6.1.1 excludes only forfeits "not covered by Article
+        # 15.2", so a round-robin forfeit belongs in the EDE
+        # sub-crosstable even without the /P flag.
+        #
+        # Two teams meeting twice: team 1 wins the first match, then
+        # forfeits the second. Ignoring the forfeit leaves team 1 ahead
+        # on the head-to-head; counting it levels the match points and
+        # hands team 2 the game-point fallback.
+        def _record(team_id: int, rounds: list[TeamMatchRecord]) -> TeamRecord:
+            return TeamRecord(
+                team_id=team_id,
+                name=f'Team {team_id}',
+                total_mp=sum(m.own_mp for m in rounds),
+                total_gp=sum(m.own_gp for m in rounds),
+                matches=rounds,
+            )
+
+        records = {
+            1: _record(
+                1,
+                [
+                    TeamMatchRecord(1, 2, 2.0, 2.5, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 2, 0.0, 0.0, TeamMatchType.FORFEIT_LOSS),
+                ],
+            ),
+            2: _record(
+                2,
+                [
+                    TeamMatchRecord(1, 1, 0.0, 1.5, TeamMatchType.PLAYED),
+                    TeamMatchRecord(2, 1, 2.0, 4.0, TeamMatchType.FORFEIT_WIN),
+                ],
+            ),
+        }
+        ede = ExtendedDirectEncounterTieBreak([])
+        group = [records[1], records[2]]
+        swiss = ede.compute_all_team_values(
+            [group], records, _board_context(), after_round=2
+        )
+        round_robin = ede.compute_all_team_values(
+            [group], records, _board_context(predetermined=True), after_round=2
+        )
+        self.assertGreater(swiss[1], swiss[2])
+        self.assertGreater(round_robin[2], round_robin[1])
+
+
+@pytest.mark.unit
+class EDEKnockoutVariantTestCase(TestCase):
+    """TEC-2023 Exercises 46-48 as the exercises actually frame them:
+    a single criterion, "EDE system with board count [13.3.2]", whose
+    knock-out part reads the two tied teams' own encounter.
+
+    Teams #11 and #14 drew their round-3 match 2-2 with the line-up
+
+        board 1  1-0    board 2  ½-½    board 3  ½-½    board 4  0-1
+
+    so 13.3.1 leaves them tied on both scores and 13.3.2 decides. Each
+    team also played an unrelated round against a third team, which the
+    knock-out tie-break must ignore — that is what distinguishes this
+    from listing BC / TBR / BBE as tie-breaks of their own.
+    """
+
+    ENCOUNTER = {11: (1.0, 0.5, 0.5, 0.0), 14: (0.0, 0.5, 0.5, 1.0)}
+    # Elsewhere #11 scores on the bottom board and #14 on the top one,
+    # which is the expensive way round for board count: over the whole
+    # tournament #11 reaches 7.5 against #14's 7.0 and so ranks second,
+    # the opposite of the encounter-only verdict.
+    ELSEWHERE = {11: (0.0, 0.0, 0.0, 1.0), 14: (0.5, 0.0, 0.0, 0.0)}
+
+    records: ClassVar[dict[int, TeamRecord]]
+    context: ClassVar[TeamTieBreakContext]
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.records = {}
+        for team_id in (11, 14):
+            encounter = cls.ENCOUNTER[team_id]
+            elsewhere = cls.ELSEWHERE[team_id]
+            matches = [
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=14 if team_id == 11 else 11,
+                    own_mp=1.0,
+                    own_gp=sum(encounter),
+                    match_type=TeamMatchType.PLAYED,
+                    board_scores=encounter,
+                ),
+                TeamMatchRecord(
+                    round_=2,
+                    opponent_id=99,
+                    own_mp=1.0,
+                    own_gp=sum(elsewhere),
+                    match_type=TeamMatchType.PLAYED,
+                    board_scores=elsewhere,
+                ),
+            ]
+            cls.records[team_id] = TeamRecord(
+                team_id=team_id,
+                name='Koalas' if team_id == 11 else 'Narwhals',
+                total_mp=2.0,
+                total_gp=sum(encounter) + sum(elsewhere),
+                matches=matches,
+            )
+        cls.context = _board_context(rounds=2)
+
+    def _ranks(self, variant: str) -> dict[int, float]:
+        ede = ExtendedDirectEncounterTieBreak(
+            [EDEKnockoutTieBreakOption(variant)] if variant else []
+        )
+        group = [self.records[11], self.records[14]]
+        return ede.compute_all_team_values(
+            [group], self.records, self.context, after_round=2
+        )
+
+    def test_without_a_variant_the_teams_stay_tied(self):
+        values = self._ranks('')
+        self.assertEqual(values[11], values[14])
+
+    def test_ex46_edebt_board_count_puts_koalas_first(self):
+        # BC over the encounter: #11 = 3.5, #14 = 6.5, lower first.
+        values = self._ranks(EDEKnockoutVariant.EDEBT.value)
+        self.assertGreater(values[11], values[14])
+
+    def test_ex47_edet_top_board_puts_koalas_first(self):
+        values = self._ranks(EDEKnockoutVariant.EDET.value)
+        self.assertGreater(values[11], values[14])
+
+    def test_ex48_edeb_bottom_board_elimination_puts_koalas_first(self):
+        # BBE over the encounter: #11 = 2, #14 = 1.
+        values = self._ranks(EDEKnockoutVariant.EDEB.value)
+        self.assertGreater(values[11], values[14])
+
+    def test_edebb_also_puts_koalas_first(self):
+        values = self._ranks(EDEKnockoutVariant.EDEBB.value)
+        self.assertGreater(values[11], values[14])
+
+    def test_the_knockout_part_ignores_the_rest_of_the_tournament(self):
+        # Standalone, board count weighs every round and #14 comes out
+        # ahead; inside EDE it weighs the encounter only and #11 does.
+        standalone = BoardCountTieBreak()
+        self.assertGreater(
+            standalone.compute_team_value(
+                self.records[14], self.records, self.context, after_round=2
+            ),
+            standalone.compute_team_value(
+                self.records[11], self.records, self.context, after_round=2
+            ),
+        )
+        values = self._ranks(EDEKnockoutVariant.EDEBT.value)
+        self.assertGreater(values[11], values[14])
+
+    def test_the_acronym_follows_the_variant(self):
+        self.assertEqual(ExtendedDirectEncounterTieBreak([]).base_acronym, 'EDE')
+        for variant in EDEKnockoutVariant:
+            tie_break = ExtendedDirectEncounterTieBreak(
+                [EDEKnockoutTieBreakOption(variant.value)]
+            )
+            self.assertEqual(tie_break.base_acronym, variant.acronym)
+
+
+@pytest.mark.unit
+class DummyOpponentCapTestCase(TestCase):
+    """FIDE Art. 16.4: the dummy opponent takes the team's own score,
+    capped — at the scheduled opponent's adjusted score for a forfeit
+    (16.4.1), at draw points × rounds for a bye (16.4.2). The two are
+    alternatives, and the 2024 edition had neither."""
+
+    @staticmethod
+    def _record(team_id: int, matches: list[TeamMatchRecord]) -> TeamRecord:
+        return TeamRecord(
+            team_id=team_id,
+            name=f'Team {team_id}',
+            total_mp=sum(m.own_mp for m in matches),
+            total_gp=sum(m.own_gp for m in matches),
+            matches=matches,
+        )
+
+    def test_forfeit_caps_at_the_opponent_score_not_at_the_draw_total(self):
+        # Own 6 MP over 4 rounds, forfeit against an opponent on 5 MP.
+        # 16.4.1 gives 5; capping at draw × rounds as well would give 4.
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(4, 2, 0.0, 0.0, TeamMatchType.FORFEIT_LOSS),
+            ],
+        )
+        opponent = self._record(
+            2,
+            [
+                TeamMatchRecord(1, 1, 1.0, 2.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, 1, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(4, 1, 0.0, 0.0, TeamMatchType.FORFEIT_WIN),
+            ],
+        )
+        self.assertEqual(own.total_mp, 6.0)
+        self.assertEqual(opponent.total_mp, 5.0)
+        value = dummy_opponent_score(
+            own,
+            ScoreType.MATCH_POINTS,
+            after_round=4,
+            rounds=4,
+            draw_value=1.0,
+            opponent_adjusted=opponent.total_mp,
+        )
+        self.assertEqual(value, 5.0)
+
+    def test_bye_caps_at_draw_points_times_rounds(self):
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(3, None, 2.0, 2.0, TeamMatchType.PAB),
+            ],
+        )
+        value = dummy_opponent_score(
+            own,
+            ScoreType.MATCH_POINTS,
+            after_round=3,
+            rounds=3,
+            draw_value=1.0,
+        )
+        # Own 6 MP, capped at 3 rounds × 1 draw point.
+        self.assertEqual(value, 3.0)
+
+    def test_game_points_are_capped_too(self):
+        # The closing note of Art. 16 makes "points" mean match points
+        # and game points alike, so the GP dummy caps at draw_gp × rounds.
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 4.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, None, 2.0, 2.0, TeamMatchType.PAB),
+            ],
+        )
+        value = dummy_opponent_score(
+            own,
+            ScoreType.GAME_POINTS,
+            after_round=2,
+            rounds=2,
+            draw_value=2.0,
+        )
+        self.assertEqual(value, 4.0)
+
+    def test_legacy_mode_caps_nothing(self):
+        own = self._record(
+            1,
+            [
+                TeamMatchRecord(1, 2, 2.0, 3.0, TeamMatchType.PLAYED),
+                TeamMatchRecord(2, None, 2.0, 2.0, TeamMatchType.PAB),
+            ],
+        )
+        value = dummy_opponent_score(
+            own,
+            ScoreType.MATCH_POINTS,
+            after_round=2,
+            rounds=2,
+            draw_value=1.0,
+            legacy=True,
+        )
+        self.assertEqual(value, own.total_mp)

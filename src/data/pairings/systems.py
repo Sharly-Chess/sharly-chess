@@ -107,6 +107,17 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def predetermined_pairings(self) -> bool:
+        """Whether every participant's opponents are known before the
+        tournament starts (round-robin, fixed-table systems). A forfeit
+        is then the only way to miss a round, which is why FIDE Art.
+        15.2 counts forfeits as regular games or matches for these
+        systems instead of applying the Swiss unplayed-round management
+        of Art. 16. Default False — a Swiss decides its pairings as it
+        goes."""
+        return False
+
+    @property
     def paired_by_team(self) -> bool:
         """Whether this system pairs entire teams against each other (each
         round groups boards into team-vs-team blocks). True for the standard
@@ -262,6 +273,12 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
     def round_per_round_pairing_generation(self) -> bool:
         return False
 
+    @property
+    @override
+    def predetermined_pairings(self) -> bool:
+        # The Berger tables fix every opponent up front.
+        return True
+
     @override
     def variation_manager(self, event: 'Event') -> EntityManager['RoundRobinVariation']:
         from data.pairings.managers import RoundRobinVariationManager
@@ -394,6 +411,12 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
     @override
     def uses_team_letters(self) -> bool:
         # Teams appear as letters (A, B, …) in the Berger grid.
+        return True
+
+    @property
+    @override
+    def predetermined_pairings(self) -> bool:
+        # The Berger tables fix every opponent up front.
         return True
 
     @override

@@ -48,6 +48,9 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             team_tie_breaks.ExtendedSonnebornBergerTeamTieBreak,
             team_tie_breaks.ScoresAndScheduleStrengthCombinationTieBreak,
             team_tie_breaks.ExtendedDirectEncounterTieBreak,
+            team_tie_breaks.BoardCountTieBreak,
+            team_tie_breaks.TopBoardResultsTieBreak,
+            team_tie_breaks.BottomBoardEliminationTieBreak,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tie_break_types')(
             tie_break_types=tie_break_types
@@ -122,6 +125,7 @@ class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):
             options.NormalizationFactorOverrideTieBreakOption,
             team_tie_breaks.ESBVariantTieBreakOption,
             team_tie_breaks.ESBCutterTieBreakOption,
+            team_tie_breaks.EDEKnockoutTieBreakOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tie_break_option_types')(
             tie_break_option_types=tie_break_option_types
