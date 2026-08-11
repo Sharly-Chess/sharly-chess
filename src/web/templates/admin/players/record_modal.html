@@ -32,7 +32,16 @@
                     <div><strong>{{ _('Team:') }}</strong> {{ admin_player.team.name }}</div>
                 {% endif %}
                 {% set category = tournament_player.category.name %}
-                <div>{{ admin_player.federation }}, {{ tournament_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
+                <div>
+                    {{ admin_player.federation }}, {{ tournament_player.rating_str }}{% if category %}, {{ category }}{% endif %}{% for link in admin_player.profile_links %},
+                        {{ link.label }}{% if link.url %}<a
+                            href="{{ link.url }}"
+                            target="_blank"
+                            rel="noopener"
+                            class="ps-1"
+                            {{ macros.tooltip_attributes('', _('Open the profile in a new tab.')) }}
+                        ><i class="bi bi-box-arrow-up-right position-relative" style="top: -1px"></i></a>{% endif %}{% endfor %}
+                </div>
             </div>
             <div>
                 {% set tournament = tournament_player.tournament %}

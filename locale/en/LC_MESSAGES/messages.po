@@ -3142,6 +3142,10 @@ msgstr ""
 msgid "FIDE recommendation - Unrated (2019)"
 msgstr ""
 
+#, python-brace-format
+msgid "FIDE {id}"
+msgstr ""
+
 msgid "FIDE-rated present"
 msgstr ""
 
@@ -5232,6 +5236,9 @@ msgid "Open IT1 certificate for this norm"
 msgstr ""
 
 msgid "Open application (browser)"
+msgstr ""
+
+msgid "Open the profile in a new tab."
 msgstr ""
 
 msgid "Open/close check-in"
@@ -8348,6 +8355,9 @@ msgid "Ukraine"
 msgstr ""
 
 msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Unassigned"
+
+msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
 msgstr "Unassigned"
 
 msgid "Unavailable before the tournament start."
