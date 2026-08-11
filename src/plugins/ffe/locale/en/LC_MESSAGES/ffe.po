@@ -227,7 +227,7 @@ msgstr ""
 
 #, python-brace-format
 msgid "FFE {id}"
-msgstr "FFE {id}"
+msgstr ""
 
 msgid "FIDE ID"
 msgstr ""
