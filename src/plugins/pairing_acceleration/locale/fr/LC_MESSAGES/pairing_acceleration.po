@@ -6,6 +6,9 @@ msgstr "%(string)s :"
 msgid "A pairing number between 1 and {max} is expected."
 msgstr "Un numéro d'appariement compris entre 1 et {max} est attendu."
 
+msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
+msgstr "Un·e joueur·euse commence chaque ronde avec ces points ajoutés à ceux qu'il·elle a marqués. Ils ne sont utilisés que pour l'appariement, jamais pour le classement, et ne font pas partie des résultats transmis pour l'homologation."
+
 #, python-brace-format
 msgid "A round between 1 and {max} is expected."
 msgstr "Une ronde comprise entre 1 et {max} est attendue."
@@ -29,11 +32,20 @@ msgstr "Groupes d'accélération"
 msgid "Add accelerated rounds"
 msgstr "Ajouter des rondes accélérées"
 
+msgid "Add to the current values"
+msgstr "Ajouter aux valeurs actuelles"
+
 msgid "At most one decimal is expected."
 msgstr "Une seule décimale au maximum est attendue."
 
 msgid "Baku acceleration system"
 msgstr "Système d'accélération de Bakou"
+
+msgid "Coefficient"
+msgstr "Coefficient"
+
+msgid "Current events"
+msgstr "Tournois en cours"
 
 msgid "Custom accelerated system"
 msgstr "Système accéléré personnalisé"
@@ -43,6 +55,15 @@ msgstr "Supprimer"
 
 msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
 msgstr "Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
+
+msgid "Event"
+msgstr "Évènement"
+
+msgid "Fill"
+msgstr "Remplir"
+
+msgid "Fill from another tournament"
+msgstr "Remplir depuis un autre tournoi"
 
 #, python-brace-format
 msgid "Group {group_id}"
@@ -62,6 +83,15 @@ msgstr "Les groupes doivent être composés d'au moins 25 %% des joueur·euses.
 msgid "Haley system"
 msgstr "Système de Haley"
 
+msgid "Initial pairing scores"
+msgstr "Scores initiaux d'appariement"
+
+msgid "Initial score"
+msgstr "Score initial"
+
+msgid "Initial score accelerated system"
+msgstr "Système accéléré à scores initiaux"
+
 msgid "Maximum value must be greater than the minimum value."
 msgstr "La valeur maximale doit être supérieure à la valeur minimale."
 
@@ -78,6 +108,12 @@ msgstr "Plage de numéros d'appariement du groupe (recommandé : %(min)d-%(max)
 msgid "Pairing numbers"
 msgstr "Numéros d'appariement"
 
+msgid "Passed events"
+msgstr "Évènements passés"
+
+msgid "Players"
+msgstr "Joueur·euses"
+
 msgid "Points"
 msgstr "Points"
 
@@ -86,6 +122,9 @@ msgstr "Des valeurs positives sont attendues."
 
 msgid "Progressive accelerated system"
 msgstr "Système accéléré dégressif (SAD)"
+
+msgid "Replace the current values"
+msgstr "Remplacer les valeurs actuelles"
 
 #, python-brace-format
 msgid "Round {round}"
@@ -102,11 +141,23 @@ msgstr "Rondes"
 msgid "Rounds {min_round}-{max_round}"
 msgstr "Rondes {min_round}-{max_round}"
 
+msgid "Search an event"
+msgstr "Rechercher un évènement"
+
+msgid "Select a tournament"
+msgstr "Choisir un tournoi"
+
+msgid "Select an event"
+msgstr "Choisir un évènement"
+
 msgid "Soft Haley system"
 msgstr "Système de Haley dégressif"
 
 msgid "The end of the range must not precede its start."
 msgstr "La fin de la plage ne doit pas précéder son début."
+
+msgid "Tournament"
+msgstr "Tournoi"
 
 msgid "Virtual points"
 msgstr "Points virtuels"
@@ -116,4 +167,11 @@ msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. 
 
 msgid "points"
 msgstr "points"
+
+#, python-brace-format
+msgid "{matched} players filled, {missing} not found in that tournament"
+msgstr "{matched} joueur·euses renseigné·es, {missing} introuvable·s dans ce tournoi"
+
+#~ msgid "{matched} players filled, {missing} not in that tournament"
+#~ msgstr "{matched} joueur·euses renseigné·es, {missing} absent·es de ce tournoi"
 

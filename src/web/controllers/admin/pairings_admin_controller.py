@@ -2322,6 +2322,33 @@ class PairingsAdminController(BaseEventAdminController):
         self._save_pairing_settings_data(tournament, data)
         return self._generate_round_pairings(web_context)
 
+    @post(
+        path='/pairings/settings-action/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-settings-action',
+    )
+    async def htmx_pairings_settings_action(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        """Re-render the pairing settings after one of their own buttons
+        has been pressed. The settings decide what the action does; the
+        values are only rendered back, never saved."""
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        for setting in tournament.pairing_variation.settings:
+            data = setting.apply_action(tournament, data)
+        return self._render_pairings_settings_modal(
+            web_context, data, tournament.get_pairing_settings_data_errors(data)
+        )
+
     @staticmethod
     def _save_pairing_settings_data(tournament: Tournament, data: dict[str, str]):
         stored_settings: dict[str, Any] = {}

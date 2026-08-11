@@ -6,6 +6,9 @@ msgstr ""
 msgid "A pairing number between 1 and {max} is expected."
 msgstr ""
 
+msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
+msgstr ""
+
 #, python-brace-format
 msgid "A round between 1 and {max} is expected."
 msgstr ""
@@ -29,10 +32,19 @@ msgstr ""
 msgid "Add accelerated rounds"
 msgstr ""
 
+msgid "Add to the current values"
+msgstr ""
+
 msgid "At most one decimal is expected."
 msgstr ""
 
 msgid "Baku acceleration system"
+msgstr ""
+
+msgid "Coefficient"
+msgstr ""
+
+msgid "Current events"
 msgstr ""
 
 msgid "Custom accelerated system"
@@ -42,6 +54,15 @@ msgid "Delete"
 msgstr ""
 
 msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "Fill"
+msgstr ""
+
+msgid "Fill from another tournament"
 msgstr ""
 
 #, python-brace-format
@@ -62,6 +83,15 @@ msgstr ""
 msgid "Haley system"
 msgstr ""
 
+msgid "Initial pairing scores"
+msgstr ""
+
+msgid "Initial score"
+msgstr ""
+
+msgid "Initial score accelerated system"
+msgstr ""
+
 msgid "Maximum value must be greater than the minimum value."
 msgstr ""
 
@@ -78,6 +108,12 @@ msgstr ""
 msgid "Pairing numbers"
 msgstr ""
 
+msgid "Passed events"
+msgstr ""
+
+msgid "Players"
+msgstr ""
+
 msgid "Points"
 msgstr ""
 
@@ -85,6 +121,9 @@ msgid "Positive values are expected."
 msgstr ""
 
 msgid "Progressive accelerated system"
+msgstr ""
+
+msgid "Replace the current values"
 msgstr ""
 
 #, python-brace-format
@@ -102,10 +141,22 @@ msgstr ""
 msgid "Rounds {min_round}-{max_round}"
 msgstr ""
 
+msgid "Search an event"
+msgstr ""
+
+msgid "Select a tournament"
+msgstr ""
+
+msgid "Select an event"
+msgstr ""
+
 msgid "Soft Haley system"
 msgstr ""
 
 msgid "The end of the range must not precede its start."
+msgstr ""
+
+msgid "Tournament"
 msgstr ""
 
 msgid "Virtual points"
@@ -116,4 +167,11 @@ msgstr ""
 
 msgid "points"
 msgstr ""
+
+#, python-brace-format
+msgid "{matched} players filled, {missing} not found in that tournament"
+msgstr ""
+
+#~ msgid "{matched} players filled, {missing} not in that tournament"
+#~ msgstr ""
 

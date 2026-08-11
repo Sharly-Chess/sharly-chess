@@ -11,6 +11,7 @@ from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration import PLUGIN_NAME, migrations
 from plugins.pairing_acceleration.pairing_variations import (
     CustomAccelerationSwissVariation,
+    InitialScoreSwissVariation,
     HaleySwissVariation,
     HaleySoftSwissVariation,
     ProgressiveSwissVariation,
@@ -62,6 +63,7 @@ class PairingAccelerationPlugin(Plugin):
             HaleySoftSwissVariation,
             ProgressiveSwissVariation,
             CustomAccelerationSwissVariation,
+            InitialScoreSwissVariation,
         ]
 
     @hookimpl

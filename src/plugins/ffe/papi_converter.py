@@ -55,6 +55,8 @@ from plugins.manager import plugin_manager
 from plugins.pairing_acceleration.pairing_variations import (
     BakuSwissVariation,
     AccelerationSwissVariation,
+    CustomAccelerationSwissVariation,
+    InitialScoreSwissVariation,
 )
 from utils import Utils
 from utils.enum import (
@@ -644,6 +646,15 @@ class PapiConverter:
             return _(
                 'The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website.'
             )
+        if isinstance(
+            pairing_variation,
+            (CustomAccelerationSwissVariation, InitialScoreSwissVariation),
+        ):
+            return _(
+                'The [{variation}] pairing system is not recognized by the FFE, '
+                'which derives acceleration from the ratings: the pairings '
+                'displayed on the FFE website may differ.'
+            ).format(variation=pairing_variation.name)
         return None
 
     @classmethod

@@ -606,6 +606,10 @@ msgstr ""
 msgid "The [{tie_break}] tie-break as implemented in Papi."
 msgstr ""
 
+#, python-brace-format
+msgid "The [{variation}] pairing system is not recognized by the FFE, which derives acceleration from the ratings: the pairings displayed on the FFE website may differ."
+msgstr ""
+
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr ""
 
@@ -759,4 +763,7 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "Papi export does not support the [{variation}] pairing system, whose virtual points the format cannot represent."
+#~ msgstr ""
 

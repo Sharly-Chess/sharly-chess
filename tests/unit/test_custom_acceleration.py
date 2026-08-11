@@ -1,11 +1,14 @@
-"""Unit tests for the custom accelerated system (TRF26 250 records).
+"""Unit tests for the arbiter-defined accelerated systems, both of which
+compile to TRF26 250 records: the custom one (rules over ranges of
+pairing numbers) and the initial-score one (a value per player).
 
-These exercise the setting (form / storage round-trips and validation)
-and the variation (virtual points, pairing-number shifts) against a stub
+These exercise the settings (form / storage round-trips and validation)
+and the variations (virtual points, pairing-number shifts) against a stub
 tournament, so no database or pairing engine is involved.
 """
 
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any
 
 import pytest
@@ -13,13 +16,20 @@ import pytest
 from plugins.pairing_acceleration.pairing_settings import (
     AccelerationRule,
     CustomAccelerationSetting,
+    InitialPairingScoreSetting,
 )
 from plugins.pairing_acceleration.pairing_variations import (
     CustomAccelerationSwissVariation,
+    InitialScoreSwissVariation,
 )
 
 SETTING = CustomAccelerationSetting()
 VARIATION = CustomAccelerationSwissVariation()
+SCORE_SETTING = InitialPairingScoreSetting()
+SCORE_VARIATION = InitialScoreSwissVariation()
+
+# Two players carrying a score over from an earlier tournament.
+SCORES = {11: 6.5, 12: 4.0}
 
 # Group A (numbers 1-40) is given a full point over the first three
 # rounds, then half a point in round 4.
@@ -38,6 +48,8 @@ class StubStoredTournament:
 class StubTournament:
     rounds: int = 9
     player_count: int = 80
+    tournament_players: list['StubPlayer'] = field(default_factory=list)
+    event: Any = None
     stored_tournament: StubStoredTournament = field(
         default_factory=StubStoredTournament
     )
@@ -50,12 +62,22 @@ class StubTournament:
 @dataclass
 class StubPlayer:
     pairing_number: int | None
+    id: int = 0
+    stored_player: Any = None
 
 
 def tournament_with(rules: list[AccelerationRule], **kwargs) -> StubTournament:
     tournament = StubTournament(**kwargs)
     tournament.stored_tournament.pairing_settings[SETTING.id] = (
         CustomAccelerationSetting.to_stored_value(rules)
+    )
+    return tournament
+
+
+def tournament_with_scores(scores: dict[int, float], **kwargs) -> StubTournament:
+    tournament = StubTournament(**kwargs)
+    tournament.stored_tournament.pairing_settings[SCORE_SETTING.id] = (
+        InitialPairingScoreSetting.to_stored_value(scores)
     )
     return tournament
 
@@ -267,3 +289,239 @@ class TestCustomAccelerationVariation:
             tournament, [1]
         )
         assert not VARIATION.update_settings_from_added_pairing_number(tournament, 1)
+
+
+@pytest.mark.unit
+class TestInitialPairingScoreSetting:
+    def test_storage_round_trip(self):
+        stored = InitialPairingScoreSetting.to_stored_value(SCORES)
+        assert stored == {'11': 6.5, '12': 4.0}
+        assert InitialPairingScoreSetting.from_stored_value(stored) == SCORES
+
+    def test_form_round_trip(self):
+        data = SCORE_SETTING.to_form_data(SCORES)
+        assert data == {
+            SCORE_SETTING.player_field(11): '6.5',
+            SCORE_SETTING.player_field(12): '4',
+        }
+        assert SCORE_SETTING.from_form_data(data) == SCORES
+
+    def test_blank_and_zero_scores_are_dropped(self):
+        data = {
+            SCORE_SETTING.player_field(11): '6.5',
+            SCORE_SETTING.player_field(12): '',
+            SCORE_SETTING.player_field(13): '0',
+        }
+        assert SCORE_SETTING.from_form_data(data) == {11: 6.5}
+
+    def test_other_fields_are_ignored(self):
+        # The modal posts every setting of the variation at once.
+        data = {
+            SCORE_SETTING.player_field(11): '6.5',
+            'COLOR_SEED': 'W',
+            f'{SCORE_SETTING.player_field_base}abc': '3',
+        }
+        assert SCORE_SETTING.from_form_data(data) == {11: 6.5}
+
+    @pytest.mark.parametrize('score', ['-1', '100', 'abc'])
+    def test_rejected_scores(self, score: str):
+        data = {SCORE_SETTING.player_field(11): score}
+        assert SCORE_SETTING.player_field(11) in SCORE_SETTING.get_data_errors(
+            StubTournament(), data
+        )
+
+    def test_score_limited_to_one_decimal(self):
+        data = {SCORE_SETTING.player_field(11): '6.25'}
+        assert SCORE_SETTING.player_field(11) in SCORE_SETTING.get_data_errors(
+            StubTournament(), data
+        )
+
+    def test_blank_score_is_not_an_error(self):
+        data = {SCORE_SETTING.player_field(11): ''}
+        assert SCORE_SETTING.get_data_errors(StubTournament(), data) == {}
+
+    def test_scores_of_departed_players_do_not_invalidate_the_setting(self):
+        # Player 99 has left the tournament; the arbiter's other values
+        # must survive rather than being reset to nothing.
+        tournament = StubTournament()
+        tournament.stored_tournament.pairing_settings[SCORE_SETTING.id] = (
+            InitialPairingScoreSetting.to_stored_value(SCORES | {99: 1.0})
+        )
+        assert InitialPairingScoreSetting.get_value(tournament) == SCORES | {99: 1.0}
+
+
+@pytest.mark.unit
+class TestInitialScoreVariation:
+    def test_virtual_points_apply_to_every_round(self):
+        tournament = tournament_with_scores(SCORES)
+        player = StubPlayer(pairing_number=1, id=11)
+        assert SCORE_VARIATION.compute_virtual_points(tournament, player, 1) == 6.5
+        assert SCORE_VARIATION.compute_virtual_points(tournament, player, 9) == 6.5
+
+    def test_no_virtual_points_without_a_score(self):
+        tournament = tournament_with_scores(SCORES)
+        player = StubPlayer(pairing_number=3, id=13)
+        assert SCORE_VARIATION.compute_virtual_points(tournament, player, 1) == 0.0
+
+    def test_print_real_points(self):
+        assert SCORE_VARIATION.print_real_points(tournament_with_scores(SCORES), 1)
+        assert not SCORE_VARIATION.print_real_points(tournament_with_scores({}), 1)
+
+    def test_one_trf_rule_per_scored_player(self):
+        tournament = tournament_with_scores(SCORES)
+        tournament.tournament_players = [
+            StubPlayer(pairing_number=2, id=12),
+            StubPlayer(pairing_number=1, id=11),
+            StubPlayer(pairing_number=3, id=13),  # no score → no record
+        ]
+        assert SCORE_VARIATION.get_tournament_accelerated_rules(tournament) == [
+            AccelerationRule(6.5, 1, 9, number_range=(1, 1)),
+            AccelerationRule(4.0, 1, 9, number_range=(2, 2)),
+        ]
+
+    def test_players_without_a_pairing_number_are_skipped(self):
+        tournament = tournament_with_scores(SCORES)
+        tournament.tournament_players = [StubPlayer(pairing_number=None, id=11)]
+        assert SCORE_VARIATION.get_tournament_accelerated_rules(tournament) == []
+
+
+@dataclass
+class StubStoredPlayer:
+    id: int
+    last_name: str = ''
+    first_name: str | None = None
+    date_of_birth: Any = None
+    fide_id: int | None = None
+    plugin_data: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class StubSourcePlayer:
+    id: int
+    stored_player: StubStoredPlayer
+    score: float
+
+    def points_total(self) -> float:
+        return self.score
+
+
+@dataclass
+class StubEvent:
+    uniq_id: str
+    tournaments_by_id: dict[int, Any] = field(default_factory=dict)
+
+    def get_player_identity_keys(self, stored_player: StubStoredPlayer) -> set[object]:
+        # Same shape as Event.get_player_identity_keys, without the plugins.
+        keys: set[object] = set()
+        if stored_player.date_of_birth and stored_player.first_name:
+            keys.add(
+                (
+                    'name',
+                    stored_player.last_name,
+                    stored_player.first_name,
+                    stored_player.date_of_birth,
+                )
+            )
+        if stored_player.fide_id:
+            keys.add(('fide', stored_player.fide_id))
+        return keys
+
+
+def make_fill_case() -> tuple[StubTournament, dict[str, str]]:
+    """A tournament whose three players are, in an earlier tournament of
+    the same event, three *different* player records — matched by FIDE ID
+    for two of them and by name + birth date for the third."""
+    birth = date(2001, 2, 3)
+    target_players = [
+        StubPlayer(pairing_number=1, id=11),
+        StubPlayer(pairing_number=2, id=12),
+        StubPlayer(pairing_number=3, id=13),
+    ]
+    target_players[0].stored_player = StubStoredPlayer(id=11, fide_id=500)
+    target_players[1].stored_player = StubStoredPlayer(
+        id=12, last_name='MARTIN', first_name='Jean', date_of_birth=birth
+    )
+    target_players[2].stored_player = StubStoredPlayer(id=13, fide_id=502)
+
+    source = StubTournament()
+    source.tournament_players = [
+        # Different ids from the target players on purpose.
+        StubSourcePlayer(91, StubStoredPlayer(id=91, fide_id=500), 6.5),
+        StubSourcePlayer(
+            92,
+            StubStoredPlayer(
+                id=92, last_name='MARTIN', first_name='Jean', date_of_birth=birth
+            ),
+            4.0,
+        ),
+    ]
+
+    tournament = StubTournament(tournament_players=target_players)
+    tournament.event = StubEvent(uniq_id='ev', tournaments_by_id={7: source})
+    data = {
+        SCORE_SETTING.source_event_field: 'ev',
+        SCORE_SETTING.source_tournament_field: '7',
+        SCORE_SETTING.coefficient_field: '1',
+        SCORE_SETTING.action_field: SCORE_SETTING.ACTION_FILL,
+    }
+    return tournament, data
+
+
+@pytest.mark.unit
+class TestInitialScoreFill:
+    def test_players_are_matched_by_identity_not_by_id(self):
+        tournament, data = make_fill_case()
+        filled = SCORE_SETTING.apply_action(tournament, data)
+        assert filled[SCORE_SETTING.player_field(11)] == '6.5'
+        assert filled[SCORE_SETTING.player_field(12)] == '4'
+        # No counterpart in the source tournament.
+        assert filled[SCORE_SETTING.player_field(13)] == ''
+        assert SCORE_SETTING.from_form_data(filled) == {11: 6.5, 12: 4.0}
+
+    def test_coefficient_is_applied_and_rounded_to_one_decimal(self):
+        tournament, data = make_fill_case()
+        filled = SCORE_SETTING.apply_action(
+            tournament, data | {SCORE_SETTING.coefficient_field: '0.5'}
+        )
+        assert filled[SCORE_SETTING.player_field(11)] == '3.3'  # 6.5 × 0.5 = 3.25
+        assert filled[SCORE_SETTING.player_field(12)] == '2'
+
+    def test_add_mode_accumulates_and_keeps_unmatched_values(self):
+        tournament, data = make_fill_case()
+        filled = SCORE_SETTING.apply_action(
+            tournament,
+            data
+            | {
+                SCORE_SETTING.mode_field: 'add',
+                SCORE_SETTING.player_field(11): '1',
+                SCORE_SETTING.player_field(13): '2',
+            },
+        )
+        assert filled[SCORE_SETTING.player_field(11)] == '7.5'
+        # Untouched: adding must not wipe a hand-entered value.
+        assert filled[SCORE_SETTING.player_field(13)] == '2'
+
+    def test_replace_mode_clears_unmatched_values(self):
+        tournament, data = make_fill_case()
+        filled = SCORE_SETTING.apply_action(
+            tournament, data | {SCORE_SETTING.player_field(13): '2'}
+        )
+        assert filled[SCORE_SETTING.player_field(13)] == ''
+
+    def test_report_counts_matched_and_missing_players(self):
+        tournament, data = make_fill_case()
+        filled = SCORE_SETTING.apply_action(tournament, data)
+        assert '2' in filled[SCORE_SETTING.report_field]
+        assert '1' in filled[SCORE_SETTING.report_field]
+
+    def test_no_action_leaves_the_data_untouched(self):
+        tournament, data = make_fill_case()
+        del data[SCORE_SETTING.action_field]
+        assert SCORE_SETTING.apply_action(tournament, data) == data
+
+    def test_unknown_source_tournament_changes_nothing(self):
+        tournament, data = make_fill_case()
+        filled = SCORE_SETTING.apply_action(
+            tournament, data | {SCORE_SETTING.source_tournament_field: '999'}
+        )
+        assert SCORE_SETTING.from_form_data(filled) == {}

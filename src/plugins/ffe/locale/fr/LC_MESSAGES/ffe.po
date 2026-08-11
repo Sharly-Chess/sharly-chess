@@ -606,6 +606,10 @@ msgstr "Le format Papi ne supporte pas le résultat [{result}]."
 msgid "The [{tie_break}] tie-break as implemented in Papi."
 msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
 
+#, python-brace-format
+msgid "The [{variation}] pairing system is not recognized by the FFE, which derives acceleration from the ratings: the pairings displayed on the FFE website may differ."
+msgstr "Le système d'appariement [{variation}] n'est pas reconnu par la FFE, qui déduit l'accélération des classements : les appariements affichés sur le site de la FFE peuvent différer."
+
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
 
@@ -759,3 +763,4 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] "{n} partie perdue par forfait, comptée -1."
 msgstr[1] "{n} parties perdues par forfait, comptées -1."
+

@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from datetime import date
 from enum import StrEnum
-from math import ceil
+from math import ceil, floor
 from typing import TYPE_CHECKING, Any
 
 from common.i18n import _
@@ -433,6 +434,275 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
             return int(value)
         except (TypeError, ValueError):
             return None
+
+    @staticmethod
+    def _parse_float(value: str | None) -> float | None:
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+
+class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
+    """A virtual score granted to a player for every round of the
+    tournament, typically carried over from an earlier tournament of the
+    event.
+
+    Keyed by player id rather than by pairing number, so that inserting
+    or deleting a player can't shift the scores onto the wrong people —
+    unlike :class:`CustomAccelerationSetting`, whose rules are ranges of
+    pairing numbers."""
+
+    MAX_SCORE = 99.9
+
+    @classmethod
+    def static_id(cls) -> str:
+        return f'{PLUGIN_NAME}-INITIAL_PAIRING_SCORE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Initial pairing scores')
+
+    @property
+    def template_path(self) -> str:
+        return f'/{PLUGIN_NAME}/initial_pairing_score.html'
+
+    @property
+    def player_field_base(self) -> str:
+        """Base of the ID of the form field holding a player's initial
+        score. The player ID is concatenated to the base."""
+        return f'{self.id}_player_'
+
+    def player_field(self, player_id: int) -> str:
+        return f'{self.player_field_base}{player_id}'
+
+    def tooltip_representation(self, value: dict[int, float]) -> str | None:
+        scored = [score for score in value.values() if score]
+        return str(len(scored)) if scored else None
+
+    def from_form_data(self, data: dict[str, str]) -> dict[int, float]:
+        scores: dict[int, float] = {}
+        for field in self._player_fields(data):
+            score = self._parse_float(data[field])
+            if score:
+                player_id = int(field[len(self.player_field_base) :])
+                scores[player_id] = score
+        return scores
+
+    def to_form_data(self, object_: dict[int, float]) -> dict[str, str]:
+        return {
+            self.player_field(player_id): f'{score:g}'
+            for player_id, score in object_.items()
+            if score
+        }
+
+    @classmethod
+    def to_stored_value(cls, object_: dict[int, float]) -> Any:
+        return {str(player_id): score for player_id, score in object_.items() if score}
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> dict[int, float]:
+        return {int(player_id): float(score) for player_id, score in value.items()}
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> dict[int, float]:
+        return {}
+
+    @classmethod
+    def check_value(cls, tournament: 'Tournament', value: dict[int, float]) -> bool:
+        # Scores of players who have left the tournament are simply never
+        # read, so they don't make the setting invalid: dropping the whole
+        # set because of one of them would lose the arbiter's work.
+        return all(0 <= score <= cls.MAX_SCORE for score in value.values())
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        errors: dict[str, str] = {}
+        for field in self._player_fields(data):
+            value = data[field]
+            if not value:
+                continue
+            score = self._parse_float(value)
+            if score is None or not 0 <= score <= self.MAX_SCORE:
+                errors[field] = _('A value between 0 and {max} is expected.').format(
+                    max=f'{self.MAX_SCORE:g}'
+                )
+            elif round(score * 10) != score * 10:
+                errors[field] = _('At most one decimal is expected.')
+        return errors
+
+    # ---------------------------------------------------------------------
+    # Filling the scores from another tournament
+    # ---------------------------------------------------------------------
+
+    ACTION_FILL = 'fill'
+
+    @property
+    def source_event_field(self) -> str:
+        return f'{self.id}_source_event'
+
+    @property
+    def source_tournament_field(self) -> str:
+        return f'{self.id}_source_tournament'
+
+    @property
+    def coefficient_field(self) -> str:
+        return f'{self.id}_coefficient'
+
+    @property
+    def mode_field(self) -> str:
+        return f'{self.id}_mode'
+
+    @property
+    def action_field(self) -> str:
+        return f'{self.id}_action'
+
+    @property
+    def report_field(self) -> str:
+        return f'{self.id}_report'
+
+    def get_source_event_options(self) -> dict[str, Any]:
+        """The events a carry-over can be taken from — any individual
+        event, since a series often spans several. Grouped by status and
+        sorted by name: the arbiter looks for a name, not for a date."""
+        from data.loader import EventLoader
+
+        today = date.today()
+        current = _('Current events')
+        passed = _('Passed events')
+        groups: dict[str, dict[str, str]] = {current: {}, passed: {}}
+        for metadata in EventLoader.get_events_metadata():
+            # Events still to come hold no results to carry over.
+            if metadata.is_team_event or today < metadata.start_date:
+                continue
+            group = passed if metadata.stop_date < today else current
+            groups[group][metadata.uniq_id] = metadata.name
+        # The leading entry doubles as a placeholder and keeps the select
+        # from being rendered disabled when a single event is offered.
+        options: dict[str, Any] = {'': _('Select an event')}
+        for label, entries in groups.items():
+            if entries:
+                options[label] = dict(
+                    sorted(entries.items(), key=lambda entry: entry[1].lower())
+                )
+        return options
+
+    def get_source_tournament_options(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        source_event = self._get_source_event(tournament, data)
+        if source_event is None:
+            return {}
+        options = {'': _('Select a tournament')}
+        options |= {
+            str(other.id): other.name
+            for other in source_event.tournaments_by_id.values()
+            if other.id is not None
+            and not other.is_team_tournament
+            and not (
+                other.id == tournament.id
+                and source_event.uniq_id == tournament.event.uniq_id
+            )
+        }
+        return options if len(options) > 1 else {}
+
+    def _source_event_ids(self) -> set[str]:
+        return {
+            uniq_id
+            for entry in self.get_source_event_options().values()
+            if isinstance(entry, dict)
+            for uniq_id in entry
+        }
+
+    def apply_action(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        """Fill the scores from the chosen tournament. Players are matched
+        by identity rather than by id: the same person entered in two
+        tournaments is two distinct player records."""
+        if data.get(self.action_field) != self.ACTION_FILL:
+            return data
+        scores_by_key = self._get_source_scores(tournament, data)
+        coefficient = self._parse_float(data.get(self.coefficient_field))
+        if coefficient is None:
+            coefficient = 1.0
+        add = data.get(self.mode_field) == 'add'
+
+        updated = dict(data)
+        matched = 0
+        missing = 0
+        for tournament_player in tournament.tournament_players:
+            field = self.player_field(tournament_player.id)
+            keys = tournament.event.get_player_identity_keys(
+                tournament_player.stored_player
+            )
+            score = next(
+                (scores_by_key[key] for key in keys if key in scores_by_key), None
+            )
+            if score is None:
+                missing += 1
+                if not add:
+                    updated[field] = ''
+                continue
+            matched += 1
+            current = (self._parse_float(updated.get(field)) or 0.0) if add else 0.0
+            # One decimal: the TRF26 250 points field holds no more. Round
+            # half up rather than to even, which reads as arbitrary here.
+            filled = floor((current + score * coefficient) * 10 + 0.5) / 10
+            updated[field] = f'{filled:g}' if filled else ''
+        updated[self.report_field] = _(
+            '{matched} players filled, {missing} not found in that tournament'
+        ).format(matched=matched, missing=missing)
+        return updated
+
+    def _get_source_scores(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[object, float]:
+        """Final score of each player of the chosen tournament, keyed by
+        every identity key that player can be recognised by."""
+        source_event = self._get_source_event(tournament, data)
+        source_id = self._parse_int(data.get(self.source_tournament_field))
+        if source_event is None or source_id is None:
+            return {}
+        source = source_event.tournaments_by_id.get(source_id)
+        if source is None:
+            return {}
+        scores_by_key: dict[object, float] = {}
+        for source_player in source.tournament_players:
+            score = source_player.points_total()
+            for key in source_event.get_player_identity_keys(
+                source_player.stored_player
+            ):
+                scores_by_key[key] = score
+        return scores_by_key
+
+    def _get_source_event(self, tournament: 'Tournament', data: dict[str, str]):
+        from data.loader import EventLoader
+
+        uniq_id = data.get(self.source_event_field)
+        if not uniq_id:
+            return None
+        if uniq_id == tournament.event.uniq_id:
+            return tournament.event
+        if uniq_id not in self._source_event_ids():
+            return None
+        return EventLoader().load_event(uniq_id)
+
+    @staticmethod
+    def _parse_int(value: str | None) -> int | None:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return None
+
+    def _player_fields(self, data: dict[str, str]) -> list[str]:
+        return [
+            field
+            for field in data
+            if field.startswith(self.player_field_base)
+            and field[len(self.player_field_base) :].isdigit()
+        ]
 
     @staticmethod
     def _parse_float(value: str | None) -> float | None:

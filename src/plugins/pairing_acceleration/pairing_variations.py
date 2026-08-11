@@ -20,6 +20,7 @@ from plugins.pairing_acceleration.pairing_settings import (
     GroupC3GroupsSetting,
     AccelerationRule,
     CustomAccelerationSetting,
+    InitialPairingScoreSetting,
 )
 from utils import Utils
 
@@ -822,3 +823,61 @@ class CustomAccelerationSwissVariation(PluginSwissVariation):
             return False
         tournament.stored_tournament.pairing_settings |= {setting.id: stored_value}
         return True
+
+
+class InitialScoreSwissVariation(PluginSwissVariation):
+    """Acceleration by a per-player initial score, carried over from an
+    earlier tournament of the event. The score counts towards the pairing
+    groups of every round but never towards the published standings, so
+    the results submitted for rating stay untouched."""
+
+    @staticmethod
+    def variation_id() -> str:
+        return 'INITIAL_SCORE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Initial score accelerated system')
+
+    @property
+    def settings(self) -> list[PairingSetting]:
+        return super().settings + [InitialPairingScoreSetting()]
+
+    def get_tournament_accelerated_rules(
+        self, tournament: Tournament
+    ) -> list[AccelerationRule]:
+        """One rule per scored player, covering the whole tournament —
+        each one written as a single-player TRF26 250 record."""
+        scores = InitialPairingScoreSetting.get_value(tournament)
+        rules = [
+            AccelerationRule(
+                vpoints=scores[tournament_player.id],
+                first_round=1,
+                last_round=tournament.rounds,
+                number_range=(
+                    tournament_player.pairing_number,
+                    tournament_player.pairing_number,
+                ),
+            )
+            for tournament_player in tournament.tournament_players
+            if scores.get(tournament_player.id)
+            and tournament_player.pairing_number is not None
+        ]
+        return sorted(rules, key=lambda rule: rule.number_range or (0, 0))
+
+    @classmethod
+    def compute_virtual_points(
+        cls,
+        tournament: Tournament,
+        tournament_player: TournamentPlayer,
+        at_round: int,
+    ) -> float:
+        return InitialPairingScoreSetting.get_value(tournament).get(
+            tournament_player.id, 0.0
+        )
+
+    @classmethod
+    def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
+        # The initial scores apply to every round, so the real points are
+        # always worth showing next to the pairing ones.
+        return any(InitialPairingScoreSetting.get_value(tournament).values())
