@@ -101,8 +101,8 @@ msgstr[0] "%(num)d table vide à apparier"
 msgstr[1] "%(num)d tables vides à apparier"
 
 #, python-format
-msgid "%(num)d informative *** COLUMNS"
-msgid_plural "%(num)d informative *** COLUMNS"
+msgid "%(num)d informative *** COLUMNS, SINGULAR"
+msgid_plural "%(num)d informative *** COLUMNS, PLURAL"
 msgstr[0] "%(num)d informative"
 msgstr[1] "%(num)d informatives"
 
@@ -113,8 +113,8 @@ msgstr[0] "%(num)d écran multiple"
 msgstr[1] "%(num)d écrans multiples"
 
 #, python-format
-msgid "%(num)d optional *** COLUMNS"
-msgid_plural "%(num)d optional *** COLUMNS"
+msgid "%(num)d optional *** COLUMNS, SINGULAR"
+msgid_plural "%(num)d optional *** COLUMNS, PLURAL"
 msgstr[0] "%(num)d facultative"
 msgstr[1] "%(num)d facultatives"
 
@@ -167,8 +167,8 @@ msgstr[0] "%(num)d groupe de protection est configuré pour cette ronde."
 msgstr[1] "%(num)d groupes de protection sont configurés pour cette ronde."
 
 #, python-format
-msgid "%(num)d required *** COLUMNS"
-msgid_plural "%(num)d required *** COLUMNS"
+msgid "%(num)d required *** COLUMNS, SINGULAR"
+msgid_plural "%(num)d required *** COLUMNS, PLURAL"
 msgstr[0] "%(num)d obligatoire"
 msgstr[1] "%(num)d obligatoires"
 
@@ -3075,9 +3075,6 @@ msgstr "Bouton de sortie :"
 
 msgid "Expand all"
 msgstr "Tout déplier"
-
-msgid "Expand or collapse every match."
-msgstr "Déplier ou replier toutes les rencontres."
 
 msgid "Expand or collapse the details of every item."
 msgstr "Développer ou réduire les détails de tous les éléments."
@@ -6954,6 +6951,9 @@ msgstr "Afficher les joueur·euses non modifié·es"
 
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
+
+msgid "Show/hide all individual games."
+msgstr "Affiche/masque toutes les parties individuelles."
 
 msgid "Show/hide the round lineups on the cards."
 msgstr "Affiche/masque les compositions par ronde sur les cartes."

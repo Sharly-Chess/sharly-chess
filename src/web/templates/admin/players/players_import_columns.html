@@ -3,31 +3,37 @@
     <span>
         {{ _('Columns:') }}
         {{ ngettext(
-            '%(num)d required *** COLUMNS',
-            '%(num)d required *** COLUMNS',
+            '%(num)d required *** COLUMNS, SINGULAR',
+            '%(num)d required *** COLUMNS, PLURAL',
             required_column_ids|length
         ) }}
-        <i
-            class="bi-info-circle-fill ps-1"
-            {{ macros.tooltip_attributes('', build_list_tooltip(required_column_ids), 'right') }}
-        ></i>,
+        {% if required_column_ids %}
+            <i
+                class="bi-info-circle-fill ps-1"
+                {{ macros.tooltip_attributes('', build_list_tooltip(required_column_ids), 'right') }}
+            ></i>,
+        {% endif %}
         {{ ngettext(
-            '%(num)d optional *** COLUMNS',
-            '%(num)d optional *** COLUMNS',
+            '%(num)d optional *** COLUMNS, SINGULAR',
+            '%(num)d optional *** COLUMNS, PLURAL',
             optional_column_ids|length
         ) }}
-        <i
-            class="bi-info-circle-fill ps-1"
-            {{ macros.tooltip_attributes('', build_list_tooltip(optional_column_ids), 'right') }}
-        ></i>,
+        {% if optional_column_ids %}
+            <i
+                class="bi-info-circle-fill ps-1"
+                {{ macros.tooltip_attributes('', build_list_tooltip(optional_column_ids), 'right') }}
+            ></i>,
+        {% endif %}
         {{ ngettext(
-            '%(num)d informative *** COLUMNS',
-            '%(num)d informative *** COLUMNS',
+            '%(num)d informative *** COLUMNS, SINGULAR',
+            '%(num)d informative *** COLUMNS, PLURAL',
             informative_column_ids|length
         ) }}
-        <i
-            class="bi-info-circle-fill ps-1"
-            {{ macros.tooltip_attributes('', build_list_tooltip(informative_column_ids), 'right') }}
-        ></i>
+        {% if informative_column_ids %}
+            <i
+                class="bi-info-circle-fill ps-1"
+                {{ macros.tooltip_attributes('', build_list_tooltip(informative_column_ids), 'right') }}
+            ></i>
+        {% endif %}
     </span>
 </div>
