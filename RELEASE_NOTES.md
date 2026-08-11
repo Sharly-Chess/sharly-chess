@@ -17,6 +17,7 @@
 - Titles are displayed intelligently: both are shown when they matter (e.g. FM and WIM), but the women title is hidden when the open title supersedes it (e.g. GM instead of GM/WGM) (5.0.0)
 - When the FIDE database is installed locally, players looked up from it (including via an FFE search) have their women title filled in automatically (5.0.0)
 - A player's record now shows their federation identifiers — the FIDE ID, and the FFE licence number for French events — each linking to the corresponding federation profile page (5.0.0)
+- Omit empty lines when importing players (5.0.0)
 
 ## Teams
 

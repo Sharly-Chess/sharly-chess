@@ -1968,8 +1968,11 @@ class PlayerAdminController(BaseEventAdminController):
             if reader.fieldnames:
                 content_by_column = {header: [] for header in reader.fieldnames}
                 for row in reader:
-                    for header in reader.fieldnames:
-                        content_by_column[header].append((row[header] or '').strip())
+                    if any(row[header] for header in reader.fieldnames):
+                        for header in reader.fieldnames:
+                            content_by_column[header].append(
+                                (row[header] or '').strip()
+                            )
         return content_by_column
 
     @classmethod
