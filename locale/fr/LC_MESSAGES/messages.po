@@ -1316,13 +1316,13 @@ msgid "Board and Color"
 msgstr "Échiquier et couleur"
 
 msgid "Board count"
-msgstr "Décompte des échiquiers"
+msgstr "Nombre d'échiquiers"
 
 msgid "Board count, then bottom board elimination"
-msgstr "Décompte des échiquiers, puis élimination du dernier échiquier"
+msgstr "Nombre d'échiquiers, puis élimination du dernier échiquier"
 
 msgid "Board count, then top board results"
-msgstr "Décompte des échiquiers, puis résultats des premiers échiquiers"
+msgstr "Nombre d'échiquiers, puis résultats des premiers échiquiers"
 
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
