@@ -1472,7 +1472,7 @@ msgid "C2: whether the player may take the pairing-allocated bye — a player ca
 msgstr "C2 : si le·la joueur·euse peut être exempt·e — un·e joueur·euse ne peut l'être qu'une fois."
 
 msgid "C2: whether the team may take the pairing-allocated bye — a team can only ever receive one."
-msgstr "C2 : si l'équipe peut recevoir le bye d'appariement — une équipe ne peut en recevoir qu'un seul."
+msgstr "C2 : si l'équipe peut être exempte — une équipe ne peut l'être qu'une seule fois."
 
 msgid "CA"
 msgstr "ARB"
