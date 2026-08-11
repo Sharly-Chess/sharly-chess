@@ -43,6 +43,7 @@ from database.sqlite.event.event_store import (
     set_stored_fields,
 )
 from plugins.manager import plugin_manager
+from utils import Utils
 from utils.enum import (
     TournamentRating,
     Result,
@@ -604,15 +605,22 @@ class TrfTournamentImporter(FileTournamentImporter):
         team_index_by_internal_player_id: dict[int, int] = {}
         pairing_number_by_team_id: dict[int, int] = {}
         team_id_by_tpn: dict[int, int] = {}
-        # Team names are unique event-wide: reuse an existing team with the
-        # same name (e.g. a re-import, or the same club already created)
-        # instead of inserting a duplicate. New teams are registered as we
-        # go so a name repeated within this file also reuses the first.
+        # Reuse an existing team with the same name instead of inserting a
+        # duplicate — but only within the tournament being imported into.
+        # A team belongs to one tournament, so reusing one from another
+        # would attach the imported players to *that* tournament and leave
+        # this one empty. New teams are registered as we go so a name
+        # repeated within this file also reuses the first.
+        stored_teams = database.load_stored_teams()
         existing_team_id_by_name: dict[str, int] = {
             team.name: team.id
-            for team in database.load_stored_teams()
-            if team.id is not None
+            for team in stored_teams
+            if team.id is not None and team.tournament_id == tournament_id
         }
+        # Teams can be moved between tournaments, so their names are kept
+        # unique across the whole event; a name already taken by another
+        # tournament's team is suffixed, as tournament names are.
+        used_team_names: set[str] = {team.name for team in stored_teams}
         for stored_team, trf_player_ids in self._pending_teams:
             reused_team_id = existing_team_id_by_name.get(stored_team.name)
             if reused_team_id is not None:
@@ -620,6 +628,10 @@ class TrfTournamentImporter(FileTournamentImporter):
                 stored_team.id = team_id
             else:
                 stored_team.tournament_id = tournament_id
+                stored_team.name = Utils.get_unused_item_name(
+                    stored_team.name, used_team_names
+                )
+                used_team_names.add(stored_team.name)
                 team_id = database.add_stored_team(stored_team)
                 stored_team.id = team_id
                 existing_team_id_by_name[stored_team.name] = team_id

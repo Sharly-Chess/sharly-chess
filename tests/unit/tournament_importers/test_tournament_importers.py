@@ -379,6 +379,30 @@ class TournamentImporterTestCase(TestCase):
             finally:
                 Path(trf_path).unlink(missing_ok=True)
 
+    def test_trf_team_import_into_a_second_tournament_keeps_them_apart(self):
+        """A team belongs to one tournament, so importing the same file
+        again must build the second tournament its own teams. Reusing the
+        first tournament's teams by name attached every imported player to
+        it and left the new tournament empty."""
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        file_path = BASE_PATH / 'trf-team-import-test.trf'
+
+        first = self._import_tournament(TrfTournamentImporter([FileOption(file_path)]))
+        players, teams = len(first.players), len(first.teams)
+        self.assertTrue(players and teams)
+
+        second = self._import_tournament(TrfTournamentImporter([FileOption(file_path)]))
+        self.assertNotEqual(second.id, first.id)
+        # Reload the first through the same event as the second.
+        first = self.event.tournaments_by_id[first.id]
+        self.assertEqual((len(first.players), len(first.teams)), (players, teams))
+        self.assertEqual((len(second.players), len(second.teams)), (players, teams))
+        self.assertFalse(
+            {team.id for team in first.teams} & {team.id for team in second.teams},
+            'the two tournaments share a team',
+        )
+
     def test_trf_team_swiss_import(self):
         """Import a TRF26 file carrying team rosters (310) + team
         match-point system (362) + board-colour sequence (352) +
