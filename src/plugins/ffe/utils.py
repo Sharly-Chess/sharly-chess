@@ -146,6 +146,10 @@ class FFEUtils:
         return f'https://echecs.asso.fr/FicheTournoi.aspx?Ref={ffe_id}'
 
     @classmethod
+    def player_url(cls, ffe_id: int) -> str:
+        return f'https://echecs.asso.fr/FicheJoueur.aspx?Id={ffe_id}'
+
+    @classmethod
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
     ) -> list[FFEUploadStatus]:
