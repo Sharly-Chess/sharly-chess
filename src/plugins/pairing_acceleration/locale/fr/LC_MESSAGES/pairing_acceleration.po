@@ -114,6 +114,14 @@ msgstr "Évènements passés"
 msgid "Players"
 msgstr "Joueur·euses"
 
+#, python-brace-format
+msgid "Players in this group at round #1: {0} (odd number)."
+msgstr "Joueur·euses dans ce groupe à la ronde n°1 : {0} (nombre impair)."
+
+#, python-brace-format
+msgid "Players in this group at round #1: {0}."
+msgstr "Joueur·euses dans ce groupe à la ronde n°1 : {0}."
+
 msgid "Points"
 msgstr "Points"
 
@@ -171,3 +179,7 @@ msgstr "points"
 #, python-brace-format
 msgid "{matched} players filled, {missing} not found in that tournament"
 msgstr "{matched} joueur·euses renseigné·es, {missing} introuvable·s dans ce tournoi"
+
+#~ msgid "layers in this group at round #1: {0} (warning: even number)."
+#~ msgstr ""
+
