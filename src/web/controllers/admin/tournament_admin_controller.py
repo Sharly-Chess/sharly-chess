@@ -1278,6 +1278,8 @@ class TournamentAdminController(BaseEventAdminController):
                 tournament = Tournament(event, stored_tournament)
                 if action == FormAction.CLONE:
                     base_tournament = web_context.get_admin_tournament()
+                    assert tournament.id is not None
+                    database.delete_all_tournament_stored_tie_breaks(tournament.id)
                     for tie_break in base_tournament.tie_breaks_with_invalid:
                         stored_tie_break = tie_break.to_stored_value()
                         stored_tie_break.tournament_id = tournament.id

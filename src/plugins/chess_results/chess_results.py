@@ -176,10 +176,9 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def get_tournament_tie_breaks_warning_message(
         self, tournament: 'Tournament'
     ) -> str | None:
-        if (
-            CRUtils.get_tournament_plugin_data(tournament).tnr
-            and len(tournament.tie_breaks) > MAX_TIE_BREAKS
-        ):
+        if not CRUtils.get_tournament_plugin_data(tournament).tnr:
+            return None
+        if len(tournament.tie_breaks) > MAX_TIE_BREAKS:
             return _(
                 'Chess-Results.com only displays {max} tie-breaks. '
                 'However, the rankings remain the same as in Sharly Chess.'

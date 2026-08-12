@@ -72,12 +72,13 @@ _FFE_GAME_POINTS_MOLTER: dict[int, float] = {
     Result.PAIRING_ALLOCATED_BYE.value: 0.0,
 }
 
-# Tie-break order for the Swiss / round-robin phases of the two FFE
-# team cups: match-point primary → game-points differential →
+# Ranking order for the Swiss / round-robin phases of the two FFE
+# team cups: the points (the primary score) → game-points differential →
 # game-points "pour" → lowest own avg Elo. Same list applies to
 # ``TEAM_SWISS`` and ``TEAM_ROUND_ROBIN`` because the regulations
 # bracket "Système Suisse ou toutes rondes" together.
 _FFE_SUISSE_TIE_BREAKS: list[tuple[str, dict]] = [
+    ('POINTS', {}),
     ('ffe-GP-DIFFERENTIAL', {}),
     ('ffe-GP-FOR', {}),
     ('ffe-OWN-AVG-ELO', {}),
@@ -88,6 +89,7 @@ _FFE_SUISSE_TIE_BREAKS: list[tuple[str, dict]] = [
 # Unlike Loubatière there is no lowest-Elo step — F01 keeps that for
 # Molter only (§4.4.b).
 _FFE_FEMININ_SUISSE_TIE_BREAKS: list[tuple[str, dict]] = [
+    ('POINTS', {}),
     ('ffe-GP-DIFFERENTIAL', {}),
     ('ffe-GP-FOR', {}),
     ('ffe-BOARD-DIFFERENTIAL', {}),
@@ -95,6 +97,7 @@ _FFE_FEMININ_SUISSE_TIE_BREAKS: list[tuple[str, dict]] = [
 
 # Molter phases: Berlin then lowest own avg Elo.
 _FFE_MOLTER_TIE_BREAKS: list[tuple[str, dict]] = [
+    ('POINTS', {}),
     ('ffe-BERLIN', {}),
     ('ffe-OWN-AVG-ELO', {}),
 ]

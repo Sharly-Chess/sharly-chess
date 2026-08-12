@@ -103,7 +103,6 @@ class PlayerColumnHandler:
                 pt.GenderColumn,
                 pt.FederationColumn,
                 pt.ClubColumn,
-                pt.PointsColumn,
             ]
             + [
                 partial(pt.TieBreakColumn, tournament=tournament, index=index)
@@ -127,9 +126,6 @@ class PlayerColumnHandler:
             + [
                 partial(pt.RoundColumn, round_=round_)
                 for round_ in range(1, ranking_round + 1)
-            ]
-            + [
-                pt.PointsColumn,
             ]
             + [
                 partial(pt.TieBreakColumn, tournament=tournament, index=index)

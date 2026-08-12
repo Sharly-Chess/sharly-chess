@@ -65,9 +65,8 @@
                     {% for berger_number in range(1, teams|length + 1) %}
                         <th>{{ berger_number }}</th>
                     {% endfor %}
-                    <th class="result">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
                     {% for tie_break in team_tie_breaks %}
-                        <th class="result text-nowrap">{{ tie_break.acronym }}</th>
+                        <th class="result text-nowrap">{{ tournament.tie_break_acronym(tie_break) }}</th>
                     {% endfor %}
                 </tr>
             </thead>

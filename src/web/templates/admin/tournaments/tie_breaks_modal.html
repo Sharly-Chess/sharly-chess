@@ -238,20 +238,35 @@
                                                 <i class="bi-pencil-fill"></i>
                                             </button>
                                         </span>
-                                        <button
-                                            class="btn btn-sm btn-outline-danger text-nowrap"
-                                            hx-delete="{{ url_for(
-                                                'admin-tie-break-delete',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                tournament_id=admin_tournament.id,
-                                                tie_break_id=stored_id,
-                                            ) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-target="#modal-wrapper"
+                                        {# The standings rank on the criteria
+                                           listed, so the last one has to stay. #}
+                                        {% set is_last_tie_break = admin_tournament.tie_breaks_by_id|length == 1 %}
+                                        <span
+                                            {{ macros.tooltip_attributes(
+                                                'info',
+                                                _('The tournament must keep at least one ranking criterion.'),
+                                                'top',
+                                            ) if is_last_tie_break }}
                                         >
-                                            <i class="bi-trash-fill"></i>
-                                        </button>
+                                            <button
+                                                class="btn btn-sm btn-outline-danger text-nowrap"
+                                                {% if is_last_tie_break %}
+                                                    disabled
+                                                {% else %}
+                                                    hx-delete="{{ url_for(
+                                                        'admin-tie-break-delete',
+                                                        event_uniq_id=admin_event.uniq_id,
+                                                        tournament_id=admin_tournament.id,
+                                                        tie_break_id=stored_id,
+                                                    ) }}"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                    data-bs-target="#modal-wrapper"
+                                                {% endif %}
+                                            >
+                                                <i class="bi-trash-fill"></i>
+                                            </button>
+                                        </span>
                                     {% endif %}
                                 </div>
                             </div>

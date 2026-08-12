@@ -3,5 +3,6 @@
 {% elif prize_category.ranks_by_best_round_performance %}
     {{ _('Peak perf. *** PEAK PERFORMANCE COLUMN HEADER') }}
 {% else %}
-    {{ _('Pts *** POINTS COLUMN HEADER') }}
+    {# Ranked by final standing, which is decided on the leading criterion. #}
+    {{ tournament.leading_tie_break.acronym }}
 {% endif %}

@@ -4,7 +4,7 @@
     and admin_tournament.primary_score|string == 'MATCH_POINTS'
 ) %}
 {% set primary_is_gp = not primary_is_mp %}
-{% set team_tie_breaks = admin_tournament.tie_breaks | selectattr('supports_team_mode') | list %}
+{% set team_tie_breaks = admin_tournament.team_tie_breaks %}
 <div class="d-flex">
     <h4>{{ _('Team ranking') }}</h4>
 </div>
@@ -24,9 +24,6 @@
                 <th class="text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</th>
                 <th class="text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</th>
                 <th class="text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</th>
-                <th class="text-center fw-bold">{{ _('MP *** TEAM RANKING HEADER MATCH POINTS') }}</th>
-            {% else %}
-                <th class="text-center fw-bold">{{ _('GP *** TEAM RANKING HEADER GAME POINTS') }}</th>
             {% endif %}
             {% for tie_break in team_tie_breaks %}
                 <th
@@ -34,7 +31,7 @@
                     {{ macros.tooltip_attributes(
                         '', tie_break.help_text, 'top'
                     ) if tie_break.help_text }}
-                >{{ tie_break.acronym }}</th>
+                >{{ admin_tournament.tie_break_acronym(tie_break) }}</th>
             {% endfor %}
         </tr>
     </thead>
@@ -50,9 +47,6 @@
                     <td class="text-center">{{ row.wins }}</td>
                     <td class="text-center">{{ row.draws }}</td>
                     <td class="text-center">{{ row.losses }}</td>
-                    <td class="text-center fw-bold">{{ '%g'|format(row.mp) }}</td>
-                {% else %}
-                    <td class="text-center fw-bold">{{ '%g'|format(row.gp) }}</td>
                 {% endif %}
                 {% for tie_break in team_tie_breaks %}
                     {% set value = row.tie_break_values[loop.index0] %}

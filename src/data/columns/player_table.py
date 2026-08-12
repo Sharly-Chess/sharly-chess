@@ -293,7 +293,8 @@ class TieBreakColumn(TournamentPlayerTableColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-center'
+        emphasis = 'fw-bold ' if self.index == 0 else ''
+        return f'{emphasis}text-center'
 
 
 class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
@@ -316,7 +317,8 @@ class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-center'
+        emphasis = 'fw-bold ' if self.index == 0 else ''
+        return f'{emphasis}text-center'
 
 
 class PaidColumn(TournamentPlayerTableColumn):

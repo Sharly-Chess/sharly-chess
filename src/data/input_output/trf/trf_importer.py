@@ -78,6 +78,14 @@ class TrfTournamentImporter(FileTournamentImporter):
     def static_name() -> str:
         return _('TRF file')
 
+    @property
+    def tie_breaks_are_authoritative(self) -> bool:
+        # Record 212 lists the criteria that define the standings, so a
+        # file omitting PTS ranks without the score on purpose. Record
+        # 202 only lists what breaks ties, and `_read_trf_tournament`
+        # prepends PTS for it.
+        return True
+
     @staticmethod
     def available_options() -> list[type[TournamentImporterOption]]:
         return [
@@ -358,9 +366,6 @@ class TrfTournamentImporter(FileTournamentImporter):
             tie_breaks = standard_tie_breaks
         if not tie_breaks:
             tie_breaks = standard_tie_breaks
-        if tie_breaks:
-            if tie_breaks[0] != 'PTS':
-                features.append(_('212 Tie-breaks with PTS not used first'))
         if tie_breaks:
             __, unknown = self._read_tie_breaks(tie_breaks, event)
             if unknown:
@@ -1106,8 +1111,8 @@ class TrfTournamentImporter(FileTournamentImporter):
         unknown_acronyms: list[str] = []
         manager = TieBreakManager(event)
         for acronym in tie_break_acronyms:
-            if acronym == 'PTS':
-                continue
+            # PTS is not skipped: TRF26 makes it one of the criteria that
+            # define the standings, and where it sits decides the ranking.
             is_fide = not acronym.startswith('OTHER_')
             tie_break = manager.tie_break_from_trf_acronym(acronym)
             if tie_break and is_fide == tie_break.is_fide:

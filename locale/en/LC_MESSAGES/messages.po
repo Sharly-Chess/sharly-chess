@@ -45,14 +45,6 @@ msgid "%(minutes)d min before"
 msgstr ""
 
 #, python-format
-msgid "%(minutes)d minutes after"
-msgstr ""
-
-#, python-format
-msgid "%(minutes)d minutes before"
-msgstr ""
-
-#, python-format
 msgid "%(n)d players freed from their soft constraints"
 msgstr ""
 
@@ -221,10 +213,6 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr ""
 
 #, python-format
-msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
-msgstr ""
-
-#, python-format
 msgid "%(seconds)d sec."
 msgstr ""
 
@@ -327,9 +315,6 @@ msgid "(inherited)"
 msgstr ""
 
 msgid "(multi-screen)"
-msgstr ""
-
-msgid "(no screens)"
 msgstr ""
 
 #, python-format
@@ -494,9 +479,6 @@ msgid "2/3 of %(n)s opponents"
 msgstr ""
 
 msgid "202 and 212 tie-breaks (212 used)"
-msgstr ""
-
-msgid "212 Tie-breaks with PTS not used first"
 msgstr ""
 
 msgid "250 Accelerated rounds"
@@ -4559,9 +4541,6 @@ msgstr ""
 msgid "Multi-screens are always expanded inline."
 msgstr ""
 
-msgid "Multi-screens:"
-msgstr ""
-
 #, python-format
 msgid "Multi-screens: %(num)d"
 msgstr ""
@@ -5165,10 +5144,6 @@ msgstr ""
 msgid "Number of players per team:"
 msgstr ""
 
-#, python-format
-msgid "Number of players: %(num)d"
-msgstr ""
-
 msgid "Number of prize places"
 msgstr ""
 
@@ -5540,10 +5515,6 @@ msgid "Pairings started"
 msgstr ""
 
 msgid "Pairings successfully generated."
-msgstr ""
-
-#, python-format
-msgid "Pairings: %(pairing_variation)s"
 msgstr ""
 
 msgid "Pakistan"
@@ -5953,6 +5924,9 @@ msgid "Plugins"
 msgstr ""
 
 msgid "Point attribution"
+msgstr ""
+
+msgid "Points"
 msgstr ""
 
 #, python-format
@@ -6456,10 +6430,6 @@ msgstr ""
 msgid "Rotation delay"
 msgstr ""
 
-#, python-format
-msgid "Rotation delay: %(seconds)d sec."
-msgstr ""
-
 msgid "Rotator"
 msgstr ""
 
@@ -6710,9 +6680,6 @@ msgstr ""
 msgid "Screen types"
 msgstr ""
 
-msgid "Screen types:"
-msgstr ""
-
 msgid "Screens"
 msgstr ""
 
@@ -6723,9 +6690,6 @@ msgid "Screens list"
 msgstr ""
 
 msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
-msgstr ""
-
-msgid "Screens:"
 msgstr ""
 
 #, python-format
@@ -7679,6 +7643,9 @@ msgstr ""
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr ""
 
+msgid "The points scored in the tournament (the primary score for teams). Placed first it ranks the standings as usual; placed lower, the criteria above it outrank the score."
+msgstr ""
+
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr ""
 
@@ -7788,6 +7755,9 @@ msgstr ""
 
 msgid "The tournament is finished."
 msgstr ""
+
+msgid "The tournament must keep at least one ranking criterion."
+msgstr "The tournament must keep at least one ranking criterion."
 
 msgid "The tournament of the screens of the multi-screen."
 msgstr ""
@@ -8375,10 +8345,6 @@ msgid "Type of teams:"
 msgstr ""
 
 msgid "Type:"
-msgstr ""
-
-#, python-format
-msgid "Type: %(family_type)s"
 msgstr ""
 
 #, python-format
@@ -9711,3 +9677,46 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "%(minutes)d minutes after"
+#~ msgstr ""
+
+#~ msgid "%(minutes)d minutes before"
+#~ msgstr ""
+
+#~ msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
+#~ msgstr ""
+
+#~ msgid "(no screens)"
+#~ msgstr ""
+
+#~ msgid "212 Tie-breaks with PTS not used first"
+#~ msgstr ""
+
+#~ msgid "GP *** TEAM RANKING HEADER GAME POINTS"
+#~ msgstr "GP"
+
+#~ msgid "MP *** TEAM RANKING HEADER MATCH POINTS"
+#~ msgstr "MP"
+
+#~ msgid "Multi-screens:"
+#~ msgstr ""
+
+#~ msgid "Number of players: %(num)d"
+#~ msgstr ""
+
+#~ msgid "Pairings: %(pairing_variation)s"
+#~ msgstr ""
+
+#~ msgid "Rotation delay: %(seconds)d sec."
+#~ msgstr ""
+
+#~ msgid "Screen types:"
+#~ msgstr ""
+
+#~ msgid "Screens:"
+#~ msgstr ""
+
+#~ msgid "Type: %(family_type)s"
+#~ msgstr ""
+

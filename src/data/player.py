@@ -1038,6 +1038,11 @@ class TournamentPlayer(Player):
         return self._tie_break_values
 
     @property
+    def leading_tie_break_value(self) -> TieBreakValue:
+        """This player's value for :attr:`Tournament.leading_tie_break`."""
+        return self.tie_break_values[0]
+
+    @property
     def team_ranking_tie_break_values(self) -> list[TieBreakValue]:
         """Returns the player's tie-break values (only the tie-breaks used for team ranking)."""
         return [
@@ -1097,45 +1102,55 @@ class TournamentPlayer(Player):
     def board_number_sort_key(self) -> tuple:
         return -(self.vpoints or 0.0), self.pairing_number or 0
 
+    def _rank_key_elements(self) -> list[float]:
+        """This player's value for each ranking criterion, in order.
+
+        Each value is negated, so sorting ascending puts the best player
+        first: a bigger value is always better.
+
+        The points are in this list like any other criterion, in the
+        place the Points tie-break holds — they are not a separate first
+        key. Every ranking key below is a slice of this list, so they all
+        share one definition of the order.
+        """
+        return [
+            -float(tie_break_value.value) for tie_break_value in self.tie_break_values
+        ]
+
     @property
     def before_manual_rank_key(self) -> tuple:
+        """The criteria that outrank the manual reorder — players sharing
+        this key are the ones an arbiter may drag past one another.
+
+        Without a manual tie-break there is nothing to delimit, and the
+        key falls back to the leading criterion, which is what the ranking
+        table groups its score groups by.
+        """
         from data.tie_breaks.tie_breaks import ManualTieBreak
 
-        tie_break_sort_key: list = []
-        tie_break_found = False
-        for tie_break_value in self.tie_break_values:
+        elements = self._rank_key_elements()
+        for index, tie_break_value in enumerate(self.tie_break_values):
             if isinstance(tie_break_value.tie_break, ManualTieBreak):
-                tie_break_found = True
-                break
-            tie_break_sort_key.append(-float(tie_break_value.value))
-        if not tie_break_found:
-            tie_break_sort_key = []
-        return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
+                return tuple(elements[:index])
+        return tuple(elements[:1])
 
     def rank_sort_key_before_tie_break(self, tie_break_index: int) -> tuple:
         """Returns a rank sort key up to the tie-break of index *tie_break_index*."""
-        tie_break_sort_key: list = []
-        for tie_break_value in self.tie_break_values[:tie_break_index]:
-            tie_break_sort_key.append(-float(tie_break_value.value))
-        return (-(self.points or 0.0),) + tuple(tie_break_sort_key)
+        return tuple(self._rank_key_elements()[:tie_break_index])
 
     def rank_sort_key_without_tie_break(self, tie_break_index: int) -> tuple:
         """Returns a rank sort key as if the tie-break of type *tie_break_type* was not set."""
-
-        tie_break_sort_key = tuple(
-            -float(tie_break_value.value)
-            for index, tie_break_value in enumerate(self.tie_break_values)
-            if index != tie_break_index
-        )
+        elements = self._rank_key_elements()
         assert self.pairing_number is not None
-        return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
+        return tuple(
+            element
+            for index, element in enumerate(elements)
+            if index != tie_break_index
+        ) + (self.pairing_number,)
 
     @property
     def rank_sort_key_without_pairing_number(self) -> tuple:
-        tie_break_sort_key = tuple(
-            -float(tie_break_value.value) for tie_break_value in self.tie_break_values
-        )
-        return (-(self.points or 0.0),) + tie_break_sort_key
+        return tuple(self._rank_key_elements())
 
     @property
     def rank_sort_key(self) -> tuple:

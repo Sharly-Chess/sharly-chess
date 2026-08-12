@@ -11,9 +11,11 @@ from data.input_output.tournament_importer_options import (
     FileOption,
 )
 from data.loader import EventLoader
+from data.tie_breaks.tie_breaks import PointsTieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
+    StoredTieBreak,
     StoredTournament,
     StoredPlayer,
     StoredBoard,
@@ -64,6 +66,18 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
     def reorder_boards(self) -> bool:
         """Determines if the boards need reordering after they've been loaded."""
         return True
+
+    @property
+    def tie_breaks_are_authoritative(self) -> bool:
+        """Whether the file states the ranking criteria in full.
+
+        Most formats only describe what breaks ties, the score being
+        understood to come first, so the Points tie-break is added on
+        import. TRF26 record 212 is different: it lists the criteria that
+        define the standings, ``PTS`` among them, so a file that leaves
+        it out means it — and the importer takes the list as written.
+        """
+        return False
 
     @property
     def check_in_imported(self) -> bool:
@@ -243,7 +257,27 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 tournament_id, stored_tournament.pairing_settings
             )
         database.delete_all_tournament_stored_tie_breaks(tournament_id)
-        for index, stored_tie_break in enumerate(stored_tournament.stored_tie_breaks):
+        imported_tie_breaks = list(stored_tournament.stored_tie_breaks)
+        points_id = PointsTieBreak.static_id()
+        if not self.tie_breaks_are_authoritative and not any(
+            stored_tie_break.type == points_id
+            for stored_tie_break in imported_tie_breaks
+        ):
+            # Formats that only describe what breaks ties leave the score
+            # implicit, so it is stated here. A format that lists the
+            # ranking criteria in full says so — see
+            # `tie_breaks_are_authoritative`.
+            imported_tie_breaks.insert(
+                0,
+                StoredTieBreak(
+                    id=None,
+                    tournament_id=tournament_id,
+                    type=points_id,
+                    options={},
+                    index=0,
+                ),
+            )
+        for index, stored_tie_break in enumerate(imported_tie_breaks):
             stored_tie_break.tournament_id = tournament_id
             stored_tie_break.index = index
             database.add_stored_tie_break(stored_tie_break)

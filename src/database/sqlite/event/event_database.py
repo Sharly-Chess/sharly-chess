@@ -797,6 +797,17 @@ class EventDatabase(MigrationDatabase):
         tournament_id: int | None = self._last_inserted_id()
         if tournament_id is None:
             raise RuntimeError('Tournament insertion failed')
+        from data.tie_breaks.tie_breaks import PointsTieBreak
+
+        self.add_stored_tie_break(
+            StoredTieBreak(
+                id=None,
+                tournament_id=tournament_id,
+                type=PointsTieBreak.static_id(),
+                options={},
+                index=0,
+            )
+        )
         return tournament_id
 
     def update_stored_tournament(self, stored_tournament: StoredTournament):

@@ -5,7 +5,11 @@ import pytest
 from data.event import Event
 from data.loader import EventLoader
 from data.tie_breaks import TieBreakManager, TieBreak
-from data.tie_breaks.tie_breaks import StandardBuchholzTieBreak, WinsTieBreak
+from data.tie_breaks.tie_breaks import (
+    PointsTieBreak,
+    StandardBuchholzTieBreak,
+    WinsTieBreak,
+)
 from data.tournament import Tournament
 from plugins.chess_results.chess_results_mappers import ChessResultsTieBreak
 from plugins.ffe.ffe_tie_breaks import PapiPerformanceTieBreak
@@ -49,8 +53,11 @@ class TournamentExporterTestCase(TestCase):
     # -------------------------------------------------------------------------
 
     def _set_tie_breaks(self, tie_breaks: list[TieBreak]):
+        """Rank on the points, then on *tie_breaks* — the points being a
+        criterion of their own now, they are stated rather than implied."""
+        ordered = [PointsTieBreak()] + tie_breaks
         self.tournament.tie_breaks_by_id = {
-            index + 1: tie_break for index, tie_break in enumerate(tie_breaks)
+            index + 1: tie_break for index, tie_break in enumerate(ordered)
         }
 
     def test_papi_manual_tie_break_pairing_number(self):

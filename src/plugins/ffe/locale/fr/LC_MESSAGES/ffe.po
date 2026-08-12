@@ -467,6 +467,10 @@ msgstr "L'export Papi n'est pas possible pour les évènements par équipe."
 msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
 msgstr "L'export Papi ne supporte que les systèmes de points de partie standard (1 / 0.5 / 0) ou « victoire à 3 points » (3 / 1 / 0). Valeurs actuelles : {win} / {draw} / {loss}."
 
+#, python-brace-format
+msgid "Papi export requires the standings to be ranked on the points first. This tournament ranks on [{tie_break}] before them, which the Papi format cannot represent."
+msgstr "L'export Papi exige que le classement soit établi sur les points en premier. Ce tournoi classe sur [{tie_break}] avant eux, ce que le format Papi ne peut pas représenter."
+
 msgid "Papi file"
 msgstr "Fichier Papi"
 
@@ -759,3 +763,4 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] "{n} partie perdue par forfait, comptée -1."
 msgstr[1] "{n} parties perdues par forfait, comptées -1."
+

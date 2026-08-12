@@ -23,6 +23,10 @@
 
 - _Sharly Chess_ now supports **Teams** events! (5.0.0)
 
+## Rankings
+
+- The points are now a ranking criterion in their own right, listed alongside the tie-breaks (5.0.0)
+
 ## Prizes
 
 - Added a quick way to generate prize categories for age categories and rating ranges (5.0.0)
