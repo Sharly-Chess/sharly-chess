@@ -374,16 +374,22 @@ class ConfigDatabase(MigrationDatabase):
             id=row['id'],
             name=row['name'],
             color=row['color'],
+            index=row['index'],
         )
 
     def load_stored_tags(self) -> list[StoredTag]:
-        self.execute('SELECT * FROM `tag` ORDER BY `name`')
+        # The tags are arranged by hand, and that order is the one they are
+        # listed in everywhere. `id` only settles the indexes a migration or
+        # a deletion may have left equal.
+        self.execute('SELECT * FROM `tag` ORDER BY `index`, `id`')
         return [self._row_to_stored_tag(row) for row in self.fetchall()]
 
     def add_stored_tag(self, stored_tag: StoredTag) -> int:
+        # A new tag goes last, where the user will look for it.
+        self.execute('SELECT COALESCE(MAX(`index`), -1) + 1 AS `index` FROM `tag`')
         self.execute(
-            'INSERT INTO `tag` (`name`, `color`) VALUES (?, ?)',
-            (stored_tag.name, stored_tag.color),
+            'INSERT INTO `tag` (`name`, `color`, `index`) VALUES (?, ?, ?)',
+            (stored_tag.name, stored_tag.color, self.fetchone()['index']),
         )
         id_ = self._last_inserted_id()
         if id_ is None:
@@ -391,11 +397,20 @@ class ConfigDatabase(MigrationDatabase):
         return id_
 
     def update_stored_tag(self, stored_tag: StoredTag):
+        """Updates the name and the colour; the rank is set by
+        :meth:`reorder_stored_tags` alone."""
         assert stored_tag.id is not None
         self.execute(
             'UPDATE `tag` SET `name` = ?, `color` = ? WHERE `id` = ?',
             (stored_tag.name, stored_tag.color, stored_tag.id),
         )
+
+    def reorder_stored_tags(self, tag_ids: list[int]):
+        """Ranks the tags in the order given. Ids that no longer exist are
+        ignored, and tags missing from the list keep their rank — the caller
+        is a drag-and-drop, which sends the whole list."""
+        for index, tag_id in enumerate(tag_ids):
+            self.execute('UPDATE `tag` SET `index` = ? WHERE `id` = ?', (index, tag_id))
 
     def delete_stored_tag(self, tag_id: int):
         self.execute('DELETE FROM `tag` WHERE `id` = ?', (tag_id,))

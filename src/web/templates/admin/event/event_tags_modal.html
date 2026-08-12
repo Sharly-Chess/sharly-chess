@@ -37,7 +37,8 @@
                 {% endif %}
             >
                 {% for field_name, field_value in event_form_data.items() %}
-                    {% if field_name not in ('tag_name', 'tag_color') %}
+                    {# `tag_ids` is the drag order, emitted by the rows. #}
+                    {% if field_name not in ('tag_name', 'tag_color', 'tag_ids') %}
                         <input type="hidden" name="{{ field_name }}" value="{{ field_value }}">
                     {% endif %}
                 {% endfor %}
@@ -67,10 +68,32 @@
                         </div>
                     </div>
                 {% elif all_tags %}
-                    <div class="d-flex flex-column gap-2">
+                    {# Dragging a row rewrites the registry order, which is
+                       the order the tags are listed in everywhere. The rows
+                       carry their id, and the form around them is included
+                       so that Back still finds the event it came from. #}
+                    {% set reorder_enabled = all_tags | length > 1 %}
+                    <div
+                        class="d-flex flex-column gap-2{% if reorder_enabled %} sortable{% endif %}"
+                        {% if reorder_enabled %}
+                            hx-patch="{{ url_for('tag-reorder') }}"
+                            hx-include="#tags-modal-form"
+                            hx-target="body"
+                            hx-trigger="end"
+                            hx-indicator="#please-wait"
+                            data-bs-target="#modal-wrapper"
+                        {% endif %}
+                    >
                         {% for tag in all_tags %}
-                            <div class="border border-secondary bg-body-tertiary">
+                            <div
+                                class="tag-row border border-secondary bg-body-tertiary
+                                    {% if reorder_enabled %}cursor-grab{% endif %}"
+                            >
+                                <input type="hidden" name="tag_ids" value="{{ tag.id }}">
                                 <div class="p-2 d-flex align-items-center gap-4">
+                                    {% if reorder_enabled %}
+                                        <i class="bi-grip-horizontal"></i>
+                                    {% endif %}
                                     <div class="text-start flex-grow-1 min-width-0">
                                         {{ tag_macros.tag_badge(tag) }}
                                     </div>
@@ -119,18 +142,34 @@
             </form>
         </div>
         <div class="modal-footer">
-                <button
-                    class="btn btn-secondary text-nowrap me-auto"
-                    type="button"
-                    hx-post="{{ event_form_data.get('event_return_url') }}"
-                    hx-include="#tags-modal-form"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-target="#modal-wrapper"
-                >
-                    <i class="bi-arrow-left-circle-fill pe-1"></i>
-                    {{ _('Back') }}
-                </button>
+                {# Opened from an event, the modal goes back to it; opened
+                   from the tag filter of an event list, it just closes,
+                   reloading the list the renamed tags are shown on. #}
+                {% if event_form_data.get('event_return_url') %}
+                    <button
+                        class="btn btn-secondary text-nowrap me-auto"
+                        type="button"
+                        hx-post="{{ event_form_data.get('event_return_url') }}"
+                        hx-include="#tags-modal-form"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-arrow-left-circle-fill pe-1"></i>
+                        {{ _('Back') }}
+                    </button>
+                {% else %}
+                    <button
+                        class="btn btn-secondary text-nowrap me-auto"
+                        type="button"
+                        hx-get="{{ event_form_data.get('tags_close_url') }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <i class="bi-x-circle-fill pe-1"></i>
+                        {{ _('Close') }}
+                    </button>
+                {% endif %}
                 {% if tags_container_state == 'form' %}
                     {% if edited_tag_id %}
                         <button

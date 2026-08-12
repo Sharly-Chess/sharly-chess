@@ -64,13 +64,26 @@ class TestEventTags:
         # to survive the lightweight load.
         metadata = EventLoader.load_event_metadata(event)
         assert metadata.tag_ids == tag_ids
-        assert [tag.name for tag in metadata.tags] == ['Regional', 'Youth']
+        assert [tag.name for tag in metadata.tags] == ['Youth', 'Regional']
 
-    def test_tags_are_resolved_and_sorted_by_name(self, event):
+    def test_tags_are_resolved_in_registry_order(self, event):
+        # The registry is arranged by hand rather than alphabetically, so a
+        # tag created second is listed second here too.
         tags = EventLoader().load_event(event).tags
         assert [(tag.name, tag.color) for tag in tags] == [
-            ('Regional', '#EEDDCC'),
             ('Youth', '#112233'),
+            ('Regional', '#EEDDCC'),
+        ]
+
+    def test_reordering_the_registry_reorders_the_tags(self, event, tag_ids):
+        with ConfigDatabase(True) as database:
+            database.reorder_stored_tags(list(reversed(tag_ids)))
+        SharlyChessConfig().load_and_set_env()
+        assert [tag.name for tag in SharlyChessConfig().tags] == ['Regional', 'Youth']
+        # The order of a single event's tags follows the registry.
+        assert [tag.name for tag in EventLoader().load_event(event).tags] == [
+            'Regional',
+            'Youth',
         ]
 
     def test_renaming_the_event_keeps_the_tags(self, event, tag_ids):
@@ -89,7 +102,7 @@ class TestEventTags:
         event_ = EventLoader().load_event(event)
         # The dangling id is kept in storage but never surfaces as a tag.
         assert event_.tag_ids == [*tag_ids, 999999]
-        assert [tag.name for tag in event_.tags] == ['Regional', 'Youth']
+        assert [tag.name for tag in event_.tags] == ['Youth', 'Regional']
 
     def test_deleting_a_tag_only_hides_it(self, event, tag_ids):
         with ConfigDatabase(True) as database:

@@ -45,14 +45,6 @@ msgid "%(minutes)d min before"
 msgstr ""
 
 #, python-format
-msgid "%(minutes)d minutes after"
-msgstr ""
-
-#, python-format
-msgid "%(minutes)d minutes before"
-msgstr ""
-
-#, python-format
 msgid "%(n)d players freed from their soft constraints"
 msgstr ""
 
@@ -227,10 +219,6 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr ""
 
 #, python-format
-msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
-msgstr ""
-
-#, python-format
 msgid "%(seconds)d sec."
 msgstr ""
 
@@ -333,9 +321,6 @@ msgid "(inherited)"
 msgstr ""
 
 msgid "(multi-screen)"
-msgstr ""
-
-msgid "(no screens)"
 msgstr ""
 
 #, python-format
@@ -4249,6 +4234,9 @@ msgstr ""
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr ""
 
+msgid "Manage the tags."
+msgstr ""
+
 msgid "Manage the team roster."
 msgstr ""
 
@@ -4578,9 +4566,6 @@ msgid "Multi-screens appear as dropdowns when the menu holds more than one, othe
 msgstr ""
 
 msgid "Multi-screens are always expanded inline."
-msgstr ""
-
-msgid "Multi-screens:"
 msgstr ""
 
 #, python-format
@@ -5204,10 +5189,6 @@ msgstr ""
 msgid "Number of players per team:"
 msgstr ""
 
-#, python-format
-msgid "Number of players: %(num)d"
-msgstr ""
-
 msgid "Number of prize places"
 msgstr ""
 
@@ -5579,10 +5560,6 @@ msgid "Pairings started"
 msgstr ""
 
 msgid "Pairings successfully generated."
-msgstr ""
-
-#, python-format
-msgid "Pairings: %(pairing_variation)s"
 msgstr ""
 
 msgid "Pakistan"
@@ -6498,10 +6475,6 @@ msgstr ""
 msgid "Rotation delay"
 msgstr ""
 
-#, python-format
-msgid "Rotation delay: %(seconds)d sec."
-msgstr ""
-
 msgid "Rotator"
 msgstr ""
 
@@ -6752,9 +6725,6 @@ msgstr ""
 msgid "Screen types"
 msgstr ""
 
-msgid "Screen types:"
-msgstr ""
-
 msgid "Screens"
 msgstr ""
 
@@ -6765,9 +6735,6 @@ msgid "Screens list"
 msgstr ""
 
 msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
-msgstr ""
-
-msgid "Screens:"
 msgstr ""
 
 #, python-format
@@ -8429,10 +8396,6 @@ msgid "Type:"
 msgstr ""
 
 #, python-format
-msgid "Type: %(family_type)s"
-msgstr ""
-
-#, python-format
 msgid "Type: %(screen_type)s"
 msgstr ""
 
@@ -9765,7 +9728,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
-#~ msgstr "Unassigned"
-

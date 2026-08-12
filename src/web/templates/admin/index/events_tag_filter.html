@@ -4,8 +4,11 @@
 {# Tag filter of the event lists. Each badge toggles its own tag; the whole
    resulting selection is sent as `filter_tags`, so no client-side state is
    needed. An event is kept when it carries every selected tag, and each badge
-   counts what would remain were it added — 0 meaning nothing to select. #}
-{% if all_tags %}
+   counts what would remain were it added — 0 meaning nothing to select.
+
+   The row also holds the way into the tag registry, so that tags can be
+   renamed, recoloured and reordered without opening an event. #}
+{% if all_tags or client.can_manage_events %}
     <div class="d-flex align-items-center flex-wrap gap-1 events-tag-filter mb-3">
         {% for tag in all_tags %}
             {% set is_selected = tag.id in admin_events_tag_filter %}
@@ -63,6 +66,21 @@
                 {{ macros.tooltip_attributes('info', _('Clear the tag filter.'), 'top') }}
             >
                 <i class="bi-x-circle"></i>
+            </button>
+        {% endif %}
+        {% if client.can_manage_events %}
+            <button
+                type="button"
+                data-testid="events-tag-filter-manage"
+                class="btn btn-sm btn-link text-primary p-0 ms-1 text-nowrap lh-1"
+                hx-post="{{ url_for('tag-manager') }}"
+                hx-vals='{"tags_close_url": "{{ collection_url }}"}'
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-target="#modal-wrapper"
+                {{ macros.tooltip_attributes('info', _('Manage the tags.'), 'top') }}
+            >
+                <i class="bi-gear-fill"></i>
             </button>
         {% endif %}
     </div>

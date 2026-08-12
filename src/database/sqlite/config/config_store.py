@@ -29,6 +29,7 @@ class StoredTag:
     id: int | None
     name: str
     color: str
+    index: int = 0
 
 
 @dataclass

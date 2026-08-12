@@ -23,6 +23,22 @@ class TestEventTags:
         modal.locator('#tags-configure-button').click()
         expect(page.locator('#event-tags-modal')).to_be_visible()
 
+    @staticmethod
+    def _drag_row(page: Page, source, target):
+        """Drag *source* onto *target*. Sortable.js tracks the pointer, so
+        the move is played out in steps rather than jumped in one go."""
+        source.hover()
+        page.mouse.down()
+        target_box = target.bounding_box()
+        assert target_box is not None
+        for ratio in (0.4, 0.7, 1.0):
+            page.mouse.move(
+                target_box['x'] + target_box['width'] / 2,
+                target_box['y'] + target_box['height'] * (1 - ratio) / 2,
+                steps=5,
+            )
+        page.mouse.up()
+
     def _create_tag(self, page: Page, name: str, color: str, add_another=False):
         page.get_by_role('button', name='Add').click()
         expect(page.get_by_test_id('tag-name')).to_be_visible()
@@ -101,12 +117,39 @@ class TestEventTags:
         # ...and the split button remembers the choice.
         expect(page.get_by_test_id('add_other-button')).to_be_visible()
 
-    def test_tags_are_listed_alphabetically(
+    def test_new_tags_go_last_and_can_be_dragged(
         self, page: Page, api_request_context: APIRequestContext
     ):
+        """Tags are arranged by hand rather than sorted, so a new one lands
+        at the end of the registry and dragging it moves it for good."""
         self._open_tags_modal(page, EVENT_ID)
-        names = page.locator('#event-tags-modal .badge').all_inner_texts()
-        assert names == sorted(names, key=str.lower), names
+        rows = page.locator('#event-tags-modal .tag-row')
+        names = page.locator('#event-tags-modal .tag-row .badge')
+        assert names.all_inner_texts() == [TAG_NAME, SECOND_TAG_NAME]
+
+        self._drag_row(page, rows.nth(1), rows.nth(0))
+        expect(rows).to_have_count(2)
+        assert names.all_inner_texts() == [SECOND_TAG_NAME, TAG_NAME]
+
+        # The order is the registry's, so it holds outside this modal.
+        page.goto('/current_events')
+        # Each filter badge reads "<name>\n(<count>)".
+        filtered = page.locator('.events-tag-filter .badge').all_inner_texts()
+        assert [name.split('\n')[0] for name in filtered] == [SECOND_TAG_NAME, TAG_NAME]
+
+    def test_the_tag_filter_opens_the_manager(
+        self, page: Page, api_request_context: APIRequestContext
+    ):
+        """The event lists reach the registry without going through an
+        event, and closing comes back to the list."""
+        page.goto('/current_events')
+        page.get_by_test_id('events-tag-filter-manage').click()
+        expect(page.locator('#event-tags-modal')).to_be_visible()
+        # No event to go back to: the modal closes onto the list instead.
+        expect(page.get_by_role('button', name='Back')).not_to_be_attached()
+        page.get_by_role('button', name='Close').click()
+        expect(page.locator('.events-tag-filter')).to_be_visible()
+        expect(page.locator('#event-tags-modal')).not_to_be_attached()
 
     def test_deleting_a_tag_removes_it_from_the_events(
         self, page: Page, api_request_context: APIRequestContext

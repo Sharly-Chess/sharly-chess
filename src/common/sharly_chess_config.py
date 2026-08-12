@@ -26,7 +26,6 @@ from common.i18n import (
     set_locale,
     get_locale,
 )
-from common.i18n.utils import normalized_key
 from common.logger import set_logging_config, get_logger
 from common.network import find_lan_interfaces, LOCALHOST_IP
 from common.singleton import Singleton
@@ -297,19 +296,14 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def tags(self) -> list['Tag']:
-        """The event tags defined for this installation, sorted by name.
-
-        Sorted here rather than in SQL, whose ordering is neither
-        case-insensitive nor accent-aware."""
+        """The event tags defined for this installation, in the order the
+        user arranged them in — the order they are listed in everywhere."""
         from data.tag import Tag
 
-        return sorted(
-            (
-                Tag(id=stored_tag.id or 0, name=stored_tag.name, color=stored_tag.color)
-                for stored_tag in self.stored_config.stored_tags
-            ),
-            key=lambda tag: normalized_key(tag.name),
-        )
+        return [
+            Tag(id=stored_tag.id or 0, name=stored_tag.name, color=stored_tag.color)
+            for stored_tag in self.stored_config.stored_tags
+        ]
 
     @property
     def tags_by_id(self) -> dict[int, 'Tag']:
@@ -319,11 +313,8 @@ class SharlyChessConfig(metaclass=Singleton):
         """The tags matching `tag_ids`, in the same order as :attr:`tags`. Ids
         that no longer resolve (a deleted tag, or an event imported from
         another installation) are ignored."""
-        tags_by_id = self.tags_by_id
-        return sorted(
-            (tags_by_id[tag_id] for tag_id in tag_ids if tag_id in tags_by_id),
-            key=lambda tag: normalized_key(tag.name),
-        )
+        wanted = set(tag_ids)
+        return [tag for tag in self.tags if tag.id in wanted]
 
     @property
     def custom_tie_break_sets(self) -> list['TieBreakSet']:

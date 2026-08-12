@@ -1367,6 +1367,35 @@ class IndexAdminController(BaseAdminController):
         SharlyChessConfig().load_and_set_env()
         return self._render_tags_modal(web_context, flat_data)
 
+    @patch(
+        path='/tag/reorder',
+        name='tag-reorder',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_reorder_tags(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        """Rank the tags in the dragged order. The rows of the tag manager
+        are sent along with the event form they carry, so the ids are read
+        out of it and the rest is handed back untouched."""
+        web_context = AdminWebContext(request)
+        flat_data = WebContext.flatten_list_data(data)
+        tag_ids = [
+            int(value)
+            for value in WebContext.form_data_to_list_str(flat_data, 'tag_ids')
+            if value.isdigit()
+        ]
+        flat_data.pop('tag_ids', None)
+        with ConfigDatabase(True) as database:
+            database.reorder_stored_tags(tag_ids)
+        SharlyChessConfig().load_and_set_env()
+        return self._render_tags_modal(web_context, flat_data)
+
     @post(
         # A POST, not a DELETE: htmx sends DELETE parameters in the URL, and
         # the event form carried by the modal belongs in the body.

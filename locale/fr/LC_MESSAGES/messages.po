@@ -45,14 +45,6 @@ msgid "%(minutes)d min before"
 msgstr "%(minutes)d min. avant"
 
 #, python-format
-msgid "%(minutes)d minutes after"
-msgstr "%(minutes)d minutes après"
-
-#, python-format
-msgid "%(minutes)d minutes before"
-msgstr "%(minutes)d minutes avant"
-
-#, python-format
 msgid "%(n)d players freed from their soft constraints"
 msgstr "%(n)d joueur·euses libéré·es de leurs contraintes souples"
 
@@ -227,10 +219,6 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr "%(rating)s (%(rating_type)s)"
 
 #, python-format
-msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
-msgstr "%(rating)s (%(rating_type)s) : %(min)d → %(max)d"
-
-#, python-format
 msgid "%(seconds)d sec."
 msgstr "%(seconds)d sec."
 
@@ -334,9 +322,6 @@ msgstr "(hérité)"
 
 msgid "(multi-screen)"
 msgstr "(écran multiple)"
-
-msgid "(no screens)"
-msgstr "(aucun écran)"
 
 #, python-format
 msgid "(replace [%(object_uniq_id)s])"
@@ -4249,6 +4234,9 @@ msgstr "Gérer les groupes non-cumulables"
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
 
+msgid "Manage the tags."
+msgstr "Gérer les étiquettes."
+
 msgid "Manage the team roster."
 msgstr "Gérer l'effectif de l'équipe."
 
@@ -4579,9 +4567,6 @@ msgstr "Les écrans multiples apparaissent en menus déroulants lorsque le menu 
 
 msgid "Multi-screens are always expanded inline."
 msgstr "Les écrans multiples sont toujours développés en ligne."
-
-msgid "Multi-screens:"
-msgstr "Écrans multiples :"
 
 #, python-format
 msgid "Multi-screens: %(num)d"
@@ -5204,10 +5189,6 @@ msgstr "Nombre de joueur·euses dans l'effectif."
 msgid "Number of players per team:"
 msgstr "Nombre de joueur·euses par équipe :"
 
-#, python-format
-msgid "Number of players: %(num)d"
-msgstr "Nombre de joueur·euses : %(num)d"
-
 msgid "Number of prize places"
 msgstr "Nombre de places primées"
 
@@ -5582,10 +5563,6 @@ msgstr "Appariements commencés"
 
 msgid "Pairings successfully generated."
 msgstr "Appariements générés avec succès."
-
-#, python-format
-msgid "Pairings: %(pairing_variation)s"
-msgstr "Appariements : %(pairing_variation)s"
 
 msgid "Pakistan"
 msgstr "Pakistan"
@@ -6500,10 +6477,6 @@ msgstr "Effectifs"
 msgid "Rotation delay"
 msgstr "Délai de rotation"
 
-#, python-format
-msgid "Rotation delay: %(seconds)d sec."
-msgstr "Délai de rotation : %(seconds)d sec."
-
 msgid "Rotator"
 msgstr "Écran rotatif"
 
@@ -6754,9 +6727,6 @@ msgstr "Type d'écran"
 msgid "Screen types"
 msgstr "Types d'écran"
 
-msgid "Screen types:"
-msgstr "Types d'écran :"
-
 msgid "Screens"
 msgstr "Écrans"
 
@@ -6768,9 +6738,6 @@ msgstr "Liste d'écrans"
 
 msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
 msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
-
-msgid "Screens:"
-msgstr "Écrans :"
 
 #, python-format
 msgid "Screens: %(num)d"
@@ -8431,10 +8398,6 @@ msgid "Type:"
 msgstr "Type :"
 
 #, python-format
-msgid "Type: %(family_type)s"
-msgstr "Type : %(family_type)s"
-
-#, python-format
 msgid "Type: %(screen_type)s"
 msgstr "Type : %(screen_type)s"
 
@@ -9767,6 +9730,3 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
-#~ msgstr "Non assignées"
