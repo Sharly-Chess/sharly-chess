@@ -24,6 +24,15 @@ class TestEventTags:
         expect(page.locator('#event-tags-modal')).to_be_visible()
 
     @staticmethod
+    def _delete_all_tags(page: Page):
+        """Empty the registry from the manager, and return the row locator."""
+        rows = page.locator('#event-tags-modal .tag-row')
+        while count := rows.count():
+            rows.first.locator('button:has(.bi-trash-fill)').click()
+            expect(rows).to_have_count(count - 1)
+        return rows
+
+    @staticmethod
     def _drag_row(page: Page, source, target):
         """Drag *source* onto *target*. Sortable.js tracks the pointer, so
         the move is played out in steps rather than jumped in one go."""
@@ -173,10 +182,7 @@ class TestEventTags:
         """With nothing defined, the manager offers sets to start from
         rather than just saying the registry is empty."""
         self._open_tags_modal(page, EVENT_ID)
-        rows = page.locator('#event-tags-modal .tag-row')
-        while rows.count():
-            rows.first.locator('button:has(.bi-trash-fill)').click()
-            expect(page.locator('#event-tags-modal .tag-set-row').first).to_be_visible()
+        rows = self._delete_all_tags(page)
 
         add_button = page.get_by_role('button', name='Add the selected sets')
         expect(add_button).to_be_disabled()
@@ -187,10 +193,9 @@ class TestEventTags:
         add_button.click()
 
         # The set lands whole, in the order it is proposed in.
+        expect(rows).to_have_count(3)
         names = page.locator('#event-tags-modal .tag-row .badge')
         assert names.all_inner_texts() == ['Standard', 'Rapid', 'Blitz']
 
         # The registry is shared by the whole session: leave it as found.
-        while rows.count():
-            rows.first.locator('button:has(.bi-trash-fill)').click()
-            expect(page.locator('#event-tags-modal .tag-set-row').first).to_be_visible()
+        self._delete_all_tags(page)
