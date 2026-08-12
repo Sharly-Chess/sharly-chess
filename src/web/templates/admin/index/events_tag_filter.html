@@ -8,7 +8,7 @@
 
    The row also holds the way into the tag registry, so that tags can be
    renamed, recoloured and reordered without opening an event. #}
-{% if all_tags or client.can_manage_events %}
+{% if all_tags %}
     <div class="d-flex align-items-center flex-wrap gap-1 events-tag-filter mb-3">
         {% for tag in all_tags %}
             {% set is_selected = tag.id in admin_events_tag_filter %}

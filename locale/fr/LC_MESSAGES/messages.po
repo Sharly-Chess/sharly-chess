@@ -785,6 +785,9 @@ msgstr "Ajouter des joueur·euses"
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
 msgstr "Ajouter des écrans, des écrans multiples ou des types d'écran entiers à un menu, puis les réorganiser à votre convenance."
 
+msgid "Add the selected sets"
+msgstr "Ajouter les ensembles sélectionnés"
+
 msgid "Add tie-break"
 msgstr "Ajouter un départage"
 
@@ -2429,6 +2432,9 @@ msgstr "République démocratique du Congo"
 msgid "Denmark"
 msgstr "Danemark"
 
+msgid "Department *** EVENT TAG NAME"
+msgstr "Département"
+
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
 
@@ -4042,6 +4048,9 @@ msgstr "Lancer un navigateur web au démarrage"
 msgid "Layout"
 msgstr "Présentation"
 
+msgid "League *** EVENT TAG NAME"
+msgstr "Ligue"
+
 msgid "Leave all unchecked to print every match."
 msgstr "Ne cocher aucune case pour imprimer tous les matchs."
 
@@ -5287,6 +5296,9 @@ msgstr "Seulement {n} joueur·euse(s) supplémentaires peuvent être ajouté·e(
 msgid "Open"
 msgstr "Ouvrir"
 
+msgid "Open *** EVENT TAG NAME"
+msgstr "Open"
+
 msgid "Open IT1 certificate for this norm"
 msgstr "Ouvrir le certificat IT1 pour cette norme"
 
@@ -5581,6 +5593,9 @@ msgstr "Papouasie-Nouvelle-Guinée"
 
 msgid "Paraguay"
 msgstr "Paraguay"
+
+msgid "Participants"
+msgstr "Participants"
 
 msgid "Participation Statistics"
 msgstr "Statistiques de participation"
@@ -7162,6 +7177,9 @@ msgstr "Standard :"
 
 msgid "Start date"
 msgstr "Date de début"
+
+msgid "Start from one of these sets, or add your own tags."
+msgstr "Partez de l’un de ces ensembles, ou ajoutez vos propres étiquettes."
 
 #, python-brace-format, python-format
 msgid "Start of round {} in %%s"
@@ -8950,6 +8968,9 @@ msgstr "Grand Maître Internationale Féminin"
 msgid "Woman International Master"
 msgstr "Maître Internationale Féminin"
 
+msgid "Women *** EVENT TAG NAME"
+msgstr "Féminin"
+
 msgid "Women's Title:"
 msgstr "Titre féminin"
 
@@ -9127,6 +9148,9 @@ msgstr "Vous devez créer un tournoi avant de créer un groupe non-cumulable."
 
 msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
+
+msgid "Youth *** EVENT TAG NAME"
+msgstr "Jeunes"
 
 msgid "Zambia"
 msgstr "Zambie"
@@ -9730,3 +9754,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

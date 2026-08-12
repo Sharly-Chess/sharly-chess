@@ -37,8 +37,11 @@
                 {% endif %}
             >
                 {% for field_name, field_value in event_form_data.items() %}
-                    {# `tag_ids` is the drag order, emitted by the rows. #}
-                    {% if field_name not in ('tag_name', 'tag_color', 'tag_ids') %}
+                    {# `tag_ids` is the drag order and `tag_sets` the picked
+                       sets, both emitted by the rows they belong to. #}
+                    {% if field_name not in (
+                        'tag_name', 'tag_color', 'tag_ids', 'tag_sets'
+                    ) %}
                         <input type="hidden" name="{{ field_name }}" value="{{ field_value }}">
                     {% endif %}
                 {% endfor %}
@@ -137,7 +140,71 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <h5 class="text-center my-3">{{ _('No tag has been created yet.') }}</h5>
+                    {# Nothing to list yet: rather than say so and leave the
+                       user to invent a vocabulary, propose ready-made sets
+                       they can take whole. Tags already named the same are
+                       skipped, so taking a set twice adds nothing. #}
+                    <h5 class="text-center mt-2 mb-1">
+                        {{ _('No tag has been created yet.') }}
+                    </h5>
+                    <p class="text-center text-secondary">
+                        {{ _('Start from one of these sets, or add your own tags.') }}
+                    </p>
+                    <div class="d-flex flex-column gap-2">
+                        {% for tag_set in default_tag_sets %}
+                            <label
+                                class="tag-set-row border border-secondary bg-body-tertiary
+                                    p-2 d-flex align-items-center gap-3"
+                            >
+                                <input
+                                    class="form-check-input tag-set-checkbox m-0 flex-shrink-0"
+                                    type="checkbox"
+                                    name="tag_sets"
+                                    value="{{ tag_set.id }}"
+                                >
+                                <span class="fw-bold text-nowrap">{{ tag_set.name }}</span>
+                                <span class="d-inline-flex flex-wrap gap-1 justify-content-end flex-grow-1">
+                                    {% for tag in tag_set.tags %}
+                                        {{ tag_macros.tag_badge(tag) }}
+                                    {% endfor %}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <div class="text-end mt-3">
+                        <button
+                            id="tag-sets-add-button"
+                            type="button"
+                            class="btn btn-outline-primary btn-sm text-nowrap"
+                            disabled
+                            hx-post="{{ url_for('tag-sets-add') }}"
+                            hx-include="#tags-modal-form"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-plus-circle pe-1"></i>
+                            {{ _('Add the selected sets') }}
+                        </button>
+                    </div>
+                    <script>
+                        // Scoped in an IIFE: this fragment is re-executed on
+                        // every swap, and top-level declarations would clash
+                        // with the previous run's.
+                        (function () {
+                            const button = document.getElementById('tag-sets-add-button');
+                            const checkboxes = document.querySelectorAll('.tag-set-checkbox');
+                            function refresh() {
+                                button.disabled = ![...checkboxes].some(
+                                    (checkbox) => checkbox.checked
+                                );
+                            }
+                            checkboxes.forEach(
+                                (checkbox) => checkbox.addEventListener('change', refresh)
+                            );
+                            refresh();
+                        })();
+                    </script>
                 {% endif %}
             </form>
         </div>
@@ -171,6 +238,18 @@
                     </button>
                 {% endif %}
                 {% if tags_container_state == 'form' %}
+                    <button
+                        class="btn btn-secondary text-nowrap"
+                        type="button"
+                        hx-post="{{ url_for('tag-manager') }}"
+                        hx-include="#tags-modal-form"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-x-circle-fill pe-1"></i>
+                        {{ _('Cancel') }}
+                    </button>
                     {% if edited_tag_id %}
                         <button
                             id="tag-form-submit-button"

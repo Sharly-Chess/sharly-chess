@@ -40,7 +40,7 @@ class TestEventTags:
         page.mouse.up()
 
     def _create_tag(self, page: Page, name: str, color: str, add_another=False):
-        page.get_by_role('button', name='Add').click()
+        page.locator('.modal-footer').get_by_role('button', name='Add').click()
         expect(page.get_by_test_id('tag-name')).to_be_visible()
         page.get_by_test_id('tag-name').fill(name)
         page.get_by_test_id('tag-color').fill(color)
@@ -166,3 +166,31 @@ class TestEventTags:
         page.goto('/current_events')
         item = page.get_by_test_id('events-item').filter(has_text=EVENT_ID)
         expect(item).not_to_contain_text(TAG_NAME)
+
+    def test_an_empty_registry_proposes_ready_made_sets(
+        self, page: Page, api_request_context: APIRequestContext
+    ):
+        """With nothing defined, the manager offers sets to start from
+        rather than just saying the registry is empty."""
+        self._open_tags_modal(page, EVENT_ID)
+        rows = page.locator('#event-tags-modal .tag-row')
+        while rows.count():
+            rows.first.locator('button:has(.bi-trash-fill)').click()
+            expect(page.locator('#event-tags-modal .tag-set-row').first).to_be_visible()
+
+        add_button = page.get_by_role('button', name='Add the selected sets')
+        expect(add_button).to_be_disabled()
+        sets = page.locator('#event-tags-modal .tag-set-row')
+        expect(sets).to_have_count(3)
+        sets.filter(has_text='Time control').locator('input').check()
+        expect(add_button).to_be_enabled()
+        add_button.click()
+
+        # The set lands whole, in the order it is proposed in.
+        names = page.locator('#event-tags-modal .tag-row .badge')
+        assert names.all_inner_texts() == ['Standard', 'Rapid', 'Blitz']
+
+        # The registry is shared by the whole session: leave it as found.
+        while rows.count():
+            rows.first.locator('button:has(.bi-trash-fill)').click()
+            expect(page.locator('#event-tags-modal .tag-set-row').first).to_be_visible()

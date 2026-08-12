@@ -785,6 +785,9 @@ msgstr ""
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
 msgstr ""
 
+msgid "Add the selected sets"
+msgstr ""
+
 msgid "Add tie-break"
 msgstr ""
 
@@ -2429,6 +2432,9 @@ msgstr ""
 msgid "Denmark"
 msgstr ""
 
+msgid "Department *** EVENT TAG NAME"
+msgstr "Department"
+
 msgid "Deputy Chief Arbitration"
 msgstr ""
 
@@ -4042,6 +4048,9 @@ msgstr ""
 msgid "Layout"
 msgstr ""
 
+msgid "League *** EVENT TAG NAME"
+msgstr "League"
+
 msgid "Leave all unchecked to print every match."
 msgstr ""
 
@@ -5285,6 +5294,9 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
+msgid "Open *** EVENT TAG NAME"
+msgstr "Open"
+
 msgid "Open IT1 certificate for this norm"
 msgstr ""
 
@@ -5578,6 +5590,9 @@ msgid "Papua New Guinea"
 msgstr ""
 
 msgid "Paraguay"
+msgstr ""
+
+msgid "Participants"
 msgstr ""
 
 msgid "Participation Statistics"
@@ -7159,6 +7174,9 @@ msgid "Standard:"
 msgstr ""
 
 msgid "Start date"
+msgstr ""
+
+msgid "Start from one of these sets, or add your own tags."
 msgstr ""
 
 #, python-brace-format, python-format
@@ -8948,6 +8966,9 @@ msgstr ""
 msgid "Woman International Master"
 msgstr ""
 
+msgid "Women *** EVENT TAG NAME"
+msgstr "Women"
+
 msgid "Women's Title:"
 msgstr ""
 
@@ -9125,6 +9146,9 @@ msgstr ""
 
 msgid "You must create a tournament before creating these screens."
 msgstr ""
+
+msgid "Youth *** EVENT TAG NAME"
+msgstr "Youth"
 
 msgid "Zambia"
 msgstr ""
@@ -9728,3 +9752,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+

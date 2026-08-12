@@ -41,7 +41,7 @@ from data.player_categories import (
     SELECTABLE_SENIOR_CATEGORIES,
     PlayerCategory,
 )
-from data.tag import DEFAULT_TAG_COLOR
+from data.tag import DEFAULT_TAG_COLOR, default_tag_sets
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
@@ -421,6 +421,9 @@ class IndexAdminController(BaseAdminController):
             'tags_container_state': container_state,
             'tag_options': {str(tag.id): tag.name for tag in tags},
             'all_tags': tags,
+            # Proposed while the registry is empty, which is the only state
+            # the manager offers them in.
+            'default_tag_sets': default_tag_sets() if not tags else [],
             'tag_event_counts': event_counts_by_tag_id,
             'edited_tag_id': edited_tag_id,
             'default_tag_color': DEFAULT_TAG_COLOR,
@@ -1364,6 +1367,41 @@ class IndexAdminController(BaseAdminController):
             )
         with ConfigDatabase(True) as database:
             database.update_stored_tag(StoredTag(id=tag_id, name=name, color=color))
+        SharlyChessConfig().load_and_set_env()
+        return self._render_tags_modal(web_context, flat_data)
+
+    @post(
+        path='/tag/add-sets',
+        name='tag-sets-add',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_add_tag_sets(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        """Take the ready-made sets ticked in the manager. A set is only
+        offered on an empty registry, but names are unique, so one already
+        in use is left alone rather than refused."""
+        web_context = AdminWebContext(request)
+        flat_data = WebContext.flatten_list_data(data)
+        picked = set(WebContext.form_data_to_list_str(flat_data, 'tag_sets'))
+        flat_data.pop('tag_sets', None)
+        names = {tag.name for tag in SharlyChessConfig().tags}
+        with ConfigDatabase(True) as database:
+            for tag_set in default_tag_sets():
+                if tag_set.id not in picked:
+                    continue
+                for tag in tag_set.tags:
+                    if tag.name in names:
+                        continue
+                    names.add(tag.name)
+                    database.add_stored_tag(
+                        StoredTag(id=None, name=tag.name, color=tag.color)
+                    )
         SharlyChessConfig().load_and_set_env()
         return self._render_tags_modal(web_context, flat_data)
 

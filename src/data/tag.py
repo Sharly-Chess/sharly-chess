@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from functools import cached_property
 
 from common import hexa_to_rgb
+from common.i18n import _
 
 DEFAULT_TAG_COLOR: str = '#6C757D'
 
@@ -39,3 +40,51 @@ class Tag:
     @property
     def form_key(self) -> str:
         return str(self.id)
+
+
+@dataclass(frozen=True)
+class TagSet:
+    """A ready-made group of tags, offered while the registry is still empty
+    so that an installation can be labelled without inventing everything.
+    Its tags carry no id: they are proposals until the user takes them."""
+
+    id: str
+    name: str
+    tags: list[Tag]
+
+
+def default_tag_sets() -> list[TagSet]:
+    """The sets proposed on an empty registry.
+
+    Built on each call rather than held as a constant, so that the names
+    follow the locale in use."""
+    return [
+        TagSet(
+            id='time_control',
+            name=_('Time control'),
+            tags=[
+                Tag(id=0, name=_('Standard'), color='#E100FF'),
+                Tag(id=0, name=_('Rapid'), color='#EF75FF'),
+                Tag(id=0, name=_('Blitz'), color='#FEB3FF'),
+            ],
+        ),
+        TagSet(
+            id='participants',
+            name=_('Participants'),
+            tags=[
+                Tag(id=0, name=_('Open *** EVENT TAG NAME'), color='#008000'),
+                Tag(id=0, name=_('Women *** EVENT TAG NAME'), color='#3D7F3E'),
+            ],
+        ),
+        TagSet(
+            id='organiser',
+            name=_('Organiser'),
+            tags=[
+                Tag(id=0, name=_('Club'), color='#B9B8FF'),
+                Tag(id=0, name=_('Department *** EVENT TAG NAME'), color='#7D7AFF'),
+                Tag(id=0, name=_('League *** EVENT TAG NAME'), color='#7D7AFF'),
+                Tag(id=0, name=_('Federation'), color='#0400FF'),
+                Tag(id=0, name=_('Youth *** EVENT TAG NAME'), color='#558255'),
+            ],
+        ),
+    ]
