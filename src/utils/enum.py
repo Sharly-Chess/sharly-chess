@@ -709,6 +709,18 @@ class PlayerRatingType(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    @property
+    def form_key(self) -> str:
+        match self:
+            case PlayerRatingType.ESTIMATED:
+                return 'estimated'
+            case PlayerRatingType.NATIONAL:
+                return 'national'
+            case PlayerRatingType.FIDE:
+                return 'fide'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
     @classmethod
     def from_key(cls, key: str) -> Self:
         match key.lower():
@@ -720,6 +732,20 @@ class PlayerRatingType(IntEnum):
                 return PlayerRatingType.FIDE
             case _:
                 raise ValueError(f'Unknown value: {key}')
+
+    @property
+    def min_value(self) -> int:
+        match self:
+            case PlayerRatingType.FIDE:
+                return 1400
+            case PlayerRatingType.NATIONAL | PlayerRatingType.ESTIMATED:
+                return 1
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def max_value(self) -> int:
+        return 9999
 
     def __str__(self) -> str:
         return self.short_name

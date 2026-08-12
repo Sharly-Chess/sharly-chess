@@ -3897,6 +3897,9 @@ msgstr ""
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
 
+msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
+msgstr ""
+
 msgid "Iran"
 msgstr ""
 
