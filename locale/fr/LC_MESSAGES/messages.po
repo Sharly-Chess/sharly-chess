@@ -3905,6 +3905,9 @@ msgstr "Valeur invalide."
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr "Date de naissance invalide (attendue : {min} - {max})"
 
+msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
+msgstr "Classement {rating_type} [{rating}] invalide (attendu dans la plage [{min}-{max}])."
+
 msgid "Iran"
 msgstr "Iran"
 
