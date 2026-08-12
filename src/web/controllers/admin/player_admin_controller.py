@@ -2155,7 +2155,7 @@ class PlayerAdminController(BaseEventAdminController):
         for index, stored_player in stored_players_by_index.items():
             for tr in TournamentRating:
                 for prt in PlayerRatingType:
-                    ratings = stored_player.ratings[tr.value]
+                    ratings = stored_player.ratings.get(tr.value, {})
                     if prt.form_key in ratings:
                         rating = ratings[prt.form_key]
                         if rating and not (prt.min_value <= rating <= prt.max_value):
