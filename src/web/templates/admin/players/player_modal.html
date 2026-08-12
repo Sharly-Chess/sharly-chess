@@ -194,7 +194,7 @@
                                         national_id=national|replace('_', '-'),
                                         estimated_id=estimated|replace('_', '-')
                                 %}
-                                    <label for="{{ id }}" class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
+                                    <label class="form-check-label d-block pb-1">{{ tournament_rating_strings['label'] }}</label>
                                     <div class="d-flex align-items-center gap-2">
                                         <input
                                             name="{{ fide }}"
@@ -207,6 +207,11 @@
                                         />
                                         <div>{{ rating_type_labels['fide'] }}</div>
                                     </div>
+                                    {% if fide in errors %}
+                                        <div id="{{ fide_id }}-error" class="form-text invalid-feedback" style="display: block">
+                                            {{ errors[fide] }}
+                                        </div>
+                                    {% endif %}
                                     <div class="d-flex align-items-center gap-2">
                                         <input
                                             name="{{ national }}"
@@ -219,6 +224,11 @@
                                         />
                                         <div>{{ rating_type_labels['national'] }}</div>
                                     </div>
+                                    {% if national in errors %}
+                                        <div id="{{ national_id }}-error" class="form-text invalid-feedback" style="display: block">
+                                            {{ errors[national] }}
+                                        </div>
+                                    {% endif %}
                                     <div
                                         class="estimated-container d-flex align-items-center gap-2"
                                         {% if not show_estimated_ratings %}
@@ -236,9 +246,9 @@
                                         />
                                         <div>{{ rating_type_labels['estimated'] }}</div>
                                     </div>
-                                    {% if name in errors %}
-                                        <div id="{{ id }}-error" class="form-text invalid-feedback">
-                                            {{ errors[name] }}
+                                    {% if estimated in errors %}
+                                        <div id="{{ estimated_id }}-error" class="form-text invalid-feedback" style="display: block">
+                                            {{ errors[estimated] }}
                                         </div>
                                     {% endif %}
                                 {% endwith %}
