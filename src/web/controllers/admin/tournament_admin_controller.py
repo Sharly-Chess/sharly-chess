@@ -1925,7 +1925,7 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        if tournament.tie_breaks_by_id:
+        if not tournament.only_ranks_on_points:
             raise ClientException(
                 'Cannot apply a tie-break set when tie-breaks already exist.'
             )
@@ -1945,6 +1945,13 @@ class TournamentAdminController(BaseEventAdminController):
             raise ClientException(
                 tie_break_set.disabled_reason or 'Tie-break set is disabled.'
             )
+        # A set is the whole ranking order, so it replaces what is there
+        # rather than adding to it — a tournament always holds at least
+        # the points, which would otherwise be listed twice.
+        assert tournament.id is not None
+        with EventDatabase(tournament.event.uniq_id, write=True) as database:
+            database.delete_all_tournament_stored_tie_breaks(tournament.id)
+        tournament.tie_breaks_by_id.clear()
         for stored_tb in tie_break_set.stored_tie_breaks:
             tie_break = instantiate_tie_break(stored_tb, tournament.event)
             if tie_break is not None:

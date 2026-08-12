@@ -1811,6 +1811,15 @@ class Tournament:
         tie_breaks = self.tie_breaks
         return bool(tie_breaks) and isinstance(tie_breaks[0], PointsTieBreak)
 
+    @property
+    def only_ranks_on_points(self) -> bool:
+        """Whether nothing has been chosen to break ties — the standings
+        rank on the score and stop there. The state a tournament starts
+        in, and the one a tie-break set may be applied to."""
+        return len(self.tie_breaks_by_id) == 0 or (
+            len(self.tie_breaks_by_id) == 1 and self.leads_on_points
+        )
+
     def tie_break_acronym(self, tie_break: TieBreak) -> str:
         """The label for a criterion's column in the standings.
 
