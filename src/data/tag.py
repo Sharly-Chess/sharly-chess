@@ -73,18 +73,18 @@ def default_tag_sets() -> list[TagSet]:
             name=_('Participants'),
             tags=[
                 Tag(id=0, name=_('Open *** EVENT TAG NAME'), color='#008000'),
-                Tag(id=0, name=_('Women *** EVENT TAG NAME'), color='#3D7F3E'),
+                Tag(id=0, name=_('Women *** EVENT TAG NAME'), color='#3E7F3E'),
+                Tag(id=0, name=_('Youth *** EVENT TAG NAME'), color='#558255'),
             ],
         ),
         TagSet(
             id='organiser',
             name=_('Organiser'),
             tags=[
-                Tag(id=0, name=_('Club'), color='#B9B8FF'),
-                Tag(id=0, name=_('Department *** EVENT TAG NAME'), color='#7D7AFF'),
-                Tag(id=0, name=_('League *** EVENT TAG NAME'), color='#7D7AFF'),
-                Tag(id=0, name=_('Federation'), color='#0400FF'),
-                Tag(id=0, name=_('Youth *** EVENT TAG NAME'), color='#558255'),
+                Tag(id=0, name=_('Federation'), color='#0000FF'),
+                Tag(id=0, name=_('League *** EVENT TAG NAME'), color='#4545FF'),
+                Tag(id=0, name=_('Department *** EVENT TAG NAME'), color='#7D7DFF'),
+                Tag(id=0, name=_('Club'), color='#B8B8FF'),
             ],
         ),
     ]
