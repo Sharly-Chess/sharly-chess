@@ -1,4 +1,6 @@
 from web.admin.collection import (
+    BADGE_GROUP_COLUMN_CELL_CLASS,
+    badge_group_column_width,
     AdminCollectionSpec,
     AdminCollectionViewMode,
     CardLayout,
@@ -68,7 +70,8 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
             ListColumn(
                 'tie_break_summary',
                 label=_('Tie-breaks'),
-                width='minmax(auto, max-content)',
+                width=badge_group_column_width('14rem'),
+                cell_class=BADGE_GROUP_COLUMN_CELL_CLASS,
             ),
             ListColumn(
                 'actions',

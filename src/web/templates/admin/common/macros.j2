@@ -1880,10 +1880,11 @@ with_indicator: display a loading indicator, optional
     </div>
 {% endmacro %}
 
-{% macro create_with_add_other_split_buttons(is_add_other_active) %}
+{% macro create_with_add_other_split_buttons(is_add_other_active, form_id='modal-form') %}
     {{ split_submit_buttons(
         options={'create': _('Create'), 'add_other': _('Create and add another')},
-        active_option='add_other' if is_add_other_active else 'create'
+        active_option='add_other' if is_add_other_active else 'create',
+        form_id=form_id
     )}}
 {% endmacro %}
 

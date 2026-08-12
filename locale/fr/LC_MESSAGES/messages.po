@@ -45,14 +45,6 @@ msgid "%(minutes)d min before"
 msgstr "%(minutes)d min. avant"
 
 #, python-format
-msgid "%(minutes)d minutes after"
-msgstr "%(minutes)d minutes après"
-
-#, python-format
-msgid "%(minutes)d minutes before"
-msgstr "%(minutes)d minutes avant"
-
-#, python-format
 msgid "%(n)d players freed from their soft constraints"
 msgstr "%(n)d joueur·euses libéré·es de leurs contraintes souples"
 
@@ -99,6 +91,12 @@ msgid "%(num)d empty table to pair"
 msgid_plural "%(num)d empty tables to pair"
 msgstr[0] "%(num)d table vide à apparier"
 msgstr[1] "%(num)d tables vides à apparier"
+
+#, python-format
+msgid "%(num)d event"
+msgid_plural "%(num)d events"
+msgstr[0] "%(num)d évènement"
+msgstr[1] "%(num)d évènements"
 
 #, python-format
 msgid "%(num)d informative *** COLUMNS, SINGULAR"
@@ -221,10 +219,6 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr "%(rating)s (%(rating_type)s)"
 
 #, python-format
-msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
-msgstr "%(rating)s (%(rating_type)s) : %(min)d → %(max)d"
-
-#, python-format
 msgid "%(seconds)d sec."
 msgstr "%(seconds)d sec."
 
@@ -328,9 +322,6 @@ msgstr "(hérité)"
 
 msgid "(multi-screen)"
 msgstr "(écran multiple)"
-
-msgid "(no screens)"
-msgstr "(aucun écran)"
 
 #, python-format
 msgid "(replace [%(object_uniq_id)s])"
@@ -797,6 +788,9 @@ msgstr "Ajouter des joueur·euses"
 
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
 msgstr "Ajouter des écrans, des écrans multiples ou des types d'écran entiers à un menu, puis les réorganiser à votre convenance."
+
+msgid "Add the selected sets"
+msgstr "Ajouter les ensembles sélectionnés"
 
 msgid "Add tie-break"
 msgstr "Ajouter un départage"
@@ -1725,6 +1719,9 @@ msgstr "Effacer les logs"
 msgid "Clear result"
 msgstr "Effacer le résultat"
 
+msgid "Clear the tag filter."
+msgstr "Effacer le filtre par étiquette."
+
 msgid "Click and drag to select balanced groups."
 msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
 
@@ -1869,6 +1866,9 @@ msgstr "Configurer les protections d'appariement pour cette ronde."
 
 msgid "Configure the category sets, which are available for all events."
 msgstr "Configurer les ensembles de catégories, qui sont disponibles pour tous les évènements."
+
+msgid "Configure the tags, which are available for all events."
+msgstr "Configurer les étiquettes, qui sont disponibles pour tous les évènements."
 
 msgid "Configure the tie-breaks of the tournament."
 msgstr "Configurer les départages du tournoi."
@@ -2424,6 +2424,9 @@ msgstr "Supprimer les joueur·euses non-apparié·es"
 msgid "Deletes all the criteria of this category."
 msgstr "Supprime tous les critères de cette catégorie."
 
+msgid "Deleting a tag removes it from the events that use it."
+msgstr "Supprimer une étiquette la retire des évènements qui l'utilisent."
+
 msgid "Deletion date"
 msgstr "Date de suppression"
 
@@ -2432,6 +2435,9 @@ msgstr "République démocratique du Congo"
 
 msgid "Denmark"
 msgstr "Danemark"
+
+msgid "Department *** EVENT TAG NAME"
+msgstr "Département"
 
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
@@ -2775,6 +2781,9 @@ msgstr "Ex. : Équipes %%f à %%l"
 
 msgid "E.g.: World championship"
 msgstr "Ex.: Championnat du monde"
+
+msgid "E.g.: Youth"
+msgstr "Ex. : Jeunes"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Ex. : https://mon.club.fr/affiche.jpg"
@@ -3370,6 +3379,9 @@ msgstr "Ve"
 
 msgid "France"
 msgstr "France"
+
+msgid "Free labels used to organise and filter the list of events. Tags are shared by all the events of this installation, and are removed when an event is exported or imported."
+msgstr "Libellés libres utilisés pour organiser et filtrer la liste des évènements. Les étiquettes sont partagées par tous les évènements de cette installation, et sont retirées lorsqu'un évènement est exporté ou importé."
 
 msgid "From the rule set"
 msgstr "Issu du jeu de règles"
@@ -4043,6 +4055,9 @@ msgstr "Lancer un navigateur web au démarrage"
 msgid "Layout"
 msgstr "Présentation"
 
+msgid "League *** EVENT TAG NAME"
+msgstr "Ligue"
+
 msgid "Leave all unchecked to print every match."
 msgstr "Ne cocher aucune case pour imprimer tous les matchs."
 
@@ -4234,6 +4249,9 @@ msgstr "Gérer les groupes non-cumulables"
 
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
+
+msgid "Manage the tags."
+msgstr "Gérer les étiquettes."
 
 msgid "Manage the team roster."
 msgstr "Gérer l'effectif de l'équipe."
@@ -4566,9 +4584,6 @@ msgstr "Les écrans multiples apparaissent en menus déroulants lorsque le menu 
 msgid "Multi-screens are always expanded inline."
 msgstr "Les écrans multiples sont toujours développés en ligne."
 
-msgid "Multi-screens:"
-msgstr "Écrans multiples :"
-
 #, python-format
 msgid "Multi-screens: %(num)d"
 msgstr "Écrans multiples : %(num)d"
@@ -4726,6 +4741,9 @@ msgstr "De nouveaux résultats ont été enregistrés, actualisez la page"
 msgid "New rotator"
 msgstr "Nouvel écran rotatif"
 
+msgid "New tag"
+msgstr "Nouvelle étiquette"
+
 msgid "New timer"
 msgstr "Nouveau chronomètre"
 
@@ -4776,6 +4794,9 @@ msgstr "Aucun critère pour la catégorie générale."
 
 msgid "No criteria."
 msgstr "Aucun critère."
+
+msgid "No current event carries the selected tags."
+msgstr "Aucun évènement en cours ne porte les étiquettes sélectionnées."
 
 msgid "No current events."
 msgstr "Aucun évènement en cours."
@@ -4879,6 +4900,9 @@ msgstr "Aucun appariement pour cette ronde."
 
 msgid "No pairings."
 msgstr "Aucun appariement."
+
+msgid "No passed event carries the selected tags."
+msgstr "Aucun évènement passé ne porte les étiquettes sélectionnées."
 
 msgid "No passed events."
 msgstr "Aucun évènement passé."
@@ -4985,6 +5009,12 @@ msgstr "Aucune table disponible pour ce système d'appariement."
 msgid "No tables available for {t} teams."
 msgstr "Aucune table disponible pour {t} équipes."
 
+msgid "No tag"
+msgstr "Aucune étiquette"
+
+msgid "No tag has been created yet."
+msgstr "Aucune étiquette n'a encore été créée."
+
 msgid "No team pairings for this round yet."
 msgstr "Aucun appariement d'équipes pour cette ronde."
 
@@ -5011,6 +5041,9 @@ msgstr "Aucun tournoi."
 
 msgid "No unassigned players available. Remove a player from another team first."
 msgstr "Aucun·e joueur·euse disponible. Retirez d'abord un·e joueur·euse d'une autre équipe."
+
+msgid "No upcoming event carries the selected tags."
+msgstr "Aucun évènement à venir ne porte les étiquettes sélectionnées."
 
 msgid "No upcoming events."
 msgstr "Aucun évènement à venir."
@@ -5172,10 +5205,6 @@ msgstr "Nombre de joueur·euses dans l'effectif."
 msgid "Number of players per team:"
 msgstr "Nombre de joueur·euses par équipe :"
 
-#, python-format
-msgid "Number of players: %(num)d"
-msgstr "Nombre de joueur·euses : %(num)d"
-
 msgid "Number of prize places"
 msgstr "Nombre de places primées"
 
@@ -5273,6 +5302,9 @@ msgstr "Seulement {n} joueur·euse(s) supplémentaires peuvent être ajouté·e(
 
 msgid "Open"
 msgstr "Ouvrir"
+
+msgid "Open *** EVENT TAG NAME"
+msgstr "Open"
 
 msgid "Open IT1 certificate for this norm"
 msgstr "Ouvrir le certificat IT1 pour cette norme"
@@ -5551,10 +5583,6 @@ msgstr "Appariements commencés"
 msgid "Pairings successfully generated."
 msgstr "Appariements générés avec succès."
 
-#, python-format
-msgid "Pairings: %(pairing_variation)s"
-msgstr "Appariements : %(pairing_variation)s"
-
 msgid "Pakistan"
 msgstr "Pakistan"
 
@@ -5572,6 +5600,9 @@ msgstr "Papouasie-Nouvelle-Guinée"
 
 msgid "Paraguay"
 msgstr "Paraguay"
+
+msgid "Participants"
+msgstr "Participants"
 
 msgid "Participation Statistics"
 msgstr "Statistiques de participation"
@@ -5899,6 +5930,9 @@ msgstr "Veuillez choisir un nom pour l'ensemble."
 
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
+
+msgid "Please choose a valid colour."
+msgstr "Veuillez choisir une couleur valide."
 
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
@@ -6465,10 +6499,6 @@ msgstr "Effectifs"
 msgid "Rotation delay"
 msgstr "Délai de rotation"
 
-#, python-format
-msgid "Rotation delay: %(seconds)d sec."
-msgstr "Délai de rotation : %(seconds)d sec."
-
 msgid "Rotator"
 msgstr "Écran rotatif"
 
@@ -6719,9 +6749,6 @@ msgstr "Type d'écran"
 msgid "Screen types"
 msgstr "Types d'écran"
 
-msgid "Screen types:"
-msgstr "Types d'écran :"
-
 msgid "Screens"
 msgstr "Écrans"
 
@@ -6733,9 +6760,6 @@ msgstr "Liste d'écrans"
 
 msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
 msgstr "Les écrans peuvent afficher des informations sur votre événement, telles que la liste des joueur·euses, les appariements et les résultats. Un écran peut contenir des informations concernant un seul tournoi ou plusieurs tournois."
-
-msgid "Screens:"
-msgstr "Écrans :"
 
 #, python-format
 msgid "Screens: %(num)d"
@@ -7161,6 +7185,9 @@ msgstr "Standard :"
 msgid "Start date"
 msgstr "Date de début"
 
+msgid "Start from one of these sets, or add your own tags."
+msgstr "Partez de l’un de ces ensembles, ou ajoutez vos propres étiquettes."
+
 #, python-brace-format, python-format
 msgid "Start of round {} in %%s"
 msgstr "Début de la ronde {} dans %%s"
@@ -7247,6 +7274,9 @@ msgstr "Numéro de table"
 
 msgid "Table numbers:"
 msgstr "Numéros des tables :"
+
+msgid "Tags"
+msgstr "Étiquettes"
 
 msgid "Tajikistan"
 msgstr "Tadjikistan"
@@ -7868,6 +7898,12 @@ msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur
 msgid "These sets are saved per pairing system and shared across events."
 msgstr "Ces ensembles sont enregistrés par système d'appariement et partagés entre les événements."
 
+msgid "These sets are shared by every event of this installation."
+msgstr "Ces jeux sont partagés par tous les évènements de cette installation."
+
+msgid "These tags are shared by every event of this installation."
+msgstr "Ces étiquettes sont partagées par tous les évènements de cette installation."
+
 msgid "These tournaments are already included for this account by a higher access level."
 msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
 
@@ -8387,10 +8423,6 @@ msgid "Type:"
 msgstr "Type :"
 
 #, python-format
-msgid "Type: %(family_type)s"
-msgstr "Type : %(family_type)s"
-
-#, python-format
 msgid "Type: %(screen_type)s"
 msgstr "Type : %(screen_type)s"
 
@@ -8602,6 +8634,9 @@ msgstr "Modifier les résultats"
 
 msgid "Update search failed (no internet)"
 msgstr "Recherche de mises à jour échouée (pas de connection internet)"
+
+msgid "Update tag"
+msgstr "Modifier l'étiquette"
 
 msgid "Update the players' information from an external data source."
 msgstr "Mettre à jour les informations des joueur·euses à partir d'une source de données extérieure."
@@ -8940,6 +8975,9 @@ msgstr "Grand Maître Internationale Féminin"
 msgid "Woman International Master"
 msgstr "Maître Internationale Féminin"
 
+msgid "Women *** EVENT TAG NAME"
+msgstr "Féminin"
+
 msgid "Women's Title:"
 msgstr "Titre féminin"
 
@@ -9117,6 +9155,9 @@ msgstr "Vous devez créer un tournoi avant de créer un groupe non-cumulable."
 
 msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
+
+msgid "Youth *** EVENT TAG NAME"
+msgstr "Jeunes"
 
 msgid "Zambia"
 msgstr "Zambie"

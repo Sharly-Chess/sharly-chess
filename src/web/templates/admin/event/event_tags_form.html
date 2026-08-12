@@ -1,0 +1,116 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{# Tag picker; the registry itself is managed in event_tags_modal.html. #}
+<div id="tags-main-container">
+    <div class="d-flex gap-2 align-items-center gy-2 gx-3">
+        <div class="flex-grow-1">
+            {{ admin_macros.select_input(
+                name='tags',
+                label=_('Tags'),
+                placeholder=_('No tag'),
+                tooltip_text=_(
+                    'Free labels used to organise and filter the list of events. '
+                    'Tags are shared by all the events of this installation, and '
+                    'are removed when an event is exported or imported.'
+                ),
+                select_options=tag_options,
+                multiple_select=true,
+                search_placeholder=_('Search by name'),
+                disabled=not client.can_update_event,
+                data=data, errors=errors
+            ) }}
+            {{ admin_macros.hidden_disabled_input(data, 'tags') }}
+        </div>
+        {% if client.can_manage_events %}
+            <div
+                {{ macros.tooltip_attributes(
+                    'info', _('Configure the tags, which are available for all events.'), 'top'
+                ) }}
+            >
+                <button
+                    id="tags-configure-button"
+                    type="button"
+                    class="btn btn-sm btn-outline-primary text-nowrap"
+                    hx-post="{{ url_for('tag-manager') }}"
+                    hx-include="#modal-form"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-gear-fill pe-1"></i>
+                    {{ _('Tags') }}
+                </button>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // The select2 chips are plain grey by default: paint the selected
+        // tags with their own colour, as they appear everywhere else.
+        // Scoped in an IIFE: this fragment is re-executed on every swap, and
+        // top-level declarations would clash with the previous run's.
+        (function () {
+            const tagColors = {};
+            {% for tag in all_tags %}
+                tagColors[{{ tag.name | tojson }}] = [
+                    {{ tag.color | tojson }}, {{ tag.text_color | tojson }}
+                ];
+            {% endfor %}
+            // The theme styles the chip's inner label and remove button, so
+            // each one needs the colour set on it — and !important to win.
+            function paint(element, properties) {
+                Object.entries(properties).forEach(function ([name, value]) {
+                    element.style.setProperty(name, value, 'important');
+                });
+            }
+            // The remove button's cross is an SVG background-image with a
+            // hard-coded fill, so it has to be rebuilt in the wanted colour
+            // rather than simply recoloured.
+            function crossBackground(color) {
+                return (
+                    "transparent url(\"data:image/svg+xml,%3csvg"
+                    + " xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'"
+                    + " fill='" + encodeURIComponent(color) + "'%3e%3cpath"
+                    + " d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0"
+                    + " 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414"
+                    + " 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586"
+                    + " 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e\")"
+                    + ' 50%/.75rem auto no-repeat'
+                );
+            }
+            function colorTagChoices() {
+                $('#tags').next('.select2').find('.select2-selection__choice').each(
+                    function () {
+                        // The option text — and so select2's title — carries
+                        // the template's surrounding whitespace.
+                        const colors = tagColors[($(this).attr('title') || '').trim()];
+                        if (!colors) return;
+                        const [background, foreground] = colors;
+                        paint(this, {
+                            'background-color': background,
+                            'border-color': background,
+                            'color': foreground,
+                            // Matches the pill badges used everywhere else.
+                            'border-radius': '50rem',
+                        });
+                        $(this)
+                            .find('.select2-selection__choice__display')
+                            .each(function () {
+                                paint(this, {'color': foreground});
+                            });
+                        $(this)
+                            .find('.select2-selection__choice__remove')
+                            .each(function () {
+                                paint(this, {
+                                    'background': crossBackground(foreground),
+                                });
+                            });
+                    }
+                );
+            }
+            $('#tags').on('change', colorTagChoices);
+            colorTagChoices();
+        })();
+    </script>
+</div>

@@ -28,6 +28,7 @@
 {% endblock %}
 
 {% block cards_container_cards %}
+    {% include 'events_tag_filter.html' %}
     {% with
         items=nav_tab.events,
         empty_message=nav_tab.empty_str,
