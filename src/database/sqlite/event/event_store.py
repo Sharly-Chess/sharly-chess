@@ -537,6 +537,11 @@ class BaseStoredEvent:
     allow_multi_tournament_players: bool = True
     event_type: EventType = EventType.INDIVIDUAL
 
+    # The ids of the tags of the event, as defined in the config database.
+    # Ids are local to an installation: they are stripped on export/import
+    # and ids that no longer resolve are ignored (see data.tag).
+    tag_ids: list[int] = field(default_factory=list[int])
+
     # Plugins can add their own event data
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]

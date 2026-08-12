@@ -40,6 +40,7 @@ from utils.program_variables import ProgramVar
 if TYPE_CHECKING:
     from data.player import Federation
     from data.player_categories import PlayerCategorySet
+    from data.tag import Tag
     from data.tie_breaks.sets import TieBreakSet
 
 logger: logging.Logger = get_logger()
@@ -292,6 +293,28 @@ class SharlyChessConfig(metaclass=Singleton):
             )
             for stored_set in self.stored_config.stored_player_category_sets
         ]
+
+    @property
+    def tags(self) -> list['Tag']:
+        """The event tags defined for this installation, in the order the
+        user arranged them in — the order they are listed in everywhere."""
+        from data.tag import Tag
+
+        return [
+            Tag(id=stored_tag.id or 0, name=stored_tag.name, color=stored_tag.color)
+            for stored_tag in self.stored_config.stored_tags
+        ]
+
+    @property
+    def tags_by_id(self) -> dict[int, 'Tag']:
+        return {tag.id: tag for tag in self.tags}
+
+    def resolve_tags(self, tag_ids: list[int]) -> list['Tag']:
+        """The tags matching `tag_ids`, in the same order as :attr:`tags`. Ids
+        that no longer resolve (a deleted tag, or an event imported from
+        another installation) are ignored."""
+        wanted = set(tag_ids)
+        return [tag for tag in self.tags if tag.id in wanted]
 
     @property
     def custom_tie_break_sets(self) -> list['TieBreakSet']:

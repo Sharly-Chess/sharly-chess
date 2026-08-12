@@ -1,4 +1,8 @@
 from web.admin.collection import (
+    BADGE_GROUP_COLUMN_CELL_CLASS,
+    BADGE_GROUP_COLUMN_WIDTH,
+    NAME_COLUMN_CELL_CLASS,
+    NAME_COLUMN_WIDTH,
     AdminCollectionSpec,
     CardLayout,
     ComponentPlacement,
@@ -26,6 +30,7 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
         body=(
             ComponentPlacement('unique_id'),
             ComponentPlacement('visibility'),
+            ComponentPlacement('tags'),
             ComponentPlacement('plugin_health'),
         ),
         details=(ComponentPlacement('details'),),
@@ -36,12 +41,18 @@ COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
             ListColumn(
                 'identity',
                 label=_('Event'),
-                width='minmax(8rem, 1.4fr)',
+                width=NAME_COLUMN_WIDTH,
+                cell_class=NAME_COLUMN_CELL_CLASS,
             ),
             ListColumn(
                 'date_range',
                 label=_('Dates'),
-                width='minmax(min-content, 1fr)',
+            ),
+            ListColumn(
+                'tags',
+                label=_('Tags'),
+                width=BADGE_GROUP_COLUMN_WIDTH,
+                cell_class=BADGE_GROUP_COLUMN_CELL_CLASS,
             ),
             ListColumn(
                 'tournaments_count',

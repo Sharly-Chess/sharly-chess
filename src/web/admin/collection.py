@@ -23,6 +23,27 @@ class ComponentPlacement:
     template: str | None = field(default=None, kw_only=True)
 
 
+BADGE_GROUP_COLUMN_CELL_CLASS: str = 'collection-list-cell-badge-group'
+
+
+def badge_group_column_width(cap: str = '22rem') -> str:
+    """Width of a column holding a wrapping group of badges: its content's
+    width, clamped at ``cap``. A track sizing function rather than a
+    ``min-width``, which would need Chrome-only ``calc-size()``. Use with
+    :data:`BADGE_GROUP_COLUMN_CELL_CLASS`."""
+    return f'fit-content({cap})'
+
+
+BADGE_GROUP_COLUMN_WIDTH: str = badge_group_column_width()
+
+# Name column sharing a row with a badge column: both intrinsic, so grid
+# widens them in equal parts. The minimum is a length, not ``min-content`` —
+# ``text-truncate`` stops the name wrapping, so its min-content is its whole
+# width and would pin the column.
+NAME_COLUMN_WIDTH: str = 'minmax(8rem, auto)'
+NAME_COLUMN_CELL_CLASS: str = 'collection-list-cell-name-first'
+
+
 @dataclass
 class ListColumn(ComponentPlacement):
     label: str = ''

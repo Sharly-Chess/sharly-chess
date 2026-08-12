@@ -1,0 +1,87 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/tag_macros.j2' as tag_macros with context %}
+
+{# Tag filter of the event lists. Each badge toggles its own tag; the whole
+   resulting selection is sent as `filter_tags`, so no client-side state is
+   needed. An event is kept when it carries every selected tag, and each badge
+   counts what would remain were it added — 0 meaning nothing to select.
+
+   The row also holds the way into the tag registry, so that tags can be
+   renamed, recoloured and reordered without opening an event. #}
+{% if all_tags %}
+    <div class="d-flex align-items-center flex-wrap gap-1 events-tag-filter mb-3">
+        {% for tag in all_tags %}
+            {% set is_selected = tag.id in admin_events_tag_filter %}
+            {% set count = (nav_tab.tag_counts or {}).get(tag.id, 0) %}
+            {% if is_selected %}
+                {% set new_tag_ids = admin_events_tag_filter | reject('eq', tag.id) | list %}
+            {% else %}
+                {% set new_tag_ids = (admin_events_tag_filter | list) + [tag.id] %}
+            {% endif %}
+            <button
+                type="button"
+                class="btn btn-sm border-0 p-0 lh-1"
+                {% if is_selected or count %}
+                    hx-get="{{ collection_url }}"
+                    hx-vals='{"filter_tags": "{{ new_tag_ids | join(';') }}"}'
+                    hx-target="body"
+                    hx-push-url="false"
+                    hx-indicator="#please-wait"
+                {% else %}
+                    disabled
+                {% endif %}
+                aria-pressed="{{ 'true' if is_selected else 'false' }}"
+            >
+                {% if is_selected %}
+                    {{ tag_macros.tag_badge(tag, count=count) }}
+                {% else %}
+                    {# Tinted rather than outlined: the label keeps the body
+                       colour, which stays legible whatever the tag colour. #}
+                    <span
+                        class="badge tag-badge rounded-pill fw-normal d-inline-flex align-items-center gap-1{% if not count %} opacity-50{% endif %}"
+                        style="
+                            background-color: color-mix(in srgb, {{ tag.color }} 25%, transparent);
+                            color: var(--bs-body-color);
+                            border-color: color-mix(
+                                in srgb, {{ tag.color }} 65%, var(--bs-body-color)
+                            ) !important;
+                        "
+                    >
+                        {{ tag.name }}
+                        <span class="opacity-75">({{ count }})</span>
+                    </span>
+                {% endif %}
+            </button>
+        {% endfor %}
+        {% if admin_events_tag_filter %}
+            <button
+                type="button"
+                data-testid="events-tag-filter-clear"
+                class="btn btn-sm btn-link text-primary p-0 ms-1 text-nowrap lh-1"
+                hx-get="{{ collection_url }}"
+                hx-vals='{"filter_tags": ""}'
+                hx-target="body"
+                hx-push-url="false"
+                hx-indicator="#please-wait"
+                {{ macros.tooltip_attributes('info', _('Clear the tag filter.'), 'top') }}
+            >
+                <i class="bi-x-circle"></i>
+            </button>
+        {% endif %}
+        {% if client.can_manage_events %}
+            <button
+                type="button"
+                data-testid="events-tag-filter-manage"
+                class="btn btn-sm btn-link text-primary p-0 ms-1 text-nowrap lh-1"
+                hx-post="{{ url_for('tag-manager') }}"
+                hx-vals='{"tags_close_url": "{{ collection_url }}"}'
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-target="#modal-wrapper"
+                {{ macros.tooltip_attributes('info', _('Manage the tags.'), 'top') }}
+            >
+                <i class="bi-gear-fill"></i>
+            </button>
+        {% endif %}
+    </div>
+{% endif %}

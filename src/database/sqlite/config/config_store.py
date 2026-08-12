@@ -22,6 +22,17 @@ class StoredTieBreakSet:
 
 
 @dataclass
+class StoredTag:
+    """A tag that events can be labelled with. Tags are global to the
+    installation; events reference them by id."""
+
+    id: int | None
+    name: str
+    color: str
+    index: int = 0
+
+
+@dataclass
 class StoredConfig:
     force_edit: bool
     console_log_level: int | None
@@ -41,6 +52,7 @@ class StoredConfig:
     stored_tie_break_sets: list[StoredTieBreakSet] = field(
         default_factory=list[StoredTieBreakSet]
     )
+    stored_tags: list[StoredTag] = field(default_factory=list[StoredTag])
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

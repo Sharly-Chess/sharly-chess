@@ -96,6 +96,10 @@ class EventLoader:
         shutil.move(file_path, new_path)
         try:
             EventLoader.check_event_database(uniq_id)
+            # Tag ids are only meaningful within the installation that
+            # defined them, so an imported event starts with no tags.
+            with EventDatabase(uniq_id, write=True) as database:
+                database.delete_all_tags()
             return uniq_id
         except Exception as e:
             new_path.unlink(missing_ok=True)
