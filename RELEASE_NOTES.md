@@ -35,6 +35,7 @@
 - A new **Custom accelerated system** lets the arbiter define the acceleration round by round — a number of virtual points granted to a range of pairing numbers over a range of rounds — instead of choosing a published system (5.0.0)
 - Tournaments using it export their rules as TRF26 250 records, and a TRF file carrying 250 records is now imported as a custom accelerated tournament (the **Accelerated pairings** plugin must be enabled) (5.0.0)
 - A new **Initial score accelerated system** gives each player an initial virtual score — useful when a tournament continues an earlier one (a blitz, for instance). The scores can be filled in one go from any other tournament, in this event or another one, with a coefficient. (5.0.0)
+- Warn when top acceleration groups have an odd number of players at round #1 (5.0.0)
 
 ## Fixed tables
 
