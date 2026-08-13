@@ -78,6 +78,11 @@ class ChessResultsTieBreak:
         """Mapping from our tie-breaks to the ones used by the Chess-Results
         (id + up to 5 parameters, see /docs/technical-appendices/chess-results/Tie-Breaks-1.xlsx)"""
         match type(tie_break):
+            # 1 = points. An ordinary entry in the same numbered list as
+            # the rest, so the ranking order we send is the one that is
+            # applied — the score need not come first.
+            case tb.PointsTieBreak:
+                return cls(1)
             # Victories (variable): Type 0..WIN, 1..WON, 2..BWG (games won
             # with black), 3..BPG (games played with black) + played
             # modifier.

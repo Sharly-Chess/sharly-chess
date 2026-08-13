@@ -76,7 +76,13 @@ class AveragePrizeSharing(PrizeSharing):
         place_index = 0
         total_prizes = len(prizes)
         warning = False
-        for score, group in groupby(tournament_players, key=lambda p: -(p.points or 0)):
+        # Prizes are shared between players the standings cannot
+        # separate on their leading criterion — the points in the usual
+        # layout, whatever ranks first otherwise (TRF26 lets the Points
+        # tie-break sit anywhere).
+        for score, group in groupby(
+            tournament_players, key=lambda p: p.rank_sort_key_before_tie_break(1)
+        ):
             players_in_tie = list(group)
             prizes_to_share = prizes[place_index : place_index + len(players_in_tie)]
             total = sum(p.value for p in prizes_to_share)
@@ -140,7 +146,13 @@ class HortSystemPrizeSharing(PrizeSharing):
         place_index = 0
         total_prizes = len(prizes)
         warning = False
-        for score, group in groupby(tournament_players, key=lambda p: -(p.points or 0)):
+        # Prizes are shared between players the standings cannot
+        # separate on their leading criterion — the points in the usual
+        # layout, whatever ranks first otherwise (TRF26 lets the Points
+        # tie-break sit anywhere).
+        for score, group in groupby(
+            tournament_players, key=lambda p: p.rank_sort_key_before_tie_break(1)
+        ):
             players_in_tie = list(group)
             prizes_to_share = prizes[place_index : place_index + len(players_in_tie)]
             total = sum(p.value for p in prizes_to_share)

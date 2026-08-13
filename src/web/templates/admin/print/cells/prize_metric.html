@@ -1,5 +1,5 @@
 {% if prize_category.ranks_by_final_standing %}
-    {{ tournament_player.points_str }}
+    {{ tournament_player.leading_tie_break_value }}
 {% else %}
     {% set metric = prize_category.ranking_metric(tournament_player) %}
     {% if metric is not none %}{{ '%+.2f'|format(metric) }}{% endif %}

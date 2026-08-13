@@ -217,7 +217,9 @@ class TestAdminCollections:
             re.compile(r'\bbi-grip-vertical\b')
         )
         tie_breaks = item.locator('.collection-component-tie_break_summary')
-        expect(tie_breaks).to_contain_text('None')
+        # A new tournament ranks on the points alone: the criterion is
+        # listed, and the warning still says nothing breaks ties.
+        expect(tie_breaks).to_contain_text('PTS')
         expect(tie_breaks.locator('[class*="bi-exclamation"]')).to_have_count(1)
         configuration_buttons = item.locator(
             'button[aria-label="Configure the tie-breaks of the tournament."]'

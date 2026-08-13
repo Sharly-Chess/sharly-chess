@@ -204,20 +204,26 @@ class TeamStandingsIntegrationTestCase(TestCase):
         self.assertEqual(records[self.team_a_id].matches[0].board_scores, (1.0, 0.0))
         self.assertEqual(records[self.team_b_id].matches[0].board_scores, (0.0, 1.0))
 
-        # team_standings sorts by primary/secondary then by tie-break values.
-        # MP=1 each, GP=1 each → Berlin (2 vs 1) is the deciding factor.
+        # team_standings sorts on the criteria in order: the points
+        # (1 MP each here) leave the teams level, so Berlin (2 vs 1)
+        # decides.
         standings = tournament.team_standings()
         self.assertEqual(len(standings), 2)
         self.assertEqual(standings[0]['team'].id, self.team_a_id)
         self.assertEqual(standings[1]['team'].id, self.team_b_id)
-        self.assertEqual([v.value for v in standings[0]['tie_break_values']], [2.0])
-        self.assertEqual([v.value for v in standings[1]['tie_break_values']], [1.0])
+        self.assertEqual(
+            [v.value for v in standings[0]['tie_break_values']], [1.0, 2.0]
+        )
+        self.assertEqual(
+            [v.value for v in standings[1]['tie_break_values']], [1.0, 1.0]
+        )
         self.assertEqual(standings[0]['rank'], 1)
         self.assertEqual(standings[1]['rank'], 2)
 
-    def test_no_team_tie_breaks_keeps_tie_break_values_empty(self) -> None:
-        """When no team tie-breaks are configured, tie_break_values is
-        present but empty so consumers can iterate uniformly."""
+    def test_no_team_tie_breaks_ranks_on_the_points_alone(self) -> None:
+        """A tournament with nothing configured ranks on its primary score
+        — the Points tie-break — and on nothing else. `tie_break_values`
+        is always present so consumers can iterate uniformly."""
         with EventDatabase(EVENT_ID, write=True) as db:
             tournament = next(
                 t for t in db.load_stored_tournaments() if t.name == TOURNAMENT_NAME
@@ -231,4 +237,5 @@ class TeamStandingsIntegrationTestCase(TestCase):
         tournament = self._load()
         standings = tournament.team_standings()
         self.assertEqual(len(standings), 1)
-        self.assertEqual(standings[0]['tie_break_values'], [])
+        # One criterion, the points; the team has played nothing, so 0.
+        self.assertEqual([v.value for v in standings[0]['tie_break_values']], [0.0])

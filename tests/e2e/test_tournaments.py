@@ -40,7 +40,9 @@ class TestTournamentFunctionality:
         page.locator('.select2-results__option[id$="swiss-sc-recommendation"]').click()
         TestUtils.button_by_text(modal, 'Apply').click()
 
-        expect(modal.locator('.tie-break-row')).to_have_count(5)
+        # The set lists the points as its leading criterion, then its
+        # five tie-breaks.
+        expect(modal.locator('.tie-break-row')).to_have_count(6)
         page.wait_for_function('!ignoreNextModalClose')
         TestUtils.button_by_text(modal, 'Close').click()
         expect(modal).not_to_be_visible()

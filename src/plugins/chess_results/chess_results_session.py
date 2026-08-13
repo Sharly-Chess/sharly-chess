@@ -176,7 +176,9 @@ class ChessResultsSession(Session):
         # --- Tournament section ---
         tdata = ET.SubElement(root, 'tournamentdata')
 
-        # Get up to `MAX_TIE_BREAKS`` tiebreak keys (pad with zeros if fewer)
+        # Get up to `MAX_TIE_BREAKS`` tiebreak keys (pad with zeros if fewer).
+        # The points are one of them (code 1), in whatever place the
+        # ranking gives them.
         tb_details: list[tuple[str, str]] = []
         for tie_break in tournament.tie_breaks[:MAX_TIE_BREAKS]:
             cr_tie_break = ChessResultsTieBreak.from_tie_break(tournament, tie_break)

@@ -273,6 +273,7 @@ class RuleSet(IdentifiableEntity, ABC):
         return {}
 
     def tie_breaks_for_pairing(self, pairing_id: str) -> list[tuple[str, dict]]:
+        """The rule set's ranking criteria for a pairing system, in order."""
         return self.tie_break_overrides_by_pairing.get(pairing_id, [])
 
     def team_point_adjustment(

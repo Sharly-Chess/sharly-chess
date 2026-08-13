@@ -56,7 +56,7 @@
                             {{ _('Club') }}
                         </th>
                         <th scope="col">
-                            {{ _('Pts *** POINTS COLUMN HEADER') }}
+                            {{ admin_tournament.leading_tie_break.acronym }}
                         </th>
                         {% if admin_prize_category.ranks_by_average_performance %}
                             <th scope="col">
@@ -112,7 +112,7 @@
                                 {{ player.club.name }}
                             </td>
                             <td class="{{ prize_class }}">
-                                {{ player.points_str }}
+                                {{ player.leading_tie_break_value }}
                             </td>
                             {% if not admin_prize_category.ranks_by_final_standing %}
                                 {% set metric = admin_prize_category.ranking_metric(player) %}

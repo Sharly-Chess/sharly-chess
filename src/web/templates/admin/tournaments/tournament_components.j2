@@ -249,16 +249,18 @@
 {% endmacro %}
 
 {% macro tie_break_section_warning(item, extra_class='') %}
+    {# The points alone leave every tie unbroken, so that counts as
+       nothing configured, whether or not the criterion is listed. #}
     {% set section_warning = (
         _('It is highly recommended to set at least one tie-break.')
-        if not item.tie_breaks_by_id else
+        if item.only_ranks_on_points else
         item.tie_breaks_warning_message
     ) %}
     {% if section_warning %}
         <i
             class="bi-exclamation-triangle-fill text-warning flex-shrink-0 {{ extra_class }}"
             {{ macros.tooltip_attributes(
-                'warning' if not item.tie_breaks_by_id else '',
+                'warning' if item.only_ranks_on_points else '',
                 section_warning,
                 'top',
             ) }}
