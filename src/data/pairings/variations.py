@@ -122,8 +122,8 @@ class PairingVariation(IdentifiableEntity, ABC):
         """Compute the virtual points of a player for round *at_round*."""
         return 0.0
 
-    @staticmethod
-    def print_real_points(current_round: int, rounds: int) -> bool:
+    @classmethod
+    def print_real_points(cls, tournament: 'Tournament', current_round: int) -> bool:
         """Defines if the real points have to be displayed
         in addition to the virtual points for a round."""
         return False
@@ -150,7 +150,7 @@ class PairingVariation(IdentifiableEntity, ABC):
         return False
 
     def get_tournament_accelerated_rules(
-        self, rounds: int, draw_points: float, win_points: float
+        self, tournament: 'Tournament'
     ) -> list[AccelerationRule]:
         """Get the acceleration rules of a tournament."""
         return []

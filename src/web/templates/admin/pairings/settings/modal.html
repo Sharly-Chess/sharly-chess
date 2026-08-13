@@ -8,21 +8,39 @@
             </div>
         </div>
         <div class="modal-body">
+            {% if settings_read_only %}
+                <div class="alert alert-info py-2">
+                    <i class="bi-info-circle-fill pe-1"></i>
+                    {{ _(
+                        'These settings are part of the pairings already made '
+                        'and can no longer be changed.'
+                    ) }}
+                </div>
+            {% endif %}
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
-                {% if admin_tournament.pairing_system.round_per_round_pairing_generation %}
+                {% if settings_for_pairing %}
+                    {% if admin_tournament.pairing_system.round_per_round_pairing_generation %}
+                        hx-post="{{ url_for(
+                            'generate-round-pairings-with-settings',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round
+                        ) }}"
+                    {% else %}
+                        hx-post="{{ url_for(
+                            'generate-tournament-pairings',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id
+                        ) }}"
+                    {% endif %}
+                {% else %}
                     hx-post="{{ url_for(
-                        'generate-round-pairings-with-settings',
+                        'pairings-settings-save',
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_round
-                    ) }}"
-                {% else %}
-                    hx-post="{{ url_for(
-                        'generate-tournament-pairings',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id
                     ) }}"
                 {% endif %}
                 hx-target="body"
@@ -31,9 +49,14 @@
                 <h4 class="mb-3">
                     {{ admin_tournament.pairing_variation.name }}
                 </h4>
-                {% for setting in pairing_settings %}
-                    {% include setting.template_path %}
-                {% endfor %}
+                {# A disabled fieldset disables every control inside, so
+                   the settings render read-only without each of them
+                   having to know about it. #}
+                <fieldset {% if settings_read_only %}disabled{% endif %}>
+                    {% for setting in pairing_settings %}
+                        {% include setting.template_path %}
+                    {% endfor %}
+                </fieldset>
             </form>
         </div>
         <div class="modal-footer">
@@ -43,16 +66,23 @@
                 data-bs-dismiss="modal"
             >
                 <i class="bi-x-circle-fill"></i>
-                {{ _('Cancel') }}
+                {{ _('Close') if settings_read_only else _('Cancel') }}
             </button>
-            <button
-                type="submit"
-                form="modal-form"
-                class="text-nowrap white btn btn-primary"
-            >
-                <i class="bi-shuffle pe-1"></i>
-                {{ _('Pair') }}
-            </button>
+            {% if not settings_read_only %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    {% if settings_for_pairing %}
+                        <i class="bi-shuffle pe-1"></i>
+                        {{ _('Pair') }}
+                    {% else %}
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Save') }}
+                    {% endif %}
+                </button>
+            {% endif %}
         </div>
     </div>
 </div>

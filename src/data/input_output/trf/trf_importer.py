@@ -137,6 +137,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         stored_tournament = self._read_trf_tournament(
             event, trf_tournament, stored_tournament
         )
+        self._populate_acceleration(event, stored_tournament, trf_tournament)
         stored_tournament.rating = tournament_rating
         self._pending_teams = self._read_trf_teams(trf_tournament)
         # OOdO records (TRF26 300) carry the per-round team lineups in
@@ -306,6 +307,10 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
 
     def get_not_importable_features(self, event: Event) -> list[str]:
+        from plugins.pairing_acceleration.pairing_acceleration import (
+            PairingAccelerationPlugin,
+        )
+
         file_path = self.get_option_values()[0]
         with open(file_path, 'r', encoding='utf-8') as file:
             tournament = TrfSerializer.load(file)
@@ -371,8 +376,17 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
                 )
 
-        if tournament.accelerated_rounds:
-            features.append(_('250 Accelerated rounds'))
+        if tournament.accelerated_rounds and not self._acceleration_is_importable(
+            tournament
+        ):
+            features.append(
+                _('250 Accelerated rounds')
+                if tournament.teams
+                else _(
+                    '250 Accelerated rounds (enable the [{plugin}] plugin '
+                    'to import them)'
+                ).format(plugin=PairingAccelerationPlugin.static_name())
+            )
         if tournament.abnormal_points_assignments and not tournament.teams:
             features.append(_('299 Abnormal assignment points'))
         if any(
@@ -391,6 +405,77 @@ class TrfTournamentImporter(FileTournamentImporter):
             features.append(_('BB fields'))
 
         return features
+
+    @staticmethod
+    def _acceleration_is_importable(trf_tournament: TrfTournament) -> bool:
+        """250 records are imported as the custom accelerated system,
+        which the accelerated pairings plugin provides — so the plugin
+        has to be available. The published systems already carry their
+        acceleration in the 192 encoded type, so only a plain Swiss
+        tournament is switched over."""
+        from data.pairings.variations import StandardSwissVariation
+        from plugins.pairing_acceleration.pairing_acceleration import (
+            PairingAccelerationPlugin,
+        )
+
+        if trf_tournament.teams:
+            return False
+        variation = TrfEncodedType.get_supported_pairing_variation(
+            trf_tournament.encoded_type or 'FIDE_DUTCH_2025'
+        )
+        if variation is None or variation.id != StandardSwissVariation.static_id():
+            return False
+        return plugin_manager.plugins_by_id[
+            PairingAccelerationPlugin.static_id()
+        ].is_enabled
+
+    def _populate_acceleration(
+        self,
+        event: Event,
+        stored_tournament: StoredTournament,
+        trf_tournament: TrfTournament,
+    ):
+        """Import the 250 records as the rules of the custom accelerated
+        system, enabling the plugin that provides it for the event: the
+        variation is only registered for events the plugin is enabled
+        for, so without this the stored variation wouldn't resolve."""
+        from plugins.pairing_acceleration.pairing_acceleration import (
+            PairingAccelerationPlugin,
+        )
+        from plugins.pairing_acceleration.pairing_settings import (
+            AccelerationRule,
+            CustomAccelerationSetting,
+        )
+        from plugins.pairing_acceleration.pairing_variations import (
+            CustomAccelerationSwissVariation,
+        )
+
+        if not trf_tournament.accelerated_rounds:
+            return
+        if not self._acceleration_is_importable(trf_tournament):
+            return
+        rules = [
+            AccelerationRule(
+                vpoints=accelerated_round.game_points or 0.0,
+                first_round=accelerated_round.first_round,
+                last_round=accelerated_round.last_round,
+                number_range=(accelerated_round.first_id, accelerated_round.last_id),
+            )
+            for accelerated_round in trf_tournament.accelerated_rounds
+        ]
+        stored_tournament.pairing = CustomAccelerationSwissVariation.static_id()
+        stored_tournament.pairing_settings = stored_tournament.pairing_settings | {
+            CustomAccelerationSetting.static_id(): (
+                CustomAccelerationSetting.to_stored_value(rules)
+            )
+        }
+        plugin_id = PairingAccelerationPlugin.static_id()
+        if plugin_id not in event.stored_event.enabled_plugins:
+            event.stored_event.enabled_plugins = [
+                *event.stored_event.enabled_plugins,
+                plugin_id,
+            ]
+            self.stored_event_modified = True
 
     @staticmethod
     def _check_team_event_compatibility(

@@ -1,0 +1,177 @@
+{#
+    Rule list of the custom accelerated system, one row per TRF26 250
+    record. Row indexes only have to be distinct, so a row can be dropped
+    without renumbering the others; `ROW_INDEX` is substituted when the
+    hidden row template is cloned.
+#}
+{% macro rule_row(index) %}
+    {% set vpoints_field = setting.id ~ '_' ~ index ~ '_vpoints' %}
+    {% set first_round_field = setting.id ~ '_' ~ index ~ '_first_round' %}
+    {% set last_round_field = setting.id ~ '_' ~ index ~ '_last_round' %}
+    {% set first_number_field = setting.id ~ '_' ~ index ~ '_first_number' %}
+    {% set last_number_field = setting.id ~ '_' ~ index ~ '_last_number' %}
+    <tr class="custom-acceleration-row">
+        <td>
+            <input
+                type="number" step="0.5" min="0" max="{{ setting.MAX_VPOINTS }}"
+                class="form-control form-control-sm {{ 'is-invalid' if errors.get(vpoints_field) }}"
+                name="{{ vpoints_field }}"
+                data-testid="{{ vpoints_field | replace('_', '-') }}"
+                value="{{ data.get(vpoints_field, '') }}"
+                required
+            >
+        </td>
+        {% for first_field, last_field, max_value, placeholder_first, placeholder_last in [
+            (
+                first_round_field, last_round_field, admin_tournament.rounds,
+                _('1st'), _('last'),
+            ),
+            (
+                first_number_field, last_number_field, admin_tournament.player_count,
+                _('1st'), _('last'),
+            ),
+        ] %}
+            <td>
+                <div class="input-group input-group-sm flex-nowrap">
+                    {#
+                        Either bound may be left empty, meaning "from the
+                        start" / "to the end" — the rule then follows the
+                        tournament as rounds and players are added.
+                    #}
+                    <input
+                        type="number" min="1" max="{{ max_value }}"
+                        class="form-control form-control-sm {{ 'is-invalid' if errors.get(first_field) }}"
+                        name="{{ first_field }}"
+                        data-testid="{{ first_field | replace('_', '-') }}"
+                        value="{{ data.get(first_field, '') }}"
+                        placeholder="{{ placeholder_first }}"
+                        aria-label="{{ placeholder_first }}"
+                    >
+                    <span class="input-group-text px-1">-</span>
+                    <input
+                        type="number" min="1" max="{{ max_value }}"
+                        class="form-control form-control-sm {{ 'is-invalid' if errors.get(last_field) }}"
+                        name="{{ last_field }}"
+                        data-testid="{{ last_field | replace('_', '-') }}"
+                        value="{{ data.get(last_field, '') }}"
+                        placeholder="{{ placeholder_last }}"
+                        aria-label="{{ placeholder_last }}"
+                    >
+                </div>
+            </td>
+        {% endfor %}
+        <td class="text-end">
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-danger delete-custom-acceleration-row"
+                aria-label="{{ _('Delete') }}"
+            >
+                <i class="bi-trash-fill"></i>
+            </button>
+        </td>
+    </tr>
+    {% set row_errors = [
+        errors.get(vpoints_field),
+        errors.get(first_round_field), errors.get(last_round_field),
+        errors.get(first_number_field), errors.get(last_number_field),
+    ] | select | unique | list %}
+    {% if row_errors %}
+        <tr class="custom-acceleration-row-errors">
+            <td colspan="4" class="pt-0 border-0">
+                {% for row_error in row_errors %}
+                    <div class="text-danger small">{{ row_error }}</div>
+                {% endfor %}
+            </td>
+        </tr>
+    {% endif %}
+{% endmacro %}
+
+<h4>
+    {{ _('Accelerated rounds') }}
+    <i
+        class="bi-info-circle-fill ps-1 text-body"
+        style="font-size: 90%"
+        {{ macros.tooltip_attributes(
+            '', _(
+                'Each rule grants virtual points to a range of pairing numbers '
+                'over a range of rounds. Those points only are used for pairing, '
+                'not for ranking.'
+            ), 'top'
+        ) }}
+    ></i>
+</h4>
+<table class="table table-sm align-middle mb-2" id="custom-acceleration-table">
+    <thead>
+        <tr>
+            <th class="small" style="width: 6rem">{{ _('Points') }}</th>
+            <th class="small">{{ _('Rounds') }}</th>
+            <th class="small">{{ _('Pairing numbers') }}</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="custom-acceleration-rows">
+        {% set row_indexes = setting.row_indexes(data) %}
+        {% for index in row_indexes %}
+            {{ rule_row(index) }}
+        {% endfor %}
+    </tbody>
+</table>
+<div id="custom-acceleration-empty" class="fst-italic small mb-2">
+    {{ _('No acceleration.') }}
+</div>
+<button
+    type="button"
+    id="add-custom-acceleration-row"
+    class="btn btn-sm btn-outline-primary mb-3"
+>
+    <i class="bi-plus-circle pe-1"></i>{{ _('Add accelerated rounds') }}
+</button>
+<template id="custom-acceleration-row-template">
+    {{ rule_row('ROW_INDEX') }}
+</template>
+
+<script>
+    (function () {
+        const rows = document.getElementById('custom-acceleration-rows');
+        const table = document.getElementById('custom-acceleration-table');
+        const empty = document.getElementById('custom-acceleration-empty');
+        const template = document.getElementById('custom-acceleration-row-template');
+        {# Indexes need not be contiguous, so carry on after the highest one. #}
+        let nextIndex = {{ ((row_indexes | max) + 1) if row_indexes else 0 }};
+
+        function refresh() {
+            const isEmpty = !rows.querySelector('.custom-acceleration-row');
+            table.classList.toggle('d-none', isEmpty);
+            empty.classList.toggle('d-none', !isEmpty);
+        }
+
+        document.getElementById('add-custom-acceleration-row').addEventListener(
+            'click',
+            function () {
+                rows.insertAdjacentHTML(
+                    'beforeend',
+                    template.innerHTML.replaceAll('ROW_INDEX', nextIndex++),
+                );
+                refresh();
+                const added = rows.querySelectorAll('.custom-acceleration-row');
+                added[added.length - 1].querySelector('input').focus();
+            },
+        );
+
+        rows.addEventListener('click', function (event) {
+            const button = event.target.closest('.delete-custom-acceleration-row');
+            if (!button) {
+                return;
+            }
+            const row = button.closest('.custom-acceleration-row');
+            const rowErrors = row.nextElementSibling;
+            if (rowErrors && rowErrors.classList.contains('custom-acceleration-row-errors')) {
+                rowErrors.remove();
+            }
+            row.remove();
+            refresh();
+        });
+
+        refresh();
+    })();
+</script>

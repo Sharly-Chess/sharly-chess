@@ -89,3 +89,33 @@ def test_duplicate_key_is_used_when_checking_one_player():
     stored_player = player(2, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}})
 
     assert event._are_player_duplicates(stored_player, existing_player)
+
+
+@pytest.mark.unit
+def test_identity_keys_recognise_a_player_entered_twice():
+    # The same person in two tournaments is two player records with two
+    # different ids, so carrying a score over has to match on identity.
+    event = make_event()
+    first = player(1, first_name='First', date_of_birth=date(2000, 1, 2), fide_id=42)
+    second = player(2, first_name='First', date_of_birth=date(2000, 1, 2), fide_id=42)
+    second.last_name = first.last_name
+
+    keys = event.get_player_identity_keys(first)
+    assert keys & event.get_player_identity_keys(second)
+    assert ('fide', 42) in keys
+
+
+@pytest.mark.unit
+def test_identity_keys_ignore_a_name_without_a_first_name():
+    event = make_event()
+    stored_player = player(1, first_name=None, date_of_birth=date(2000, 1, 2))
+    assert event.get_player_identity_keys(stored_player) == set()
+
+
+@pytest.mark.unit
+def test_identity_keys_include_the_ffe_licence_number():
+    event = make_event()
+    stored_player = player(1, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}})
+    assert any(
+        key[0] == 'plugin' for key in event.get_player_identity_keys(stored_player)
+    )
