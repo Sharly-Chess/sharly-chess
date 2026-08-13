@@ -93,6 +93,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d event"
+msgid_plural "%(num)d events"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d informative *** COLUMNS, SINGULAR"
 msgid_plural "%(num)d informative *** COLUMNS, PLURAL"
 msgstr[0] "%(num)d informative"
@@ -774,6 +780,9 @@ msgid "Add players"
 msgstr ""
 
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
+msgstr ""
+
+msgid "Add the selected sets"
 msgstr ""
 
 msgid "Add tie-break"
@@ -1703,6 +1712,9 @@ msgstr ""
 msgid "Clear result"
 msgstr ""
 
+msgid "Clear the tag filter."
+msgstr ""
+
 msgid "Click and drag to select balanced groups."
 msgstr ""
 
@@ -1846,6 +1858,9 @@ msgid "Configure prohibited pairings for this round."
 msgstr ""
 
 msgid "Configure the category sets, which are available for all events."
+msgstr ""
+
+msgid "Configure the tags, which are available for all events."
 msgstr ""
 
 msgid "Configure the tie-breaks of the tournament."
@@ -2402,6 +2417,9 @@ msgstr ""
 msgid "Deletes all the criteria of this category."
 msgstr ""
 
+msgid "Deleting a tag removes it from the events that use it."
+msgstr ""
+
 msgid "Deletion date"
 msgstr ""
 
@@ -2410,6 +2428,9 @@ msgstr ""
 
 msgid "Denmark"
 msgstr ""
+
+msgid "Department *** EVENT TAG NAME"
+msgstr "Department"
 
 msgid "Deputy Chief Arbitration"
 msgstr ""
@@ -2752,6 +2773,9 @@ msgid "E.g.: Teams %%f to %%l"
 msgstr ""
 
 msgid "E.g.: World championship"
+msgstr ""
+
+msgid "E.g.: Youth"
 msgstr ""
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
@@ -3349,6 +3373,9 @@ msgstr "Fr"
 msgid "France"
 msgstr ""
 
+msgid "Free labels used to organise and filter the list of events. Tags are shared by all the events of this installation, and are removed when an event is exported or imported."
+msgstr ""
+
 msgid "From the rule set"
 msgstr ""
 
@@ -3875,6 +3902,9 @@ msgstr ""
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
 
+msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
+msgstr ""
+
 msgid "Iran"
 msgstr ""
 
@@ -4017,6 +4047,9 @@ msgstr ""
 
 msgid "Layout"
 msgstr ""
+
+msgid "League *** EVENT TAG NAME"
+msgstr "League"
 
 msgid "Leave all unchecked to print every match."
 msgstr ""
@@ -4208,6 +4241,9 @@ msgid "Manage the prize brackets"
 msgstr ""
 
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
+msgstr ""
+
+msgid "Manage the tags."
 msgstr ""
 
 msgid "Manage the team roster."
@@ -4698,6 +4734,9 @@ msgstr ""
 msgid "New rotator"
 msgstr ""
 
+msgid "New tag"
+msgstr ""
+
 msgid "New timer"
 msgstr ""
 
@@ -4747,6 +4786,9 @@ msgid "No criteria for the main category."
 msgstr ""
 
 msgid "No criteria."
+msgstr ""
+
+msgid "No current event carries the selected tags."
 msgstr ""
 
 msgid "No current events."
@@ -4850,6 +4892,9 @@ msgid "No pairings for this round yet."
 msgstr ""
 
 msgid "No pairings."
+msgstr ""
+
+msgid "No passed event carries the selected tags."
 msgstr ""
 
 msgid "No passed events."
@@ -4957,6 +5002,12 @@ msgstr ""
 msgid "No tables available for {t} teams."
 msgstr ""
 
+msgid "No tag"
+msgstr ""
+
+msgid "No tag has been created yet."
+msgstr ""
+
 msgid "No team pairings for this round yet."
 msgstr ""
 
@@ -4982,6 +5033,9 @@ msgid "No tournaments."
 msgstr ""
 
 msgid "No unassigned players available. Remove a player from another team first."
+msgstr ""
+
+msgid "No upcoming event carries the selected tags."
 msgstr ""
 
 msgid "No upcoming events."
@@ -5239,6 +5293,9 @@ msgstr ""
 
 msgid "Open"
 msgstr ""
+
+msgid "Open *** EVENT TAG NAME"
+msgstr "Open"
 
 msgid "Open IT1 certificate for this norm"
 msgstr ""
@@ -5533,6 +5590,9 @@ msgid "Papua New Guinea"
 msgstr ""
 
 msgid "Paraguay"
+msgstr ""
+
+msgid "Participants"
 msgstr ""
 
 msgid "Participation Statistics"
@@ -5860,6 +5920,9 @@ msgid "Please choose a name for the set."
 msgstr ""
 
 msgid "Please choose a player."
+msgstr ""
+
+msgid "Please choose a valid colour."
 msgstr ""
 
 msgid "Please choose the document."
@@ -7116,6 +7179,9 @@ msgstr ""
 msgid "Start date"
 msgstr ""
 
+msgid "Start from one of these sets, or add your own tags."
+msgstr ""
+
 #, python-brace-format, python-format
 msgid "Start of round {} in %%s"
 msgstr ""
@@ -7201,6 +7267,9 @@ msgid "Table number"
 msgstr ""
 
 msgid "Table numbers:"
+msgstr ""
+
+msgid "Tags"
 msgstr ""
 
 msgid "Tajikistan"
@@ -7827,6 +7896,12 @@ msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
 msgid "These sets are saved per pairing system and shared across events."
+msgstr ""
+
+msgid "These sets are shared by every event of this installation."
+msgstr ""
+
+msgid "These tags are shared by every event of this installation."
 msgstr ""
 
 msgid "These tournaments are already included for this account by a higher access level."
@@ -8560,6 +8635,9 @@ msgstr ""
 msgid "Update search failed (no internet)"
 msgstr ""
 
+msgid "Update tag"
+msgstr ""
+
 msgid "Update the players' information from an external data source."
 msgstr ""
 
@@ -8897,6 +8975,9 @@ msgstr ""
 msgid "Woman International Master"
 msgstr ""
 
+msgid "Women *** EVENT TAG NAME"
+msgstr "Women"
+
 msgid "Women's Title:"
 msgstr ""
 
@@ -9074,6 +9155,9 @@ msgstr ""
 
 msgid "You must create a tournament before creating these screens."
 msgstr ""
+
+msgid "Youth *** EVENT TAG NAME"
+msgstr "Youth"
 
 msgid "Zambia"
 msgstr ""
@@ -9677,46 +9761,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "%(minutes)d minutes after"
-#~ msgstr ""
-
-#~ msgid "%(minutes)d minutes before"
-#~ msgstr ""
-
-#~ msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
-#~ msgstr ""
-
-#~ msgid "(no screens)"
-#~ msgstr ""
-
-#~ msgid "212 Tie-breaks with PTS not used first"
-#~ msgstr ""
-
-#~ msgid "GP *** TEAM RANKING HEADER GAME POINTS"
-#~ msgstr "GP"
-
-#~ msgid "MP *** TEAM RANKING HEADER MATCH POINTS"
-#~ msgstr "MP"
-
-#~ msgid "Multi-screens:"
-#~ msgstr ""
-
-#~ msgid "Number of players: %(num)d"
-#~ msgstr ""
-
-#~ msgid "Pairings: %(pairing_variation)s"
-#~ msgstr ""
-
-#~ msgid "Rotation delay: %(seconds)d sec."
-#~ msgstr ""
-
-#~ msgid "Screen types:"
-#~ msgstr ""
-
-#~ msgid "Screens:"
-#~ msgstr ""
-
-#~ msgid "Type: %(family_type)s"
-#~ msgstr ""
 

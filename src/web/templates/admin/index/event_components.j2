@@ -1,3 +1,5 @@
+{% import '/admin/common/tag_macros.j2' as tag_macros with context %}
+
 {% macro item_class(item, view) -%}
     {%- if not item.are_all_plugins_enabled -%}
         collection-status-danger
@@ -114,6 +116,19 @@
         <span class="text-nowrap">
             <i class="bi-person-fill pe-1"></i>{{ _('Individual') }}
         </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro tags(item, view, placement) %}
+    {% if view == 'card' %}
+        {% if item.tags %}
+            <div class="collection-fact">
+                <span class="collection-fact-label"><i class="bi-tags-fill"></i>{{ _('Tags') }}</span>
+                {{ tag_macros.tag_badges(item.tags) }}
+            </div>
+        {% endif %}
+    {% else %}
+        {{ tag_macros.tag_badges(item.tags) }}
     {% endif %}
 {% endmacro %}
 

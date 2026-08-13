@@ -163,30 +163,6 @@
         {% endwith %}
     </form>
     <script>
-        function sizeTournamentTieBreakColumns() {
-            document.querySelectorAll(
-                '.collection-list-cell-tie_break_summary'
-            ).forEach(function(cell) {
-                cell.style.minWidth = '0';
-                cell.style.width = 'max-content';
-                const naturalWidth = cell.getBoundingClientRect().width;
-                cell.style.width = '';
-                cell.style.minWidth = `min(14rem, ${naturalWidth}px)`;
-            });
-        }
-
-        function scheduleTournamentTieBreakColumnSizing() {
-            requestAnimationFrame(sizeTournamentTieBreakColumns);
-        }
-
-        $(document)
-            .off('htmx:afterSettle.tournamentTieBreakColumns')
-            .on(
-                'htmx:afterSettle.tournamentTieBreakColumns',
-                scheduleTournamentTieBreakColumnSizing
-            );
-        scheduleTournamentTieBreakColumnSizing();
-
         $(document).ready(function() {
             renderHumanizedTimeControls();
         });

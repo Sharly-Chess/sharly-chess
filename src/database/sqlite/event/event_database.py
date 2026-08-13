@@ -331,6 +331,7 @@ class EventDatabase(MigrationDatabase):
                 row['allow_multi_tournament_players']
             ),
             event_type=EventType(row['event_type']),
+            tag_ids=self.load_json_from_database_field(row['tag_ids'], []),
             plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
             enabled_plugins=self.load_json_from_database_field(
                 row['enabled_plugins'], []
@@ -426,12 +427,19 @@ class EventDatabase(MigrationDatabase):
             'enabled_plugins': self.dump_to_json_database_field(
                 stored_event.enabled_plugins, []
             ),
+            'tag_ids': self.dump_to_json_database_field(stored_event.tag_ids, []),
         }
 
         field_sets = (f'`{f}` = ?' for f in fields.keys())
         self.execute(
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
         )
+
+    def delete_all_tags(self):
+        """Drops the tags of the event. Tag ids only mean something within
+        the installation that defined them, so they are stripped whenever
+        the event database leaves it (export) or enters it (import)."""
+        self.execute("UPDATE `info` SET `tag_ids` = '[]'")
 
     # ---------------------------------------------------------------------------------
     # StoredTimerHour

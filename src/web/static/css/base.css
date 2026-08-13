@@ -792,13 +792,46 @@ body[data-bs-theme="dark"] .htmx-indicator {
     justify-content: flex-end !important;
 }
 
-.collection-component-tie_break_summary {
-    width: 100%;
+/* Bootstrap's badge padding is symmetric, but a font's ascent exceeds its
+   descent, so the ink renders slightly high inside it. Shift it down half a
+   pixel so the label looks centred rather than merely being centred. */
+.tag-badge {
+    padding-top: 0.4em;
+    padding-bottom: 0.3em;
+    /* Carried by every badge, so that the outlined and filled variants of the
+       event filter measure the same and toggling one doesn't shift the row.
+       The fill paints under it, leaving the filled variant unchanged. */
+    border: 1px solid transparent;
 }
 
+/* Columns holding a wrapping group of badges (tie-breaks, tags...). List
+   cells clip by default, which cuts badges in half when the row gets narrow:
+   floor the cell at its widest badge and let the group wrap instead. */
+.collection-list-cell.collection-list-cell-badge-group {
+    min-width: min-content;
+    overflow: visible;
+}
+
+/* Tie-break acronyms are short enough that a fixed floor is always wider
+   than the widest badge, so the column keeps a readable width when a
+   tournament has few tie-breaks. */
 .collection-list-cell.collection-list-cell-tie_break_summary {
-    min-width: 14rem;
-    min-width: calc-size(max-content, min(14rem, size));
+    min-width: 10rem;
+}
+
+.collection-list-cell-badge-group .collection-component {
+    overflow: visible;
+}
+
+/* Name column claiming its width first (see NAME_COLUMN_WIDTH): the cap is
+   what the column asks for at most, past which the name truncates rather
+   than widening the whole row. */
+.collection-list-cell-name-first .text-truncate {
+    max-width: 26rem;
+}
+
+.collection-component-tie_break_summary {
+    width: 100%;
 }
 
 .tournament-tie-break-summary {

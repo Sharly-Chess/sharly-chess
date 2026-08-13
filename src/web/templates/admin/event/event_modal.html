@@ -31,6 +31,30 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {# Where the sub-modals (tags, category sets) come back to. Built
+                   here, the only place with the action / tab / event context,
+                   and carried along with the rest of the form. #}
+                {% if action == 'update' %}
+                    {% set event_return_url = url_for(
+                        'admin-event-modal-restore',
+                        action=action,
+                        admin_tab=admin_tab or '',
+                        event_uniq_id=admin_event.uniq_id,
+                    ) %}
+                {% elif action == 'clone' %}
+                    {% set event_return_url = url_for(
+                        'admin-event-modal-restore',
+                        action=action,
+                        event_uniq_id=admin_event.uniq_id,
+                    ) %}
+                {% else %}
+                    {% set event_return_url = url_for(
+                        'admin-event-modal-restore',
+                        action=action,
+                        admin_tab=admin_tab or 'home',
+                    ) %}
+                {% endif %}
+                <input type="hidden" name="event_return_url" value="{{ event_return_url }}">
                 {% if action == 'clone' %}
                     <h4>
                         {{ _('Duplication settings') }}
@@ -182,6 +206,12 @@
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
+                    </div>
+                </div>
+
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {% include 'event_tags_form.html' %}
                     </div>
                 </div>
                 <button

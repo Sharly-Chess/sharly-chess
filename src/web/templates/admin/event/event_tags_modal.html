@@ -1,0 +1,284 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/admin/common/tag_macros.j2' as tag_macros with context %}
+
+{# The tag registry, opened from the event modal. That modal's in-progress
+   fields ride along as hidden inputs, so Back restores a half-filled form
+   rather than re-reading the stored event. #}
+<div
+    id="event-tags-modal"
+    class="modal-dialog modal-dialog-scrollable admin-event-edit-modal"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Tags') }}
+                <i
+                    class="bi-info-circle-fill"
+                    style="font-size: 70%"
+                    {{ macros.tooltip_attributes('', _(
+                        'These tags are shared by every event of this installation.'
+                    )) }}
+                ></i>
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="tags-modal-form"
+                {% if tags_container_state == 'form' %}
+                    {% if edited_tag_id %}
+                        hx-patch="{{ url_for('tag-update', tag_id=edited_tag_id) }}"
+                    {% else %}
+                        hx-post="{{ url_for('tag-create') }}"
+                    {% endif %}
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                {% endif %}
+            >
+                {% for field_name, field_value in event_form_data.items() %}
+                    {# `tag_ids` is the drag order and `tag_sets` the picked
+                       sets, both emitted by the rows they belong to. #}
+                    {% if field_name not in (
+                        'tag_name', 'tag_color', 'tag_ids', 'tag_sets'
+                    ) %}
+                        <input type="hidden" name="{{ field_name }}" value="{{ field_value }}">
+                    {% endif %}
+                {% endfor %}
+                {% if tags_container_state == 'form' %}
+                    <h4>
+                        {% if edited_tag_id %}
+                            {{ _('Update tag') }}
+                        {% else %}
+                            {{ _('New tag') }}
+                        {% endif %}
+                    </h4>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-8">
+                            {{ admin_macros.text_input(
+                                name='tag_name',
+                                label=_('%(string)s:', string=_('Name')),
+                                placeholder=_('E.g.: Youth'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-4">
+                            {{ admin_macros.color_input(
+                                name='tag_color',
+                                label=_('%(string)s:', string=_('Colour')),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                {% elif all_tags %}
+                    {# Dragging a row rewrites the registry order, which is
+                       the order the tags are listed in everywhere. The rows
+                       carry their id, and the form around them is included
+                       so that Back still finds the event it came from. #}
+                    {% set reorder_enabled = all_tags | length > 1 %}
+                    <div
+                        class="d-flex flex-column gap-2{% if reorder_enabled %} sortable{% endif %}"
+                        {% if reorder_enabled %}
+                            hx-patch="{{ url_for('tag-reorder') }}"
+                            hx-include="#tags-modal-form"
+                            hx-target="body"
+                            hx-trigger="end"
+                            hx-indicator="#please-wait"
+                            data-bs-target="#modal-wrapper"
+                        {% endif %}
+                    >
+                        {% for tag in all_tags %}
+                            <div
+                                class="tag-row border border-secondary bg-body-tertiary
+                                    {% if reorder_enabled %}cursor-grab{% endif %}"
+                            >
+                                <input type="hidden" name="tag_ids" value="{{ tag.id }}">
+                                <div class="p-2 d-flex align-items-center gap-4">
+                                    {% if reorder_enabled %}
+                                        <i class="bi-grip-horizontal"></i>
+                                    {% endif %}
+                                    <div class="text-start flex-grow-1 min-width-0">
+                                        {{ tag_macros.tag_badge(tag) }}
+                                    </div>
+                                    {% set event_count = tag_event_counts.get(tag.id, 0) %}
+                                    <div
+                                        class="text-secondary text-nowrap"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            _('Deleting a tag removes it from the events that use it.'),
+                                            'top',
+                                        ) if event_count else '' }}
+                                    >
+                                        {{ ngettext(
+                                            '%(num)d event', '%(num)d events', event_count
+                                        ) }}
+                                    </div>
+                                    <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                        <button
+                                            class="btn btn-sm btn-outline-primary text-nowrap"
+                                            type="button"
+                                            hx-post="{{ url_for('tag-update-form', tag_id=tag.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-pencil-fill"></i>
+                                        </button>
+                                        <button
+                                            class="btn btn-sm btn-outline-danger text-nowrap"
+                                            type="button"
+                                            hx-post="{{ url_for('tag-delete', tag_id=tag.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-trash-fill"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {# Nothing to list yet: rather than say so and leave the
+                       user to invent a vocabulary, propose ready-made sets
+                       they can take whole. Tags already named the same are
+                       skipped, so taking a set twice adds nothing. #}
+                    <h5 class="text-center mt-2 mb-1">
+                        {{ _('No tag has been created yet.') }}
+                    </h5>
+                    <p class="text-center text-secondary">
+                        {{ _('Start from one of these sets, or add your own tags.') }}
+                    </p>
+                    <div class="d-flex flex-column gap-2">
+                        {% for tag_set in default_tag_sets %}
+                            <label
+                                class="tag-set-row border border-secondary bg-body-tertiary
+                                    p-2 d-flex align-items-center gap-3"
+                            >
+                                <input
+                                    class="form-check-input tag-set-checkbox m-0 flex-shrink-0"
+                                    type="checkbox"
+                                    name="tag_sets"
+                                    value="{{ tag_set.id }}"
+                                >
+                                <span class="fw-bold text-nowrap">{{ tag_set.name }}</span>
+                                <span class="d-inline-flex flex-wrap gap-1 justify-content-end flex-grow-1">
+                                    {% for tag in tag_set.tags %}
+                                        {{ tag_macros.tag_badge(tag) }}
+                                    {% endfor %}
+                                </span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <div class="text-end mt-3">
+                        <button
+                            id="tag-sets-add-button"
+                            type="button"
+                            class="btn btn-outline-primary btn-sm text-nowrap"
+                            disabled
+                            hx-post="{{ url_for('tag-sets-add') }}"
+                            hx-include="#tags-modal-form"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-plus-circle pe-1"></i>
+                            {{ _('Add the selected sets') }}
+                        </button>
+                    </div>
+                    <script>
+                        // Scoped in an IIFE: this fragment is re-executed on
+                        // every swap, and top-level declarations would clash
+                        // with the previous run's.
+                        (function () {
+                            const button = document.getElementById('tag-sets-add-button');
+                            const checkboxes = document.querySelectorAll('.tag-set-checkbox');
+                            function refresh() {
+                                button.disabled = ![...checkboxes].some(
+                                    (checkbox) => checkbox.checked
+                                );
+                            }
+                            checkboxes.forEach(
+                                (checkbox) => checkbox.addEventListener('change', refresh)
+                            );
+                            refresh();
+                        })();
+                    </script>
+                {% endif %}
+            </form>
+        </div>
+        <div class="modal-footer">
+                {# Opened from an event, the modal goes back to it; opened
+                   from the tag filter of an event list, it just closes,
+                   reloading the list the renamed tags are shown on. #}
+                {% if event_form_data.get('event_return_url') %}
+                    <button
+                        class="btn btn-secondary text-nowrap me-auto"
+                        type="button"
+                        hx-post="{{ event_form_data.get('event_return_url') }}"
+                        hx-include="#tags-modal-form"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-arrow-left-circle-fill pe-1"></i>
+                        {{ _('Back') }}
+                    </button>
+                {% else %}
+                    <button
+                        class="btn btn-secondary text-nowrap me-auto"
+                        type="button"
+                        hx-get="{{ event_form_data.get('tags_close_url') }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <i class="bi-x-circle-fill pe-1"></i>
+                        {{ _('Close') }}
+                    </button>
+                {% endif %}
+                {% if tags_container_state == 'form' %}
+                    <button
+                        class="btn btn-secondary text-nowrap"
+                        type="button"
+                        hx-post="{{ url_for('tag-manager') }}"
+                        hx-include="#tags-modal-form"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-x-circle-fill pe-1"></i>
+                        {{ _('Cancel') }}
+                    </button>
+                    {% if edited_tag_id %}
+                        <button
+                            id="tag-form-submit-button"
+                            class="btn btn-primary text-nowrap"
+                            type="submit"
+                            form="tags-modal-form"
+                        >
+                            <i class="bi-floppy-fill pe-1"></i>
+                            {{ _('Save') }}
+                        </button>
+                    {% else %}
+                        {{ admin_macros.create_with_add_other_split_buttons(
+                            add_other_active, form_id='tags-modal-form'
+                        ) }}
+                    {% endif %}
+                {% else %}
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        type="button"
+                        hx-post="{{ url_for('tag-add-form') }}"
+                        hx-include="#tags-modal-form"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-plus-circle pe-1"></i>
+                        {{ _('Add') }}
+                    </button>
+                {% endif %}
+        </div>
+    </div>
+</div>
