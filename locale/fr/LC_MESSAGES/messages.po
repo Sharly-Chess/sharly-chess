@@ -7785,6 +7785,9 @@ msgstr "Le nombre de rondes est incompatible avec le nombre de joueur·euses (at
 msgid "The round count is incompatible with the number of teams (expected: {expected})."
 msgstr "Le nombre de rondes est incompatible avec le nombre d'équipes (attendu : {expected})."
 
+msgid "The round must be paired first."
+msgstr "La ronde doit d'abord être appariée."
+
 msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
 

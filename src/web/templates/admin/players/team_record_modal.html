@@ -109,23 +109,41 @@
                                     >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</span>
                                 {% endif %}
                                 {% if client.can_update_results(tournament.id) %}
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-primary ms-1 px-1 py-0"
-                                        hx-get="{{ url_for(
-                                            'admin-team-point-adjustment-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=tournament.id,
-                                            round=round,
-                                            team_id=admin_team.id,
-                                        ) }}"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        data-bs-target="#modal-wrapper"
-                                        {{ macros.tooltip_attributes('info', _('Bonus / penalty points'), 'top') }}
+                                    {# There is nothing to adjust until the round
+                                       is paired: the adjustment belongs to a game
+                                       that has not been arranged yet. #}
+                                    {% set _round_paired = tournament.round_has_pairings(round) %}
+                                    <span
+                                        class="d-inline-block"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            _('Bonus / penalty points')
+                                            if _round_paired else
+                                            _('The round must be paired first.'),
+                                            'top',
+                                        ) }}
                                     >
-                                        <i class="bi-plus-slash-minus"></i>
-                                    </button>
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary ms-1 px-1 py-0"
+                                            {% if _round_paired %}
+                                                hx-get="{{ url_for(
+                                                    'admin-team-point-adjustment-modal',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    tournament_id=tournament.id,
+                                                    round=round,
+                                                    team_id=admin_team.id,
+                                                ) }}"
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                                data-bs-target="#modal-wrapper"
+                                            {% else %}
+                                                disabled
+                                            {% endif %}
+                                        >
+                                            <i class="bi-plus-slash-minus"></i>
+                                        </button>
+                                    </span>
                                 {% endif %}
                             </td>
                             {% if bye_modifiable %}

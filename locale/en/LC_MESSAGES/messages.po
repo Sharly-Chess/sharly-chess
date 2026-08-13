@@ -7783,6 +7783,9 @@ msgstr ""
 msgid "The round count is incompatible with the number of teams (expected: {expected})."
 msgstr ""
 
+msgid "The round must be paired first."
+msgstr ""
+
 msgid "The rule set fixes the team sort order."
 msgstr ""
 
