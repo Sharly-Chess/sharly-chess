@@ -32,6 +32,10 @@
 - Pairing settings can be prepared before pairing round #1 and always reviewed (5.0.0)
 - Warn when top acceleration groups have an odd number of players at round #1 (5.0.0)
 
+## Rankings
+
+- The points are now a ranking criterion in their own right, listed alongside the tie-breaks (5.0.0)
+
 ## Fixed tables
 
 The handling of fixed tables has been improved in several ways:

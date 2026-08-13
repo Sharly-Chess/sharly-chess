@@ -1020,9 +1020,7 @@ class TeamRankingPrintDocument(PrintDocument):
             self.tournament.pairing_system.paired_by_team
             and self.tournament.primary_score == ScoreType.MATCH_POINTS
         )
-        team_tie_breaks = [
-            tb for tb in self.tournament.tie_breaks if tb.supports_team_mode
-        ]
+        team_tie_breaks = self.tournament.team_tie_breaks
         return {
             'tournament': self.tournament,
             'subtitle': self.tournament.name,
@@ -1399,9 +1397,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
                 tournament.pairing_system.paired_by_team
                 and tournament.primary_score == ScoreType.MATCH_POINTS
             ),
-            'team_tie_breaks': [
-                tb for tb in tournament.tie_breaks if tb.supports_team_mode
-            ],
+            'team_tie_breaks': tournament.team_tie_breaks,
         }
 
 
@@ -2887,7 +2883,6 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
             columns.NameColumn,
             columns.CategoryColumn,
             columns.GenderColumn,
-            columns.PointsColumn,
         ]
         for index in range(len(tournament.team_ranking_tie_breaks)):
             column_types.append(

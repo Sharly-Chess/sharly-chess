@@ -127,6 +127,7 @@ from plugins.ffe.utils import (
     FfePlayerPluginData,
     FfeTournamentPluginData,
 )
+from data.tie_breaks import tie_breaks as tie_breaks_module
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
@@ -1036,6 +1037,7 @@ class FfePlugin(Plugin):
                 key=f'{PLUGIN_NAME}:youth-championship-swiss',
                 name=_('"France jeunes" and qualifiers'),
                 tie_breaks=[
+                    tie_breaks_module.PointsTieBreak(),
                     ffe_tie_breaks.PapiBuchholzTieBreak(
                         [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
                     ),
@@ -1051,6 +1053,7 @@ class FfePlugin(Plugin):
                 key=f'{PLUGIN_NAME}:youth-championship-swiss-unrated',
                 name=_('"France jeunes" and qualifiers - Unrated'),
                 tie_breaks=[
+                    tie_breaks_module.PointsTieBreak(),
                     ffe_tie_breaks.PapiBuchholzTieBreak(
                         [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
                     ),

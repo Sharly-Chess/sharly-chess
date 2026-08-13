@@ -1,5 +1,6 @@
 {% set has_tie_breaks = admin_tournament.tie_breaks_by_id|length > 0 %}
 {% set rule_set_managed = admin_tournament.rule_set_managed_tie_breaks %}
+{% set only_the_points = admin_tournament.only_ranks_on_points %}
 <div
     id="tie-breaks-modal"
     class="modal-dialog modal-dialog-scrollable"
@@ -67,86 +68,26 @@
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
-            {% if not admin_tournament.tie_breaks_by_id %}
-                {% if not rule_set_managed %}
-                    <div class="text-danger">{{ _('No tie-breaks.') }}</div>
-                {% endif %}
-                <div class="pt-2">
-                    {% if not rule_set_managed and tie_break_set_select_options %}
-                        <form
-                            id="tie-break-set-apply-form"
-                            hx-post="{{ url_for(
-                                'admin-apply-tie-break-set',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            class="d-flex gap-2 align-items-end"
-                        >
-                            <div class="flex-grow-1">
-                                <style>
-                                    #tie-break-set-wrapper { flex-direction: column; }
-                                </style>
-                                {{ admin_macros.select_input(
-                                    name='tie_break_set',
-                                    label=_('Quick-apply a tie-break set'),
-                                    placeholder=_('Choose a set…'),
-                                    select_options=tie_break_set_select_options,
-                                    tooltip_select=true,
-                                    data={}, errors={}
-                                ) }}
-                            </div>
-                            <button
-                                id="tie-break-set-apply-button"
-                                type="submit"
-                                class="btn btn-outline-primary text-nowrap"
-                                disabled
-                            >
-                                <i class="bi-check-circle-fill pe-1"></i>
-                                {{ _('Apply') }}
-                            </button>
-                        </form>
-                        {% if has_custom_sets %}
-                            <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-primary btn-sm text-nowrap"
-                                    hx-get="{{ url_for(
-                                        'admin-tie-break-sets-modal',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=admin_tournament.id,
-                                    ) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-target="#modal-wrapper"
-                                >
-                                    <i class="bi-gear-fill pe-1"></i>
-                                    {{ _('Manage custom sets') }}
-                                </button>
-                            </div>
-                        {% endif %}
-                        <script>
-                            (function () {
-                                var $sel = $('#tie-break-set');
-                                $sel.prop('disabled', false);
-                                $sel.removeAttr('disabled');
-                                $sel.next('.select2-container')
-                                    .find('.select2-selection')
-                                    .removeAttr('aria-disabled')
-                                    .removeClass('select2-selection--disabled');
-                                $sel.change(function () {
-                                    var v = $(this).val();
-                                    $('#tie-break-set-apply-button').prop(
-                                        'disabled', !v || v === '__placeholder__'
-                                    );
-                                });
-                                $sel.trigger('change');
-                            })();
-                        </script>
-                    {% endif %}
-                </div>
-            {% else %}
+            {# The points alone means nothing has been chosen to break ties,
+               which is worth saying plainly — an arbiter who forgets leaves
+               the standings undecided below the score. #}
+            {% if only_the_points and not rule_set_managed %}
+                {% with type='warning', message=_(
+                    'No tie-breaks defined other than points.'
+                ), hide_remove_button=true, icon='bi-exclamation-triangle-fill' %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            {# Ranking on tie-breaks without the score is almost never
+               what an arbiter means, so say so rather than let it pass. #}
+            {% if admin_tournament.tie_breaks_by_id and not admin_tournament.ranks_on_points %}
+                {% with type='warning', message=_(
+                    'The points are not among the ranking criteria.'
+                ), hide_remove_button=true, icon='bi-exclamation-triangle-fill' %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            {% if admin_tournament.tie_breaks_by_id %}
                 {% set reorder_enabled = (
                     not rule_set_managed and admin_tournament.tie_breaks_by_id|length > 1
                 ) %}
@@ -238,20 +179,35 @@
                                                 <i class="bi-pencil-fill"></i>
                                             </button>
                                         </span>
-                                        <button
-                                            class="btn btn-sm btn-outline-danger text-nowrap"
-                                            hx-delete="{{ url_for(
-                                                'admin-tie-break-delete',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                tournament_id=admin_tournament.id,
-                                                tie_break_id=stored_id,
-                                            ) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-target="#modal-wrapper"
+                                        {# The standings rank on the criteria
+                                           listed, so the last one has to stay. #}
+                                        {% set is_last_tie_break = admin_tournament.tie_breaks_by_id|length == 1 %}
+                                        <span
+                                            {{ macros.tooltip_attributes(
+                                                'info',
+                                                _('The tournament must keep at least one ranking criterion.'),
+                                                'top',
+                                            ) if is_last_tie_break }}
                                         >
-                                            <i class="bi-trash-fill"></i>
-                                        </button>
+                                            <button
+                                                class="btn btn-sm btn-outline-danger text-nowrap"
+                                                {% if is_last_tie_break %}
+                                                    disabled
+                                                {% else %}
+                                                    hx-delete="{{ url_for(
+                                                        'admin-tie-break-delete',
+                                                        event_uniq_id=admin_event.uniq_id,
+                                                        tournament_id=admin_tournament.id,
+                                                        tie_break_id=stored_id,
+                                                    ) }}"
+                                                    hx-target="body"
+                                                    hx-indicator="#please-wait"
+                                                    data-bs-target="#modal-wrapper"
+                                                {% endif %}
+                                            >
+                                                <i class="bi-trash-fill"></i>
+                                            </button>
+                                        </span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -388,6 +344,85 @@
                         </div>
                     </div>
                 {% endif %}
+            {% endif %}
+            {# Offered while nothing has been configured beyond the points, #}
+            {# which is the state a tournament starts in. #}
+            {% if only_the_points %}
+                <div class="pt-2">
+                    {% if not rule_set_managed and tie_break_set_select_options %}
+                        <form
+                            id="tie-break-set-apply-form"
+                            hx-post="{{ url_for(
+                                'admin-apply-tie-break-set',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            class="d-flex gap-2 align-items-end"
+                        >
+                            <div class="flex-grow-1">
+                                <style>
+                                    #tie-break-set-wrapper { flex-direction: column; }
+                                </style>
+                                {{ admin_macros.select_input(
+                                    name='tie_break_set',
+                                    label=_('Quick-apply a tie-break set'),
+                                    placeholder=_('Choose a set…'),
+                                    select_options=tie_break_set_select_options,
+                                    tooltip_select=true,
+                                    data={}, errors={}
+                                ) }}
+                            </div>
+                            <button
+                                id="tie-break-set-apply-button"
+                                type="submit"
+                                class="btn btn-outline-primary text-nowrap"
+                                disabled
+                            >
+                                <i class="bi-check-circle-fill pe-1"></i>
+                                {{ _('Apply') }}
+                            </button>
+                        </form>
+                        {% if has_custom_sets %}
+                            <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm text-nowrap"
+                                    hx-get="{{ url_for(
+                                        'admin-tie-break-sets-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                    ) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    data-bs-target="#modal-wrapper"
+                                >
+                                    <i class="bi-gear-fill pe-1"></i>
+                                    {{ _('Manage custom sets') }}
+                                </button>
+                            </div>
+                        {% endif %}
+                        <script>
+                            (function () {
+                                var $sel = $('#tie-break-set');
+                                $sel.prop('disabled', false);
+                                $sel.removeAttr('disabled');
+                                $sel.next('.select2-container')
+                                    .find('.select2-selection')
+                                    .removeAttr('aria-disabled')
+                                    .removeClass('select2-selection--disabled');
+                                $sel.change(function () {
+                                    var v = $(this).val();
+                                    $('#tie-break-set-apply-button').prop(
+                                        'disabled', !v || v === '__placeholder__'
+                                    );
+                                });
+                                $sel.trigger('change');
+                            })();
+                        </script>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>

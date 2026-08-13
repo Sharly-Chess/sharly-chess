@@ -467,6 +467,10 @@ msgstr ""
 msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
 msgstr ""
 
+#, python-brace-format
+msgid "Papi export requires the standings to be ranked on the points first. This tournament ranks on [{tie_break}] before them, which the Papi format cannot represent."
+msgstr ""
+
 msgid "Papi file"
 msgstr ""
 

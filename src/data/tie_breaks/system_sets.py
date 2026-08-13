@@ -38,6 +38,7 @@ def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
             key='swiss-sc-recommendation',
             name=_('Sharly Chess recommendation'),
             tie_breaks=[
+                tie_breaks.PointsTieBreak(),
                 tie_breaks.StandardBuchholzTieBreak(
                     [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
                 ),
@@ -51,6 +52,7 @@ def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
             key='swiss-fide-recommendation-2019',
             name=_('FIDE recommendation (2019)'),
             tie_breaks=[
+                tie_breaks.PointsTieBreak(),
                 tie_breaks.StandardBuchholzTieBreak(
                     [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
                 ),
@@ -66,6 +68,7 @@ def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
             key='swiss-fide-recommendation-2019-unrated',
             name=_('FIDE recommendation - Unrated (2019)'),
             tie_breaks=[
+                tie_breaks.PointsTieBreak(),
                 tie_breaks.StandardBuchholzTieBreak(
                     [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
                 ),
@@ -93,6 +96,7 @@ def _round_robin_system_sets() -> list['SystemTieBreakSet']:
             key='rr-fide-recommendation-2019',
             name=_('FIDE recommendation (2019)'),
             tie_breaks=[
+                tie_breaks.PointsTieBreak(),
                 tie_breaks.DirectEncounterTieBreak(),
                 tie_breaks.WinsTieBreak(),
                 tie_breaks.SonnebornBergerTieBreak(),

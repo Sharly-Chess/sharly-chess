@@ -487,9 +487,6 @@ msgstr "2/3 de %(n)s adversaires"
 msgid "202 and 212 tie-breaks (212 used)"
 msgstr "202 et 212 Départages (212 utilisé)"
 
-msgid "212 Tie-breaks with PTS not used first"
-msgstr "212 Départages avec PTS pas en première position"
-
 msgid "250 Accelerated rounds"
 msgstr "250 Rondes accélérées"
 
@@ -5038,8 +5035,8 @@ msgstr "Aucune équipe"
 msgid "No teams in this tournament."
 msgstr "Aucune équipe dans ce tournoi."
 
-msgid "No tie-breaks."
-msgstr "Aucun départage."
+msgid "No tie-breaks defined other than points."
+msgstr "Aucun départage défini en dehors des points."
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
@@ -6008,6 +6005,9 @@ msgstr "Plug-ins"
 
 msgid "Point attribution"
 msgstr "Attribution des points"
+
+msgid "Points"
+msgstr "Points"
 
 #, python-format
 msgid "Points: %(min)s or more"
@@ -7741,6 +7741,12 @@ msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
 
+msgid "The points are not among the ranking criteria."
+msgstr "Les points ne font pas partie des critères de classement."
+
+msgid "The points scored in the tournament (the primary score for teams). Placed first it ranks the standings as usual; placed lower, the criteria above it outrank the score."
+msgstr "Les points marqués dans le tournoi (le score principal pour les équipes). Placé en premier, ce critère classe comme à l'accoutumée ; placé plus bas, les critères au-dessus priment sur le score."
+
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr "Les protections d'appariement ne peuvent pas être satisfaites pour cette ronde."
 
@@ -7853,6 +7859,9 @@ msgstr "Le tournoi n'est pas encore commencé."
 
 msgid "The tournament is finished."
 msgstr "Le tournoi est terminé."
+
+msgid "The tournament must keep at least one ranking criterion."
+msgstr "Le tournoi doit conserver au moins un critère de classement."
 
 msgid "The tournament of the screens of the multi-screen."
 msgstr "Le tournoi des écrans de l'écran multiple."

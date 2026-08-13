@@ -1361,6 +1361,8 @@ class TournamentAdminController(BaseEventAdminController):
                 tournament = Tournament(event, stored_tournament)
                 if action == FormAction.CLONE:
                     base_tournament = web_context.get_admin_tournament()
+                    assert tournament.id is not None
+                    database.delete_all_tournament_stored_tie_breaks(tournament.id)
                     for tie_break in base_tournament.tie_breaks_with_invalid:
                         stored_tie_break = tie_break.to_stored_value()
                         stored_tie_break.tournament_id = tournament.id
@@ -2006,7 +2008,7 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        if tournament.tie_breaks_by_id:
+        if not tournament.only_ranks_on_points:
             raise ClientException(
                 'Cannot apply a tie-break set when tie-breaks already exist.'
             )
@@ -2026,6 +2028,13 @@ class TournamentAdminController(BaseEventAdminController):
             raise ClientException(
                 tie_break_set.disabled_reason or 'Tie-break set is disabled.'
             )
+        # A set is the whole ranking order, so it replaces what is there
+        # rather than adding to it — a tournament always holds at least
+        # the points, which would otherwise be listed twice.
+        assert tournament.id is not None
+        with EventDatabase(tournament.event.uniq_id, write=True) as database:
+            database.delete_all_tournament_stored_tie_breaks(tournament.id)
+        tournament.tie_breaks_by_id.clear()
         for stored_tb in tie_break_set.stored_tie_breaks:
             tie_break = instantiate_tie_break(stored_tb, tournament.event)
             if tie_break is not None:
@@ -2281,10 +2290,17 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _tie_break_sets_modal_context() -> dict[str, Any]:
-        """Context for the custom TB-set management modal: lists all custom
-        sets for the current pairing system."""
-        system_name_by_id = PairingSystemManager(None).options()
+    def _tie_break_sets_modal_context(event: 'Event') -> dict[str, Any]:
+        """Context for the custom TB-set management modal: lists all
+        custom sets, grouped by the pairing system they belong to.
+
+        The systems on offer depend on the event — a team event has its
+        own — while the sets are global to the installation, so a set may
+        name a system this event never offers. Those are grouped under
+        the stored id rather than left to fail: the modal lists every
+        set, whichever event it is opened from.
+        """
+        system_name_by_id = PairingSystemManager(event).options()
         custom_sets_by_pairing_system_name: dict[str, list[TieBreakSet]] = {
             system_name: [] for system_name in system_name_by_id.values()
         }
@@ -2292,8 +2308,12 @@ class TournamentAdminController(BaseEventAdminController):
             from data.tie_breaks.sets import fill_acronyms
 
             fill_acronyms(tie_break_set, event=None)
-            system_name = system_name_by_id[tie_break_set.pairing_system_id]
-            custom_sets_by_pairing_system_name[system_name].append(tie_break_set)
+            system_name = system_name_by_id.get(
+                tie_break_set.pairing_system_id, tie_break_set.pairing_system_id
+            )
+            custom_sets_by_pairing_system_name.setdefault(system_name, []).append(
+                tie_break_set
+            )
 
         return {
             'modal': 'tie_break_sets',
@@ -2318,7 +2338,8 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         return self._admin_base_event_render(
-            web_context.template_context | self._tie_break_sets_modal_context()
+            web_context.template_context
+            | self._tie_break_sets_modal_context(web_context.get_admin_event())
         )
 
     @delete(
@@ -2341,7 +2362,8 @@ class TournamentAdminController(BaseEventAdminController):
             database.delete_stored_tie_break_set(tie_break_set_id)
         SharlyChessConfig().load_and_set_env()
         return self._admin_base_event_render(
-            web_context.template_context | self._tie_break_sets_modal_context()
+            web_context.template_context
+            | self._tie_break_sets_modal_context(web_context.get_admin_event())
         )
 
     @get(

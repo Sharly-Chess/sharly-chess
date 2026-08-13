@@ -23,7 +23,7 @@ from data.pairings.variations import (
 )
 from data.player import TournamentPlayer, PlayerRating
 from data.player_categories import PlayerCategory
-from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
+from data.tie_breaks.tie_breaks import ManualTieBreak, PointsTieBreak, TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
     StoredTournament,
@@ -723,6 +723,15 @@ class PapiConverter:
         if tournament.event.is_team_event:
             return _('Papi export is not available for team events.')
 
+        # Papi ranks on the points and then on up to three tie-breaks;
+        # there is no way to express a criterion that outranks the score.
+        if not tournament.leads_on_points:
+            return _(
+                'Papi export requires the standings to be ranked on the points '
+                'first. This tournament ranks on [{tie_break}] before them, '
+                'which the Papi format cannot represent.'
+            ).format(tie_break=tournament.leading_tie_break.full_name)
+
         win = tournament.win_points
         draw = tournament.draw_points
         loss = tournament.loss_points
@@ -905,12 +914,21 @@ class PapiConverter:
         manual_index: int | None = None
         use_manual: bool = False
         for index, tiebreak in enumerate(tournament.tie_breaks):
+            if isinstance(tiebreak, PointsTieBreak):
+                # Papi always ranks on the points first and has no code
+                # for them, so they take no slot. Anywhere but first and
+                # the ranking is one Papi cannot express — fall back to
+                # the manual tie-break, which carries it exactly.
+                if index > 0:
+                    use_manual = True
+                    break
+                continue
             if tiebreak == ManualTieBreak():
                 manual_index = index
             papi_tiebreak = PapiTieBreak.get_outer_value(
                 tiebreak, three_points_for_a_win=tournament.win_points == 3.0
             )
-            if index > 2 or not papi_tiebreak:
+            if len(papi_tiebreaks) > 2 or not papi_tiebreak:
                 use_manual = True
                 break
             papi_tiebreaks.append(papi_tiebreak)
@@ -931,7 +949,7 @@ class PapiConverter:
                 manual_tiebreak_by_player_id[tournament_player.id] = (
                     player_count - tournament_player.rank + 1
                 )
-        elif len(papi_tiebreaks) < 3 and not manual_index:
+        elif len(papi_tiebreaks) < 3 and manual_index is None:
             # If a spot is available, add a manual tie-break representing the start rank
             # This way, the rankings are the same on all rounds
             papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
@@ -945,7 +963,7 @@ class PapiConverter:
                 manual_tiebreak_by_player_id[tournament_player.id] = (
                     player_count - index
                 )
-        elif manual_index:
+        elif manual_index is not None:
             # Setup the manual tie-break values from the stored value
             manual_tiebreak_by_player_id = {
                 tournament_player.id: tournament_player.manual_tiebreak

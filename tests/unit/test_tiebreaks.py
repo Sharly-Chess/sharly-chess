@@ -86,8 +86,11 @@ class TieBreakTestCase(TestCase, ABC):
     def get_direct_encounter_player_values(self):
         self.tournament.compute_tournament_player_ranks()
         tie_break_ = tie_breaks.DirectEncounterTieBreak()
+        # Direct encounter resolves the players still tied when it is
+        # reached, so it is applied after the points — index 1, the
+        # points being the criterion at index 0.
         return tie_break_.compute_all_player_values(
-            self.tournament, 0, after_round=self.tournament.rounds
+            self.tournament, 1, after_round=self.tournament.rounds
         )
 
 

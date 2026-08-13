@@ -709,9 +709,11 @@ class Tournament:
                 entry['gp'] += gp_adj
 
     def team_standings(self, *, after_round: int | None = None) -> list[dict[str, Any]]:
-        """Compute team standings for this tournament, sorted by
-        primary_score then the configured tie-breaks — the secondary score
-        is not implicit, see :func:`base_key` below.
+        """Compute team standings for this tournament, sorted by the
+        configured ranking criteria in order. The primary score is one of
+        them — the Points tie-break — rather than an implicit first key,
+        so that its position can be chosen; the secondary score is opted
+        into with MPvGP. See :func:`base_key` below.
         Each entry: {team, mp, gp, played, wins, draws, losses, rank}.
 
         ``after_round`` bounds which rounds count: only matches up to
@@ -886,18 +888,17 @@ class Tournament:
                     ent_b['draws'] += 1
         self._apply_point_adjustments_to_standings(standings, after_round)
         rows = list(standings.values())
-        primary = self.primary_score
-
-        def score_value(entry: dict[str, Any], score_type: ScoreType) -> float:
-            if score_type == ScoreType.MATCH_POINTS:
-                return float(entry['mp'])
-            return float(entry['gp'])
 
         def base_key(entry: dict[str, Any]) -> tuple[float, ...]:
-            """Primary score is the only mandatory ranking key (FIDE
-            C.07 §11 / AF §12). Secondary is *not* implicit — users
-            opt into it by adding the MPvGP tie-break."""
-            return (-score_value(entry, primary),)
+            """Nothing ranks ahead of the configured criteria.
+
+            The primary score is one of them — the Points tie-break —
+            rather than an implicit prefix, so that its position can be
+            chosen (TRF26 record 212). The secondary score has never been
+            implicit either: it is opted into with MPvGP. A tournament
+            whose list holds neither ranks on its tie-breaks alone.
+            """
+            return ()
 
         for row in rows:
             row['tie_break_values'] = []
@@ -1776,11 +1777,91 @@ class Tournament:
 
     @property
     def tie_breaks(self) -> list[TieBreak]:
+        """The ranking criteria, in order.
+
+        A tournament that has none falls back to the points alone: the
+        criteria decide the standings outright — the score is one of them
+        rather than an implicit first key — so an empty list would
+        otherwise rank nobody. Removing the Points tie-break from a list
+        that holds others is a deliberate act and is honoured.
+        """
         invalid_tie_break_ids = self.tie_breaks_invalid_messages.keys()
-        return [
+        configured = [
             tie_break
             for stored_id, tie_break in self.tie_breaks_by_id.items()
             if stored_id not in invalid_tie_break_ids
+        ]
+        return configured or self._default_tie_breaks
+
+    @cached_property
+    def _default_tie_breaks(self) -> list[TieBreak]:
+        """Cached so the instance outlives the call: a
+        :class:`TieBreakValue` keeps only a weak reference to its
+        tie-break, so a freshly built one would be collected at once."""
+        from data.tie_breaks.tie_breaks import PointsTieBreak
+
+        return [PointsTieBreak()]
+
+    @property
+    def leads_on_points(self) -> bool:
+        """Whether the standings rank on the points before anything else
+        — the usual layout, and the only one Papi can express."""
+        from data.tie_breaks.tie_breaks import PointsTieBreak
+
+        tie_breaks = self.tie_breaks
+        return bool(tie_breaks) and isinstance(tie_breaks[0], PointsTieBreak)
+
+    @property
+    def ranks_on_points(self) -> bool:
+        """Whether the points are among the ranking criteria at all.
+
+        They need not come first — another criterion may outrank them —
+        but leaving them out altogether ranks the field on tie-breaks
+        alone, which is almost never intended.
+        """
+        from data.tie_breaks.tie_breaks import PointsTieBreak
+
+        return any(
+            isinstance(tie_break, PointsTieBreak) for tie_break in self.tie_breaks
+        )
+
+    @property
+    def only_ranks_on_points(self) -> bool:
+        """Whether nothing has been chosen to break ties — the standings
+        rank on the score and stop there. The state a tournament starts
+        in, and the one a tie-break set may be applied to."""
+        return len(self.tie_breaks_by_id) == 0 or (
+            len(self.tie_breaks_by_id) == 1 and self.leads_on_points
+        )
+
+    def tie_break_acronym(self, tie_break: TieBreak) -> str:
+        """The label for a criterion's column in the standings.
+
+        The Points tie-break stands for the primary score, which in a
+        team tournament is either the match points or the game points —
+        the column says which rather than showing a generic label.
+        """
+        from data.tie_breaks.tie_breaks import PointsTieBreak
+
+        if isinstance(tie_break, PointsTieBreak) and self.is_team_tournament:
+            if self.primary_score == ScoreType.MATCH_POINTS:
+                return _('MP *** TEAM RANKING HEADER MATCH POINTS')
+            return _('GP *** TEAM RANKING HEADER GAME POINTS')
+        return tie_break.acronym
+
+    @property
+    def leading_tie_break(self) -> TieBreak:
+        """The criterion the standings rank on first — the points in the
+        usual layout. Prize categories that rank by final standing are
+        decided on it, so it is what they display."""
+        return self.tie_breaks[0]
+
+    @property
+    def team_tie_breaks(self) -> list[TieBreak]:
+        """The ranking criteria that yield a per-team value — the list
+        :meth:`team_standings` computes values for, in the same order."""
+        return [
+            tie_break for tie_break in self.tie_breaks if tie_break.supports_team_mode
         ]
 
     @property
@@ -1900,6 +1981,13 @@ class Tournament:
         if tie_break_id not in self.tie_breaks_by_id:
             raise ValueError(
                 f'Tie-break [{tie_break_id}] not part of tournament [{self.name}].'
+            )
+        if len(self.tie_breaks_by_id) == 1:
+            # The standings rank on the criteria listed and nothing else,
+            # so the last one cannot go — there would be nothing to rank on.
+            raise ValueError(
+                f'Tie-break [{tie_break_id}] is the only ranking criterion '
+                f'of tournament [{self.name}].'
             )
         with EventDatabase(self.event.uniq_id, True) as database:
             if self.tie_breaks_by_id[tie_break_id].is_manual:
@@ -2870,8 +2958,12 @@ class Tournament:
             starting_rank_federation=self.event.federation or '',
             pairing_controller_id='Sharly Chess',
             encoded_type=self.pairing_variation.trf_encoded_type,
-            standings_tie_breaks=['PTS']
-            + [tie_break.trf_acronym for tie_break in self.tie_breaks],
+            # Record 212 is the ordered list of criteria that define the
+            # standings, PTS included — no longer prefixed here, since the
+            # Points tie-break carries its own place in the list.
+            standings_tie_breaks=[
+                tie_break.trf_acronym for tie_break in self.tie_breaks
+            ],
             time_control=self.time_control_trf25 or '',
             players=[
                 player.to_trf(after_round, next_round_pairings_as_zpb)

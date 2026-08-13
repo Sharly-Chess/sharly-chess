@@ -737,6 +737,71 @@ class StandardPointsTieBreak(PlayerRecordTieBreak):
         return None
 
 
+class PointsTieBreak(PlayerRecordTieBreak):
+    """The points themselves, as a ranking criterion of their own.
+
+    TRF26 record 212 lists the criteria that *define the standings*, and
+    among the tie-break codes it accepts an extra one, ``PTS``, standing
+    for the number of points (the primary score in team competitions).
+    Its position in the list decides the ranking, so ``212 PTS,<rest>``
+    is the classic "points first, then tie-breaks" — the spec notes it is
+    the same as ``202 <rest>`` — while putting it lower lets another
+    criterion outrank the score.
+
+    It is therefore not a tie-break in the C.07 sense and appears in no
+    tie-break table; it exists so that the points can take their place in
+    the ordered list like anything else.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'POINTS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Points')
+
+    @property
+    def base_acronym(self) -> str:
+        return 'PTS'
+
+    # `is_fide` is left True: it decides the OTHER_ prefix, and PTS is
+    # defined by FIDE in TRF26 itself, so it takes none — even though it
+    # appears in no tie-break table.
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'The points scored in the tournament (the primary score for '
+            'teams). Placed first it ranks the standings as usual; placed '
+            'lower, the criteria above it outrank the score.'
+        )
+
+    @property
+    def allow_multiple(self) -> bool:
+        # Ranking on the same score twice can never separate anyone.
+        return False
+
+    def compute_player_value(
+        self, player: TournamentPlayer, *, after_round: int
+    ) -> float:
+        return player.points_after(after_round)
+
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> float:
+        return team_record.total(tournament_context.primary_score)
+
+
 class PairingNumberTieBreak(PlayerRecordTieBreak):
     """The tournament pairing number in ascending or descending order.
     Default order is ascending.

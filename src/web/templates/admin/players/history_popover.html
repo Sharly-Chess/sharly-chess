@@ -20,9 +20,6 @@
             <th scope="col" class="text-nowrap text-center">
                 {{ _('Fed. *** FEDERATION COLUMN HEADER') }}
             </th>
-            <th scope="col" class="text-nowrap">
-                {{ _('Pts *** POINTS COLUMN HEADER') }}
-            </th>
             {% for tie_break in admin_tournament.tie_breaks %}
                 <th class="tie-break text-nowrap text-center">{{ tie_break.acronym }}</th>
             {% endfor %}
@@ -42,7 +39,6 @@
                     <td>{{ opponent.rating_str }}</td>
                     <td>{{ opponent.category_name }}</td>
                     <td>{{ opponent.federation }}</td>
-                    <td class='text-center fw-bold'>{{ opponent.points_str }}</td>
                     {% for tie_break_value in opponent.tie_break_values %}
                         <td class="tie-break text-center">
                             {{ tie_break_value }}

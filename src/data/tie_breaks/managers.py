@@ -26,6 +26,7 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             tie_breaks.GamesWonWithBlackTieBreak,
             tie_breaks.ProgressiveScoresTieBreak,
             tie_breaks.RoundsElectedToPlayTieBreak,
+            tie_breaks.PointsTieBreak,
             tie_breaks.StandardPointsTieBreak,
             tie_breaks.PairingNumberTieBreak,
             tie_breaks.StandardBuchholzTieBreak,
