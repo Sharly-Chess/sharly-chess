@@ -24,7 +24,9 @@ from data.pairings.engines import (
     RoundRobinPairingEngine,
     _TeamRoundRobinEngine,
 )
+from data.pairings.fixed_table import FixedTablePairingSystem
 from data.pairings.molter import MolterPairingSystem
+from data.pairings.scheveningen import ScheveningenPairingSystem
 from data.pairings.settings import BergerNumbersSetting
 from data.pairings.systems import (
     RoundRobinPairingSystem,
@@ -1403,20 +1405,30 @@ class TeamBergerGridPrintDocument(PrintDocument):
         }
 
 
-class MolterTablePrintDocument(PrintDocument):
-    """The fixed Molter pairing schedule for a team tournament: one row per
-    board, one column per round. Cells show ``<team letter><board> – <team
-    letter><board>``; a legend maps each letter to its team."""
+class FixedPairingTablePrintDocument(PrintDocument, ABC):
+    """The fixed pairing schedule of a table-driven team system: one row
+    per board, one column per round. Cells show ``<team letter><board> –
+    <team letter><board>``; a legend maps each letter to its team.
+
+    The whole schedule is known before a move is played, so this prints
+    as soon as the teams are entered."""
 
     hide_for_individual_events = True
 
     @staticmethod
-    def static_id() -> str:
-        return 'molter-table'
+    @abstractmethod
+    def system_type() -> type:
+        """The pairing system this document belongs to."""
 
-    @staticmethod
-    def static_name() -> str:
-        return _('Molter table')
+    @property
+    @abstractmethod
+    def wrong_system_message(self) -> str:
+        """Shown when the chosen tournament uses another system."""
+
+    @property
+    @abstractmethod
+    def no_table_message(self) -> str:
+        """Shown when the tournament's shape has no table."""
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1428,14 +1440,14 @@ class MolterTablePrintDocument(PrintDocument):
 
     @property
     def template_name(self) -> str:
-        return '/admin/print/molter_table.html'
+        return '/admin/print/fixed_pairing_table.html'
 
     @classmethod
     def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
         if not super().is_available(allowed_tournaments):
             return False
         return any(
-            isinstance(tournament.pairing_system, MolterPairingSystem)
+            isinstance(tournament.pairing_system, cls.system_type())
             for tournament in allowed_tournaments
         )
 
@@ -1443,16 +1455,10 @@ class MolterTablePrintDocument(PrintDocument):
         super().validate_options()
         option = self._get_option(TournamentPrintOption)
         tournament = self.tournament
-        if not isinstance(tournament.pairing_system, MolterPairingSystem):
-            raise OptionError(
-                _('This document is only available for Molter tournaments.'),
-                option,
-            )
+        if not isinstance(tournament.pairing_system, self.system_type()):
+            raise OptionError(self.wrong_system_message, option)
         if self._table() is None:
-            raise OptionError(
-                _('No Molter table is available for this tournament size.'),
-                option,
-            )
+            raise OptionError(self.no_table_message, option)
 
     def _ordered_teams(self) -> list:
         # Canonical order = pairing order; letter A = first team, B = second…
@@ -1469,7 +1475,7 @@ class MolterTablePrintDocument(PrintDocument):
         teams = self._ordered_teams()
         players_per_team = tournament.team_player_count or 0
         system = tournament.pairing_system
-        assert isinstance(system, MolterPairingSystem)
+        assert isinstance(system, FixedTablePairingSystem)
         return system.get_table(len(teams), players_per_team, tournament)
 
     @property
@@ -1501,6 +1507,50 @@ class MolterTablePrintDocument(PrintDocument):
             'board_rows': board_rows,
             'legend': legend,
         }
+
+
+class MolterTablePrintDocument(FixedPairingTablePrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'molter-table'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Molter table')
+
+    @staticmethod
+    def system_type() -> type:
+        return MolterPairingSystem
+
+    @property
+    def wrong_system_message(self) -> str:
+        return _('This document is only available for Molter tournaments.')
+
+    @property
+    def no_table_message(self) -> str:
+        return _('No Molter table is available for this tournament size.')
+
+
+class ScheveningenTablePrintDocument(FixedPairingTablePrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'scheveningen-table'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Scheveningen table')
+
+    @staticmethod
+    def system_type() -> type:
+        return ScheveningenPairingSystem
+
+    @property
+    def wrong_system_message(self) -> str:
+        return _('This document is only available for Scheveningen tournaments.')
+
+    @property
+    def no_table_message(self) -> str:
+        return _('No Scheveningen table is available for this tournament size.')
 
 
 class RoundRobinSchedulePrintDocument(PrintDocument):
