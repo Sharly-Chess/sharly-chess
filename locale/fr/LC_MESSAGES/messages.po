@@ -490,6 +490,10 @@ msgstr "202 et 212 Départages (212 utilisé)"
 msgid "250 Accelerated rounds"
 msgstr "250 Rondes accélérées"
 
+#, python-brace-format
+msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
+msgstr "250 Rondes accélérées (activez le plugin [{plugin}] pour les importer)"
+
 msgid "299 Abnormal assignment points"
 msgstr "299 Attribution de points anormaux"
 
@@ -6019,6 +6023,9 @@ msgstr "Des valeurs positives sont attendues."
 msgid "Pref."
 msgstr "Préf."
 
+msgid "Prepare the settings of the pairing system."
+msgstr "Préparer les paramètres du système d'appariement."
+
 msgid "Present"
 msgstr "Présent·e"
 
@@ -7784,6 +7791,9 @@ msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "Les écrans utilisés par le pilote d'afficheur sont désignés par l'administrateur·ice."
 
+msgid "The settings are set and can no longer be changed."
+msgstr "Les paramètres sont fixés et ne peuvent plus être modifiés."
+
 #, python-brace-format
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
 msgstr "La somme des scores [{tie_break}] des adversaires joué·es sur l'échiquier."
@@ -7906,6 +7916,9 @@ msgstr "Ces ensembles sont enregistrés par système d'appariement et partagés 
 
 msgid "These sets are shared by every event of this installation."
 msgstr "Ces jeux sont partagés par tous les évènements de cette installation."
+
+msgid "These settings are part of the pairings already made and can no longer be changed."
+msgstr "Ces paramètres font partie des appariements déjà effectués et ne peuvent plus être modifiés."
 
 msgid "These tags are shared by every event of this installation."
 msgstr "Ces étiquettes sont partagées par tous les évènements de cette installation."

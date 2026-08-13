@@ -108,6 +108,13 @@ class PairingEngine(ABC):
         if not partial_pairings and len(stored_boards) == 0:
             return _('Pairing is not possible.')
         if self.reorder_boards:
+            # Board order follows the players' virtual points, which are
+            # only computed when a round is rendered. The pairing settings
+            # feeding them (acceleration groups, initial scores) are saved
+            # by the same request that generates the pairings, *after* that
+            # render — so recompute here rather than sorting on values
+            # predating the settings the pairing was made with.
+            tournament.set_for_round(round_)
             boards = [
                 Board(tournament, round_, stored_board)
                 for stored_board in stored_boards

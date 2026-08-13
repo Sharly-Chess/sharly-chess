@@ -1,5 +1,5 @@
 {% set are_groups_editable = admin_tournament.pairing_variation.are_groups_editable %}
-<div class="row mb-3">
+<div class="row mt-3">
     <div class="col-12">
         {% set recommended = setting.default_value(admin_tournament) %}
         {{ admin_macros.integer_range_input(
@@ -23,6 +23,8 @@
             errors=errors,
         ) }}
     </div>
+    <div id="pairing-acceleration-GROUP-C-{{ setting.group_count() }}-r1" class="col-12 form-text mt-0">
+    </div>
 </div>
 <script>
     {% set min_field = 'pairing-acceleration-GROUP-C-' ~ setting.group_count() ~ '-min' %}
@@ -33,6 +35,7 @@
             newVal = String(parseInt($(this).val(), 10) - 1);
         }
         $('#{{ previous_max_field }}').val(newVal);
+        updateR1Fields();
     });
     $('#{{ previous_max_field }}').change(function () {
         var newVal = '';
@@ -40,5 +43,9 @@
             newVal = String(parseInt($(this).val(), 10) + 1);
         }
         $('#{{ min_field }}').val(newVal);
+        updateR1Fields();
     });
+    {% if setting.group_count() == 3 %}
+        updateR1Fields();
+    {% endif %}
 </script>

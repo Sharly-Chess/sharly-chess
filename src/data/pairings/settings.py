@@ -36,6 +36,14 @@ class PairingSetting[T](IdentifiableEntity, ABC):
     ) -> dict[str, str]:
         """Check if one of the fields has an error."""
 
+    def apply_action(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        """Handle a button of the setting's form being pressed, returning
+        the form data to render back. Settings that offer no action of
+        their own leave the data untouched."""
+        return data
+
     @classmethod
     @abstractmethod
     def default_value(cls, tournament: 'Tournament') -> T:
