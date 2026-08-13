@@ -118,9 +118,12 @@
                         {{ data.get(setting.report_field, '') }}
                     </div>
                     <button
+                        id="initial-score-fill-button"
                         type="button"
                         class="btn btn-sm btn-outline-primary text-nowrap"
-                        {{ 'disabled' if not source_tournaments }}
+                        {# There is nothing to fill from until a tournament
+                           has been picked, not merely an event. #}
+                        {{ 'disabled' if not data.get(setting.source_tournament_field) }}
                         hx-post="{{ action_url }}"
                         hx-include="#modal-form"
                         hx-vals='{"{{ setting.action_field }}": "{{ setting.ACTION_FILL }}"}'
@@ -137,6 +140,18 @@
         $('#initial-score-source-event').on('change', function () {
             htmx.trigger(this, 'sourceEventChanged');
         });
+        // Choosing the tournament is what makes Fill meaningful, and it
+        // happens without a round-trip, so the button follows it here.
+        (function () {
+            const $tournament = $('#initial-score-source-tournament');
+            const button = document.getElementById('initial-score-fill-button');
+            if (!button || !$tournament.length) return;
+            function refresh() {
+                button.disabled = !$tournament.val();
+            }
+            $tournament.on('change', refresh);
+            refresh();
+        })();
     </script>
 {% endif %}
 
