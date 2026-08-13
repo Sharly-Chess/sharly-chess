@@ -33,11 +33,6 @@
         disabled=rounds_are_fixed,
         input_tooltip=rounds_fixed_reason if rounds_are_fixed else '',
     ) }}
-    {% if rounds_are_fixed %}
-        {# A disabled input is not submitted, so the figure travels in a
-           hidden one alongside it. #}
-        <input type="hidden" name="rounds" value="{{ data['rounds'] }}">
-    {% endif %}
     <script>
         $('#rounds').on('change delay:0.3s', () => {{ reload_schedule_script|safe }});
     </script>
