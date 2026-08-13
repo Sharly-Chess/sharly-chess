@@ -198,10 +198,3 @@ msgstr ""
 msgid "{matched} players filled, {missing} not found in that tournament"
 msgstr ""
 
-#, python-brace-format
-msgid "{matched} players filled, {missing} not found in that tournament"
-msgstr ""
-
-#~ msgid "layers in this group at round #1: {0} (warning: even number)."
-#~ msgstr ""
-
