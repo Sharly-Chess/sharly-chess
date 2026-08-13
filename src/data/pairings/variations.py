@@ -95,6 +95,19 @@ class PairingVariation(IdentifiableEntity, ABC):
         """Encoded type of the variation in TRF26.
         See https://handbook.fide.com/files/handbook/ETT26.pdf for all the types."""
 
+    def required_round_count(self, boards: int) -> int | None:
+        """The round count this variation imposes, as far as the
+        tournament form can tell, or ``None`` when it cannot.
+
+        Only systems driven by the *board count* can answer here, because
+        that is set in the form itself. A round-robin's round count is
+        just as rigid, but it follows the number of entrants, who are
+        added to the tournament afterwards — so it returns ``None`` and
+        is checked when the pairings are generated instead
+        (``invalid_player_count_message``).
+        """
+        return None
+
     # -------------------------------------------------------------------------
     # Acceleration
     # -------------------------------------------------------------------------

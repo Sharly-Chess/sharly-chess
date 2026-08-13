@@ -1,0 +1,44 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{# The round count, which a board-driven pairing system decides for the
+   arbiter: a Scheveningen on 4 boards is 4 rounds, 8 played twice. Those
+   cases show the figure greyed out with the reason; everything else stays
+   editable. A round-robin's count is just as rigid but follows the
+   entrants, who are added after the tournament exists, so it is left
+   alone here and checked when the pairings are generated.
+
+   Re-rendered on its own whenever the pairing system, the variation or
+   the board count changes, so the figure follows what is on screen
+   rather than what was saved. #}
+<div
+    id="rounds-field"
+    hx-trigger="rounds-params-updated"
+    hx-swap="outerHTML"
+    hx-get="{{ url_for(
+        'admin-tournament-rounds-field',
+        event_uniq_id=admin_event.uniq_id,
+    ) ~ (
+        '?tournament_id=' ~ admin_tournament.id
+        if admin_tournament
+        else ''
+    ) }}"
+    hx-include='[name="pairing_system"],[name$="_pairing_variation"],[name="team_player_count"]'
+    hx-indicator="#please-wait"
+>
+    {{ admin_macros.number_input(
+        name='rounds',
+        label=_('%(string)s:', string=_('Rounds')),
+        data=data, errors=errors,
+        disabled=rounds_are_fixed,
+        input_tooltip=rounds_fixed_reason if rounds_are_fixed else '',
+    ) }}
+    {% if rounds_are_fixed %}
+        {# A disabled input is not submitted, so the figure travels in a
+           hidden one alongside it. #}
+        <input type="hidden" name="rounds" value="{{ data['rounds'] }}">
+    {% endif %}
+    <script>
+        $('#rounds').on('change delay:0.3s', () => {{ reload_schedule_script|safe }});
+    </script>
+</div>

@@ -292,12 +292,8 @@ class ScheveningenEngine(FixedTablePairingEngine):
         if message := super().invalid_player_count_message(tournament):
             return message
         players = tournament.team_player_count or 0
-        variation = tournament.pairing_variation
-        double_round = (
-            isinstance(variation, ScheveningenVariation) and variation.double_round
-        )
-        expected = players * 2 if double_round else players
-        if tournament.rounds != expected:
+        expected = tournament.pairing_variation.required_round_count(players)
+        if expected is not None and tournament.rounds != expected:
             return _(
                 'A Scheveningen on {boards} boards is played over {expected} '
                 'rounds, so that every player meets every opponent.'
@@ -314,6 +310,12 @@ class ScheveningenVariation(FixedTableVariation, ABC):
     def double_round(self) -> bool:
         """Whether the match is played twice, colours reversed."""
         return False
+
+    @override
+    def required_round_count(self, boards: int) -> int | None:
+        if boards < 2:
+            return None
+        return boards * (2 if self.double_round else 1)
 
     @property
     def engine(self) -> PairingEngine:

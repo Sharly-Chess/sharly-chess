@@ -52,14 +52,7 @@
                     </div>
 
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.number_input(
-                            name='rounds',
-                            label=_('%(string)s:', string=_('Rounds')),
-                            data=data, errors=errors,
-                        ) }}
-                        <script>
-                            $('#rounds').on('change delay:0.3s', () => {{ reload_schedule_script|safe }});
-                        </script>
+                        {% include 'tournament_rounds_field.html' %}
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -245,6 +238,20 @@
                             {% endfor %}
                         });
                         triggerModalInitEvent('#pairing-system');
+                    </script>
+                    <script>
+                        // Some systems decide the round count (a round-robin
+                        // from the entrants, a Scheveningen from the boards),
+                        // so the field is re-read whenever those change.
+                        (function () {
+                            function reloadRoundsField() {
+                                const field = document.getElementById('rounds-field');
+                                if (field) htmx.trigger(field, 'rounds-params-updated');
+                            }
+                            $('#pairing-system').on('change', reloadRoundsField);
+                            $('[name$="_pairing_variation"]').on('change', reloadRoundsField);
+                            $('#team-player-count').on('change', reloadRoundsField);
+                        })();
                     </script>
                 </div>
                 <div class="row gy-2 gx-3">

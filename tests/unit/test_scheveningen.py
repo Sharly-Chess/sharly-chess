@@ -19,6 +19,9 @@ from data.print_documents.documents import (
     ScheveningenTablePrintDocument,
 )
 from data.print_documents.options import TournamentPrintOption
+from web.controllers.admin.tournament_admin_controller import (
+    TournamentAdminController,
+)
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTeam
 from tests.test_config import TestUtils
@@ -382,3 +385,39 @@ class TestScheveningenTournament(TestCase):
         """The two share a base class; each stays with its own system."""
         self._add_teams(2)
         assert not MolterTablePrintDocument.is_available([self._tournament()])
+
+    def test_the_round_count_is_fixed_by_the_boards(self):
+        """The board count is a field of the same form, so the round
+        count can be settled while the tournament is being created."""
+        data = {
+            'pairing_system': 'SCHEVENINGEN',
+            'SCHEVENINGEN_pairing_variation': 'SCHEVENINGEN_STANDARD',
+            'team_player_count': '4',
+            'rounds': '1',
+        }
+        context = TournamentAdminController._rounds_field_context(
+            self._tournament(), data
+        )
+        assert context['rounds_are_fixed']
+        assert context['rounds_fixed_reason']
+        assert data['rounds'] == '4'
+
+        data['SCHEVENINGEN_pairing_variation'] = 'SCHEVENINGEN_DOUBLE'
+        TournamentAdminController._rounds_field_context(self._tournament(), data)
+        assert data['rounds'] == '8'
+
+    def test_the_round_count_stays_free_for_entrant_driven_systems(self):
+        """A round-robin's round count is just as rigid, but it follows
+        the teams, who are added after the tournament exists — so the
+        form cannot settle it and must leave the field alone."""
+        data = {
+            'pairing_system': 'TEAM_ROUND_ROBIN',
+            'TEAM_ROUND_ROBIN_pairing_variation': 'TEAM_ROUND_ROBIN_BERGER',
+            'team_player_count': '4',
+            'rounds': '7',
+        }
+        context = TournamentAdminController._rounds_field_context(
+            self._tournament(), data
+        )
+        assert not context['rounds_are_fixed']
+        assert data['rounds'] == '7'

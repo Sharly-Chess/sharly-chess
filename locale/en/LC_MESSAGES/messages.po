@@ -7720,6 +7720,9 @@ msgstr ""
 msgid "The pairing numbers of the tournament in descending order."
 msgstr ""
 
+msgid "The pairing system sets the number of rounds."
+msgstr ""
+
 msgid "The permissions of this account can not be updated."
 msgstr ""
 
