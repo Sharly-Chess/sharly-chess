@@ -2287,6 +2287,11 @@ class PairingsAdminController(BaseEventAdminController):
         template_context = {
             'modal': 'pairing-settings',
             'pairing_settings': tournament.pairing_variation.settings,
+            'r1_present_pairing_numbers': [
+                player.pairing_number
+                for player in tournament.players
+                if player.pairings_by_round[1].needs_pairing
+            ],
             'data': data,
             'errors': errors or {},
             'settings_for_pairing': for_pairing,

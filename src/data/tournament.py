@@ -2836,7 +2836,7 @@ class Tournament:
         self,
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
-        prohibited_pairing_override: "list['TrfProhibitedPairing'] | None" = None,
+        prohibited_pairing_override: list['TrfProhibitedPairing'] | None = None,
     ) -> 'TrfTournament':
         from data.input_output.trf.trf_data import TRF_DATE_FORMAT, TrfTournament
 
