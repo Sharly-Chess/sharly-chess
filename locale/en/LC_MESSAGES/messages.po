@@ -3902,6 +3902,7 @@ msgstr ""
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
 msgstr ""
 
@@ -7826,7 +7827,7 @@ msgid "The tournament is finished."
 msgstr ""
 
 msgid "The tournament must keep at least one ranking criterion."
-msgstr "The tournament must keep at least one ranking criterion."
+msgstr ""
 
 msgid "The tournament of the screens of the multi-screen."
 msgstr ""

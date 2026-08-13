@@ -3902,6 +3902,7 @@ msgstr "Valeur invalide."
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr "Date de naissance invalide (attendue : {min} - {max})"
 
+#, python-brace-format
 msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
 msgstr "Classement {rating_type} [{rating}] invalide (attendu dans la plage [{min}-{max}])."
 
@@ -9763,46 +9764,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "%(minutes)d minutes after"
-#~ msgstr "%(minutes)d minutes après"
-
-#~ msgid "%(minutes)d minutes before"
-#~ msgstr "%(minutes)d minutes avant"
-
-#~ msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
-#~ msgstr "%(rating)s (%(rating_type)s) : %(min)d → %(max)d"
-
-#~ msgid "(no screens)"
-#~ msgstr "(aucun écran)"
-
-#~ msgid "212 Tie-breaks with PTS not used first"
-#~ msgstr "212 Départages avec PTS pas en première position"
-
-#~ msgid "GP *** TEAM RANKING HEADER GAME POINTS"
-#~ msgstr "PP"
-
-#~ msgid "MP *** TEAM RANKING HEADER MATCH POINTS"
-#~ msgstr "PM"
-
-#~ msgid "Multi-screens:"
-#~ msgstr "Écrans multiples :"
-
-#~ msgid "Number of players: %(num)d"
-#~ msgstr "Nombre de joueur·euses : %(num)d"
-
-#~ msgid "Pairings: %(pairing_variation)s"
-#~ msgstr "Appariements : %(pairing_variation)s"
-
-#~ msgid "Rotation delay: %(seconds)d sec."
-#~ msgstr "Délai de rotation : %(seconds)d sec."
-
-#~ msgid "Screen types:"
-#~ msgstr "Types d'écran :"
-
-#~ msgid "Screens:"
-#~ msgstr "Écrans :"
-
-#~ msgid "Type: %(family_type)s"
-#~ msgstr "Type : %(family_type)s"
 
