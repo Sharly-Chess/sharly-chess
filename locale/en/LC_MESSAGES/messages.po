@@ -3909,6 +3909,7 @@ msgstr ""
 msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
 msgstr ""
 
@@ -6020,6 +6021,9 @@ msgstr ""
 msgid "Pref."
 msgstr ""
 
+msgid "Prepare the settings of the pairing system."
+msgstr ""
+
 msgid "Present"
 msgstr ""
 
@@ -7779,6 +7783,9 @@ msgstr ""
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr ""
 
+msgid "The settings are set and can no longer be changed."
+msgstr ""
+
 #, python-brace-format
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
 msgstr ""
@@ -7897,6 +7904,9 @@ msgid "These sets are saved per pairing system and shared across events."
 msgstr ""
 
 msgid "These sets are shared by every event of this installation."
+msgstr ""
+
+msgid "These settings are part of the pairings already made and can no longer be changed."
 msgstr ""
 
 msgid "These tags are shared by every event of this installation."

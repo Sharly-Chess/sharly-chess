@@ -1,0 +1,38 @@
+{# Access to the pairing settings — the acceleration groups and rules,
+   the colour seed, the Berger numbers — on their own rather than as the
+   step the first pairing goes through, so they can be prepared ahead of
+   time. Only shown for systems that have settings at all.
+
+   The same modal still opens automatically on the first pairing; once
+   anything is paired it renders read-only, since the settings are part
+   of the pairings already made. #}
+{% if client.can_use_pairing_engine(admin_tournament.id)
+    and admin_tournament.pairing_variation.settings %}
+    <div
+        {{ macros.tooltip_attributes(
+            'info',
+            _('The settings are set and can no longer be changed.')
+            if admin_tournament.has_pairings else
+            _('Prepare the settings of the pairing system.'),
+            'top',
+        ) }}
+    >
+        <button
+            class="btn btn-outline-primary text-nowrap d-inline-flex align-items-center justify-content-center"
+            hx-get="{{ url_for(
+                'pairings-settings-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=admin_round
+            ) ~ '?configure=1' }}"
+            hx-trigger="click"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            <i class="bi-sliders pe-1"></i>
+            {{ admin_tournament.pairing_variation.name }}
+        </button>
+    </div>
+{% endif %}

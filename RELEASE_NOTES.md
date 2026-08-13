@@ -24,11 +24,12 @@
 
 - _Sharly Chess_ now supports **Teams** events! (5.0.0)
 
-## Prizes
+## Pairings
 
-- Added a quick way to generate prize categories for age categories and rating ranges (5.0.0)
-- Duplication prize categories are now added immediately after the original (5.0.0)
-- Duplicate prizes when duplicating a tournament (5.0.0)
+- A new **Custom accelerated system** lets the arbiter define the acceleration round by round — a number of virtual points granted to a range of pairing numbers over a range of rounds — instead of choosing a published system (5.0.0)
+- Tournaments using it export their rules as TRF26 250 records, and a TRF file carrying 250 records is now imported as a custom accelerated tournament (the **Accelerated pairings** plugin must be enabled) (5.0.0)
+- A new **Initial score accelerated system** gives each player an initial virtual score — useful when a tournament continues an earlier one (a blitz, for instance). The scores can be filled in one go from any other tournament, in this event or another one, with a coefficient. (5.0.0)
+- Pairing settings can be prepared before pairing round #1 and always reviewed (5.0.0)
 
 ## Pairings
 
@@ -54,6 +55,12 @@ In order to maintain compatibility with the display of table numbers on the _FFE
 - By default, we still leave the orignal table empty when the players are moved to a fixed table number (5.0.0)
 - In this compatibility mode, duplicate tables still occur when fixed table numbers are inside the normal table range (5.0.0)
 - This behavior can be changed in the _FFE_ plugin section of event's configuration (5.0.0)
+
+## Prizes
+
+- Added a quick way to generate prize categories for age categories and rating ranges (5.0.0)
+- Duplication prize categories are now added immediately after the original (5.0.0)
+- Duplicate prizes when duplicating a tournament (5.0.0)
 
 ## Screens
 
