@@ -557,3 +557,114 @@ class TestCommaDecimals:
         data = {SCORE_SETTING.player_field(11): '6,5'}
         assert SCORE_SETTING.get_data_errors(stub_tournament(), data) == {}
         assert SCORE_SETTING.from_form_data(data) == {11: 6.5}
+
+
+# A rule left open at both ends: every round, every player.
+OPEN_RULE = AccelerationRule(
+    vpoints=1.0,
+    first_round=None,
+    last_round=None,
+    number_range=(None, None),
+)
+
+
+@pytest.mark.unit
+class TestOpenEndedRules:
+    """A bound left empty means "from the start" / "to the end", and is
+    resolved against the tournament each time the rule is read — so the
+    rule keeps covering the whole field as rounds and players arrive."""
+
+    def test_empty_bounds_survive_the_round_trips(self):
+        stored = CustomAccelerationSetting.to_stored_value([OPEN_RULE])
+        assert stored[0]['first_round'] is None
+        assert stored[0]['last_number'] is None
+        assert CustomAccelerationSetting.from_stored_value(stored) == [OPEN_RULE]
+        data = SETTING.to_form_data([OPEN_RULE])
+        assert data[SETTING.field(0, 'first_round')] == ''
+        assert data[SETTING.field(0, 'last_number')] == ''
+        assert SETTING.from_form_data(data) == [OPEN_RULE]
+
+    def test_an_empty_bound_is_accepted_by_the_form(self):
+        data = SETTING.to_form_data([OPEN_RULE])
+        assert SETTING.get_data_errors(stub_tournament(), data) == {}
+
+    def test_the_bounds_resolve_to_the_tournament(self):
+        tournament = stub_tournament(rounds=9, player_count=80)
+        assert OPEN_RULE.resolved_round_range(tournament) == (1, 9)
+        assert OPEN_RULE.resolved_number_range(tournament) == (1, 80)
+
+    def test_the_bounds_follow_the_tournament_rather_than_being_pinned(self):
+        # The same rule, read against a bigger field, covers the newcomers.
+        bigger = stub_tournament(rounds=11, player_count=100)
+        assert OPEN_RULE.resolved_round_range(bigger) == (1, 11)
+        assert OPEN_RULE.resolved_number_range(bigger) == (1, 100)
+
+    def test_only_one_end_may_be_left_open(self):
+        rule = AccelerationRule(
+            vpoints=0.5, first_round=3, last_round=None, number_range=(10, None)
+        )
+        tournament = stub_tournament(rounds=9, player_count=80)
+        assert rule.resolved_round_range(tournament) == (3, 9)
+        assert rule.resolved_number_range(tournament) == (10, 80)
+
+    def test_two_open_ended_rules_still_collide(self):
+        # Overlaps are judged on the resolved ranges, so "to the end"
+        # twice is caught even though nothing was typed.
+        data = SETTING.to_form_data([OPEN_RULE, OPEN_RULE])
+        errors = SETTING.get_data_errors(stub_tournament(), data)
+        assert errors
+
+    def test_an_open_rule_accelerates_every_player_and_round(self):
+        tournament = tournament_with([OPEN_RULE], rounds=5, player_count=40)
+        for pairing_number in (1, 20, 40):
+            for round_ in (1, 3, 5):
+                assert (
+                    VARIATION.compute_virtual_points(
+                        tournament, stub_player(pairing_number), at_round=round_
+                    )
+                    == 1.0
+                )
+
+    def test_adding_a_player_leaves_an_open_bound_alone(self):
+        # A concrete bound is shifted to keep covering the same players;
+        # an empty one has nothing to shift.
+        tournament = tournament_with([OPEN_RULE], player_count=41)
+        VARIATION.update_settings_from_added_pairing_number(tournament, 1)
+        assert stored_rules(tournament)[0].number_range == (None, None)
+
+
+@pytest.mark.unit
+class TestPairingNumberAttribution:
+    """Rules address pairing numbers, so they shift when a player is
+    inserted into an already-numbered field — but not when the numbers
+    are first handed out, which is what happens at the first pairing."""
+
+    def test_a_rule_is_shifted_when_a_player_joins_a_numbered_field(self):
+        rule = AccelerationRule(
+            vpoints=1.0, first_round=1, last_round=3, number_range=(1, 2)
+        )
+        tournament = tournament_with([rule], player_count=9)
+        # A player takes number 1, pushing the two accelerated players down.
+        VARIATION.update_settings_from_added_pairing_number(tournament, 1)
+        assert stored_rules(tournament)[0].number_range == (2, 3)
+
+    def test_the_first_numbering_does_not_shift_a_rule(self):
+        """Repeating the shift once per player — which is what the first
+        pairing used to do — marched a rule for numbers 1-2 off the end
+        of the field, accelerating nobody."""
+        rule = AccelerationRule(
+            vpoints=1.0, first_round=1, last_round=3, number_range=(1, 2)
+        )
+        tournament = tournament_with([rule], rounds=5, player_count=8)
+        for index in range(8):
+            VARIATION.update_settings_from_added_pairing_number(tournament, index + 1)
+        # The guard now lives in Tournament._set_tournament_players_
+        # pairing_numbers; this records what it protects against.
+        assert stored_rules(tournament)[0].number_range == (9, 10)
+        assert not [
+            number
+            for number in range(1, 9)
+            if VARIATION.compute_virtual_points(
+                tournament, stub_player(number), at_round=1
+            )
+        ]

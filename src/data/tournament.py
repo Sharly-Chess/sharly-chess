@@ -3757,13 +3757,13 @@ class Tournament:
             TrfAcceleratedRound(
                 match_points=None,
                 game_points=rule.vpoints,
-                first_round=rule.first_round,
-                last_round=rule.last_round,
-                first_id=rule.number_range[0],
-                last_id=rule.number_range[1],
+                first_round=rule.resolved_round_range(self)[0],
+                last_round=rule.resolved_round_range(self)[1],
+                first_id=number_range[0],
+                last_id=number_range[1],
             )
             for rule in acceleration_rules
-            if rule.number_range is not None
+            if (number_range := rule.resolved_number_range(self)) is not None
         ]
         players_by_tpn = self.tournament_players_by_pairing_number
         for group, (min_tpn, max_tpn) in tpn_range_by_group.items():
@@ -3777,8 +3777,8 @@ class Tournament:
                     TrfAcceleratedRound(
                         match_points=None,
                         game_points=rule.vpoints,
-                        first_round=rule.first_round,
-                        last_round=rule.last_round,
+                        first_round=rule.resolved_round_range(self)[0],
+                        last_round=rule.resolved_round_range(self)[1],
                         first_id=min_tpn,
                         last_id=max_tpn,
                     )
@@ -4135,9 +4135,15 @@ class Tournament:
             else:
                 current_tournament_players.append(tournament_player)
                 current_pairing_numbers.add(tournament_player.pairing_number)
-        deleted_pairing_numbers = set(range(1, self.player_count + 1)).difference(
-            current_pairing_numbers
-        )
+        # Holes in the numbering, i.e. numbers that were attributed and
+        # since freed. Counted over the players that *have* a number, not
+        # the whole field: a player still waiting for one has never held
+        # a number, so counting them would report the numbers about to be
+        # handed out as deleted — and on the first pairing, where nobody
+        # is numbered yet, that means all of them.
+        deleted_pairing_numbers = set(
+            range(1, len(current_tournament_players) + 1)
+        ).difference(current_pairing_numbers)
         settings_updated = (
             self.pairing_variation.update_settings_from_deleted_pairing_numbers(
                 self, deleted_pairing_numbers
@@ -4160,6 +4166,13 @@ class Tournament:
             sorted_tournament_players = sorted(
                 current_tournament_players, key=attrgetter('starting_rank_sort_key')
             )
+        # Handing out the numbers for the first time is not an insertion:
+        # nobody is being slotted into an existing order, so the pairing
+        # settings that address numbers (acceleration rules) must not be
+        # shifted — they were written against the numbering about to be
+        # created. Shifting them once per player would march a rule for
+        # numbers 1-2 clear off the end of the field.
+        numbers_already_attributed = bool(current_tournament_players)
         for tournament_player in inserted_tournament_players:
             tournament_player_index = next(
                 (
@@ -4171,11 +4184,12 @@ class Tournament:
                 len(sorted_tournament_players),
             )
             sorted_tournament_players.insert(tournament_player_index, tournament_player)
-            settings_updated |= (
-                self.pairing_variation.update_settings_from_added_pairing_number(
-                    self, tournament_player_index + 1
+            if numbers_already_attributed:
+                settings_updated |= (
+                    self.pairing_variation.update_settings_from_added_pairing_number(
+                        self, tournament_player_index + 1
+                    )
                 )
-            )
 
         tournament_players_by_updated_pairing_number = {
             pairing_number: player

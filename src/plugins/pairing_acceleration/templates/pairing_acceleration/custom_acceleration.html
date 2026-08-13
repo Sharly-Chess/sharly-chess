@@ -21,19 +21,31 @@
                 required
             >
         </td>
-        {% for first_field, last_field, max_value in [
-            (first_round_field, last_round_field, admin_tournament.rounds),
-            (first_number_field, last_number_field, admin_tournament.player_count),
+        {% for first_field, last_field, max_value, placeholder_first, placeholder_last in [
+            (
+                first_round_field, last_round_field, admin_tournament.rounds,
+                _('1st'), _('last'),
+            ),
+            (
+                first_number_field, last_number_field, admin_tournament.player_count,
+                _('1st'), _('last'),
+            ),
         ] %}
             <td>
                 <div class="input-group input-group-sm flex-nowrap">
+                    {#
+                        Either bound may be left empty, meaning "from the
+                        start" / "to the end" — the rule then follows the
+                        tournament as rounds and players are added.
+                    #}
                     <input
                         type="number" min="1" max="{{ max_value }}"
                         class="form-control form-control-sm {{ 'is-invalid' if errors.get(first_field) }}"
                         name="{{ first_field }}"
                         data-testid="{{ first_field | replace('_', '-') }}"
                         value="{{ data.get(first_field, '') }}"
-                        required
+                        placeholder="{{ placeholder_first }}"
+                        aria-label="{{ placeholder_first }}"
                     >
                     <span class="input-group-text px-1">-</span>
                     <input
@@ -42,7 +54,8 @@
                         name="{{ last_field }}"
                         data-testid="{{ last_field | replace('_', '-') }}"
                         value="{{ data.get(last_field, '') }}"
-                        required
+                        placeholder="{{ placeholder_last }}"
+                        aria-label="{{ placeholder_last }}"
                     >
                 </div>
             </td>

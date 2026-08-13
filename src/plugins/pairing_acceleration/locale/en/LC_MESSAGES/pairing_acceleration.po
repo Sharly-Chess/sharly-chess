@@ -2,6 +2,9 @@
 msgid "%(string)s:"
 msgstr ""
 
+msgid "1st"
+msgstr ""
+
 #, python-brace-format
 msgid "A pairing number between 1 and {max} is expected."
 msgstr ""
@@ -165,9 +168,13 @@ msgstr ""
 msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
 msgstr ""
 
+msgid "last"
+msgstr ""
+
 msgid "points"
 msgstr ""
 
 #, python-brace-format
 msgid "{matched} players filled, {missing} not found in that tournament"
 msgstr ""
+

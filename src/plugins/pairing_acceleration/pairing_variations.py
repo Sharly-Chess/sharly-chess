@@ -735,7 +735,9 @@ class CustomAccelerationSwissVariation(PluginSwissVariation):
     @classmethod
     def print_real_points(cls, tournament: Tournament, current_round: int) -> bool:
         return any(
-            rule.first_round <= current_round <= rule.last_round
+            rule.resolved_round_range(tournament)[0]
+            <= current_round
+            <= rule.resolved_round_range(tournament)[1]
             for rule in CustomAccelerationSetting.get_value(tournament)
         )
 
@@ -748,10 +750,12 @@ class CustomAccelerationSwissVariation(PluginSwissVariation):
         if pairing_number is None:
             return None
         for rule in CustomAccelerationSetting.get_value(tournament):
-            assert rule.number_range is not None
-            first_number, last_number = rule.number_range
+            number_range = rule.resolved_number_range(tournament)
+            assert number_range is not None
+            first_number, last_number = number_range
+            first_round, last_round = rule.resolved_round_range(tournament)
             if (
-                rule.first_round <= at_round <= rule.last_round
+                first_round <= at_round <= last_round
                 and first_number <= pairing_number <= last_number
             ):
                 return rule
@@ -772,10 +776,16 @@ class CustomAccelerationSwissVariation(PluginSwissVariation):
         for rule in stored_rules:
             assert rule.number_range is not None
             first_number, last_number = rule.number_range
-            first_number -= sum(1 for number in deleted if number < first_number)
-            last_number -= sum(1 for number in deleted if number <= last_number)
-            last_number = min(last_number, tournament.player_count)
-            if first_number <= last_number:
+            if first_number is not None:
+                first_number -= sum(1 for number in deleted if number < first_number)
+            if last_number is not None:
+                last_number -= sum(1 for number in deleted if number <= last_number)
+                last_number = min(last_number, tournament.player_count)
+            resolved_first = 1 if first_number is None else first_number
+            resolved_last = (
+                tournament.player_count if last_number is None else last_number
+            )
+            if resolved_first <= resolved_last:
                 rules.append(replace(rule, number_range=(first_number, last_number)))
         return self._store_rules(tournament, rules)
 
@@ -793,8 +803,13 @@ class CustomAccelerationSwissVariation(PluginSwissVariation):
                 replace(
                     rule,
                     number_range=(
-                        first_number + (1 if pairing_number <= first_number else 0),
-                        last_number + (1 if pairing_number <= last_number else 0),
+                        None
+                        if first_number is None
+                        else first_number
+                        + (1 if pairing_number <= first_number else 0),
+                        None
+                        if last_number is None
+                        else last_number + (1 if pairing_number <= last_number else 0),
                     ),
                 )
             )

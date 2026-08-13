@@ -43,14 +43,39 @@ class AccelerationGroup(StrEnum):
 class AccelerationRule:
     """Virtual points granted over a range of rounds, either to an
     acceleration group or, when *number_range* is set, to an explicit
-    range of pairing numbers (one TRF26 250 record)."""
+    range of pairing numbers (one TRF26 250 record).
+
+    Any bound of either range may be left empty, meaning "from the
+    start" or "to the end" — the first/last round, the first/last
+    pairing number. Such a rule is resolved against the tournament each
+    time it is read rather than pinned when it is saved, so it keeps
+    covering the whole field as rounds and players are added.
+    """
 
     vpoints: float
-    first_round: int
-    last_round: int
+    first_round: int | None
+    last_round: int | None
     group: AccelerationGroup | None = None
     points_threshold: float = 0
-    number_range: tuple[int, int] | None = None
+    number_range: tuple[int | None, int | None] | None = None
+
+    def resolved_round_range(self, tournament: 'Tournament') -> tuple[int, int]:
+        """The rounds this rule covers, with empty bounds filled in."""
+        return (
+            1 if self.first_round is None else self.first_round,
+            tournament.rounds if self.last_round is None else self.last_round,
+        )
+
+    def resolved_number_range(self, tournament: 'Tournament') -> tuple[int, int] | None:
+        """The pairing numbers this rule covers, with empty bounds
+        filled in. ``None`` for a rule that addresses a group instead."""
+        if self.number_range is None:
+            return None
+        first, last = self.number_range
+        return (
+            1 if first is None else first,
+            tournament.player_count if last is None else last,
+        )
 
 
 class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
@@ -287,28 +312,38 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
         return [
             AccelerationRule(
                 vpoints=_form_float(data, self.field(index, 'vpoints')) or 0.0,
-                first_round=_form_int(data, self.field(index, 'first_round')) or 0,
-                last_round=_form_int(data, self.field(index, 'last_round')) or 0,
+                first_round=_form_int(data, self.field(index, 'first_round')),
+                last_round=_form_int(data, self.field(index, 'last_round')),
                 number_range=(
-                    _form_int(data, self.field(index, 'first_number')) or 0,
-                    _form_int(data, self.field(index, 'last_number')) or 0,
+                    _form_int(data, self.field(index, 'first_number')),
+                    _form_int(data, self.field(index, 'last_number')),
                 ),
             )
             for index in self.row_indexes(data)
         ]
 
+    @staticmethod
+    def _bound_to_form(value: int | None) -> str:
+        return '' if value is None else str(value)
+
     def to_form_data(self, object_: list[AccelerationRule]) -> dict[str, str]:
         data: dict[str, str] = {}
         for index, rule in enumerate(object_):
-            first_number, last_number = rule.number_range or (1, 1)
+            first_number, last_number = rule.number_range or (None, None)
             data |= {
                 self.field(index, 'vpoints'): f'{rule.vpoints:g}',
-                self.field(index, 'first_round'): str(rule.first_round),
-                self.field(index, 'last_round'): str(rule.last_round),
-                self.field(index, 'first_number'): str(first_number),
-                self.field(index, 'last_number'): str(last_number),
+                self.field(index, 'first_round'): self._bound_to_form(rule.first_round),
+                self.field(index, 'last_round'): self._bound_to_form(rule.last_round),
+                self.field(index, 'first_number'): self._bound_to_form(first_number),
+                self.field(index, 'last_number'): self._bound_to_form(last_number),
             }
         return data
+
+    @staticmethod
+    def _bound_from_stored(value: Any) -> int | None:
+        """An empty bound is stored as null. Rules written before that
+        was possible always carry a number."""
+        return None if value is None else int(value)
 
     @classmethod
     def to_stored_value(cls, object_: list[AccelerationRule]) -> Any:
@@ -317,8 +352,8 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
                 'vpoints': rule.vpoints,
                 'first_round': rule.first_round,
                 'last_round': rule.last_round,
-                'first_number': (rule.number_range or (1, 1))[0],
-                'last_number': (rule.number_range or (1, 1))[1],
+                'first_number': (rule.number_range or (None, None))[0],
+                'last_number': (rule.number_range or (None, None))[1],
             }
             for rule in object_
         ]
@@ -328,9 +363,12 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
         return [
             AccelerationRule(
                 vpoints=float(rule['vpoints']),
-                first_round=int(rule['first_round']),
-                last_round=int(rule['last_round']),
-                number_range=(int(rule['first_number']), int(rule['last_number'])),
+                first_round=cls._bound_from_stored(rule['first_round']),
+                last_round=cls._bound_from_stored(rule['last_round']),
+                number_range=(
+                    cls._bound_from_stored(rule['first_number']),
+                    cls._bound_from_stored(rule['last_number']),
+                ),
             )
             for rule in value
         ]
@@ -345,18 +383,18 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
     ) -> bool:
         covered: set[tuple[int, int]] = set()
         for rule in value:
-            if rule.number_range is None:
+            number_range = rule.resolved_number_range(tournament)
+            if number_range is None:
                 return False
             if not 0 <= rule.vpoints <= cls.MAX_VPOINTS:
                 return False
-            if not 1 <= rule.first_round <= rule.last_round <= tournament.rounds:
+            round_range = rule.resolved_round_range(tournament)
+            if not 1 <= round_range[0] <= round_range[1] <= tournament.rounds:
                 return False
-            first_number, last_number = rule.number_range
+            first_number, last_number = number_range
             if not 1 <= first_number <= last_number <= tournament.player_count:
                 return False
-            cells = cls._covered_cells(
-                (rule.first_round, rule.last_round), rule.number_range
-            )
+            cells = cls._covered_cells(round_range, number_range)
             if cells & covered:
                 return False
             covered |= cells
@@ -389,6 +427,8 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
                     max=tournament.player_count
                 ),
             )
+            # Overlaps are checked on the resolved ranges: two rules that
+            # both run "to the end" do collide, whatever is typed.
             if round_range is None or number_range is None:
                 continue
             cells = self._covered_cells(round_range, number_range)
@@ -421,16 +461,20 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
         max_value: int,
         message: str,
     ) -> tuple[int, int] | None:
+        """Read a range from the form, resolving an empty bound to the
+        start or the end. The resolved range is what gets checked for
+        overlaps; the emptiness itself is kept in the stored rule."""
         first_field = self.field(index, f'first_{name}')
         last_field = self.field(index, f'last_{name}')
         first = _form_int(data, first_field)
         last = _form_int(data, last_field)
         for field, value in ((first_field, first), (last_field, last)):
-            if value is None or not 1 <= value <= max_value:
+            if value is not None and not 1 <= value <= max_value:
                 errors[field] = message
         if first_field in errors or last_field in errors:
             return None
-        assert first is not None and last is not None
+        first = 1 if first is None else first
+        last = max_value if last is None else last
         if first > last:
             errors[last_field] = _('The end of the range must not precede its start.')
             return None
