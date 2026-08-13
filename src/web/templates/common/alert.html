@@ -6,6 +6,12 @@
     {% endif %}
 >
     {% block alert_content %}
+        {# Optional leading icon, e.g. 'bi-exclamation-triangle-fill'.
+           Guarded with `is defined` so the many callers that pass no
+           icon are unaffected. #}
+        {% if icon is defined and icon %}
+            <i class="{{ icon }} align-self-center"></i>
+        {% endif %}
         <div class="flex-grow-1 align-self-center">
             {{ message | safe }}
         </div>

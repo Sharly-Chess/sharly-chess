@@ -5021,7 +5021,7 @@ msgstr ""
 msgid "No teams in this tournament."
 msgstr ""
 
-msgid "No tie-breaks."
+msgid "No tie-breaks defined other than points."
 msgstr ""
 
 msgid "No timers"
@@ -7713,6 +7713,9 @@ msgstr ""
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr ""
 
+msgid "The points are not among the ranking criteria."
+msgstr ""
+
 msgid "The points scored in the tournament (the primary score for teams). Placed first it ranks the standings as usual; placed lower, the criteria above it outrank the score."
 msgstr ""
 
@@ -9762,4 +9765,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "No tie-breaks."
+#~ msgstr ""
 

@@ -5021,8 +5021,8 @@ msgstr "Aucune équipe"
 msgid "No teams in this tournament."
 msgstr "Aucune équipe dans ce tournoi."
 
-msgid "No tie-breaks."
-msgstr "Aucun départage."
+msgid "No tie-breaks defined other than points."
+msgstr "Aucun départage défini en dehors des points."
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
@@ -7715,6 +7715,9 @@ msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
 
+msgid "The points are not among the ranking criteria."
+msgstr "Les points ne font pas partie des critères de classement."
+
 msgid "The points scored in the tournament (the primary score for teams). Placed first it ranks the standings as usual; placed lower, the criteria above it outrank the score."
 msgstr "Les points marqués dans le tournoi (le score principal pour les équipes). Placé en premier, ce critère classe comme à l'accoutumée ; placé plus bas, les critères au-dessus priment sur le score."
 
@@ -9764,4 +9767,7 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "No tie-breaks."
+#~ msgstr "Aucun départage."
 

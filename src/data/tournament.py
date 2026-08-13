@@ -1812,6 +1812,20 @@ class Tournament:
         return bool(tie_breaks) and isinstance(tie_breaks[0], PointsTieBreak)
 
     @property
+    def ranks_on_points(self) -> bool:
+        """Whether the points are among the ranking criteria at all.
+
+        They need not come first — another criterion may outrank them —
+        but leaving them out altogether ranks the field on tie-breaks
+        alone, which is almost never intended.
+        """
+        from data.tie_breaks.tie_breaks import PointsTieBreak
+
+        return any(
+            isinstance(tie_break, PointsTieBreak) for tie_break in self.tie_breaks
+        )
+
+    @property
     def only_ranks_on_points(self) -> bool:
         """Whether nothing has been chosen to break ties — the standings
         rank on the score and stop there. The state a tournament starts
