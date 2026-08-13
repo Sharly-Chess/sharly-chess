@@ -29,7 +29,7 @@
     ></i>
 </h4>
 
-{% if source_events %}
+{% if source_events and not settings_read_only %}
     <div class="mb-2">
         <a class="small" data-bs-toggle="collapse" href="#initial-score-fill" role="button">
             <i class="bi-chevron-down pe-1"></i>{{ _('Fill from another tournament') }}
