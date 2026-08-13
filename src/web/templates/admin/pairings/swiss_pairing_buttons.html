@@ -57,6 +57,7 @@
         </button>
     </div>
     {% include 'prohibited_button.html' %}
+    {% include 'pairing_settings_button.html' %}
     {% set can_use_pairing_engine = client.can_use_pairing_engine(admin_tournament.id) %}
     {% if 'FULL_PAIRING' in allowed_actions %}
         <div

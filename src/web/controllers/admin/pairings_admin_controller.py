@@ -2266,7 +2266,17 @@ class PairingsAdminController(BaseEventAdminController):
         web_context: PairingsAdminWebContext,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        for_pairing: bool = True,
     ) -> Template:
+        """The pairing settings, either as the last step before pairing
+        (*for_pairing*, the modal that opens on the first pairing) or on
+        their own, so they can be prepared ahead of time.
+
+        Prepared on their own they are read-only once anything has been
+        paired: the settings are baked into the pairings already made,
+        so changing them then would describe a tournament that was never
+        played.
+        """
         tournament = web_context.get_admin_tournament()
         if data is None:
             data = {}
@@ -2279,6 +2289,8 @@ class PairingsAdminController(BaseEventAdminController):
             'pairing_settings': tournament.pairing_variation.settings,
             'data': data,
             'errors': errors or {},
+            'settings_for_pairing': for_pairing,
+            'settings_read_only': not for_pairing and tournament.has_pairings,
         }
         return cls._admin_event_pairings_render(web_context, template_context)
 
@@ -2291,9 +2303,43 @@ class PairingsAdminController(BaseEventAdminController):
         request: HTMXRequest,
         tournament_id: FromPath[int],
         round: FromPath[int],
+        configure: FromQuery[bool] = False,
     ) -> Template:
+        """*configure* opens the settings on their own, to be prepared
+        before the first pairing; without it this is the step the pairing
+        flow goes through."""
         web_context = PairingsAdminWebContext(request, tournament_id, round)
-        return self._render_pairings_settings_modal(web_context)
+        return self._render_pairings_settings_modal(
+            web_context, for_pairing=not configure
+        )
+
+    @post(
+        path='/pairings/settings-save/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-settings-save',
+        guards=[TournamentActionGuard(AuthAction.USE_PAIRING_ENGINE)],
+    )
+    async def htmx_pairings_settings_save(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+    ) -> Template:
+        """Store the settings without pairing, so they can be prepared
+        ahead of the first round."""
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        if errors := tournament.get_pairing_settings_data_errors(data):
+            return self._render_pairings_settings_modal(
+                web_context, data, errors, for_pairing=False
+            )
+        self._save_pairing_settings_data(tournament, data)
+        return self._admin_event_pairings_render(web_context, {})
 
     @post(
         path='/pairings/generate-with-settings/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
