@@ -552,6 +552,30 @@ class Event:
             None,
         )
 
+    def get_player_identity_keys(self, stored_player: StoredPlayer) -> set[tuple]:
+        """The keys identifying a player as the same person elsewhere —
+        in another tournament, or in another event, where they are stored
+        as a distinct player with a different id."""
+        keys: set[tuple] = set()
+        if stored_player.date_of_birth and stored_player.first_name:
+            keys.add(
+                (
+                    'name',
+                    stored_player.last_name,
+                    stored_player.first_name,
+                    stored_player.date_of_birth,
+                )
+            )
+        if stored_player.fide_id:
+            keys.add(('fide', stored_player.fide_id))
+        keys.update(
+            ('plugin', key)
+            for key in plugin_manager.hook_for_event(self, 'get_player_duplicate_key')(
+                stored_player=stored_player
+            )
+        )
+        return keys
+
     @property
     def has_multi_tournament_players(self) -> bool:
         duplicate_key_hook = plugin_manager.hook_for_event(
