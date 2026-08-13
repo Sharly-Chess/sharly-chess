@@ -233,21 +233,6 @@
                             </th>
                             <td class="text-nowrap text-center align-middle">
                                 {{ score }}
-                                {% set _delta = tournament.player_point_adjustment(
-                                    tournament_player.id, round
-                                ) %}
-                                {% if _delta %}
-                                    <span
-                                        class="badge rounded-pill {{ 'text-bg-danger' if _delta < 0 else 'text-bg-success' }}"
-                                        {{ macros.tooltip_attributes(
-                                            'info',
-                                            macros.player_point_adjustment_tooltip(
-                                                tournament, tournament_player.id, round
-                                            ),
-                                            'top'
-                                        ) }}
-                                    >{{ '%+g'|format(_delta) }}</span>
-                                {% endif %}
                                 {% if client.can_update_results(tournament.id) %}
                                     {# There is nothing to adjust until the round
                                        is paired: the adjustment belongs to a game
@@ -284,6 +269,21 @@
                                             <i class="bi-plus-slash-minus"></i>
                                         </button>
                                     </span>
+                                {% endif %}
+                                {% set _delta = tournament.player_point_adjustment(
+                                    tournament_player.id, round
+                                ) %}
+                                {% if _delta %}
+                                    <span
+                                        class="badge rounded-pill {{ 'text-bg-danger' if _delta < 0 else 'text-bg-success' }}"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            macros.player_point_adjustment_tooltip(
+                                                tournament, tournament_player.id, round
+                                            ),
+                                            'top'
+                                        ) }}
+                                    >{{ '%+g'|format(_delta) }}</span>
                                 {% endif %}
                             </td>
                             {% if bye_modifiable_for_round %}
