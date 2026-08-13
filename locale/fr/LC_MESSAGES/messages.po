@@ -7917,6 +7917,9 @@ msgstr "Les contraintes sur ces équipes de fin de classement ont été supprim�
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
 
+msgid "These points count towards the tournament standings and are used for the pairings. They do not change the results of the games, which are reported to FIDE as they were played."
+msgstr "Ces points comptent pour le classement du tournoi et sont utilisés pour les appariements. Ils ne modifient pas les résultats des parties, qui sont transmis à la FIDE tels qu’ils ont été joués."
+
 msgid "These sets are saved per pairing system and shared across events."
 msgstr "Ces ensembles sont enregistrés par système d'appariement et partagés entre les événements."
 

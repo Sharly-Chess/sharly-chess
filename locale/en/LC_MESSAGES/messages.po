@@ -7915,6 +7915,9 @@ msgstr ""
 msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
+msgid "These points count towards the tournament standings and are used for the pairings. They do not change the results of the games, which are reported to FIDE as they were played."
+msgstr ""
+
 msgid "These sets are saved per pairing system and shared across events."
 msgstr ""
 

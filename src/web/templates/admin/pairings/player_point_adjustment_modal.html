@@ -58,6 +58,20 @@
                     </div>
                 </form>
             {% endif %}
+            {# What these points do and do not touch: arbiters reach for
+               them as a sanction or a compensation, and need to know the
+               game itself is reported unchanged. #}
+            <div class="alert alert-info d-flex gap-2 py-2 px-2 mt-3 mb-0 small">
+                <i class="bi-info-circle-fill"></i>
+                <div>
+                    {{ _(
+                        'These points count towards the tournament standings '
+                        'and are used for the pairings. They do not change the '
+                        'results of the games, which are reported to FIDE as '
+                        'they were played.'
+                    ) }}
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <button
