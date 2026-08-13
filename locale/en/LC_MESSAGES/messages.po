@@ -9779,6 +9779,3 @@ msgstr ""
 msgid "← Back to IT1 certificate"
 msgstr ""
 
-#~ msgid "No tie-breaks."
-#~ msgstr ""
-

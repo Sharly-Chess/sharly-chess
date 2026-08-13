@@ -9781,6 +9781,3 @@ msgstr "—"
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
 
-#~ msgid "No tie-breaks."
-#~ msgstr "Aucun départage."
-
