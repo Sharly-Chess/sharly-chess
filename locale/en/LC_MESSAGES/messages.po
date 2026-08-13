@@ -1548,7 +1548,7 @@ msgstr ""
 msgid "Candidate Master"
 msgstr ""
 
-msgid "Cannot be both chief and deputy on the same tournament."
+msgid "Cannot have multiple arbiter roles on the same tournament."
 msgstr ""
 
 #, python-brace-format
@@ -7848,6 +7848,9 @@ msgstr ""
 msgid "The tournaments for which the staff member is a deputy arbiter."
 msgstr ""
 
+msgid "The tournaments for which the staff member is an arbiter."
+msgstr ""
+
 msgid "The tournaments for which the staff member is the chief arbiter."
 msgstr ""
 
@@ -9778,4 +9781,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Cannot be both chief and deputy on the same tournament."
+#~ msgstr ""
 

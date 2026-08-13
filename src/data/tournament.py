@@ -2323,6 +2323,18 @@ class Tournament:
         ]
 
     @property
+    def arbiters(self) -> list[Account]:
+        return [
+            account
+            for account in self.event.accounts_by_id.values()
+            if (
+                (role := account.get_role(RoleType.ARBITER))
+                and role.tournament_ids
+                and self.id in role.tournament_ids
+            )
+        ]
+
+    @property
     def max_ranking_round(self) -> int:
         if not self.started:
             return 0

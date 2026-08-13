@@ -342,7 +342,7 @@ class MatchSheetArbiterPrintOption(PrintOption):
         return _('Chief arbiter')
 
     def arbiter_options(self) -> 'dict[str, str]':
-        """``{account_id: full_name}`` for the arbiters (chief + deputies)
+        """``{account_id: full_name}`` for all the arbiters
         of the event's team tournaments — the staff that can sign a sheet."""
         result: dict[str, str] = {}
         if self.event is None or not self.event.is_team_event:
@@ -354,6 +354,7 @@ class MatchSheetArbiterPrintOption(PrintOption):
             if tournament.chief_arbiter is not None:
                 arbiters.append(tournament.chief_arbiter)
             arbiters.extend(tournament.deputy_arbiters)
+            arbiters.extend(tournament.arbiters)
             for account in arbiters:
                 result.setdefault(str(account.id), account.full_name)
         return result

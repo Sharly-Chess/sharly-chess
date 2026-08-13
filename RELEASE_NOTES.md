@@ -11,6 +11,7 @@
 
 - Custom tags can be created and added to events for easier filtering (5.0.0)
 - Event creation allowed for access level "Organization" (5.0.0)
+- Staff members can now be assigned as arbiters, separately from chief and deputy arbiter roles, and are included in tournament documents and _Chess-Results_ exports (5.0.0)
 
 ## Players
 
