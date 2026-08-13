@@ -42,6 +42,15 @@
 | `name`       | `TEXT`    | NOT NULL   | The name of the extension                                                             |
 | `is_enabled` | `INTEGER` | NOT NULL   | Boolean:<br/>- `1`: The extension is enabled;<br/>- `0`: The extension is not enabled |
 
+### `tag` table (tags)
+
+| Field   | Type      | Constraint                                 | Description                |
+|---------|-----------|--------------------------------------------|----------------------------|
+| `id`    | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The tag's ID               |
+| `name`  | `TEXT`    | NOT NULL<br/>UNIQUE                        | The name of the tag        |
+| `color` | `TEXT`    | NOT NULL                                   | The color used for the tag |
+| `index` | `INTEGER` | NOT NULL DEFAULT 0                         | The index of the tags      |
+
 ## Event Database (`events/*.sce`)
 
 ``sce`` stands for **S**harly **C**hess **E**vent.
