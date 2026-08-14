@@ -36,9 +36,6 @@
                         <i>({{ _('incomplete *** INCOMPLETE TEAM') }})</i>
                     {% endif %}
                 </div>
-                <div class="overall-cell text-center fw-bold">
-                   {{ points_str(team.total_points) }}
-                </div>
                 {% for tb_sum in team.tie_break_sums %}
                      <div class="overall-cell text-center">
                         {{ points_str(tb_sum) }}
@@ -100,7 +97,7 @@
                         </div>
                     {% endfor %}
                 {% endfor %}
-                <div class="total text-start" style="grid-column: 1 / {{ player_columns|length - team.tie_break_sums|length }};">
+                <div class="total text-start" style="grid-column: 1 / {{ player_columns|length - team.tie_break_sums|length + 1 }};">
                     {{ _('Total') }}
                 </div>
                 {% for tie_break_sum in team.tie_break_sums %}
