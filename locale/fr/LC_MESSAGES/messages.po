@@ -1359,9 +1359,6 @@ msgstr "Les écrans d'affichage des échiquiers présentent les appariements par
 msgid "Bolivia"
 msgstr "Bolivie"
 
-msgid "Bonus / penalty"
-msgstr "Bonus / pénalité"
-
 msgid "Bonus / penalty points"
 msgstr "Points de bonus/pénalité"
 
@@ -2824,9 +2821,6 @@ msgstr "Modifier joueur·euse"
 
 msgid "Edit account"
 msgstr "Modifier le compte"
-
-msgid "Edit bonus / penalty"
-msgstr "Modifier bonus / pénalité"
 
 msgid "Edit criterion"
 msgstr "Modifier le critère"
@@ -9796,4 +9790,10 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Cannot be both chief and deputy on the same tournament."
 #~ msgstr "Impossible d’être à la fois arbitre principal·e et arbitre adjoint·e sur le même tournoi."
+
+#~ msgid "Bonus / penalty"
+#~ msgstr "Bonus / pénalité"
+
+#~ msgid "Edit bonus / penalty"
+#~ msgstr "Modifier bonus / pénalité"
 

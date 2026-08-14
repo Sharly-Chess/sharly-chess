@@ -1359,9 +1359,6 @@ msgstr ""
 msgid "Bolivia"
 msgstr ""
 
-msgid "Bonus / penalty"
-msgstr ""
-
 msgid "Bonus / penalty points"
 msgstr ""
 
@@ -2823,9 +2820,6 @@ msgid "Edit Player"
 msgstr ""
 
 msgid "Edit account"
-msgstr ""
-
-msgid "Edit bonus / penalty"
 msgstr ""
 
 msgid "Edit criterion"
@@ -9793,5 +9787,11 @@ msgid "← Back to IT1 certificate"
 msgstr ""
 
 #~ msgid "Cannot be both chief and deputy on the same tournament."
+#~ msgstr ""
+
+#~ msgid "Bonus / penalty"
+#~ msgstr ""
+
+#~ msgid "Edit bonus / penalty"
 #~ msgstr ""
 
