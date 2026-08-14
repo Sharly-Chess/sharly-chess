@@ -386,9 +386,10 @@ class TestScheveningenTournament(TestCase):
         self._add_teams(2)
         assert not MolterTablePrintDocument.is_available([self._tournament()])
 
-    def test_the_round_count_is_fixed_by_the_boards(self):
-        """The board count is a field of the same form, so the round
-        count can be settled while the tournament is being created."""
+    def test_the_round_count_is_left_to_the_system(self):
+        """A Scheveningen's count follows its boards, so the field is
+        emptied and disabled rather than typed in — the count is worked
+        out on demand."""
         data = {
             'pairing_system': 'SCHEVENINGEN',
             'SCHEVENINGEN_pairing_variation': 'SCHEVENINGEN_STANDARD',
@@ -398,18 +399,13 @@ class TestScheveningenTournament(TestCase):
         context = TournamentAdminController._rounds_field_context(
             self._tournament(), data
         )
-        assert context['rounds_are_fixed']
-        assert context['rounds_fixed_reason']
-        assert data['rounds'] == '4'
+        assert context['rounds_are_automatic']
+        assert context['rounds_automatic_reason']
+        assert data['rounds'] == ''
 
-        data['SCHEVENINGEN_pairing_variation'] = 'SCHEVENINGEN_DOUBLE'
-        TournamentAdminController._rounds_field_context(self._tournament(), data)
-        assert data['rounds'] == '8'
-
-    def test_the_round_count_stays_free_for_entrant_driven_systems(self):
-        """A round-robin's round count is just as rigid, but it follows
-        the teams, who are added after the tournament exists — so the
-        form cannot settle it and must leave the field alone."""
+    def test_an_entrant_driven_system_is_automatic_too(self):
+        """A round-robin's count follows its teams. The form cannot know
+        it yet, but it must not ask for it either."""
         data = {
             'pairing_system': 'TEAM_ROUND_ROBIN',
             'TEAM_ROUND_ROBIN_pairing_variation': 'TEAM_ROUND_ROBIN_BERGER',
@@ -419,5 +415,18 @@ class TestScheveningenTournament(TestCase):
         context = TournamentAdminController._rounds_field_context(
             self._tournament(), data
         )
-        assert not context['rounds_are_fixed']
+        assert context['rounds_are_automatic']
+        assert data['rounds'] == ''
+
+    def test_a_swiss_is_still_asked_for(self):
+        data = {
+            'pairing_system': 'TEAM_SWISS',
+            'TEAM_SWISS_pairing_variation': 'TEAM_SWISS_STANDARD',
+            'team_player_count': '4',
+            'rounds': '7',
+        }
+        context = TournamentAdminController._rounds_field_context(
+            self._tournament(), data
+        )
+        assert not context['rounds_are_automatic']
         assert data['rounds'] == '7'

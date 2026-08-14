@@ -1,16 +1,16 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
-{# The round count, which a board-driven pairing system decides for the
-   arbiter: a Scheveningen on 4 boards is 4 rounds, 8 played twice. Those
-   cases show the figure greyed out with the reason; everything else stays
-   editable. A round-robin's count is just as rigid but follows the
-   entrants, who are added after the tournament exists, so it is left
-   alone here and checked when the pairings are generated.
+{# The round count. Some systems settle it themselves — a round-robin
+   from its entrants, a Scheveningen from its boards — and neither is
+   knowable while the tournament is being created. Those show an empty,
+   disabled field reading "Automatic"; the count is stored as 0 and
+   worked out on demand (see ``Tournament.rounds``). Everything else is
+   typed in as before.
 
-   Re-rendered on its own whenever the pairing system, the variation or
-   the board count changes, so the figure follows what is on screen
-   rather than what was saved. #}
+   Re-rendered on its own whenever the pairing system or its variation
+   changes, so the field follows what is on screen rather than what was
+   saved. #}
 <div
     id="rounds-field"
     hx-trigger="rounds-params-updated"
@@ -30,8 +30,9 @@
         name='rounds',
         label=_('%(string)s:', string=_('Rounds')),
         data=data, errors=errors,
-        disabled=rounds_are_fixed,
-        input_tooltip=rounds_fixed_reason if rounds_are_fixed else '',
+        placeholder=_('Automatic') if rounds_are_automatic else '',
+        disabled=rounds_are_automatic,
+        input_tooltip=rounds_automatic_reason if rounds_are_automatic else '',
     ) }}
     <script>
         $('#rounds').on('change delay:0.3s', () => {{ reload_schedule_script|safe }});

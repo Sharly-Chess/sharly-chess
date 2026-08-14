@@ -7672,6 +7672,9 @@ msgstr "Le nombre de points obtenus contre tou·tes les joueur·euses ayant atte
 msgid "The number of points in the standard 1/0.5/0 point system."
 msgstr "Le nombre de points dans le système de points standard 1/0,5/0."
 
+msgid "The number of rounds follows from the pairing system and is worked out when the pairings are generated."
+msgstr "Le nombre de rondes découle du système d'appariement et est déterminé lors de la génération des appariements."
+
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de bye ou une défaite par forfait."
 
@@ -7728,9 +7731,6 @@ msgstr "Les numéros d'appariement du tournoi par ordre croissant."
 
 msgid "The pairing numbers of the tournament in descending order."
 msgstr "Les numéros d'appariement du tournoi par ordre décroissant."
-
-msgid "The pairing system sets the number of rounds."
-msgstr "Le système d'appariement fixe le nombre de rondes."
 
 msgid "The permissions of this account can not be updated."
 msgstr "Les permissions de ce compte ne peuvent être modifiées."
@@ -9802,4 +9802,7 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "The pairing system sets the number of rounds."
+#~ msgstr "Le système d'appariement fixe le nombre de rondes."
 

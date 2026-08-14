@@ -324,7 +324,7 @@ class TournamentAdminController(BaseEventAdminController):
                 start_date = admin_tournament.start_date
                 stop_date = admin_tournament.stop_date
                 rating = admin_tournament.rating.value
-                rounds = admin_tournament.rounds or 1
+                rounds = stored_tournament.rounds
                 pairing_system = admin_tournament.pairing_system
                 pairing_variations[
                     admin_tournament.pairing_system.variation_field_id
@@ -631,12 +631,19 @@ class TournamentAdminController(BaseEventAdminController):
             data = {}
         start_date = event.start_date
         stop_date = event.stop_date
-        rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
+        # 0 (an empty field) means the pairing system works the count
+        # out from its entrants — see ``Tournament.rounds``. The field is
+        # disabled for those systems, so an empty value can only mean
+        # that; anything else must still be a positive number.
+        rounds = WebContext.form_data_to_int(data, field := 'rounds') or 0
+        rounds_are_automatic = rounds == 0
         tournament: Tournament | None = None
 
         index = len(event.tournaments)
-        if rounds < 1:
+        if rounds < 0:
             errors[field] = _('A positive integer is expected.')
+        elif rounds_are_automatic:
+            pass
         elif action == 'update':
             tournament = web_context.get_admin_tournament()
             index = tournament.index
@@ -1135,13 +1142,12 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         """Whether the pairing system decides the round count, and why.
 
-        Only a system driven by the board count can be settled here — a
-        Scheveningen on 4 boards is 4 rounds — because that count is a
-        field of this same form. A round-robin is just as rigid but
-        follows the entrants, who are added after the tournament exists,
-        so its field stays editable and the mismatch is reported when
-        the pairings are generated. When the count is settled,
-        ``data['rounds']`` is overwritten so the field shows it.
+        A round-robin's length follows from its entrants, a
+        Scheveningen's from its boards; neither is something the arbiter
+        should have to work out, and neither is knowable while the
+        tournament is being created. Those systems leave the field empty
+        and disabled — stored as 0, answered on demand by
+        ``Tournament.rounds``.
         """
         from data.pairings import PairingVariationManager
 
@@ -1150,7 +1156,7 @@ class TournamentAdminController(BaseEventAdminController):
         # variation id.
         system_id = data.get('pairing_system') or ''
         variation_id = data.get(f'{system_id}_pairing_variation') or ''
-        required: int | None = None
+        variation = None
         if variation_id:
             try:
                 variation = PairingVariationManager(
@@ -1158,16 +1164,16 @@ class TournamentAdminController(BaseEventAdminController):
                 ).get_object(variation_id)
             except KeyError:
                 variation = None
-            if variation is not None:
-                required = variation.required_round_count(
-                    WebContext.form_data_to_int(data, 'team_player_count') or 0
-                )
-        if required is None:
-            return {'rounds_are_fixed': False, 'rounds_fixed_reason': ''}
-        data['rounds'] = str(required)
+        if variation is None or not variation.sets_its_own_round_count:
+            return {'rounds_are_automatic': False, 'rounds_automatic_reason': ''}
+        # Empty, so the placeholder shows and 0 is stored.
+        data['rounds'] = ''
         return {
-            'rounds_are_fixed': True,
-            'rounds_fixed_reason': _('The pairing system sets the number of rounds.'),
+            'rounds_are_automatic': True,
+            'rounds_automatic_reason': _(
+                'The number of rounds follows from the pairing system and is '
+                'worked out when the pairings are generated.'
+            ),
         }
 
     @get(

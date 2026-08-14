@@ -7670,6 +7670,9 @@ msgstr ""
 msgid "The number of points in the standard 1/0.5/0 point system."
 msgstr ""
 
+msgid "The number of rounds follows from the pairing system and is worked out when the pairings are generated."
+msgstr ""
+
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr ""
 
@@ -7725,9 +7728,6 @@ msgid "The pairing numbers of the tournament in ascending order."
 msgstr ""
 
 msgid "The pairing numbers of the tournament in descending order."
-msgstr ""
-
-msgid "The pairing system sets the number of rounds."
 msgstr ""
 
 msgid "The permissions of this account can not be updated."
@@ -9800,4 +9800,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "The pairing system sets the number of rounds."
+#~ msgstr ""
 
