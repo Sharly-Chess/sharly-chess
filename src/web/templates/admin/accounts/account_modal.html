@@ -89,6 +89,18 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='arbiter_tournament_ids',
+                            label=_('%(string)s:', string=_('Arbiter')),
+                            tooltip_text=_('The tournaments for which the staff member is an arbiter.'),
+                            select_all=true,
+                            select_options=tournament_options,
+                            multiple_select=true,
+                            placeholder=_('Choose one, many or no tournaments.'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                 </div>
             </form>
         </div>

@@ -470,6 +470,21 @@
                     ><i>{{ _('None') }}</i></span>
                 {% endif %}
             </div>
+            <div>
+                <div>{{ _('%(string)s:', string=_('Arbiters')) }}</div>
+                {% if tournament.arbiters %}
+                    <ul class="mb-0">
+                        {% for arbiter in tournament.arbiters %}
+                            <li>{{ arbiter.full_name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <span
+                        class="text-secondary"
+                        {{ macros.tooltip_attributes('info', _('Use the Staff tab to declare arbiters.'), 'right') }}
+                    ><i>{{ _('None') }}</i></span>
+                {% endif %}
+            </div>
         </section>
     {% endset %}
 

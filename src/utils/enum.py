@@ -1037,6 +1037,7 @@ class TeamSortMode(StrEnum):
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
     DEPUTY_ARBITER = 'deputy_arbiter'
+    ARBITER = 'arbiter'
     ORGANISER = 'organiser'
 
     @property
@@ -1049,7 +1050,8 @@ class RoleType(StrEnum):
         order_map = {
             RoleType.CHIEF_ARBITER: 0,
             RoleType.DEPUTY_ARBITER: 1,
-            RoleType.ORGANISER: 2,
+            RoleType.ARBITER: 2,
+            RoleType.ORGANISER: 3,
         }
         return order_map[self]
 
@@ -1059,6 +1061,8 @@ class RoleType(StrEnum):
                 return _('Chief arbiter')
             case RoleType.DEPUTY_ARBITER:
                 return _('Deputy arbiter')
+            case RoleType.ARBITER:
+                return _('Arbiter')
             case RoleType.ORGANISER:
                 return _('Organiser')
             case _:
