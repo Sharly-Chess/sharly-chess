@@ -6590,6 +6590,10 @@ msgstr "Numéro de ronde ou texte"
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
 
+#, python-brace-format
+msgid "Round {round} is already paired. Unpair it before pairing it again."
+msgstr "La ronde {round} est déjà appariée. Supprimez ses appariements avant de l’apparier à nouveau."
+
 #, python-brace-format, python-format
 msgid "Round {} started for %%s"
 msgstr "Ronde {} commencée depuis %%s"

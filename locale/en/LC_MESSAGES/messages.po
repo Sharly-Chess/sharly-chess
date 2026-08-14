@@ -6588,6 +6588,10 @@ msgstr ""
 msgid "Round performance indicators"
 msgstr ""
 
+#, python-brace-format
+msgid "Round {round} is already paired. Unpair it before pairing it again."
+msgstr ""
+
 #, python-brace-format, python-format
 msgid "Round {} started for %%s"
 msgstr ""

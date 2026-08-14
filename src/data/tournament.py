@@ -2882,6 +2882,10 @@ class Tournament:
     def generate_round_pairings(
         self, at_round: int, partial_pairings: bool = False
     ) -> str:
+        if not partial_pairings and self.round_has_pairings(at_round):
+            return _(
+                'Round {round} is already paired. Unpair it before pairing it again.'
+            ).format(round=at_round)
         return self.pairing_variation.engine.generate_pairings(
             self, at_round, partial_pairings
         )
