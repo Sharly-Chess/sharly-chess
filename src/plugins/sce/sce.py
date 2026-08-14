@@ -167,6 +167,16 @@ class SCEPlugin(Plugin):
         if PLUGIN_NAME not in stored_event.enabled_plugins:
             return
         stored_event.plugin_data[PLUGIN_NAME] = {}
+        # The plugin is only ever enabled by importing an event from
+        # Sharly-Chess.com, so an enabled plugin means "this event is linked".
+        # The duplicate is not, so disable it: otherwise the copy keeps
+        # advertising itself as linked and the fields controlled from
+        # Sharly-Chess.com stay locked for good.
+        stored_event.enabled_plugins = [
+            plugin_id
+            for plugin_id in stored_event.enabled_plugins
+            if plugin_id != PLUGIN_NAME
+        ]
         event_database.update_stored_event(stored_event)
         for stored_tournament in stored_event.stored_tournaments:
             stored_tournament.plugin_data[PLUGIN_NAME] = {}
