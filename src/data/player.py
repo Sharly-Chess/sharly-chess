@@ -377,6 +377,14 @@ class Player:
             return None
         return tournament.tournament_players_by_id.get(self.id)
 
+    def invalidate_team_derived_cache(self):
+        """Forget what was worked out from this player's team.
+
+        In a team event the player's tournament comes from their team, and
+        it is cached — so joining, leaving or changing team has to drop it.
+        """
+        Utils.reset_cached_properties(self, 'optional_single_tournament_id')
+
     def replace_stored_player(self, stored_player: StoredPlayer):
         self.stored_player = stored_player
         self.plugin_data = self._get_plugin_data()
