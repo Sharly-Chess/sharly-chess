@@ -717,6 +717,9 @@ class Team:
         player.stored_player.team_index = next_index
         database.set_player_team(player.id, self.id, next_index)
         self._invalidate_players()
+        player.invalidate_team_derived_cache()
+        if self.tournament is not None:
+            self.tournament.register_rostered_player(player.id)
         if previous_team_id is not None:
             previous_team = self.event.teams_by_id.get(previous_team_id)
             if previous_team is not None:
@@ -726,6 +729,11 @@ class Team:
                     previous_team.set_captain(None, None, database)
                 previous_team._invalidate_players()
                 previous_team._compact_indexes(database)
+                previous_tournament = previous_team.tournament
+                if previous_tournament is not None and previous_tournament.id != (
+                    self.tournament.id if self.tournament else None
+                ):
+                    previous_tournament.unregister_rostered_player(player.id)
 
     def remove_player(self, player: 'Player', database: EventDatabase):
         """Remove a player from this team. Compacts remaining indexes."""
@@ -737,6 +745,9 @@ class Team:
         player.stored_player.team_index = None
         database.set_player_team(player.id, None, None)
         self._invalidate_players()
+        player.invalidate_team_derived_cache()
+        if self.tournament is not None:
+            self.tournament.unregister_rostered_player(player.id)
         self._compact_indexes(database)
 
     def _compact_indexes(self, database: EventDatabase):
