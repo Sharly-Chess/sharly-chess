@@ -84,8 +84,28 @@ class PlayerPointAdjustmentTestCase(TestCase):
             tournament.stored_player_point_adjustment(player.id, 1).reason,
             'late arrival',
         )
-        # The score the pairing engine works from moves with it.
-        self.assertEqual(player.points_after(tournament.rounds), before - 0.5)
+        # The score cannot go below zero, so a penalty against nothing
+        # leaves the player on nothing — the group the pairing engine
+        # puts them in.
+        self.assertEqual(before, 0.0)
+        self.assertEqual(player.points_after(tournament.rounds), 0.0)
+
+    def test_a_penalty_reduces_a_score_it_cannot_wipe_out(self):
+        """The floor is at zero, not a cap on the penalty itself: it
+        still bites into whatever the player has."""
+        tournament = self.tournament
+        player = tournament.tournament_players_by_pairing_number[1]
+        with EventDatabase(EVENT_ID, write=True) as database:
+            tournament.set_manual_player_point_adjustment(
+                player.id, 1, 3.0, 'bonus', database
+            )
+            tournament.set_manual_player_point_adjustment(
+                player.id, 2, -1.0, 'penalty', database
+            )
+        self._reload()
+        tournament = self.tournament
+        player = tournament.tournament_players_by_pairing_number[1]
+        self.assertEqual(player.points_after(tournament.rounds), 2.0)
 
     def test_clearing_an_adjustment_removes_it(self):
         tournament = self.tournament
@@ -158,10 +178,12 @@ class PlayerPointAdjustmentTestCase(TestCase):
         tournament = self.tournament
         player = tournament.tournament_players_by_pairing_number[1]
 
-        # Entering round 2, the round-1 penalty counts.
-        self.assertEqual(player.points_before(2), -1.0)
+        # Entering round 2 the round-1 penalty counts, but the score
+        # stops at zero rather than showing a negative — the figure the
+        # pairings table displays and sorts on.
+        self.assertEqual(player.points_before(2), 0.0)
         player.compute_points(before_round=2)
-        self.assertEqual(player.points, -1.0)
+        self.assertEqual(player.points, 0.0)
         # It is not counted before the round it belongs to.
         self.assertEqual(player.points_before(1), 0.0)
 

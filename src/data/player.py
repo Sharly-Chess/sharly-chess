@@ -758,6 +758,13 @@ class TournamentPlayer(Player):
             value += self.tournament.player_point_adjustment_total(
                 self.id, before_round - 1
             )
+            # A score counts points won, so it stops at zero: a penalty
+            # that would take it below leaves the player on nothing. The
+            # pairing engine already works this way — the TRF score is
+            # unsigned and bbpPairings floors its own recomputation — so
+            # anything else would show a figure the tournament is not
+            # actually being run on.
+            value = max(0.0, value)
         if caching:
             self._compute_cache[key] = value
         return value
@@ -776,8 +783,10 @@ class TournamentPlayer(Player):
         )
         # Manual bonus / penalty points count towards the score, so they
         # reach the score groups the pairing engine works from — which is
-        # what the TRF26 299 record they are exported as is for.
+        # what the TRF26 299 record they are exported as is for. Floored
+        # at zero, as in ``points_before``.
         value += self.tournament.player_point_adjustment_total(self.id, after_round)
+        value = max(0.0, value)
         if caching:
             self._compute_cache[key] = value
         return value
