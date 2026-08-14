@@ -1,11 +1,27 @@
-{% set has_tie_breaks = admin_tournament.tie_breaks_by_id|length > 0 %}
 {% set rule_set_managed = admin_tournament.rule_set_managed_tie_breaks %}
 {% set only_the_points = admin_tournament.only_ranks_on_points %}
+{# A definite width, not fit-content: sizing to the content meant the
+   dialog moved whenever the content did — opening the custom-sets section,
+   or the body growing tall enough for a scrollbar. Anything too wide now
+   wraps or scrolls inside instead. #}
 <div
     id="tie-breaks-modal"
     class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: fit-content; min-width: min(90vw, {% if has_tie_breaks %}450px{% else %}550px{% endif %});"
+    style="--bs-modal-width: min(90vw, 550px);"
 >
+    <style>
+        #tie-breaks-modal .tie-break-set-field,
+        #tie-breaks-modal .tie-break-set-field .input-block { min-width: 0; }
+        #tie-breaks-modal .tie-break-set-field .form-check-label {
+            white-space: normal;
+            margin-right: 0;
+        }
+        #tie-breaks-modal .tie-break-set-action {
+            flex: 0 0 auto;
+            min-width: 9.5rem;
+            justify-content: center;
+        }
+    </style>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -250,7 +266,7 @@
                                         hx-indicator="#please-wait"
                                         class="d-flex gap-2 align-items-end"
                                     >
-                                        <div class="flex-grow-1">
+                                        <div class="flex-grow-1 tie-break-set-field">
                                             <style>
                                                 #save-as-name-wrapper { flex-direction: column; }
                                             </style>
@@ -265,7 +281,8 @@
                                         <input type="hidden" name="name" id="save-as-name-hidden"/>
                                         <button
                                             type="submit"
-                                            class="btn btn-outline-primary text-nowrap"
+                                            class="btn btn-outline-primary text-nowrap
+                                                d-inline-flex align-items-center tie-break-set-action"
                                             id="save-as-submit"
                                             disabled
                                         >
@@ -321,25 +338,6 @@
                                         })();
                                     </script>
                                 {% endif %}
-                                {% if has_custom_sets %}
-                                    <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-primary btn-sm text-nowrap"
-                                            hx-get="{{ url_for(
-                                                'admin-tie-break-sets-modal',
-                                                event_uniq_id=admin_event.uniq_id,
-                                                tournament_id=admin_tournament.id,
-                                            ) }}"
-                                            hx-target="body"
-                                            hx-indicator="#please-wait"
-                                            data-bs-target="#modal-wrapper"
-                                        >
-                                            <i class="bi-gear-fill pe-1"></i>
-                                            {{ _('Manage custom sets') }}
-                                        </button>
-                                    </div>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -361,7 +359,7 @@
                             hx-indicator="#please-wait"
                             class="d-flex gap-2 align-items-end"
                         >
-                            <div class="flex-grow-1">
+                            <div class="flex-grow-1 tie-break-set-field">
                                 <style>
                                     #tie-break-set-wrapper { flex-direction: column; }
                                 </style>
@@ -377,32 +375,14 @@
                             <button
                                 id="tie-break-set-apply-button"
                                 type="submit"
-                                class="btn btn-outline-primary text-nowrap"
+                                class="btn btn-outline-primary text-nowrap
+                                    d-inline-flex align-items-center tie-break-set-action"
                                 disabled
                             >
                                 <i class="bi-check-circle-fill pe-1"></i>
                                 {{ _('Apply') }}
                             </button>
                         </form>
-                        {% if has_custom_sets %}
-                            <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
-                                <button
-                                    type="button"
-                                    class="btn btn-outline-primary btn-sm text-nowrap"
-                                    hx-get="{{ url_for(
-                                        'admin-tie-break-sets-modal',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=admin_tournament.id,
-                                    ) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-target="#modal-wrapper"
-                                >
-                                    <i class="bi-gear-fill pe-1"></i>
-                                    {{ _('Manage custom sets') }}
-                                </button>
-                            </div>
-                        {% endif %}
                         <script>
                             (function () {
                                 var $sel = $('#tie-break-set');
@@ -422,6 +402,25 @@
                             })();
                         </script>
                     {% endif %}
+                </div>
+            {% endif %}
+            {% if not rule_set_managed and has_custom_sets %}
+                <div class="text-end mt-3">
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm text-nowrap"
+                        hx-get="{{ url_for(
+                            'admin-tie-break-sets-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-gear-fill pe-1"></i>
+                        {{ _('Manage custom sets') }}
+                    </button>
                 </div>
             {% endif %}
         </div>
