@@ -263,7 +263,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-6 bye-option">
                         {{ admin_macros.number_input(
                             name='max_byes',
                             label=_('Max byes:'),
@@ -276,7 +276,7 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div class="col-12 col-md-6 bye-option">
                         {{ admin_macros.number_input(
                             name='last_rounds_no_byes',
                             label=_('No. final rounds without byes:'),
@@ -285,6 +285,23 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <script>
+                        (function () {
+                            const PREDETERMINED = {{
+                                pairing_systems
+                                | selectattr('predetermined_pairings')
+                                | map(attribute='id')
+                                | list
+                                | tojson
+                            }};
+                            function syncByeOptions() {
+                                const id = $('#pairing-system').val() || '';
+                                $('.bye-option').toggle(!PREDETERMINED.includes(id));
+                            }
+                            $('#pairing-system').on('change', syncByeOptions);
+                            syncByeOptions();
+                        })();
+                    </script>
 
                     <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
