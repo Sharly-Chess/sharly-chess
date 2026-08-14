@@ -4670,6 +4670,14 @@ class Tournament:
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
             database.delete_stored_team_board(stb_id)
+            for team_id in (
+                team_board.stored_team_board.team_a_id,
+                team_board.stored_team_board.team_b_id,
+            ):
+                if team_id is not None:
+                    self.set_manual_point_adjustment(
+                        team_id, round_, 0.0, 0.0, None, database
+                    )
             round_list = self.stored_tournament.stored_team_boards_by_round.get(
                 round_, []
             )
@@ -4687,9 +4695,19 @@ class Tournament:
                 if white_tp is not None:
                     white_tp.delete_pairing(board.round, database)
                     white_tp.reset_board()
+                    self.set_manual_player_point_adjustment(
+                        white_tp.id, board.round, 0.0, None, database
+                    )
                 if board.black_tournament_player:
                     board.black_tournament_player.delete_pairing(board.round, database)
                     board.black_tournament_player.reset_board()
+                    self.set_manual_player_point_adjustment(
+                        board.black_tournament_player.id,
+                        board.round,
+                        0.0,
+                        None,
+                        database,
+                    )
                 database.delete_stored_board(board.identifier)
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
@@ -4712,6 +4730,13 @@ class Tournament:
                             kept.append(stb)
                         elif stb.id is not None:
                             database.delete_stored_team_board(stb.id)
+                            # The match is gone, so its manual bonus /
+                            # penalty goes with it.
+                            for team_id in (stb.team_a_id, stb.team_b_id):
+                                if team_id is not None:
+                                    self.set_manual_point_adjustment(
+                                        team_id, round_, 0.0, 0.0, None, database
+                                    )
                     if kept:
                         self.stored_tournament.stored_team_boards_by_round[round_] = (
                             kept

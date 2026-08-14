@@ -3,7 +3,12 @@ from unittest import TestCase
 
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredPlayer, StoredTournamentPlayer
+from database.sqlite.event.event_store import (
+    StoredBoard,
+    StoredPlayer,
+    StoredTournamentPlayer,
+)
+from utils.enum import Result
 from tests.test_config import TestUtils
 
 EVENT_ID = 'test-player-point-adjustments'
@@ -39,6 +44,27 @@ class PlayerPointAdjustmentTestCase(TestCase):
 
     def _reload(self):
         self.event = EventLoader().load_event(EVENT_ID)
+
+    def _pair_round_one(self):
+        """Seat the two players on one board. The pairing engine refuses
+        a field this small (it wants more players than rounds), and the
+        board is all these tests need."""
+        tournament = self.tournament
+        white = tournament.tournament_players_by_pairing_number[1]
+        black = tournament.tournament_players_by_pairing_number[2]
+        tournament.create_boards(
+            [
+                StoredBoard(
+                    id=None,
+                    white_player_id=white.id,
+                    black_player_id=black.id,
+                    index=0,
+                )
+            ],
+            1,
+            Result.NO_RESULT,
+        )
+        self._reload()
 
     def test_adjustment_survives_a_reload_and_counts_towards_the_score(self):
         tournament = self.tournament
@@ -166,3 +192,49 @@ class PlayerPointAdjustmentTestCase(TestCase):
         self.assertIsNone(
             PapiConverter.papi_export_unavailable_message(self.tournament)
         )
+
+    def test_unpairing_a_board_clears_its_players_adjustments(self):
+        """Points are only assignable on a paired round — the button is
+        disabled otherwise — so unpairing must take them with it. Left
+        behind they are invisible (no board to show them on) and still
+        count towards the score the pairing engine reads."""
+        tournament = self.tournament
+        players = list(tournament.tournament_players_by_pairing_number.values())
+        white, black = players[0], players[1]
+        self._pair_round_one()
+        tournament = self.tournament
+        white, black = (
+            tournament.tournament_players_by_pairing_number[1],
+            tournament.tournament_players_by_pairing_number[2],
+        )
+
+        with EventDatabase(EVENT_ID, write=True) as database:
+            tournament.set_manual_player_point_adjustment(
+                white.id, 1, -2.0, 'penalty', database
+            )
+            tournament.set_manual_player_point_adjustment(
+                black.id, 1, 1.0, 'bonus', database
+            )
+        assert tournament.player_point_adjustment(white.id, 1) == -2.0
+
+        tournament.unpair_boards(tournament.get_round_boards(1))
+
+        assert tournament.player_point_adjustment(white.id, 1) == 0.0
+        assert tournament.player_point_adjustment(black.id, 1) == 0.0
+        self._reload()
+        tournament = self.tournament
+        assert tournament.stored_player_point_adjustment(white.id, 1) is None
+        assert tournament.stored_player_point_adjustment(black.id, 1) is None
+
+    def test_another_rounds_adjustment_is_left_alone(self):
+        tournament = self.tournament
+        player = next(iter(tournament.tournament_players_by_pairing_number.values()))
+        self._pair_round_one()
+        tournament = self.tournament
+        player = tournament.tournament_players_by_pairing_number[1]
+        with EventDatabase(EVENT_ID, write=True) as database:
+            tournament.set_manual_player_point_adjustment(
+                player.id, 2, -1.0, 'later round', database
+            )
+        tournament.unpair_boards(tournament.get_round_boards(1))
+        assert tournament.player_point_adjustment(player.id, 2) == -1.0
