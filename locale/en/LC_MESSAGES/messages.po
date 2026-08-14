@@ -7673,6 +7673,9 @@ msgstr ""
 msgid "The number of rounds follows from the pairing system and is worked out when the pairings are generated."
 msgstr ""
 
+msgid "The number of rounds follows from the pairing system."
+msgstr ""
+
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr ""
 

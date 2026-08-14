@@ -23,9 +23,9 @@ from web.controllers.admin.tournament_admin_controller import (
     TournamentAdminController,
 )
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTeam
+from database.sqlite.event.event_store import StoredBoard, StoredPlayer, StoredTeam
 from tests.test_config import TestUtils
-from utils.enum import EventType
+from utils.enum import EventType, Result
 
 # Transcribed verbatim from the paper, "Scheveningen tables".
 PUBLISHED: dict[int, str] = {
@@ -332,6 +332,38 @@ class TestScheveningenTournament(TestCase):
                     )
                 )
 
+    def _seat_a_board(self) -> None:
+        """Put one player from each team on a board, which is all it
+        takes for the tournament to count as paired. The engine itself
+        wants a full roster, and this test is about the form."""
+        tournament = self._tournament()
+        teams = list(tournament.event.teams_by_id.values())
+        with EventDatabase(self.EVENT_ID, write=True) as database:
+            player_ids = []
+            for index, team in enumerate(teams[:2]):
+                player_id = database.add_stored_player(
+                    StoredPlayer(
+                        id=None,
+                        last_name=f'PLAYER{index}',
+                        team_id=team.id,
+                        team_index=0,
+                    )
+                )
+                player_ids.append(player_id)
+        tournament = self._tournament()
+        tournament.create_boards(
+            [
+                StoredBoard(
+                    id=None,
+                    white_player_id=player_ids[0],
+                    black_player_id=player_ids[1],
+                    index=0,
+                )
+            ],
+            1,
+            Result.NO_RESULT,
+        )
+
     def test_the_system_is_offered_for_team_events(self):
         tournament = self._tournament()
         assert tournament.pairing_system.id == 'SCHEVENINGEN'
@@ -417,6 +449,30 @@ class TestScheveningenTournament(TestCase):
         )
         assert context['rounds_are_automatic']
         assert data['rounds'] == ''
+
+    def test_a_paired_tournament_shows_the_settled_count(self):
+        """Before pairing the count depends on boards or entrants that
+        may still change, so the field reads "Automatic". Once the
+        tournament is under way it is settled, and showing it beats a
+        placeholder — still greyed out, since it is not typed in."""
+        self._add_teams(2)
+        tournament = self._tournament()
+        data = {
+            'pairing_system': 'SCHEVENINGEN',
+            'SCHEVENINGEN_pairing_variation': 'SCHEVENINGEN_STANDARD',
+            'team_player_count': '4',
+            'rounds': '',
+        }
+        context = TournamentAdminController._rounds_field_context(tournament, data)
+        assert context['rounds_are_automatic']
+        assert data['rounds'] == '', 'unpaired: the placeholder shows'
+
+        self._seat_a_board()
+        tournament = self._tournament()
+        assert tournament.has_pairings
+        context = TournamentAdminController._rounds_field_context(tournament, data)
+        assert context['rounds_are_automatic'], "still not the arbiter's to type"
+        assert data['rounds'] == '4'
 
     def test_a_swiss_is_still_asked_for(self):
         data = {

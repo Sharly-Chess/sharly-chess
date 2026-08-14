@@ -1166,11 +1166,20 @@ class TournamentAdminController(BaseEventAdminController):
                 variation = None
         if variation is None or not variation.sets_its_own_round_count:
             return {'rounds_are_automatic': False, 'rounds_automatic_reason': ''}
-        # Empty, so the placeholder shows and 0 is stored.
-        data['rounds'] = ''
+        # Once the tournament is under way the count is settled, so show
+        # it rather than a placeholder — greyed out either way, since it
+        # is still not the arbiter's to type. Before that it is left
+        # empty: it depends on entrants or boards that may yet change,
+        # and 0 is what gets stored.
+        is_paired = tournament is not None and tournament.has_pairings
+        data['rounds'] = str(tournament.rounds) if tournament and is_paired else ''
         return {
             'rounds_are_automatic': True,
             'rounds_automatic_reason': _(
+                'The number of rounds follows from the pairing system.'
+            )
+            if is_paired
+            else _(
                 'The number of rounds follows from the pairing system and is '
                 'worked out when the pairings are generated.'
             ),
