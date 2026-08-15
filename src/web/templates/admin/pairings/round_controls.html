@@ -8,7 +8,7 @@
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
                 hx-on::after-request="window.scrollTo(0, 0)"
-                {% if admin_round <= 1 %}
+                {% if admin_round <= 1 and not display_rankings %}
                     disabled
                 {% else %}
                     hx-trigger="click, SC_Ctrl_Shift_ArrowLeft from:body"
@@ -26,7 +26,7 @@
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
                 hx-on::after-request="window.scrollTo(0, 0)"
-                {% if admin_round <= 1 %}
+                {% if admin_round <= 1 and not display_rankings %}
                     disabled
                 {% else %}
                     hx-trigger="click, SC_Shift_ArrowLeft from:body"

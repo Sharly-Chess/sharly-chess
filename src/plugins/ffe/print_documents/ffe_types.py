@@ -109,12 +109,13 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
     @cached_property
     def arbiters(self) -> str:
-        """Returns the lists of arbiters, chief arbiters first then deputy arbiters, as a textarea string."""
+        """Returns the lists of arbiters by role as a textarea string."""
         accounts_by_role: dict[RoleType, set[Account]] = {
             role_type: set()
             for role_type in [
                 RoleType.CHIEF_ARBITER,
                 RoleType.DEPUTY_ARBITER,
+                RoleType.ARBITER,
                 RoleType.ORGANISER,
             ]
         }
@@ -139,6 +140,14 @@ class FFEDocumentType(IdentifiableEntity, ABC):
             ),
             key=lambda a: a.full_name,
         )
+        arbiters: list[Account] = sorted(
+            (
+                account
+                for account in accounts_by_role[RoleType.ARBITER]
+                if account not in chief_arbiters and account not in deputy_arbiters
+            ),
+            key=lambda a: a.full_name,
+        )
 
         def format_arbiter(arbiter: Account) -> str:
             return ' '.join(
@@ -156,7 +165,8 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
         return (
             f'Arbitres en chef :\n{", ".join(format_arbiter(arbiter) for arbiter in chief_arbiters)}\n\n'
-            f'Arbitres adjoint·es :\n{", ".join(format_arbiter(arbiter) for arbiter in deputy_arbiters)}\n'
+            f'Arbitres adjoint·es :\n{", ".join(format_arbiter(arbiter) for arbiter in deputy_arbiters)}\n\n'
+            f'Arbitres :\n{", ".join(format_arbiter(arbiter) for arbiter in arbiters)}\n'
         )
 
     @cached_property

@@ -198,6 +198,9 @@ class ChessResultsSession(Session):
                 'director': (event.organiser_director or '')[:80],
                 'organiser': (event.organiser_name or '')[:80],
                 'location': tournament.location or '',
+                'arbiter': ', '.join(
+                    arbiter.fide_arbiter_str for arbiter in tournament.arbiters
+                ),
                 'rounds': str(tournament.rounds),
                 'currentround': str(tournament.current_round or 0),
                 'rankinground': str(
