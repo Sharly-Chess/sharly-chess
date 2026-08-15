@@ -662,7 +662,7 @@ class SCEEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        if previous_object:
+        if previous_object and action != 'clone':
             return previous_object
         return cls()
 
