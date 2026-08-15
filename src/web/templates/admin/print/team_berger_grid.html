@@ -88,7 +88,6 @@
                             {% endif %}
                         {% endfor %}
                         {% set standing = standings_by_team_id.get(team.id) %}
-                        <td class="result fw-bold">{% if standing %}{{ '%g'|format(standing.mp if primary_is_mp else standing.gp) }}{% endif %}</td>
                         {% for tie_break in team_tie_breaks %}
                             <td class="result text-nowrap">{% if standing %}{{ standing.tie_break_values[loop.index0].display_string_value }}{% endif %}</td>
                         {% endfor %}
