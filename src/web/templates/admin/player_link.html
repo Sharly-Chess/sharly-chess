@@ -1,4 +1,39 @@
+{% import '/common/macros.j2' as macros with context %}
 <span>
+    {# Bonus / penalty badge, opt-in: callers that sit in a round pass
+       ``point_adjustment_round``. The rankings and other round-less
+       includes get nothing. Team events adjust whole teams, so the
+       tournament returns zero there and no badge appears. #}
+    {% if point_adjustment_round is defined and point_adjustment_round and tournament_player %}
+        {% set _delta = tournament_player.tournament.player_point_adjustment(
+            tournament_player.id, point_adjustment_round
+        ) %}
+        {% if _delta %}
+            <a
+                class="badge rounded-pill align-middle ms-1 {{ 'text-bg-danger' if _delta < 0 else 'text-bg-success' }}"
+                style="cursor: pointer;"
+                onclick="event.stopPropagation()"
+                hx-get="{{ url_for(
+                    'admin-player-point-adjustment-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=tournament_player.tournament.id,
+                    round=point_adjustment_round,
+                    player_id=tournament_player.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                {{ macros.tooltip_attributes(
+                    'info',
+                    macros.player_point_adjustment_tooltip(
+                        tournament_player.tournament, tournament_player.id, point_adjustment_round
+                    ),
+                    'top'
+                ) }}
+            >{{ utils.points_delta_str(_delta) }}</a>
+        {% endif %}
+    {% endif %}
     {% set link_target = tournament_player if tournament_player else player %}
     {% set full_name = link_target.last_name ~ ' ' ~ link_target.first_name if last_name_first else link_target.full_name %}
     {% set rating_suffix = (' (' ~ tournament_player.rating_str ~ ')') if (display_rating and tournament_player) else '' %}

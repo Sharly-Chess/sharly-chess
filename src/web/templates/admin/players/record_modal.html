@@ -231,8 +231,60 @@
                             <th scope="row gy-2 gx-3" class="text-nowrap text-center">
                                 {{ round }}
                             </th>
-                            <td class="text-nowrap text-center">
+                            <td class="text-nowrap text-center align-middle">
                                 {{ score }}
+                                {% if client.can_update_results(tournament.id) %}
+                                    {# There is nothing to adjust until the round
+                                       is paired: the adjustment belongs to a game
+                                       that has not been arranged yet. #}
+                                    {% set _round_paired = tournament.round_has_pairings(round) %}
+                                    <span
+                                        class="d-inline-block"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            _('Bonus / penalty points')
+                                            if _round_paired else
+                                            _('The round must be paired first.'),
+                                            'top',
+                                        ) }}
+                                    >
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary ms-1 px-1 py-0"
+                                            {% if _round_paired %}
+                                                hx-get="{{ url_for(
+                                                    'admin-player-point-adjustment-modal',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    tournament_id=tournament.id,
+                                                    round=round,
+                                                    player_id=tournament_player.id,
+                                                ) }}"
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                                data-bs-target="#modal-wrapper"
+                                            {% else %}
+                                                disabled
+                                            {% endif %}
+                                        >
+                                            <i class="bi-plus-slash-minus"></i>
+                                        </button>
+                                    </span>
+                                {% endif %}
+                                {% set _delta = tournament.player_point_adjustment(
+                                    tournament_player.id, round
+                                ) %}
+                                {% if _delta %}
+                                    <span
+                                        class="badge rounded-pill {{ 'text-bg-danger' if _delta < 0 else 'text-bg-success' }}"
+                                        {{ macros.tooltip_attributes(
+                                            'info',
+                                            macros.player_point_adjustment_tooltip(
+                                                tournament, tournament_player.id, round
+                                            ),
+                                            'top'
+                                        ) }}
+                                    >{{ utils.points_delta_str(_delta) }}</span>
+                                {% endif %}
                             </td>
                             {% if bye_modifiable_for_round %}
                                 <td colspan="5" class="text-nowrap text-start">

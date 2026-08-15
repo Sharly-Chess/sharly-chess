@@ -1363,9 +1363,6 @@ msgstr ""
 msgid "Bolivia"
 msgstr ""
 
-msgid "Bonus / penalty"
-msgstr ""
-
 msgid "Bonus / penalty points"
 msgstr ""
 
@@ -2830,9 +2827,6 @@ msgid "Edit Player"
 msgstr ""
 
 msgid "Edit account"
-msgstr ""
-
-msgid "Edit bonus / penalty"
 msgstr ""
 
 msgid "Edit criterion"
@@ -6598,6 +6592,10 @@ msgstr ""
 msgid "Round performance indicators"
 msgstr ""
 
+#, python-brace-format
+msgid "Round {round} is already paired. Unpair it before pairing it again."
+msgstr ""
+
 #, python-brace-format, python-format
 msgid "Round {} started for %%s"
 msgstr ""
@@ -7805,6 +7803,9 @@ msgstr ""
 msgid "The round count is incompatible with the number of teams (expected: {expected})."
 msgstr ""
 
+msgid "The round must be paired first."
+msgstr ""
+
 msgid "The rule set fixes the team sort order."
 msgstr ""
 
@@ -7932,6 +7933,9 @@ msgid "These lower-ranked teams were released so the round could be paired."
 msgstr ""
 
 msgid "These plugins can only be activated on events of their federation."
+msgstr ""
+
+msgid "These points count towards the tournament standings and are used for the pairings. They do not change the results of the games, which are reported to FIDE as they were played."
 msgstr ""
 
 msgid "These sets are saved per pairing system and shared across events."
@@ -9806,4 +9810,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-

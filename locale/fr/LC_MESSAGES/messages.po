@@ -1363,9 +1363,6 @@ msgstr "Les écrans d'affichage des échiquiers présentent les appariements par
 msgid "Bolivia"
 msgstr "Bolivie"
 
-msgid "Bonus / penalty"
-msgstr "Bonus / pénalité"
-
 msgid "Bonus / penalty points"
 msgstr "Points de bonus/pénalité"
 
@@ -2831,9 +2828,6 @@ msgstr "Modifier joueur·euse"
 
 msgid "Edit account"
 msgstr "Modifier le compte"
-
-msgid "Edit bonus / penalty"
-msgstr "Modifier bonus / pénalité"
 
 msgid "Edit criterion"
 msgstr "Modifier le critère"
@@ -6600,6 +6594,10 @@ msgstr "Numéro de ronde ou texte"
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
 
+#, python-brace-format
+msgid "Round {round} is already paired. Unpair it before pairing it again."
+msgstr "La ronde {round} est déjà appariée. Supprimez ses appariements avant de l’apparier à nouveau."
+
 #, python-brace-format, python-format
 msgid "Round {} started for %%s"
 msgstr "Ronde {} commencée depuis %%s"
@@ -7807,6 +7805,9 @@ msgstr "Le nombre de rondes est incompatible avec le nombre de joueur·euses (at
 msgid "The round count is incompatible with the number of teams (expected: {expected})."
 msgstr "Le nombre de rondes est incompatible avec le nombre d'équipes (attendu : {expected})."
 
+msgid "The round must be paired first."
+msgstr "La ronde doit d'abord être appariée."
+
 msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
 
@@ -7935,6 +7936,9 @@ msgstr "Les contraintes sur ces équipes de fin de classement ont été supprim�
 
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
+
+msgid "These points count towards the tournament standings and are used for the pairings. They do not change the results of the games, which are reported to FIDE as they were played."
+msgstr "Ces points comptent pour le classement du tournoi et sont utilisés pour les appariements. Ils ne modifient pas les résultats des parties, qui sont transmis à la FIDE tels qu’ils ont été joués."
 
 msgid "These sets are saved per pairing system and shared across events."
 msgstr "Ces ensembles sont enregistrés par système d'appariement et partagés entre les événements."
@@ -9808,4 +9812,3 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-

@@ -419,6 +419,7 @@ class WebContext:
             'locale': SessionLocale(self.request).get(),
             'client': self.client,
             'user_agent': self.request.headers.get('User-Agent', ''),
+            'utils': Utils,
         }
 
 
