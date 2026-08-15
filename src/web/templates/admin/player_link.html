@@ -31,7 +31,7 @@
                     ),
                     'top'
                 ) }}
-            >{{ '%+g'|format(_delta) }}</a>
+            >{{ utils.points_delta_str(_delta) }}</a>
         {% endif %}
     {% endif %}
     {% set link_target = tournament_player if tournament_player else player %}

@@ -283,7 +283,7 @@
                                             ),
                                             'top'
                                         ) }}
-                                    >{{ '%+g'|format(_delta) }}</span>
+                                    >{{ utils.points_delta_str(_delta) }}</span>
                                 {% endif %}
                             </td>
                             {% if bye_modifiable_for_round %}
