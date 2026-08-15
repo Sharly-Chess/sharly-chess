@@ -2350,6 +2350,18 @@ class Tournament:
         ]
 
     @property
+    def arbiters(self) -> list[Account]:
+        return [
+            account
+            for account in self.event.accounts_by_id.values()
+            if (
+                (role := account.get_role(RoleType.ARBITER))
+                and role.tournament_ids
+                and self.id in role.tournament_ids
+            )
+        ]
+
+    @property
     def max_ranking_round(self) -> int:
         if not self.started:
             return 0
@@ -4221,6 +4233,60 @@ class Tournament:
                 database.add_stored_tournament_player(stored_tournament_player)
         self.tournament_players_by_id[stored_player.id] = TournamentPlayer(
             self, stored_tournament_player
+        )
+
+    def register_rostered_player(self, player_id: int):
+        """Take note that a player has joined a team of this tournament.
+
+        A team tournament stores no ``tournament_player`` rows — the
+        loader synthesises them from team membership (see
+        ``load_stored_tournament_players``) — so a player added to a team
+        after the event was loaded is absent from this tournament until
+        the next reload, and the players tab shows them with no
+        tournament of their own.
+        """
+        if player_id in self.tournament_players_by_id:
+            return
+        stored_tournament_player = StoredTournamentPlayer(
+            tournament_id=self.id,
+            player_id=player_id,
+            pairing_number=None,
+            manual_tiebreak=None,
+            stored_pairings=[],
+        )
+        self.stored_tournament.stored_tournament_players.append(
+            stored_tournament_player
+        )
+        self.tournament_players_by_id[player_id] = TournamentPlayer(
+            self, stored_tournament_player
+        )
+        self._reset_player_derived_cache()
+
+    def unregister_rostered_player(self, player_id: int):
+        """The reverse: a player has left a team of this tournament."""
+        if player_id not in self.tournament_players_by_id:
+            return
+        del self.tournament_players_by_id[player_id]
+        self.stored_tournament.stored_tournament_players = [
+            stored_tournament_player
+            for stored_tournament_player in (
+                self.stored_tournament.stored_tournament_players
+            )
+            if stored_tournament_player.player_id != player_id
+        ]
+        self._reset_player_derived_cache()
+
+    def _reset_player_derived_cache(self):
+        """Drop what is computed from the tournament's player list."""
+        Utils.reset_cached_properties(
+            self,
+            'player_count',
+            'exclusive_player_ids',
+            'tournament_players_by_fide_id',
+            'tournament_players_by_starting_rank',
+            'tournament_players_by_pairing_number',
+            'sorted_tournament_players',
+            'sorted_tournament_players_without_unpaired',
         )
 
     def get_available_board_indexes(self, round_: int) -> list[int]:

@@ -1552,8 +1552,8 @@ msgstr "Annuler « %(bye)s » à la ronde n°%(round)s for [%(player)s]?"
 msgid "Candidate Master"
 msgstr "Candidat Maître"
 
-msgid "Cannot be both chief and deputy on the same tournament."
-msgstr "Impossible d’être à la fois arbitre principal·e et arbitre adjoint·e sur le même tournoi."
+msgid "Cannot have multiple arbiter roles on the same tournament."
+msgstr "Impossible d’avoir plusieurs rôles d’arbitre sur le même tournoi."
 
 #, python-brace-format
 msgid "Cannot tile {remaining} remaining players into a base table for {t} teams."
@@ -7872,6 +7872,9 @@ msgstr "Le tournoi des écrans de l'écran multiple."
 msgid "The tournaments for which the staff member is a deputy arbiter."
 msgstr "Les tournois pour lesquels le membre du staff est arbitre adjoint·e."
 
+msgid "The tournaments for which the staff member is an arbiter."
+msgstr "Les tournois pour lesquels le membre du staff est arbitre."
+
 msgid "The tournaments for which the staff member is the chief arbiter."
 msgstr "Les tournois pour lesquels le membre du staff est arbitre principal·e."
 
@@ -9805,7 +9808,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "The pairing system sets the number of rounds."
-#~ msgstr "Le système d'appariement fixe le nombre de rondes."
 
