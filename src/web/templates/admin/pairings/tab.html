@@ -203,6 +203,25 @@
                     </div>
                 {% endif %}
             </div>
+            {# Why the round cannot be paired. The buttons carry it as a
+               tooltip too, but a disabled button is not somewhere an arbiter
+               thinks to hover — the reason has to be on the page. Its own
+               column in the row, so it sits under the buttons and lines up
+               with the table below. #}
+            {% if not display_rankings and pairings_generation_disabled_message %}
+                {% if has_unpaired %}
+                    <div class="col-12 col-lg-3"></div>
+                {% endif %}
+                <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
+                    {% with type='warning',
+                        message=pairings_generation_disabled_message,
+                        hide_remove_button=true,
+                        icon='bi-exclamation-triangle-fill',
+                        alert_classes='mb-2' %}
+                        {% include '/common/alert.html' %}
+                    {% endwith %}
+                </div>
+            {% endif %}
 
             {% if not display_rankings %}
                 {% if has_unpaired %}

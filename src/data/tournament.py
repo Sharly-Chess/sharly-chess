@@ -340,7 +340,34 @@ class Tournament:
 
     @property
     def rounds(self) -> int:
-        return self.stored_tournament.rounds
+        """The number of rounds this tournament is played over.
+        A stored 0 means the pairing system works it out from its entrants"""
+        stored_rounds = self.stored_tournament.rounds
+        if self.pairing_variation.sets_its_own_round_count:
+            # The system's answer wins over whatever is stored. A
+            # tournament saved before it could work this out — or before
+            # its boards or its entrants changed — would otherwise be
+            # stuck with a count that no longer describes it, and could
+            # not be paired at all.
+            return self.automatic_rounds or stored_rounds or 1
+        return stored_rounds or 1
+
+    @property
+    def rounds_are_automatic(self) -> bool:
+        """Whether the pairing system settles the round count itself."""
+        return self.pairing_variation.automatic_round_count(self) is not None or (
+            not self.stored_tournament.rounds
+        )
+
+    @property
+    def automatic_rounds(self) -> int | None:
+        if getattr(self, '_computing_automatic_rounds', False):
+            return None
+        self._computing_automatic_rounds = True
+        try:
+            return self.pairing_variation.automatic_round_count(self)
+        finally:
+            self._computing_automatic_rounds = False
 
     @cached_property
     def pairing_variation(self) -> 'PairingVariation':
@@ -2818,9 +2845,30 @@ class Tournament:
     def generate_round_pairings(
         self, at_round: int, partial_pairings: bool = False
     ) -> str:
+        self.persist_automatic_rounds()
         return self.pairing_variation.engine.generate_pairings(
             self, at_round, partial_pairings
         )
+
+    def persist_automatic_rounds(self):
+        """Write down the round count a system works out for itself.
+
+        ``rounds`` already answers with it, but the stored value is what
+        the schedule, the exports and every other reader of the record
+        see. Settling it as the pairings are generated keeps them in
+        step — including after an unpairing, when the field may have
+        changed size and the count with it.
+        """
+        if not self.pairing_variation.sets_its_own_round_count:
+            return
+        automatic_rounds = self.automatic_rounds
+        if automatic_rounds is None or automatic_rounds == (
+            self.stored_tournament.rounds
+        ):
+            return
+        self.stored_tournament.rounds = automatic_rounds
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.update_stored_tournament(self.stored_tournament)
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(

@@ -395,6 +395,30 @@ class FixedTablePairingEngine(PairingEngine):
         tournament.create_boards(stored_boards, round_, self.pab_result)
         return ''
 
+    def _combined_pairings_or_empty(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        team_count: int,
+        players_per_team: int,
+    ) -> list[TablePairing]:
+        """The round's pairings, or nothing when this tournament's shape
+        has no usable table.
+
+        The read-only callers below run on every render of the pairings
+        tab, including when the system was picked for a shape it cannot
+        pair (say a two-team system on three teams). That has to leave
+        the tab standing — the pairing buttons carry
+        ``invalid_player_count_message`` to explain it — rather than
+        raise out of the page. Generation itself still fails loudly.
+        """
+        try:
+            return self._build_combined_pairings(
+                tournament, round_, team_count, players_per_team
+            )
+        except SharlyChessException:
+            return []
+
     def team_by_letter(self, tournament: 'Tournament') -> dict[str, 'Team']:
         """The table's team-letter assignment (``'A'`` = first team in
         the canonical order, ``'B'`` = second, …)."""
@@ -419,7 +443,7 @@ class FixedTablePairingEngine(PairingEngine):
                 f'{p.white_team}{p.white_index}',
                 f'{p.black_team}{p.black_index}',
             )
-            for p in self._build_combined_pairings(tournament, round_, len(teams), n)
+            for p in self._combined_pairings_or_empty(tournament, round_, len(teams), n)
         ]
 
     def round_team_by_letter(
@@ -440,7 +464,8 @@ class FixedTablePairingEngine(PairingEngine):
         boards = sorted(tournament.get_round_boards(round_), key=lambda b: b.index)
         votes: dict[str, Counter] = {}
         for board, p in zip(
-            boards, self._build_combined_pairings(tournament, round_, len(teams), n)
+            boards,
+            self._combined_pairings_or_empty(tournament, round_, len(teams), n),
         ):
             wtp = board.optional_white_tournament_player
             btp = board.black_tournament_player
@@ -472,7 +497,7 @@ class FixedTablePairingEngine(PairingEngine):
         }
         seats: dict[tuple[int, int], tuple[int, str]] = {}
         for index, p in enumerate(
-            self._build_combined_pairings(tournament, round_, len(teams), n)
+            self._combined_pairings_or_empty(tournament, round_, len(teams), n)
         ):
             white_team = team_by_letter.get(p.white_team)
             black_team = team_by_letter.get(p.black_team)

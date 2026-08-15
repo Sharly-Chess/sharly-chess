@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, override
 
 from common.i18n import _
 from data.pairings import systems
 from data.pairings.engines import (
     PairingEngine,
+    RoundRobinPairingEngine,
+    _TeamRoundRobinEngine,
     BbpPairings,
     BergerPairingEngine,
     DoubleBergerPairingEngine,
@@ -94,6 +96,29 @@ class PairingVariation(IdentifiableEntity, ABC):
     def trf_encoded_type(self) -> str:
         """Encoded type of the variation in TRF26.
         See https://handbook.fide.com/files/handbook/ETT26.pdf for all the types."""
+
+    @property
+    def sets_its_own_round_count(self) -> bool:
+        """Whether this system settles the round count itself.
+
+        Distinct from :meth:`automatic_round_count`, which answers *what*
+        the count is and cannot while the tournament is still empty. The
+        form needs to know it should not be asking before anyone has
+        been entered.
+        """
+        return False
+
+    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+        """The number of rounds this system works out for itself, or
+        ``None`` when the arbiter chooses it.
+
+        A round-robin's length follows from how many take part, a
+        Scheveningen's from how many boards each team fields. Either way
+        the arbiter should not have to work it out, so the round count
+        field is left empty and the answer given on demand. ``None`` is
+        also the answer while the tournament is too empty to say.
+        """
+        return None
 
     # -------------------------------------------------------------------------
     # Acceleration
@@ -189,6 +214,20 @@ class RoundRobinVariation(PairingVariation, ABC):
     def system() -> 'PairingSystem':
         return systems.RoundRobinPairingSystem()
 
+    @property
+    @override
+    def sets_its_own_round_count(self) -> bool:
+        return True
+
+    @override
+    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+        engine = self.engine
+        assert isinstance(engine, RoundRobinPairingEngine)
+        player_count = tournament.player_count
+        if player_count < engine.MIN_PLAYERS:
+            return None
+        return engine.get_round_count(player_count)
+
 
 class StandardSwissVariation(SwissVariation):
     @staticmethod
@@ -275,6 +314,20 @@ class TeamRoundRobinVariation(PairingVariation, ABC):
     @staticmethod
     def system() -> 'PairingSystem':
         return systems.TeamRoundRobinPairingSystem()
+
+    @property
+    @override
+    def sets_its_own_round_count(self) -> bool:
+        return True
+
+    @override
+    def automatic_round_count(self, tournament: 'Tournament') -> int | None:
+        engine = self.engine
+        assert isinstance(engine, _TeamRoundRobinEngine)
+        team_count = len(tournament.teams)
+        if team_count < engine.MIN_TEAMS:
+            return None
+        return engine.get_round_count(team_count)
 
 
 class StandardTeamSwissVariation(TeamSwissVariation):

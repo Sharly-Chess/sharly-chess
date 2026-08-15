@@ -137,9 +137,6 @@ msgstr ""
 msgid "Replace the current values"
 msgstr ""
 
-msgid "Replace the current values"
-msgstr ""
-
 #, python-brace-format
 msgid "Round {round}"
 msgstr ""
@@ -153,15 +150,6 @@ msgstr ""
 
 #, python-brace-format
 msgid "Rounds {min_round}-{max_round}"
-msgstr ""
-
-msgid "Search an event"
-msgstr ""
-
-msgid "Select a tournament"
-msgstr ""
-
-msgid "Select an event"
 msgstr ""
 
 msgid "Search an event"
