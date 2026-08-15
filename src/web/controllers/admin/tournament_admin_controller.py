@@ -324,7 +324,7 @@ class TournamentAdminController(BaseEventAdminController):
                 start_date = admin_tournament.start_date
                 stop_date = admin_tournament.stop_date
                 rating = admin_tournament.rating.value
-                rounds = admin_tournament.rounds or 1
+                rounds = stored_tournament.rounds
                 pairing_system = admin_tournament.pairing_system
                 pairing_variations[
                     admin_tournament.pairing_system.variation_field_id
@@ -554,61 +554,67 @@ class TournamentAdminController(BaseEventAdminController):
             rule_set_lock_titles[rs.id] = _('Set by rule set "{name}".').format(
                 name=rs.name
             )
-        template_context = {
-            'rating_options': cls._get_rating_options(),
-            'pairing_systems': pairing_systems,
-            'pairing_system_options': PairingSystemManager(admin_event).options(),
-            'rule_sets': rule_sets,
-            'rule_set_options': rule_set_options,
-            'rule_set_managed_fields': rule_set_managed_fields,
-            'rule_set_defaults': rule_set_defaults,
-            'rule_set_lock_titles': rule_set_lock_titles,
-            'rule_set_config_fields': rule_set_config_fields,
-            'plugin_form_fields_templates': plugin_form_fields_templates,
-            'admin_tournament': None
-            if action == 'clone'
-            else web_context.admin_tournament,
-            'cloned_tournament': web_context.admin_tournament
-            if action == 'clone'
-            else None,
-            'player_rating_type_options': player_rating_type_options,
-            'is_team_event': admin_event.is_team_event,
-            'BoardColor': BoardColor,
-            'TeamSwissPairingSystem': TeamSwissPairingSystem,
-            'TeamRoundRobinPairingSystem': TeamRoundRobinPairingSystem,
-            'score_type_options': {t.value: str(t) for t in ScoreType},
-            'team_colour_type_options': {t.value: str(t) for t in TeamColourType},
-            'modal': 'tournament',
-            'action': action,
-            'data': data,
-            'errors': errors,
-            'tournament_criteria': tournament_criteria,
-            'force_criteria_open': any(
-                criterion.is_used_in_form_data(data)
-                for criterion in tournament_criteria
-            ),
-            'force_points_open': any(
-                field in errors or (data.get(field) or '').strip()
-                for field in (
-                    'gp_win',
-                    'gp_draw',
-                    'gp_loss',
-                    'gp_zpb',
-                    'gp_pab',
-                    'mp_win',
-                    'mp_draw',
-                    'mp_loss',
-                    'mp_pab',
-                )
-            ),
-            # The current rounds count is needed to render the schedule inputs
-            'schedule_rounds': rounds,
-            'force_schedule_open': any(
-                data.get(f'round_{n}_datetime') for n in range(1, rounds + 1)
-            ),
-            'schedule_min_date': format_date(schedule_min_date),
-            'schedule_max_date': format_date(schedule_max_date),
-        } | form_fields_templates_data
+        template_context = (
+            {
+                'rating_options': cls._get_rating_options(),
+                'pairing_systems': pairing_systems,
+                'pairing_system_options': PairingSystemManager(admin_event).options(),
+                'rule_sets': rule_sets,
+                'rule_set_options': rule_set_options,
+                'rule_set_managed_fields': rule_set_managed_fields,
+                'rule_set_defaults': rule_set_defaults,
+                'rule_set_lock_titles': rule_set_lock_titles,
+                'rule_set_config_fields': rule_set_config_fields,
+                'plugin_form_fields_templates': plugin_form_fields_templates,
+                'admin_tournament': None
+                if action == 'clone'
+                else web_context.admin_tournament,
+                'cloned_tournament': web_context.admin_tournament
+                if action == 'clone'
+                else None,
+                'player_rating_type_options': player_rating_type_options,
+                'is_team_event': admin_event.is_team_event,
+                'BoardColor': BoardColor,
+                'TeamSwissPairingSystem': TeamSwissPairingSystem,
+                'TeamRoundRobinPairingSystem': TeamRoundRobinPairingSystem,
+                'score_type_options': {t.value: str(t) for t in ScoreType},
+                'team_colour_type_options': {t.value: str(t) for t in TeamColourType},
+                'modal': 'tournament',
+                'action': action,
+                'data': data,
+                'errors': errors,
+            }
+            | cls._rounds_field_context(web_context.admin_tournament, data)
+            | {
+                'tournament_criteria': tournament_criteria,
+                'force_criteria_open': any(
+                    criterion.is_used_in_form_data(data)
+                    for criterion in tournament_criteria
+                ),
+                'force_points_open': any(
+                    field in errors or (data.get(field) or '').strip()
+                    for field in (
+                        'gp_win',
+                        'gp_draw',
+                        'gp_loss',
+                        'gp_zpb',
+                        'gp_pab',
+                        'mp_win',
+                        'mp_draw',
+                        'mp_loss',
+                        'mp_pab',
+                    )
+                ),
+                # The current rounds count is needed to render the schedule inputs
+                'schedule_rounds': rounds,
+                'force_schedule_open': any(
+                    data.get(f'round_{n}_datetime') for n in range(1, rounds + 1)
+                ),
+                'schedule_min_date': format_date(schedule_min_date),
+                'schedule_max_date': format_date(schedule_max_date),
+            }
+            | form_fields_templates_data
+        )
 
         return template_context
 
@@ -625,12 +631,19 @@ class TournamentAdminController(BaseEventAdminController):
             data = {}
         start_date = event.start_date
         stop_date = event.stop_date
-        rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
+        # 0 (an empty field) means the pairing system works the count
+        # out from its entrants — see ``Tournament.rounds``. The field is
+        # disabled for those systems, so an empty value can only mean
+        # that; anything else must still be a positive number.
+        rounds = WebContext.form_data_to_int(data, field := 'rounds') or 0
+        rounds_are_automatic = rounds == 0
         tournament: Tournament | None = None
 
         index = len(event.tournaments)
-        if rounds < 1:
+        if rounds < 0:
             errors[field] = _('A positive integer is expected.')
+        elif rounds_are_automatic:
+            pass
         elif action == 'update':
             tournament = web_context.get_admin_tournament()
             index = tournament.index
@@ -1120,6 +1133,91 @@ class TournamentAdminController(BaseEventAdminController):
         return self._admin_event_tournaments_render(
             web_context=web_context,
             template_context=template_context,
+        )
+
+    @staticmethod
+    def _rounds_field_context(
+        tournament: Tournament | None,
+        data: dict[str, str],
+    ) -> dict[str, Any]:
+        """Whether the pairing system decides the round count, and why.
+
+        A round-robin's length follows from its entrants, a
+        Scheveningen's from its boards; neither is something the arbiter
+        should have to work out, and neither is knowable while the
+        tournament is being created. Those systems leave the field empty
+        and disabled — stored as 0, answered on demand by
+        ``Tournament.rounds``.
+        """
+        from data.pairings import PairingVariationManager
+
+        # 'pairing_system' carries the system id; the chosen variation
+        # sits in a field named after that system and carries the full
+        # variation id.
+        system_id = data.get('pairing_system') or ''
+        variation_id = data.get(f'{system_id}_pairing_variation') or ''
+        variation = None
+        if variation_id:
+            try:
+                variation = PairingVariationManager(
+                    tournament.event if tournament else None
+                ).get_object(variation_id)
+            except KeyError:
+                variation = None
+        if variation is None or not variation.sets_its_own_round_count:
+            return {'rounds_are_automatic': False, 'rounds_automatic_reason': ''}
+        # Once the tournament is under way the count is settled, so show
+        # it rather than a placeholder — greyed out either way, since it
+        # is still not the arbiter's to type. Before that it is left
+        # empty: it depends on entrants or boards that may yet change,
+        # and 0 is what gets stored.
+        is_paired = tournament is not None and tournament.has_pairings
+        data['rounds'] = str(tournament.rounds) if tournament and is_paired else ''
+        return {
+            'rounds_are_automatic': True,
+            'rounds_automatic_reason': _(
+                'The number of rounds follows from the pairing system.'
+            )
+            if is_paired
+            else _(
+                'The number of rounds follows from the pairing system and is '
+                'worked out when the pairings are generated.'
+            ),
+        }
+
+    @get(
+        path='/tournament-rounds-field/{event_uniq_id:str}',
+        name='admin-tournament-rounds-field',
+    )
+    async def htmx_admin_tournament_rounds_field(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromQuery[int | None] = None,
+    ) -> Template:
+        """Re-render the round-count field alone, after a change to the
+        pairing system, its variation or the board count."""
+        web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
+        tournament = web_context.admin_tournament
+        data: dict[str, str] = dict(request.query_params)
+        data.setdefault('rounds', str(tournament.rounds if tournament else 1))
+        template_context = (
+            web_context.template_context
+            | {
+                'admin_event': web_context.get_admin_event(),
+                'data': data,
+                'errors': {},
+                'reload_schedule_script': (
+                    "htmx.trigger(document.getElementById('schedule-section'), "
+                    "'schedule-params-updated')"
+                ),
+            }
+            | self._rounds_field_context(tournament, data)
+        )
+        return HTMXTemplate(
+            template_name='/admin/tournaments/tournament_rounds_field.html',
+            re_swap='outerHTML',
+            re_target='#rounds-field',
+            context=template_context,
         )
 
     @get(

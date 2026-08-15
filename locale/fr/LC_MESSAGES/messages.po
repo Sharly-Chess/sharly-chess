@@ -582,6 +582,10 @@ msgstr "<smart_count> seconde |||| <smart_count> secondes"
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr "<smart_count> semaine |||| <smart_count> semaines"
 
+#, python-brace-format
+msgid "A Scheveningen on {boards} boards is played over {expected} rounds, so that every player meets every opponent."
+msgstr "Un Scheveningen à {boards} échiquiers se joue en {expected} rondes, afin que chaque joueur·euse rencontre tou·te·s ses adversaires."
+
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
 
@@ -2603,6 +2607,9 @@ msgstr "République dominicaine"
 
 msgid "Double-round Berger"
 msgstr "Berger aller-retour"
+
+msgid "Double-round Scheveningen"
+msgstr "Scheveningen en double ronde"
 
 msgid "Download"
 msgstr "Télécharger"
@@ -4766,6 +4773,9 @@ msgstr "Aucun Groupe de Prix Non-Cumulables"
 msgid "No Prize Category"
 msgstr "Aucune catégorie de prix"
 
+msgid "No Scheveningen table is available for this tournament size."
+msgstr "Aucune table Scheveningen n'est disponible pour un tournoi de cette taille."
+
 msgid "No accounts"
 msgstr "Aucun compte"
 
@@ -6696,6 +6706,12 @@ msgstr "Horaires"
 msgid "Scheduled hours"
 msgstr "Calendrier"
 
+msgid "Scheveningen"
+msgstr "Scheveningen"
+
+msgid "Scheveningen table"
+msgstr "Table Scheveningen"
+
 msgid "Scope"
 msgstr "Périmètre"
 
@@ -7654,6 +7670,12 @@ msgstr "Le nombre de points obtenus contre tou·tes les joueur·euses ayant atte
 msgid "The number of points in the standard 1/0.5/0 point system."
 msgstr "Le nombre de points dans le système de points standard 1/0,5/0."
 
+msgid "The number of rounds follows from the pairing system and is worked out when the pairings are generated."
+msgstr "Le nombre de rondes découle du système d'appariement et est déterminé lors de la génération des appariements."
+
+msgid "The number of rounds follows from the pairing system."
+msgstr "Le nombre de rondes découle du système d'appariement."
+
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de bye ou une défaite par forfait."
 
@@ -7974,6 +7996,9 @@ msgstr "Ce document n'est disponible que pour les tournois au système Molter."
 
 msgid "This document is only available for Round-Robin tournaments."
 msgstr "Ce document est seulement disponible pour les tournois Toutes-Rondes."
+
+msgid "This document is only available for Scheveningen tournaments."
+msgstr "Ce document n'est disponible que pour les tournois au système Scheveningen."
 
 msgid "This document is only available for round-robin tournaments."
 msgstr "Ce document n'est disponible que pour les tournois toutes rondes."
@@ -9787,13 +9812,3 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Cannot be both chief and deputy on the same tournament."
-#~ msgstr "Impossible d’être à la fois arbitre principal·e et arbitre adjoint·e sur le même tournoi."
-
-#~ msgid "Bonus / penalty"
-#~ msgstr "Bonus / pénalité"
-
-#~ msgid "Edit bonus / penalty"
-#~ msgstr "Modifier bonus / pénalité"
-

@@ -582,6 +582,10 @@ msgstr ""
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
+#, python-brace-format
+msgid "A Scheveningen on {boards} boards is played over {expected} rounds, so that every player meets every opponent."
+msgstr ""
+
 msgid "A file is expected."
 msgstr ""
 
@@ -2602,6 +2606,9 @@ msgid "Dominican Republic"
 msgstr ""
 
 msgid "Double-round Berger"
+msgstr ""
+
+msgid "Double-round Scheveningen"
 msgstr ""
 
 msgid "Download"
@@ -4766,6 +4773,9 @@ msgstr ""
 msgid "No Prize Category"
 msgstr ""
 
+msgid "No Scheveningen table is available for this tournament size."
+msgstr ""
+
 msgid "No accounts"
 msgstr ""
 
@@ -6694,6 +6704,12 @@ msgstr ""
 msgid "Scheduled hours"
 msgstr ""
 
+msgid "Scheveningen"
+msgstr ""
+
+msgid "Scheveningen table"
+msgstr ""
+
 msgid "Scope"
 msgstr ""
 
@@ -7652,6 +7668,12 @@ msgstr ""
 msgid "The number of points in the standard 1/0.5/0 point system."
 msgstr ""
 
+msgid "The number of rounds follows from the pairing system and is worked out when the pairings are generated."
+msgstr ""
+
+msgid "The number of rounds follows from the pairing system."
+msgstr ""
+
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr ""
 
@@ -7971,6 +7993,9 @@ msgid "This document is only available for Molter tournaments."
 msgstr ""
 
 msgid "This document is only available for Round-Robin tournaments."
+msgstr ""
+
+msgid "This document is only available for Scheveningen tournaments."
 msgstr ""
 
 msgid "This document is only available for round-robin tournaments."
@@ -9785,13 +9810,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Cannot be both chief and deputy on the same tournament."
-#~ msgstr ""
-
-#~ msgid "Bonus / penalty"
-#~ msgstr ""
-
-#~ msgid "Edit bonus / penalty"
-#~ msgstr ""
-
