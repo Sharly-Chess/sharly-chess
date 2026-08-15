@@ -754,6 +754,20 @@ class PapiConverter:
                 if msg := cls.check_result(player.pairings[round_].result, tournament):
                     return msg
 
+        # Papi has nowhere to record a bonus / penalty, so exporting a
+        # tournament that uses them would silently drop points and change
+        # the standings.
+        if any(
+            adjustment.delta
+            for adjustment in (
+                tournament.stored_tournament.stored_player_point_adjustments
+            )
+        ):
+            return _(
+                'Papi export does not support bonus / penalty points, which '
+                'this tournament uses.'
+            )
+
         return None
 
     @classmethod

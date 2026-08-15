@@ -34,7 +34,7 @@
             <em class="text-muted">—</em>
         {% elif lineup_team_board is defined and wtp.team_id %}
             <span class="lineup-view">
-                {% with tournament_player=wtp, display_rating=true %}
+                {% with tournament_player=wtp, display_rating=true, point_adjustment_round=admin_round %}
                     {% include '/admin/player_link.html' %}
                 {% endwith %}
             </span>
@@ -44,7 +44,7 @@
                 {% endwith %}
             </span>
         {% else %}
-            {% with tournament_player=wtp, display_rating=true %}
+            {% with tournament_player=wtp, display_rating=true, point_adjustment_round=admin_round %}
                 {% include '/admin/player_link.html' %}
             {% endwith %}
         {% endif %}
@@ -95,7 +95,7 @@
             {% if _black_molter_code %}<small class="text-muted me-1">{{ _black_molter_code }}</small>{% endif %}
             {% if lineup_team_board is defined and btp.team_id %}
                 <span class="lineup-view">
-                    {% with tournament_player=btp, display_rating=true %}
+                    {% with tournament_player=btp, display_rating=true, point_adjustment_round=admin_round %}
                         {% include '/admin/player_link.html' %}
                     {% endwith %}
                 </span>
@@ -105,7 +105,7 @@
                     {% endwith %}
                 </span>
             {% else %}
-                {% with tournament_player=btp, display_rating=true %}
+                {% with tournament_player=btp, display_rating=true, point_adjustment_round=admin_round %}
                     {% include '/admin/player_link.html' %}
                 {% endwith %}
             {% endif %}

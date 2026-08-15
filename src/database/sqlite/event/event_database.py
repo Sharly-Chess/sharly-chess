@@ -46,6 +46,7 @@ from database.sqlite.event.event_store import (
     StoredTeamGroup,
     StoredTeamPairingBlock,
     StoredTeamPointAdjustment,
+    StoredPlayerPointAdjustment,
     StoredTeamRoundLineupEntry,
 )
 from database.sqlite.event import migrations
@@ -731,6 +732,9 @@ class EventDatabase(MigrationDatabase):
             )
             stored_tournament.stored_team_point_adjustments = (
                 self.load_tournament_stored_team_point_adjustments(id_)
+            )
+            stored_tournament.stored_player_point_adjustments = (
+                self.load_tournament_stored_player_point_adjustments(id_)
             )
             stored_tournament.stored_prohibited_pairing_groups = (
                 self.load_tournament_stored_prohibited_pairing_groups(id_)
@@ -1932,6 +1936,57 @@ class EventDatabase(MigrationDatabase):
             '`gp_delta` = excluded.`gp_delta`, '
             '`reason` = excluded.`reason`',
             (tournament_id, team_id, round_, mp_delta, gp_delta, reason),
+        )
+
+    @classmethod
+    def _row_to_stored_player_point_adjustment(
+        cls, row: dict[str, Any]
+    ) -> StoredPlayerPointAdjustment:
+        return StoredPlayerPointAdjustment(
+            id=row['id'],
+            tournament_id=row['tournament_id'],
+            player_id=row['player_id'],
+            round_=row['round'],
+            delta=row['delta'],
+            reason=row['reason'],
+        )
+
+    def load_tournament_stored_player_point_adjustments(
+        self, tournament_id: int
+    ) -> list[StoredPlayerPointAdjustment]:
+        self.execute(
+            'SELECT * FROM `player_point_adjustment` WHERE `tournament_id` = ?',
+            (tournament_id,),
+        )
+        return [
+            self._row_to_stored_player_point_adjustment(row) for row in self.fetchall()
+        ]
+
+    def set_stored_player_point_adjustment(
+        self,
+        tournament_id: int,
+        player_id: int,
+        round_: int,
+        delta: float,
+        reason: str | None,
+    ):
+        """Upsert a (player, round) manual adjustment. A row with nothing
+        to record (no delta and no reason) is removed."""
+        if not delta and not reason:
+            self.execute(
+                'DELETE FROM `player_point_adjustment` '
+                'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?',
+                (tournament_id, player_id, round_),
+            )
+            return
+        self.execute(
+            'INSERT INTO `player_point_adjustment` '
+            '(`tournament_id`, `player_id`, `round`, `delta`, `reason`) '
+            'VALUES (?, ?, ?, ?, ?) '
+            'ON CONFLICT(`tournament_id`, `player_id`, `round`) DO UPDATE SET '
+            '`delta` = excluded.`delta`, '
+            '`reason` = excluded.`reason`',
+            (tournament_id, player_id, round_, delta, reason),
         )
 
     # ---------------------------------------------------------------------------------

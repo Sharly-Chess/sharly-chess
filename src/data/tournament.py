@@ -39,6 +39,7 @@ from database.sqlite.event.event_store import (
     StoredBoard,
     StoredTeamBoard,
     StoredTeamPointAdjustment,
+    StoredPlayerPointAdjustment,
     StoredProhibitedPairingGroup,
     StoredTournamentPlayer,
     StoredPairing,
@@ -340,7 +341,34 @@ class Tournament:
 
     @property
     def rounds(self) -> int:
-        return self.stored_tournament.rounds
+        """The number of rounds this tournament is played over.
+        A stored 0 means the pairing system works it out from its entrants"""
+        stored_rounds = self.stored_tournament.rounds
+        if self.pairing_variation.sets_its_own_round_count:
+            # The system's answer wins over whatever is stored. A
+            # tournament saved before it could work this out — or before
+            # its boards or its entrants changed — would otherwise be
+            # stuck with a count that no longer describes it, and could
+            # not be paired at all.
+            return self.automatic_rounds or stored_rounds or 1
+        return stored_rounds or 1
+
+    @property
+    def rounds_are_automatic(self) -> bool:
+        """Whether the pairing system settles the round count itself."""
+        return self.pairing_variation.automatic_round_count(self) is not None or (
+            not self.stored_tournament.rounds
+        )
+
+    @property
+    def automatic_rounds(self) -> int | None:
+        if getattr(self, '_computing_automatic_rounds', False):
+            return None
+        self._computing_automatic_rounds = True
+        try:
+            return self.pairing_variation.automatic_round_count(self)
+        finally:
+            self._computing_automatic_rounds = False
 
     @cached_property
     def pairing_variation(self) -> 'PairingVariation':
@@ -688,6 +716,69 @@ class Tournament:
                     round_=round_,
                     mp_delta=mp_delta,
                     gp_delta=gp_delta,
+                    reason=reason,
+                )
+            )
+
+    def stored_player_point_adjustment(
+        self, player_id: int, round_: int
+    ) -> 'StoredPlayerPointAdjustment | None':
+        """The stored manual adjustment row for (player, round), or None."""
+        for adjustment in self.stored_tournament.stored_player_point_adjustments:
+            if adjustment.player_id == player_id and adjustment.round_ == round_:
+                return adjustment
+        return None
+
+    def player_point_adjustment(self, player_id: int, round_: int) -> float:
+        """Manual bonus / penalty points for (player, round) in an
+        individual tournament. Team events adjust whole teams instead, so
+        this is always zero there.
+
+        Unlike the team counterpart there is no rule-set contribution:
+        rule sets award match points, which individual tournaments don't
+        have."""
+        if self.is_team_tournament:
+            return 0.0
+        adjustment = self.stored_player_point_adjustment(player_id, round_)
+        return adjustment.delta if adjustment else 0.0
+
+    def player_point_adjustment_total(self, player_id: int, after_round: int) -> float:
+        """Every adjustment for the player through ``after_round``."""
+        if self.is_team_tournament:
+            return 0.0
+        return sum(
+            adjustment.delta
+            for adjustment in self.stored_tournament.stored_player_point_adjustments
+            if adjustment.player_id == player_id and adjustment.round_ <= after_round
+        )
+
+    def set_manual_player_point_adjustment(
+        self,
+        player_id: int,
+        round_: int,
+        delta: float,
+        reason: str | None,
+        database: 'EventDatabase',
+    ) -> None:
+        """Upsert the manual adjustment for (player, round) and keep the
+        in-memory stored list in sync."""
+        database.set_stored_player_point_adjustment(
+            self.id, player_id, round_, delta, reason
+        )
+        adjustments = self.stored_tournament.stored_player_point_adjustments
+        adjustments[:] = [
+            adjustment
+            for adjustment in adjustments
+            if not (adjustment.player_id == player_id and adjustment.round_ == round_)
+        ]
+        if delta or reason:
+            adjustments.append(
+                StoredPlayerPointAdjustment(
+                    id=None,
+                    tournament_id=self.id,
+                    player_id=player_id,
+                    round_=round_,
+                    delta=delta,
                     reason=reason,
                 )
             )
@@ -2818,9 +2909,34 @@ class Tournament:
     def generate_round_pairings(
         self, at_round: int, partial_pairings: bool = False
     ) -> str:
+        if not partial_pairings and self.round_has_pairings(at_round):
+            return _(
+                'Round {round} is already paired. Unpair it before pairing it again.'
+            ).format(round=at_round)
+        self.persist_automatic_rounds()
         return self.pairing_variation.engine.generate_pairings(
             self, at_round, partial_pairings
         )
+
+    def persist_automatic_rounds(self):
+        """Write down the round count a system works out for itself.
+
+        ``rounds`` already answers with it, but the stored value is what
+        the schedule, the exports and every other reader of the record
+        see. Settling it as the pairings are generated keeps them in
+        step — including after an unpairing, when the field may have
+        changed size and the count with it.
+        """
+        if not self.pairing_variation.sets_its_own_round_count:
+            return
+        automatic_rounds = self.automatic_rounds
+        if automatic_rounds is None or automatic_rounds == (
+            self.stored_tournament.rounds
+        ):
+            return
+        self.stored_tournament.rounds = automatic_rounds
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.update_stored_tournament(self.stored_tournament)
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
         return self.pairing_variation.engine.pairings_generation_disabled_message(
@@ -2990,6 +3106,10 @@ class Tournament:
                 after_round=after_round,
                 next_round_pairings_as_zpb=next_round_pairings_as_zpb,
             )
+        else:
+            trf.abnormal_points_assignments = (
+                self._individual_abnormal_points_assignments(after_round)
+            )
         trf.prohibited_pairings = (
             prohibited_pairing_override
             if prohibited_pairing_override is not None
@@ -3156,6 +3276,35 @@ class Tournament:
         trf.abnormal_points_assignments = self._team_abnormal_points_assignments(
             after_round=after_round, tpn_by_team_id=tpn_map
         )
+
+    def _individual_abnormal_points_assignments(
+        self, after_round: int
+    ) -> 'list[TrfAbnormalPointsAssignment]':
+        """TRF26 299 records for an individual tournament: one blank-type
+        line per (player, round) carrying a bonus / penalty, keyed on the
+        pairing number. Only the game-points field applies — 8-11 is for
+        teams — and the 001 points already include the delta, which is
+        what a reader recomputing the score from the results expects."""
+        from data.input_output.trf.trf_data import TrfAbnormalPointsAssignment
+
+        assignments: list[TrfAbnormalPointsAssignment] = []
+        for player in self.tournament_players_by_pairing_number.values():
+            if player.pairing_number is None:
+                continue
+            for round_ in range(1, after_round + 1):
+                delta = self.player_point_adjustment(player.id, round_)
+                if not delta:
+                    continue
+                assignments.append(
+                    TrfAbnormalPointsAssignment(
+                        type=' ',
+                        match_points=None,
+                        game_points=delta,
+                        round=round_,
+                        pairing_numbers=[player.pairing_number],
+                    )
+                )
+        return assignments
 
     def _team_abnormal_points_assignments(
         self, *, after_round: int, tpn_by_team_id: dict[int, int]
@@ -4573,6 +4722,14 @@ class Tournament:
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
             database.delete_stored_team_board(stb_id)
+            for team_id in (
+                team_board.stored_team_board.team_a_id,
+                team_board.stored_team_board.team_b_id,
+            ):
+                if team_id is not None:
+                    self.set_manual_point_adjustment(
+                        team_id, round_, 0.0, 0.0, None, database
+                    )
             round_list = self.stored_tournament.stored_team_boards_by_round.get(
                 round_, []
             )
@@ -4590,9 +4747,19 @@ class Tournament:
                 if white_tp is not None:
                     white_tp.delete_pairing(board.round, database)
                     white_tp.reset_board()
+                    self.set_manual_player_point_adjustment(
+                        white_tp.id, board.round, 0.0, None, database
+                    )
                 if board.black_tournament_player:
                     board.black_tournament_player.delete_pairing(board.round, database)
                     board.black_tournament_player.reset_board()
+                    self.set_manual_player_point_adjustment(
+                        board.black_tournament_player.id,
+                        board.round,
+                        0.0,
+                        None,
+                        database,
+                    )
                 database.delete_stored_board(board.identifier)
                 if board.identifier in self.boards_by_id:
                     del self.boards_by_id[board.identifier]
@@ -4615,6 +4782,13 @@ class Tournament:
                             kept.append(stb)
                         elif stb.id is not None:
                             database.delete_stored_team_board(stb.id)
+                            # The match is gone, so its manual bonus /
+                            # penalty goes with it.
+                            for team_id in (stb.team_a_id, stb.team_b_id):
+                                if team_id is not None:
+                                    self.set_manual_point_adjustment(
+                                        team_id, round_, 0.0, 0.0, None, database
+                                    )
                     if kept:
                         self.stored_tournament.stored_team_boards_by_round[round_] = (
                             kept

@@ -684,13 +684,25 @@ class TrfTournamentImporter(FileTournamentImporter):
         tournament_id = super()._write_stored_tournament(
             stored_tournament, stored_players, database
         )
-        if not self._pending_teams:
-            return tournament_id
         internal_by_external = {
             external_id: player.id
             for external_id, player in zip(external_player_ids, stored_players)
             if external_id is not None and player.id is not None
         }
+        if not self._pending_teams:
+            # 299 in an individual file targets players, and carries the
+            # delta in the game-points field — 8-11 is team-only.
+            for (
+                round_,
+                pairing_number,
+            ), (_mp, delta) in self._pending_point_adjustments.items():
+                player_id = internal_by_external.get(pairing_number)
+                if player_id is None or not delta:
+                    continue
+                database.set_stored_player_point_adjustment(
+                    tournament_id, player_id, round_, delta, None
+                )
+            return tournament_id
         team_id_by_internal_player_id: dict[int, int] = {}
         team_index_by_internal_player_id: dict[int, int] = {}
         pairing_number_by_team_id: dict[int, int] = {}

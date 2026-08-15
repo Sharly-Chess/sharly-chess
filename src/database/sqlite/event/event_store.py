@@ -203,6 +203,20 @@ class StoredTeamPointAdjustment:
 
 
 @dataclass
+class StoredPlayerPointAdjustment:
+    """Manual per-player, per-round bonus / penalty points for individual
+    tournaments. A single ``delta`` (which may be negative) because those
+    score in game points only. One row per (tournament, player, round)."""
+
+    id: int | None
+    tournament_id: int
+    player_id: int
+    round_: int
+    delta: float = 0.0
+    reason: str | None = None
+
+
+@dataclass
 class StoredProhibitedPairingGroup:
     """A set of members (player ids, or team ids in team mode) that must
     not be paired together. ``round_`` is None for a reusable manual
@@ -327,6 +341,9 @@ class StoredTournament:
     )
     stored_team_point_adjustments: list[StoredTeamPointAdjustment] = field(
         default_factory=list[StoredTeamPointAdjustment]
+    )
+    stored_player_point_adjustments: list[StoredPlayerPointAdjustment] = field(
+        default_factory=list[StoredPlayerPointAdjustment]
     )
     stored_prohibited_pairing_groups: list['StoredProhibitedPairingGroup'] = field(
         default_factory=list['StoredProhibitedPairingGroup']

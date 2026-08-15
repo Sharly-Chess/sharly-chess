@@ -163,12 +163,18 @@ class Utils:
         return lowest_int
 
     @staticmethod
-    def points_str(points: float | None) -> str:
+    def points_str(points: float | None, plus_sign: bool = False) -> str:
         if points is None:
             return ''
-        points_str = f'{points:.2f}'
-        if 0 < points < 1:
-            points_str = points_str.replace('0.', '.')
+        if plus_sign:
+            points_str = f'{points:+.2f}'
+        else:
+            points_str = f'{points:.2f}'
+        # Drop the leading zero of a bare fraction, so half a point reads
+        # ½ rather than 0½ — on either side of zero, since a penalty can
+        # take a score below it.
+        if points and -1 < points < 1:
+            points_str = points_str.replace('0.', '.', 1)
         for old, new in {
             '.00': '',
             '.25': '¼',
@@ -177,6 +183,10 @@ class Utils:
         }.items():
             points_str = points_str.replace(old, new)
         return points_str
+
+    @classmethod
+    def points_delta_str(cls, delta: float | None) -> str:
+        return cls.points_str(delta, plus_sign=True)
 
     @staticmethod
     def currency_value_str(value: float, currency: str) -> str:
