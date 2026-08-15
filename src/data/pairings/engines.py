@@ -1227,11 +1227,21 @@ class _TeamRoundRobinEngine(_TeamPairingBase, ABC):
         """The complete round-robin schedule, round → team-id pairs,
         computed from the Berger tables. Deterministic — usable for
         rounds that haven't been paired yet (pairing is performed
-        round by round so lineups can change between rounds)."""
+        round by round so lineups can change between rounds).
+
+        Only the rounds the system actually defines: a round-robin's
+        length follows from the number of teams, and a tournament may be
+        configured with more (the pairing button reports that mismatch).
+        Asking the Berger table for a round beyond its end raises, so the
+        schedule stops where the table does.
+        """
         teams = self._teams_for_tournament(tournament)
+        if len(teams) < self.MIN_TEAMS:
+            return {}
+        last_round = min(tournament.rounds, self.get_round_count(len(teams)))
         return {
             round_: self._compute_team_pairs(teams, round_)
-            for round_ in range(1, tournament.rounds + 1)
+            for round_ in range(1, last_round + 1)
         }
 
     @override
