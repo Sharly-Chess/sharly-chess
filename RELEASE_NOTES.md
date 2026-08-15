@@ -23,7 +23,7 @@
 
 ## Teams
 
-- _Sharly Chess_ now supports **Teams** events! (5.0.0)
+- _Sharly Chess_ now supports **Teams** events (Swiss, Round-Robin, Scheveningen and Molter pairings)! (5.0.0)
 
 ## Pairings
 
@@ -36,6 +36,7 @@
 ## Rankings
 
 - The points are now a ranking criterion in their own right, listed alongside the tie-breaks (5.0.0)
+- Bonus / penalty points can be given to players (TRF26 299 record) (5.0.0)
 
 ## Fixed tables
 
