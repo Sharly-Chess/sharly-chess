@@ -2023,10 +2023,6 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        if not tournament.only_ranks_on_points:
-            raise ClientException(
-                'Cannot apply a tie-break set when tie-breaks already exist.'
-            )
         raw = (data or {}).get('tie_break_set', '')
         if isinstance(raw, list):
             raw = raw[0] if raw else ''
