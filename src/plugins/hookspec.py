@@ -526,6 +526,18 @@ class AppHookSpecs:
         """Provide extra system tie-break sets for the swiss pairing system."""
 
     @hookspec
+    def insert_team_swiss_system_tie_break_sets(
+        self, system_sets: list['SystemTieBreakSet']
+    ):
+        """Provide extra system tie-break sets for the team swiss pairing system."""
+
+    @hookspec
+    def insert_team_round_robin_system_tie_break_sets(
+        self, system_sets: list['SystemTieBreakSet']
+    ):
+        """Provide extra system tie-break sets for the team round-robin pairing system."""
+
+    @hookspec
     def add_tie_breaks_to_trf_acronym_mapping(
         self, tie_break_by_acronym: dict[str, 'TieBreak']
     ):
