@@ -35,6 +35,7 @@ from data.input_output.tournament_importer_options import (
 from data.input_output.tournament_importers import TournamentImporter
 from data.input_output.trf.trf_importer import TrfTournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
+from data.pairings.scheveningen import ScheveningenPairingSystem
 from data.pairings.systems import (
     SwissPairingSystem,
     TeamRoundRobinPairingSystem,
@@ -577,6 +578,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'BoardColor': BoardColor,
                 'TeamSwissPairingSystem': TeamSwissPairingSystem,
                 'TeamRoundRobinPairingSystem': TeamRoundRobinPairingSystem,
+                'ScheveningenPairingSystem': ScheveningenPairingSystem,
                 'score_type_options': {t.value: str(t) for t in ScoreType},
                 'team_colour_type_options': {t.value: str(t) for t in TeamColourType},
                 'modal': 'tournament',

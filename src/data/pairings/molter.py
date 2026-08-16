@@ -67,6 +67,12 @@ class MolterPairingSystem(FixedTablePairingSystem):
     def default_current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 
+    @property
+    def supports_match_points(self) -> bool:
+        # Molter aggregates individual game points only;
+        # there's no match-points side of the score.
+        return False
+
     @override
     def get_table(
         self,

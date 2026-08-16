@@ -258,6 +258,11 @@ class ScheveningenPairingSystem(FixedTablePairingSystem):
     def default_current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 
+    @property
+    def supports_match_points(self) -> bool:
+        # Match points can be used with Scheveningen (and MPvGP as a consequence).
+        return True
+
     @override
     def get_table(
         self,
