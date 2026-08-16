@@ -6165,7 +6165,7 @@ msgstr ""
 msgid "Qatar"
 msgstr ""
 
-msgid "Quick-apply a tie-break set"
+msgid "Quick-apply a tie-break set (replace actual tie-breaks)"
 msgstr ""
 
 msgid "R"
