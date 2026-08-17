@@ -700,6 +700,29 @@ class TestScheveningenTournament(TestCase):
         assert FFEUtils.supports_ffe_transfer(tournament)
         assert FFEUtils.event_supports_ffe_transfer(tournament.event)
 
+    def test_numbering_a_team_scheveningen_never_writes_to_the_db(self):
+        """Team players are synthetic (no stored row), so their pairing
+        numbers live in memory. The FFE upload converts on a throwaway
+        copy whose database is already closed, so any write there fails —
+        the numbering must stay in memory. Reproduces the upload crash."""
+        from unittest.mock import patch
+
+        import data.tournament as tournament_module
+
+        tournament = self._paired_round(4)
+        real_event_database = tournament_module.EventDatabase
+
+        def _no_write(uniq_id=None, write=False, **kwargs):
+            if write:
+                raise AssertionError('team numbering must not write to the DB')
+            return real_event_database(uniq_id, write, **kwargs)
+
+        with patch.object(tournament_module, 'EventDatabase', _no_write):
+            numbers = sorted(tournament.tournament_players_by_pairing_number)
+            # The manual-tie-break path that the FFE upload takes.
+            tournament.compute_tournament_player_ranks()
+        assert numbers == list(range(1, 9))
+
     def test_the_pairing_tab_warns_it_becomes_a_swiss(self):
         """The tournament tab's pairing warning flags the Scheveningen as
         FFE-unknown, but only once an FFE ID links it to the site."""
