@@ -582,6 +582,13 @@ msgstr "<smart_count> seconde |||| <smart_count> secondes"
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr "<smart_count> semaine |||| <smart_count> semaines"
 
+msgid "A Scheveningen is a match between exactly two teams."
+msgstr "Un Scheveningen est un match entre exactement deux équipes."
+
+#, python-brace-format
+msgid "A Scheveningen is played on {min} boards at least."
+msgstr "Un Scheveningen se joue sur au moins {min} échiquiers."
+
 #, python-brace-format
 msgid "A Scheveningen on {boards} boards is played over {expected} rounds, so that every player meets every opponent."
 msgstr "Un Scheveningen à {boards} échiquiers se joue en {expected} rondes, afin que chaque joueur·euse rencontre tou·te·s ses adversaires."
@@ -6979,6 +6986,12 @@ msgstr "Sharly Chess atteint son plein potentiel lorsqu'utilisé comme un serveu
 msgid "Sharly Chess recommendation"
 msgstr "Recommendation Sharly Chess"
 
+msgid "Sharly Chess recommendation (GP as primary score)"
+msgstr "Recommendation Sharly Chess (PP en score primaire)"
+
+msgid "Sharly Chess recommendation (MP as primary score)"
+msgstr "Recommendation Sharly Chess (PM en score primaire)"
+
 msgid "Sharly Chess server"
 msgstr "Serveur Sharly Chess"
 
@@ -9812,3 +9825,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

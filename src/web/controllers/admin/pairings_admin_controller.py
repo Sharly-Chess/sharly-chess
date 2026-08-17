@@ -1228,22 +1228,31 @@ class PairingsAdminController(BaseEventAdminController):
     def _team_owning_side(
         tournament: Tournament,
         team_board: TeamBoard,
-        slot: int,
+        board_index: int,
         side: str,
     ) -> Team | None:
-        """Which team owns physical side ``side`` ('W' / 'B') at
-        board ``slot`` of ``team_board``. Determined entirely by the
-        tournament's colour pattern at this slot."""
-        if team_board.team_b is None:
-            return None
-        pattern = tournament.color_pattern or ''
-        if 0 <= slot < len(pattern):
-            team_a_color = pattern[slot]
-        else:
-            team_a_color = 'W' if slot % 2 == 0 else 'B'
-        team_a_is_white = team_a_color == 'W'
-        a_or_b_is_white = team_a_is_white if side == 'W' else not team_a_is_white
-        return team_board.team_a if a_or_b_is_white else team_board.team_b
+        """Which team owns physical side ``side`` ('W' / 'B') on the
+        board at ``board_index`` of ``team_board``, as the pairing
+        system seats the match."""
+        return tournament.pairing_variation.engine.team_seat_owner(
+            tournament,
+            team_board,
+            board_index,
+            'white' if side == 'W' else 'black',
+        )
+
+    @staticmethod
+    def _team_lineup_slot(
+        tournament: Tournament,
+        team_board: TeamBoard,
+        side_team: Team,
+        board_index: int,
+    ) -> int:
+        """The line-up slot ``side_team`` fills by seating a player on
+        the board at ``board_index``."""
+        return tournament.pairing_variation.engine.team_board_slots(
+            tournament, team_board, side_team.id
+        ).get(board_index, board_index)
 
     @staticmethod
     def _punch_lineup_hole_for_team(
@@ -1259,7 +1268,9 @@ class PairingsAdminController(BaseEventAdminController):
         the player was on becomes ``NULL`` on the board (no flip).
         Both sides empty ⇒ delete the board."""
         round_ = this_board.round
-        slot = this_board.index
+        slot = PairingsAdminController._team_lineup_slot(
+            tournament, team_board, side_team, this_board.index
+        )
         w_id = this_board.stored_board.white_player_id
         physical_side: str = 'white' if side_player_id == w_id else 'black'
         side_tp = tournament.tournament_players_by_id[side_player_id]
@@ -1322,7 +1333,9 @@ class PairingsAdminController(BaseEventAdminController):
         slot. No swap, no reshape: the chip-colour matches the
         physical side everywhere."""
         round_ = this_board.round
-        slot = this_board.index
+        slot = PairingsAdminController._team_lineup_slot(
+            tournament, team_board, side_team, this_board.index
+        )
         with EventDatabase(event.uniq_id, write=True) as database:
             lineup_slots: list[int | None] = [
                 p.id if p is not None else None

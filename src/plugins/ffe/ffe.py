@@ -1066,6 +1066,20 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
+    def insert_team_swiss_system_tie_break_sets(
+        self, system_sets: list['SystemTieBreakSet']
+    ):
+        # TODO add the FFE-specific tie-breaks needed
+        pass
+
+    @hookimpl
+    def insert_team_round_robin_system_tie_break_sets(
+        self, system_sets: list['SystemTieBreakSet']
+    ):
+        # TODO add the FFE-specific tie-breaks needed
+        pass
+
+    @hookimpl
     def add_tie_breaks_to_trf_acronym_mapping(
         self, tie_break_by_acronym: dict[str, TieBreak]
     ):

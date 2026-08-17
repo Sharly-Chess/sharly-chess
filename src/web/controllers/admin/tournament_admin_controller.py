@@ -37,7 +37,6 @@ from data.input_output.trf.trf_importer import TrfTournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import (
     SwissPairingSystem,
-    TeamRoundRobinPairingSystem,
     TeamSwissPairingSystem,
 )
 from data.player import TournamentPlayer
@@ -575,8 +574,6 @@ class TournamentAdminController(BaseEventAdminController):
                 'player_rating_type_options': player_rating_type_options,
                 'is_team_event': admin_event.is_team_event,
                 'BoardColor': BoardColor,
-                'TeamSwissPairingSystem': TeamSwissPairingSystem,
-                'TeamRoundRobinPairingSystem': TeamRoundRobinPairingSystem,
                 'score_type_options': {t.value: str(t) for t in ScoreType},
                 'team_colour_type_options': {t.value: str(t) for t in TeamColourType},
                 'modal': 'tournament',

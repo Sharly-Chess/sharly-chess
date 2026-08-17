@@ -391,8 +391,15 @@ class Team:
         n = tournament.team_player_count
         slots: list['Player | None'] = [None] * n
         players_by_id = self.event.players_by_id
+        # Which line-up slot each board seats this team's player on. A
+        # match seats slot i on board i, but a table that rotates one
+        # team around the other does not.
+        slot_by_board_index = tournament.pairing_variation.engine.team_board_slots(
+            tournament, team_board, self.id
+        )
         for board in team_board.boards:
-            if not 0 <= board.index < n:
+            slot = slot_by_board_index.get(board.index)
+            if slot is None or not 0 <= slot < n:
                 continue
             for player_id in (
                 board.stored_board.white_player_id,
@@ -400,7 +407,7 @@ class Team:
             ):
                 player = players_by_id.get(player_id) if player_id else None
                 if player is not None and player.team_id == self.id:
-                    slots[board.index] = player
+                    slots[slot] = player
                     break
         return slots
 

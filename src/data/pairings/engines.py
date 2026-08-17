@@ -30,6 +30,7 @@ from utils.enum import BoardColor, Result, TeamByeType, ScoreType
 
 if TYPE_CHECKING:
     from data.teams.team import Team
+    from data.teams.team_board import TeamBoard
     from data.tournament import Tournament
 
 logger = get_logger()
@@ -71,6 +72,50 @@ class PairingEngine(ABC):
     @property
     def reorder_boards(self) -> bool:
         return False
+
+    def team_seat_owner(
+        self,
+        tournament: 'Tournament',
+        team_board: 'TeamBoard',
+        board_index: int,
+        physical_side: str,
+    ) -> 'Team | None':
+        """Which of the match's two teams owns physical side
+        *physical_side* (``'white'`` / ``'black'``) of the board at
+        *board_index*, before anyone is seated there.
+
+        The colour pattern settles it: its *i*-th character is the
+        colour team_a takes on board *i*."""
+        if team_board.team_b is None:
+            return None
+        pattern = tournament.color_pattern or ''
+        if 0 <= board_index < len(pattern):
+            team_a_color = pattern[board_index]
+        else:
+            team_a_color = (
+                BoardColor.WHITE.value
+                if board_index % 2 == 0
+                else BoardColor.BLACK.value
+            )
+        team_a_is_white = team_a_color == BoardColor.WHITE.value
+        team_a_owns = (
+            team_a_is_white if physical_side == 'white' else not team_a_is_white
+        )
+        return team_board.team_a if team_a_owns else team_board.team_b
+
+    def team_board_slots(
+        self,
+        tournament: 'Tournament',
+        team_board: 'TeamBoard',
+        team_id: int,
+    ) -> dict[int, int]:
+        """Board index → the line-up slot of *team_id* seated on it.
+
+        A team match seats each team's *i*-th player on board *i*, so
+        the two numbers coincide. Systems whose table rotates one team
+        around the other (a Scheveningen) override this."""
+        n = tournament.team_player_count or 0
+        return {index: index for index in range(n)}
 
     def generate_pairings(
         self,
@@ -622,9 +667,9 @@ def _team_ui_sort_key(team: 'Team') -> tuple[float, str]:
     )
 
 
-class _TeamPairingBase(PairingEngine, ABC):
-    """Shared machinery for team-vs-team engines (Swiss + Berger). All
-    concrete engines decide *which* teams play whom each round; this
+class TeamPairingEngine(PairingEngine, ABC):
+    """Shared machinery for every engine pairing team against team. A
+    concrete engine decides *which* teams play whom each round; this
     base persists the resulting ``team_board`` envelopes + individual
     boards using the teams' effective round lineups."""
 
@@ -838,16 +883,20 @@ class _TeamPairingBase(PairingEngine, ABC):
         tournament.clear_team_cache()
         tournament.create_boards(stored_boards, round_, self.pab_result)
 
-    @staticmethod
     def _team_match_stored_boards(
+        self,
         tournament: 'Tournament',
         stb: StoredTeamBoard,
     ) -> list[StoredBoard]:
-        """Build StoredBoard entries for a team match.
+        """Build StoredBoard entries for a team match. Board *i* seats
+        each team's *i*-th player against the other's.
         Colors per board taken from *tournament.color_pattern* (a string of
         'W'/'B' characters, length = team_player_count, position i = team_a's
         color on board i). Falls back to WBWB... when no pattern is set.
-        Team_b always gets the opposite color of team_a on each board."""
+        Team_b always gets the opposite color of team_a on each board.
+
+        Overridden by systems whose table says who meets whom on each
+        board rather than pairing the line-ups straight across."""
         team_a = tournament.event.teams_by_id[stb.team_a_id]
         team_b = (
             tournament.event.teams_by_id[stb.team_b_id]
@@ -889,7 +938,7 @@ class _TeamPairingBase(PairingEngine, ABC):
         return boards
 
 
-class TeamSwissEngine(_TeamPairingBase):
+class TeamSwissEngine(TeamPairingEngine):
     """Team Swiss engine (FIDE C.04.6, TRF26-encoded).
 
     Builds a full TRF26 team file via :meth:`Tournament.to_trf` —
@@ -1153,7 +1202,7 @@ class TeamSwissEngine(_TeamPairingBase):
         return pairs
 
 
-class _TeamRoundRobinEngine(_TeamPairingBase, ABC):
+class TeamRoundRobinPairingEngine(TeamPairingEngine, ABC):
     """Team round-robin shared logic. Subclasses implement
     :meth:`_compute_team_pairs` for the round; this base validates
     round count and persists the resulting matches via
@@ -1274,7 +1323,7 @@ class _TeamRoundRobinEngine(_TeamPairingBase, ABC):
         return {i + 1: team.id for i, team in enumerate(teams)}
 
 
-class TeamBergerEngine(_TeamRoundRobinEngine):
+class TeamBergerEngine(TeamRoundRobinPairingEngine):
     """Single round-robin: each pair of teams meets once."""
 
     @property
