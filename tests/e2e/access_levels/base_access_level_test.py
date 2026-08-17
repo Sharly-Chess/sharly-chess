@@ -9,6 +9,7 @@ from database.sqlite.event.event_database import EventDatabase
 from data.access_levels.access_levels import AccessLevel
 from common.sharly_chess_config import SharlyChessConfig
 from tests.e2e.access_levels.conftest import (
+    PRIVATE_EVENT_ID,
     PUBLIC_EVENT_ID,
     TOURNAMENT_ID,
     TOURNAMENT_UNPAIRED_ID,
@@ -239,10 +240,11 @@ class BaseAccessLevelTest:
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
 
     def assert_access_to_visible_events(self, event_id: str, auth_page: Page):
-        """Asserts that the user can access the public event only"""
         auth_page.goto('/home')
-        expect(auth_page.locator('.card')).to_have_count(1)
         expect(auth_page.locator(f"div.card:has-text('{event_id}')")).to_be_visible()
+        expect(
+            auth_page.locator(f"div.card:has-text('{PRIVATE_EVENT_ID}')")
+        ).to_have_count(0)
 
     # --------------------------------------------------------------------------
     # Input Screens
