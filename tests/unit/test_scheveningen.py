@@ -13,7 +13,12 @@ import pytest
 
 from data.event import Event
 from data.loader import EventLoader
-from data.pairings.scheveningen import ScheveningenVariation, scheveningen_table
+from data.pairings.scheveningen import (
+    ScheveningenPairingSystem,
+    ScheveningenVariation,
+    StandardScheveningenVariation,
+    scheveningen_table,
+)
 from data.print_documents.documents import (
     MolterTablePrintDocument,
     ScheveningenTablePrintDocument,
@@ -666,3 +671,77 @@ class TestScheveningenTournament(TestCase):
         )
         assert not context['rounds_are_automatic']
         assert data['rounds'] == '7'
+
+    def test_papi_export_is_available_and_flattens_to_a_swiss(self):
+        """A Scheveningen has no Papi type of its own, so it is exported as
+        an individual Swiss rather than blocked as a team event."""
+        from plugins.ffe.papi_converter import PapiConverter
+
+        tournament = self._paired_round(4)
+        assert PapiConverter.papi_export_unavailable_message(tournament) is None
+        warning = PapiConverter.papi_export_warning(tournament)
+        assert warning is not None and 'Swiss' in warning
+
+        papi_data = PapiConverter().tournament_to_papi_data(tournament)
+        # The individual Swiss type, not the (absent) Scheveningen one.
+        assert papi_data.variables.type == 'Suisse'
+        assert papi_data.variables.pairing == 'Standard'
+        # Every board of the match is carried as an individual game.
+        assert len(papi_data.players) == 8
+        assert all(len(player.rounds) == 4 for player in papi_data.players)
+
+    def test_the_ffe_transfer_is_offered_for_the_scheveningen(self):
+        """The FFE-site transfer and its fields, hidden on team events,
+        are opened up for a Scheveningen — it uploads as an individual
+        Swiss."""
+        from plugins.ffe.utils import FFEUtils
+
+        tournament = self._paired_round(4)
+        assert FFEUtils.supports_ffe_transfer(tournament)
+        assert FFEUtils.event_supports_ffe_transfer(tournament.event)
+
+    def test_numbering_a_team_scheveningen_never_writes_to_the_db(self):
+        """Team players are synthetic (no stored row), so their pairing
+        numbers live in memory. The FFE upload converts on a throwaway
+        copy whose database is already closed, so any write there fails —
+        the numbering must stay in memory. Reproduces the upload crash."""
+        from unittest.mock import patch
+
+        import data.tournament as tournament_module
+
+        tournament = self._paired_round(4)
+        real_event_database = tournament_module.EventDatabase
+
+        def _no_write(uniq_id=None, write=False, **kwargs):
+            if write:
+                raise AssertionError('team numbering must not write to the DB')
+            return real_event_database(uniq_id, write, **kwargs)
+
+        with patch.object(tournament_module, 'EventDatabase', _no_write):
+            numbers = sorted(tournament.tournament_players_by_pairing_number)
+            # The manual-tie-break path that the FFE upload takes.
+            tournament.compute_tournament_player_ranks()
+        assert numbers == list(range(1, 9))
+
+    def test_the_pairing_tab_warns_it_becomes_a_swiss(self):
+        """The tournament tab's pairing warning flags the Scheveningen as
+        FFE-unknown, but only once an FFE ID links it to the site."""
+        from plugins.ffe.utils import FFEUtils
+
+        tournament = self._paired_round(4)
+        # No FFE ID: the tab stays quiet.
+        assert tournament.pairing_warning_message is None
+        # Linked to the FFE site: the warning appears.
+        FFEUtils.get_tournament_plugin_data(tournament).ffe_id = 12345
+        warning = tournament.pairing_warning_message
+        assert warning is not None and 'Swiss' in warning
+
+
+def test_the_scheveningen_maps_to_the_swiss_papi_type():
+    from plugins.ffe.papi_mappers import PapiPairingSystem, PapiPairingVariation
+
+    assert PapiPairingSystem.get_outer_value(ScheveningenPairingSystem()) == 'Suisse'
+    assert (
+        PapiPairingVariation.get_outer_value(StandardScheveningenVariation())
+        == 'Standard'
+    )
