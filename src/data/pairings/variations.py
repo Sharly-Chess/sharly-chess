@@ -204,7 +204,7 @@ class SwissVariation(PairingVariation, ABC):
 
     @property
     def trf_encoded_type(self) -> str:
-        return 'FIDE_DUTCH_2025'
+        return 'FIDE_DUTCH_2026'
 
 
 class RoundRobinVariation(PairingVariation, ABC):

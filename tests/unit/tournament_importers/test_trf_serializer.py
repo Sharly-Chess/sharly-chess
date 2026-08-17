@@ -104,12 +104,17 @@ class TestTrfSerializer(TestCase):
 
         # Individual Swiss FIDE table code.
         self.assertIsInstance(
+            TrfEncodedType.get_supported_pairing_variation('FIDE_DUTCH_2026'),
+            StandardSwissVariation,
+        )
+
+        self.assertIsInstance(
             TrfEncodedType.get_supported_pairing_variation('FIDE_DUTCH_2025'),
             StandardSwissVariation,
         )
 
         # Export side: variations emit valid FIDE table codes.
-        self.assertEqual(StandardSwissVariation().trf_encoded_type, 'FIDE_DUTCH_2025')
+        self.assertEqual(StandardSwissVariation().trf_encoded_type, 'FIDE_DUTCH_2026')
         self.assertEqual(
             BergerTeamRoundRobinVariation().trf_encoded_type, 'FIDE_TEAM_ROUNDROBIN'
         )
@@ -122,8 +127,8 @@ class TestTrfSerializer(TestCase):
     # parameterised forms (BERGER_ROUNDROBIN_Gn, FIDE_SCHILLER_TxP,
     # FIDE_SCHEVENINGEN_Gn) are listed in their documented default form.
     TOURNAMENT_TYPE_CODES = (
-        'FIDE_DUTCH_2017 FIDE_DUTCH_2025 FIDE_DUTCH FIDE_DUBOV FIDE_BURSTEIN '
-        'FIDE_DUTCH_2017_BAKU FIDE_DUTCH_2025_BAKU FIDE_DUTCH_BAKU '
+        'FIDE_DUTCH_2017 FIDE_DUTCH_2026 FIDE_DUTCH FIDE_DUBOV FIDE_BURSTEIN '
+        'FIDE_DUTCH_2017_BAKU FIDE_DUTCH_2026_BAKU FIDE_DUTCH_BAKU '
         'FIDE_DUBOV_BAKU FIDE_BURSTEIN_BAKU CUSTOM_SWISS FIDE_DOUBLESWISS '
         'FIDE_DOUBLESWISS_BAKU CUSTOM_DOUBLESWISS BERGER_ROUNDROBIN '
         'BERGER_DOUBLEROUNDROBIN FIDE_ROUNDROBIN FIDE_DOUBLEROUNDROBIN '

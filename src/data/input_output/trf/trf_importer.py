@@ -426,7 +426,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         if trf_tournament.teams:
             return False
         variation = TrfEncodedType.get_supported_pairing_variation(
-            trf_tournament.encoded_type or 'FIDE_DUTCH_2025'
+            trf_tournament.encoded_type or 'FIDE_DUTCH_2026'
         )
         if variation is None or variation.id != StandardSwissVariation.static_id():
             return False

@@ -157,11 +157,18 @@ class TrfEncodedType:
     ) -> PairingVariation | None:
         encoded_type = cls.canonical(encoded_type)
         match encoded_type:
-            case 'FIDE_DUTCH_2025' | 'FIDE_DUTCH_2026' | 'FIDE_DUTCH':
+            # ``FIDE_DUTCH`` follows the date: the 2017 rules before
+            # February 1st 2026, the 2026 rules after. The 2017 rules are
+            # not implemented here, so ``FIDE_DUTCH_2017`` is left to the
+            # fallback, which says so rather than pairing it silently by
+            # the wrong rules.
+            #
+            # ``_2025`` is not a code the type table defines. It is the
+            # name bbpPairings gives the same ruleset, and versions of
+            # this program up to 5.0 wrote it, so files carrying it load.
+            case 'FIDE_DUTCH_2026' | 'FIDE_DUTCH' | 'FIDE_DUTCH_2025':
                 return StandardSwissVariation()
-            case 'FIDE_DUTCH_2025_BAKU' | 'FIDE_DUTCH_2026_BAKU' | 'FIDE_DUTCH_BAKU':
-                # 2026 is not a code the type table defines; earlier
-                # versions emitted it, so files carrying it still load.
+            case 'FIDE_DUTCH_2026_BAKU' | 'FIDE_DUTCH_BAKU' | 'FIDE_DUTCH_2025_BAKU':
                 return BakuSwissVariation()
             case 'FIDE_ROUNDROBIN' | 'BERGER_ROUNDROBIN' | 'BERGER_ROUNDROBIN_G1':
                 return BergerRoundRobinVariation()
@@ -280,7 +287,7 @@ class TrfEncodedType:
             case _:
                 if 'ROUNDROBIN' in encoded_type or 'SCHEVENINGEN' in encoded_type:
                     return 'FIDE_ROUNDROBIN'
-                return 'FIDE_DUTCH_2025'
+                return 'FIDE_DUTCH_2026'
 
 
 class TrfColor(CoreMapper[str, BoardColor | None]):  # type: ignore
