@@ -51,4 +51,7 @@ jobs:
                 python -m playwright install chromium
 
             - name: Run all tests
-              run: pytest
+              # -m "" clears the default marker filter from pytest.ini, which
+              # leaves the release-only tests out. This is the run they exist
+              # for, so they have to be put back in.
+              run: pytest -m ""

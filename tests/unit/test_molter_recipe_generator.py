@@ -16,6 +16,10 @@ import pytest
 
 from data.pairings.fixed_table import FixedPairingTable, TablePairing
 
+# Generating a table is a search, and these check whole families of them:
+# the file takes about fifty seconds
+pytestmark = pytest.mark.release_only
+
 MOLTER_APPENDIX_DIR = (
     Path(__file__).resolve().parents[2] / 'docs' / 'technical-appendices' / 'molter'
 )

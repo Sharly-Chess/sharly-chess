@@ -1,6 +1,7 @@
 """Test configuration and utilities."""
 
 import re
+import shutil
 import time
 from enum import StrEnum
 from pathlib import Path
@@ -9,7 +10,7 @@ from urllib import parse
 
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
 
-from common import BASE_DIR
+from common import BASE_DIR, TMP_DIR
 from data.board import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
@@ -155,6 +156,23 @@ class TestUtils:
                     raise
                 time.sleep(delay_secs)
 
+    #: A fully-migrated, empty event database, built once and copied for
+    #: every event a test creates. See :meth:`_event_template_file`.
+    _event_template_path: Path | None = None
+
+    @classmethod
+    def _event_template_file(cls) -> Path:
+        """An empty event database to copy, built on first use."""
+        if cls._event_template_path is None:
+            source = EventDatabase('event-template')
+            source.file.unlink(missing_ok=True)
+            source.create()
+            template = TMP_DIR / source.file.name
+            template.unlink(missing_ok=True)
+            source.file.rename(template)
+            cls._event_template_path = template
+        return cls._event_template_path
+
     @classmethod
     def create_event(
         cls,
@@ -194,7 +212,7 @@ class TestUtils:
             )
             cls.check_api_response(res)
         else:
-            database.create()
+            shutil.copyfile(cls._event_template_file(), database.file)
             stored_event = StoredEvent(**data)
             with EventDatabase(uniq_id, write=True) as event_database:
                 event_database.update_stored_event(stored_event)
