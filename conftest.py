@@ -165,10 +165,17 @@ def backend_server(request):
 
 
 @pytest.fixture(autouse=True)
-def setup_page(page, backend_server):
+def setup_page(request, backend_server):
+    """Give every e2e test's page the same timeouts.
+
+    The page is asked for through ``request`` rather than taken as an
+    argument: this fixture runs for every test, and naming ``page`` would
+    have each of them open a browser context.
+    """
     if not backend_server:
         return None
 
+    page = request.getfixturevalue('page')
     page.set_default_timeout(15000)
     page.set_default_navigation_timeout(10000)
     return page
