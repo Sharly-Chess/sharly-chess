@@ -4,6 +4,7 @@ from typing import Self
 
 from data.pairing import Pairing
 from data.pairings import PairingVariation, variations
+from data.pairings.scheveningen import ScheveningenPairingSystem
 from data.pairings.systems import (
     RoundRobinPairingSystem,
     SwissPairingSystem,
@@ -53,7 +54,10 @@ class PapiPairingVariation(CoreMapper[str, PairingVariation]):
         if papi_key := super().get_outer_value(core_object):
             return papi_key
         pairing_system = core_object.system()
-        if pairing_system == SwissPairingSystem():
+        # A Scheveningen is exported as an individual Swiss.
+        if pairing_system == SwissPairingSystem() or isinstance(
+            pairing_system, ScheveningenPairingSystem
+        ):
             core_object = variations.StandardSwissVariation()
         elif pairing_system == RoundRobinPairingSystem():
             core_object = variations.BergerRoundRobinVariation()
@@ -67,6 +71,14 @@ class PapiPairingSystem(CoreMapper[str, PairingSystem]):
             'Suisse': SwissPairingSystem(),
             'ToutesRondes': RoundRobinPairingSystem(),
         }
+
+    @classmethod
+    def get_outer_value(cls, core_object: PairingSystem) -> str | None:
+        # A Scheveningen has no Papi type of its own; it is exported as an
+        # individual Swiss.
+        if isinstance(core_object, ScheveningenPairingSystem):
+            return 'Suisse'
+        return super().get_outer_value(core_object)
 
 
 class PapiTieBreak(CoreMapper[str, TieBreak]):

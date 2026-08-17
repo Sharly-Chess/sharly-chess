@@ -13,7 +13,12 @@ import pytest
 
 from data.event import Event
 from data.loader import EventLoader
-from data.pairings.scheveningen import ScheveningenVariation, scheveningen_table
+from data.pairings.scheveningen import (
+    ScheveningenPairingSystem,
+    ScheveningenVariation,
+    StandardScheveningenVariation,
+    scheveningen_table,
+)
 from data.print_documents.documents import (
     MolterTablePrintDocument,
     ScheveningenTablePrintDocument,
@@ -666,3 +671,31 @@ class TestScheveningenTournament(TestCase):
         )
         assert not context['rounds_are_automatic']
         assert data['rounds'] == '7'
+
+    def test_papi_export_is_available_and_flattens_to_a_swiss(self):
+        """A Scheveningen has no Papi type of its own, so it is exported as
+        an individual Swiss rather than blocked as a team event."""
+        from plugins.ffe.papi_converter import PapiConverter
+
+        tournament = self._paired_round(4)
+        assert PapiConverter.papi_export_unavailable_message(tournament) is None
+        warning = PapiConverter.papi_export_warning(tournament)
+        assert warning is not None and 'Swiss' in warning
+
+        papi_data = PapiConverter().tournament_to_papi_data(tournament)
+        # The individual Swiss type, not the (absent) Scheveningen one.
+        assert papi_data.variables.type == 'Suisse'
+        assert papi_data.variables.pairing == 'Standard'
+        # Every board of the match is carried as an individual game.
+        assert len(papi_data.players) == 8
+        assert all(len(player.rounds) == 4 for player in papi_data.players)
+
+
+def test_the_scheveningen_maps_to_the_swiss_papi_type():
+    from plugins.ffe.papi_mappers import PapiPairingSystem, PapiPairingVariation
+
+    assert PapiPairingSystem.get_outer_value(ScheveningenPairingSystem()) == 'Suisse'
+    assert (
+        PapiPairingVariation.get_outer_value(StandardScheveningenVariation())
+        == 'Standard'
+    )

@@ -10,8 +10,11 @@ from utils.enum import EventType
 
 
 class PapiTournamentExporter(TournamentExporter):
-    # Papi is an individual-tournament format.
-    supported_event_types = [EventType.INDIVIDUAL]
+    # Papi is an individual-tournament format. Team events are offered it
+    # too so that a Scheveningen — which flattens to an individual Swiss —
+    # can be exported; the other team tournaments are disabled per-tournament
+    # by is_unavailable_message.
+    supported_event_types = [EventType.INDIVIDUAL, EventType.TEAM]
 
     @staticmethod
     def static_id() -> str:
