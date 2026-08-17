@@ -22,9 +22,9 @@ from data.norms import ForecastRequirement
 from data.pairings.engines import (
     BergerPairingEngine,
     RoundRobinPairingEngine,
-    _TeamRoundRobinEngine,
+    TeamRoundRobinPairingEngine,
 )
-from data.pairings.fixed_table import FixedTablePairingSystem
+from data.pairings.fixed_table import PairingTableProvider
 from data.pairings.molter import MolterPairingSystem
 from data.pairings.scheveningen import ScheveningenPairingSystem
 from data.pairings.settings import BergerNumbersSetting
@@ -1255,7 +1255,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
             else _('After round #{round}').format(round=bound_round)
         )
         engine = tournament.pairing_variation.engine
-        assert isinstance(engine, _TeamRoundRobinEngine)
+        assert isinstance(engine, TeamRoundRobinPairingEngine)
         teams = self._get_option(TeamGridSortPrintOption).team_grid_sorter.sorted_teams(
             tournament
         )
@@ -1471,7 +1471,7 @@ class FixedPairingTablePrintDocument(PrintDocument, ABC):
         teams = self._ordered_teams()
         players_per_team = tournament.team_player_count or 0
         system = tournament.pairing_system
-        assert isinstance(system, FixedTablePairingSystem)
+        assert isinstance(system, PairingTableProvider)
         return system.get_table(len(teams), players_per_team, tournament)
 
     @property
@@ -1612,7 +1612,7 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
     def _team_rounds_data(
         tournament: Tournament, engine: Any, rounds: int
     ) -> list[dict[str, Any]]:
-        assert isinstance(engine, _TeamRoundRobinEngine)
+        assert isinstance(engine, TeamRoundRobinPairingEngine)
         name_by_id = {team.id: team.name for team in tournament.teams}
         # The played match for each (round, team pair), to fill in the score.
         match_by_round_pair: dict[tuple[int, frozenset], Any] = {}

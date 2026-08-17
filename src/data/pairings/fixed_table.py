@@ -91,18 +91,48 @@ class FixedPairingTable:
         return self.rounds[(round_index - 1) % self.regular_round_count]
 
 
+class PairingTableProvider(ABC):
+    """A system that can produce the whole schedule of a shape as a
+    :class:`FixedPairingTable`, whether it reads it from a registry of
+    tabulated combinations or works it out.
+
+    Declared apart from any one framework so that the schedule print
+    document can render every such system through the same call."""
+
+    @abstractmethod
+    def get_table(
+        self,
+        team_count: int,
+        players_per_team: int,
+        tournament: 'Tournament | None' = None,
+    ) -> FixedPairingTable | None:
+        """The table for the given (team_count, players_per_team) combo,
+        or ``None`` when this system has none for that shape.
+
+        ``tournament`` is forwarded so implementations can consult the
+        variation or the rule set (a double round, cell overrides for a
+        specific cup)."""
+
+
 # ---------------------------------------------------------------------------------
 # Abstract system / variation
 # ---------------------------------------------------------------------------------
 
 
-class FixedTablePairingSystem(PairingSystem['FixedTableVariation'], ABC):
-    """A pairing system driven by pre-computed lookup tables.
+class FixedTablePairingSystem(
+    PairingSystem['FixedTableVariation'], PairingTableProvider, ABC
+):
+    """A pairing system driven by pre-computed lookup tables, spreading
+    each round's boards over more teams than the two a match has.
 
     Concrete subclasses (typically plugin-provided) implement
     :meth:`get_table` to return the table for a given (team_count,
     players_per_team) combination, or ``None`` if unsupported (in which
     case the engine will try to combine smaller tables).
+
+    A round pairs players from several teams at once, so it is no team's
+    match: the boards stay flat (``paired_by_team = False``), and a
+    team's score is the sum of its players' game points.
     """
 
     @property
@@ -145,21 +175,6 @@ class FixedTablePairingSystem(PairingSystem['FixedTableVariation'], ABC):
         # Fixed-table systems aggregate individual game points only;
         # there's no match-points side of the score.
         return False
-
-    @abstractmethod
-    def get_table(
-        self,
-        team_count: int,
-        players_per_team: int,
-        tournament: 'Tournament | None' = None,
-    ) -> FixedPairingTable | None:
-        """Return the table for the given (team_count, players_per_team) combo,
-        or None if no exact table exists. The engine may then chain smaller
-        base tables to cover larger rosters.
-
-        ``tournament`` is forwarded so concrete implementations can
-        consult the rule set for cell overrides (e.g. cup-specific
-        tables)."""
 
     @abstractmethod
     def supported_team_counts(self) -> tuple[int, ...]:
