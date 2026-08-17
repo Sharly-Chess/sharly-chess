@@ -689,7 +689,7 @@ class PapiConverter:
         modal and the tournament tab's pairing warning."""
         if isinstance(tournament.pairing_system, ScheveningenPairingSystem):
             return _(
-                'Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament.'
+                'This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament.'
             )
         return None
 

@@ -774,9 +774,3 @@ msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] "{n} partie perdue par forfait, comptée -1."
 msgstr[1] "{n} parties perdues par forfait, comptées -1."
 
-#~ msgid "Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
-#~ msgstr "L'appariement Scheveningen n'est pas connu du site FFE et sera exporté comme un tournoi individuel au système suisse."
-
-#~ msgid "This SchevenScheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
-#~ msgstr ""
-
