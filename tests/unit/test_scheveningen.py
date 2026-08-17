@@ -690,6 +690,16 @@ class TestScheveningenTournament(TestCase):
         assert len(papi_data.players) == 8
         assert all(len(player.rounds) == 4 for player in papi_data.players)
 
+    def test_the_ffe_transfer_is_offered_for_the_scheveningen(self):
+        """The FFE-site transfer and its fields, hidden on team events,
+        are opened up for a Scheveningen — it uploads as an individual
+        Swiss."""
+        from plugins.ffe.utils import FFEUtils
+
+        tournament = self._paired_round(4)
+        assert FFEUtils.supports_ffe_transfer(tournament)
+        assert FFEUtils.event_supports_ffe_transfer(tournament.event)
+
 
 def test_the_scheveningen_maps_to_the_swiss_papi_type():
     from plugins.ffe.papi_mappers import PapiPairingSystem, PapiPairingVariation
