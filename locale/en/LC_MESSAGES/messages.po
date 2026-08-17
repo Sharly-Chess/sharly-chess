@@ -477,6 +477,9 @@ msgstr ""
 msgid "192 Encoded type {type} (default: {default})"
 msgstr ""
 
+msgid "1st"
+msgstr ""
+
 msgid "1st day of the month"
 msgstr ""
 
@@ -488,10 +491,6 @@ msgid "202 and 212 tie-breaks (212 used)"
 msgstr ""
 
 msgid "250 Accelerated rounds"
-msgstr ""
-
-#, python-brace-format
-msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
 msgstr ""
 
 msgid "299 Abnormal assignment points"
@@ -606,6 +605,13 @@ msgid "A number is expected."
 msgstr ""
 
 #, python-brace-format
+msgid "A pairing number between 1 and {max} is expected."
+msgstr ""
+
+msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
+msgstr ""
+
+#, python-brace-format
 msgid "A player with {column}=[{value}] already exists in the event."
 msgstr ""
 
@@ -632,10 +638,18 @@ msgid "A positive value is expected."
 msgstr ""
 
 #, python-brace-format
+msgid "A round between 1 and {max} is expected."
+msgstr ""
+
+#, python-brace-format
 msgid "A set named [{name}] already exists. Tick the overwrite option to replace it."
 msgstr ""
 
 msgid "A set with this name already existe."
+msgstr ""
+
+#, python-brace-format
+msgid "A value between 0 and {max} is expected."
 msgstr ""
 
 msgid "A value is expected."
@@ -671,6 +685,12 @@ msgid "Absents"
 msgstr ""
 
 msgid "Absolute"
+msgstr ""
+
+msgid "Accelerated rounds"
+msgstr ""
+
+msgid "Acceleration groups"
 msgstr ""
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
@@ -776,6 +796,9 @@ msgstr ""
 msgid "Add a tournament to the event."
 msgstr ""
 
+msgid "Add accelerated rounds"
+msgstr ""
+
 msgid "Add an account to the event."
 msgstr ""
 
@@ -801,6 +824,9 @@ msgid "Add the selected sets"
 msgstr ""
 
 msgid "Add tie-break"
+msgstr ""
+
+msgid "Add to the current values"
 msgstr ""
 
 msgid "Add tournaments"
@@ -1098,6 +1124,9 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "At most one decimal is expected."
+msgstr ""
+
 msgid "Aug *** AUGUST"
 msgstr "Aug"
 
@@ -1212,6 +1241,9 @@ msgid "Bahamas"
 msgstr ""
 
 msgid "Bahrain"
+msgstr ""
+
+msgid "Baku acceleration system"
 msgstr ""
 
 msgid "Bangladesh"
@@ -1773,6 +1805,9 @@ msgstr ""
 msgid "Clubs"
 msgstr ""
 
+msgid "Coefficient"
+msgstr ""
+
 msgid "Colombia"
 msgstr ""
 
@@ -2181,6 +2216,9 @@ msgid "Currently displaying screen [{name}]"
 msgstr ""
 
 msgid "Custom"
+msgstr ""
+
+msgid "Custom accelerated system"
 msgstr ""
 
 msgid "Custom sets"
@@ -2824,6 +2862,9 @@ msgstr ""
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
 msgstr ""
 
+msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
+msgstr ""
+
 msgid "Ecuador"
 msgstr ""
 
@@ -3253,6 +3294,12 @@ msgstr ""
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
 msgstr ""
 
+msgid "Fill"
+msgstr ""
+
+msgid "Fill from another tournament"
+msgstr ""
+
 msgid "Filter out players of higher categories."
 msgstr ""
 
@@ -3530,6 +3577,21 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
+#, python-brace-format
+msgid "Group {group_id}"
+msgstr ""
+
+msgid "Groups can't be edited for this pairing system."
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% of players."
+msgstr ""
+
 msgid "Guam"
 msgstr ""
 
@@ -3546,6 +3608,9 @@ msgid "Guyana"
 msgstr ""
 
 msgid "Haiti"
+msgstr ""
+
+msgid "Haley system"
 msgstr ""
 
 msgid "Half-Point Bye"
@@ -3783,6 +3848,15 @@ msgstr ""
 
 #, python-brace-format
 msgid "Inherited by permission [{permission}]."
+msgstr ""
+
+msgid "Initial pairing scores"
+msgstr ""
+
+msgid "Initial score"
+msgstr ""
+
+msgid "Initial score accelerated system"
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
@@ -4399,6 +4473,9 @@ msgstr ""
 msgid "Maximum roster size:"
 msgstr ""
 
+msgid "Maximum value must be greater than the minimum value."
+msgstr ""
+
 msgid "May"
 msgstr ""
 
@@ -4781,6 +4858,9 @@ msgid "No Prize Category"
 msgstr ""
 
 msgid "No Scheveningen table is available for this tournament size."
+msgstr ""
+
+msgid "No acceleration."
 msgstr ""
 
 msgid "No accounts"
@@ -5509,7 +5589,17 @@ msgstr ""
 msgid "Pairing number"
 msgstr ""
 
+msgid "Pairing number range of players in the group."
+msgstr ""
+
+#, python-format
+msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
+msgstr ""
+
 msgid "Pairing number — set by the team order."
+msgstr ""
+
+msgid "Pairing numbers"
 msgstr ""
 
 msgid "Pairing numbers selection"
@@ -5863,6 +5953,14 @@ msgstr ""
 msgid "Players import"
 msgstr ""
 
+#, python-brace-format
+msgid "Players in this group at round #1: {0} (odd number)."
+msgstr ""
+
+#, python-brace-format
+msgid "Players in this group at round #1: {0}."
+msgstr ""
+
 msgid "Players may have default estimated ratings depending on the activated plugins."
 msgstr ""
 
@@ -6121,6 +6219,9 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
+msgid "Progressive accelerated system"
+msgstr ""
+
 msgid "Progressive scores"
 msgstr ""
 
@@ -6359,6 +6460,9 @@ msgstr ""
 
 #, python-format
 msgid "Replace player [%(player)s]"
+msgstr ""
+
+msgid "Replace the current values"
 msgstr ""
 
 msgid "Replace the player to update this field."
@@ -6600,7 +6704,15 @@ msgid "Round performance indicators"
 msgstr ""
 
 #, python-brace-format
+msgid "Round {round}"
+msgstr ""
+
+#, python-brace-format
 msgid "Round {round} is already paired. Unpair it before pairing it again."
+msgstr ""
+
+#, python-brace-format
+msgid "Round {round} of pairing number {number} is already accelerated."
 msgstr ""
 
 #, python-brace-format, python-format
@@ -6627,6 +6739,10 @@ msgid "Rounds"
 msgstr ""
 
 msgid "Rounds one Elected to Play"
+msgstr ""
+
+#, python-brace-format
+msgid "Rounds {min_round}-{max_round}"
 msgstr ""
 
 msgid "Rows per screen:"
@@ -6794,6 +6910,9 @@ msgstr ""
 msgid "Search *** SECTION TITLE"
 msgstr "Search"
 
+msgid "Search an event"
+msgstr ""
+
 msgid "Search by name"
 msgstr ""
 
@@ -6834,6 +6953,9 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
+msgid "Select a tournament"
+msgstr ""
+
 msgid "Select all"
 msgstr ""
 
@@ -6848,6 +6970,9 @@ msgstr ""
 
 #, python-format
 msgid "Select an action for the %(count)d absent players:"
+msgstr ""
+
+msgid "Select an event"
 msgstr ""
 
 msgid "Select at least two members."
@@ -7066,6 +7191,9 @@ msgid "Slovenia"
 msgstr ""
 
 msgid "Soft"
+msgstr ""
+
+msgid "Soft Haley system"
 msgstr ""
 
 msgid "Soft constraint"
@@ -7547,6 +7675,9 @@ msgid "The default federation for your events."
 msgstr ""
 
 msgid "The director is the person in charge of the event."
+msgstr ""
+
+msgid "The end of the range must not precede its start."
 msgstr ""
 
 msgid "The event already has multi-tournament players."
@@ -8866,6 +8997,12 @@ msgstr ""
 msgid "View the menu."
 msgstr ""
 
+msgid "Virtual points"
+msgstr ""
+
+msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
+msgstr ""
+
 msgid "Visibility:"
 msgstr ""
 
@@ -9491,6 +9628,9 @@ msgstr ""
 msgid "players on {parts} screens"
 msgstr ""
 
+msgid "points"
+msgstr ""
+
 #, python-format
 msgid "raised to %(r)s"
 msgstr ""
@@ -9765,6 +9905,10 @@ msgid "{first_name} {last_name}"
 msgstr ""
 
 #, python-brace-format
+msgid "{matched} players filled, {missing} not found in that tournament"
+msgstr ""
+
+#, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
 msgstr ""
 
@@ -9823,4 +9967,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
+#~ msgstr ""
 

@@ -7,7 +7,7 @@ from data.pairings.variations import (
     StandardSwissVariation,
     StandardTeamSwissVariation,
 )
-from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
+from data.pairings.acceleration import BakuSwissVariation
 from utils import CoreMapper
 from utils.enum import (
     BoardColor,

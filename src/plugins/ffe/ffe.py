@@ -130,7 +130,6 @@ from plugins.ffe.utils import (
 from data.tie_breaks import tie_breaks as tie_breaks_module
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
-from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
 from plugins.sce.sce_data import SCEPlayerSyncData
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.utils import (
@@ -193,7 +192,7 @@ class FfePlugin(Plugin):
 
     @property
     def dependencies(self) -> list[type[Plugin]]:
-        return [PairingAccelerationPlugin]
+        return []
 
     @property
     def description(self) -> str:

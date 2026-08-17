@@ -1,5 +1,7 @@
 import random
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 from common.i18n import _
@@ -8,6 +10,51 @@ from utils.enum import BoardColor
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
+
+
+class AccelerationGroup(StrEnum):
+    A = 'A'
+    B = 'B'
+    C = 'C'
+
+
+@dataclass
+class AccelerationRule:
+    """Virtual points granted over a range of rounds, either to an
+    acceleration group or, when *number_range* is set, to an explicit
+    range of pairing numbers (one TRF26 250 record).
+
+    Any bound of either range may be left empty, meaning "from the
+    start" or "to the end" — the first/last round, the first/last
+    pairing number. Such a rule is resolved against the tournament each
+    time it is read rather than pinned when it is saved, so it keeps
+    covering the whole field as rounds and players are added.
+    """
+
+    vpoints: float
+    first_round: int | None
+    last_round: int | None
+    group: AccelerationGroup | None = None
+    points_threshold: float = 0
+    number_range: tuple[int | None, int | None] | None = None
+
+    def resolved_round_range(self, tournament: 'Tournament') -> tuple[int, int]:
+        """The rounds this rule covers, with empty bounds filled in."""
+        return (
+            1 if self.first_round is None else self.first_round,
+            tournament.rounds if self.last_round is None else self.last_round,
+        )
+
+    def resolved_number_range(self, tournament: 'Tournament') -> tuple[int, int] | None:
+        """The pairing numbers this rule covers, with empty bounds
+        filled in. ``None`` for a rule that addresses a group instead."""
+        if self.number_range is None:
+            return None
+        first, last = self.number_range
+        return (
+            1 if first is None else first,
+            tournament.player_count if last is None else last,
+        )
 
 
 class PairingSetting[T](IdentifiableEntity, ABC):

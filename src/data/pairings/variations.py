@@ -19,12 +19,10 @@ from data.pairings.settings import (
     PairingSetting,
     ColorSeedSetting,
     BergerNumbersSetting,
-)
-from data.player import TournamentPlayer
-from plugins.pairing_acceleration.pairing_settings import (
     AccelerationRule,
     AccelerationGroup,
 )
+from data.player import TournamentPlayer
 from utils.entity import IdentifiableEntity
 
 if TYPE_CHECKING:

@@ -53,7 +53,7 @@ from plugins.ffe.papi_mappers import (
 from plugins.ffe.utils import FFEUtils
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
 from plugins.manager import plugin_manager
-from plugins.pairing_acceleration.pairing_variations import (
+from data.pairings.acceleration import (
     BakuSwissVariation,
     AccelerationSwissVariation,
     CustomAccelerationSwissVariation,
