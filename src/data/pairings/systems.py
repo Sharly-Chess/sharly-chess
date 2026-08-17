@@ -128,6 +128,22 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def uses_colour_pattern(self) -> bool:
+        """Whether the arbiter chooses which team takes White on each
+        board of a match. True wherever teams are paired against each
+        other and nothing else settles the colours; systems reading
+        their colours off a fixed table override to False."""
+        return self.paired_by_team
+
+    @property
+    def supports_colour_preferences(self) -> bool:
+        """Whether colours are allocated from each entrant's colour
+        history — the Swiss rule, which brings a colour-allocation
+        basis (the secondary score) and a colour-difference rule with
+        it. Fixed-schedule systems settle colours from their table."""
+        return False
+
+    @property
     def fide_team_swiss_code(self) -> bool:
         """Whether TRF field 192 should carry the FIDE team-Swiss code
         (``FIDE_TEAM_TYPE<X>_<primary>[_<secondary>]``) for this system.
@@ -370,6 +386,11 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
     @property
     @override
     def fide_team_swiss_code(self) -> bool:
+        return True
+
+    @property
+    @override
+    def supports_colour_preferences(self) -> bool:
         return True
 
     @override

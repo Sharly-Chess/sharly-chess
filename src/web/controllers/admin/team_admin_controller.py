@@ -1122,7 +1122,16 @@ class TeamAdminController(BaseEventAdminController):
                 team.round_board_slots(round_) or team.effective_round_slots(round_)
             )
         ]
-        boards_by_index = {board.index: board for board in team_board.boards}
+        # Keyed by the team's line-up slot, which is the board index in
+        # a straight team match but not in a table that rotates one team
+        # around the other.
+        slot_by_board_index = tournament.pairing_variation.engine.team_board_slots(
+            tournament, team_board, team.id
+        )
+        boards_by_slot = {
+            slot_by_board_index.get(board.index, board.index): board
+            for board in team_board.boards
+        }
 
         # Two-pass: vacate every slot that changes, then fill. Avoids
         # collisions when two players swap within the team's lineup.
@@ -1138,14 +1147,14 @@ class TeamAdminController(BaseEventAdminController):
                 to_fill.append((i, new_pid))
 
         for slot, old_pid in to_punch:
-            board = boards_by_index.get(slot)
+            board = boards_by_slot.get(slot)
             if board is None:
                 continue
             PairingsAdminController._punch_lineup_hole_for_team(
                 event, tournament, board, team_board, team, old_pid
             )
         for slot, new_pid in to_fill:
-            board = boards_by_index.get(slot)
+            board = boards_by_slot.get(slot)
             if board is None:
                 continue
             new_tp = tournament.tournament_players_by_id.get(new_pid)
@@ -1154,7 +1163,7 @@ class TeamAdminController(BaseEventAdminController):
             physical_side = (
                 'white'
                 if PairingsAdminController._team_owning_side(
-                    tournament, team_board, slot, 'W'
+                    tournament, team_board, board.index, 'W'
                 )
                 == team
                 else 'black'

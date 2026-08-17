@@ -582,6 +582,13 @@ msgstr ""
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
+msgid "A Scheveningen is a match between exactly two teams."
+msgstr ""
+
+#, python-brace-format
+msgid "A Scheveningen is played on {min} boards at least."
+msgstr ""
+
 #, python-brace-format
 msgid "A Scheveningen on {boards} boards is played over {expected} rounds, so that every player meets every opponent."
 msgstr ""

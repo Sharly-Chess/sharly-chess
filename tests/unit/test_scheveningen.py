@@ -23,7 +23,12 @@ from web.controllers.admin.tournament_admin_controller import (
     TournamentAdminController,
 )
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredBoard, StoredPlayer, StoredTeam
+from database.sqlite.event.event_store import (
+    StoredBoard,
+    StoredPlayer,
+    StoredTeam,
+    StoredTournamentPlayer,
+)
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result
 
@@ -332,6 +337,99 @@ class TestScheveningenTournament(TestCase):
                     )
                 )
 
+    @staticmethod
+    def _cells(pairings) -> list[tuple[str, str]]:
+        """Table cells as the paper writes them: ``('A1', 'B3')``."""
+        return [
+            (
+                f'{pairing.white_team}{pairing.white_index}',
+                f'{pairing.black_team}{pairing.black_index}',
+            )
+            for pairing in pairings
+        ]
+
+    def _add_players(self, per_team: int) -> None:
+        """Fill both rosters. Player ``A2`` is the second player of the
+        first team, and so on, so a board can be read back as a cell."""
+        with EventDatabase(self.EVENT_ID, write=True) as database:
+            tournament_id = next(
+                stored.id
+                for stored in database.load_stored_tournaments()
+                if stored.name == self.TOURNAMENT_NAME
+            )
+            assert tournament_id is not None
+            teams = sorted(
+                (
+                    team
+                    for team in database.load_stored_teams()
+                    if team.tournament_id == tournament_id
+                ),
+                key=lambda team: team.pairing_number or 0,
+            )
+            for letter, team in zip('AB', teams):
+                for index in range(per_team):
+                    player_id = database.add_stored_player(
+                        StoredPlayer(
+                            id=None,
+                            last_name=f'{letter}{index + 1}',
+                            team_id=team.id,
+                            team_index=index,
+                            check_in=True,
+                        )
+                    )
+                    database.add_stored_tournament_player(
+                        StoredTournamentPlayer(
+                            tournament_id=tournament_id,
+                            player_id=player_id,
+                            pairing_number=index + 1,
+                        )
+                    )
+
+    def _enter_results(self, tournament, round_: int, a_wins: int) -> None:
+        """The first team takes the first *a_wins* boards of the round,
+        the other team the rest. Which side of a board a team sits on
+        varies, so the result is stated from the players' names."""
+        for position, board in enumerate(
+            sorted(tournament.get_round_boards(round_), key=lambda b: b.index)
+        ):
+            first_team_is_white = board.white_tournament_player.last_name.startswith(
+                'A'
+            )
+            first_team_takes_it = position < a_wins
+            tournament.add_result(
+                board,
+                Result.WIN
+                if first_team_takes_it == first_team_is_white
+                else Result.LOSS,
+            )
+
+    def _paired_round(self, round_: int):
+        """A tournament with *round_* paired by the engine. Earlier
+        rounds are played out — a round is only paired once the one
+        before it has all its results."""
+        self._add_teams(2)
+        self._add_players(4)
+        tournament = self._tournament()
+        for pending in range(1, round_ + 1):
+            assert tournament.generate_round_pairings(pending) == ''
+            if pending < round_:
+                self._enter_results(tournament, pending, 2)
+        return self._tournament()
+
+    @staticmethod
+    def _seating(tournament, round_: int) -> list[tuple[str, str]]:
+        """Who actually sits on each board of *round_*, by player name —
+        directly comparable with the table's cells."""
+        return [
+            (
+                board.white_tournament_player.last_name,
+                board.black_tournament_player.last_name,
+            )
+            for board in sorted(
+                tournament.get_round_boards(round_), key=lambda b: b.index
+            )
+        ]
+
     def _seat_a_board(self) -> None:
         """Put one player from each team on a board, which is all it
         takes for the tournament to count as paired. The engine itself
@@ -376,24 +474,106 @@ class TestScheveningenTournament(TestCase):
         self._add_teams(3)
         tournament = self._tournament()
         engine = tournament.pairing_variation.engine
-        message = engine.invalid_player_count_message(tournament)
-        assert message is not None and '2' in message
-        # The read-only accessors the pairings tab calls stay quiet.
-        assert engine.board_references(tournament, 1) == []
-        assert engine.round_seats(tournament, 1) == {}
-        assert tournament.unboarded_holes(1) == []
+        assert engine.invalid_player_count_message(tournament) is not None
+        # The read-only accessor the pairings tab calls stays quiet.
+        assert engine.round_pairings(tournament, 1) == ()
 
     def test_two_teams_produce_the_table(self):
         self._add_teams(2)
         tournament = self._tournament()
         engine = tournament.pairing_variation.engine
         assert engine.invalid_player_count_message(tournament) is None
-        assert engine.board_references(tournament, 1) == [
+        assert self._cells(engine.round_pairings(tournament, 1)) == [
             ('A1', 'B1'),
             ('A2', 'B2'),
             ('B3', 'A3'),
             ('B4', 'A4'),
         ]
+
+    def test_the_system_pairs_team_against_team(self):
+        """Not a flat table spread over several teams: two teams meet,
+        so the round is a match and carries match points."""
+        tournament = self._tournament()
+        assert tournament.pairing_system.paired_by_team
+        assert tournament.pairing_system.supports_match_points
+        # The table gives every board its colour, so there is no pattern
+        # for the arbiter to choose.
+        assert not tournament.pairing_system.uses_colour_pattern
+        assert not tournament.pairing_system.supports_colour_preferences
+
+    def test_a_round_is_one_match(self):
+        tournament = self._paired_round(1)
+        team_boards = tournament.get_round_team_boards(1)
+        assert len(team_boards) == 1
+        team_board = team_boards[0]
+        assert team_board.team_a.name == 'Team 1'
+        assert team_board.team_b is not None
+        assert team_board.team_b.name == 'Team 2'
+        # Every board of the round hangs off that one envelope.
+        boards = tournament.get_round_boards(1)
+        assert len(boards) == 4
+        assert {board.stored_board.team_board_id for board in boards} == {team_board.id}
+
+    def test_the_boards_are_seated_from_the_table(self):
+        """Board j keeps team A's j-th player and team B moves around
+        it, which is what a colour pattern could not express."""
+        tournament = self._paired_round(2)
+        assert self._seating(tournament, 1) == [
+            ('A1', 'B1'),
+            ('A2', 'B2'),
+            ('B3', 'A3'),
+            ('B4', 'A4'),
+        ]
+        assert self._seating(tournament, 2) == [
+            ('B2', 'A1'),
+            ('B1', 'A2'),
+            ('A3', 'B4'),
+            ('A4', 'B3'),
+        ]
+
+    def test_a_line_up_slot_follows_the_table(self):
+        """Team B's slot is not the board number — the engine is what
+        the line-up edits ask, rather than assuming the two agree."""
+        tournament = self._paired_round(2)
+        engine = tournament.pairing_variation.engine
+        team_board = tournament.get_round_team_boards(2)[0]
+        stb = team_board.stored_team_board
+        assert engine.team_board_slots(tournament, team_board, stb.team_a_id) == {
+            0: 0,
+            1: 1,
+            2: 2,
+            3: 3,
+        }
+        assert engine.team_board_slots(tournament, team_board, stb.team_b_id) == {
+            0: 1,
+            1: 0,
+            2: 3,
+            3: 2,
+        }
+        # Round 2 seats team B on the white side of the first board.
+        assert engine.team_seat_owner(tournament, team_board, 0, 'white') is (
+            team_board.team_b
+        )
+        assert engine.team_seat_owner(tournament, team_board, 0, 'black') is (
+            team_board.team_a
+        )
+
+    def test_the_match_is_scored_in_match_points(self):
+        """The point of the exercise: a won match is worth match points,
+        just as it is in a team Swiss or a team round-robin."""
+        tournament = self._paired_round(1)
+        # Team 1 takes the first three boards, Team 2 the fourth.
+        self._enter_results(tournament, 1, 3)
+        tournament = self._tournament()
+        standings = {row['team'].name: row for row in tournament.team_standings()}
+        assert standings['Team 1']['gp'] == 3.0
+        assert standings['Team 2']['gp'] == 1.0
+        assert standings['Team 1']['mp'] == 2.0
+        assert standings['Team 2']['mp'] == 0.0
+        assert standings['Team 1']['wins'] == 1
+        assert standings['Team 2']['losses'] == 1
+        assert standings['Team 1']['played'] == 1
+        assert standings['Team 1']['rank'] == 1
 
     def test_the_pairing_table_document_lists_every_round(self):
         """The whole schedule is known up front, so the document prints

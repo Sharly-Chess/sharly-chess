@@ -7,7 +7,7 @@ from data.pairings import systems
 from data.pairings.engines import (
     PairingEngine,
     RoundRobinPairingEngine,
-    _TeamRoundRobinEngine,
+    TeamRoundRobinPairingEngine,
     BbpPairings,
     BergerPairingEngine,
     DoubleBergerPairingEngine,
@@ -323,7 +323,7 @@ class TeamRoundRobinVariation(PairingVariation, ABC):
     @override
     def automatic_round_count(self, tournament: 'Tournament') -> int | None:
         engine = self.engine
-        assert isinstance(engine, _TeamRoundRobinEngine)
+        assert isinstance(engine, TeamRoundRobinPairingEngine)
         team_count = len(tournament.teams)
         if team_count < engine.MIN_TEAMS:
             return None
