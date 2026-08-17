@@ -11,7 +11,7 @@ from plugins.ffe.ffe_tie_breaks import (
     MedianPapiBuchholzType,
 )
 from plugins.ffe.utils import PlayerFFELicence
-from plugins.pairing_acceleration.pairing_variations import (
+from data.pairings.acceleration import (
     HaleySwissVariation,
     HaleySoftSwissVariation,
     ProgressiveSwissVariation,

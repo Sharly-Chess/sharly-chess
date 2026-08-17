@@ -13,7 +13,7 @@ from plugins.ffe import PLUGIN_NAME
 from utils.enum import EventType
 from plugins.ffe.papi_converter import PapiConverter, PapiData
 from plugins.manager import plugin_manager
-from plugins.pairing_acceleration.utils import PairingAccelerationUtils
+from data.pairings.acceleration import AccelerationUtils
 
 
 class FfeTournamentImporter(FileTournamentImporter):
@@ -53,7 +53,7 @@ class FfeTournamentImporter(FileTournamentImporter):
             self.post_import_task.insert(
                 0,
                 partial(
-                    PairingAccelerationUtils.set_pairing_settings_from_rating_threshold,
+                    AccelerationUtils.set_pairing_settings_from_rating_threshold,
                     rating_threshold=rating_threshold_1,
                 ),
             )
@@ -61,7 +61,7 @@ class FfeTournamentImporter(FileTournamentImporter):
             self.post_import_task.insert(
                 0,
                 partial(
-                    PairingAccelerationUtils.set_pairing_settings_from_dual_rating_thresholds,
+                    AccelerationUtils.set_pairing_settings_from_dual_rating_thresholds,
                     lower_rating_threshold=rating_threshold_2,
                     upper_rating_threshold=rating_threshold_1,
                 ),

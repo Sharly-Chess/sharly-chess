@@ -26,9 +26,6 @@ class AppPluginManager(PluginManager):
         from plugins.chess_results.chess_results import ChessResultsPlugin
         from plugins.ffe.ffe import FfePlugin
         from plugins.chessevent.chessevent import ChessEventPlugin
-        from plugins.pairing_acceleration.pairing_acceleration import (
-            PairingAccelerationPlugin,
-        )
         from plugins.handicap_games.handicap_games import (
             HandicapGamesPlugin,
         )
@@ -39,7 +36,6 @@ class AppPluginManager(PluginManager):
 
         plugins = [
             SCEPlugin(),
-            PairingAccelerationPlugin(),
             ChessResultsPlugin(),
             FfePlugin(),
             ChessEventPlugin(),

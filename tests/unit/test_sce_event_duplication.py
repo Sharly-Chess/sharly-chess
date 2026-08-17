@@ -56,7 +56,7 @@ def _linked_event() -> _FakeStoredEvent:
             },
             'ffe': {'id': '12345'},
         },
-        enabled_plugins=[PLUGIN_NAME, 'ffe', 'pairing_acceleration'],
+        enabled_plugins=[PLUGIN_NAME, 'ffe'],
         stored_tournaments=[_FakeStored({PLUGIN_NAME: {'id': 'trn-1'}})],
         stored_players=[_FakeStored({PLUGIN_NAME: {'registration_id': 'reg-1'}})],
     )
@@ -87,7 +87,7 @@ class TestSCEOnEventDuplicated:
 
         SCEPlugin().on_event_duplicated(event_database=database)
 
-        assert database.stored_event.enabled_plugins == ['ffe', 'pairing_acceleration']
+        assert database.stored_event.enabled_plugins == ['ffe']
         assert database.stored_event.plugin_data['ffe'] == {'id': '12345'}
 
     def test_nothing_happens_when_the_plugin_is_not_enabled(self):

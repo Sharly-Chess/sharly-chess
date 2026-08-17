@@ -21,7 +21,7 @@ from plugins.ffe.ffe_tie_breaks import (
     MedianPapiBuchholzType,
 )
 from plugins.ffe.utils import PlayerFFELicence
-from plugins.pairing_acceleration import pairing_variations as accelerations
+from data.pairings import acceleration as accelerations
 from utils import CoreMapper
 from utils.enum import (
     TournamentRating,

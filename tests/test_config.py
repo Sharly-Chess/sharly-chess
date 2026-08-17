@@ -194,7 +194,7 @@ class TestUtils:
             }
         else:
             defaults |= {
-                'enabled_plugins': ['ffe', 'pairing_acceleration'],
+                'enabled_plugins': ['ffe'],
             }
 
         # Merge overrides

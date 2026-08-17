@@ -13,22 +13,22 @@
                 ) if are_groups_editable else
                 _('Pairing number range of players in the group.')
             ),
-            tooltip_text=admin_tournament.pairing_variation.get_group_b_tooltip(admin_tournament),
+            tooltip_text=admin_tournament.pairing_variation.get_group_c_tooltip(admin_tournament),
             input_tooltip=(
                 '' if are_groups_editable else
                 _('Groups can\'t be edited for this pairing system.')
             ),
-            max_disabled=setting.group_count() == 2,
+            max_disabled=setting.group_count() == 3,
             data=data,
             errors=errors,
         ) }}
     </div>
-    <div id="pairing-acceleration-GROUP-B-{{ setting.group_count() }}-r1" class="col-12 form-text mt-0">
+    <div id="GROUP-C-{{ setting.group_count() }}-r1" class="col-12 form-text mt-0">
     </div>
 </div>
 <script>
-    {% set min_field = 'pairing-acceleration-GROUP-B-' ~ setting.group_count() ~ '-min' %}
-    {% set previous_max_field = 'pairing-acceleration-GROUP-A-' ~ setting.group_count() ~ '-max' %}
+    {% set min_field = 'GROUP-C-' ~ setting.group_count() ~ '-min' %}
+    {% set previous_max_field = 'GROUP-B-' ~ setting.group_count() ~ '-max' %}
     $('#{{ min_field }}').change(function () {
         var newVal = '';
         if ($(this).val() !== '') {
@@ -45,7 +45,7 @@
         $('#{{ min_field }}').val(newVal);
         updateR1Fields();
     });
-    {% if setting.group_count() == 2 %}
+    {% if setting.group_count() == 3 %}
         updateR1Fields();
     {% endif %}
 </script>

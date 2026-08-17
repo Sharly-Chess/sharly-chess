@@ -477,6 +477,9 @@ msgstr "172 méthode de classement initial {method}"
 msgid "192 Encoded type {type} (default: {default})"
 msgstr "192 Type {type} (défaut : {default})"
 
+msgid "1st"
+msgstr "1ère"
+
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
@@ -489,10 +492,6 @@ msgstr "202 et 212 Départages (212 utilisé)"
 
 msgid "250 Accelerated rounds"
 msgstr "250 Rondes accélérées"
-
-#, python-brace-format
-msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
-msgstr "250 Rondes accélérées (activez le plugin [{plugin}] pour les importer)"
 
 msgid "299 Abnormal assignment points"
 msgstr "299 Attribution de points anormaux"
@@ -606,6 +605,13 @@ msgid "A number is expected."
 msgstr "Un nombre est attendu."
 
 #, python-brace-format
+msgid "A pairing number between 1 and {max} is expected."
+msgstr "Un numéro d'appariement compris entre 1 et {max} est attendu."
+
+msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
+msgstr "Un·e joueur·euse commence chaque ronde avec ces points ajoutés à ceux qu'il·elle a marqués. Ils ne sont utilisés que pour l'appariement, jamais pour le classement, et ne font pas partie des résultats transmis pour l'évolution du classement des joueur·euses."
+
+#, python-brace-format
 msgid "A player with {column}=[{value}] already exists in the event."
 msgstr "Un·e joueur·euse avec {column}=[{value}] existe déjà dans l'évènement."
 
@@ -632,11 +638,19 @@ msgid "A positive value is expected."
 msgstr "Une valeur positive est attendue."
 
 #, python-brace-format
+msgid "A round between 1 and {max} is expected."
+msgstr "Une ronde comprise entre 1 et {max} est attendue."
+
+#, python-brace-format
 msgid "A set named [{name}] already exists. Tick the overwrite option to replace it."
 msgstr "Un ensemble nommé [{name}] existe déjà. Cochez l'option Remplacement pour le remplacer."
 
 msgid "A set with this name already existe."
 msgstr "Un ensemble avec ce nom existe déjà."
+
+#, python-brace-format
+msgid "A value between 0 and {max} is expected."
+msgstr "Une valeur comprise entre 0 et {max} est attendue."
 
 msgid "A value is expected."
 msgstr "Une valeur est attendue."
@@ -672,6 +686,12 @@ msgstr "Absent·es"
 
 msgid "Absolute"
 msgstr "Préférence absolue"
+
+msgid "Accelerated rounds"
+msgstr "Rondes accélérées"
+
+msgid "Acceleration groups"
+msgstr "Groupes d'accélération"
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
 msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
@@ -776,6 +796,9 @@ msgstr "Ajoutez un tournoi pour pouvoir ajouter des joueur·euses."
 msgid "Add a tournament to the event."
 msgstr "Ajouter un tournoi à l'évènement."
 
+msgid "Add accelerated rounds"
+msgstr "Ajouter des rondes accélérées"
+
 msgid "Add an account to the event."
 msgstr "Ajouter un compte à l'évènement."
 
@@ -802,6 +825,9 @@ msgstr "Ajouter les ensembles sélectionnés"
 
 msgid "Add tie-break"
 msgstr "Ajouter un départage"
+
+msgid "Add to the current values"
+msgstr "Ajouter aux valeurs actuelles"
 
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
@@ -1098,6 +1124,9 @@ msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] "Au plus %(num)d coup illegal est enregistré."
 msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 
+msgid "At most one decimal is expected."
+msgstr "Une seule décimale au maximum est attendue."
+
 msgid "Aug *** AUGUST"
 msgstr "Août"
 
@@ -1213,6 +1242,9 @@ msgstr "Bahamas"
 
 msgid "Bahrain"
 msgstr "Bahreïn"
+
+msgid "Baku acceleration system"
+msgstr "Système d'accélération de Bakou"
 
 msgid "Bangladesh"
 msgstr "Bangladesh"
@@ -1773,6 +1805,9 @@ msgstr "Club :"
 msgid "Clubs"
 msgstr "Clubs"
 
+msgid "Coefficient"
+msgstr "Coefficient"
+
 msgid "Colombia"
 msgstr "Colombie"
 
@@ -2182,6 +2217,9 @@ msgstr "Affiche actuellement l'écran [{name}]"
 
 msgid "Custom"
 msgstr "Personnalisés"
+
+msgid "Custom accelerated system"
+msgstr "Système accéléré personnalisé"
 
 msgid "Custom sets"
 msgstr "Ensembles personnalisés"
@@ -2824,6 +2862,9 @@ msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
 msgstr "Chaque ligne représente une norme réalisée par un·e joueur·euse. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur·euse."
 
+msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
+msgstr "Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
+
 msgid "Ecuador"
 msgstr "Équateur"
 
@@ -3253,6 +3294,12 @@ msgstr "Fichier"
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
 msgstr "L'extension du fichier [{suffix}] est invalide (attendue : {expected})."
 
+msgid "Fill"
+msgstr "Remplir"
+
+msgid "Fill from another tournament"
+msgstr "Remplir depuis un autre tournoi"
+
 msgid "Filter out players of higher categories."
 msgstr "Exclure les joueur·euses des catégories supérieures."
 
@@ -3530,6 +3577,21 @@ msgstr "Groenland"
 msgid "Group"
 msgstr "Groupe"
 
+#, python-brace-format
+msgid "Group {group_id}"
+msgstr "Groupe {group_id}"
+
+msgid "Groups can't be edited for this pairing system."
+msgstr "Les groupes ne peuvent être mis à jour pour ce système d'appariement."
+
+#, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr "Les groupes doivent être composés d'au moins 25 %% et d'au plus 50 %% des joueur·euses."
+
+#, python-format
+msgid "Groups must be composed of at least 25%% of players."
+msgstr "Les groupes doivent être composés d'au moins 25 %% des joueur·euses."
+
 msgid "Guam"
 msgstr "Guam"
 
@@ -3547,6 +3609,9 @@ msgstr "Guyana"
 
 msgid "Haiti"
 msgstr "Haïti"
+
+msgid "Haley system"
+msgstr "Système de Haley"
 
 msgid "Half-Point Bye"
 msgstr "Bye"
@@ -3784,6 +3849,15 @@ msgstr "Info"
 #, python-brace-format
 msgid "Inherited by permission [{permission}]."
 msgstr "Hérité de la permission [{permission}]."
+
+msgid "Initial pairing scores"
+msgstr "Scores initiaux d'appariement"
+
+msgid "Initial score"
+msgstr "Score initial"
+
+msgid "Initial score accelerated system"
+msgstr "Système accéléré à scores initiaux"
 
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
 msgstr "Les écrans de saisie peuvent être utilisés pour permettre aux joueur·euses d’entrer eux-mêmes leurs résultats sur un portable ou une tablette mis à disposition sur le lieu du tournoi."
@@ -4399,6 +4473,9 @@ msgstr "Elo maximum"
 msgid "Maximum roster size:"
 msgstr "Taille maximum de l'effectif :"
 
+msgid "Maximum value must be greater than the minimum value."
+msgstr "La valeur maximale doit être supérieure à la valeur minimale."
+
 msgid "May"
 msgstr "Mai"
 
@@ -4782,6 +4859,9 @@ msgstr "Aucune catégorie de prix"
 
 msgid "No Scheveningen table is available for this tournament size."
 msgstr "Aucune table Scheveningen n'est disponible pour un tournoi de cette taille."
+
+msgid "No acceleration."
+msgstr "Pas d'accélération."
 
 msgid "No accounts"
 msgstr "Aucun compte"
@@ -5511,8 +5591,18 @@ msgstr "Appariement non-trouvé."
 msgid "Pairing number"
 msgstr "Numéro d'appariement"
 
+msgid "Pairing number range of players in the group."
+msgstr "Plage de numéros d'appariement des joueur·euses du groupe."
+
+#, python-format
+msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
+msgstr "Plage de numéros d'appariement du groupe (recommandé : %(min)d-%(max)d)."
+
 msgid "Pairing number — set by the team order."
 msgstr "Numéro d'appariement — défini par l'ordre des équipes."
+
+msgid "Pairing numbers"
+msgstr "Numéros d'appariement"
 
 msgid "Pairing numbers selection"
 msgstr "Sélection des numéros d'appariements"
@@ -5865,6 +5955,14 @@ msgstr "joueur·euses de %(first)s à %(last)s"
 msgid "Players import"
 msgstr "Import de joueur·euses"
 
+#, python-brace-format
+msgid "Players in this group at round #1: {0} (odd number)."
+msgstr "Joueur·euses dans ce groupe à la ronde n°1 : {0} (nombre impair)."
+
+#, python-brace-format
+msgid "Players in this group at round #1: {0}."
+msgstr "Joueur·euses dans ce groupe à la ronde n°1 : {0}."
+
 msgid "Players may have default estimated ratings depending on the activated plugins."
 msgstr "Les joueur·euses peuvent avoir des classements estimés par défaut en fonction des plug-ins actifs."
 
@@ -6123,6 +6221,9 @@ msgstr "Continuer"
 msgid "Profile"
 msgstr "Profil"
 
+msgid "Progressive accelerated system"
+msgstr "Système accéléré dégressif (SAD)"
+
 msgid "Progressive scores"
 msgstr "Scores cumulés"
 
@@ -6363,6 +6464,9 @@ msgstr "Remplacer <b>{old}</b> par <b>{new}</b>"
 msgid "Replace player [%(player)s]"
 msgstr "Remplacer le·la joueur·euse [%(player)s]"
 
+msgid "Replace the current values"
+msgstr "Remplacer les valeurs actuelles"
+
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
 
@@ -6602,8 +6706,16 @@ msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
 
 #, python-brace-format
+msgid "Round {round}"
+msgstr "Ronde {round}"
+
+#, python-brace-format
 msgid "Round {round} is already paired. Unpair it before pairing it again."
 msgstr "La ronde {round} est déjà appariée. Supprimez ses appariements avant de l’apparier à nouveau."
+
+#, python-brace-format
+msgid "Round {round} of pairing number {number} is already accelerated."
+msgstr "La ronde {round} du numéro d'appariement {number} est déjà accélérée."
 
 #, python-brace-format, python-format
 msgid "Round {} started for %%s"
@@ -6630,6 +6742,10 @@ msgstr "Rondes"
 
 msgid "Rounds one Elected to Play"
 msgstr "Rondes désigné comme jouant"
+
+#, python-brace-format
+msgid "Rounds {min_round}-{max_round}"
+msgstr "Rondes {min_round}-{max_round}"
 
 msgid "Rows per screen:"
 msgstr "Lignes par écran :"
@@ -6796,6 +6912,9 @@ msgstr "Faites défiler vers le bas pour consulter toutes les normes…"
 msgid "Search *** SECTION TITLE"
 msgstr "Recherche"
 
+msgid "Search an event"
+msgstr "Rechercher un évènement"
+
 msgid "Search by name"
 msgstr "Rechercher par nom"
 
@@ -6836,6 +6955,9 @@ msgstr "Couleur initiale"
 msgid "Select All"
 msgstr "Tout sélectionner"
 
+msgid "Select a tournament"
+msgstr "Choisir un tournoi"
+
 msgid "Select all"
 msgstr "Tout sélectionner"
 
@@ -6851,6 +6973,9 @@ msgstr "Sélectionner une action pour les équipes absentes :"
 #, python-format
 msgid "Select an action for the %(count)d absent players:"
 msgstr "Sélectionner une action pour les %(count)d joueur·euses absent·es :"
+
+msgid "Select an event"
+msgstr "Choisir un évènement"
 
 msgid "Select at least two members."
 msgstr "Sélectionnez au moins deux membres."
@@ -7069,6 +7194,9 @@ msgstr "Slovénie"
 
 msgid "Soft"
 msgstr "Souple"
+
+msgid "Soft Haley system"
+msgstr "Système de Haley dégressif"
 
 msgid "Soft constraint"
 msgstr "Contrainte souple"
@@ -7550,6 +7678,9 @@ msgstr "La fédération par défaut pour vos évènements."
 
 msgid "The director is the person in charge of the event."
 msgstr "Le·la directeur·ice est la personne responsable de l’événement."
+
+msgid "The end of the range must not precede its start."
+msgstr "La fin de la plage ne doit pas précéder son début."
 
 msgid "The event already has multi-tournament players."
 msgstr "Cet évènement a déjà des joueur·euses multi-tournois."
@@ -8868,6 +8999,12 @@ msgstr "Voir l'onglet Tournois"
 msgid "View the menu."
 msgstr "Voir le menu."
 
+msgid "Virtual points"
+msgstr "Points virtuels"
+
+msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
+msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
+
 msgid "Visibility:"
 msgstr "Visibilité :"
 
@@ -9493,6 +9630,9 @@ msgstr "joueur·euses du début au n°{last}, sur {parts} écrans"
 msgid "players on {parts} screens"
 msgstr "joueur·euses sur {parts} écrans"
 
+msgid "points"
+msgstr "points"
+
 #, python-format
 msgid "raised to %(r)s"
 msgstr "porté à %(r)s"
@@ -9767,6 +9907,10 @@ msgid "{first_name} {last_name}"
 msgstr "{last_name} {first_name}"
 
 #, python-brace-format
+msgid "{matched} players filled, {missing} not found in that tournament"
+msgstr "{matched} joueur·euses renseigné·es, {missing} introuvable·s dans ce tournoi"
+
+#, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
 msgstr "{n} joueur·euses par équipe non pris en charge (les tables FFE couvrent {sizes} ; les effectifs plus grands que le maximum peuvent être réparties en blocs)."
 
@@ -9825,4 +9969,7 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#~ msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
+#~ msgstr "250 Rondes accélérées (activez le plugin [{plugin}] pour les importer)"
 
