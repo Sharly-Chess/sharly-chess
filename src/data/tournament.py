@@ -4596,8 +4596,10 @@ class Tournament:
         flipped from PAB to NO_RESULT. Otherwise creates a fresh PAB
         envelope for *team_id* (with its lineup populated against an
         empty opposing side, just like an engine-assigned bye)."""
-        from data.pairings.engines import _TeamPairingBase
+        from data.pairings.engines import TeamPairingEngine
 
+        engine = self.pairing_variation.engine
+        assert isinstance(engine, TeamPairingEngine)
         round_list = self.stored_tournament.stored_team_boards_by_round.setdefault(
             round_, []
         )
@@ -4664,9 +4666,7 @@ class Tournament:
                 pab_stb.team_b_id = team_id
                 pab_stb.bye_type = None
                 database.update_stored_team_board(pab_stb)
-                stored_boards = _TeamPairingBase._team_match_stored_boards(
-                    self, pab_stb
-                )
+                stored_boards = engine._team_match_stored_boards(self, pab_stb)
             else:
                 # Reuse the first free table number — like individual manual
                 # pairing, a hole left by an unpaired match is filled rather
@@ -4688,9 +4688,7 @@ class Tournament:
                 )
                 new_stb.id = database.add_stored_team_board(new_stb)
                 round_list.append(new_stb)
-                stored_boards = _TeamPairingBase._team_match_stored_boards(
-                    self, new_stb
-                )
+                stored_boards = engine._team_match_stored_boards(self, new_stb)
         self.clear_team_cache()
         self.create_boards(stored_boards, round_, Result.PAIRING_ALLOCATED_BYE)
         target_id = pab_stb.id if completing_pair else new_stb.id  # type: ignore[union-attr]

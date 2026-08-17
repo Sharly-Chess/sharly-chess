@@ -30,21 +30,24 @@ from functools import cached_property, lru_cache
 from typing import TYPE_CHECKING, override
 
 from common.i18n import _
-from data.pairings.engines import PairingEngine
+from data.pairings.engines import PairingEngine, TeamPairingEngine
 from data.pairings.fixed_table import (
     FixedPairingTable,
-    FixedTablePairingEngine,
-    FixedTablePairingSystem,
-    FixedTableVariation,
+    PairingTableProvider,
     TablePairing,
 )
 from data.pairings.settings import PairingSetting
-from data.pairings.systems import SwissPairingSystem
+from data.pairings.systems import PairingSystem, SwissPairingSystem
+from data.pairings.variations import PairingVariation
 from data.safety_mode import PairingAction, PermissionHandler
+from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
 from utils.entity import EntityManager, EventBoundEntityManager
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.player import Player
+    from data.teams.team import Team
+    from data.teams.team_board import TeamBoard
     from data.tournament import Tournament
 
 
@@ -211,7 +214,21 @@ def scheveningen_table(players_per_team: int, double_round: bool) -> FixedPairin
     )
 
 
-class ScheveningenPairingSystem(FixedTablePairingSystem):
+class ScheveningenPairingSystem(
+    PairingSystem['ScheveningenVariation'], PairingTableProvider
+):
+    """A match between two teams, board by board, over as many rounds as
+    there are boards.
+
+    Every round opposes the same two teams, so every round is a match and
+    is scored as one. What the table settles is who meets whom on which
+    board, and with which colour — which is why the colour pattern and
+    the colour-preference rules have nothing to say here.
+    """
+
+    MIN_BOARDS = 2
+    TEAM_COUNT = 2
+
     @staticmethod
     def static_id() -> str:
         return 'SCHEVENINGEN'
@@ -221,12 +238,27 @@ class ScheveningenPairingSystem(FixedTablePairingSystem):
         return _('Scheveningen')
 
     @override
-    def variation_manager(self, event: 'Event') -> EntityManager[FixedTableVariation]:
+    def variation_manager(
+        self, event: 'Event'
+    ) -> EntityManager['ScheveningenVariation']:
         return ScheveningenVariationManager(event)
 
     @property
     def pairing_buttons_template(self) -> str:
+        # Round by round, so each team can edit its line-up between them.
         return '/admin/pairings/swiss_pairing_buttons.html'
+
+    @property
+    @override
+    def uses_colour_pattern(self) -> bool:
+        # The table names the colour of every board itself.
+        return False
+
+    @property
+    @override
+    def uses_team_letters(self) -> bool:
+        # The table addresses the two teams as A and B.
+        return True
 
     @property
     @override
@@ -251,6 +283,33 @@ class ScheveningenPairingSystem(FixedTablePairingSystem):
     def allow_player_addition_once_paired(self) -> bool:
         return False
 
+    @property
+    @override
+    def allow_team_addition_once_paired(self) -> bool:
+        # A third team has no place in a match.
+        return False
+
+    @property
+    @override
+    def allow_bye_definition(self) -> bool:
+        return False
+
+    @property
+    @override
+    def show_unpaired_player_modal(self) -> bool:
+        return False
+
+    @property
+    @override
+    def show_unpaired_team_modal(self) -> bool:
+        # Both teams are paired by the table, every round.
+        return False
+
+    @property
+    @override
+    def split_unpaired_and_bye_players(self) -> bool:
+        return False
+
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return SwissPairingSystem().permission_handler
@@ -265,7 +324,7 @@ class ScheveningenPairingSystem(FixedTablePairingSystem):
         players_per_team: int,
         tournament: 'Tournament | None' = None,
     ) -> FixedPairingTable | None:
-        if team_count != 2 or players_per_team < 2:
+        if team_count != self.TEAM_COUNT or players_per_team < self.MIN_BOARDS:
             return None
         double_round = False
         if tournament is not None:
@@ -275,33 +334,179 @@ class ScheveningenPairingSystem(FixedTablePairingSystem):
             )
         return scheveningen_table(players_per_team, double_round)
 
-    @override
-    def supported_team_counts(self) -> tuple[int, ...]:
-        # A Scheveningen is a match: exactly two teams.
-        return (2,)
 
+class ScheveningenEngine(TeamPairingEngine):
+    """Pairs the round as the match it is: one team_board envelope over
+    every board of the round, which is what earns each round its match
+    points. The seating comes from the table rather than from the two
+    line-ups read straight across — board *j* keeps team A's *j*-th
+    player, and team B moves around it from round to round."""
 
-class ScheveningenEngine(FixedTablePairingEngine):
     @property
-    @override
     def system(self) -> ScheveningenPairingSystem:
         return ScheveningenPairingSystem()
 
+    def round_pairings(
+        self, tournament: 'Tournament', round_: int
+    ) -> tuple[TablePairing, ...]:
+        """The table's cells for *round_*, in board order. Empty when
+        the tournament's shape has no table or the round is past its
+        end — the pairing buttons carry the reason."""
+        table = self.system.get_table(
+            len(self._teams_for_tournament(tournament)),
+            tournament.team_player_count or 0,
+            tournament,
+        )
+        if table is None:
+            return ()
+        try:
+            return table.round_pairings(round_, tournament.rounds)
+        except ValueError:
+            return ()
+
     @override
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
-        if message := super().invalid_player_count_message(tournament):
-            return message
-        players = tournament.team_player_count or 0
+        teams = self._teams_for_tournament(tournament)
+        if len(teams) != self.system.TEAM_COUNT:
+            return _('A Scheveningen is a match between exactly two teams.')
+        boards = tournament.team_player_count or 0
+        if boards < self.system.MIN_BOARDS:
+            return _('A Scheveningen is played on {min} boards at least.').format(
+                min=self.system.MIN_BOARDS
+            )
         expected = tournament.pairing_variation.automatic_round_count(tournament)
         if expected is not None and tournament.rounds != expected:
             return _(
                 'A Scheveningen on {boards} boards is played over {expected} '
                 'rounds, so that every player meets every opponent.'
-            ).format(boards=players, expected=expected)
+            ).format(boards=boards, expected=expected)
         return None
 
+    @override
+    def pairings_generation_disabled_message(
+        self, tournament: 'Tournament', at_round: int
+    ) -> str | None:
+        if message := super().pairings_generation_disabled_message(
+            tournament, at_round
+        ):
+            return message
+        teams = self._teams_for_tournament(tournament)
+        if not any(
+            player is not None
+            for team in teams
+            for player in team.effective_round_slots(at_round)
+        ):
+            return _('Pairings generation disabled if there are no players to pair.')
+        if any(
+            not tournament.is_round_finished(round_) for round_ in range(1, at_round)
+        ):
+            return _(
+                'Pairings generation not allowed if previous rounds have '
+                'missing results.'
+            )
+        return None
 
-class ScheveningenVariation(FixedTableVariation, ABC):
+    @override
+    def generate_pairings(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> str:
+        if self.pairings_generation_disabled_message(tournament, round_):
+            raise ValueError(
+                f'Pairings generation not allowed for round {round_} '
+                f'of tournament [{tournament.name}].'
+            )
+        teams = self._teams_for_tournament(tournament)
+        if not self.round_pairings(tournament, round_):
+            return _('Pairing is not possible.')
+        team_a, team_b = teams
+        self._persist_team_round(tournament, round_, [(team_a.id, team_b.id)])
+        return ''
+
+    @override
+    def _team_match_stored_boards(
+        self,
+        tournament: 'Tournament',
+        stb: StoredTeamBoard,
+    ) -> list[StoredBoard]:
+        """Seat the round's boards from the table. Letter ``A`` is the
+        envelope's team_a — the engine always pairs the two teams in
+        their canonical order — and the cell's own sides give the
+        colours, so no colour pattern is consulted."""
+        team_a = tournament.event.teams_by_id[stb.team_a_id]
+        team_b = (
+            tournament.event.teams_by_id[stb.team_b_id]
+            if stb.team_b_id is not None
+            else None
+        )
+        n = tournament.team_player_count or 0
+        slots_by_letter: dict[str, list['Player | None']] = {
+            'A': list(team_a.effective_round_slots(stb.round_)),
+            'B': list(team_b.effective_round_slots(stb.round_))
+            if team_b is not None
+            else [None] * n,
+        }
+
+        def player_id(letter: str, index_1based: int) -> int | None:
+            # Hole-aware: ``effective_round_slots`` carries a ``None``
+            # at each seat the team left empty.
+            slots = slots_by_letter.get(letter, [])
+            index = index_1based - 1
+            player = slots[index] if 0 <= index < len(slots) else None
+            return player.id if player is not None else None
+
+        return [
+            StoredBoard(
+                id=None,
+                white_player_id=player_id(pairing.white_team, pairing.white_index),
+                black_player_id=player_id(pairing.black_team, pairing.black_index),
+                index=board_index,
+                team_board_id=stb.id,
+            )
+            for board_index, pairing in enumerate(
+                self.round_pairings(tournament, stb.round_)
+            )
+        ]
+
+    @override
+    def team_seat_owner(
+        self,
+        tournament: 'Tournament',
+        team_board: 'TeamBoard',
+        board_index: int,
+        physical_side: str,
+    ) -> 'Team | None':
+        if team_board.team_b is None:
+            return None
+        pairings = self.round_pairings(tournament, team_board.round)
+        if not 0 <= board_index < len(pairings):
+            return None
+        pairing = pairings[board_index]
+        letter = pairing.white_team if physical_side == 'white' else pairing.black_team
+        return team_board.team_a if letter == 'A' else team_board.team_b
+
+    @override
+    def team_board_slots(
+        self,
+        tournament: 'Tournament',
+        team_board: 'TeamBoard',
+        team_id: int,
+    ) -> dict[int, int]:
+        letter = 'A' if team_id == team_board.stored_team_board.team_a_id else 'B'
+        slots: dict[int, int] = {}
+        for board_index, pairing in enumerate(
+            self.round_pairings(tournament, team_board.round)
+        ):
+            if pairing.white_team == letter:
+                slots[board_index] = pairing.white_index - 1
+            elif pairing.black_team == letter:
+                slots[board_index] = pairing.black_index - 1
+        return slots
+
+
+class ScheveningenVariation(PairingVariation, ABC):
     @staticmethod
     def system() -> 'ScheveningenPairingSystem':
         return ScheveningenPairingSystem()
@@ -319,7 +524,7 @@ class ScheveningenVariation(FixedTableVariation, ABC):
     @override
     def automatic_round_count(self, tournament: 'Tournament') -> int | None:
         boards = tournament.team_player_count or 0
-        if boards < 2:
+        if boards < ScheveningenPairingSystem.MIN_BOARDS:
             return None
         return boards * (2 if self.double_round else 1)
 
@@ -362,7 +567,7 @@ class DoubleScheveningenVariation(ScheveningenVariation):
         return True
 
 
-class ScheveningenVariationManager(EventBoundEntityManager[FixedTableVariation]):
+class ScheveningenVariationManager(EventBoundEntityManager[ScheveningenVariation]):
     @override
-    def entity_types(self) -> list[type[FixedTableVariation]]:
+    def entity_types(self) -> list[type[ScheveningenVariation]]:
         return [StandardScheveningenVariation, DoubleScheveningenVariation]
