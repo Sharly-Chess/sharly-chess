@@ -45,7 +45,7 @@ from utils.entity import EntityManager, EventBoundEntityManager
 
 if TYPE_CHECKING:
     from data.event import Event
-    from data.player import TournamentPlayer
+    from data.player import Player
     from data.teams.team import Team
     from data.teams.team_board import TeamBoard
     from data.tournament import Tournament
@@ -442,7 +442,7 @@ class ScheveningenEngine(TeamPairingEngine):
             else None
         )
         n = tournament.team_player_count or 0
-        slots_by_letter: dict[str, list['TournamentPlayer | None']] = {
+        slots_by_letter: dict[str, list['Player | None']] = {
             'A': list(team_a.effective_round_slots(stb.round_)),
             'B': list(team_b.effective_round_slots(stb.round_))
             if team_b is not None

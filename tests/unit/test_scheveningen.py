@@ -357,6 +357,7 @@ class TestScheveningenTournament(TestCase):
                 for stored in database.load_stored_tournaments()
                 if stored.name == self.TOURNAMENT_NAME
             )
+            assert tournament_id is not None
             teams = sorted(
                 (
                     team
