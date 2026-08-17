@@ -13,12 +13,10 @@ from typing import Any
 
 import pytest
 
-from plugins.pairing_acceleration.pairing_settings import (
-    AccelerationRule,
+from data.pairings.settings import AccelerationRule
+from data.pairings.acceleration import (
     CustomAccelerationSetting,
     InitialPairingScoreSetting,
-)
-from plugins.pairing_acceleration.pairing_variations import (
     CustomAccelerationSwissVariation,
     InitialScoreSwissVariation,
 )

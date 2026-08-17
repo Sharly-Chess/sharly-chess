@@ -7,6 +7,7 @@ from data.pairings.scheveningen import (
     ScheveningenVariationManager,
 )
 from data.pairings.systems import PairingSystem
+from data.pairings.acceleration import ACCELERATED_SWISS_VARIATIONS
 from data.pairings.variations import (
     SwissVariation,
     StandardSwissVariation,
@@ -46,7 +47,10 @@ class PairingSystemManager(EventBoundEntityManager[PairingSystem]):
 class SwissVariationManager(EventBoundEntityManager[SwissVariation]):
     @override
     def entity_types(self) -> list[type[SwissVariation]]:
-        variations: list[type[SwissVariation]] = [StandardSwissVariation]
+        variations: list[type[SwissVariation]] = [
+            StandardSwissVariation,
+            *ACCELERATED_SWISS_VARIATIONS,
+        ]
         plugin_manager.hook_for_event(
             self.event, 'insert_swiss_pairing_variation_types'
         )(variation_types=variations)

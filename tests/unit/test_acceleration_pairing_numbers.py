@@ -13,10 +13,8 @@ import pytest
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer, StoredTournamentPlayer
-from plugins.pairing_acceleration.pairing_settings import (
-    AccelerationRule,
-    CustomAccelerationSetting,
-)
+from data.pairings.settings import AccelerationRule
+from data.pairings.acceleration import CustomAccelerationSetting
 from tests.test_config import TestUtils
 
 EVENT_ID = 'test-acceleration-pairing-numbers'
@@ -32,7 +30,7 @@ class TestRuleAcrossFirstNumbering:
         TestUtils.create_tournament(
             EVENT_ID,
             TOURNAMENT_NAME,
-            overrides={'rounds': 5, 'pairing': 'pairing_acceleration-SWISS_CUSTOM'},
+            overrides={'rounds': 5, 'pairing': 'SWISS_CUSTOM'},
         )
         with EventDatabase(EVENT_ID, write=True) as database:
             tournament_id = next(

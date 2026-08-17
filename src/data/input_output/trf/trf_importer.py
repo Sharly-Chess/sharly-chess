@@ -315,10 +315,6 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
 
     def get_not_importable_features(self, event: Event) -> list[str]:
-        from plugins.pairing_acceleration.pairing_acceleration import (
-            PairingAccelerationPlugin,
-        )
-
         file_path = self.get_option_values()[0]
         with open(file_path, 'r', encoding='utf-8') as file:
             tournament = TrfSerializer.load(file)
@@ -384,14 +380,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         if tournament.accelerated_rounds and not self._acceleration_is_importable(
             tournament
         ):
-            features.append(
-                _('250 Accelerated rounds')
-                if tournament.teams
-                else _(
-                    '250 Accelerated rounds (enable the [{plugin}] plugin '
-                    'to import them)'
-                ).format(plugin=PairingAccelerationPlugin.static_name())
-            )
+            features.append(_('250 Accelerated rounds'))
         if tournament.abnormal_points_assignments and not tournament.teams:
             features.append(_('299 Abnormal assignment points'))
         if any(
@@ -413,15 +402,10 @@ class TrfTournamentImporter(FileTournamentImporter):
 
     @staticmethod
     def _acceleration_is_importable(trf_tournament: TrfTournament) -> bool:
-        """250 records are imported as the custom accelerated system,
-        which the accelerated pairings plugin provides — so the plugin
-        has to be available. The published systems already carry their
-        acceleration in the 192 encoded type, so only a plain Swiss
-        tournament is switched over."""
+        """250 records are imported as the custom accelerated system. The
+        published systems already carry their acceleration in the 192
+        encoded type, so only a plain Swiss tournament is switched over."""
         from data.pairings.variations import StandardSwissVariation
-        from plugins.pairing_acceleration.pairing_acceleration import (
-            PairingAccelerationPlugin,
-        )
 
         if trf_tournament.teams:
             return False
@@ -430,9 +414,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         )
         if variation is None or variation.id != StandardSwissVariation.static_id():
             return False
-        return plugin_manager.plugins_by_id[
-            PairingAccelerationPlugin.static_id()
-        ].is_enabled
+        return True
 
     def _populate_acceleration(
         self,
@@ -441,17 +423,10 @@ class TrfTournamentImporter(FileTournamentImporter):
         trf_tournament: TrfTournament,
     ):
         """Import the 250 records as the rules of the custom accelerated
-        system, enabling the plugin that provides it for the event: the
-        variation is only registered for events the plugin is enabled
-        for, so without this the stored variation wouldn't resolve."""
-        from plugins.pairing_acceleration.pairing_acceleration import (
-            PairingAccelerationPlugin,
-        )
-        from plugins.pairing_acceleration.pairing_settings import (
-            AccelerationRule,
+        system."""
+        from data.pairings.settings import AccelerationRule
+        from data.pairings.acceleration import (
             CustomAccelerationSetting,
-        )
-        from plugins.pairing_acceleration.pairing_variations import (
             CustomAccelerationSwissVariation,
         )
 
@@ -474,13 +449,6 @@ class TrfTournamentImporter(FileTournamentImporter):
                 CustomAccelerationSetting.to_stored_value(rules)
             )
         }
-        plugin_id = PairingAccelerationPlugin.static_id()
-        if plugin_id not in event.stored_event.enabled_plugins:
-            event.stored_event.enabled_plugins = [
-                *event.stored_event.enabled_plugins,
-                plugin_id,
-            ]
-            self.stored_event_modified = True
 
     @staticmethod
     def _check_team_event_compatibility(

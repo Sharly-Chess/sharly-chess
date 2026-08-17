@@ -26,11 +26,11 @@ from database.sqlite.event.event_store import StoredPlayer
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import PlayerFFELicence
 from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, FFE_LEAGUES
-from plugins.pairing_acceleration.pairing_settings import (
+from data.pairings.settings import (
     AccelerationGroup,
     AccelerationRule,
 )
-from plugins.pairing_acceleration.pairing_variations import (
+from data.pairings.acceleration import (
     Acceleration3GroupsSwissVariation,
 )
 from plugins.utils import PluginUtils

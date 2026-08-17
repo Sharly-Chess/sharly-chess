@@ -151,10 +151,10 @@ class TestTrfSerializer(TestCase):
         import inspect
 
         from data.pairings import variations
-        from plugins.pairing_acceleration import pairing_variations
+        from data.pairings import acceleration
 
         emitted: set[str] = set()
-        for module in (variations, pairing_variations):
+        for module in (variations, acceleration):
             for _name, obj in vars(module).items():
                 if not inspect.isclass(obj) or not issubclass(obj, PairingVariation):
                     continue

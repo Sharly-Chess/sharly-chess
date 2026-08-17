@@ -28,7 +28,7 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiTournamentImporter,
 )
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
-from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
+from data.pairings.acceleration import BakuSwissVariation
 from tests.test_config import TestUtils
 from utils.enum import (
     BoardColor,
