@@ -51,8 +51,12 @@ pytest -m e2e
 # Run only unit tests
 pytest -m unit
 
-# Skip release_only tests
-pytest -m "not release_only"
+# Release-only tests are skipped by default (see addopts in pytest.ini).
+# Put them back in — this is what a release build runs:
+pytest -m ""
+
+# Run only the release-only tests
+pytest -m release_only
 ```
 
 ### Development Options
