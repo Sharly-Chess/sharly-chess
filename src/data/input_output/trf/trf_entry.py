@@ -639,9 +639,8 @@ class OOdOTeamPairingEntry(MultipleLinesEntry):
 class AbnormalPointsAssignmentEntry(MultipleLinesEntry):
     """Record 299. ``[-]11.5`` is four columns wide, as everywhere else in
     the format, holding either a sign or a second integer digit but not
-    both. The worked example in the spec puts the fields two columns to
-    the left of its own field table; the table is what bbpPairings reads,
-    so it wins."""
+    both. Match points are for teams only and game points stand for the
+    points of an individual, so either may be missing."""
 
     TYPES = 'WDLFHZ+- '
     # 1-based line positions; the payload handed to ``parse`` starts at 5.
