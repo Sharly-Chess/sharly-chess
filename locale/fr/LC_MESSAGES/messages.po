@@ -6174,8 +6174,8 @@ msgstr "Type de QR Code :"
 msgid "Qatar"
 msgstr "Qatar"
 
-msgid "Quick-apply a tie-break set"
-msgstr "Appliquer un ensemble de départages"
+msgid "Quick-apply a tie-break set (replace actual tie-breaks)"
+msgstr "Appliquer un ensemble de départages (remplace les départages actuels)"
 
 msgid "R"
 msgstr "R"
