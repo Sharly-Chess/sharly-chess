@@ -6984,6 +6984,12 @@ msgstr ""
 msgid "Sharly Chess recommendation"
 msgstr ""
 
+msgid "Sharly Chess recommendation (GP as primary score)"
+msgstr ""
+
+msgid "Sharly Chess recommendation (MP as primary score)"
+msgstr ""
+
 msgid "Sharly Chess server"
 msgstr ""
 

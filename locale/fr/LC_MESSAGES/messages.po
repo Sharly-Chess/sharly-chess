@@ -6986,6 +6986,12 @@ msgstr "Sharly Chess atteint son plein potentiel lorsqu'utilisé comme un serveu
 msgid "Sharly Chess recommendation"
 msgstr "Recommendation Sharly Chess"
 
+msgid "Sharly Chess recommendation (GP as primary score)"
+msgstr "Recommendation Sharly Chess (PP en score primaire)"
+
+msgid "Sharly Chess recommendation (MP as primary score)"
+msgstr "Recommendation Sharly Chess (PM en score primaire)"
+
 msgid "Sharly Chess server"
 msgstr "Serveur Sharly Chess"
 
