@@ -782,8 +782,7 @@ class PapiConverter:
         if isinstance(tournament.pairing_system, ScheveningenPairingSystem):
             warnings.append(
                 _(
-                    'This Scheveningen has no Papi format of its own and will be '
-                    'exported as an individual Swiss tournament.'
+                    'This SchevenScheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament.'
                 )
             )
         if warning := cls.check_tiebreaks_warning(

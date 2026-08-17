@@ -626,6 +626,9 @@ msgstr ""
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
 msgstr ""
 
+msgid "Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
+msgstr ""
+
 msgid "Tournament"
 msgstr ""
 
