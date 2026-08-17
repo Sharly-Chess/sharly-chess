@@ -4505,14 +4505,24 @@ class Tournament:
         }
         if not tournament_players_by_updated_pairing_number:
             return
+        for (
+            pairing_number,
+            tournament_player,
+        ) in tournament_players_by_updated_pairing_number.items():
+            tournament_player.stored_tournament_player.pairing_number = pairing_number
+        if self.is_team_tournament:
+            # A team tournament's players are synthesised from the team
+            # rosters and have no stored tournament_player row to persist
+            # to, so their numbering lives in memory only. Skipping the
+            # write also keeps the FFE-upload conversion — which runs on a
+            # throwaway copy whose database is already closed — from
+            # reopening a database that is no longer there.
+            return
         with EventDatabase(self.event.uniq_id, True) as database:
             for (
                 pairing_number,
                 tournament_player,
             ) in tournament_players_by_updated_pairing_number.items():
-                tournament_player.stored_tournament_player.pairing_number = (
-                    pairing_number
-                )
                 database.set_tournament_player_pairing_number(
                     tournament_player.stored_tournament_player
                 )
