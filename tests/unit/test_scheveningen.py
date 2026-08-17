@@ -700,6 +700,19 @@ class TestScheveningenTournament(TestCase):
         assert FFEUtils.supports_ffe_transfer(tournament)
         assert FFEUtils.event_supports_ffe_transfer(tournament.event)
 
+    def test_the_pairing_tab_warns_it_becomes_a_swiss(self):
+        """The tournament tab's pairing warning flags the Scheveningen as
+        FFE-unknown, but only once an FFE ID links it to the site."""
+        from plugins.ffe.utils import FFEUtils
+
+        tournament = self._paired_round(4)
+        # No FFE ID: the tab stays quiet.
+        assert tournament.pairing_warning_message is None
+        # Linked to the FFE site: the warning appears.
+        FFEUtils.get_tournament_plugin_data(tournament).ffe_id = 12345
+        warning = tournament.pairing_warning_message
+        assert warning is not None and 'Swiss' in warning
+
 
 def test_the_scheveningen_maps_to_the_swiss_papi_type():
     from plugins.ffe.papi_mappers import PapiPairingSystem, PapiPairingVariation
