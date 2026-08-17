@@ -12,7 +12,7 @@ import pytest
 import requests
 from playwright.sync_api import Browser, Playwright, APIRequestContext
 
-from common import TEST_DATA_DIR
+from common import DATA_DIR
 from common.sharly_chess_config import SharlyChessConfig
 from tests.test_config import TestConfig
 
@@ -82,13 +82,16 @@ class BackendServer:
             sys.executable,
             str((project_root / 'src/sharly_chess.py').resolve()),
             '--path',
-            str(TEST_DATA_DIR),
+            # The worker's own data directory, not the shared root: the
+            # server has to read and write the same tree as the tests
+            # driving it.
+            str(DATA_DIR),
         ]
 
         # Create log file for server output - use unique name to avoid conflicts
         import time
 
-        log_file = TEST_DATA_DIR / f'server_{int(time.time())}.log'
+        log_file = DATA_DIR / f'server_{int(time.time())}.log'
 
         # Keep reference to log file handle so we can close it later
         self.log_file_handle = open(log_file, 'w')
@@ -105,12 +108,14 @@ class BackendServer:
         # Wait for server to be ready
         self._wait_for_server()
 
+    STOP_TIMEOUT = 0.5
+
     def stop(self):
         """Stop the backend server."""
         if self.process:
             self.process.terminate()
             try:
-                self.process.wait(timeout=10)
+                self.process.wait(timeout=self.STOP_TIMEOUT)
             except subprocess.TimeoutExpired:
                 self.process.kill()
                 self.process.wait()

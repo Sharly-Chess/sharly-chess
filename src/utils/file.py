@@ -62,8 +62,19 @@ def shutil_delete_onerror(func, path, exc_info):
     import stat
     import os
 
-    os.chmod(path, stat.S_IWUSR)
-    func(path)
+    # The whole of the owner's permissions, not write alone: a directory
+    # left without read and execute cannot be listed or entered, so the
+    # workaround would make every later attempt on that tree fail too.
+    os.chmod(path, stat.S_IRWXU)
+    try:
+        func(path)
+    except TypeError:
+        # On POSIX ``rmtree`` walks by file descriptor, so the call that
+        # failed may be ``os.open`` or ``os.scandir``, neither of which
+        # takes a path on its own. Nothing more to retry here — the
+        # permissions are mended, which is what the workaround is for,
+        # and the deletion succeeds the next time round.
+        pass
 
 
 def base64_encode_file(

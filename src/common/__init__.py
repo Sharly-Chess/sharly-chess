@@ -128,7 +128,13 @@ MANUAL_PATH_USED = os.getenv('SC_MANUAL_PATH_USED') == '1'
 
 def _app_data_dir() -> Path:
     if TEST_ENV:
-        return TEST_DATA_DIR
+        # Tests run against their own tree, and each pytest-xdist worker
+        # against a subtree of its own: the data directory is emptied on
+        # import (below), so workers sharing one would delete the events,
+        # the configuration and the session store out from under each
+        # other mid-run.
+        worker = os.getenv('PYTEST_XDIST_WORKER')
+        return TEST_DATA_DIR / worker if worker else TEST_DATA_DIR
     if MANUAL_PATH_USED:
         return Path()
     data_dir = ProgramVar.DATA_DIR.read_path_value()
@@ -180,9 +186,11 @@ EXAMPLE_PLACE_CARDS_DIR = EXAMPLES_DIR / 'place_cards'
 # use the OS default so behaviour is unchanged.
 TEMPFILE_DIR: Path | None = TMP_DIR if FLATPAK_ID else None
 
-if TEST_ENV and TEST_DATA_DIR.exists() and not MANUAL_PATH_USED:
-    # Clear the test data directory when the test run (not in server mode)
-    shutil.rmtree(TEST_DATA_DIR, onerror=shutil_delete_onerror)
+if TEST_ENV and DATA_DIR.exists() and not MANUAL_PATH_USED:
+    # Clear the test data directory when the test run (not in server mode).
+    # DATA_DIR rather than TEST_DATA_DIR: under pytest-xdist that is the
+    # worker's own subtree, and a worker must only empty its own.
+    shutil.rmtree(DATA_DIR, onerror=shutil_delete_onerror)
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 if not os.access(DATA_DIR, os.W_OK):
