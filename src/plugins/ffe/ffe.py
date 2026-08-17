@@ -728,9 +728,16 @@ class FfePlugin(Plugin):
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ):
-        # The FFE upload pipeline is Papi-based — individual events only.
+        # The FFE upload pipeline is Papi-based. In a team event only a
+        # Scheveningen (uploaded as an individual Swiss) auto-uploads; the
+        # other team systems have no Papi form.
         if stored_event.event_type == EventType.TEAM:
-            return
+            from data.pairings.scheveningen import ScheveningenPairingSystem
+
+            if not (stored_tournament.pairing or '').startswith(
+                f'{ScheveningenPairingSystem.static_id()}_'
+            ):
+                return
         # Defer the event reload so result entry does not wait for it.
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
@@ -761,9 +768,14 @@ class FfePlugin(Plugin):
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]] | None:
-        # The FFE-site connection (Papi upload) is individual-only — no
-        # FFE fields on team-tournament forms.
-        if event.is_team_event:
+        # The FFE-site connection is Papi-based. Individual tournaments
+        # always carry the fields; among the team systems only a saved
+        # Scheveningen, which is uploaded as an individual Swiss. On
+        # creation the system is not settled yet, so team forms stay bare
+        # until the tournament exists and is a Scheveningen.
+        if event.is_team_event and not (
+            tournament is not None and FFEUtils.supports_ffe_transfer(tournament)
+        ):
             return None
         return '/ffe_tournament_form_fields.html', {}
 
@@ -789,7 +801,7 @@ class FfePlugin(Plugin):
     def get_tournament_connection_field(
         self, tournament: 'Tournament'
     ) -> TournamentConnectionField | None:
-        if tournament.event.is_team_event:
+        if not FFEUtils.supports_ffe_transfer(tournament):
             return None
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
@@ -871,8 +883,9 @@ class FfePlugin(Plugin):
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        # FFE upload is Papi-based — hide the transfer entry for team events.
-        if event.is_team_event:
+        # FFE upload is Papi-based. A team event only earns the transfer
+        # entry through a Scheveningen, which uploads as an individual Swiss.
+        if not FFEUtils.event_supports_ffe_transfer(event):
             return []
         return [
             NavDataTransferItem(

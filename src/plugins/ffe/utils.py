@@ -68,6 +68,29 @@ FFE_LEAGUES: dict[str, str] = {
 
 
 class FFEUtils:
+    @staticmethod
+    def supports_ffe_transfer(tournament: Tournament) -> bool:
+        """Whether the FFE-site transfer (Papi upload and its fields) is
+        offered for this tournament. The transfer is Papi-based, so every
+        individual tournament qualifies; among the team systems only the
+        Scheveningen, which is uploaded as an individual Swiss."""
+        from data.pairings.scheveningen import ScheveningenPairingSystem
+
+        if not tournament.event.is_team_event:
+            return True
+        return isinstance(tournament.pairing_system, ScheveningenPairingSystem)
+
+    @staticmethod
+    def event_supports_ffe_transfer(event: Event) -> bool:
+        """Whether any tournament of the event offers the FFE-site transfer
+        — the test for the event-level transfer entry."""
+        if not event.is_team_event:
+            return True
+        return any(
+            FFEUtils.supports_ffe_transfer(tournament)
+            for tournament in event.tournaments
+        )
+
     @classmethod
     def resolve_auto_upload(cls, tournament: Tournament) -> bool:
         if not cls.get_event_plugin_data(tournament.event).auto_upload:
