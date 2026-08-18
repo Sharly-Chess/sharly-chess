@@ -1570,6 +1570,66 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.15);
 }
 
+/* The out-of-order mark rides the corner of the group like a notification
+   badge — one per group, since its rounds share a line-up. Positioned
+   here rather than with Bootstrap's position utilities: those carry
+   !important, and the badge is hidden and shown through an inline
+   display. */
+.lineup-round-group {
+    position: relative;
+    display: inline-flex;
+}
+.lineup-round-button {
+    /* Square at least: a lone digit would otherwise sit in a narrow pill,
+       leaving the group no corner to speak of. */
+    min-width: 2.25rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+}
+.lineup-round-mark {
+    position: absolute;
+    top: -0.4rem;
+    right: -0.4rem;
+    z-index: 2;
+    padding: 0.15rem;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    line-height: 1;
+    color: var(--bs-dark);
+    background-color: var(--bs-primary);
+    /* A ring in the page colour, so the badge reads as sitting on top of
+       the button rather than being part of its border. */
+    box-shadow: 0 0 0 0.1rem var(--bs-body-bg);
+}
+
+/* Laid out here rather than with Bootstrap's d-flex: that class carries
+   !important, which would outrank the inline display:none that hides the
+   alert on a round whose line-up is in order.
+
+   Filled rather than Bootstrap 5.3's subtle alert, which was too quiet to
+   catch the eye. Done by overriding the alert's own variables, so the
+   Reset button below keeps deriving its colours from them and stays
+   readable against the stronger background. */
+.lineup-order-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Takes its colours from the alert it sits in rather than naming them, so
+   it still matches if that alert is ever given another type. */
+.lineup-reset-order {
+    color: var(--bs-alert-color);
+    border-color: var(--bs-alert-color);
+    background-color: transparent;
+}
+.lineup-reset-order:hover,
+.lineup-reset-order:focus-visible {
+    color: var(--bs-alert-bg);
+    border-color: var(--bs-alert-color);
+    background-color: var(--bs-alert-color);
+}
+
 .color-chip {
     display: inline-block;
     width: 0.85rem;

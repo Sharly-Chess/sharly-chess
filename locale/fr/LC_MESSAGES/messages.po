@@ -6506,6 +6506,9 @@ msgstr "Réinitialiser le pointage"
 msgid "Reset manual tie-break"
 msgstr "Réinitialiser le départage manuel"
 
+msgid "Reset order"
+msgstr "Rétablir l'ordre"
+
 msgid "Restart to complete the move"
 msgstr "Redémarrer pour appliquer le déplacement"
 
@@ -9507,6 +9510,9 @@ msgstr[1] "dernière recherche il y a {count} heures"
 msgid "last search just now"
 msgstr "dernière recherche à l'instant"
 
+msgid "marks a round whose line-up is not in the same order as the team roster."
+msgstr "signale une ronde dont la composition n'est pas dans le même ordre que la liste de l'équipe."
+
 msgid "match points"
 msgstr "les points de match"
 
@@ -9795,9 +9801,6 @@ msgstr "puis"
 msgid "total: %(total)s"
 msgstr "total : %(total)s"
 
-msgid "unchanged"
-msgstr "inchangée"
-
 #, python-brace-format
 msgid "value: {value}"
 msgstr "valeur : {value}"
@@ -9972,4 +9975,10 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
 #~ msgstr "250 Rondes accélérées (activez le plugin [{plugin}] pour les importer)"
+
+#~ msgid "* the line-up is not in the same order as the team roster."
+#~ msgstr "* la composition n'est pas dans le même ordre que la liste de l'équipe."
+
+#~ msgid "unchanged"
+#~ msgstr "inchangée"
 

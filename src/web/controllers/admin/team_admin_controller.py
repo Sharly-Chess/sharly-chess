@@ -874,6 +874,30 @@ class TeamAdminController(BaseEventAdminController):
     # Lineups
     # -------------------------------------------------------------------------
 
+    @staticmethod
+    def _group_rounds_by_lineup(
+        rounds_data: list[dict[str, Any]],
+    ) -> list[list[dict[str, Any]]]:
+        """Split the rounds into runs sharing one line-up.
+
+        A round opens a run when it does not take the previous round's
+        line-up — that is, whenever the editor's "use the previous
+        round's line-up" box is unticked or absent (round 1, and any
+        paired round, whose line-up is whatever is on its boards).
+        """
+        groups: list[list[dict[str, Any]]] = []
+        for round_info in rounds_data:
+            inherits = (
+                round_info['round'] > 1
+                and not round_info['is_paired']
+                and round_info['lineup_source'] != 'explicit'
+            )
+            if groups and inherits:
+                groups[-1].append(round_info)
+            else:
+                groups.append([round_info])
+        return groups
+
     @classmethod
     def _team_lineups_modal_context(
         cls,
@@ -957,6 +981,7 @@ class TeamAdminController(BaseEventAdminController):
         return {
             'modal': 'team_lineups',
             'rounds_data': rounds_data,
+            'round_groups': cls._group_rounds_by_lineup(rounds_data),
             'default_round': default_round,
             'team_player_count': team_player_count,
             'color_pattern': color_pattern,
