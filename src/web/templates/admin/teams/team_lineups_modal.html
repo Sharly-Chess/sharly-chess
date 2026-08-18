@@ -54,26 +54,20 @@
                                together. #}
                             <i
                                 class="lineup-round-mark bi-recycle"
+                                {{ macros.tooltip_attributes(
+                                    '',
+                                    _(
+                                        'This line-up is not in the same order '
+                                        'as the team roster.'
+                                    ),
+                                    'top',
+                                ) }}
                                 {% if not group | selectattr('out_of_order') | list %}
                                     style="display:none"
                                 {% endif %}
                             ></i>
                         </div>
                     {% endfor %}
-                </div>
-                {# Always rendered, so a drag that puts a round out of order
-                   can reveal it; shown only while some round is marked. #}
-                <div
-                    class="lineup-order-legend text-muted small mb-3"
-                    {% if not rounds_data | selectattr('out_of_order') | list %}
-                        style="display:none"
-                    {% endif %}
-                >
-                    <i class="bi-recycle"></i>
-                    {{ _(
-                        'marks a round whose line-up is not in the same order '
-                        'as the team roster.'
-                    ) }}
                 </div>
                 {% for round_info in rounds_data %}
                     {% set round_num = round_info['round'] %}
@@ -324,19 +318,6 @@
                             if (mark) {
                                 mark.style.display = outOfOrder ? '' : 'none';
                             }
-                            updateOrderLegend();
-                        }
-                        // The legend explains the asterisks, so it belongs on
-                        // screen exactly while there is one to explain.
-                        function updateOrderLegend() {
-                            const legend = document.querySelector('.lineup-order-legend');
-                            if (!legend) return;
-                            const marked = Array.from(
-                                document.querySelectorAll('.lineup-round-mark')
-                            ).some(function (mark) {
-                                return mark.style.display !== 'none';
-                            });
-                            legend.style.display = marked ? '' : 'none';
                         }
                         // Put the players already on boards back in roster
                         // order. Only the order: a slot left empty stays
@@ -378,12 +359,6 @@
                             const round = section.dataset.round;
                             const group = 'lineup-r' + round;
                             const form = section.querySelector('.lineup-form');
-                            const resetOrder = section.querySelector('.lineup-reset-order');
-                            if (resetOrder) {
-                                resetOrder.addEventListener('click', function () {
-                                    resetRosterOrder(section, form);
-                                });
-                            }
                             const slots = section.querySelectorAll('.lineup-slot');
                             const bench = section.querySelector('.lineup-bench');
                             // "Use previous round's lineup" toggle: when ticked,
@@ -400,6 +375,24 @@
                                 if (usePrevValue) usePrevValue.value = usePrev.checked ? '1' : '0';
                                 if (editor) editor.style.display = usePrev.checked ? 'none' : '';
                                 if (prevNote) prevNote.style.display = usePrev.checked ? '' : 'none';
+                            }
+                            const resetOrder = section.querySelector('.lineup-reset-order');
+                            if (resetOrder) {
+                                resetOrder.addEventListener('click', function () {
+                                    // On a round that takes the previous
+                                    // round's line-up, the reorder has to make
+                                    // the line-up this round's own. Left
+                                    // inheriting, the save would drop what was
+                                    // just reordered — and the reorder would
+                                    // in any case belong to the round the
+                                    // line-up came from, reaching back over
+                                    // rounds the captain did not touch.
+                                    if (usePrev && usePrev.checked) {
+                                        usePrev.checked = false;
+                                        applyUsePrevious();
+                                    }
+                                    resetRosterOrder(section, form);
+                                });
                             }
                             if (usePrev) {
                                 applyUsePrevious();

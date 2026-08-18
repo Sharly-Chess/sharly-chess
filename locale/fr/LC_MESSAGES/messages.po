@@ -9510,9 +9510,6 @@ msgstr[1] "dernière recherche il y a {count} heures"
 msgid "last search just now"
 msgstr "dernière recherche à l'instant"
 
-msgid "marks a round whose line-up is not in the same order as the team roster."
-msgstr "signale une ronde dont la composition n'est pas dans le même ordre que la liste de l'équipe."
-
 msgid "match points"
 msgstr "les points de match"
 
@@ -9981,4 +9978,7 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "unchanged"
 #~ msgstr "inchangée"
+
+#~ msgid "marks a round whose line-up is not in the same order as the team roster."
+#~ msgstr "signale une ronde dont la composition n'est pas dans le même ordre que la liste de l'équipe."
 

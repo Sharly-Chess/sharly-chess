@@ -9508,9 +9508,6 @@ msgstr[1] ""
 msgid "last search just now"
 msgstr ""
 
-msgid "marks a round whose line-up is not in the same order as the team roster."
-msgstr ""
-
 msgid "match points"
 msgstr ""
 
@@ -9978,5 +9975,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "unchanged"
+#~ msgstr ""
+
+#~ msgid "marks a round whose line-up is not in the same order as the team roster."
 #~ msgstr ""
 
