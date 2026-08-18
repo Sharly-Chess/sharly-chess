@@ -4899,9 +4899,6 @@ msgstr ""
 msgid "No dropdowns"
 msgstr ""
 
-msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
-msgstr ""
-
 msgid "No email"
 msgstr ""
 
@@ -8238,6 +8235,9 @@ msgstr ""
 msgid "This round cannot be edited."
 msgstr ""
 
+msgid "This round has been paired, so its line-up is what stands on its boards. Change it from that round on the pairings tab, where the boards follow."
+msgstr ""
+
 #, python-brace-format
 msgid "This round hasn't started (current round: #{round})."
 msgstr ""
@@ -8277,6 +8277,9 @@ msgid "This set contains [{name}] twice in a row."
 msgstr ""
 
 msgid "This team has already been paired; its tournament cannot be changed."
+msgstr ""
+
+msgid "This team has no rounds to show a line-up for."
 msgstr ""
 
 msgid "This tie-break can be used multiple times."
@@ -9978,5 +9981,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "marks a round whose line-up is not in the same order as the team roster."
+#~ msgstr ""
+
+#~ msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
 #~ msgstr ""
 

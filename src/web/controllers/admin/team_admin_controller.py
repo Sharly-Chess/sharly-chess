@@ -906,39 +906,27 @@ class TeamAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         team = web_context.get_admin_team()
         tournament = team.tournament
-        editable_rounds: list[int] = []
+        shown_rounds: list[int] = []
         team_player_count = 0
         color_pattern = ''
         warn_lineup_order = False
         if tournament is not None:
             warn_lineup_order = tournament.warn_lineup_order
-            first_editable = max(1, tournament.last_paired_round + 1)
-            rounds_set = set(range(first_editable, tournament.rounds + 1))
-            # Include the current round even if already paired — paired
-            # rounds get reconciled to existing boards on save.
-            if (
-                tournament.current_round
-                and 1 <= tournament.current_round <= tournament.rounds
-            ):
-                rounds_set.add(tournament.current_round)
-            # Also include an explicitly requested past round (e.g.
-            # opened from the pairings tab pencil).
-            if (
-                requested_round is not None
-                and 1 <= requested_round <= tournament.rounds
-            ):
-                rounds_set.add(requested_round)
-            editable_rounds = sorted(rounds_set)
+            # Every round, played ones included: the team's line-up through
+            # the whole tournament is worth seeing in one place. A played
+            # round is shown read-only unless the pairings tab asked for
+            # that very round — see ``editable`` below.
+            shown_rounds = list(range(1, tournament.rounds + 1))
             team_player_count = tournament.team_player_count or 0
             color_pattern = tournament.color_pattern or ''
         elif team.players:
             # Team not yet assigned to a tournament: edit a single base
             # lineup (round 1), the roster standing in for the board count.
             # It becomes round 1's lineup once the team is assigned.
-            editable_rounds = [1]
+            shown_rounds = [1]
             team_player_count = len(team.players)
         rounds_data: list[dict[str, Any]] = []
-        for round_ in editable_rounds:
+        for round_ in shown_rounds:
             # Once a round is paired, the boards are the source of truth —
             # show what's actually on them, not the fallback. With no stored
             # lineup, ``effective_round_slots`` returns the inherited previous
@@ -960,6 +948,12 @@ class TeamAdminController(BaseEventAdminController):
                 {
                     'round': round_,
                     'is_paired': is_paired,
+                    # A played round's line-up is its boards, and moving a
+                    # player there has to move them on the board too. That
+                    # is what the pairings tab does, and it opens this same
+                    # modal naming the round — so the round it names is
+                    # editable and the rest are there to be read.
+                    'editable': not is_paired or round_ == requested_round,
                     'has_override': team.has_explicit_round_lineup(round_),
                     'lineup_source': team.lineup_source(round_),
                     'slots': slots,
@@ -968,15 +962,13 @@ class TeamAdminController(BaseEventAdminController):
                 }
             )
         default_round = 0
-        if editable_rounds:
+        if shown_rounds:
             if tournament is not None:
                 current = tournament.current_round or 1
-                default_round = (
-                    current if current in editable_rounds else editable_rounds[0]
-                )
+                default_round = current if current in shown_rounds else shown_rounds[0]
             else:
-                default_round = editable_rounds[0]
-        if requested_round is not None and requested_round in editable_rounds:
+                default_round = shown_rounds[0]
+        if requested_round is not None and requested_round in shown_rounds:
             default_round = requested_round
         return {
             'modal': 'team_lineups',
@@ -985,7 +977,7 @@ class TeamAdminController(BaseEventAdminController):
             'default_round': default_round,
             'team_player_count': team_player_count,
             'color_pattern': color_pattern,
-            'roster_players': team.players if editable_rounds else [],
+            'roster_players': team.players if shown_rounds else [],
             'warn_lineup_order': warn_lineup_order,
         }
 

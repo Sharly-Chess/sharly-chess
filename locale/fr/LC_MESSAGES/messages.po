@@ -4899,9 +4899,6 @@ msgstr "Aucun pilote d'afficheur"
 msgid "No dropdowns"
 msgstr "Sans menus déroulants"
 
-msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
-msgstr "Aucune ronde éditable. Les compositions des rondes déjà appariées ne peuvent être modifiées ici."
-
 msgid "No email"
 msgstr "Aucun email"
 
@@ -8240,6 +8237,9 @@ msgstr "Cet écran rotatif est public (visible des spectateur·ices)."
 msgid "This round cannot be edited."
 msgstr "Cette ronde ne peut pas être modifiée."
 
+msgid "This round has been paired, so its line-up is what stands on its boards. Change it from that round on the pairings tab, where the boards follow."
+msgstr "Cette ronde est appariée, sa composition est donc celle de ses échiquiers. Modifiez-la depuis cette ronde dans l'onglet des appariements, où les échiquiers suivent."
+
 #, python-brace-format
 msgid "This round hasn't started (current round: #{round})."
 msgstr "Cette ronde n’a pas encore commencé (ronde actuelle : #{round})."
@@ -8280,6 +8280,9 @@ msgstr "Cet ensemble contient [{name}] deux fois de suite."
 
 msgid "This team has already been paired; its tournament cannot be changed."
 msgstr "Cette équipe a déjà été appariée, elle ne peut changer de tournoi."
+
+msgid "This team has no rounds to show a line-up for."
+msgstr "Cette équipe n'a aucune ronde dont afficher la composition."
 
 msgid "This tie-break can be used multiple times."
 msgstr "Ce départage peut-être utilisé plusieurs fois."
@@ -9981,4 +9984,7 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "marks a round whose line-up is not in the same order as the team roster."
 #~ msgstr "signale une ronde dont la composition n'est pas dans le même ordre que la liste de l'équipe."
+
+#~ msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
+#~ msgstr "Aucune ronde éditable. Les compositions des rondes déjà appariées ne peuvent être modifiées ici."
 
