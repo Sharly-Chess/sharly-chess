@@ -282,3 +282,21 @@
         {% endif %}
     {% endif %}
 {% endmacro %}
+
+{% macro prize_totals_value(monetary_formatted, non_monetary_formatted) -%}
+    {%- set parts = [] -%}
+    {%- if monetary_formatted -%}
+        {{- parts.append(monetary_formatted ~ ' (' ~ _('Monetary') ~ ')') or '' -}}
+    {%- endif -%}
+    {%- if non_monetary_formatted -%}
+        {{- parts.append(non_monetary_formatted ~ ' (' ~ _('Non-monetary') ~ ')') or '' -}}
+    {%- endif -%}
+    {{- parts|join(', ') -}}
+{%- endmacro %}
+
+{% macro prize_totals_line(monetary_formatted, non_monetary_formatted) -%}
+    {%- set value = prize_totals_value(monetary_formatted, non_monetary_formatted)|trim -%}
+    {%- if value -%}
+        {{ _('%(string)s:', string=_('Total')) }} {{ value }}
+    {%- endif -%}
+{%- endmacro %}

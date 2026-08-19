@@ -337,5 +337,17 @@
                 {% include '/admin/common/collection.html' %}
             {% endwith %}
         </form>
+        {% if admin_prize_group.categories|length > 1
+            and (admin_prize_group.total_monetary_value
+                or admin_prize_group.total_non_monetary_value) %}
+            <div class="border-top pt-2 mt-2 text-end text-secondary">
+                {{ macros.prize_totals_line(
+                    admin_prize_group.format_total_monetary_value(prize_currency)
+                        if admin_prize_group.total_monetary_value else None,
+                    admin_prize_group.format_total_non_monetary_value(prize_currency)
+                        if admin_prize_group.total_non_monetary_value else None,
+                ) }}
+            </div>
+        {% endif %}
     {% endif %}
 {% endblock %}
