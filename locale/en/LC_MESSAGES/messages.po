@@ -4899,9 +4899,6 @@ msgstr ""
 msgid "No dropdowns"
 msgstr ""
 
-msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
-msgstr ""
-
 msgid "No email"
 msgstr ""
 
@@ -6504,6 +6501,9 @@ msgstr ""
 msgid "Reset manual tie-break"
 msgstr ""
 
+msgid "Reset order"
+msgstr ""
+
 msgid "Restart to complete the move"
 msgstr ""
 
@@ -7735,6 +7735,14 @@ msgstr[1] ""
 msgid "The limit can only be adjusted by {count} half-points."
 msgstr ""
 
+#, python-format
+msgid "The line-up for round %(round)d is not in the same order as the team roster."
+msgstr ""
+
+#, python-format
+msgid "The line-up for rounds %(first_round)d-%(last_round)d is not in the same order as the team roster."
+msgstr ""
+
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
 msgstr ""
 
@@ -8179,9 +8187,6 @@ msgstr ""
 msgid "This folder is not empty."
 msgstr ""
 
-msgid "This line-up is not in the same order as the team roster."
-msgstr ""
-
 msgid "This menu is empty."
 msgstr ""
 
@@ -8235,6 +8240,10 @@ msgstr ""
 msgid "This round cannot be edited."
 msgstr ""
 
+#, python-format
+msgid "This round has been paired, so its line-up is what stands on its boards. If you really want to edit this line-up: go to the Pairings tab, select round #%(round)d and open this modal again."
+msgstr ""
+
 #, python-brace-format
 msgid "This round hasn't started (current round: #{round})."
 msgstr ""
@@ -8274,6 +8283,9 @@ msgid "This set contains [{name}] twice in a row."
 msgstr ""
 
 msgid "This team has already been paired; its tournament cannot be changed."
+msgstr ""
+
+msgid "This team has no rounds to show a line-up for."
 msgstr ""
 
 msgid "This tie-break can be used multiple times."
@@ -9793,9 +9805,6 @@ msgstr ""
 msgid "total: %(total)s"
 msgstr ""
 
-msgid "unchanged"
-msgstr ""
-
 #, python-brace-format
 msgid "value: {value}"
 msgstr ""
@@ -9967,7 +9976,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
-#~ msgstr ""
 
