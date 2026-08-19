@@ -8237,8 +8237,8 @@ msgstr "Cet écran rotatif est public (visible des spectateur·ices)."
 msgid "This round cannot be edited."
 msgstr "Cette ronde ne peut pas être modifiée."
 
-msgid "This round has been paired, so its line-up is what stands on its boards. Change it from that round on the pairings tab, where the boards follow."
-msgstr "Cette ronde est appariée, sa composition est donc celle de ses échiquiers. Modifiez-la depuis cette ronde dans l'onglet des appariements, où les échiquiers suivent."
+msgid "This round has been paired, so its line-up is what stands on its boards. Change it from that round on the pairings tab."
+msgstr "Cette ronde est appariée, sa composition est donc celle de ses échiquiers. Modifiez-la depuis cette ronde dans l'onglet des appariements."
 
 #, python-brace-format
 msgid "This round hasn't started (current round: #{round})."
@@ -9972,3 +9972,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

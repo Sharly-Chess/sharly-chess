@@ -626,9 +626,6 @@ msgstr ""
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
 msgstr ""
 
-msgid "This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
-msgstr ""
-
 msgid "Tournament"
 msgstr ""
 
@@ -773,3 +770,7 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
+#~ msgstr ""
+

@@ -8235,7 +8235,7 @@ msgstr ""
 msgid "This round cannot be edited."
 msgstr ""
 
-msgid "This round has been paired, so its line-up is what stands on its boards. Change it from that round on the pairings tab, where the boards follow."
+msgid "This round has been paired, so its line-up is what stands on its boards. Change it from that round on the pairings tab."
 msgstr ""
 
 #, python-brace-format
@@ -9970,3 +9970,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
