@@ -33,6 +33,8 @@
                            the first and last .btn, and anything trailing
                            inside would cost the last button its corners. #}
                         <div class="lineup-round-group" data-group="{{ group_index }}">
+                            {% set first_round = group[0]['round'] %}
+                            {% set last_round = group[-1]['round'] %}
                             <div class="btn-group btn-group-sm" role="group">
                                 {% for round_info in group %}
                                     {% set round_num = round_info['round'] %}
@@ -54,8 +56,12 @@
                                 {{ macros.tooltip_attributes(
                                     '',
                                     _(
-                                        'This line-up is not in the same order '
-                                        'as the team roster.'
+                                        'The line-up for round %(round)d is not in the same order as the team roster.',
+                                        round=first_round
+                                    ) if first_round == last_round else _(
+                                        'The line-up for rounds %(first_round)d-%(last_round)d is not in the same order as the team roster.',
+                                        first_round=first_round,
+                                        last_round=last_round
                                     ),
                                     'top',
                                 ) }}
@@ -80,9 +86,8 @@
                         {% if not editable %}
                             <div class="alert alert-info py-1 px-2 small mb-2">
                                 {{ _(
-                                    'This round has been paired, so its line-up '
-                                    'is what stands on its boards. Change it '
-                                    'from that round on the pairings tab.'
+                                    'This round has been paired, so its line-up is what stands on its boards. If you really want to edit this line-up: go to the Pairings tab, select round #%(round)d and open this modal again.',
+                                    round=round_num
                                 ) }}
                             </div>
                         {% endif %}
@@ -97,8 +102,8 @@
                             <i class="bi-recycle"></i>
                             <span class="flex-grow-1">
                                 {{ _(
-                                    'This line-up is not in the same order as '
-                                    'the team roster.'
+                                    'The line-up for round %(round)d is not in the same order as the team roster.',
+                                    round=round_num
                                 ) }}
                             </span>
                             {% if editable %}

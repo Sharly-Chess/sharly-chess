@@ -1596,7 +1596,7 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     font-size: 0.65rem;
     line-height: 1;
     color: var(--bs-dark);
-    background-color: var(--bs-primary);
+    background-color: var(--bs-warning);
     /* A ring in the page colour, so the badge reads as sitting on top of
        the button rather than being part of its border. */
     box-shadow: 0 0 0 0.1rem var(--bs-body-bg);

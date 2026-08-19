@@ -7737,6 +7737,14 @@ msgstr[1] "Les {count} valeurs les moins élevées sont retirées."
 msgid "The limit can only be adjusted by {count} half-points."
 msgstr "La limite ne peut être ajustée que de {count} demi-points."
 
+#, python-format
+msgid "The line-up for round %(round)d is not in the same order as the team roster."
+msgstr "La composition pour la ronde %(round)d n'est pas dans le même ordre que l'effectif."
+
+#, python-format
+msgid "The line-up for rounds %(first_round)d-%(last_round)d is not in the same order as the team roster."
+msgstr "La composition pour les rondes %(first_round)d-%(last_round)d n'est pas dans le même ordre que l'effectif."
+
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
 msgstr "Le classement le plus bas qu'un·e joueur·euse doit avoir pour que son score attendu soit supérieur ou égal à son score réel."
 
@@ -8181,9 +8189,6 @@ msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly 
 msgid "This folder is not empty."
 msgstr "Ce dossier n'est pas vide."
 
-msgid "This line-up is not in the same order as the team roster."
-msgstr "Cette composition n'est pas dans le même ordre que l'effectif."
-
 msgid "This menu is empty."
 msgstr "Ce menu est vide."
 
@@ -8237,8 +8242,9 @@ msgstr "Cet écran rotatif est public (visible des spectateur·ices)."
 msgid "This round cannot be edited."
 msgstr "Cette ronde ne peut pas être modifiée."
 
-msgid "This round has been paired, so its line-up is what stands on its boards. Change it from that round on the pairings tab."
-msgstr "Cette ronde est appariée, sa composition est donc celle de ses échiquiers. Modifiez-la depuis cette ronde dans l'onglet des appariements."
+#, python-format
+msgid "This round has been paired, so its line-up is what stands on its boards. If you really want to edit this line-up: go to the Pairings tab, select round #%(round)d and open this modal again."
+msgstr "Cette ronde est appariée, sa composition est donc celle de ses échiquiers. Si vous souhaitez vraiment éditer cette composition : allez sur l'onglet Appariements, sélectionnez la ronde n°%(round)d et ouvrer cette modale à nouveau."
 
 #, python-brace-format
 msgid "This round hasn't started (current round: #{round})."
