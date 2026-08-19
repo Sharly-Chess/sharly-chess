@@ -9972,19 +9972,3 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
-#~ msgstr "250 Rondes accélérées (activez le plugin [{plugin}] pour les importer)"
-
-#~ msgid "* the line-up is not in the same order as the team roster."
-#~ msgstr "* la composition n'est pas dans le même ordre que la liste de l'équipe."
-
-#~ msgid "unchanged"
-#~ msgstr "inchangée"
-
-#~ msgid "marks a round whose line-up is not in the same order as the team roster."
-#~ msgstr "signale une ronde dont la composition n'est pas dans le même ordre que la liste de l'équipe."
-
-#~ msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
-#~ msgstr "Aucune ronde éditable. Les compositions des rondes déjà appariées ne peuvent être modifiées ici."
-

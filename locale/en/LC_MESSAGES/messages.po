@@ -9970,19 +9970,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
-#~ msgstr ""
-
-#~ msgid "* the line-up is not in the same order as the team roster."
-#~ msgstr ""
-
-#~ msgid "unchanged"
-#~ msgstr ""
-
-#~ msgid "marks a round whose line-up is not in the same order as the team roster."
-#~ msgstr ""
-
-#~ msgid "No editable rounds. Lineups for already-paired rounds cannot be changed here."
-#~ msgstr ""
-
