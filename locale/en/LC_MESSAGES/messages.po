@@ -1892,6 +1892,9 @@ msgstr ""
 msgid "Complementary prize"
 msgstr ""
 
+msgid "Complementary value"
+msgstr ""
+
 msgid "Complete Team"
 msgstr ""
 
@@ -5437,6 +5440,9 @@ msgid "Opponents"
 msgstr ""
 
 msgid "Opponents' records"
+msgstr ""
+
+msgid "Optional monetary value of the complementary non-monetary prize (e.g. value of the trophy)."
 msgstr ""
 
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
@@ -9803,10 +9809,6 @@ msgstr ""
 
 #, python-format
 msgid "total: %(total)s"
-msgstr ""
-
-#, python-brace-format
-msgid "value: {value}"
 msgstr ""
 
 #, python-format

@@ -55,6 +55,7 @@ class StoredPrize:
     type: str
     value: float
     description: str
+    complementary_value: float | None = None
 
 
 @dataclass

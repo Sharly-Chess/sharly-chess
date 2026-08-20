@@ -117,6 +117,20 @@ class PrizeGroup:
                     category.stored_prize_category.index = index
                     database.update_stored_prize_category_index(category.id, index)
 
+    @property
+    def total_monetary_value(self) -> float:
+        return sum(category.total_monetary_value for category in self.categories)
+
+    @property
+    def total_non_monetary_value(self) -> float:
+        return sum(category.total_non_monetary_value for category in self.categories)
+
+    def format_total_monetary_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_monetary_value, currency)
+
+    def format_total_non_monetary_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_non_monetary_value, currency)
+
     # ---------------------------------------------------------------------------------
     # Calculation
     # ---------------------------------------------------------------------------------

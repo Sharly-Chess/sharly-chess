@@ -1632,6 +1632,12 @@ class PrizeAdminController(BaseEventAdminController):
             )
             if not description:
                 errors[field] = _('This field is required.')
+        if prize_type.has_complementary_value:
+            field = 'complementary_value'
+            try:
+                WebContext.form_data_to_float(data, field, minimum=0)
+            except ValueError:
+                errors[field] = _('A positive value is expected.')
         return errors
 
     @staticmethod
@@ -1647,6 +1653,7 @@ class PrizeAdminController(BaseEventAdminController):
             'type': MonetaryPrizeType().id,
             'value': WebContext.value_to_form_data(0.0),
             'description': '',
+            'complementary_value': '',
         }
         prize_types = PrizeTypeManager().objects()
         type_options: dict[str, SelectOption] = {}
@@ -1707,7 +1714,13 @@ class PrizeAdminController(BaseEventAdminController):
                 ),
             )
         type_id = WebContext.form_data_to_str(data, 'type') or ''
+        prize_type = PrizeTypeManager().get_object(type_id)
         description = WebContext.form_data_to_str(data, 'description') or ''
+        complementary_value = (
+            WebContext.form_data_to_float(data, 'complementary_value')
+            if prize_type.has_complementary_value
+            else None
+        )
         str_values = WebContext.form_data_to_str(data, 'values') or '0'
         values = [
             float(value.replace(',', '.')) for value in str_values.split(' ') if value
@@ -1720,6 +1733,7 @@ class PrizeAdminController(BaseEventAdminController):
                     type=type_id,
                     value=value,
                     description=description,
+                    complementary_value=complementary_value,
                 )
             )
         if add_other:
@@ -1772,9 +1786,15 @@ class PrizeAdminController(BaseEventAdminController):
         prize = web_context.get_admin_prize()
         stored_prize = prize.stored_prize
         stored_prize.type = WebContext.form_data_to_str(data, 'type') or ''
+        prize_type = PrizeTypeManager().get_object(stored_prize.type)
         stored_prize.value = WebContext.form_data_to_float(data, 'value') or 0.0
         stored_prize.description = (
             WebContext.form_data_to_str(data, 'description') or ''
+        )
+        stored_prize.complementary_value = (
+            WebContext.form_data_to_float(data, 'complementary_value')
+            if prize_type.has_complementary_value
+            else None
         )
         prize.update()
         return self._admin_event_prizes_render(web_context, {'modal': 'prizes'})
@@ -1884,6 +1904,7 @@ class PrizeAdminController(BaseEventAdminController):
                 'type': prize.type.id,
                 'value': prize.value,
                 'description': prize.description,
+                'complementary_value': prize.complementary_value,
             }
         )
         return self._admin_event_prizes_render(

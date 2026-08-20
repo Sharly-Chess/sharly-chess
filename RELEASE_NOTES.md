@@ -61,6 +61,7 @@ In order to maintain compatibility with the display of table numbers on the _FFE
 - Added a quick way to generate prize categories for age categories and rating ranges (5.0.0)
 - Duplication prize categories are now added immediately after the original (5.0.0)
 - Duplicate prizes when duplicating a tournament (5.0.0)
+- A monetary value can now be attached to the non-monetary part of a hybrid prize (e.g. the worth of a trophy) (5.0.0)
 
 ## Screens
 
