@@ -442,7 +442,7 @@ class FfeTournamentPluginData(PluginData):
             password=WebContext.form_data_to_str(data, 'ffe_password'),
         )
         if previous_object:
-            if action != 'clone':
+            if action != 'clone' and plugin_data.ffe_id and plugin_data.password:
                 plugin_data.last_upload_at = previous_object.last_upload_at
                 plugin_data.last_upload_attempt_at = (
                     previous_object.last_upload_attempt_at

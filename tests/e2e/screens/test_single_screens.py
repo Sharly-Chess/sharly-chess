@@ -70,6 +70,55 @@ class TestSingleScreensFunctionality:
             page.get_by_test_id('screens-item').filter(has_text=name)
         ).not_to_be_attached()
 
+    def test_eye_link_updates_after_uniq_id_change(
+        self,
+        page: Page,
+        api_request_context: APIRequestContext,
+        unpaired_tournament: StoredTournament,
+    ):
+        stored_screen = TestUtils.create_screen(
+            api_request_context,
+            EVENT_ID,
+            'Eye Link Screen',
+            ScreenType.INPUT,
+            {'init_set_tournament_id': unpaired_tournament.id},
+        )
+        old_uniq_id = stored_screen.uniq_id
+        new_uniq_id = old_uniq_id + '-renamed'
+        eye_selector = f'#screen-eye-{stored_screen.id}'
+        try:
+            page.goto(f'/event/{EVENT_ID}/screens')
+            accordion = page.get_by_test_id(
+                f'accordion-screen-type-{ScreenType.INPUT.value}'
+            )
+            if accordion.get_attribute('aria-expanded') == 'false':
+                accordion.click()
+
+            item = page.locator(f'#collection-screens-item-{stored_screen.id}')
+            expect(item).to_be_visible()
+
+            # The eye link initially points to the original uniq ID
+            expect(page.locator(eye_selector)).to_have_attribute(
+                'href', re.compile(rf'/view/screen/{EVENT_ID}/{old_uniq_id}$')
+            )
+
+            # Open the edit modal and rename the screen's uniq ID
+            item.locator('button[hx-get*="screen-modal/update"]').click()
+            modal = page.locator('.modal-dialog')
+            expect(modal).to_be_visible()
+            page.get_by_test_id('uniq-id-update-button').click()
+            update_input = page.get_by_test_id('uniq-id-update-input')
+            expect(update_input).to_be_visible()
+            update_input.fill(new_uniq_id)
+            page.get_by_test_id('uniq-id-update-submit-button').click()
+
+            # The eye link in the background card must now point to the new uniq ID
+            expect(page.locator(eye_selector)).to_have_attribute(
+                'href', re.compile(rf'/view/screen/{EVENT_ID}/{new_uniq_id}$')
+            )
+        finally:
+            TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
+
     def test_check_in_screen(
         self,
         api_request_context: APIRequestContext,
