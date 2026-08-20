@@ -9981,6 +9981,3 @@ msgstr "—"
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
 
-#~ msgid "value: {value}"
-#~ msgstr "valeur : {value}"
-

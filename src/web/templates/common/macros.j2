@@ -286,10 +286,10 @@
 {% macro prize_totals_value(monetary_formatted, non_monetary_formatted) -%}
     {%- set parts = [] -%}
     {%- if monetary_formatted -%}
-        {{- parts.append(monetary_formatted ~ ' (' ~ _('Monetary') ~ ')') or '' -}}
+        {{- parts.append(monetary_formatted ~ ' ' ~ _('Monetary')) or '' -}}
     {%- endif -%}
     {%- if non_monetary_formatted -%}
-        {{- parts.append(non_monetary_formatted ~ ' (' ~ _('Non-monetary') ~ ')') or '' -}}
+        {{- parts.append(non_monetary_formatted ~ ' ' ~ _('Non-monetary')) or '' -}}
     {%- endif -%}
     {{- parts|join(', ') -}}
 {%- endmacro %}

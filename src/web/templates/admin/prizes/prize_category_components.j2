@@ -276,7 +276,7 @@
             {% if prize_category.sorted_prizes %}
                 <ol class="mb-0 ps-3">
                     {% for prize in prize_category.sorted_prizes %}
-                        <li>{{ prize.name }}</li>
+                        <li>{{ prize.full_name }}</li>
                     {% endfor %}
                 </ol>
             {% else %}
