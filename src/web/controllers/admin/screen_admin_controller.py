@@ -911,7 +911,10 @@ class ScreenAdminController(ScreenAdminRenderer):
         return HTMXTemplate(
             template_name='/admin/screens/screen_update_modal_header.html',
             context=web_context.template_context
-            | {'screen_uniq_ids': list(event.screens_by_uniq_id.keys())},
+            | {
+                'screen_uniq_ids': list(event.screens_by_uniq_id.keys()),
+                'oob_eye_link': True,
+            },
             re_swap='innerHTML',
             re_target='.modal-header',
         )

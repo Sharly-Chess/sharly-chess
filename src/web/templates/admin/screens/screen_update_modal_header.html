@@ -53,3 +53,9 @@
         $('#uniq-id-field').css('display', '');
     });
 </script>
+
+{% if oob_eye_link %}
+    {% with eye_screen=admin_screen, swap_oob=True %}
+        {% include '/admin/screens/screen_eye_link.html' %}
+    {% endwith %}
+{% endif %}
