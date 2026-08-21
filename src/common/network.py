@@ -4,12 +4,14 @@ from __future__ import annotations
 import ipaddress
 import subprocess
 import socket
+import struct
 import sys
 from concurrent.futures import (
     ThreadPoolExecutor,
     TimeoutError as FutureTimeoutError,
     as_completed,
 )
+from functools import cache
 from logging import Logger
 import time
 from typing import Optional
@@ -27,6 +29,26 @@ IP_V4_ADDR_REGEX: str = r'^(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|0?[1-9][0-9]|0?0?[0-
 
 LOCALHOST_IP: str = '127.0.0.1'
 LOCALHOST_NAME: str = 'localhost'
+
+
+@cache
+def docker_gateway_ip() -> str | None:
+    """The container's default gateway, i.e. the address the host machine
+    appears as (due to NAT hairpinning) when it reaches a Docker-published
+    port from the host itself. Linux-only (containers always run Linux);
+    returns None if unavailable (e.g. host networking, no default route)."""
+    try:
+        with open('/proc/net/route') as f:
+            next(f)  # header line
+            for line in f:
+                fields = line.split()
+                if len(fields) < 3 or fields[1] != '00000000':
+                    continue
+                return socket.inet_ntoa(struct.pack('<L', int(fields[2], 16)))
+    except OSError:
+        pass
+    return None
+
 
 logger: Logger = get_logger()
 

@@ -3,9 +3,10 @@ from typing import TYPE_CHECKING, Optional, Collection
 
 from litestar_htmx import HTMXRequest
 
+from common import IN_DOCKER
 from common.i18n.utils import by
 from common.logger import get_logger
-from common.network import LOCALHOST_IP, LOCALHOST_NAME
+from common.network import LOCALHOST_IP, LOCALHOST_NAME, docker_gateway_ip
 from data.access_levels.actions import AuthAction
 from data.account import (
     Account,
@@ -44,7 +45,13 @@ class Client:
         self.account = self._get_account()
 
     def _get_account(self) -> Account:
-        if self.host in [LOCALHOST_IP, LOCALHOST_NAME]:
+        local_hosts = [LOCALHOST_IP, LOCALHOST_NAME]
+        if IN_DOCKER and (gateway_ip := docker_gateway_ip()):
+            # Docker's bridge networking NATs the host machine's own
+            # requests to the container's default gateway rather than
+            # 127.0.0.1 (see docker_gateway_ip's docstring).
+            local_hosts.append(gateway_ip)
+        if self.host in local_hosts:
             if self.event:
                 return self.event.administrator_account
             return Account.predefined_administrator_account()

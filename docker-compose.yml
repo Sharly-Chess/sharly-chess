@@ -1,0 +1,12 @@
+services:
+  sharly-chess:
+    build: .
+    image: sharly-chess:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - sharly-chess-data:/data
+    restart: unless-stopped
+
+volumes:
+  sharly-chess-data:
