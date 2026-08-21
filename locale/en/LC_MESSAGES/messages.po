@@ -3741,7 +3741,7 @@ msgstr ""
 msgid "Import TRF file"
 msgstr ""
 
-msgid "Import a SCE file"
+msgid "Import an SCE file"
 msgstr ""
 
 msgid "Import a tournament"
@@ -9978,4 +9978,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-

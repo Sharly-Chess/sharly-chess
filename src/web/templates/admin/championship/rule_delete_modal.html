@@ -1,0 +1,27 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 500px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Delete rule') }}</h2>
+        </div>
+        <div class="modal-body">
+            <h4>{{ rule.name }}</h4>
+            <h4 class="text-danger">{{ _('Delete this scoring rule?') }}</h4>
+            <form
+                id="modal-form"
+                hx-delete="{{ url_for('admin-championship-rule-delete', championship_uniq_id=championship.uniq_id, rule_id=rule.id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            ></form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" data-bs-dismiss="modal" class="btn btn-secondary text-nowrap">
+                <i class="bi-x-circle-fill pe-1"></i>{{ _('Cancel') }}
+            </button>
+            <button type="submit" form="modal-form" class="text-nowrap white btn btn-danger">
+                <i class="bi-trash pe-1"></i>{{ _('Delete') }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -22,6 +22,7 @@ from data.access_levels.actions import AuthAction
 from data.board import Board, PlayerRatingType
 from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
+from data.championship.championship_loader import ChampionshipLoader
 from data.input_output import (
     DataSourceManager,
     TournamentExporter,
@@ -1556,8 +1557,19 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: FromPath[int | None],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
+        referencing_championship = [
+            ChampionshipLoader().load_championship(championship_id)
+            for championship_id in ChampionshipLoader.championship_ids_referencing(
+                web_context.get_admin_event().uniq_id, tournament.id
+            )
+        ]
         return self._admin_base_event_render(
-            web_context.template_context | {'modal': 'tournament-delete'}
+            web_context.template_context
+            | {
+                'modal': 'tournament-delete',
+                'referencing_championship': referencing_championship,
+            }
         )
 
     @delete(

@@ -1,0 +1,73 @@
+{% extends '/admin/common/base.html' %}
+
+{% block wrapper_class %}championship admin{% endblock wrapper_class %}
+
+{% block admin_header_back_button %}
+    {% set target_tab = 'championship' %}
+    {% if championship.coming %}
+        {% set target_tab = 'coming_championship' %}
+    {% elif championship.passed %}
+        {% set target_tab = 'passed_championship' %}
+    {% endif %}
+    <div class="d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
+        <button
+            class="btn px-0 py-0 d-flex align-items-center gap-2"
+            hx-get="{{ url_for('admin-tab', admin_tab=target_tab) }}"
+            hx-target="body"
+            hx-push-url="true"
+            hx-indicator="#please-wait"
+        >
+            <i class="back-icon bi-arrow-left-circle-fill"></i>
+            <span class="expanded-only">{{ _('All Championships') }}</span>
+        </button>
+    </div>
+{% endblock admin_header_back_button %}
+
+{% block admin_nav %}
+    <h4 class="w-100 px-2 fs-5 mt-2 mb-2 text-center">{{ championship.name }}</h4>
+    {% for nav_id, nav_tab in nav_tabs.items() %}
+        <button
+            class="nav-link text-start d-flex align-items-center w-100 {% if championship_tab == nav_id %}active{% endif %}"
+            id="nav-{{ nav_id }}-tab"
+            data-testid="nav-{{ nav_id }}-tab"
+            hx-get="{{ url_for('admin-championship-tab', championship_uniq_id=championship.uniq_id, championship_tab=nav_id) }}"
+            hx-target="body"
+            hx-push-url="true"
+            hx-indicator="#please-wait"
+            hx-trigger="click, {{ nav_tab.shortcut }} from:body"
+        >
+            <i class="{{ nav_tab.icon_class }}"></i>
+            <span class="expanded-only">{{ nav_tab.title_html|safe }}</span>
+            {% if nav_id == 'sources' and championship.broken_sources %}
+                <span class="badge rounded-pill text-bg-warning ms-auto expanded-only">{{ championship.broken_sources|length }}</span>
+            {% endif %}
+        </button>
+    {% endfor %}
+    <button
+        class="nav-link text-start d-flex align-items-center w-100"
+        id="nav-documents-tab"
+        data-testid="nav-documents-tab"
+        hx-get="{{ url_for('admin-championship-documents-modal', championship_uniq_id=championship.uniq_id) }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        hx-trigger="click, SC_D from:body"
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    >
+        <i class="bi bi-file-earmark-text-fill"></i>
+        <span class="expanded-only"><u>D</u>ocuments</span>
+    </button>
+    {% if client.can_manage_source_databases or client.can_manage_application_settings %}
+        <div class="sidebar-divider my-3"></div>
+    {% endif %}
+    {% if client.can_manage_source_databases %}
+        {% include '/admin/common/database/database_button.html' %}
+    {% endif %}
+    {% if client.can_manage_application_settings %}
+        {% include '/admin/common/settings_button.html' %}
+    {% endif %}
+{% endblock admin_nav %}
+
+{% block admin_content %}
+    {% include '/admin/championship/' ~ championship_tab ~ '.html' %}
+{% endblock admin_content %}

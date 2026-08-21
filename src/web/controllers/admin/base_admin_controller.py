@@ -48,6 +48,10 @@ class AdminWebContext(WebContext):
             'current_events',
             'coming_events',
             'archives',
+            'championship',
+            'coming_championship',
+            'passed_championship',
+            'championship_archives',
         ]:
             raise NotFoundException(
                 f'Invalid value [{self.admin_tab}] for parameter [admin_tab]'

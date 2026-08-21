@@ -1,0 +1,57 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(92vw, 520px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Create a championship') }}</h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-post="{{ url_for('admin-championship-create') }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('Name:'),
+                            placeholder=_('E.g.: Junior Circuit'),
+                            data=data,
+                            errors=errors,
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='competitor_type',
+                            label=_('Competitors:'),
+                            select_options={
+                                'INDIVIDUAL': _('Players'),
+                                'TEAM': _('Teams'),
+                            },
+                            data=data,
+                            errors=errors,
+                            search_disabled=true,
+                        ) }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>{{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="btn btn-primary text-nowrap"
+                data-testid="championship-create-submit"
+            >
+                <i class="bi-plus-circle-fill pe-1"></i>{{ _('Create') }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -280,15 +280,20 @@ class Utils:
         cls, base_uniq_id: str, used_uniq_ids: Iterable[str]
     ) -> str:
         """Returns the first unused uniq_id in a list looking like base_uniq_id:
-        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1..."""
+        base_uniq_id, or base_uniq_id-2, or base_uniq_id-n+1...
+
+        Matching is case-insensitive: a uniq_id maps to a database file name, and
+        those live on case-insensitive filesystems, so ``foo`` and ``Foo`` are the
+        same slot."""
+        base_uniq_id = cls.name_to_uniq_id(base_uniq_id)
         index = 1
         uniq_id = base_uniq_id
-        base_uniq_id = cls.name_to_uniq_id(base_uniq_id)
         if matches := re.match(r'^(.*)-(\d+)$', base_uniq_id):
             base_uniq_id = matches.group(1)
             index = int(matches.group(2))
             uniq_id = f'{base_uniq_id}-{index}'
-        while uniq_id in used_uniq_ids:
+        used = {str(used_id).casefold() for used_id in used_uniq_ids}
+        while uniq_id.casefold() in used:
             index += 1
             uniq_id = f'{base_uniq_id}-{index}'
         return uniq_id

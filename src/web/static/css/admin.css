@@ -153,6 +153,22 @@
   width: max-content;   /* shrink to fit table */
 }
 
+/* Championship rule rows: a shared grid template so the handle, order, acronym,
+   name, details and actions line up across every (independent) row card. */
+.championship-rule-grid {
+    display: grid;
+    grid-template-columns: 1.25rem 1.5rem 5rem minmax(6rem, 1fr) minmax(0, 2fr) auto;
+    align-items: center;
+    gap: 1rem;
+}
+
+.championship-category-grid {
+    display: grid;
+    grid-template-columns: 1.25rem 1.5rem minmax(8rem, 1fr) minmax(0, 2fr) auto;
+    align-items: center;
+    gap: 1rem;
+}
+
 .player-popover:has(.empty) {
     display: none;
 }

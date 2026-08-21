@@ -1,0 +1,185 @@
+<form
+    id="championship-competitor-merge-form"
+    hx-post="{{ url_for('admin-championship-merge', championship_uniq_id=championship.uniq_id) }}"
+    hx-target="body"
+    hx-indicator="#please-wait"
+>
+    <div id="top-nav-wrapper">
+        <div id="top-nav-content">
+            {{ admin_macros.admin_title(nav_tabs.competitors.title) }}
+            <div class="flex-grow-1"></div>
+            <div class="d-flex gap-2 ms-auto align-items-center">
+                <button
+                    id="championship-merge-competitors"
+                    class="btn btn-primary text-nowrap"
+                    type="submit"
+                    disabled
+                >
+                    <i class="bi-link-45deg pe-1"></i>
+                    {% if championship.competitor_type == competitor_type_team %}
+                        {{ _('Merge selected teams') }}
+                    {% else %}
+                        {{ _('Merge selected players') }}
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <section class="px-3 pb-1">
+        <table
+            id="championship-competitors-table"
+            class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+        >
+            <thead
+                class="position-sticky z-2"
+                style="top: var(--header-height);"
+            >
+                <tr>
+                    <th class="text-center compact-col" scope="col">
+                        <span class="visually-hidden">{{ _('Select') }}</span>
+                    </th>
+                    <th class="text-end compact-col" scope="col">#</th>
+                    <th class="text-start" scope="col">
+                        {% if championship.competitor_type == competitor_type_team %}
+                            {{ _('Team') }}
+                        {% else %}
+                            {{ _('Player') }}
+                        {% endif %}
+                    </th>
+                    <th class="text-center compact-col" scope="col">
+                        {% if championship.competitor_type == competitor_type_team %}
+                            {{ _('Fed. *** FEDERATION COLUMN HEADER') }}
+                        {% else %}
+                            {{ _('FIDE ID') }}
+                        {% endif %}
+                    </th>
+                    {% if championship.competitor_type == competitor_type_individual %}
+                        <th class="text-center compact-col" scope="col">
+                            {{ _('Cat. *** CATEGORY COLUMN HEADER') }}
+                        </th>
+                        <th class="text-center compact-col" scope="col">
+                            {{ _('Gen. *** GENDER COLUMN HEADER') }}
+                        </th>
+                    {% endif %}
+                    <th class="text-center compact-col" scope="col">{{ _('Tournaments') }}</th>
+                    <th class="text-center compact-col" scope="col">{{ _('Matching') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in competitor_rows %}
+                    <tr>
+                        <td class="text-center compact-col">
+                            <input
+                                class="form-check-input championship-competitor-selection"
+                                type="checkbox"
+                                name="groups"
+                                value="{{ row.refs }}"
+                                aria-label="{{ _('Select %(competitor)s', competitor=row.name) }}"
+                            >
+                        </td>
+                        <td class="text-nowrap text-end compact-col index">{{ loop.index }}</td>
+                        <td class="text-nowrap fw-semibold">{{ row.name }}</td>
+                        <td class="text-nowrap text-center compact-col">
+                            {% if row.secondary %}{{ row.secondary }}{% else %}<span class="text-muted">—</span>{% endif %}
+                        </td>
+                        {% if championship.competitor_type == competitor_type_individual %}
+                            <td class="text-nowrap text-center compact-col">
+                                {% if row.category %}{{ row.category }}{% else %}<span class="text-muted">—</span>{% endif %}
+                            </td>
+                            <td class="text-nowrap text-center compact-col">
+                                {% if row.gender %}{{ row.gender }}{% else %}<span class="text-muted">—</span>{% endif %}
+                            </td>
+                        {% endif %}
+                        <td class="text-center compact-col text-nowrap">
+                            <span data-testid="championship-tournament-count">{{ row.participations|length }}</span>
+                            <button
+                                type="button"
+                                class="btn championship-stage-info p-1"
+                                data-content-id="championship-stage-content-{{ loop.index }}"
+                                aria-label="{{ _('Show the stages of %(competitor)s', competitor=row.name) }}"
+                            >
+                                <i class="bi-info-circle"></i>
+                            </button>
+                            <div
+                                id="championship-stage-content-{{ loop.index }}"
+                                class="d-none"
+                                data-testid="championship-stage-popover-content"
+                            >
+                                <table class="table table-sm mb-0">
+                                    <tbody>
+                                        {% for participation in row.participations %}
+                                            <tr>
+                                                <td class="text-start text-nowrap">{{ participation.source_name }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                        <td class="text-nowrap text-center compact-col">
+                            {% if row.override_group_keys %}
+                                {% for group_key in row.override_group_keys %}
+                                    <button
+                                        class="btn btn-sm btn-outline-warning"
+                                        type="button"
+                                        hx-delete="{{ url_for(
+                                            'admin-championship-override-group-delete',
+                                            championship_uniq_id=championship.uniq_id,
+                                            group_key=group_key,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                    >
+                                        <i class="bi-link-45deg pe-1"></i>{{ _('Unmerge') }}
+                                    </button>
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-body-secondary">{{ _('Automatic') }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="100%" class="px-3 text-center">
+                            {{ _('No competitors are available. Add a valid source tournament first.') }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</form>
+
+<script>
+    (() => {
+        const selections = document.querySelectorAll('.championship-competitor-selection');
+        const mergeButton = document.getElementById('championship-merge-competitors');
+        const updateMergeButton = () => {
+            mergeButton.disabled = Array.from(selections).filter(input => input.checked).length < 2;
+        };
+        selections.forEach(input => input.addEventListener('change', updateMergeButton));
+        updateMergeButton();
+    })();
+
+    // Stage list shown in a popover with a table (mirrors the pairings ranking
+    // view). Deferred to document-ready because the Bootstrap bundle is loaded
+    // at the end of the page. The data is already computed server-side, so it
+    // is rendered inline rather than fetched on hover.
+    $(document).ready(() => {
+        document.querySelectorAll('.championship-stage-info').forEach((button) => {
+            new bootstrap.Popover(button, {
+                html: true,
+                trigger: 'hover focus',
+                container: 'body',
+                placement: 'auto',
+                sanitize: false,
+                customClass: 'player-popover',
+                content: () => {
+                    const content = document.getElementById(button.getAttribute('data-content-id'));
+                    return content ? content.innerHTML : '';
+                },
+            });
+        });
+    });
+</script>

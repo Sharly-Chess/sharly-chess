@@ -1,0 +1,17 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% block modal_title %}{{ _('Delete championship') }}{% endblock %}
+{% block object_name %}{{ championship.name }}{% endblock %}
+{% block form_content %}
+    <p>{{ _('The source events and tournaments will not be deleted.') }}</p>
+    {{ admin_macros.checkbox_input(name='confirm-checkbox', placeholder=_('I confirm that I want to delete this championship.')) }}
+    <script>
+        $('#confirm-checkbox').change(function () {
+            $('#delete-button').prop('disabled', !$(this).is(':checked'));
+        });
+        $('#confirm-checkbox').trigger('change');
+    </script>
+{% endblock %}
+{% block delete_url %}{{ url_for('admin-championship-delete', championship_uniq_id=championship.uniq_id) }}{% endblock %}

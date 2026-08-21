@@ -1,0 +1,47 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 500px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Create a category') }}</h2>
+        </div>
+        <div class="modal-body">
+            {% if previous_category %}
+                {% with type='success', message=_(
+                    'Category [%(category)s] successfully created!',
+                    category=previous_category.name,
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-post="{{ url_for('admin-championship-category-add', championship_uniq_id=championship.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <div class="row gy-3">
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('Name:'),
+                            placeholder=_('E.g.: U12 girls'),
+                            data=data,
+                            errors=errors,
+                        ) }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>{{ _('Cancel') }}
+            </button>
+            {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>
