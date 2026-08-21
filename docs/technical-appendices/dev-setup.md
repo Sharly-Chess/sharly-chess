@@ -20,6 +20,32 @@ python --version
 python src/sharly_chess.py
 ```
 
+## Running with Docker
+
+The server (headless console mode, no GUI) can also run in a container, for local development or for a self-hosted deployment. On Linux, the container detects a GTK-less environment and falls back to console mode automatically; the GUI code isn't used.
+
+### Production
+
+```
+docker compose up -d --build
+```
+
+This builds the image, starts the server on port 8080, and persists its data in the named volume declared in [`docker-compose.yml`](../../docker-compose.yml).
+
+### Development
+
+[`docker-compose.dev.yml`](../../docker-compose.dev.yml) bind-mounts `src`, `default-files` and `locale` over the image's copies, so source changes are picked up on a container restart, without rebuilding the image:
+
+```
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml restart
+```
+
+### Notes
+
+- Federation-specific plugins (FFE, FIDE, Chess-Results) each need their own credentials file to work; without them they log a warning at startup instead of failing. The FFE, FIDE and FRA Schools local-database passwords can be set from the running app itself, in the "Data sources" modal of the settings page.
+- The container is not meant to be exposed beyond the host it runs on: whichever client the host's Docker bridge network presents requests as (see `common.network.docker_gateway_ip`) is trusted as the local/administrator machine, the same way `127.0.0.1` is trusted outside of Docker.
+
 ## Configuring _FIDE_ local database decryption
 
 The `src/.fide-database-enc-credentials` file, used to decrypt the _FIDE_ local database, is not stored in the _GitHub_ repository.
