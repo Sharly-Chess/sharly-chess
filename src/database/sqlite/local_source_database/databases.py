@@ -295,6 +295,13 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         )
 
     @property
+    def has_credentials(self) -> bool | None:
+        """Whether a locally-stored secret is required to download this
+        database's source file, and whether it's currently set. None means
+        no secret is needed."""
+        return None
+
+    @property
     def log_prefix(self) -> str:
         return f'Database [{self.name}] - '
 
@@ -404,7 +411,14 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         with tempfile.TemporaryDirectory(dir=TEMPFILE_DIR) as tmpdir:
             tmp_dir: Path = Path(tmpdir)
             logger.info(self.log_prefix + 'Downloading source file…')
-            if not self._download_source_file(tmp_dir):
+            try:
+                if not self._download_source_file(tmp_dir):
+                    return self.stop_update(False)
+            except SharlyChessException as ex:
+                logger.exception(
+                    self.log_prefix + 'Error while downloading the source file: %s.',
+                    ex,
+                )
                 return self.stop_update(False)
             if self.stop_event.is_set():
                 return self.stop_update(False)
@@ -495,6 +509,11 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
     @abstractmethod
     def credentials_file(cls) -> Path:
         pass
+
+    @property
+    @override
+    def has_credentials(self) -> bool:
+        return self.credentials_file().is_file()
 
     @classmethod
     def dump_credentials(
