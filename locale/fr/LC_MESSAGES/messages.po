@@ -105,6 +105,12 @@ msgstr[0] "%(num)d informative"
 msgstr[1] "%(num)d informatives"
 
 #, python-format
+msgid "%(num)d missing tournament"
+msgid_plural "%(num)d missing tournaments"
+msgstr[0] "%(num)d tournoi manquant"
+msgstr[1] "%(num)d tournois manquants"
+
+#, python-format
 msgid "%(num)d multi-screen"
 msgid_plural "%(num)d multi-screens"
 msgstr[0] "%(num)d écran multiple"
@@ -592,6 +598,9 @@ msgstr "Un Scheveningen se joue sur au moins {min} échiquiers."
 msgid "A Scheveningen on {boards} boards is played over {expected} rounds, so that every player meets every opponent."
 msgstr "Un Scheveningen à {boards} échiquiers se joue en {expected} rondes, afin que chaque joueur·euse rencontre tou·te·s ses adversaires."
 
+msgid "A category with this name already exists."
+msgstr "Une catégorie portant ce nom existe déjà."
+
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
 
@@ -784,11 +793,17 @@ msgstr "Ajouter un prix à la liste."
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
 
+msgid "Add a rule"
+msgstr "Ajouter une règle"
+
 msgid "Add a set"
 msgstr "Ajouter un ensemble"
 
 msgid "Add a timer to the event."
 msgstr "Ajouter un chronomètre à l'évènement."
+
+msgid "Add a tournament"
+msgstr "Ajouter un tournoi"
 
 msgid "Add a tournament before adding players."
 msgstr "Ajoutez un tournoi pour pouvoir ajouter des joueur·euses."
@@ -817,8 +832,14 @@ msgstr "Ajouter une période"
 msgid "Add players"
 msgstr "Ajouter des joueur·euses"
 
+msgid "Add rule"
+msgstr "Ajouter la règle"
+
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
 msgstr "Ajouter des écrans, des écrans multiples ou des types d'écran entiers à un menu, puis les réorganiser à votre convenance."
+
+msgid "Add the first tournament to start building the standings."
+msgstr "Ajoutez le premier tournoi pour commencer à construire le classement."
 
 msgid "Add the selected sets"
 msgstr "Ajouter les ensembles sélectionnés"
@@ -875,6 +896,13 @@ msgstr "Age"
 msgid "Age categories"
 msgstr "Catégories d'age"
 
+msgid "Age category reference date:"
+msgstr "Date de référence des catégories d'âge :"
+
+#, python-brace-format
+msgid "Age: {minimum} – {maximum}"
+msgstr "Âge : {minimum} – {maximum}"
+
 msgid "Albania"
 msgstr "Albanie"
 
@@ -898,6 +926,9 @@ msgstr "Tous les écrans « %(screen_type)s »"
 msgid "All \"%(screen_type)s\" screens already belong to a menu."
 msgstr "Tous les écrans « %(screen_type)s » appartiennent déjà à un menu."
 
+msgid "All Championships"
+msgstr "Tous les Grands Prix"
+
 msgid "All Events"
 msgstr "Évènements"
 
@@ -915,6 +946,9 @@ msgstr "Tou·tes les joueur·euses ont été marqué·es « Présent·e »."
 
 msgid "All present *** ALL TEAMS PRESENT"
 msgstr "Toutes présentes"
+
+msgid "All rankings"
+msgstr "Tous les classements"
 
 msgid "All teams are assigned to a tournament."
 msgstr "Toutes les équipes sont assignées à un tournoi."
@@ -1031,6 +1065,9 @@ msgstr "Appliquer"
 msgid "Apply to all"
 msgstr "Appliquer à tout·es"
 
+msgid "Apply tournament’s coefficient"
+msgstr "Appliquer le coefficient du tournoi"
+
 msgid "Apr *** APRIL"
 msgstr "Avr"
 
@@ -1075,11 +1112,20 @@ msgstr "Archiver l'évènement."
 msgid "Archived ({num})"
 msgstr "Archivés ({num})"
 
+msgid "Archived championship"
+msgstr "Grand Prix archivé"
+
+msgid "Archived championships"
+msgstr "Grands Prix archivés"
+
 msgid "Archived event"
 msgstr "Évènement archivé"
 
 msgid "Archived events"
 msgstr "Évènements archivés"
+
+msgid "Archiving this event will break its sources in the following championships:"
+msgstr "L'archivage de cet événement rompra ses sources dans les Grands Prix suivants :"
 
 msgid "Argentina"
 msgstr "Argentine"
@@ -1162,6 +1208,9 @@ msgstr "Moyenne (Ra), arrondie selon 1.4.7 :"
 msgid "Average age: %(years)s"
 msgstr "Âge moyen : %(years)s"
 
+msgid "Average of a tie-break"
+msgstr "Moyenne d'un départage"
+
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
 
@@ -1173,6 +1222,12 @@ msgstr "Moyenne des performances parfaites des adversaires"
 
 msgid "Average performance rating of opponents"
 msgstr "Moyenne des performances des adversaires"
+
+msgid "Average points"
+msgstr "Points moyens"
+
+msgid "Average ranking"
+msgstr "Classement moyen"
 
 msgid "Average rating of entire team"
 msgstr "Classement moyen de l'équipe"
@@ -1252,6 +1307,9 @@ msgstr "Bangladesh"
 msgid "Barbados"
 msgstr "Barbade"
 
+msgid "Base configuration"
+msgstr "Configuration de base"
+
 msgid "Base date"
 msgstr "Date de référence"
 
@@ -1293,6 +1351,9 @@ msgstr "Grille Berger"
 
 msgid "Bermuda"
 msgstr "Bermudes"
+
+msgid "Best stages:"
+msgstr "Meilleures étapes :"
 
 msgid "Bhutan"
 msgstr "Bhoutan"
@@ -1654,6 +1715,39 @@ msgstr "République centrafricaine"
 msgid "Chad"
 msgstr "Tchad"
 
+msgid "Championship"
+msgstr "Grand Prix"
+
+#, python-brace-format
+msgid "Championship [{name}] has been archived ({archive})."
+msgstr "Le Grand Prix [{name}] a été archivé ({archive})."
+
+#, python-brace-format
+msgid "Championship [{name}] has been created."
+msgstr "Le Grand Prix [{name}] a été créé."
+
+#, python-brace-format
+msgid "Championship [{name}] has been restored."
+msgstr "Le Grand Prix [{name}] a été restauré."
+
+#, python-brace-format
+msgid "Championship archive [{archive}] could not be restored."
+msgstr "L'archive de Grand Prix [{archive}] n'a pas pu être restaurée."
+
+#, python-brace-format
+msgid "Championship archive [{name}] has been permanently deleted."
+msgstr "L'archive de Grand Prix [{name}] a été définitivement supprimée."
+
+msgid "Championship standings"
+msgstr "Classement du Grand Prix"
+
+#, python-brace-format
+msgid "Championship unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
+msgstr "L'identifiant unique du Grand Prix a été renommé de [{old_uniq_id}] en [{new_uniq_id}]."
+
+msgid "Championships"
+msgstr "Grands Prix"
+
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
@@ -1704,6 +1798,9 @@ msgstr "Choisir un·e joueur·euse au hasard"
 
 msgid "Choose a set…"
 msgstr "Choisir un ensemble…"
+
+msgid "Choose a tie-break…"
+msgstr "Choisir un départage…"
 
 msgid "Choose at least one value."
 msgstr "Choisir au moins une valeur."
@@ -1808,6 +1905,12 @@ msgstr "Clubs"
 msgid "Coefficient"
 msgstr "Coefficient"
 
+msgid "Coefficient applied to this tournament’s scores."
+msgstr "Coefficient appliqué aux scores de ce tournoi."
+
+msgid "Coefficient:"
+msgstr "Coefficient :"
+
 msgid "Colombia"
 msgstr "Colombie"
 
@@ -1880,6 +1983,18 @@ msgstr "Commentaires"
 msgid "Comoros Islands"
 msgstr "Îles Comores"
 
+msgid "Competitor"
+msgstr "Compétiteur"
+
+msgid "Competitor type mismatch"
+msgstr "Type de compétiteur incompatible"
+
+msgid "Competitors"
+msgstr "Compétiteurs"
+
+msgid "Competitors:"
+msgstr "Compétiteurs :"
+
 msgid "Complementary pairings"
 msgstr "Appariements complémentaires"
 
@@ -1909,6 +2024,9 @@ msgstr "Configurer les protections d'appariement pour cette ronde."
 
 msgid "Configure the category sets, which are available for all events."
 msgstr "Configurer les ensembles de catégories, qui sont disponibles pour tous les évènements."
+
+msgid "Configure the ordered scoring rules. Later rules only break ties left by earlier rules."
+msgstr "Configurez les règles de score ordonnées. Les règles suivantes ne départagent que les égalités laissées par les précédentes."
 
 msgid "Configure the tags, which are available for all events."
 msgstr "Configurer les étiquettes, qui sont disponibles pour tous les évènements."
@@ -2012,6 +2130,9 @@ msgstr "Créez une catégorie de prix pour continuer."
 
 msgid "Create a category"
 msgstr "Créer une catégorie"
+
+msgid "Create a championship"
+msgstr "Créer un Grand Prix"
 
 msgid "Create a display controller"
 msgstr "Créer un pilote d'afficheur"
@@ -2187,6 +2308,9 @@ msgstr "Curacao"
 msgid "Current ({num})"
 msgstr "En cours ({num})"
 
+msgid "Current championships"
+msgstr "Grands Prix en cours"
+
 msgid "Current events"
 msgstr "Évènements en cours"
 
@@ -2293,6 +2417,9 @@ msgstr "Base de données"
 msgid "Database [{database}] successfully updated."
 msgstr "Base de données [{database}] mise à jour avec succès."
 
+msgid "Date"
+msgstr "Date"
+
 msgid "Date and time"
 msgstr "Date et heure"
 
@@ -2313,6 +2440,9 @@ msgstr "Dec"
 
 msgid "December"
 msgstr "Décembre"
+
+msgid "Default"
+msgstr "Par défaut"
 
 msgid "Default accounts have been created."
 msgstr "Les comptes par défault ont été créés."
@@ -2389,6 +2519,12 @@ msgstr "Supprimer le compte"
 msgid "Delete all hours for this timer and start fresh."
 msgstr "Supprimer tous les horaires de ce chronomètre et recommencer."
 
+msgid "Delete category"
+msgstr "Supprimer la catégorie"
+
+msgid "Delete championship"
+msgstr "Supprimer le Grand Prix"
+
 msgid "Delete display controller"
 msgstr "Supprimer le pilote d'afficheur"
 
@@ -2400,6 +2536,9 @@ msgstr "Supprimer le menu"
 
 msgid "Delete multi-screen"
 msgstr "Supprimer l'écran multiple"
+
+msgid "Delete permanently"
+msgstr "Supprimer définitivement"
 
 msgid "Delete player"
 msgstr "Supprimer le·la joueur·euse"
@@ -2415,6 +2554,9 @@ msgstr "Supprimer le groupe de prix"
 
 msgid "Delete rotator"
 msgstr "Supprimer l'écran rotatif"
+
+msgid "Delete rule"
+msgstr "Supprimer la règle"
 
 msgid "Delete screen"
 msgstr "Supprimer l'écran"
@@ -2455,6 +2597,21 @@ msgstr "Supprimer le chronomètre."
 msgid "Delete the tournament."
 msgstr "Supprimer le tournoi"
 
+msgid "Delete this category."
+msgstr "Supprimer cette catégorie."
+
+msgid "Delete this championship category?"
+msgstr "Supprimer cette catégorie de Grand Prix ?"
+
+msgid "Delete this championship."
+msgstr "Supprimer ce Grand Prix."
+
+msgid "Delete this rule."
+msgstr "Supprimer cette règle."
+
+msgid "Delete this scoring rule?"
+msgstr "Supprimer cette règle de score ?"
+
 msgid "Delete timer"
 msgstr "Supprimer le chronomètre"
 
@@ -2472,6 +2629,9 @@ msgstr "Supprime tous les critères de cette catégorie."
 
 msgid "Deleting a tag removes it from the events that use it."
 msgstr "Supprimer une étiquette la retire des évènements qui l'utilisent."
+
+msgid "Deleting this tournament will break its source in the following championships:"
+msgstr "La suppression de ce tournoi rompra sa source dans les Grands Prix suivants :"
 
 msgid "Deletion date"
 msgstr "Date de suppression"
@@ -2686,6 +2846,12 @@ msgstr "Glisser pour réordonner"
 msgid "Drag to reorder the category."
 msgstr "Glisser pour réordonner la catégorie."
 
+msgid "Drag to reorder the rule."
+msgstr "Glissez pour réordonner la règle."
+
+msgid "Drag to set the manual order."
+msgstr "Glissez pour définir l'ordre manuel."
+
 msgid "Draw"
 msgstr "Nulle"
 
@@ -2726,6 +2892,9 @@ msgstr "Dupliquer le chronomètre."
 msgid "Duplicate the tournament."
 msgstr "Dupliquer le tournoi"
 
+msgid "Duplicate this category."
+msgstr "Dupliquer cette catégorie."
+
 msgid "Duplication settings"
 msgstr "Paramètres de duplication"
 
@@ -2749,6 +2918,9 @@ msgstr "Ex. : %(num)d"
 #, python-format
 msgid "E.g.: %(string)s"
 msgstr "Ex. : %(string)s"
+
+msgid "E.g.: 1.5"
+msgstr "Ex. : 1.5"
 
 msgid "E.g.: 20 (boards per screen)"
 msgstr "Ex. : 20 (échiquiers par écran)"
@@ -2787,6 +2959,9 @@ msgstr "Ex. : Pierre"
 
 msgid "E.g.: John Smith"
 msgstr "Ex. : Jean Dupont"
+
+msgid "E.g.: Junior Circuit"
+msgstr "Ex. : Circuit Junior"
 
 msgid "E.g.: Main tournament"
 msgstr "Ex. : Tournoi principal"
@@ -2828,6 +3003,9 @@ msgstr "Ex. : Début du pointage dans %%s"
 msgid "E.g.: Teams %%f to %%l"
 msgstr "Ex. : Équipes %%f à %%l"
 
+msgid "E.g.: U12 girls"
+msgstr "Ex. : U12 filles"
+
 msgid "E.g.: World championship"
 msgstr "Ex.: Championnat du monde"
 
@@ -2839,6 +3017,9 @@ msgstr "Ex. : https://mon.club.fr/affiche.jpg"
 
 msgid "E.g.: john.doe@chess.com"
 msgstr "Ex. : pierre.dupont@chess.com"
+
+msgid "E.g.: junior-circuit"
+msgstr "Ex. : circuit-junior"
 
 msgid "ESB variant"
 msgstr "Variante ESB"
@@ -2862,11 +3043,17 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
+msgid "Each player keeps the category they have on this date for the whole Championship. The default is January 1st of the year of the earliest source tournament."
+msgstr "Chaque joueur conserve la catégorie qu'il a à cette date pour tout le Grand Prix. Par défaut, il s'agit du 1er janvier de l'année du tournoi source le plus ancien."
+
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
 msgstr "Chaque ligne représente une norme réalisée par un·e joueur·euse. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur·euse."
 
 msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
 msgstr "Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
+
+msgid "Each stage rescaled so the winner scores 1 and the last-placed 0, then summed. Evens out stages with different field sizes."
+msgstr "Chaque étape est mise à l'échelle pour que le vainqueur obtienne 1 et le dernier 0, puis sommée. Compense les étapes de tailles différentes."
 
 msgid "Ecuador"
 msgstr "Équateur"
@@ -2915,6 +3102,9 @@ msgstr "Modifier la catégorie de prix"
 
 msgid "Edit rotator"
 msgstr "Modifier l'écran rotatif"
+
+msgid "Edit rule"
+msgstr "Modifier la règle"
 
 msgid "Edit screen"
 msgstr "Modifier l'écran"
@@ -2990,6 +3180,9 @@ msgstr "Modifier les ensembles d'équipes affichés sur l'écran."
 
 msgid "Edit the unique ID."
 msgstr "Éditer l'identifiant unique."
+
+msgid "Edit this rule."
+msgstr "Modifier cette règle."
 
 msgid "Edit tie-break"
 msgstr "Modifier le départage"
@@ -3099,6 +3292,9 @@ msgstr "Export d'évènement"
 msgid "Event name"
 msgstr "Nom de l'évènement"
 
+msgid "Event not found"
+msgstr "Événement introuvable"
+
 msgid "Event tournaments"
 msgstr "Tournois de l'évènement"
 
@@ -3108,6 +3304,9 @@ msgstr "Type d'événement :"
 #, python-brace-format
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
+
+msgid "Event:"
+msgstr "Événement :"
 
 msgid "Events"
 msgstr "Évènements"
@@ -3364,6 +3563,9 @@ msgstr "Ordre des échiquiers fixes :"
 msgid "Fixed board:"
 msgstr "Échiquier fixe :"
 
+msgid "Fixed points per finishing position (e.g. 20 for first, 15 for second), summed. Positions beyond the table score nothing."
+msgstr "Points fixes par place à l'arrivée (p. ex. 20 pour le premier, 15 pour le deuxième), sommés. Les places au-delà du barème ne rapportent rien."
+
 msgid "Fixed table"
 msgstr "Table fixe"
 
@@ -3497,6 +3699,10 @@ msgstr "Genre ({gender})"
 msgid "Gender:"
 msgstr "Genre :"
 
+#, python-brace-format
+msgid "Gender: {gender}"
+msgstr "Sexe : {gender}"
+
 msgid "Genders"
 msgstr "Genres"
 
@@ -3505,6 +3711,9 @@ msgstr "Général"
 
 msgid "General configuration"
 msgstr "Configuration générale"
+
+msgid "General ranking"
+msgstr "Classement général"
 
 msgid "Generate"
 msgstr "Générer"
@@ -3671,6 +3880,9 @@ msgstr "L'horaire [{hour}] a été créé."
 msgid "Hours"
 msgstr "Horaires"
 
+msgid "How many times the competitor finished in the chosen position (e.g. number of first places). A count, so not weighted."
+msgstr "Combien de fois le compétiteur a terminé à la place choisie (p. ex. nombre de premières places). Un décompte, donc non pondéré."
+
 msgid "How the boards shown by these screens are chosen and ordered."
 msgstr "Comment les échiquiers affichés par ces écrans sont choisis et ordonnés."
 
@@ -3688,6 +3900,9 @@ msgstr "Hybride"
 
 msgid "I confirm that I want to archive this event."
 msgstr "Je confirme vouloir archiver cet évènement."
+
+msgid "I confirm that I want to delete this championship."
+msgstr "Je confirme vouloir supprimer ce Grand Prix."
 
 msgid "I confirm that I want to delete this tournament."
 msgstr "Je confirme vouloir supprimer ce tournoi."
@@ -3741,14 +3956,14 @@ msgstr "Importer"
 msgid "Import TRF file"
 msgstr "Importer un fichier TRF"
 
-msgid "Import an SCE file"
-msgstr "Importer un fichier SCE"
-
 msgid "Import a tournament"
 msgstr "Importer un tournoi"
 
 msgid "Import a tournament to the event from an external source."
 msgstr "Importer un tournoi à l'évènement depuis une source externe."
+
+msgid "Import an SCE file"
+msgstr "Importer un fichier SCE"
 
 msgid "Import players from a CSV file."
 msgstr "Importer des joueur·euses depuis un fichier CSV."
@@ -4009,6 +4224,9 @@ msgstr "Île de Man"
 
 msgid "Israel"
 msgstr "Israël"
+
+msgid "Issues"
+msgstr "Problèmes"
 
 msgid "It is highly recommended to set at least one tie-break."
 msgstr "Il est fortement recommandé de définir au moins un départage."
@@ -4345,6 +4563,9 @@ msgstr "Manuel"
 msgid "Manual groups"
 msgstr "Groupes manuels"
 
+msgid "Manual tie-break"
+msgstr "Départage manuel"
+
 msgid "Manually pair players"
 msgstr "Appairer des joueur·euses manuellement"
 
@@ -4420,6 +4641,9 @@ msgstr "Matchs par colonne :"
 msgid "Matches to print:"
 msgstr "Matchs à imprimer :"
 
+msgid "Matching"
+msgstr "Correspondance"
+
 msgid "Mauritania"
 msgstr "Mauritanie"
 
@@ -4491,9 +4715,21 @@ msgstr "Peut être remplacé au niveau de chaque tournoi."
 msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
 
+msgid "Mean finishing position over the counted stages; lower is better. A position, so the stage coefficient is not applied."
+msgstr "Place moyenne à l'arrivée sur les étapes comptées ; plus la valeur est basse, mieux c'est. Une place, donc le coefficient d'étape n'est pas appliqué."
+
+msgid "Mean of the points scored over the counted stages."
+msgstr "Moyenne des points marqués sur les étapes comptées."
+
+msgid "Mean, over the stages that use it, of a tie-break from the source events (e.g. Buchholz)."
+msgstr "Moyenne, sur les étapes qui l'utilisent, d'un départage des événements sources (p. ex. Buchholz)."
+
 #, python-brace-format
 msgid "Median {value}"
 msgstr "Médian {value}"
+
+msgid "Men"
+msgstr "Hommes"
 
 msgid "Menu"
 msgstr "Menu"
@@ -4529,6 +4765,12 @@ msgstr "Menus ({num})"
 
 msgid "Menus group screens together so users can navigate between them."
 msgstr "Les menus regroupent des écrans pour permettre aux utilisateur·ices de naviguer entre eux."
+
+msgid "Merge selected players"
+msgstr "Fusionner les joueurs sélectionnés"
+
+msgid "Merge selected teams"
+msgstr "Fusionner les équipes sélectionnées"
 
 msgid "Mexico"
 msgstr "Mexique"
@@ -4872,11 +5114,17 @@ msgstr "Aucun compte"
 msgid "No alert message"
 msgstr "Pas de message d'alerte"
 
+msgid "No archived championships."
+msgstr "Aucun Grand Prix archivé."
+
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
 
 msgid "No available update"
 msgstr "Pas de mise à jour disponible"
+
+msgid "No competitors are available. Add a valid source tournament first."
+msgstr "Aucun compétiteur disponible. Ajoutez d'abord un tournoi source valide."
 
 msgid "No criteria defined."
 msgstr "Aucun critère défini."
@@ -4886,6 +5134,9 @@ msgstr "Aucun critère pour la catégorie générale."
 
 msgid "No criteria."
 msgstr "Aucun critère."
+
+msgid "No current championships."
+msgstr "Aucun Grand Prix en cours."
 
 msgid "No current event carries the selected tags."
 msgstr "Aucun évènement en cours ne porte les étiquettes sélectionnées."
@@ -4907,6 +5158,9 @@ msgstr "Aucun email"
 
 msgid "No events."
 msgstr "Aucun évènement."
+
+msgid "No filtered ranking has been created yet."
+msgstr "Aucun classement filtré n'a encore été créé."
 
 msgid "No floor needed"
 msgstr "Aucun plancher nécessaire"
@@ -4990,6 +5244,9 @@ msgstr "Aucun appariement pour cette ronde."
 msgid "No pairings."
 msgstr "Aucun appariement."
 
+msgid "No passed championships."
+msgstr "Aucun Grand Prix passé."
+
 msgid "No passed event carries the selected tags."
 msgstr "Aucun évènement passé ne porte les étiquettes sélectionnées."
 
@@ -5054,6 +5311,12 @@ msgstr "Aucun événement public."
 msgid "No public screens"
 msgstr "Aucun écran public"
 
+msgid "No ranking is available yet."
+msgstr "Aucun classement n'est encore disponible."
+
+msgid "No ranking rules configured"
+msgstr "Aucune règle de classement configurée"
+
 msgid "No result"
 msgstr "Pas de résultat"
 
@@ -5074,6 +5337,9 @@ msgstr "Aucune ronde dans ce tournoi."
 
 msgid "No saved sets."
 msgstr "Aucun ensemble enregistré."
+
+msgid "No scoring rule has been created yet."
+msgstr "Aucune règle de score n'a encore été créée."
 
 msgid "No screens"
 msgstr "Aucun écran"
@@ -5130,6 +5396,9 @@ msgstr "Aucun tournoi."
 
 msgid "No unassigned players available. Remove a player from another team first."
 msgstr "Aucun·e joueur·euse disponible. Retirez d'abord un·e joueur·euse d'une autre équipe."
+
+msgid "No upcoming championships."
+msgstr "Aucun Grand Prix à venir."
 
 msgid "No upcoming event carries the selected tags."
 msgstr "Aucun évènement à venir ne porte les étiquettes sélectionnées."
@@ -5225,6 +5494,9 @@ msgstr "Non-apparié·e pour cette ronde"
 msgid "Not specified"
 msgstr "Non-spécifié"
 
+msgid "Not used because an earlier rule resolved the tie"
+msgstr "Non utilisé car une règle précédente a départagé l'égalité"
+
 msgid "Note"
 msgstr "Remarque"
 
@@ -5284,6 +5556,9 @@ msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points re
 
 msgid "Number of multi-screens"
 msgstr "Nombre d'écrans multiples"
+
+msgid "Number of placings"
+msgstr "Nombre de places"
 
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
@@ -5376,6 +5651,9 @@ msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les pilotes d'
 msgid "Only allowed users can view private rotators."
 msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans rotatifs privés."
 
+msgid "Only count each competitor’s best N stages (leave empty to count them all)."
+msgstr "Ne compter que les N meilleures étapes de chaque compétiteur (laisser vide pour toutes les compter)."
+
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’administrateur·ice sont visibles via le réseau."
 
@@ -5400,6 +5678,12 @@ msgstr "Ouvrir le certificat IT1 pour cette norme"
 
 msgid "Open application (browser)"
 msgstr "Ouvrir l'application (navigateur)"
+
+msgid "Open the event"
+msgstr "Ouvrir l'événement"
+
+msgid "Open the event."
+msgstr "Ouvrir l'événement."
 
 msgid "Open the profile in a new tab."
 msgstr "Ouvrir la fiche dans un nouvel onglet."
@@ -5453,6 +5737,9 @@ msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officie
 msgid "Or upload an image (stored with the event, max 2 MB):"
 msgstr "Ou téléverser une image (stockée avec l'événement, max 2 Mo) :"
 
+msgid "Order the still-tied competitors by hand, by dragging them in the ranking."
+msgstr "Ordonnez à la main les compétiteurs encore à égalité en les faisant glisser dans le classement."
+
 msgid "Organisation"
 msgstr "Organisation"
 
@@ -5484,6 +5771,9 @@ msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les p
 
 msgid "Others"
 msgstr "Autres"
+
+msgid "Overall"
+msgstr "Général"
 
 msgid "Overall ranking"
 msgstr "Classement général"
@@ -5713,6 +6003,9 @@ msgstr "Statistiques de participation"
 msgid "Passed ({num})"
 msgstr "Passés ({num})"
 
+msgid "Passed championships"
+msgstr "Grands Prix passés"
+
 msgid "Passed events"
 msgstr "Évènements passés"
 
@@ -5794,6 +6087,9 @@ msgstr "Chevalets"
 
 msgid "Place card type:"
 msgstr "Type de chevalet :"
+
+msgid "Place:"
+msgstr "Place :"
 
 msgid "Played"
 msgstr "Parties"
@@ -5891,6 +6187,9 @@ msgstr "Estimation expliquée dans le règlement"
 
 msgid "Player is not yet rated."
 msgstr "Le·la joueur·euse n’est pas encore classé·e."
+
+msgid "Player list"
+msgstr "Liste des joueurs"
 
 msgid "Player pairings"
 msgstr "Appariements par joueur·euse"
@@ -6041,6 +6340,9 @@ msgstr "Veuillez choisir un nom pour l'ensemble."
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
 
+msgid "Please choose a tie-break."
+msgstr "Veuillez choisir un départage."
+
 msgid "Please choose a valid colour."
 msgstr "Veuillez choisir une couleur valide."
 
@@ -6056,14 +6358,53 @@ msgstr "Veuillez choisir le tournoi."
 msgid "Please consider contacting support, or installing the new version manually."
 msgstr "Considérez contacter le support, ou installer la nouvelle version manuellement."
 
+msgid "Please enter a category name."
+msgstr "Veuillez saisir un nom de catégorie."
+
+msgid "Please enter a coefficient greater than zero."
+msgstr "Veuillez saisir un coefficient supérieur à zéro."
+
+msgid "Please enter a name for the championship."
+msgstr "Veuillez saisir un nom pour le Grand Prix."
+
+msgid "Please enter a name."
+msgstr "Veuillez saisir un nom."
+
+msgid "Please enter a space-separated list of numbers."
+msgstr "Veuillez saisir une liste de nombres séparés par des espaces."
+
+msgid "Please enter a valid value."
+msgstr "Veuillez saisir une valeur valide."
+
+msgid "Please enter a whole number of 1 or more."
+msgstr "Veuillez saisir un nombre entier supérieur ou égal à 1."
+
 msgid "Please enter an image URL or upload a file."
 msgstr "Veuillez saisir l'URL d'une image ou téléverser un fichier."
 
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
 
+msgid "Please select a competitor type."
+msgstr "Veuillez sélectionner un type de compétiteur."
+
+msgid "Please select a rule."
+msgstr "Veuillez sélectionner une règle."
+
+msgid "Please select a tournament."
+msgstr "Veuillez sélectionner un tournoi."
+
 msgid "Please select a type of criterion."
 msgstr "Veuillez choisir un type de critère."
+
+msgid "Please select a valid score basis."
+msgstr "Veuillez sélectionner une base de score valide."
+
+msgid "Please select a valid tournament."
+msgstr "Veuillez sélectionner un tournoi valide."
+
+msgid "Please select an event."
+msgstr "Veuillez sélectionner un événement."
 
 msgid "Please select at least one age category."
 msgstr "Veuillez sélectionner au moins une catégorie d'âge."
@@ -6111,6 +6452,13 @@ msgstr "Attribution des points"
 msgid "Points"
 msgstr "Points"
 
+#, python-brace-format
+msgid "Points awarded per finishing position: {table}. Positions beyond the table score nothing."
+msgstr "Points attribués par place à l'arrivée : {table}. Les places au-delà du barème ne rapportent rien."
+
+msgid "Points per place:"
+msgstr "Points par place :"
+
 #, python-format
 msgid "Points: %(min)s or more"
 msgstr "Points: %(min)s ou plus"
@@ -6128,6 +6476,12 @@ msgstr "Pologne"
 
 msgid "Portugal"
 msgstr "Portugal"
+
+msgid "Position-based points"
+msgstr "Points selon la place"
+
+msgid "Positional score"
+msgstr "Score positionnel"
 
 msgid "Positive values are expected."
 msgstr "Des valeurs positives sont attendues."
@@ -6346,11 +6700,23 @@ msgstr "Classement par club après la ronde n°{round}"
 msgid "Ranking by federation after round #{round}"
 msgstr "Classement par fédération après la ronde n°{round}"
 
+msgid "Ranking categories"
+msgstr "Catégories de classement"
+
+msgid "Ranking category"
+msgstr "Catégorie de classement"
+
 msgid "Ranking only"
 msgstr "Classement seulement"
 
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
+
+msgid "Rankings"
+msgstr "Classements"
+
+msgid "Rankings to print:"
+msgstr "Classements à imprimer :"
 
 msgid "Rapid"
 msgstr "Rapide"
@@ -6387,6 +6753,10 @@ msgstr "Types de classement"
 
 msgid "Rating:"
 msgstr "Classement :"
+
+#, python-brace-format
+msgid "Rating: {minimum} – {maximum}"
+msgstr "Élo : {minimum} – {maximum}"
 
 msgid "Ratings"
 msgstr "Classements"
@@ -6444,6 +6814,9 @@ msgstr "Rappel : le tournoi est joué sur plusieurs périodes FIDE, vous devez 
 msgid "Reminder: you might have to update the players' ratings before pairing."
 msgstr "Rappel : vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
 
+msgid "Remove"
+msgstr "Retirer"
+
 msgid "Remove from team"
 msgstr "Retirer de l'équipe"
 
@@ -6453,8 +6826,26 @@ msgstr "Supprimer le·la joueur·euse de l'évènement."
 msgid "Remove the screen from the display controller."
 msgstr "Supprimer la redirection du pilote d'afficheur vers cet écran."
 
+msgid "Remove this tournament from the championship?"
+msgstr "Retirer ce tournoi du Grand Prix ?"
+
+msgid "Remove this tournament."
+msgstr "Retirer ce tournoi."
+
+msgid "Remove tournament"
+msgstr "Retirer le tournoi"
+
+msgid "Rename"
+msgstr "Renommer"
+
 msgid "Rename event"
 msgstr "Renommer l'évènement"
+
+msgid "Rename the category"
+msgstr "Renommer la catégorie"
+
+msgid "Rename this category."
+msgstr "Renommer cette catégorie."
 
 msgid "Replace"
 msgstr "Remplacer"
@@ -6557,6 +6948,9 @@ msgstr "Saisie des résultats sur écrans publics"
 msgid "Results for round #{round}"
 msgstr "Résultats de la ronde {round}"
 
+msgid "Results of the games the tied competitors played against each other. Skipped when they never met."
+msgstr "Résultats des parties que les compétiteurs à égalité ont jouées entre eux. Ignoré s'ils ne se sont jamais rencontrés."
+
 msgid "Results screens show the last results (most recent first)."
 msgstr "Les écrans de résultats affichent les derniers résultats saisis par ordre anti-chronologique (le plus récent d'abord)."
 
@@ -6584,6 +6978,9 @@ msgstr "Inversé"
 
 msgid "Right wins"
 msgstr "Victoire droite"
+
+msgid "Rk."
+msgstr "Rg."
 
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Pl."
@@ -6778,6 +7175,12 @@ msgstr "Jeu de règles"
 msgid "Rule set applied"
 msgstr "Jeu de règles appliqué"
 
+msgid "Rule:"
+msgstr "Règle :"
+
+msgid "Rules are applied in order: each rule only breaks the ties left by the earlier ones."
+msgstr "Les règles sont appliquées dans l'ordre : chaque règle ne départage que les égalités laissées par les précédentes."
+
 msgid "Rules used were only effective until march 2026 (legacy)."
 msgstr "Les règles utilisées n'étaient effectives que jusqu'en mars 2026 (obsolètes)."
 
@@ -6858,6 +7261,9 @@ msgstr "Score calculé en ajoutant, pour chaque ronde, la valeur obtenue en mult
 
 msgid "Scores + Schedule Strength (SSSC)"
 msgstr "Scores + force du parcours (SSSC)"
+
+msgid "Scoring and tie-break rules"
+msgstr "Règles de score et de départage"
 
 msgid "Scotland"
 msgstr "Écosse"
@@ -6958,11 +7364,21 @@ msgstr "Voir les informations d’appariement pour le début de cette ronde."
 msgid "Seed color"
 msgstr "Couleur initiale"
 
+msgid "Select"
+msgstr "Sélectionner"
+
+#, python-format
+msgid "Select %(competitor)s"
+msgstr "Sélectionner %(competitor)s"
+
 msgid "Select All"
 msgstr "Tout sélectionner"
 
 msgid "Select a tournament"
 msgstr "Choisir un tournoi"
+
+msgid "Select a tournament stage…"
+msgstr "Sélectionner une étape de tournoi…"
 
 msgid "Select all"
 msgstr "Tout sélectionner"
@@ -6983,8 +7399,18 @@ msgstr "Sélectionner une action pour les %(count)d joueur·euses absent·es :"
 msgid "Select an event"
 msgstr "Choisir un évènement"
 
+msgid "Select an event…"
+msgstr "Sélectionner un événement…"
+
+msgid "Select and add another"
+msgstr "Sélectionner et en ajouter un autre"
+
 msgid "Select at least two members."
 msgstr "Sélectionnez au moins deux membres."
+
+#, python-brace-format
+msgid "Select at least two {competitors} to merge."
+msgstr "Sélectionnez au moins deux {competitors} à fusionner."
 
 msgid "Select members"
 msgstr "Sélectionner les membres"
@@ -7080,6 +7506,12 @@ msgstr "Noter des résultats spéciaux"
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
 msgstr "Affiliation définie pour %(filled)d équipe(s) à partir de « %(source)s »."
 
+msgid "Set the coefficient"
+msgstr "Définir le coefficient"
+
+msgid "Set the coefficient applied to this tournament’s scores."
+msgstr "Définir le coefficient appliqué aux scores de ce tournoi."
+
 msgid "Set the current round"
 msgstr "Changer la ronde courante"
 
@@ -7147,6 +7579,10 @@ msgstr "Afficher le niveau"
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
+
+#, python-format
+msgid "Show the stages of %(competitor)s"
+msgstr "Afficher les étapes de %(competitor)s"
 
 msgid "Show unmodified players"
 msgstr "Afficher les joueur·euses non modifié·es"
@@ -7274,6 +7710,9 @@ msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en prem
 msgid "Source"
 msgstr "Source"
 
+msgid "Sources"
+msgstr "Sources"
+
 msgid "South Africa"
 msgstr "Afrique du Sud"
 
@@ -7285,6 +7724,9 @@ msgstr "Soudan du Sud"
 
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeur dans la liste."
+
+msgid "Space-separated points awarded for each finishing position, best first. Leave empty for a default points scale."
+msgstr "Points attribués pour chaque place à l'arrivée, séparés par des espaces, du meilleur au moins bon. Laisser vide pour un barème par défaut."
 
 msgid "Spain"
 msgstr "Espagne"
@@ -7319,6 +7761,12 @@ msgstr "Informations"
 
 msgid "Staff member roles"
 msgstr "Rôles"
+
+msgid "Stage"
+msgstr "Étape"
+
+msgid "Stages"
+msgstr "Étapes"
 
 msgid "Standard"
 msgstr "Standard"
@@ -7394,11 +7842,20 @@ msgstr "Soudan"
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
+msgid "Sum of a tie-break"
+msgstr "Somme d'un départage"
+
+msgid "Sum of the points scored across the counted stages."
+msgstr "Somme des points marqués sur les étapes comptées."
+
 msgid "Sum the opponents (or own) game-point totals instead of match points."
 msgstr "Faire la somme des totaux des points de partie à la place des points de match."
 
 msgid "Sum the opponents (or own) match-point totals instead of game points."
 msgstr "Faire la somme des totaux des points de match à la place des points de partie."
+
+msgid "Sum, across the counted stages, of a tie-break used in the source events (e.g. Buchholz). Stages without it are skipped."
+msgstr "Somme, sur les étapes comptées, d'un départage utilisé dans les événements sources (p. ex. Buchholz). Les étapes qui ne l'utilisent pas sont ignorées."
 
 msgid "Suriname"
 msgstr "Suriname"
@@ -7497,6 +7954,9 @@ msgstr "Pointage des équipes"
 
 msgid "Team competition"
 msgstr "Compétition par équipes"
+
+msgid "Team list"
+msgstr "Liste des équipes"
 
 msgid "Team opponents' records"
 msgstr "Historique des équipes rencontrées"
@@ -7633,6 +8093,9 @@ msgstr "La FIDE utilisera le classement standard du·de la joueur·euse pour cet
 msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
 msgstr "La FIDE utilisera les classements standards des deux joueur·euses pour cette partie ({rating_opponent} et {rating_player})."
 
+msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
+msgstr "Le classement général inclut tous les joueurs et est toujours disponible. Créez des catégories pour ajouter des classements filtrés ; les joueurs doivent satisfaire tous les critères d'une catégorie."
+
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
@@ -7664,8 +8127,29 @@ msgstr "Le ou la capitaine doit faire partie de l'effectif de l'équipe."
 msgid "The category contains non-monetary prizes which can not be shared."
 msgstr "La catégorie contient des prix non-monétaires qui ne peuvent être partagés."
 
+msgid "The category has been deleted."
+msgstr "La catégorie a été supprimée."
+
+msgid "The category has been duplicated."
+msgstr "La catégorie a été dupliquée."
+
+msgid "The category has been renamed."
+msgstr "La catégorie a été renommée."
+
+msgid "The coefficient can be used to weight this tournament’s points and tie-break values in the championship ranking."
+msgstr "Le coefficient permet de pondérer les points et les valeurs de départage de ce tournoi dans le classement du Grand Prix."
+
+msgid "The coefficient has been saved."
+msgstr "Le coefficient a été enregistré."
+
 msgid "The color attributed to the highest ranked player at the first round."
 msgstr "La couleur attribuée au·à la joueur·euse au plus fort classement à la première ronde."
+
+msgid "The competitors have been unmerged."
+msgstr "Les compétiteurs ont été séparés."
+
+msgid "The configuration has been saved."
+msgstr "La configuration a été enregistrée."
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
 msgstr "La grille américaine montre tous les résultats des joueur·euses, tandis que c'est le club qui est affiché lors qu'on ne montre que le classement."
@@ -7691,8 +8175,14 @@ msgstr "La fin de la plage ne doit pas précéder son début."
 msgid "The event already has multi-tournament players."
 msgstr "Cet évènement a déjà des joueur·euses multi-tournois."
 
+msgid "The event no longer exists, so it cannot be opened."
+msgstr "L'événement n'existe plus, il ne peut donc pas être ouvert."
+
 msgid "The event type cannot be changed after creation."
 msgstr "Le type d'événement ne peut pas être modifié après la création."
+
+msgid "The finishing position counted (e.g. 1 counts first places)."
+msgstr "La place à l'arrivée comptée (p. ex. 1 compte les premières places)."
 
 #, python-brace-format
 msgid "The first round is ignored."
@@ -7756,6 +8246,12 @@ msgstr "Le classement le plus bas qu'un·e joueur·euse doit avoir pour que son 
 
 msgid "The main category is open to all the players."
 msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
+
+msgid "The manual match has been cleared."
+msgstr "La correspondance manuelle a été effacée."
+
+msgid "The manual tie-break has been reset."
+msgstr "Le départage manuel a été réinitialisé."
 
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
@@ -7966,14 +8462,36 @@ msgstr "Le nombre de rondes est incompatible avec le nombre d'équipes (attendu�
 msgid "The round must be paired first."
 msgstr "La ronde doit d'abord être appariée."
 
+msgid "The rule has been deleted."
+msgstr "La règle a été supprimée."
+
+msgid "The rule has been saved."
+msgstr "La règle a été enregistrée."
+
 msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
+
+msgid "The scoring criterion applied to rank the competitors."
+msgstr "Le critère de score appliqué pour classer les compétiteurs."
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "Les écrans utilisés par le pilote d'afficheur sont désignés par l'administrateur·ice."
 
+#, python-brace-format
+msgid "The selected {competitors} have been merged."
+msgstr "Les {competitors} sélectionnés ont été fusionnés."
+
 msgid "The settings are set and can no longer be changed."
 msgstr "Les paramètres sont fixés et ne peuvent plus être modifiés."
+
+msgid "The source event and tournament will not be deleted."
+msgstr "L'événement et le tournoi source ne seront pas supprimés."
+
+msgid "The source events and tournaments will not be deleted."
+msgstr "Les événements et tournois sources ne seront pas supprimés."
+
+msgid "The source has been removed."
+msgstr "La source a été retirée."
 
 #, python-brace-format
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
@@ -7994,6 +8512,9 @@ msgstr "Le numéro de table du dernier match à sélectionner."
 msgid "The team order sets each team's pairing number, shown on each card."
 msgstr "L'ordre des équipes définit le numéro d'appariement de chaque équipe, indiqué sur chaque carte."
 
+msgid "The team score basis has been saved."
+msgstr "La base de score par équipe a été enregistrée."
+
 msgid "The team score that is not used as the primary score (match points if the primary is game points and vice versa)."
 msgstr "Le score d'équipe qui n'est pas utilisé comme score primaire (les points de match si le score primaire est les points de partie et vice-versa)."
 
@@ -8004,11 +8525,17 @@ msgstr "L'ordre de tri des équipes est fixé après l'appariement de la premiè
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr "Le seuil ne peut être supérieur à la valeur du dernier prix de la catégorie ({value})."
 
+msgid "The tie-break computed from each stage’s games and aggregated across the counted stages."
+msgstr "Le départage calculé à partir des parties de chaque étape et agrégé sur les étapes comptées."
+
 msgid "The timer displayed on the screen."
 msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 
 msgid "The timer displayed on the screens of the multi-screen."
 msgstr "Le chronomètre affiché sur les écrans de l'écran multiple."
+
+msgid "The tournament has been added."
+msgstr "Le tournoi a été ajouté."
 
 msgid "The tournament has invalid tie-breaks; please fix them before saving as a set."
 msgstr "Le tournoi contient des départages invalides ; corrigez-les avant d'enregistrer l'ensemble."
@@ -8072,6 +8599,9 @@ msgstr "Il y a déjà un horaire défini à cette heure-ci."
 #, python-brace-format
 msgid "There already is an hour for round #{round}."
 msgstr "Il y a déjà un horaire pour la ronde n°{round}."
+
+msgid "There are no other compatible tournaments available."
+msgstr "Aucun autre tournoi compatible n'est disponible."
 
 #, python-brace-format
 msgid "There are no pairings for this round (last round with pairings: #{round})."
@@ -8166,6 +8696,9 @@ msgstr "Ce document est disponible uniquement pour les tournois en cadence class
 
 msgid "This event can't be used by the current version of Sharly Chess."
 msgstr "Cet évènement ne peut pas être utilisé par la version actuelle de Sharly Chess."
+
+msgid "This event cannot be opened: one or more required plugins are disabled. You can enable plugins in the application settings."
+msgstr "Cet événement ne peut pas être ouvert : un ou plusieurs plugins requis sont désactivés. Vous pouvez activer les plugins dans les paramètres de l'application."
 
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des spectateur·ices)."
@@ -8335,6 +8868,9 @@ msgstr "Ce tournoi a déjà été apparié, il n'est plus possible d'y ajouter d
 msgid "This tournament has no norm-eligible titled players."
 msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de normes."
 
+msgid "This type of criterion is already defined."
+msgstr "Ce type de critère est déjà défini."
+
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
 
@@ -8360,6 +8896,9 @@ msgstr "Départage favorisant les joueur·euses ayant gagné contre les joueur·
 
 msgid "Tie-break sets are saved from the Tie-breaks modal."
 msgstr "Les ensembles de départages sont enregistrés depuis la fenêtre Départages."
+
+msgid "Tie-break:"
+msgstr "Départage :"
 
 msgid "Tie-breaks"
 msgstr "Départages"
@@ -8505,6 +9044,12 @@ msgstr "Moyenne des 40 meilleur·es"
 msgid "Total"
 msgstr "Total"
 
+msgid "Total games won across the counted stages. A count, so not weighted by the stage coefficient."
+msgstr "Nombre total de parties gagnées sur les étapes comptées. Un décompte, donc non pondéré par le coefficient d'étape."
+
+msgid "Total points"
+msgstr "Points totaux"
+
 msgid "Total prize value"
 msgstr "Valeur totale des prix"
 
@@ -8519,6 +9064,10 @@ msgstr "Tournoi"
 
 msgid "Tournament Norms Summary"
 msgstr "Résumé des normes du tournoi"
+
+#, python-format
+msgid "Tournament [%(tournament)s] added."
+msgstr "Tournoi [%(tournament)s] ajouté."
 
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
@@ -8552,6 +9101,9 @@ msgstr "Le tournoi n'a pas de nombre de joueur·euses par équipe configuré."
 
 msgid "Tournament name"
 msgstr "Nom du tournoi"
+
+msgid "Tournament not found"
+msgstr "Tournoi introuvable"
 
 msgid "Tournament not found or has no schedule."
 msgstr "Tournoi introuvable ou sans horaire."
@@ -8750,6 +9302,9 @@ msgstr "Valeur inconnue (attendu : {expected})."
 msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les écrans multiples ne peuvent être utilisés que pour afficher les informations d'un seul tournoi."
 
+msgid "Unmerge"
+msgstr "Séparer"
+
 msgid "Unmet requirements are highlighted in red and should be verified. They will appear in black when printed."
 msgstr "Les exigences non remplies sont affichées en rouge et doivent être vérifiées. Elles apparaîtront en noir à l’impression."
 
@@ -8823,6 +9378,9 @@ msgstr "Joueur·euses non-classé·es"
 msgid "Upcoming ({num})"
 msgstr "À venir ({num})"
 
+msgid "Upcoming championships"
+msgstr "Grands Prix à venir"
+
 msgid "Upcoming events"
 msgstr "Évènements à venir"
 
@@ -8888,6 +9446,9 @@ msgstr "Par défaut – {option}"
 msgid "Use dropdowns"
 msgstr "Utiliser des menus déroulants"
 
+msgid "Use each source tournament’s primary score"
+msgstr "Utiliser le score principal de chaque tournoi source"
+
 msgid "Use game points for colour allocation"
 msgstr "Utiliser les points de parties pour l'attribution des couleurs"
 
@@ -8927,6 +9488,9 @@ msgid "Used by %(num)d tournament."
 msgid_plural "Used by %(num)d tournaments."
 msgstr[0] "Utilisé par %(num)d tournoi."
 msgstr[1] "Utilisé par %(num)d tournois."
+
+msgid "Used in the source tournaments"
+msgstr "Utilisés dans les tournois sources"
 
 msgid "Uzbekistan"
 msgstr "Ouzbékistan"
@@ -9109,6 +9673,9 @@ msgstr "Préférence faible"
 msgid "Weekly"
 msgstr "Une semaine"
 
+msgid "Weight each counted stage’s value by the tournament’s coefficient."
+msgstr "Pondérer la valeur de chaque étape comptée par le coefficient du tournoi."
+
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
@@ -9193,6 +9760,9 @@ msgstr "Grand Maître Internationale Féminin"
 
 msgid "Woman International Master"
 msgstr "Maître Internationale Féminin"
+
+msgid "Women"
+msgstr "Femmes"
 
 msgid "Women *** EVENT TAG NAME"
 msgstr "Féminin"
@@ -9428,6 +9998,10 @@ msgid "any OTB result"
 msgstr "tout résultat sur l'échiquier"
 
 #, python-brace-format
+msgid "best {num} stages"
+msgstr "meilleures {num} étapes"
+
+#, python-brace-format
 msgid "boards from #{first} to #{last}"
 msgstr "échiquiers du n°{first} au n°{last}"
 
@@ -9461,6 +10035,9 @@ msgstr "échiquiers {board_numbers}"
 
 msgid "clear filters"
 msgstr "effacer les filtres"
+
+msgid "coefficient off"
+msgstr "coefficient désactivé"
 
 msgid "default"
 msgstr "défaut"
@@ -9575,8 +10152,14 @@ msgstr "mon-ecran"
 msgid "no"
 msgstr "non"
 
+msgid "no tie-break selected"
+msgstr "aucun départage sélectionné"
+
 msgid "norm already achieved"
 msgstr "norme déjà acquise"
+
+msgid "not counted"
+msgstr "non comptée"
 
 #, python-format
 msgid "of %(n)s opponents"
@@ -9614,6 +10197,10 @@ msgstr "appariements du début au n°{last}, sur {parts} écrans"
 msgid "pairings on {parts} screens"
 msgstr "appariements sur {parts} écrans"
 
+#, python-brace-format
+msgid "place {place}"
+msgstr "place {place}"
+
 msgid "player already received a PAB in a previous round"
 msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"
 
@@ -9650,6 +10237,10 @@ msgstr "joueur·euses sur {parts} écrans"
 
 msgid "points"
 msgstr "points"
+
+#, python-brace-format
+msgid "points: {table}"
+msgstr "points : {table}"
 
 #, python-format
 msgid "raised to %(r)s"
@@ -9809,6 +10400,10 @@ msgstr "classement complet"
 msgid "then"
 msgstr "puis"
 
+#, python-brace-format
+msgid "tie-break: {acronym}"
+msgstr "départage : {acronym}"
+
 #, python-format
 msgid "total: %(total)s"
 msgstr "total : %(total)s"
@@ -9918,8 +10513,20 @@ msgid "{first_name} {last_name}"
 msgstr "{last_name} {first_name}"
 
 #, python-brace-format
+msgid "{label} (best {num} stages)"
+msgstr "{label} (meilleures {num} étapes)"
+
+#, python-brace-format
 msgid "{matched} players filled, {missing} not found in that tournament"
 msgstr "{matched} joueur·euses renseigné·es, {missing} introuvable·s dans ce tournoi"
+
+#, python-brace-format
+msgid "{name} (copy {num})"
+msgstr "{name} (copie {num})"
+
+#, python-brace-format
+msgid "{name} (copy)"
+msgstr "{name} (copie)"
 
 #, python-brace-format
 msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
@@ -9980,3 +10587,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

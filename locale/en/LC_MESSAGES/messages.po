@@ -105,6 +105,12 @@ msgstr[0] "%(num)d informative"
 msgstr[1] "%(num)d informative"
 
 #, python-format
+msgid "%(num)d missing tournament"
+msgid_plural "%(num)d missing tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d multi-screen"
 msgid_plural "%(num)d multi-screens"
 msgstr[0] ""
@@ -592,6 +598,9 @@ msgstr ""
 msgid "A Scheveningen on {boards} boards is played over {expected} rounds, so that every player meets every opponent."
 msgstr ""
 
+msgid "A category with this name already exists."
+msgstr ""
+
 msgid "A file is expected."
 msgstr ""
 
@@ -784,10 +793,16 @@ msgstr ""
 msgid "Add a rotator to the event."
 msgstr ""
 
+msgid "Add a rule"
+msgstr ""
+
 msgid "Add a set"
 msgstr ""
 
 msgid "Add a timer to the event."
+msgstr ""
+
+msgid "Add a tournament"
 msgstr ""
 
 msgid "Add a tournament before adding players."
@@ -817,7 +832,13 @@ msgstr ""
 msgid "Add players"
 msgstr ""
 
+msgid "Add rule"
+msgstr ""
+
 msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
+msgstr ""
+
+msgid "Add the first tournament to start building the standings."
 msgstr ""
 
 msgid "Add the selected sets"
@@ -875,6 +896,13 @@ msgstr ""
 msgid "Age categories"
 msgstr ""
 
+msgid "Age category reference date:"
+msgstr ""
+
+#, python-brace-format
+msgid "Age: {minimum} – {maximum}"
+msgstr ""
+
 msgid "Albania"
 msgstr ""
 
@@ -898,6 +926,9 @@ msgstr ""
 msgid "All \"%(screen_type)s\" screens already belong to a menu."
 msgstr ""
 
+msgid "All Championships"
+msgstr ""
+
 msgid "All Events"
 msgstr ""
 
@@ -915,6 +946,9 @@ msgstr ""
 
 msgid "All present *** ALL TEAMS PRESENT"
 msgstr "All present"
+
+msgid "All rankings"
+msgstr ""
 
 msgid "All teams are assigned to a tournament."
 msgstr ""
@@ -1031,6 +1065,9 @@ msgstr ""
 msgid "Apply to all"
 msgstr ""
 
+msgid "Apply tournament’s coefficient"
+msgstr ""
+
 msgid "Apr *** APRIL"
 msgstr "Apr"
 
@@ -1075,10 +1112,19 @@ msgstr ""
 msgid "Archived ({num})"
 msgstr ""
 
+msgid "Archived championship"
+msgstr ""
+
+msgid "Archived championships"
+msgstr ""
+
 msgid "Archived event"
 msgstr ""
 
 msgid "Archived events"
+msgstr ""
+
+msgid "Archiving this event will break its sources in the following championships:"
 msgstr ""
 
 msgid "Argentina"
@@ -1162,6 +1208,9 @@ msgstr ""
 msgid "Average age: %(years)s"
 msgstr ""
 
+msgid "Average of a tie-break"
+msgstr ""
+
 msgid "Average of opponents Buchholz"
 msgstr ""
 
@@ -1172,6 +1221,12 @@ msgid "Average perfect performance of opponents"
 msgstr ""
 
 msgid "Average performance rating of opponents"
+msgstr ""
+
+msgid "Average points"
+msgstr ""
+
+msgid "Average ranking"
 msgstr ""
 
 msgid "Average rating of entire team"
@@ -1252,6 +1307,9 @@ msgstr ""
 msgid "Barbados"
 msgstr ""
 
+msgid "Base configuration"
+msgstr ""
+
 msgid "Base date"
 msgstr ""
 
@@ -1292,6 +1350,9 @@ msgid "Berger grid"
 msgstr ""
 
 msgid "Bermuda"
+msgstr ""
+
+msgid "Best stages:"
 msgstr ""
 
 msgid "Bhutan"
@@ -1654,6 +1715,39 @@ msgstr ""
 msgid "Chad"
 msgstr ""
 
+msgid "Championship"
+msgstr ""
+
+#, python-brace-format
+msgid "Championship [{name}] has been archived ({archive})."
+msgstr ""
+
+#, python-brace-format
+msgid "Championship [{name}] has been created."
+msgstr ""
+
+#, python-brace-format
+msgid "Championship [{name}] has been restored."
+msgstr ""
+
+#, python-brace-format
+msgid "Championship archive [{archive}] could not be restored."
+msgstr ""
+
+#, python-brace-format
+msgid "Championship archive [{name}] has been permanently deleted."
+msgstr ""
+
+msgid "Championship standings"
+msgstr ""
+
+#, python-brace-format
+msgid "Championship unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
+msgstr ""
+
+msgid "Championships"
+msgstr ""
+
 msgid "Change the player's tournament."
 msgstr ""
 
@@ -1703,6 +1797,9 @@ msgid "Choose a random player"
 msgstr ""
 
 msgid "Choose a set…"
+msgstr ""
+
+msgid "Choose a tie-break…"
 msgstr ""
 
 msgid "Choose at least one value."
@@ -1808,6 +1905,12 @@ msgstr ""
 msgid "Coefficient"
 msgstr ""
 
+msgid "Coefficient applied to this tournament’s scores."
+msgstr ""
+
+msgid "Coefficient:"
+msgstr ""
+
 msgid "Colombia"
 msgstr ""
 
@@ -1880,6 +1983,18 @@ msgstr "Comments"
 msgid "Comoros Islands"
 msgstr ""
 
+msgid "Competitor"
+msgstr ""
+
+msgid "Competitor type mismatch"
+msgstr ""
+
+msgid "Competitors"
+msgstr ""
+
+msgid "Competitors:"
+msgstr ""
+
 msgid "Complementary pairings"
 msgstr ""
 
@@ -1908,6 +2023,9 @@ msgid "Configure prohibited pairings for this round."
 msgstr ""
 
 msgid "Configure the category sets, which are available for all events."
+msgstr ""
+
+msgid "Configure the ordered scoring rules. Later rules only break ties left by earlier rules."
 msgstr ""
 
 msgid "Configure the tags, which are available for all events."
@@ -2011,6 +2129,9 @@ msgid "Create a Prize Category now to continue."
 msgstr ""
 
 msgid "Create a category"
+msgstr ""
+
+msgid "Create a championship"
 msgstr ""
 
 msgid "Create a display controller"
@@ -2187,6 +2308,9 @@ msgstr ""
 msgid "Current ({num})"
 msgstr ""
 
+msgid "Current championships"
+msgstr ""
+
 msgid "Current events"
 msgstr ""
 
@@ -2293,6 +2417,9 @@ msgstr ""
 msgid "Database [{database}] successfully updated."
 msgstr ""
 
+msgid "Date"
+msgstr ""
+
 msgid "Date and time"
 msgstr ""
 
@@ -2312,6 +2439,9 @@ msgid "Dec *** DECEMBER"
 msgstr "Dec"
 
 msgid "December"
+msgstr ""
+
+msgid "Default"
 msgstr ""
 
 msgid "Default accounts have been created."
@@ -2389,6 +2519,12 @@ msgstr ""
 msgid "Delete all hours for this timer and start fresh."
 msgstr ""
 
+msgid "Delete category"
+msgstr ""
+
+msgid "Delete championship"
+msgstr ""
+
 msgid "Delete display controller"
 msgstr ""
 
@@ -2399,6 +2535,9 @@ msgid "Delete menu"
 msgstr ""
 
 msgid "Delete multi-screen"
+msgstr ""
+
+msgid "Delete permanently"
 msgstr ""
 
 msgid "Delete player"
@@ -2414,6 +2553,9 @@ msgid "Delete prize group"
 msgstr ""
 
 msgid "Delete rotator"
+msgstr ""
+
+msgid "Delete rule"
 msgstr ""
 
 msgid "Delete screen"
@@ -2455,6 +2597,21 @@ msgstr ""
 msgid "Delete the tournament."
 msgstr ""
 
+msgid "Delete this category."
+msgstr ""
+
+msgid "Delete this championship category?"
+msgstr ""
+
+msgid "Delete this championship."
+msgstr ""
+
+msgid "Delete this rule."
+msgstr ""
+
+msgid "Delete this scoring rule?"
+msgstr ""
+
 msgid "Delete timer"
 msgstr ""
 
@@ -2471,6 +2628,9 @@ msgid "Deletes all the criteria of this category."
 msgstr ""
 
 msgid "Deleting a tag removes it from the events that use it."
+msgstr ""
+
+msgid "Deleting this tournament will break its source in the following championships:"
 msgstr ""
 
 msgid "Deletion date"
@@ -2686,6 +2846,12 @@ msgstr ""
 msgid "Drag to reorder the category."
 msgstr ""
 
+msgid "Drag to reorder the rule."
+msgstr ""
+
+msgid "Drag to set the manual order."
+msgstr ""
+
 msgid "Draw"
 msgstr ""
 
@@ -2726,6 +2892,9 @@ msgstr ""
 msgid "Duplicate the tournament."
 msgstr ""
 
+msgid "Duplicate this category."
+msgstr ""
+
 msgid "Duplication settings"
 msgstr ""
 
@@ -2748,6 +2917,9 @@ msgstr ""
 
 #, python-format
 msgid "E.g.: %(string)s"
+msgstr ""
+
+msgid "E.g.: 1.5"
 msgstr ""
 
 msgid "E.g.: 20 (boards per screen)"
@@ -2786,6 +2958,9 @@ msgid "E.g.: John"
 msgstr ""
 
 msgid "E.g.: John Smith"
+msgstr ""
+
+msgid "E.g.: Junior Circuit"
 msgstr ""
 
 msgid "E.g.: Main tournament"
@@ -2828,6 +3003,9 @@ msgstr ""
 msgid "E.g.: Teams %%f to %%l"
 msgstr ""
 
+msgid "E.g.: U12 girls"
+msgstr ""
+
 msgid "E.g.: World championship"
 msgstr ""
 
@@ -2838,6 +3016,9 @@ msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
 msgid "E.g.: john.doe@chess.com"
+msgstr ""
+
+msgid "E.g.: junior-circuit"
 msgstr ""
 
 msgid "ESB variant"
@@ -2862,10 +3043,16 @@ msgstr ""
 msgid "Each player can only be awarded one prize per bracket."
 msgstr ""
 
+msgid "Each player keeps the category they have on this date for the whole Championship. The default is January 1st of the year of the earliest source tournament."
+msgstr ""
+
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
 msgstr ""
 
 msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
+msgstr ""
+
+msgid "Each stage rescaled so the winner scores 1 and the last-placed 0, then summed. Evens out stages with different field sizes."
 msgstr ""
 
 msgid "Ecuador"
@@ -2914,6 +3101,9 @@ msgid "Edit prize category"
 msgstr ""
 
 msgid "Edit rotator"
+msgstr ""
+
+msgid "Edit rule"
 msgstr ""
 
 msgid "Edit screen"
@@ -2989,6 +3179,9 @@ msgid "Edit the sets of teams displayed on the screen."
 msgstr ""
 
 msgid "Edit the unique ID."
+msgstr ""
+
+msgid "Edit this rule."
 msgstr ""
 
 msgid "Edit tie-break"
@@ -3099,6 +3292,9 @@ msgstr ""
 msgid "Event name"
 msgstr ""
 
+msgid "Event not found"
+msgstr ""
+
 msgid "Event tournaments"
 msgstr ""
 
@@ -3107,6 +3303,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
+msgstr ""
+
+msgid "Event:"
 msgstr ""
 
 msgid "Events"
@@ -3364,6 +3563,9 @@ msgstr ""
 msgid "Fixed board:"
 msgstr ""
 
+msgid "Fixed points per finishing position (e.g. 20 for first, 15 for second), summed. Positions beyond the table score nothing."
+msgstr ""
+
 msgid "Fixed table"
 msgstr ""
 
@@ -3497,6 +3699,10 @@ msgstr ""
 msgid "Gender:"
 msgstr ""
 
+#, python-brace-format
+msgid "Gender: {gender}"
+msgstr ""
+
 msgid "Genders"
 msgstr ""
 
@@ -3504,6 +3710,9 @@ msgid "General"
 msgstr ""
 
 msgid "General configuration"
+msgstr ""
+
+msgid "General ranking"
 msgstr ""
 
 msgid "Generate"
@@ -3671,6 +3880,9 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
+msgid "How many times the competitor finished in the chosen position (e.g. number of first places). A count, so not weighted."
+msgstr ""
+
 msgid "How the boards shown by these screens are chosen and ordered."
 msgstr ""
 
@@ -3687,6 +3899,9 @@ msgid "Hybrid"
 msgstr ""
 
 msgid "I confirm that I want to archive this event."
+msgstr ""
+
+msgid "I confirm that I want to delete this championship."
 msgstr ""
 
 msgid "I confirm that I want to delete this tournament."
@@ -3741,13 +3956,13 @@ msgstr ""
 msgid "Import TRF file"
 msgstr ""
 
-msgid "Import an SCE file"
-msgstr ""
-
 msgid "Import a tournament"
 msgstr ""
 
 msgid "Import a tournament to the event from an external source."
+msgstr ""
+
+msgid "Import an SCE file"
 msgstr ""
 
 msgid "Import players from a CSV file."
@@ -4008,6 +4223,9 @@ msgid "Isle of Man"
 msgstr ""
 
 msgid "Israel"
+msgstr ""
+
+msgid "Issues"
 msgstr ""
 
 msgid "It is highly recommended to set at least one tie-break."
@@ -4345,6 +4563,9 @@ msgstr ""
 msgid "Manual groups"
 msgstr ""
 
+msgid "Manual tie-break"
+msgstr ""
+
 msgid "Manually pair players"
 msgstr ""
 
@@ -4420,6 +4641,9 @@ msgstr ""
 msgid "Matches to print:"
 msgstr ""
 
+msgid "Matching"
+msgstr ""
+
 msgid "Mauritania"
 msgstr ""
 
@@ -4491,8 +4715,20 @@ msgstr ""
 msgid "May be used for per-round prize giveaways etc."
 msgstr ""
 
+msgid "Mean finishing position over the counted stages; lower is better. A position, so the stage coefficient is not applied."
+msgstr ""
+
+msgid "Mean of the points scored over the counted stages."
+msgstr ""
+
+msgid "Mean, over the stages that use it, of a tie-break from the source events (e.g. Buchholz)."
+msgstr ""
+
 #, python-brace-format
 msgid "Median {value}"
+msgstr ""
+
+msgid "Men"
 msgstr ""
 
 msgid "Menu"
@@ -4528,6 +4764,12 @@ msgid "Menus ({num})"
 msgstr ""
 
 msgid "Menus group screens together so users can navigate between them."
+msgstr ""
+
+msgid "Merge selected players"
+msgstr ""
+
+msgid "Merge selected teams"
 msgstr ""
 
 msgid "Mexico"
@@ -4872,10 +5114,16 @@ msgstr ""
 msgid "No alert message"
 msgstr ""
 
+msgid "No archived championships."
+msgstr ""
+
 msgid "No archived events."
 msgstr ""
 
 msgid "No available update"
+msgstr ""
+
+msgid "No competitors are available. Add a valid source tournament first."
 msgstr ""
 
 msgid "No criteria defined."
@@ -4885,6 +5133,9 @@ msgid "No criteria for the main category."
 msgstr ""
 
 msgid "No criteria."
+msgstr ""
+
+msgid "No current championships."
 msgstr ""
 
 msgid "No current event carries the selected tags."
@@ -4906,6 +5157,9 @@ msgid "No email"
 msgstr ""
 
 msgid "No events."
+msgstr ""
+
+msgid "No filtered ranking has been created yet."
 msgstr ""
 
 msgid "No floor needed"
@@ -4990,6 +5244,9 @@ msgstr ""
 msgid "No pairings."
 msgstr ""
 
+msgid "No passed championships."
+msgstr ""
+
 msgid "No passed event carries the selected tags."
 msgstr ""
 
@@ -5054,6 +5311,12 @@ msgstr ""
 msgid "No public screens"
 msgstr ""
 
+msgid "No ranking is available yet."
+msgstr ""
+
+msgid "No ranking rules configured"
+msgstr ""
+
 msgid "No result"
 msgstr ""
 
@@ -5073,6 +5336,9 @@ msgid "No rounds in this tournament."
 msgstr ""
 
 msgid "No saved sets."
+msgstr ""
+
+msgid "No scoring rule has been created yet."
 msgstr ""
 
 msgid "No screens"
@@ -5129,6 +5395,9 @@ msgid "No tournaments."
 msgstr ""
 
 msgid "No unassigned players available. Remove a player from another team first."
+msgstr ""
+
+msgid "No upcoming championships."
 msgstr ""
 
 msgid "No upcoming event carries the selected tags."
@@ -5225,6 +5494,9 @@ msgstr ""
 msgid "Not specified"
 msgstr ""
 
+msgid "Not used because an earlier rule resolved the tie"
+msgstr ""
+
 msgid "Note"
 msgstr ""
 
@@ -5283,6 +5555,9 @@ msgid "Number of half-points above or below the 50%% limit required for opponent
 msgstr ""
 
 msgid "Number of multi-screens"
+msgstr ""
+
+msgid "Number of placings"
 msgstr ""
 
 msgid "Number of players"
@@ -5374,6 +5649,9 @@ msgstr ""
 msgid "Only allowed users can view private rotators."
 msgstr ""
 
+msgid "Only count each competitor’s best N stages (leave empty to count them all)."
+msgstr ""
+
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr ""
 
@@ -5397,6 +5675,12 @@ msgid "Open IT1 certificate for this norm"
 msgstr ""
 
 msgid "Open application (browser)"
+msgstr ""
+
+msgid "Open the event"
+msgstr ""
+
+msgid "Open the event."
 msgstr ""
 
 msgid "Open the profile in a new tab."
@@ -5451,6 +5735,9 @@ msgstr ""
 msgid "Or upload an image (stored with the event, max 2 MB):"
 msgstr ""
 
+msgid "Order the still-tied competitors by hand, by dragging them in the ranking."
+msgstr ""
+
 msgid "Organisation"
 msgstr ""
 
@@ -5481,6 +5768,9 @@ msgid "Other players in this score group are not awarded prizes, as their share 
 msgstr ""
 
 msgid "Others"
+msgstr ""
+
+msgid "Overall"
 msgstr ""
 
 msgid "Overall ranking"
@@ -5711,6 +6001,9 @@ msgstr ""
 msgid "Passed ({num})"
 msgstr ""
 
+msgid "Passed championships"
+msgstr ""
+
 msgid "Passed events"
 msgstr ""
 
@@ -5791,6 +6084,9 @@ msgid "Place Cards"
 msgstr ""
 
 msgid "Place card type:"
+msgstr ""
+
+msgid "Place:"
 msgstr ""
 
 msgid "Played"
@@ -5888,6 +6184,9 @@ msgid "Player estimation explained in the rules"
 msgstr ""
 
 msgid "Player is not yet rated."
+msgstr ""
+
+msgid "Player list"
 msgstr ""
 
 msgid "Player pairings"
@@ -6039,6 +6338,9 @@ msgstr ""
 msgid "Please choose a player."
 msgstr ""
 
+msgid "Please choose a tie-break."
+msgstr ""
+
 msgid "Please choose a valid colour."
 msgstr ""
 
@@ -6054,13 +6356,52 @@ msgstr ""
 msgid "Please consider contacting support, or installing the new version manually."
 msgstr ""
 
+msgid "Please enter a category name."
+msgstr ""
+
+msgid "Please enter a coefficient greater than zero."
+msgstr ""
+
+msgid "Please enter a name for the championship."
+msgstr ""
+
+msgid "Please enter a name."
+msgstr ""
+
+msgid "Please enter a space-separated list of numbers."
+msgstr ""
+
+msgid "Please enter a valid value."
+msgstr ""
+
+msgid "Please enter a whole number of 1 or more."
+msgstr ""
+
 msgid "Please enter an image URL or upload a file."
 msgstr ""
 
 msgid "Please enter the name of the event."
 msgstr ""
 
+msgid "Please select a competitor type."
+msgstr ""
+
+msgid "Please select a rule."
+msgstr ""
+
+msgid "Please select a tournament."
+msgstr ""
+
 msgid "Please select a type of criterion."
+msgstr ""
+
+msgid "Please select a valid score basis."
+msgstr ""
+
+msgid "Please select a valid tournament."
+msgstr ""
+
+msgid "Please select an event."
 msgstr ""
 
 msgid "Please select at least one age category."
@@ -6109,6 +6450,13 @@ msgstr ""
 msgid "Points"
 msgstr ""
 
+#, python-brace-format
+msgid "Points awarded per finishing position: {table}. Positions beyond the table score nothing."
+msgstr ""
+
+msgid "Points per place:"
+msgstr ""
+
 #, python-format
 msgid "Points: %(min)s or more"
 msgstr ""
@@ -6125,6 +6473,12 @@ msgid "Poland"
 msgstr ""
 
 msgid "Portugal"
+msgstr ""
+
+msgid "Position-based points"
+msgstr ""
+
+msgid "Positional score"
 msgstr ""
 
 msgid "Positive values are expected."
@@ -6344,10 +6698,22 @@ msgstr ""
 msgid "Ranking by federation after round #{round}"
 msgstr ""
 
+msgid "Ranking categories"
+msgstr ""
+
+msgid "Ranking category"
+msgstr ""
+
 msgid "Ranking only"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
+msgstr ""
+
+msgid "Rankings"
+msgstr ""
+
+msgid "Rankings to print:"
 msgstr ""
 
 msgid "Rapid"
@@ -6384,6 +6750,10 @@ msgid "Rating types"
 msgstr ""
 
 msgid "Rating:"
+msgstr ""
+
+#, python-brace-format
+msgid "Rating: {minimum} – {maximum}"
 msgstr ""
 
 msgid "Ratings"
@@ -6442,6 +6812,9 @@ msgstr ""
 msgid "Reminder: you might have to update the players' ratings before pairing."
 msgstr ""
 
+msgid "Remove"
+msgstr ""
+
 msgid "Remove from team"
 msgstr ""
 
@@ -6451,7 +6824,25 @@ msgstr ""
 msgid "Remove the screen from the display controller."
 msgstr ""
 
+msgid "Remove this tournament from the championship?"
+msgstr ""
+
+msgid "Remove this tournament."
+msgstr ""
+
+msgid "Remove tournament"
+msgstr ""
+
+msgid "Rename"
+msgstr ""
+
 msgid "Rename event"
+msgstr ""
+
+msgid "Rename the category"
+msgstr ""
+
+msgid "Rename this category."
 msgstr ""
 
 msgid "Replace"
@@ -6555,6 +6946,9 @@ msgstr ""
 msgid "Results for round #{round}"
 msgstr ""
 
+msgid "Results of the games the tied competitors played against each other. Skipped when they never met."
+msgstr ""
+
 msgid "Results screens show the last results (most recent first)."
 msgstr ""
 
@@ -6581,6 +6975,9 @@ msgid "Reversed"
 msgstr ""
 
 msgid "Right wins"
+msgstr ""
+
+msgid "Rk."
 msgstr ""
 
 msgid "Rk. *** RANK COLUMN HEADER"
@@ -6776,6 +7173,12 @@ msgstr ""
 msgid "Rule set applied"
 msgstr ""
 
+msgid "Rule:"
+msgstr ""
+
+msgid "Rules are applied in order: each rule only breaks the ties left by the earlier ones."
+msgstr ""
+
 msgid "Rules used were only effective until march 2026 (legacy)."
 msgstr ""
 
@@ -6855,6 +7258,9 @@ msgid "Score computed by adding, for each round, a value given by multiplying th
 msgstr ""
 
 msgid "Scores + Schedule Strength (SSSC)"
+msgstr ""
+
+msgid "Scoring and tie-break rules"
 msgstr ""
 
 msgid "Scotland"
@@ -6956,10 +7362,20 @@ msgstr ""
 msgid "Seed color"
 msgstr ""
 
+msgid "Select"
+msgstr ""
+
+#, python-format
+msgid "Select %(competitor)s"
+msgstr ""
+
 msgid "Select All"
 msgstr ""
 
 msgid "Select a tournament"
+msgstr ""
+
+msgid "Select a tournament stage…"
 msgstr ""
 
 msgid "Select all"
@@ -6981,7 +7397,17 @@ msgstr ""
 msgid "Select an event"
 msgstr ""
 
+msgid "Select an event…"
+msgstr ""
+
+msgid "Select and add another"
+msgstr ""
+
 msgid "Select at least two members."
+msgstr ""
+
+#, python-brace-format
+msgid "Select at least two {competitors} to merge."
 msgstr ""
 
 msgid "Select members"
@@ -7078,6 +7504,12 @@ msgstr ""
 msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
 msgstr ""
 
+msgid "Set the coefficient"
+msgstr ""
+
+msgid "Set the coefficient applied to this tournament’s scores."
+msgstr ""
+
 msgid "Set the current round"
 msgstr ""
 
@@ -7144,6 +7576,10 @@ msgid "Show level"
 msgstr ""
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
+msgstr ""
+
+#, python-format
+msgid "Show the stages of %(competitor)s"
 msgstr ""
 
 msgid "Show unmodified players"
@@ -7272,6 +7708,9 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
+msgid "Sources"
+msgstr ""
+
 msgid "South Africa"
 msgstr ""
 
@@ -7282,6 +7721,9 @@ msgid "South Sudan"
 msgstr ""
 
 msgid "Space-separated list of numbers. One prize is created per value in the list."
+msgstr ""
+
+msgid "Space-separated points awarded for each finishing position, best first. Leave empty for a default points scale."
 msgstr ""
 
 msgid "Spain"
@@ -7316,6 +7758,12 @@ msgid "Staff information"
 msgstr ""
 
 msgid "Staff member roles"
+msgstr ""
+
+msgid "Stage"
+msgstr ""
+
+msgid "Stages"
 msgstr ""
 
 msgid "Standard"
@@ -7392,10 +7840,19 @@ msgstr ""
 msgid "Sum of Buchholz"
 msgstr ""
 
+msgid "Sum of a tie-break"
+msgstr ""
+
+msgid "Sum of the points scored across the counted stages."
+msgstr ""
+
 msgid "Sum the opponents (or own) game-point totals instead of match points."
 msgstr ""
 
 msgid "Sum the opponents (or own) match-point totals instead of game points."
+msgstr ""
+
+msgid "Sum, across the counted stages, of a tie-break used in the source events (e.g. Buchholz). Stages without it are skipped."
 msgstr ""
 
 msgid "Suriname"
@@ -7494,6 +7951,9 @@ msgid "Team check-in"
 msgstr ""
 
 msgid "Team competition"
+msgstr ""
+
+msgid "Team list"
 msgstr ""
 
 msgid "Team opponents' records"
@@ -7631,6 +8091,9 @@ msgstr ""
 msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
 msgstr ""
 
+msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
+msgstr ""
+
 msgid "The URL of the image to display."
 msgstr ""
 
@@ -7662,7 +8125,28 @@ msgstr ""
 msgid "The category contains non-monetary prizes which can not be shared."
 msgstr ""
 
+msgid "The category has been deleted."
+msgstr ""
+
+msgid "The category has been duplicated."
+msgstr ""
+
+msgid "The category has been renamed."
+msgstr ""
+
+msgid "The coefficient can be used to weight this tournament’s points and tie-break values in the championship ranking."
+msgstr ""
+
+msgid "The coefficient has been saved."
+msgstr ""
+
 msgid "The color attributed to the highest ranked player at the first round."
+msgstr ""
+
+msgid "The competitors have been unmerged."
+msgstr ""
+
+msgid "The configuration has been saved."
 msgstr ""
 
 msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
@@ -7689,7 +8173,13 @@ msgstr ""
 msgid "The event already has multi-tournament players."
 msgstr ""
 
+msgid "The event no longer exists, so it cannot be opened."
+msgstr ""
+
 msgid "The event type cannot be changed after creation."
+msgstr ""
+
+msgid "The finishing position counted (e.g. 1 counts first places)."
 msgstr ""
 
 #, python-brace-format
@@ -7753,6 +8243,12 @@ msgid "The lowest rating that a player should have for their expected score to b
 msgstr ""
 
 msgid "The main category is open to all the players."
+msgstr ""
+
+msgid "The manual match has been cleared."
+msgstr ""
+
+msgid "The manual tie-break has been reset."
 msgstr ""
 
 #, python-format
@@ -7964,13 +8460,35 @@ msgstr ""
 msgid "The round must be paired first."
 msgstr ""
 
+msgid "The rule has been deleted."
+msgstr ""
+
+msgid "The rule has been saved."
+msgstr ""
+
 msgid "The rule set fixes the team sort order."
+msgstr ""
+
+msgid "The scoring criterion applied to rank the competitors."
 msgstr ""
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr ""
 
+#, python-brace-format
+msgid "The selected {competitors} have been merged."
+msgstr ""
+
 msgid "The settings are set and can no longer be changed."
+msgstr ""
+
+msgid "The source event and tournament will not be deleted."
+msgstr ""
+
+msgid "The source events and tournaments will not be deleted."
+msgstr ""
+
+msgid "The source has been removed."
 msgstr ""
 
 #, python-brace-format
@@ -7992,6 +8510,9 @@ msgstr ""
 msgid "The team order sets each team's pairing number, shown on each card."
 msgstr ""
 
+msgid "The team score basis has been saved."
+msgstr ""
+
 msgid "The team score that is not used as the primary score (match points if the primary is game points and vice versa)."
 msgstr ""
 
@@ -8002,10 +8523,16 @@ msgstr ""
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr ""
 
+msgid "The tie-break computed from each stage’s games and aggregated across the counted stages."
+msgstr ""
+
 msgid "The timer displayed on the screen."
 msgstr ""
 
 msgid "The timer displayed on the screens of the multi-screen."
+msgstr ""
+
+msgid "The tournament has been added."
 msgstr ""
 
 msgid "The tournament has invalid tie-breaks; please fix them before saving as a set."
@@ -8069,6 +8596,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "There already is an hour for round #{round}."
+msgstr ""
+
+msgid "There are no other compatible tournaments available."
 msgstr ""
 
 #, python-brace-format
@@ -8163,6 +8693,9 @@ msgid "This document is only available for standard time control tournaments."
 msgstr ""
 
 msgid "This event can't be used by the current version of Sharly Chess."
+msgstr ""
+
+msgid "This event cannot be opened: one or more required plugins are disabled. You can enable plugins in the application settings."
 msgstr ""
 
 msgid "This event is private (by default, screens are not visible by the spectators)."
@@ -8333,6 +8866,9 @@ msgstr ""
 msgid "This tournament has no norm-eligible titled players."
 msgstr ""
 
+msgid "This type of criterion is already defined."
+msgstr ""
+
 msgid "This unique ID is already used."
 msgstr ""
 
@@ -8357,6 +8893,9 @@ msgid "Tie-break favoring players which have won against the players they are ti
 msgstr ""
 
 msgid "Tie-break sets are saved from the Tie-breaks modal."
+msgstr ""
+
+msgid "Tie-break:"
 msgstr ""
 
 msgid "Tie-breaks"
@@ -8503,6 +9042,12 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
+msgid "Total games won across the counted stages. A count, so not weighted by the stage coefficient."
+msgstr ""
+
+msgid "Total points"
+msgstr ""
+
 msgid "Total prize value"
 msgstr ""
 
@@ -8516,6 +9061,10 @@ msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
 
 msgid "Tournament Norms Summary"
+msgstr ""
+
+#, python-format
+msgid "Tournament [%(tournament)s] added."
 msgstr ""
 
 #, python-brace-format
@@ -8549,6 +9098,9 @@ msgid "Tournament has no team-player count configured."
 msgstr ""
 
 msgid "Tournament name"
+msgstr ""
+
+msgid "Tournament not found"
 msgstr ""
 
 msgid "Tournament not found or has no schedule."
@@ -8748,6 +9300,9 @@ msgstr ""
 msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
 msgstr ""
 
+msgid "Unmerge"
+msgstr ""
+
 msgid "Unmet requirements are highlighted in red and should be verified. They will appear in black when printed."
 msgstr ""
 
@@ -8821,6 +9376,9 @@ msgstr ""
 msgid "Upcoming ({num})"
 msgstr ""
 
+msgid "Upcoming championships"
+msgstr ""
+
 msgid "Upcoming events"
 msgstr ""
 
@@ -8886,6 +9444,9 @@ msgstr ""
 msgid "Use dropdowns"
 msgstr ""
 
+msgid "Use each source tournament’s primary score"
+msgstr ""
+
 msgid "Use game points for colour allocation"
 msgstr ""
 
@@ -8925,6 +9486,9 @@ msgid "Used by %(num)d tournament."
 msgid_plural "Used by %(num)d tournaments."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Used in the source tournaments"
+msgstr ""
 
 msgid "Uzbekistan"
 msgstr ""
@@ -9107,6 +9671,9 @@ msgstr ""
 msgid "Weekly"
 msgstr ""
 
+msgid "Weight each counted stage’s value by the tournament’s coefficient."
+msgstr ""
+
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
@@ -9190,6 +9757,9 @@ msgid "Woman Grand Master"
 msgstr ""
 
 msgid "Woman International Master"
+msgstr ""
+
+msgid "Women"
 msgstr ""
 
 msgid "Women *** EVENT TAG NAME"
@@ -9426,6 +9996,10 @@ msgid "any OTB result"
 msgstr ""
 
 #, python-brace-format
+msgid "best {num} stages"
+msgstr ""
+
+#, python-brace-format
 msgid "boards from #{first} to #{last}"
 msgstr ""
 
@@ -9458,6 +10032,9 @@ msgid "boards {board_numbers}"
 msgstr ""
 
 msgid "clear filters"
+msgstr ""
+
+msgid "coefficient off"
 msgstr ""
 
 msgid "default"
@@ -9573,7 +10150,13 @@ msgstr ""
 msgid "no"
 msgstr ""
 
+msgid "no tie-break selected"
+msgstr ""
+
 msgid "norm already achieved"
+msgstr ""
+
+msgid "not counted"
 msgstr ""
 
 #, python-format
@@ -9612,6 +10195,10 @@ msgstr ""
 msgid "pairings on {parts} screens"
 msgstr ""
 
+#, python-brace-format
+msgid "place {place}"
+msgstr ""
+
 msgid "player already received a PAB in a previous round"
 msgstr ""
 
@@ -9647,6 +10234,10 @@ msgid "players on {parts} screens"
 msgstr ""
 
 msgid "points"
+msgstr ""
+
+#, python-brace-format
+msgid "points: {table}"
 msgstr ""
 
 #, python-format
@@ -9807,6 +10398,10 @@ msgstr ""
 msgid "then"
 msgstr ""
 
+#, python-brace-format
+msgid "tie-break: {acronym}"
+msgstr ""
+
 #, python-format
 msgid "total: %(total)s"
 msgstr ""
@@ -9916,7 +10511,19 @@ msgid "{first_name} {last_name}"
 msgstr ""
 
 #, python-brace-format
+msgid "{label} (best {num} stages)"
+msgstr ""
+
+#, python-brace-format
 msgid "{matched} players filled, {missing} not found in that tournament"
+msgstr ""
+
+#, python-brace-format
+msgid "{name} (copy {num})"
+msgstr ""
+
+#, python-brace-format
+msgid "{name} (copy)"
 msgstr ""
 
 #, python-brace-format
@@ -9978,3 +10585,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
