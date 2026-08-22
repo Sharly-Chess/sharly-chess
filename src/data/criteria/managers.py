@@ -1,10 +1,16 @@
-from typing import override
+from typing import TYPE_CHECKING, Optional, override
+from common.sharly_chess_config import SharlyChessConfig
 from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter
 from data.criteria import tournament_criteria as crit
 from data.criteria.tournament_criteria import TournamentCriterion
+from data.player_categories import PlayerCategory
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager
+from utils.enum import PlayerGender
+
+if TYPE_CHECKING:
+    from data.event import Event
 
 
 class PrizePlayerFilterManager(EventBoundEntityManager[PlayerFilter]):
@@ -64,3 +70,43 @@ class TournamentCriterionManager(EventBoundEntityManager[TournamentCriterion]):
             criteria_types=criteria
         )
         return criteria
+
+
+class SearchFilterManager:
+    def __init__(self, event: Optional['Event']):
+        self.event = event
+
+    def get_filters(self) -> list[dict]:
+        federations = {'': '-'} | {
+            federation_id: f'{federation_id} - {federation_name}'
+            for federation_id, federation_name in SharlyChessConfig().federations.items()
+        }
+        if 'NON' in federations:
+            del federations['NON']
+
+        categories = PlayerCategory.get_categories(
+            [8, 10, 12, 14, 16, 18, 20], [20, 50, 65]
+        )
+
+        filters = {
+            'federation': {
+                'template_name': 'search_filters/federation.html',
+                'options': federations,
+            },
+            'gender': {
+                'template_name': 'search_filters/gender.html',
+                'options': {gender: gender.name for gender in PlayerGender},
+            },
+            'category': {
+                'template_name': 'search_filters/category.html',
+                'options': {category.id: category.name for category in categories},
+            },
+            'club': {
+                'template_name': 'search_filters/club.html',
+            },
+        }
+        plugin_manager.hook_for_event(self.event, 'insert_search_filter_types')(
+            filters=filters
+        )
+
+        return filters

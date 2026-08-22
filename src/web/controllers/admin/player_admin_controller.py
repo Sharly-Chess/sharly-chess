@@ -4,6 +4,7 @@ from collections.abc import Callable
 from datetime import date
 from functools import cached_property
 from itertools import islice
+import json
 from logging import Logger
 import math
 from pathlib import Path
@@ -42,6 +43,7 @@ from data.print_documents.documents import (
 )
 from data.teams.team import RosterFullError
 from data.tournament import Tournament
+from data.criteria.managers import SearchFilterManager
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredPlayer,
@@ -912,6 +914,9 @@ class PlayerAdminController(BaseEventAdminController):
             'team_options': team_options,
             'team_locked': team_locked,
             'is_team_event': event.is_team_event,
+            'search_filters': SearchFilterManager(
+                web_context.get_admin_event()
+            ).get_filters(),
             'selected_data_source': SessionPlayersActiveDataSource(request).get(),
             'plugin_templates_by_section': plugin_templates_by_section,
             'previous_player': (
@@ -2708,6 +2713,7 @@ class PlayerAdminController(BaseEventAdminController):
         search: FromQuery[str],
         page: FromPath[int] = 0,
         usage: FromQuery[str] = 'player',
+        filters: FromQuery[str] = '{}',
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -2723,6 +2729,7 @@ class PlayerAdminController(BaseEventAdminController):
                     web_context.get_admin_event().federation,
                     page,
                     DataSource.SEARCH_LIMIT,
+                    json.loads(filters),
                 )
                 for stored_player in stored_players:
                     stored_player.id = 0

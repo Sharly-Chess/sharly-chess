@@ -682,6 +682,26 @@ class FfePlugin(Plugin):
             datasheet_columns, FfeLeagueDatasheetColumn(), federation
         )
 
+    @hookimpl
+    def insert_search_filter_types(self, filters):
+        licences = {
+            '': '-',
+            'B': _('A or B'),
+            'A': _('A only'),
+        }
+        leagues = {'': '-'} | {
+            code: f'{code} - {name}' for code, name in FFE_LEAGUES.items()
+        }
+
+        filters['licence'] = {
+            'template_name': '/ffe_search_filter_licence.html',
+            'options': licences,
+        }
+        filters['league'] = {
+            'template_name': '/ffe_search_filter_league.html',
+            'options': leagues,
+        }
+
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------

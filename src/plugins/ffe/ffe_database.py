@@ -121,6 +121,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         federation: str,
         page: int = 0,
         limit: int | None = None,
+        filters: dict = {},
     ) -> list[StoredPlayer]:
         tokens: list[str] = [
             unicode_normalize(token) for token in re.split(r'\s+', string)

@@ -44,7 +44,11 @@
                         page=page + 1,
                         usage=usage,
                     )}}"
-                    hx-vals='{"data_source_id": "{{ data_source.id }}", "search": "{{ search }}"}'
+                    hx-vals='js:{
+                        "data_source_id": "{{ data_source.id }}",
+                        "search": "{{ search }}",
+                        "filters": getFilters(),
+                    }'
                     hx-target="this"
                     hx-swap="afterend"
                     hx-trigger="intersect once"

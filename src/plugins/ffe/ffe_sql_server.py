@@ -172,7 +172,12 @@ class FFESqlServer(SqlServer):
         return f"'{fide_id}'"
 
     async def search_player(
-        self, string: str, federation: str, page: int = 0, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
+        filters: dict = {},
     ) -> list[StoredPlayer]:
         """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
@@ -192,6 +197,7 @@ class FFESqlServer(SqlServer):
         )
         conditions: list[str] = [
             self.RATING_TYPE_CONDITION,
+            *self._processFilters(filters),
         ]
         params: list[Any] = []
         for token in tokens:
@@ -393,3 +399,40 @@ class FFESqlServer(SqlServer):
             f'joueur.FideCode IN ({", ".join(["%s"] * 2 * len(player_fide_ids))})',
             params,
         )
+
+    def _processFilters(self, filters):
+        conditions = []
+        if 'ffe_licence_filter' in filters:
+            if filters['ffe_licence_filter'] == 'B':
+                conditions.append(
+                    "(joueur.AffType IN ('B', 'A') OR joueur.Federation !='fra')"
+                )
+            elif filters['ffe_licence_filter'] == 'A':
+                conditions.append("(joueur.AffType='A' OR joueur.Federation !='fra')")
+        if 'federation_filter' in filters:
+            conditions.append(f"joueur.Federation='{filters['federation_filter']}'")
+        if 'gender_filter' in filters:
+            conditions.append(f"joueur.Sexe='{filters['gender_filter']}'")
+        if 'ffe_league_filter' in filters:
+            conditions.append(f"club.Ligue='{filters['ffe_league_filter']}'")
+        if 'club_filter' in filters:
+            conditions.append(
+                f"LOWER(club.Nom) LIKE LOWER('%%{filters['club_filter']}%%')"
+            )
+        if 'category_filter' in filters and filters['category_filter']:
+            mapping = {
+                'U8': 'Ppo',
+                'U10': 'Pou',
+                'U12': 'Pup',
+                'U14': 'Ben',
+                'U16': 'Min',
+                'U18': 'Cad',
+                'U20': 'Jun',
+                'O20': 'Sen',
+                'O50': 'Sep',
+                'O65': 'Vet',
+            }
+            conditions.append(
+                f'SUBSTRING(Joueur.Cat, 1, 3) IN ({", ".join(f"'{mapping[category]}'" for category in filters["category_filter"])})'
+            )
+        return conditions
