@@ -110,14 +110,6 @@ msgstr "Connexion à la Fédération Française des Échecs"
 msgid "Consult the logs for more details."
 msgstr "Consultez les logs pour plus d'informations."
 
-#, python-brace-format
-msgid "Could not download [{url}], error code {code}."
-msgstr "Impossible de télécharger [{url}], code d'erreur {code}."
-
-#, python-brace-format
-msgid "Could not download [{url}]: {error}."
-msgstr "Impossible de télécharger [{url}] : {error}."
-
 msgid "Cut *** TIE BREAK VARIATION"
 msgstr "Tronqué"
 
@@ -233,9 +225,6 @@ msgstr "Mot de passe FFE :"
 msgid "FFE site"
 msgstr "Site de la FFE"
 
-msgid "FFE tournament ID:"
-msgstr "Identifiant FFE du tournoi :"
-
 msgid "FFE upload"
 msgstr "Mise en ligne FFE"
 
@@ -302,9 +291,6 @@ msgstr "Importer un fichier JSON (format papi-converter)"
 
 msgid "Import Papi file"
 msgstr "Importer un fichier Papi"
-
-msgid "Import online FFE tournament"
-msgstr "Importer un tournoi FFE en ligne"
 
 msgid "Incompatible"
 msgstr "Incompatible"
@@ -461,9 +447,6 @@ msgstr "Non configuré"
 
 msgid "Ongoing"
 msgstr "En cours"
-
-msgid "Online FFE tournament"
-msgstr "Tournoi FFE en ligne"
 
 msgid "Open Arbiter (level 1)"
 msgstr "Arbitre Fédéral Open 1"
@@ -648,10 +631,6 @@ msgstr "Le Scheveningen n'est pas connu du site FFE et sera exporté comme un to
 
 msgid "Tournament"
 msgstr "Tournoi"
-
-#, python-brace-format
-msgid "Tournament [{tournament_id}] not found."
-msgstr "Tournoi [{tournament_id}] not trouvé."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."
