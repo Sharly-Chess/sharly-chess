@@ -658,19 +658,24 @@ class TournamentPlayersTabColumn(FilterPlayersTabColumn):
         return True
 
     def get_filter_key(self, player: Player) -> str:
-        return str(player.single_tournament.id)
+        tournament = player.optional_single_tournament
+        return str(tournament.id) if tournament is not None else ''
 
     def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        if not filter_key:
+            return None
         return event.tournaments_by_id[int(filter_key)]
 
     def get_filter_row_content(self, value: Any) -> str:
-        return value.name
+        return value.name if value is not None else '-'
 
     def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
-        return filter_value.value.index
+        tournament = filter_value.value
+        return (tournament is None, tournament.name.lower() if tournament else '')
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return (player.single_tournament.index,)
+        tournament = player.optional_single_tournament
+        return (tournament is None, tournament.name.lower() if tournament else '')
 
     def is_enabled_for_event(self, event: Event, tournaments: list[Tournament]) -> bool:
         if event.is_team_event:
