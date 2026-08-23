@@ -88,7 +88,7 @@ def test_championship_admin_workflow(page: Page):
     expect(page.locator('#nav-championship_archives-tab')).to_contain_text('Archived')
     expect(page.locator('#nav-championship-tab')).to_be_disabled()
     expect(page.locator('#nav-championship_archives-tab')).to_be_disabled()
-    page.get_by_role('button', name='Create a Championship', exact=True).click()
+    page.get_by_role('button', name='Create a championship', exact=True).first.click()
     modal = page.locator('.modal-dialog')
     expect(modal).to_be_visible()
     modal.locator('input[name="name"]').fill(CHAMPIONSHIP_NAME)
@@ -110,6 +110,7 @@ def test_championship_admin_workflow(page: Page):
     page.get_by_test_id('championship-item').filter(has_text=CHAMPIONSHIP_NAME).click()
     expect(page.get_by_role('heading', name=CHAMPIONSHIP_NAME)).to_be_visible()
 
+    page.get_by_test_id('nav-sources-tab').click()
     page.get_by_role('button', name='Add a tournament').click()
     modal = page.locator('.modal-dialog')
     expect(modal).to_be_visible()
@@ -134,7 +135,7 @@ def test_championship_admin_workflow(page: Page):
     event_select.select_option(EVENT_ID, force=True)
     expect(tournament_select).to_have_value('1')
     modal.locator('.dropdown-toggle-split').click()
-    modal.get_by_role('button', name='Add and add another').click()
+    modal.get_by_role('button', name='Select and add another').click()
     expect(modal.get_by_text(f'Tournament [{TOURNAMENT_NAME}] added.')).to_be_visible()
     modal.get_by_role('button', name='Cancel').click()
     source_item = page.get_by_test_id('championship-sources-item').filter(
@@ -186,9 +187,9 @@ def test_championship_admin_workflow(page: Page):
     assert CHAMPIONSHIP_NAME in tournament_delete_modal.text()
     assert 'will break its source' in tournament_delete_modal.text()
 
-    page.get_by_test_id('nav-ranking-tab').click()
+    page.get_by_test_id('nav-configuration-tab').click()
     expect(page.get_by_role('heading', name='Configuration')).to_be_visible()
-    page.get_by_role('button', name='Edit').click()
+    page.locator('button[hx-get^="/championships"][hx-get$="/config-modal"]').click()
     modal = page.locator('.modal-dialog')
     expect(modal.get_by_role('heading', name='Base configuration')).to_be_visible()
     expect(modal.locator('#modal-form input[name="uniq_id"]')).to_have_count(0)
@@ -216,8 +217,8 @@ def test_championship_admin_workflow(page: Page):
     page.get_by_test_id('championship-add-rule').click()
     modal = page.locator('.modal-dialog')
     expect(modal.get_by_role('heading', name='Add a rule')).to_be_visible()
-    modal.locator('select[name="type"]').select_option('COUNT_WINS')
-    modal.get_by_role('button', name='Add', exact=True).click()
+    modal.locator('select[name="type"]').select_option('COUNT_WINS', force=True)
+    modal.get_by_role('button', name='Add').click()
     expect(rule_rows).to_have_count(2)
     expect(rule_rows.nth(1)).to_contain_text('Number of wins')
 
@@ -229,29 +230,37 @@ def test_championship_admin_workflow(page: Page):
     modal.get_by_role('button', name='Save').click()
     expect(rule_rows.nth(0)).to_contain_text('best 4 stages')
 
-    # Reordering is enabled once there is more than one rule.
-    assert page.evaluate(
+    # Reordering is enabled once there is more than one rule. Sortable is applied
+    # after the htmx swap, so poll rather than reading it once.
+    page.wait_for_function(
         "Boolean(Sortable.get(document.getElementById('championship-rule-rows')))"
     )
 
-    # Delete the second rule (accepting the confirmation dialog).
-    page.once('dialog', lambda dialog: dialog.accept())
+    # Delete the second rule (confirming in the modal).
     rule_rows.nth(1).get_by_role('button', name='Delete rule').click()
+    delete_modal = page.locator('.modal-dialog')
+    expect(delete_modal.get_by_role('heading', name='Delete rule')).to_be_visible()
+    delete_modal.locator('button[type="submit"]').click()
     expect(rule_rows).to_have_count(1)
 
     # The base-configuration Edit modal changes the age reference date.
     changed_reference_date = date_placeholder.replace(
         str(date.today().year), str(date.today().year - 1)
     )
-    page.get_by_role('button', name='Edit', exact=True).click()
+    page.locator('button[hx-get^="/championships"][hx-get$="/config-modal"]').click()
     modal = page.locator('.modal-dialog')
     reference_date = modal.locator('input[name="age_category_base_date"]')
-    reference_date.fill(changed_reference_date)
+    # Type the date (rather than fill) so the air-datepicker keyup handler commits
+    # the selection, and wait for it to stick before saving — a raw fill leaves a
+    # transient value the picker asynchronously discards.
+    reference_date.click()
+    reference_date.press_sequentially(changed_reference_date)
+    expect(reference_date).to_have_value(changed_reference_date)
     modal.get_by_role('button', name='Save').click()
     expect(page).to_have_url(
         re.compile(rf'/championships/{RENAMED_CHAMPIONSHIP_ID}/configuration$')
     )
-    expect(page.get_by_text(changed_reference_date, exact=False)).to_be_visible()
+    expect(page.get_by_text(changed_reference_date, exact=False).first).to_be_visible()
     expect(rule_rows).to_have_count(1)
 
     expect(
@@ -300,6 +309,7 @@ def test_championship_admin_workflow(page: Page):
     modal.locator('button.btn-primary', has_text='Add').click()
     expect(modal.get_by_role('heading', name='Create criterion')).to_be_visible()
     modal.locator('select[name="type"]').select_option('AGE', force=True)
+    modal.locator('select[name="type"]').dispatch_event('change')
     expect(modal.locator('#MIN_AGE_CATEGORY_container')).to_be_visible()
     expect(modal.locator('#GENDER_VALUE_container')).to_be_hidden()
     expect(modal.locator('#MIN_RATING_container')).to_be_hidden()
@@ -309,6 +319,7 @@ def test_championship_admin_workflow(page: Page):
     modal.get_by_role('button', name='Create and add another').click()
     expect(modal.get_by_text('Criterion [Age: U12 – U12]')).to_be_visible()
     modal.locator('select[name="type"]').select_option('GENDER', force=True)
+    modal.locator('select[name="type"]').dispatch_event('change')
     expect(modal.locator('#GENDER_VALUE_container')).to_be_visible()
     expect(modal.locator('#MIN_AGE_CATEGORY_container')).to_be_hidden()
     modal.locator('select[name="GENDER_VALUE"]').select_option('F', force=True)
@@ -337,11 +348,12 @@ def test_championship_admin_workflow(page: Page):
     ranking_table = page.locator('#championship-ranking-table-overall')
     expect(ranking_table).to_have_class(re.compile(r'\brankings-table\b'))
     expect(ranking_table).to_have_class(re.compile(r'\bprominent\b'))
-    expect(ranking_table.locator('thead')).to_have_class(
+    expect(ranking_table.locator('thead').first).to_have_class(
         re.compile(r'\bposition-sticky\b')
     )
-    expect(ranking_table.locator('th.tie-break').nth(0)).to_contain_text('1.')
-    expect(ranking_table.locator('th.tie-break').nth(1)).to_contain_text('2.')
+    # One rule remains (Total points, best 4 stages); its column shows the acronym.
+    expect(ranking_table.locator('th.tie-break')).to_have_count(1)
+    expect(ranking_table.locator('th.tie-break').first).to_contain_text('Pts4')
     expect(page.locator('.admin-collection-list')).to_have_count(0)
     stage_count = page.get_by_test_id('championship-stage-count').first
     expect(stage_count).to_have_text('1/1')
@@ -356,7 +368,10 @@ def test_championship_admin_workflow(page: Page):
 
     page.goto('/championship')
     item = page.get_by_test_id('championship-item').filter(has_text=CHAMPIONSHIP_NAME)
-    item.get_by_role('button', name='Delete').click()
+    expect(item).to_be_visible()
+    delete_button = item.get_by_role('button', name='Delete')
+    expect(delete_button).to_be_visible()
+    delete_button.click()
     modal = page.locator('.modal-dialog')
     expect(modal).to_be_visible()
     modal.get_by_role('checkbox').check()
@@ -377,13 +392,14 @@ def test_championship_admin_workflow(page: Page):
 @pytest.mark.e2e
 def test_team_championship_uses_team_ranking_controls(page: Page):
     page.goto('/championship')
-    page.get_by_role('button', name='Create a Championship', exact=True).click()
+    page.get_by_role('button', name='Create a championship', exact=True).first.click()
     modal = page.locator('.modal-dialog')
     modal.locator('input[name="name"]').fill(TEAM_CHAMPIONSHIP_NAME)
     modal.locator('select[name="competitor_type"]').select_option('TEAM', force=True)
     modal.get_by_test_id('championship-create-submit').click()
 
     expect(page.get_by_text('Teams', exact=True).first).to_be_visible()
+    page.get_by_test_id('nav-sources-tab').click()
     page.get_by_role('button', name='Add a tournament').click()
     expect(
         page.get_by_text('There are no other compatible tournaments')
@@ -395,7 +411,7 @@ def test_team_championship_uses_team_ranking_controls(page: Page):
     expect(competitors_table).to_be_visible()
     expect(competitors_table.get_by_role('columnheader', name='Cat.')).to_have_count(0)
     expect(competitors_table.get_by_role('columnheader', name='Gen.')).to_have_count(0)
-    page.get_by_test_id('nav-ranking-tab').click()
+    page.get_by_test_id('nav-configuration-tab').click()
     expect(page.get_by_role('button', name='Team score basis')).to_be_visible()
     expect(page.get_by_role('button', name='Age categories')).to_have_count(0)
     expect(page.get_by_role('button', name='Ranking categories')).to_have_count(0)
