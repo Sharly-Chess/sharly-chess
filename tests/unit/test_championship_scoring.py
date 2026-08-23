@@ -6,7 +6,14 @@ best-N-by-points selection, win counting on the points-selected stages, direct
 encounter across stages, and a mixed ordered rule chain (the Circuit's Art. 6).
 """
 
-from data.championship.reconciliation import ReconciledParticipation, ReconciledPlayer
+from typing import Any, cast
+
+from data.championship.reconciliation import (
+    ReconciledParticipation as _RP,
+)
+from data.championship.reconciliation import (
+    ReconciledPlayer,
+)
 from data.championship.scoring import (
     CountWinsRule,
     DirectEncounterRule,
@@ -14,6 +21,11 @@ from data.championship.scoring import (
     TotalPointsRule,
     rank_players,
 )
+
+
+def _rp(source, tp):
+    """Build a participation from the light test fakes (cast to the real types)."""
+    return _RP(cast(Any, source), cast(Any, tp))
 
 
 class FakePairing:
@@ -62,7 +74,7 @@ def player(name, stages):
     """A reconciled player from ``stages`` = list of FakeTournamentPlayer, one
     per source. Each stage gets its own fake source."""
     participations = [
-        ReconciledParticipation(FakeSource(f'{name}-ev{i}', i), tournament_player)
+        _rp(FakeSource(f'{name}-ev{i}', i), tournament_player)
         for i, tournament_player in enumerate(stages, start=1)
     ]
     return ReconciledPlayer(participations)
@@ -161,8 +173,8 @@ def test_direct_encounter_breaks_a_points_tie():
         pairings=[FakePairing(win=False, opponent_id=10, points=0.0)],
         last_name='F',
     )
-    e = ReconciledPlayer([ReconciledParticipation(shared_source, e_tp)])
-    f = ReconciledPlayer([ReconciledParticipation(shared_source, f_tp)])
+    e = ReconciledPlayer([_rp(shared_source, e_tp)])
+    f = ReconciledPlayer([_rp(shared_source, f_tp)])
 
     direct_encounter = DirectEncounterRule()
     context = ScoringContext([f, e])
@@ -182,8 +194,8 @@ def test_direct_encounter_uses_games_from_stages_dropped_by_best_n():
     shared = FakeSource('shared', 2)
     e = ReconciledPlayer(
         [
-            ReconciledParticipation(e_high, FakeTournamentPlayer(1, 6, last_name='E')),
-            ReconciledParticipation(
+            _rp(e_high, FakeTournamentPlayer(1, 6, last_name='E')),
+            _rp(
                 shared,
                 FakeTournamentPlayer(
                     10,
@@ -196,8 +208,8 @@ def test_direct_encounter_uses_games_from_stages_dropped_by_best_n():
     )
     f = ReconciledPlayer(
         [
-            ReconciledParticipation(f_high, FakeTournamentPlayer(1, 6, last_name='F')),
-            ReconciledParticipation(
+            _rp(f_high, FakeTournamentPlayer(1, 6, last_name='F')),
+            _rp(
                 shared,
                 FakeTournamentPlayer(
                     20,
@@ -226,7 +238,7 @@ def test_direct_encounter_does_not_treat_an_unplayed_game_as_a_loss():
     shared_source = FakeSource('shared-ev', 1)
     e = ReconciledPlayer(
         [
-            ReconciledParticipation(
+            _rp(
                 shared_source,
                 FakeTournamentPlayer(
                     10,
@@ -242,7 +254,7 @@ def test_direct_encounter_does_not_treat_an_unplayed_game_as_a_loss():
     )
     f = ReconciledPlayer(
         [
-            ReconciledParticipation(
+            _rp(
                 shared_source,
                 FakeTournamentPlayer(
                     20,
@@ -255,7 +267,7 @@ def test_direct_encounter_does_not_treat_an_unplayed_game_as_a_loss():
     )
     g = ReconciledPlayer(
         [
-            ReconciledParticipation(
+            _rp(
                 shared_source,
                 FakeTournamentPlayer(
                     30,
@@ -283,7 +295,7 @@ def test_incomplete_direct_encounter_falls_through_to_later_best_n_rules():
     def circuit_player(last_name, player_id, stage_points, pairings_by_stage):
         return ReconciledPlayer(
             [
-                ReconciledParticipation(
+                _rp(
                     sources[index],
                     FakeTournamentPlayer(
                         player_id,

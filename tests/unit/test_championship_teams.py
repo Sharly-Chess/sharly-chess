@@ -156,7 +156,7 @@ def test_team_score_basis_source_primary_match_points_and_game_points(
         2.0,
         1.0,
     ]
-    assert championship.ranking[0].competitor.name == 'Alpha'
+    assert championship.ranking[0].competitor.name == 'Alpha'  # type: ignore[union-attr]
 
     loader.set_team_score_basis(team_championship, 'MATCH_POINTS')
     championship = loader.load_championship(team_championship)
@@ -187,11 +187,11 @@ def test_team_match_wins_and_direct_encounter(team_championship):
     bravo = _team_by_name(championship, 'Bravo')
     assert sum(p.wins for p in alpha.participations) == 2
     assert sum(p.wins for p in bravo.participations) == 0
-    assert championship.ranking[0].competitor.name == 'Alpha'
+    assert championship.ranking[0].competitor.name == 'Alpha'  # type: ignore[union-attr]
 
     loader.set_championship_rules(team_championship, [('DIRECT_ENCOUNTER', None)])
     assert (
-        loader.load_championship(team_championship).ranking[0].competitor.name
+        loader.load_championship(team_championship).ranking[0].competitor.name  # type: ignore[union-attr]
         == 'Alpha'
     )
 

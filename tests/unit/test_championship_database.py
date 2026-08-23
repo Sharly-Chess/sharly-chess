@@ -165,6 +165,7 @@ def test_archive_and_restore(championship_id):
         assert archive.display_name == 'Archived circuit'
 
         restored_id = archive.restore()
+        assert restored_id is not None
 
         assert restored_id == championship_id
         assert ChampionshipArchiveLoader.get_archive(championship_id) is None

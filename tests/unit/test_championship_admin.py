@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from typing import Any, cast
 
 from data.championship.options import (
     ChampionshipCompetitorType,
@@ -74,7 +75,7 @@ def test_results_show_every_ordered_best_n_score():
     ]
 
     brian_row, emilien_row = ChampionshipAdminController._ranking_rows(
-        championship, entries
+        cast(Any, championship), entries
     )
 
     assert [cell['value'] for cell in brian_row['rule_cells']] == [23, 28, 32]
@@ -130,7 +131,7 @@ def test_direct_encounter_is_displayed_as_rank_progress():
     ]
 
     winner_row, loser_row = ChampionshipAdminController._ranking_rows(
-        championship, entries
+        cast(Any, championship), entries
     )
 
     assert winner_row['rule_cells'][1] == {
@@ -170,7 +171,7 @@ def test_competitor_rows_select_players_and_carry_all_source_entries():
         stored_championship=SimpleNamespace(stored_player_overrides=[]),
     )
 
-    row = ChampionshipAdminController._competitor_rows(championship)[0]
+    row = ChampionshipAdminController._competitor_rows(cast(Any, championship))[0]
 
     assert row['name'] == 'MURER, Brian'
     assert row['secondary'] == '651038188'

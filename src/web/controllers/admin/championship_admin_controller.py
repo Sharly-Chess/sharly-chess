@@ -2,7 +2,7 @@ import copy
 import urllib.parse
 from collections import defaultdict
 from datetime import date
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 from uuid import uuid4
 
 from litestar import delete, get, patch, post
@@ -185,6 +185,9 @@ class ChampionshipAdminController(BaseAdminController):
     def _competitor_rows(cls, championship: Championship) -> list[dict[str, Any]]:
         rows = []
         for competitor in championship.competitors:
+            # A player or a team; the fields read below depend on which, and the
+            # branches pick the right ones, so treat it dynamically here.
+            competitor = cast(Any, competitor)
             if championship.competitor_type == ChampionshipCompetitorType.TEAM:
                 name = competitor.name
                 secondary = competitor.federation
@@ -1736,6 +1739,7 @@ class ChampionshipAdminController(BaseAdminController):
             errors['tournament_id'] = _('Please select a tournament.')
         if errors:
             return self._render_source_modal(request, championship, data, errors)
+        assert tournament_id is not None
         try:
             stored_source = ChampionshipLoader().add_source(
                 championship_uniq_id, event_uniq_id, tournament_id
@@ -1852,6 +1856,7 @@ class ChampionshipAdminController(BaseAdminController):
             return self._render_coefficient_modal(
                 request, championship, source, data, errors
             )
+        assert coefficient is not None
         ChampionshipLoader().set_source_coefficient(
             championship_uniq_id, source_id, coefficient
         )

@@ -1,14 +1,25 @@
 """Championship category filtering and reference-date semantics."""
 
 from datetime import date
+from typing import Any, cast
 
 from data.championship.category import ChampionshipCategory
-from data.championship.reconciliation import ReconciledParticipation, ReconciledPlayer
+from data.championship.reconciliation import (
+    ReconciledParticipation as _RP,
+)
+from data.championship.reconciliation import (
+    ReconciledPlayer,
+)
 from data.player_categories import JuniorCategory, SeniorCategory
 from database.sqlite.championship.championship_store import (
     StoredChampionshipCategory,
     StoredChampionshipCriterion,
 )
+
+
+def _rp(source, tp):
+    """Build a participation from the light test fakes (cast to the real types)."""
+    return _RP(cast(Any, source), cast(Any, tp))
 
 
 class FakeTournament:
@@ -55,11 +66,11 @@ class FakeChampionship:
 def _player_with_category_change():
     return ReconciledPlayer(
         [
-            ReconciledParticipation(
+            _rp(
                 FakeSource(date(2025, 6, 1)),
                 FakeTournamentPlayer(1, JuniorCategory(10), 3.0, 2015),
             ),
-            ReconciledParticipation(
+            _rp(
                 FakeSource(date(2025, 10, 1)),
                 FakeTournamentPlayer(1, JuniorCategory(12), 4.0, 2015),
             ),

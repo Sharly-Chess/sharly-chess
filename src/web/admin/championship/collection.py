@@ -11,7 +11,7 @@ from web.admin.collection import (
 from web.admin.label import _
 
 
-COLLECTION_SPEC = AdminCollectionSpec(
+COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     key='championship',
     components_template='/admin/championship/championship_components.j2',
     item_id_attribute='uniq_id',
@@ -55,7 +55,7 @@ COLLECTION_SPEC = AdminCollectionSpec(
     ),
 )
 
-SOURCE_COLLECTION_SPEC = AdminCollectionSpec(
+SOURCE_COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
     key='championship-sources',
     components_template='/admin/championship/source_components.j2',
     default_view_mode=AdminCollectionViewMode.CARDS,

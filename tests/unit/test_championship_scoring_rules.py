@@ -165,7 +165,7 @@ def test_manual_rule_orders_tied_competitors_by_pinned_position():
     # A pinned position (higher = better) fully orders the tie.
     manual = {a.key: 1, b.key: 3, c.key: 2}
     groups = rank_competitors([a, b, c], rules, manual_positions=manual)
-    assert [group[0].last_name for group in groups] == ['B', 'C', 'A']
+    assert [group[0].last_name for group in groups] == ['B', 'C', 'A']  # type: ignore[union-attr]
 
 
 def test_manual_rule_only_separates_pinned_competitors():
@@ -179,8 +179,8 @@ def test_manual_rule_only_separates_pinned_competitors():
         [a, b, c], [TotalPointsRule(), ManualRule()], manual_positions=manual
     )
     assert [len(group) for group in groups] == [1, 2]
-    assert groups[0][0].last_name == 'A'
-    assert sorted(p.last_name for p in groups[1]) == ['B', 'C']
+    assert groups[0][0].last_name == 'A'  # type: ignore[union-attr]
+    assert sorted(p.last_name for p in groups[1]) == ['B', 'C']  # type: ignore[union-attr]
 
 
 # ---------------------------------------------------------------------------
@@ -210,8 +210,8 @@ def test_uses_coefficient_flags():
         AverageTieBreakRule,
     }
     unweighted = {AverageRankRule, CountPlacesRule, CountWinsRule, DirectEncounterRule}
-    assert all(rule.uses_coefficient for rule in weighted)
-    assert not any(rule.uses_coefficient for rule in unweighted)
+    assert all(rule.uses_coefficient for rule in weighted)  # type: ignore[attr-defined]
+    assert not any(rule.uses_coefficient for rule in unweighted)  # type: ignore[attr-defined]
 
 
 def test_point_rules_read_use_coefficient_option():
@@ -230,7 +230,7 @@ def test_point_rules_read_use_coefficient_option():
     )
     f1 = build_rule('F1_POINTS', None, {'points': [10], 'use_coefficient': False})
     assert f1.use_coefficient is False
-    assert f1.table == [10.0]
+    assert f1.table == [10.0]  # type: ignore[attr-defined]
 
 
 def test_unweighted_rules_force_coefficient_off():

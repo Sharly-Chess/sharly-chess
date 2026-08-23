@@ -30,6 +30,7 @@ if TYPE_CHECKING:
         ReconciledTeam,
         ReconciledTeamParticipation,
     )
+    from data.tie_breaks.tie_breaks import TieBreak
 
     ReconciledCompetitor: TypeAlias = ReconciledPlayer | ReconciledTeam
     CompetitorParticipation: TypeAlias = (
@@ -79,14 +80,16 @@ def _stage_selection_key(
     that rank them. Falls back to a fixed points/wins/position cascade when no
     per-stage rule is configured."""
     weighted_points = participation.weighted_points(team_score_basis)
-    rules = context.rules if context is not None else []
-    stage_values = [
-        value
-        for value in (rule.stage_value(participation, context) for rule in rules)
-        if value is not None
-    ]
-    if stage_values:
-        return tuple(-value for value in stage_values)
+    if context is not None:
+        stage_values = [
+            value
+            for value in (
+                rule.stage_value(participation, context) for rule in context.rules
+            )
+            if value is not None
+        ]
+        if stage_values:
+            return tuple(-value for value in stage_values)
     # No per-stage rule configured: a sensible intrinsic cascade. Lower
     # finishing position is better; unranked sorts last.
     rank = float(participation.rank) if participation.rank else float('inf')
@@ -1032,7 +1035,7 @@ def build_rule(
     return championship_rule_class(static_id).from_options(best_n, options or {})
 
 
-def aggregatable_tie_break_types(sources) -> list[type]:
+def aggregatable_tie_break_types(sources) -> list[type['TieBreak']]:
     """The tie-break *types* a "sum/average of a tie-break" rule may aggregate.
 
     Because each source tournament holds the game data, we can COMPUTE any
@@ -1045,7 +1048,7 @@ def aggregatable_tie_break_types(sources) -> list[type]:
     Direct encounter / manual and other non-numeric tie-breaks are excluded."""
     from data.tie_breaks.managers import TieBreakManager
 
-    seen: dict[str, type] = {}
+    seen: dict[str, type['TieBreak']] = {}
     for source in sources:
         event = getattr(source, 'event', None)
         if event is None:
