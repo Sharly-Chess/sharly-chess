@@ -488,12 +488,19 @@ class SharlyChessServerToga(toga.App):
         doc_btn = toga.Button(_('Documentation'), on_press=self._open_documentation)
         discord_btn = toga.Button('Discord', on_press=self._open_discord)
         mail_btn = toga.Button(_('Mail'), on_press=self._open_mail)
+        donate_btn = toga.Button(_('Support the project'), on_press=self._open_donate)
         self.home_view.add(
             self.home_main_label,
             self.server_state_container,
             toga.Divider(style=Pack(margin=(5, 0))),
             toga.Box(
                 children=[help_label, doc_btn, discord_btn, mail_btn],
+                gap=5,
+                align_items='center',
+            ),
+            toga.Divider(style=Pack(margin=(5, 0))),
+            toga.Box(
+                children=[donate_btn],
                 gap=5,
                 align_items='center',
             ),
@@ -1236,6 +1243,10 @@ class SharlyChessServerToga(toga.App):
     @staticmethod
     def _open_mail(widget):
         webbrowser.open('mailto:support@sharly-chess.com')
+
+    @staticmethod
+    def _open_donate(widget: Any = None, **kwargs) -> None:
+        webbrowser.open(_('https://donations.sharly-chess.com/en'))
 
     def _clear_log(self, widget: Any = None, **kwargs) -> None:
         try:

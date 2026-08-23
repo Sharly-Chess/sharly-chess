@@ -371,6 +371,9 @@ class SharlyChessConfig(metaclass=Singleton):
     """ The URL of the project. """
     web_url: str = 'https://sharly-chess.com'
 
+    """ The URL of the donation website. """
+    donate_url: str = 'https://donations.sharly-chess.com/en'
+
     """ The contact email. """
     mail: str = 'contact@sharly-chess.com'
 
