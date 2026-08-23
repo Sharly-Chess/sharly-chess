@@ -539,22 +539,25 @@ class FileTournamentImporter(TournamentImporter, ABC):
         return None
 
     @property
-    @abstractmethod
     def accepted_file_suffixes(self) -> list[str]:
         """List of suffixes accepted by the file input."""
+        return []
 
     def validate_options(self, event: Event | None = None):
         super().validate_options()
         file_option = self._get_option(FileOption)
-        suffix = file_option.value.suffix
-        if suffix not in self.accepted_file_suffixes:
-            raise OptionError(
-                _('File has invalid suffix [{suffix}] (expected: {expected}).').format(
-                    suffix=suffix,
-                    expected=', '.join(self.accepted_file_suffixes),
-                ),
-                file_option,
-            )
+        if file_option.value:
+            suffix = file_option.value.suffix
+            if suffix not in self.accepted_file_suffixes:
+                raise OptionError(
+                    _(
+                        'File has invalid suffix [{suffix}] (expected: {expected}).'
+                    ).format(
+                        suffix=suffix,
+                        expected=', '.join(self.accepted_file_suffixes),
+                    ),
+                    file_option,
+                )
 
     def on_import_finished(self):
         file_path = self._get_option(FileOption).value
