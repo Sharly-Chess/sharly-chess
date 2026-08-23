@@ -601,6 +601,9 @@ msgstr "Un Scheveningen à {boards} échiquiers se joue en {expected} rondes, af
 msgid "A category with this name already exists."
 msgstr "Une catégorie portant ce nom existe déjà."
 
+msgid "A championship combines tournaments from several independent events into a single cross-event ranking — such as a season-long circuit or grand prix."
+msgstr "Un Grand Prix regroupe des tournois de plusieurs événements indépendants en un classement unique inter-événements — par exemple un circuit sur une saison."
+
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
 

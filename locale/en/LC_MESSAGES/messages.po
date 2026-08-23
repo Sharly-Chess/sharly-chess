@@ -601,6 +601,9 @@ msgstr ""
 msgid "A category with this name already exists."
 msgstr ""
 
+msgid "A championship combines tournaments from several independent events into a single cross-event ranking — such as a season-long circuit or grand prix."
+msgstr ""
+
 msgid "A file is expected."
 msgstr ""
 
