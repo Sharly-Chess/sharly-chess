@@ -34,10 +34,10 @@
             hx-target="body"
             hx-push-url="true"
             hx-indicator="#please-wait"
-            hx-trigger="click, {{ nav_tab.shortcut }} from:body"
+            hx-trigger="click{% if nav_tab.shortcut %}, {{ nav_tab.shortcut }}{% endif %}"
         >
             <i class="{{ nav_tab.icon_class }}"></i>
-            <span class="expanded-only">{{ nav_tab.title_html|safe }}</span>
+            <span class="expanded-only">{{ nav_tab.title|safe }}</span>
             {% if nav_id == 'sources' and championship.broken_sources %}
                 <span class="badge rounded-pill text-bg-warning ms-auto expanded-only">{{ championship.broken_sources|length }}</span>
             {% endif %}

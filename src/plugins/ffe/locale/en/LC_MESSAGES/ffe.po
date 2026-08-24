@@ -110,14 +110,6 @@ msgstr ""
 msgid "Consult the logs for more details."
 msgstr ""
 
-#, python-brace-format
-msgid "Could not download [{url}], error code {code}."
-msgstr ""
-
-#, python-brace-format
-msgid "Could not download [{url}]: {error}."
-msgstr ""
-
 msgid "Cut *** TIE BREAK VARIATION"
 msgstr "Cut"
 
@@ -233,9 +225,6 @@ msgstr ""
 msgid "FFE site"
 msgstr ""
 
-msgid "FFE tournament ID:"
-msgstr ""
-
 msgid "FFE upload"
 msgstr ""
 
@@ -301,9 +290,6 @@ msgid "Import JSON file (papi-converter format)"
 msgstr ""
 
 msgid "Import Papi file"
-msgstr ""
-
-msgid "Import online FFE tournament"
 msgstr ""
 
 msgid "Incompatible"
@@ -460,9 +446,6 @@ msgid "Not configured"
 msgstr ""
 
 msgid "Ongoing"
-msgstr ""
-
-msgid "Online FFE tournament"
 msgstr ""
 
 msgid "Open Arbiter (level 1)"
@@ -649,10 +632,6 @@ msgstr ""
 msgid "Tournament"
 msgstr ""
 
-#, python-brace-format
-msgid "Tournament [{tournament_id}] not found."
-msgstr ""
-
 msgid "Tournament exempt from registration fees."
 msgstr ""
 
@@ -794,4 +773,22 @@ msgid "{n} game lost by forfeit, counted as -1."
 msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "Could not download [{url}], error code {code}."
+#~ msgstr ""
+
+#~ msgid "Could not download [{url}]: {error}."
+#~ msgstr ""
+
+#~ msgid "FFE tournament ID:"
+#~ msgstr ""
+
+#~ msgid "Import online FFE tournament"
+#~ msgstr ""
+
+#~ msgid "Online FFE tournament"
+#~ msgstr ""
+
+#~ msgid "Tournament [{tournament_id}] not found."
+#~ msgstr ""
 

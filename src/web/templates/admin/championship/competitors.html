@@ -6,7 +6,11 @@
 >
     <div id="top-nav-wrapper">
         <div id="top-nav-content">
-            {{ admin_macros.admin_title(nav_tabs.competitors.title) }}
+            {% if championship.competitor_type == competitor_type_team %}
+                {{ admin_macros.admin_title(_('Teams')) }}
+            {% else %}
+                {{ admin_macros.admin_title(_('Players')) }}
+            {% endif %}
             <div class="flex-grow-1"></div>
             <div class="d-flex gap-2 ms-auto align-items-center">
                 <button

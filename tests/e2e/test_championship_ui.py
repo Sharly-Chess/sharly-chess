@@ -398,7 +398,7 @@ def test_team_championship_uses_team_ranking_controls(page: Page):
     modal.locator('select[name="competitor_type"]').select_option('TEAM', force=True)
     modal.get_by_test_id('championship-create-submit').click()
 
-    expect(page.get_by_text('Teams', exact=True).first).to_be_visible()
+    expect(page.get_by_test_id('nav-competitors-tab')).to_be_visible()
     page.get_by_test_id('nav-sources-tab').click()
     page.get_by_role('button', name='Add a tournament').click()
     expect(

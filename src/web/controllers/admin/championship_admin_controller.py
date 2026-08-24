@@ -102,20 +102,6 @@ class ChampionshipAdminController(BaseAdminController):
         return loader.load_championship(uniq_id)
 
     @staticmethod
-    def _shortcut_title(title: str, key: str) -> str:
-        """Title HTML with the shortcut letter underlined (first occurrence),
-        like the event sidebar. Falls back to a prefixed key when absent."""
-        from markupsafe import escape
-
-        index = title.lower().find(key.lower())
-        if index == -1:
-            return f'<u>{escape(key.upper())}</u>&nbsp;{escape(title)}'
-        return (
-            f'{escape(title[:index])}<u>{escape(title[index])}</u>'
-            f'{escape(title[index + 1 :])}'
-        )
-
-    @staticmethod
     def _score(value: float | int) -> str:
         value = float(value)
         return str(int(value)) if value.is_integer() else f'{value:g}'
@@ -842,32 +828,36 @@ class ChampionshipAdminController(BaseAdminController):
             raise NotFoundException(f'Invalid Championship tab [{championship_tab}]')
         web_context = AdminWebContext(request)
         is_team = championship.competitor_type == ChampionshipCompetitorType.TEAM
-        competitor_title = _('Teams') if is_team else _('Players')
-        competitor_key = 't' if is_team else 'p'
+        competitor_count = len(championship.competitors) or '-'
+        if is_team:
+            competitor_nav = {
+                'title': _('Teams ({num})').format(num=competitor_count),
+                'icon_class': 'bi-people-fill',
+            }
+        else:
+            competitor_nav = {
+                'title': _('Players ({num}) *** WITH_SHORTCUT_INDICATION').format(
+                    num=competitor_count
+                ),
+                'icon_class': 'bi-people-fill',
+                'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB")} from:body',
+            }
         nav_tabs = {
             'configuration': {
-                'title': _('Configuration'),
-                'title_html': cls._shortcut_title(_('Configuration'), 'c'),
+                'title': _('Configuration *** WITH_SHORTCUT_INDICATION'),
                 'icon_class': 'bi-gear-fill',
-                'shortcut': 'SC_C',
+                'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB")} from:body',
             },
             'sources': {
-                'title': _('Sources'),
-                'title_html': cls._shortcut_title(_('Sources'), 's'),
+                'title': _('Sources *** WITH_SHORTCUT_INDICATION'),
                 'icon_class': 'bi-diagram-3-fill',
-                'shortcut': 'SC_S',
+                'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE SOURCES TAB")} from:body',
             },
-            'competitors': {
-                'title': competitor_title,
-                'title_html': cls._shortcut_title(competitor_title, competitor_key),
-                'icon_class': 'bi-people-fill',
-                'shortcut': f'SC_{competitor_key.upper()}',
-            },
+            'competitors': competitor_nav,
             'results': {
-                'title': _('Rankings'),
-                'title_html': cls._shortcut_title(_('Rankings'), 'r'),
+                'title': _('Rankings *** WITH_SHORTCUT_INDICATION'),
                 'icon_class': 'bi-trophy-fill',
-                'shortcut': 'SC_R',
+                'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE RANKINGS TAB")} from:body',
             },
         }
         context = web_context.template_context | {

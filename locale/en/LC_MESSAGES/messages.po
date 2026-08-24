@@ -354,14 +354,24 @@ msgstr "SC_P"
 msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
 msgstr "SC_Z"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE RANKINGS TAB"
+msgstr "SC_R"
+
 msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
 msgstr "SC_R"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
 msgstr "SC_S"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE SOURCES TAB"
+msgstr "SC_S"
+
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
+
+#, python-brace-format, python-format
+msgid "+{winner:g}% bonus for the top {share:g}% of competitors"
+msgstr ""
 
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
@@ -6282,6 +6292,10 @@ msgstr ""
 msgid "Players per tournament"
 msgstr ""
 
+#, python-format
+msgid "Players rewarded (%%):"
+msgstr ""
+
 msgid "Players screens show pairings by alphabetical order."
 msgstr ""
 
@@ -6374,6 +6388,9 @@ msgstr ""
 msgid "Please enter a name."
 msgstr ""
 
+msgid "Please enter a percentage between 0 and 100."
+msgstr ""
+
 msgid "Please enter a space-separated list of numbers."
 msgstr ""
 
@@ -6458,6 +6475,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Points awarded per finishing position: {table}. Positions beyond the table score nothing."
+msgstr ""
+
+msgid "Points by finishing position — the winner scores the field size, down to 1 for last. The top finishers also get a percentage of their ranking points as a bonus. Scaling with field size, it combines tournaments of very different sizes fairly."
 msgstr ""
 
 msgid "Points per place:"
@@ -6713,11 +6733,17 @@ msgstr ""
 msgid "Ranking only"
 msgstr ""
 
+msgid "Ranking points with bonus"
+msgstr ""
+
 msgid "Ranking screens show the players by rank."
 msgstr ""
 
 msgid "Rankings"
 msgstr ""
+
+msgid "Rankings *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>R</u>ankings"
 
 msgid "Rankings to print:"
 msgstr ""
@@ -7717,6 +7743,9 @@ msgstr ""
 msgid "Sources"
 msgstr ""
 
+msgid "Sources *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>S</u>ources"
+
 msgid "South Africa"
 msgstr ""
 
@@ -8394,6 +8423,9 @@ msgstr ""
 msgid "The pairing numbers of the tournament in descending order."
 msgstr ""
 
+msgid "The percentage of top-ranked players that receive a bonus."
+msgstr ""
+
 msgid "The permissions of this account can not be updated."
 msgstr ""
 
@@ -8598,6 +8630,9 @@ msgid "The way to form teams."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
+msgstr ""
+
+msgid "The winner’s bonus, as a percentage of their ranking points. Lower places in the rewarded group get proportionally less."
 msgstr ""
 
 msgid "There already is an hour defined at this time."
@@ -9043,6 +9078,10 @@ msgid "Too much information to display on a single projector?"
 msgstr ""
 
 msgid "Top board results"
+msgstr ""
+
+#, python-format
+msgid "Top bonus (%%):"
 msgstr ""
 
 msgid "Top-40 average"

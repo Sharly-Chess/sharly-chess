@@ -354,14 +354,24 @@ msgstr "SC_J"
 msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
 msgstr "SC_X"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE RANKINGS TAB"
+msgstr "SC_L"
+
 msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
 msgstr "SC_R"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
 msgstr "SC_S"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE SOURCES TAB"
+msgstr "SC_S"
+
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
+
+#, python-brace-format, python-format
+msgid "+{winner:g}% bonus for the top {share:g}% of competitors"
+msgstr "+{winner:g}% de bonus pour les {share:g}% meilleurs compétiteurs"
 
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
@@ -6284,6 +6294,10 @@ msgstr "Joueur·euses par match d'équipe :"
 msgid "Players per tournament"
 msgstr "Joueur·euses par tournoi"
 
+#, python-format
+msgid "Players rewarded (%%):"
+msgstr "Joueur·euses récompensé·es (%%) :"
+
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
 
@@ -6376,6 +6390,9 @@ msgstr "Veuillez saisir un nom pour le Grand Prix."
 msgid "Please enter a name."
 msgstr "Veuillez saisir un nom."
 
+msgid "Please enter a percentage between 0 and 100."
+msgstr "Veuillez saisir un pourcentage entre 0 et 100."
+
 msgid "Please enter a space-separated list of numbers."
 msgstr "Veuillez saisir une liste de nombres séparés par des espaces."
 
@@ -6461,6 +6478,9 @@ msgstr "Points"
 #, python-brace-format
 msgid "Points awarded per finishing position: {table}. Positions beyond the table score nothing."
 msgstr "Points attribués par place à l'arrivée : {table}. Les places au-delà du barème ne rapportent rien."
+
+msgid "Points by finishing position — the winner scores the field size, down to 1 for last. The top finishers also get a percentage of their ranking points as a bonus. Scaling with field size, it combines tournaments of very different sizes fairly."
+msgstr "Des points selon le classement final — le vainqueur marque autant de points qu’il y a de participants, jusqu’à 1 pour le dernier. Les mieux classés reçoivent en plus un pourcentage de leurs points de classement en bonus. S’adaptant à la taille du tournoi, cette règle combine équitablement des tournois de tailles très différentes."
 
 msgid "Points per place:"
 msgstr "Points par place :"
@@ -6715,11 +6735,17 @@ msgstr "Catégorie de classement"
 msgid "Ranking only"
 msgstr "Classement seulement"
 
+msgid "Ranking points with bonus"
+msgstr "Points de classement avec bonus"
+
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
 
 msgid "Rankings"
 msgstr "Classements"
+
+msgid "Rankings *** WITH_SHORTCUT_INDICATION"
+msgstr "C<u>l</u>assements"
 
 msgid "Rankings to print:"
 msgstr "Classements à imprimer :"
@@ -7719,6 +7745,9 @@ msgstr "Source"
 msgid "Sources"
 msgstr "Sources"
 
+msgid "Sources *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>S</u>ources"
+
 msgid "South Africa"
 msgstr "Afrique du Sud"
 
@@ -8396,6 +8425,9 @@ msgstr "Les numéros d'appariement du tournoi par ordre croissant."
 msgid "The pairing numbers of the tournament in descending order."
 msgstr "Les numéros d'appariement du tournoi par ordre décroissant."
 
+msgid "The percentage of top-ranked players that receive a bonus."
+msgstr "Le pourcentage des joueur·euses les mieux classé·es qui reçoivent un bonus."
+
 msgid "The permissions of this account can not be updated."
 msgstr "Les permissions de ce compte ne peuvent être modifiées."
 
@@ -8601,6 +8633,9 @@ msgstr "La manière de constituer les équipes."
 
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
+
+msgid "The winner’s bonus, as a percentage of their ranking points. Lower places in the rewarded group get proportionally less."
+msgstr "Le bonus du vainqueur, en pourcentage de ses points de classement. Les places inférieures du groupe récompensé en reçoivent proportionnellement moins."
 
 msgid "There already is an hour defined at this time."
 msgstr "Il y a déjà un horaire défini à cette heure-ci."
@@ -9046,6 +9081,10 @@ msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 
 msgid "Top board results"
 msgstr "Résultats des premiers échiquiers"
+
+#, python-format
+msgid "Top bonus (%%):"
+msgstr "Bonus maximum (%%) :"
 
 msgid "Top-40 average"
 msgstr "Moyenne des 40 meilleur·es"
