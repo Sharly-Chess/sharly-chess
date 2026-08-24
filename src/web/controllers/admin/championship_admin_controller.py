@@ -374,12 +374,14 @@ class ChampionshipAdminController(BaseAdminController):
             )
             stages = []
             for participation in ordered_participations:
+                # Reconciliation only keeps participations whose source resolved.
+                tournament = participation.source.tournament
+                assert tournament is not None
                 if championship.competitor_type == ChampionshipCompetitorType.TEAM:
-                    competitor_count = participation.source.tournament.team_count
-                    competitor_ranking = 1
+                    competitor_count = tournament.team_count
                 else:
-                    competitor_count = participation.source.tournament.player_count
-                    competitor_ranking = 1
+                    competitor_count = tournament.player_count
+                competitor_ranking = participation.rank
                 stages.append(
                     {
                         'name': participation.source.tournament_name,
