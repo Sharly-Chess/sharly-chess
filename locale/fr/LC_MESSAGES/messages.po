@@ -6480,7 +6480,7 @@ msgid "Points awarded per finishing position: {table}. Positions beyond the tabl
 msgstr "Points attribués par place à l'arrivée : {table}. Les places au-delà du barème ne rapportent rien."
 
 msgid "Points by finishing position — the winner scores the field size, down to 1 for last. The top finishers also get a percentage of their ranking points as a bonus. Scaling with field size, it combines tournaments of very different sizes fairly."
-msgstr "Des points selon le classement final — le vainqueur marque autant de points qu’il y a de participants, jusqu’à 1 pour le dernier. Les mieux classés reçoivent en plus un pourcentage de leurs points de classement en bonus. S’adaptant à la taille du tournoi, cette règle combine équitablement des tournois de tailles très différentes."
+msgstr "Des points selon le classement final — le vainqueur marque autant de points qu’il y a de participants, jusqu’à 1 pour le dernier. Les mieux classé·es reçoivent en plus un pourcentage de leurs points de classement en bonus. S’adaptant à la taille du tournoi, cette règle combine équitablement des tournois de tailles très différentes."
 
 msgid "Points per place:"
 msgstr "Points par place :"
