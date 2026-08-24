@@ -1,5 +1,6 @@
 import re
 import shutil
+import sqlite3
 from time import perf_counter
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -77,7 +78,13 @@ class EventLoader:
             raise SharlyChessException(
                 f'File {database.file} is not a SQLite database.'
             )
-        if not database.check_status():
+        try:
+            needs_upgrade = not database.check_status()
+        except sqlite3.DatabaseError as e:
+            raise SharlyChessException(
+                f'File {database.file} is a corrupted SQLite database: {e}'
+            ) from e
+        if needs_upgrade:
             database.upgrade()
         with EventDatabase(event_uniq_id) as database:
             stored_event = database.load_stored_event_metadata()
