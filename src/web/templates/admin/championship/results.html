@@ -8,6 +8,12 @@
             <span class="fw-semibold">{{ row.name }}</span>
             {% if row.secondary %}<span class="small text-body-secondary ms-2">{{ row.secondary }}</span>{% endif %}
         </td>
+        {% if championship.competitor_type == competitor_type_individual %}
+            <td class="text-center compact-col text-nowrap">{% if row.category %}{{ row.category }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+            <td class="text-center compact-col text-nowrap">{% if row.gender %}{{ row.gender }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+        {% endif %}
+        <td class="text-center compact-col text-nowrap">{% if row.federation %}{{ row.federation }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+        <td class="p-0"></td>
         {% for cell in row.rule_cells %}
             {% if cell.manual %}
                 <td class="tie-break text-center compact-col {% if manual and row.manual_draggable %}cursor-grab{% endif %} {% if row.manual_pinned %}text-warning fw-semibold{% endif %}">
@@ -104,6 +110,12 @@
             <tr class="player-header">
                 <th class="rank text-end compact-col">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
                 <th class="name text-start">{{ _('Competitor') }}</th>
+                {% if championship.competitor_type == competitor_type_individual %}
+                    <th class="text-center compact-col">{{ _('Cat. *** CATEGORY COLUMN HEADER') }}</th>
+                    <th class="text-center compact-col">{{ _('Gen. *** GENDER COLUMN HEADER') }}</th>
+                {% endif %}
+                <th class="text-center compact-col">{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                <th class="p-0" style="width: 0.75rem"></th>
                 {% for header in ranking_rule_labels %}
                     <th
                         class="tie-break text-nowrap text-center"

@@ -144,6 +144,36 @@ class Championship:
     def effective_age_category_base_date(self) -> date | None:
         return self.age_category_base_date or self.default_age_category_base_date
 
+    def player_age_category(self, player: 'ReconciledPlayer') -> str:
+        """The player's age category for the whole championship: their category by
+        year of birth at the effective reference date — the same basis the
+        category rankings filter on. Empty when it cannot be determined."""
+        from data.player_categories import PlayerCategory
+
+        reference_date = self.effective_age_category_base_date
+        if reference_date is None:
+            return ''
+        participations = [
+            participation
+            for participation in player.participations
+            if participation.source.tournament is not None
+            and participation.source.event is not None
+        ]
+        if not participations:
+            return ''
+        reference = min(
+            participations,
+            key=lambda participation: (
+                participation.source.start_date is None,
+                participation.source.start_date or date.max,
+            ),
+        )
+        return PlayerCategory.from_year_of_birth_at_date(
+            reference.source.event,
+            player.year_of_birth,
+            reference_date,
+        ).name
+
     @property
     def start_date(self) -> date | None:
         source_dates = [

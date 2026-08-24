@@ -60,6 +60,7 @@ def test_results_show_every_ordered_best_n_score():
     championship = SimpleNamespace(
         competitor_type=ChampionshipCompetitorType.INDIVIDUAL,
         team_score_basis=TeamScoreBasis.SOURCE_PRIMARY,
+        player_age_category=lambda competitor: '',
         competitors=[brian, emilien],
         manual_positions={},
         rules=[
@@ -120,6 +121,7 @@ def test_direct_encounter_is_displayed_as_rank_progress():
     championship = SimpleNamespace(
         competitor_type=ChampionshipCompetitorType.INDIVIDUAL,
         team_score_basis=TeamScoreBasis.SOURCE_PRIMARY,
+        player_age_category=lambda competitor: '',
         competitors=[loser, winner],
         manual_positions={},
         rules=[TotalPointsRule(), DirectEncounterRule()],
@@ -167,6 +169,7 @@ def test_competitor_rows_select_players_and_carry_all_source_entries():
     championship = SimpleNamespace(
         competitor_type=ChampionshipCompetitorType.INDIVIDUAL,
         team_score_basis=TeamScoreBasis.SOURCE_PRIMARY,
+        player_age_category=lambda competitor: '',
         competitors=[brian],
         stored_championship=SimpleNamespace(stored_player_overrides=[]),
     )

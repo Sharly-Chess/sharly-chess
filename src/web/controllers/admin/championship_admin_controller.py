@@ -315,12 +315,34 @@ class ChampionshipAdminController(BaseAdminController):
         rows = []
         for entry in ranking:
             competitor = entry.competitor
+            category = ''
+            gender = ''
+            federation = ''
             if championship.competitor_type == ChampionshipCompetitorType.TEAM:
                 name = competitor.name
-                secondary = competitor.federation
+                # Federation has its own column, so it is not repeated inline.
+                secondary = ''
+                federation = competitor.federation
             else:
                 name = f'{competitor.last_name}, {competitor.first_name}'
                 secondary = str(competitor.fide_id or '')
+                category = championship.player_age_category(competitor)
+                genders: list[str] = []
+                federations: list[str] = []
+                for participation in competitor.participations:
+                    source_player = getattr(participation, 'tournament_player', None)
+                    gender_name = getattr(
+                        getattr(source_player, 'gender', None), 'short_name', ''
+                    )
+                    if gender_name and gender_name not in genders:
+                        genders.append(gender_name)
+                    federation_name = getattr(
+                        getattr(source_player, 'federation', None), 'name', ''
+                    )
+                    if federation_name and federation_name not in federations:
+                        federations.append(federation_name)
+                gender = ' / '.join(genders)
+                federation = ' / '.join(federations)
             counted_participations = (
                 best_participations(
                     competitor,
@@ -360,6 +382,9 @@ class ChampionshipAdminController(BaseAdminController):
                     'tied': entry.tied,
                     'name': name,
                     'secondary': secondary,
+                    'category': category,
+                    'gender': gender,
+                    'federation': federation,
                     'rule_cells': rule_cells_by_competitor[id(competitor)],
                     'stages': stages,
                     'used_stage_count': len(used_stages),

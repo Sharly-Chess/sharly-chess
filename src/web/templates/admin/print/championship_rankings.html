@@ -23,6 +23,11 @@
                 <tr>
                     <th class="num">{{ _('Rk.') }}</th>
                     <th>{{ _('Competitor') }}</th>
+                    {% if not is_team %}
+                        <th>{{ _('Cat. *** CATEGORY COLUMN HEADER') }}</th>
+                        <th>{{ _('Gen. *** GENDER COLUMN HEADER') }}</th>
+                    {% endif %}
+                    <th>{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
                     {% for header in rule_headers %}
                         <th class="num" title="{{ header.title }}">{{ header.acronym }}</th>
                     {% endfor %}
@@ -33,6 +38,11 @@
                     <tr>
                         <td class="num">{{ row.rank }}{% if row.tied %}={% endif %}</td>
                         <td>{{ row.name }}{% if row.secondary %} <span style="font-size:80%; color:#666;">{{ row.secondary }}</span>{% endif %}</td>
+                        {% if not is_team %}
+                            <td>{{ row.category or '—' }}</td>
+                            <td>{{ row.gender or '—' }}</td>
+                        {% endif %}
+                        <td>{{ row.federation or '—' }}</td>
                         {% for cell in row.rule_cells %}
                             <td class="num">{% if cell.value is not none %}{{ score(cell.value) }}{% else %}—{% endif %}</td>
                         {% endfor %}
