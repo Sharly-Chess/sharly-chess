@@ -1,4 +1,5 @@
 import copy
+import math
 import urllib.parse
 from pathlib import PurePosixPath
 from collections import defaultdict
@@ -93,6 +94,10 @@ CHAMPIONSHIP_PLAYER_FILTER_TYPES: tuple[type[PlayerFilter], ...] = (
 
 class ChampionshipAdminController(BaseAdminController):
     """Administration pages for cross-event Championship standings."""
+
+    # Competitors are loaded a page at a time (infinite scroll) so a large
+    # field does not render thousands of rows in one response.
+    COMPETITOR_PAGE_SIZE = 50
 
     @staticmethod
     def _load_championship(uniq_id: str) -> Championship:
@@ -266,6 +271,23 @@ class ChampionshipAdminController(BaseAdminController):
                 }
             )
         return sorted(rows, key=lambda row: row['name'].casefold())
+
+    @classmethod
+    def _competitor_page_context(
+        cls, championship: Championship, page: int
+    ) -> dict[str, Any]:
+        """One page of the (sorted) competitor rows, plus the paging state the
+        infinite-scroll template needs to fetch the next page."""
+        rows = cls._competitor_rows(championship)
+        page = max(1, page)
+        pages = max(1, math.ceil(len(rows) / cls.COMPETITOR_PAGE_SIZE))
+        start = (page - 1) * cls.COMPETITOR_PAGE_SIZE
+        return {
+            'competitor_rows': rows[start : start + cls.COMPETITOR_PAGE_SIZE],
+            'competitor_page': page,
+            'competitor_pages': pages,
+            'competitor_page_start': start,
+        }
 
     @classmethod
     def _ranking_rows(cls, championship: Championship, ranking=None, draggable=False):
@@ -875,7 +897,7 @@ class ChampionshipAdminController(BaseAdminController):
         if championship_tab == 'sources':
             context['source_events'] = cls._source_events(championship)
         elif championship_tab == 'competitors':
-            context['competitor_rows'] = cls._competitor_rows(championship)
+            context.update(cls._competitor_page_context(championship, 1))
         elif championship_tab == 'configuration':
             context['rule_displays'] = [
                 cls._rule_display(stored_rule)
@@ -1989,6 +2011,32 @@ class ChampionshipAdminController(BaseAdminController):
             )
         Message.success(request, _('The competitors have been unmerged.'))
         return self._render(request, championship_uniq_id, 'competitors')
+
+    @get(
+        path='/championships/{championship_uniq_id:str}/competitor-page/{page:int}',
+        name='admin-championship-competitors-page',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_championship_competitors_page(
+        self,
+        request: HTMXRequest,
+        championship_uniq_id: FromPath[str],
+        page: FromPath[int],
+    ) -> Template:
+        championship = self._load_championship(championship_uniq_id)
+        context = (
+            AdminWebContext(request).template_context
+            | {
+                'championship': championship,
+                'competitor_type_individual': ChampionshipCompetitorType.INDIVIDUAL,
+                'competitor_type_team': ChampionshipCompetitorType.TEAM,
+            }
+            | self._competitor_page_context(championship, page)
+        )
+        return HTMXTemplate(
+            template_name='/admin/championship/competitors_page.html',
+            context=context,
+        )
 
     @get(
         path='/championships/{championship_uniq_id:str}/rule-modal',
