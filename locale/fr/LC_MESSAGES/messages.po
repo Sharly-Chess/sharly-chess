@@ -3056,6 +3056,9 @@ msgstr "Le numéro de chaque échiquier multiplié par les points de parties mar
 msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
 
+msgid "Each competitor row carries a popover with the per-stage breakdown."
+msgstr "Chaque ligne affiche une infobulle détaillant chaque étape."
+
 msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
@@ -3298,6 +3301,9 @@ msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été
 #, python-brace-format
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
+
+msgid "Event and tournament"
+msgstr "Évènement et tournoi"
 
 msgid "Event content"
 msgstr "Contenu de l'évènement"
@@ -3895,6 +3901,9 @@ msgstr "L'horaire [{hour}] a été créé."
 
 msgid "Hours"
 msgstr "Horaires"
+
+msgid "How each source tournament is named in the list."
+msgstr "Comment chaque tournoi source est nommé dans la liste."
 
 msgid "How many times the competitor finished in the chosen position (e.g. number of first places). A count, so not weighted."
 msgstr "Combien de fois le compétiteur a terminé à la place choisie (p. ex. nombre de premières places). Un décompte, donc non pondéré."
@@ -4984,6 +4993,12 @@ msgstr "Nom : par défaut"
 msgid "Namibia"
 msgstr "Namibie"
 
+msgid "Naming"
+msgstr "Nom affiché"
+
+msgid "Naming:"
+msgstr "Nom affiché :"
+
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
 
@@ -5407,6 +5422,9 @@ msgstr "Aucun chronomètre"
 msgid "No title norm has been achieved in this tournament."
 msgstr "Aucune norme de titre n'a été réalisée dans ce tournoi."
 
+msgid "No tournament has been played yet."
+msgstr "Aucun tournoi n'a encore été joué."
+
 msgid "No tournaments."
 msgstr "Aucun tournoi."
 
@@ -5421,6 +5439,9 @@ msgstr "Aucun évènement à venir ne porte les étiquettes sélectionnées."
 
 msgid "No upcoming events."
 msgstr "Aucun évènement à venir."
+
+msgid "No upcoming tournament."
+msgstr "Aucun tournoi à venir."
 
 msgid "No updates found."
 msgstr "Aucun changement détecté."
@@ -6747,6 +6768,9 @@ msgstr "Classements"
 msgid "Rankings *** WITH_SHORTCUT_INDICATION"
 msgstr "C<u>l</u>assements"
 
+msgid "Rankings to print"
+msgstr "Classements à imprimer"
+
 msgid "Rankings to print:"
 msgstr "Classements à imprimer :"
 
@@ -7611,6 +7635,9 @@ msgstr "Afficher le niveau"
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
+
+msgid "Show the stage details on hover"
+msgstr "Afficher le détail des étapes au survol"
 
 #, python-format
 msgid "Show the stages of %(competitor)s"
@@ -9147,6 +9174,9 @@ msgstr "Export de tournoi"
 msgid "Tournament has no team-player count configured."
 msgstr "Le tournoi n'a pas de nombre de joueur·euses par équipe configuré."
 
+msgid "Tournament list"
+msgstr "Liste des tournois"
+
 msgid "Tournament name"
 msgstr "Nom du tournoi"
 
@@ -9195,6 +9225,9 @@ msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
 
 msgid "Tournaments displayed:"
 msgstr "Tournois affichés :"
+
+msgid "Tournaments played"
+msgstr "Tournois joués"
 
 msgid "Tournaments:"
 msgstr "Tournois :"
@@ -9431,6 +9464,9 @@ msgstr "Grands Prix à venir"
 
 msgid "Upcoming events"
 msgstr "Évènements à venir"
+
+msgid "Upcoming tournaments"
+msgstr "Tournois à venir"
 
 msgid "Update"
 msgstr "Mettre à jour"

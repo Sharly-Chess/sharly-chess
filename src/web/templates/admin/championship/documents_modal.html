@@ -17,24 +17,28 @@
                 hx-target="body"
                 hx-post="{{ url_for('admin-championship-generate-document', championship_uniq_id=championship.uniq_id) }}"
             >
-                {{ admin_macros.select_input(
-                    name='document',
-                    label=_('Document:'),
-                    select_options=document_options,
-                    data=data,
-                    errors=errors,
-                ) }}
-                <div id="championship-ranking-sets" class="mt-3" style="display:none;">
-                    {{ admin_macros.select_input(
-                        name='sets',
-                        label=_('Rankings to print:'),
-                        select_options=ranking_set_options,
-                        multiple_select=true,
-                        placeholder=_('All rankings'),
-                        data=data,
-                        errors=errors,
-                    ) }}
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='document',
+                            label=_('Document:'),
+                            select_options=document_options,
+                            data=data,
+                            errors=errors,
+                        ) }}
+                    </div>
                 </div>
+                {# Every option is rendered once; the picker shows only the
+                   containers of the selected document. #}
+                {% for option in print_options %}
+                    <div
+                        class="row gy-2 gx-3 mt-0"
+                        id="{{ option.container_id }}"
+                        {% if option.container_id not in current_document_container_ids %}style="display:none"{% endif %}
+                    >
+                        {% include option.template_name %}
+                    </div>
+                {% endfor %}
             </form>
         </div>
         <div class="modal-footer">
@@ -49,12 +53,16 @@
 </div>
 <script>
     (() => {
-        const rankingsId = '{{ rankings_document_id }}';
+        const containersByDocument = {{ containers_by_document|tojson }};
+        const allContainers = {{ print_options|map(attribute='container_id')|list|tojson }};
         const $select = $('#document');
-        const sets = document.getElementById('championship-ranking-sets');
-        if (!$select.length || !sets) return;
+        if (!$select.length) return;
         const toggle = () => {
-            sets.style.display = $select.val() === rankingsId ? 'block' : 'none';
+            const shown = containersByDocument[$select.val()] || [];
+            allContainers.forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) el.style.display = shown.includes(id) ? '' : 'none';
+            });
         };
         $select.on('change', toggle);
         toggle();

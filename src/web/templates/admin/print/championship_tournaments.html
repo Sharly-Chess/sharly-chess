@@ -1,0 +1,58 @@
+{% extends '/admin/print/base.html' %}
+
+{% block css %}
+    table.championship-print { width: 100%; border-collapse: collapse; margin-bottom: 1.2em; }
+    table.championship-print th, table.championship-print td {
+        border: 1px solid #999; padding: 2px 6px; font-size: 90%;
+    }
+    table.championship-print th { background: #eee; }
+    table.championship-print td.num, table.championship-print th.num { text-align: right; }
+    .championship-set-title {
+        font-weight: bold;
+        font-size: 135%;
+        text-align: center;
+        margin: 1.1em 0 0.5em;
+    }
+    .championship-empty { text-align: center; font-style: italic; color: #666; }
+{% endblock %}
+
+{% macro tournament_table(rows) %}
+    <table class="championship-print">
+        <thead>
+            <tr>
+                <th class="num">#</th>
+                <th>{{ _('Tournament') }}</th>
+                <th>{{ _('Date') }}</th>
+                <th class="num">
+                    {% if is_team %}{{ _('Teams') }}{% else %}{{ _('Players') }}{% endif %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td class="num">{{ loop.index }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{% if row.start_date %}{{ format_date(row.start_date) }}{% else %}—{% endif %}</td>
+                    <td class="num">{% if row.competitor_count is not none %}{{ row.competitor_count }}{% else %}—{% endif %}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% block content %}
+    <div class="championship-set-title">{{ _('Tournaments played') }}</div>
+    {% if played_tournaments %}
+        {{ tournament_table(played_tournaments) }}
+    {% else %}
+        <p class="championship-empty">{{ _('No tournament has been played yet.') }}</p>
+    {% endif %}
+
+    <div class="championship-set-title">{{ _('Upcoming tournaments') }}</div>
+    {% if upcoming_tournaments %}
+        {{ tournament_table(upcoming_tournaments) }}
+    {% else %}
+        <p class="championship-empty">{{ _('No upcoming tournament.') }}</p>
+    {% endif %}
+{% endblock %}

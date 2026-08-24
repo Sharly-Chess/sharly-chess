@@ -173,6 +173,17 @@ def test_championship_admin_workflow(page: Page):
     page.get_by_test_id('nav-documents-tab').click()
     modal = page.locator('.modal-dialog')
     expect(modal.get_by_role('heading', name='Documents')).to_be_visible()
+    # The document picker shows only the selected document's options (the
+    # #document select is a Select2, so drive the native element + change).
+    document_select = modal.locator('select[name="document"]')
+    document_select.select_option('tournaments', force=True)
+    document_select.dispatch_event('change')
+    expect(modal.locator('#tournament_name_container')).to_be_visible()
+    expect(modal.locator('#include_popover_container')).to_be_hidden()
+    document_select.select_option('rankings', force=True)
+    document_select.dispatch_event('change')
+    expect(modal.locator('#include_popover_container')).to_be_visible()
+    expect(modal.locator('#tournament_name_container')).to_be_hidden()
     modal.get_by_role('button', name='Cancel').click()
 
     event_delete_modal = page.request.get(

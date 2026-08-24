@@ -13,7 +13,45 @@
         text-align: center;
         margin: 1.1em 0 0.5em;
     }
+    {# Stage breakdown shown on hover, like the crosstable player history. #}
+    .gp-name { position: relative; }
+    .gp-name .gp-stages table {
+        display: none; position: absolute; left: 20px; top: 14px; z-index: 999;
+        border-collapse: collapse; background: #fff; border: 1px solid #999;
+    }
+    .gp-name:hover .gp-stages table { display: table; }
+    .gp-name .gp-stages th, .gp-name .gp-stages td {
+        border: 1px solid #999; padding: 2px 6px; font-size: 85%; white-space: nowrap;
+    }
+    .gp-name .gp-stages tr.gp-uncounted * { color: #999; }
 {% endblock %}
+
+{% macro stage_popover(row) %}
+    <span class="gp-stages">
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ _('Stage') }}</th>
+                    <th>{{ _('Ranking') }}</th>
+                    {% for header in stage_value_headers %}
+                        <th class="num" title="{{ header.title }}">{{ header.acronym }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for stage in row.stages %}
+                    <tr {% if not stage.counted %}class="gp-uncounted"{% endif %}>
+                        <td>{{ stage.name }}{% if not stage.counted %} <span style="font-style:italic">({{ _('not counted') }})</span>{% endif %}</td>
+                        <td class="num">{{ stage.competitor_ranking }} / {{ stage.competitor_count }}</td>
+                        {% for value in stage.rule_values %}
+                            <td class="num">{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </span>
+{% endmacro %}
 
 {% block content %}
     {% for ranking_set in ranking_sets %}
@@ -37,7 +75,14 @@
                 {% for row in ranking_set.rows %}
                     <tr>
                         <td class="num">{{ row.rank }}{% if row.tied %}={% endif %}</td>
-                        <td>{{ row.name }}{% if row.secondary %} <span style="font-size:80%; color:#666;">{{ row.secondary }}</span>{% endif %}</td>
+                        <td>
+                            {% if include_popover and row.stages %}
+                                <span class="gp-name">{{ row.name }}{{ stage_popover(row) }}</span>
+                            {% else %}
+                                {{ row.name }}
+                            {% endif %}
+                            {% if row.secondary %} <span style="font-size:80%; color:#666;">{{ row.secondary }}</span>{% endif %}
+                        </td>
                         {% if not is_team %}
                             <td>{{ row.category or '—' }}</td>
                             <td>{{ row.gender or '—' }}</td>

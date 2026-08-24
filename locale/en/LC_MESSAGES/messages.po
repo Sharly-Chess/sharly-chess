@@ -3056,6 +3056,9 @@ msgstr ""
 msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
+msgid "Each competitor row carries a popover with the per-stage breakdown."
+msgstr ""
+
 msgid "Each player can only be awarded one prize per bracket."
 msgstr ""
 
@@ -3297,6 +3300,9 @@ msgstr ""
 
 #, python-brace-format
 msgid "Event [{uniq_id}] has been updated."
+msgstr ""
+
+msgid "Event and tournament"
 msgstr ""
 
 msgid "Event content"
@@ -3894,6 +3900,9 @@ msgid "Hour [{hour}] has been created."
 msgstr ""
 
 msgid "Hours"
+msgstr ""
+
+msgid "How each source tournament is named in the list."
 msgstr ""
 
 msgid "How many times the competitor finished in the chosen position (e.g. number of first places). A count, so not weighted."
@@ -4984,6 +4993,12 @@ msgstr ""
 msgid "Namibia"
 msgstr ""
 
+msgid "Naming"
+msgstr ""
+
+msgid "Naming:"
+msgstr ""
+
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
 
@@ -5407,6 +5422,9 @@ msgstr ""
 msgid "No title norm has been achieved in this tournament."
 msgstr ""
 
+msgid "No tournament has been played yet."
+msgstr ""
+
 msgid "No tournaments."
 msgstr ""
 
@@ -5420,6 +5438,9 @@ msgid "No upcoming event carries the selected tags."
 msgstr ""
 
 msgid "No upcoming events."
+msgstr ""
+
+msgid "No upcoming tournament."
 msgstr ""
 
 msgid "No updates found."
@@ -6745,6 +6766,9 @@ msgstr ""
 msgid "Rankings *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>R</u>ankings"
 
+msgid "Rankings to print"
+msgstr ""
+
 msgid "Rankings to print:"
 msgstr ""
 
@@ -7608,6 +7632,9 @@ msgid "Show level"
 msgstr ""
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
+msgstr ""
+
+msgid "Show the stage details on hover"
 msgstr ""
 
 #, python-format
@@ -9145,6 +9172,9 @@ msgstr ""
 msgid "Tournament has no team-player count configured."
 msgstr ""
 
+msgid "Tournament list"
+msgstr ""
+
 msgid "Tournament name"
 msgstr ""
 
@@ -9192,6 +9222,9 @@ msgid "Tournaments are finished, you can not add players any longer."
 msgstr ""
 
 msgid "Tournaments displayed:"
+msgstr ""
+
+msgid "Tournaments played"
 msgstr ""
 
 msgid "Tournaments:"
@@ -9428,6 +9461,9 @@ msgid "Upcoming championships"
 msgstr ""
 
 msgid "Upcoming events"
+msgstr ""
+
+msgid "Upcoming tournaments"
 msgstr ""
 
 msgid "Update"

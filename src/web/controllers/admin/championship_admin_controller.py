@@ -27,7 +27,10 @@ from data.criteria.player_filters import (
 )
 from data.championship.documents import (
     ChampionshipCompetitorListPrintDocument,
+    ChampionshipPrintOption,
     ChampionshipRankingsPrintDocument,
+    ChampionshipTournamentListPrintDocument,
+    TournamentNamePrintOption,
     championship_print_document_type,
     championship_print_documents,
 )
@@ -1616,21 +1619,47 @@ class ChampionshipAdminController(BaseAdminController):
         data: dict[str, Any] | None = None,
         errors: dict[str, str] | None = None,
     ) -> Template:
+        document_types = championship_print_documents(championship)
         document_options = {
             document_type.static_id(): document_type.label(championship)
-            for document_type in championship_print_documents(championship)
+            for document_type in document_types
         }
         ranking_set_options = {
             ChampionshipRankingsPrintDocument.OVERALL_SET: _('Overall')
         } | {str(category.id): category.name for category in championship.categories}
-        first_document_id = next(iter(document_options), '')
+        # Every option, rendered once; the picker shows only the containers of the
+        # selected document (mirrors the event document picker).
+        print_options: list[ChampionshipPrintOption] = []
+        containers_by_document: dict[str, list[str]] = {}
+        seen_option_ids: set[str] = set()
+        for document_type in document_types:
+            options = document_type(championship).default_options()
+            containers_by_document[document_type.static_id()] = [
+                option.container_id for option in options
+            ]
+            for option in options:
+                if option.id not in seen_option_ids:
+                    seen_option_ids.add(option.id)
+                    print_options.append(option)
+        first_document_id = (data or {}).get('document') or next(
+            iter(document_options), ''
+        )
+        # Prefill each option's default (e.g. the auto naming choice) unless the
+        # form already carries a value.
+        defaults = {
+            option.id: WebContext.value_to_form_data(option.value)
+            for option in print_options
+        }
         context = AdminWebContext(request).template_context | {
             'championship': championship,
             'document_options': document_options,
             'ranking_set_options': ranking_set_options,
-            'rankings_document_id': ChampionshipRankingsPrintDocument.static_id(),
-            'data': (data or {})
-            | {'document': (data or {}).get('document') or first_document_id},
+            'print_options': print_options,
+            'containers_by_document': containers_by_document,
+            'current_document_container_ids': containers_by_document.get(
+                first_document_id, []
+            ),
+            'data': defaults | (data or {}) | {'document': first_document_id},
             'errors': errors or {},
         }
         return cls._render_modal('admin/championship/documents_modal.html', context)
@@ -1673,10 +1702,13 @@ class ChampionshipAdminController(BaseAdminController):
                 data=flat_data,
                 errors={'document': _('Please choose the document.')},
             )
-        sets = data.get('sets', [])
-        if isinstance(sets, str):
-            sets = [sets]
-        options = {'sets': ';'.join(sets)} if sets else {}
+        # Encode each option as id=value (list values already ';'-joined by
+        # flatten_list_data); the view decodes it back through the option types.
+        options = {
+            option.id: flat_data[option.id]
+            for option in document_type(championship).default_options()
+            if flat_data.get(option.id)
+        }
         return HTMXTemplate(
             template_name='common/alert.html',
             re_target='#document-success-message',
@@ -1716,10 +1748,13 @@ class ChampionshipAdminController(BaseAdminController):
                 if '=' in pair:
                     key, value = pair.split('=', 1)
                     option_data[key] = value
-        document_options: dict[str, Any] = {}
-        if option_data.get('sets'):
-            document_options['sets'] = option_data['sets'].split(';')
-        print_document = document_type(championship, document_options)
+        print_options: list[ChampionshipPrintOption] = []
+        for option in document_type(championship).default_options():
+            option_value = WebContext.form_data_to_value(
+                option_data, option.id, option.type
+            )
+            print_options.append(type(option)(championship, option_value))
+        print_document = document_type(championship, print_options)
         context = {'document': print_document} | self._document_context(print_document)
         return StreamingHTMXTemplate(
             template_name=print_document.template_name, context=context
@@ -1729,6 +1764,8 @@ class ChampionshipAdminController(BaseAdminController):
     def _document_context(cls, document) -> dict[str, Any]:
         championship = document.championship
         is_team = championship.competitor_type == ChampionshipCompetitorType.TEAM
+        if isinstance(document, ChampionshipTournamentListPrintDocument):
+            return cls._tournament_list_context(document)
         if isinstance(document, ChampionshipCompetitorListPrintDocument):
             return {
                 'is_team': is_team,
@@ -1756,6 +1793,54 @@ class ChampionshipAdminController(BaseAdminController):
             'score': cls._score,
             'rule_headers': [cls._rule_header(rule) for rule in championship.rules],
             'ranking_sets': ranking_sets,
+            'include_popover': document.include_popover(),
+            'stage_value_headers': [
+                {'acronym': rule.stage_metric, 'title': rule.label()}
+                for rule in cls._stage_rules(championship)
+            ],
+        }
+
+    @classmethod
+    def _tournament_list_context(
+        cls, document: ChampionshipTournamentListPrintDocument
+    ) -> dict[str, Any]:
+        championship = document.championship
+        name_mode = document.option_value(TournamentNamePrintOption)
+        is_team = championship.competitor_type == ChampionshipCompetitorType.TEAM
+
+        def display_name(source) -> str:
+            if name_mode == TournamentNamePrintOption.EVENT:
+                return source.event_name
+            if name_mode == TournamentNamePrintOption.TOURNAMENT:
+                return source.tournament_name
+            return f'{source.event_name} — {source.tournament_name}'
+
+        def competitor_count(source) -> int | None:
+            tournament = source.tournament
+            if tournament is None:
+                return None
+            return tournament.team_count if is_team else tournament.player_count
+
+        played, upcoming = [], []
+        for source in championship.sources:
+            row = {
+                'name': display_name(source),
+                'event_name': source.event_name,
+                'tournament_name': source.tournament_name,
+                'start_date': source.start_date,
+                'competitor_count': competitor_count(source),
+            }
+            # Upcoming = starts in the future (matches the home-page split);
+            # undated or started sources are treated as played.
+            if source.start_date is not None and date.today() < source.start_date:
+                upcoming.append(row)
+            else:
+                played.append(row)
+        return {
+            'is_team': is_team,
+            'format_date': format_date,
+            'played_tournaments': played,
+            'upcoming_tournaments': upcoming,
         }
 
     @post(
