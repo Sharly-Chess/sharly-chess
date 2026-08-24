@@ -228,7 +228,7 @@ class PrizeAdminController(BaseEventAdminController):
     async def htmx_admin_prizes_tab(
         self,
         request: HTMXRequest,
-        tournament_id: FromPath[int | None],
+        tournament_id: FromQuery[int | None],
         prize_group_id: FromQuery[int | None],
         show_details: FromQuery[bool | None],
     ) -> Template:
