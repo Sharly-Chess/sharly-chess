@@ -2619,6 +2619,9 @@ msgstr "Ne pas apparier à la ronde n°%(round)d"
 msgid "Do not use this order as ranking."
 msgstr "Ne pas utiliser cet ordre comme classement."
 
+msgid "Do you like Sharly Chess? Help us keep it free and improving!"
+msgstr "Vous aimez Sharly Chess ? Aidez-nous à le maintenir gratuit et à l'améliorer !"
+
 msgid "Do you want to add the new data folder to the Microsoft Defender exception list?"
 msgstr "Voulez-vous ajouter le nouveau dossier des données à la liste d'exclusions de Microsoft Defender ?"
 
@@ -7399,6 +7402,9 @@ msgstr "Faire la somme des totaux des points de partie à la place des points de
 
 msgid "Sum the opponents (or own) match-point totals instead of game points."
 msgstr "Faire la somme des totaux des points de match à la place des points de partie."
+
+msgid "Support the Sharly Chess project"
+msgstr "Soutenir le projet Sharly Chess"
 
 msgid "Suriname"
 msgstr "Suriname"
