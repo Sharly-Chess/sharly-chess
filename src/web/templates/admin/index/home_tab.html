@@ -71,6 +71,20 @@
             </div>
         {% endif %}
     </div>
+    <div class="mx-auto text-center mt-4" style="max-width: 500px;">
+        <p class="mb-2">
+            {{ _('Do you like Sharly Chess? Help us keep it free and improving!') }}
+        </p>
+        <a
+            class="btn btn-outline-primary"
+            href="{{ sharly_chess_config.donate_url }}"
+            target="_blank"
+            rel="noopener"
+        >
+            <i class="bi-heart-fill pe-1"></i>
+            {{ _('Support the Sharly Chess project') }}
+        </a>
+    </div>
 </div>
 
 {% if not client.account.administrator %}
