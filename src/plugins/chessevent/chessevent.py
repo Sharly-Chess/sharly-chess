@@ -25,11 +25,19 @@ from plugins.chessevent.utils import (
 from plugins.ffe.ffe import FfePlugin
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
-from plugins.utils import Plugin, PluginData, NavDataTransferItem
+from plugins.utils import (
+    Plugin,
+    PluginData,
+    NavDataTransferItem,
+    TournamentConnectionField,
+)
+from web.admin.collection import ListColumn
 from web.controllers.base_controller import WebContext, BaseController
+from utils.enum import EventType
 
 if TYPE_CHECKING:
     from data.event import Event
+    from web.admin.collection import AdminCollectionSpec
 
 
 class ChessEventPluginHooks:
@@ -48,6 +56,10 @@ class ChessEventPlugin(Plugin):
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME
+
+    @property
+    def supported_event_types(self) -> list[EventType]:
+        return [EventType.INDIVIDUAL]
 
     @staticmethod
     def static_name() -> str:
@@ -170,12 +182,29 @@ class ChessEventPlugin(Plugin):
         return {'chessevent_utils': ChessEventUtils}
 
     @hookimpl
-    def get_tournament_card_connexion_template(
+    def get_tournament_connection_field(
         self, tournament: Tournament
-    ) -> str | None:
+    ) -> TournamentConnectionField | None:
         if not ChessEventUtils.resolve_tournament_name(tournament):
             return None
-        return '/chessevent_tournament_card_connexion.html'
+        return TournamentConnectionField(
+            label=_('ChessEvent'),
+            template='/chessevent_tournament_connection_value.html',
+        )
+
+    @hookimpl
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: 'Event | None',
+    ) -> None:
+        if collection_key != 'tournaments':
+            return
+        collection_spec.ensure_list_column(
+            ListColumn('transfer', label=_('Transfer')),
+            before='actions',
+        )
 
     @hookimpl(trylast=True)
     def get_nav_data_transfer_items(

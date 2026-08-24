@@ -63,9 +63,17 @@ def _is_present_at_round(player: 'TournamentPlayer', round_: int) -> bool:
 def _missed_rounds(player: 'TournamentPlayer') -> int:
     """Count of rounds the player neither played nor received a PAB / RG /
     forfeit-win for. ≤ 1 keeps the player eligible for both 1.4.3d and
-    1.5.6a tournament-wide checks."""
+    1.5.6a tournament-wide checks.
+
+    A round with no result yet (game in progress, or not paired) is not a
+    recorded absence, so it is not counted; otherwise a running round would
+    drop players from the eligible set and skew the counts of the already
+    completed rounds until every result is entered.
+    """
     missed = 0
     for pairing in player.pairings_by_round.values():
+        if pairing.result == Result.NO_RESULT:
+            continue
         if pairing.unplayed and pairing.result not in (
             Result.FORFEIT_WIN,
             Result.PAIRING_ALLOCATED_BYE,
@@ -112,7 +120,9 @@ def _round_counts_143d(
         foreigners=len(present_foreign),
         federations=len({p.federation for p in present_foreign}),
         titled_foreigners=sum(
-            1 for p in present_foreign if p.title in TitleNorm.MASTER_TITLES
+            1
+            for p in present_foreign
+            if any(title in TitleNorm.MASTER_TITLES for title in p.held_titles)
         ),
     )
 
@@ -225,31 +235,38 @@ def apply_143abc_exemption(
 
     `exemption_code` is the arbiter's selection from the print option:
     - 'none'   → no manual exemption (1.4.3d still auto-applies elsewhere).
-    - '1.4.3a' → National championship final. Exempts 1.4.3 only for
-                 players whose federation == event's registering federation.
+    - '1.4.3a' → National championship final. Exempts only players whose
+                 federation == event's registering federation.
     - '1.4.3b' → National team championship. Same player filter as a.
-    - '1.4.3c' → Zonal or sub-zonal. Exempts 1.4.3 for ALL players
-                 regardless of federation.
+    - '1.4.3c' → Zonal or sub-zonal. Exempts ALL players regardless of
+                 federation.
 
-    NONE of a/b/c exempt 1.4.4 — only 1.4.3d does that. The result's
-    `is_met` honors this asymmetry via `is_143_exempt_via_abc`.
+    Like 1.4.3d, a/b/c exempt the whole foreigner requirement — both
+    1.4.3 and 1.4.4 (1.4.3e: "the normal foreigner requirement. (See
+    1.4.3 and 1.4.4)").
 
     Sets `result.rule_143_exemption` to 'a' / 'b' / 'c' / None as
     appropriate. The print templates render a badge from this field.
     """
-    if exemption_code == 'none':
-        return
-
-    # a and b are player-scoped: only the registering federation's
-    # players are exempt. c is tournament-scoped (applies to everyone).
-    if exemption_code in ('1.4.3a', '1.4.3b'):
-        if applicant_federation != event_federation:
-            return
-
-    code_map = {'1.4.3a': 'a', '1.4.3b': 'b', '1.4.3c': 'c'}
-    code = code_map.get(exemption_code)
+    code = resolve_143abc_code(exemption_code, applicant_federation, event_federation)
     if code is None:
-        return  # unknown value — validate() should have caught this
-
+        return
     for res in results.values():
         res.rule_143_exemption = code
+
+
+def resolve_143abc_code(
+    exemption_code: str,
+    applicant_federation: 'Federation',
+    event_federation: 'Federation',
+) -> str | None:
+    """Resolve the arbiter's print-option selection to the stored
+    exemption letter ('a' / 'b' / 'c'), or ``None`` when no exemption
+    applies to this player.
+
+    a and b are player-scoped: only the registering federation's players
+    are exempt. c is tournament-scoped (applies to everyone)."""
+    if exemption_code in ('1.4.3a', '1.4.3b'):
+        if applicant_federation != event_federation:
+            return None
+    return {'1.4.3a': 'a', '1.4.3b': 'b', '1.4.3c': 'c'}.get(exemption_code)

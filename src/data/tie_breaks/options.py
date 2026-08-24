@@ -9,6 +9,7 @@ from data.tie_breaks.cutters import NoCutTieBreakCutter, TieBreakCutter
 from utils.option import Option
 
 if TYPE_CHECKING:
+    from data.pairings import PairingSystem
     from data.tie_breaks.managers import TieBreakCutterManager
     from web.utils import SelectOption
 
@@ -30,11 +31,21 @@ class TieBreakOption(Option, ABC):
         """Defines if the option value is the default for the tie-break or if it is a variation."""
         return self.value != self.default_value
 
+    def is_compatible_with(self, pairing_system: 'PairingSystem') -> bool:
+        """Whether this option's current value can be evaluated on the
+        given pairing system. Default: always. Override on options
+        whose value relies on a pairing-system capability (e.g.
+        match-point scoring)."""
+        return True
+
     @property
-    @abstractmethod
     def variation_acronym(self) -> str:
-        """Represents the variation in the tie-break acronym
-        Example: BH/C1."""
+        """Suffix appended to the tie-break acronym when the option's
+        value differs from its default (e.g. ``BH/C1``). Override to
+        return a non-empty string. The empty default works for options
+        whose label is already carried by the base acronym (ESB
+        variant) or that don't affect the displayed name."""
+        return ''
 
     @abstractmethod
     def set_value_from_variation_acronym(self, acronym: str) -> bool:
@@ -42,15 +53,14 @@ class TieBreakOption(Option, ABC):
         Returns True if the acronym matched the option."""
 
     @property
-    @abstractmethod
     def variation_name(self) -> str:
-        """Represent the variation in the tie-break full name
-        Example: Buchholz (Cut 1)."""
+        """Suffix for the tie-break full name (e.g. ``Buchholz (Cut 1)``)."""
+        return ''
 
     @property
-    @abstractmethod
     def variation_help_text(self) -> str:
-        """Represent the variation in the tie-break help text."""
+        """Sentence appended to the tie-break help text."""
+        return ''
 
     @property
     def is_legacy(self) -> bool:
@@ -99,11 +109,18 @@ class BaseCutterTieBreakOption(TieBreakOption, ABC):
         return TieBreakCutterManager(self.include_median)
 
     def set_value_from_variation_acronym(self, acronym: str) -> bool:
-        try:
-            self.value = self.cutter_manager.get_object(acronym).id
-            return True
-        except KeyError:
+        cutter = next(
+            (
+                cutter
+                for cutter in self.cutter_manager.objects()
+                if cutter.acronym == acronym
+            ),
+            None,
+        )
+        if cutter is None:
             return False
+        self.value = cutter.id
+        return True
 
     @property
     def cutter_options(self) -> dict[str, 'SelectOption']:
@@ -229,10 +246,8 @@ class ForeModifierTieBreakOption(TieBreakOption):
     def variation_name(self) -> str:
         return _('Fore')
 
-    @property
-    def variation_help_text(self) -> str:
-        """`Buchholz` replaced by `Fore Buchholz` in the help text."""
-        return ''
+    # help_text inherits the empty default; "Buchholz" is replaced by
+    # "Fore Buchholz" inside the parent tie-break's help text directly.
 
 
 class KoyaLimitTieBreakOption(TieBreakOption):
@@ -287,10 +302,8 @@ class KoyaLimitTieBreakOption(TieBreakOption):
             abs(self.value),
         ).format(operator=self.operator)
 
-    @property
-    def variation_help_text(self) -> str:
-        """Included as an equation."""
-        return ''
+    # help_text inherits the empty default; the limit equation is
+    # surfaced through ``KoyaTieBreak.equation_suffix``.
 
     @property
     def template_file_stem(self) -> str:
@@ -315,6 +328,10 @@ class EstimatedRatingsTieBreakOption(SilentTieBreakOption):
     @property
     def template_file_stem(self) -> str:
         return 'estimated_ratings'
+
+    # variation_acronym / variation_name / variation_help_text inherit
+    # the empty defaults — this option doesn't affect the displayed
+    # acronym, name, or help text.
 
     @property
     def type(self) -> type | UnionType:
@@ -355,10 +372,6 @@ class ReversedTieBreakOption(TieBreakOption):
     @property
     def is_variation(self) -> bool:
         return bool(self.value)
-
-    @property
-    def variation_help_text(self) -> str:
-        return ''
 
     @property
     def type(self) -> type | UnionType:
@@ -403,3 +416,158 @@ class LegacyMarch2026TieBreakOption(LegacyTieBreakOption):
     @property
     def variation_help_text(self) -> str:
         return _('Rules used were only effective until march 2026 (legacy).')
+
+
+class NormalizationFactorOverrideTieBreakOption(TieBreakOption):
+    """SSSC :class:`/Kx` modifier — override the auto-computed
+    normalisation factor F_N with an explicit integer (FIDE MTB26
+    page 1: *"/Kx — Used for SSSC, to redefine the normalizing factor
+    in SSSC, (/K4, /K5, …)"*). 0 = default (compute from rounds and
+    team size)."""
+
+    MAX_VALUE = 99
+
+    @staticmethod
+    def static_id() -> str:
+        return 'NORMALIZATION_FACTOR'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int
+
+    @property
+    def default_value(self) -> Any:
+        return 0
+
+    @property
+    def is_variation(self) -> bool:
+        return bool(self.value)
+
+    @property
+    def variation_acronym(self) -> str:
+        return f'K{self.value}'
+
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        if len(acronym) < 2 or acronym[0] != 'K':
+            return False
+        try:
+            value = int(acronym[1:])
+        except ValueError:
+            return False
+        if not 0 < value <= self.MAX_VALUE:
+            return False
+        self.value = value
+        return True
+
+    @property
+    def variation_name(self) -> str:
+        return _('Normalisation factor = {value}').format(value=self.value)
+
+    @property
+    def variation_help_text(self) -> str:
+        return _(
+            'Override the auto-computed normalisation factor with {value}.'
+        ).format(value=self.value)
+
+    @property
+    def template_file_stem(self) -> str:
+        return 'normalization_factor'
+
+    def validate(self):
+        super().validate()
+        if self.value and (self.value < 1 or self.value > self.MAX_VALUE):
+            raise OptionError(
+                _('Normalisation factor must be between 1 and {max}.').format(
+                    max=self.MAX_VALUE
+                ),
+                self,
+            )
+
+
+class TeamScoreTieBreakOption(TieBreakOption):
+    """Score basis (Match Points or Game Points) a tie-break uses when
+    the tournament is a team competition. FIDE MTB26 rank-order
+    descriptor: ``BH:MP``, ``BH:GP``, etc. Default ``MP`` matches the
+    FIDE rule *"the primary score being the default, if the reference
+    score is not explicitly indicated"* — team primaries are MP by
+    convention (FFE Molter being the GP exception).
+    The option is meaningful only in team events; for individual
+    events the picker hides it and the value is ignored."""
+
+    VALUE_MP = 'MP'
+    VALUE_GP = 'GP'
+
+    @staticmethod
+    def static_id() -> str:
+        return 'TEAM_SCORE'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return self.VALUE_MP
+
+    @property
+    def template_file_stem(self) -> str:
+        return 'team_score'
+
+    @property
+    def variation_acronym(self) -> str:
+        # Mirrors the FIDE descriptor: ``BH:MP``, ``BH:GP``.
+        return f':{self.value}'
+
+    @property
+    def variation_name(self) -> str:
+        return _('match points') if self.value == self.VALUE_MP else _('game points')
+
+    @property
+    def variation_help_text(self) -> str:
+        return _(
+            'In team events, the tie-break is calculated using {score} '
+            'as the reference score.'
+        ).format(score=self.variation_name)
+
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        # Mirrors ``variation_acronym``: ``:MP`` / ``:GP``.
+        if acronym not in (f':{self.VALUE_MP}', f':{self.VALUE_GP}'):
+            return False
+        self.value = acronym[1:]
+        return True
+
+    def is_compatible_with(self, pairing_system: 'PairingSystem') -> bool:
+        # The match-point variant needs the pairing system to expose
+        # match points. GP-only systems can't compute it.
+        if self.value != self.VALUE_MP:
+            return True
+        return pairing_system.supports_match_points
+
+    @property
+    def is_variation(self) -> bool:
+        # Show the ``:GP`` suffix only when the user picks GP; the MP
+        # default is implicit (FIDE MTB26: *"primary score is the
+        # default, if not explicitly indicated"*).
+        return self.value != self.default_value
+
+    @property
+    def score_options(self) -> 'dict[str, Any]':
+        """Select-input dict consumed by ``team_score.html``."""
+        from web.utils import SelectOption
+
+        return {
+            self.VALUE_MP: SelectOption(
+                name=_('Match points'),
+                tooltip=_(
+                    'Sum the opponents (or own) match-point totals '
+                    'instead of game points.'
+                ),
+            ),
+            self.VALUE_GP: SelectOption(
+                name=_('Game points'),
+                tooltip=_(
+                    'Sum the opponents (or own) game-point totals '
+                    'instead of match points.'
+                ),
+            ),
+        }

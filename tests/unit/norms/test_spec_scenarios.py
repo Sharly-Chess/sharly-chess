@@ -12,6 +12,7 @@ clause and asserts the verdict matches the spec.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from types import SimpleNamespace
 
 import pytest
@@ -23,13 +24,34 @@ from tests.unit.norms.test_searcher import (
     _im,
     _real_searcher,
     _untitled,
+    as_tournament,
+    as_tournament_player,
     make_inputs,
 )
 from data.norms import (
     TitleNormEvaluator,
 )
+from data.player import TournamentPlayer
 from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
 from utils.types import Federation, NormCheckResult
+
+
+def _player_ns(**kwargs) -> SimpleNamespace:
+    """SimpleNamespace player/opponent double that also exposes the
+    derived title attributes/methods the norm code reads (`held_titles`,
+    `strongest_title`, `title_on_norm_ladder`), computed from `title` /
+    `women_title`."""
+    title = kwargs.get('title', PlayerTitle.NONE)
+    women = kwargs.get('women_title', PlayerTitle.NONE)
+    kwargs.setdefault('women_title', women)
+    kwargs['strongest_title'] = max(title, women, key=lambda t: t.sort_index)
+    kwargs['held_titles'] = frozenset(
+        t for t in (title, women) if t != PlayerTitle.NONE
+    )
+    kwargs['title_on_norm_ladder'] = lambda title_norm: (
+        women if title_norm.player_title.is_women else title
+    )
+    return SimpleNamespace(**kwargs)
 
 
 # ===========================================================================
@@ -186,8 +208,9 @@ class TestRule_1_4_3d:
 #
 # a (National championship final) and b (National team championship) only
 # apply to players from the event's REGISTERING federation. c (Zonal /
-# Sub-zonal) applies to ALL players regardless of federation. None of
-# a/b/c exempt 1.4.4 — only 1.4.3d does.
+# Sub-zonal) applies to ALL players regardless of federation. Like 1.4.3d,
+# every a/b/c exemption waives the WHOLE foreigner requirement — both
+# 1.4.3 and 1.4.4 (1.4.3e; confirmed in writing by the FIDE QC).
 #
 # Applied by `apply_143abc_exemption()` based on the
 # Rule143ExemptionPrintOption value set on the doc.
@@ -278,11 +301,12 @@ class TestRule_1_4_3abc:
         assert norms[TitleNorm.GM].rule_143_exemption == 'c'
         assert norms[TitleNorm.GM].is_met
 
-    # ---------- 1.4.4 NOT exempted by a/b/c ----------
+    # ---------- 1.4.4 exempted by a/b/c (foreigner requirement, 1.4.3e) ----------
 
-    def test_abc_does_NOT_exempt_144_own_fed_cap(self):
-        """Even with 1.4.3c applied, a 1.4.4 own-fed violation still
-        blocks is_met. Only 1.4.3d covers 1.4.4."""
+    def test_abc_exempts_144_own_fed_cap(self):
+        """1.4.3a-d all waive the foreigner requirement — 1.4.3 AND
+        1.4.4 (1.4.3e: "the normal foreigner requirement. (See 1.4.3
+        and 1.4.4)"). A 1.4.4 own-fed violation is exempt under c."""
         from data.norms import apply_143abc_exemption
 
         res = self._failing_143_result()
@@ -291,10 +315,9 @@ class TestRule_1_4_3abc:
         apply_143abc_exemption(norms, '1.4.3c', Federation('USA'), Federation('FRA'))
         assert res.rule_143_exemption == 'c'
         assert res.is_143_exempt_via_abc
-        # 1.4.3 is exempt, but 1.4.4 own-fed still fails.
-        assert not res.is_met
+        assert res.is_met
 
-    def test_abc_does_NOT_exempt_144_one_fed_cap(self):
+    def test_abc_exempts_144_one_fed_cap(self):
         from data.norms import apply_143abc_exemption
 
         res = self._failing_143_result()
@@ -302,14 +325,13 @@ class TestRule_1_4_3abc:
         norms = {TitleNorm.GM: res}
         apply_143abc_exemption(norms, '1.4.3a', Federation('FRA'), Federation('FRA'))
         assert res.rule_143_exemption == 'a'
-        assert not res.is_met  # 1.4.4 one-fed still blocks
+        assert res.is_met
 
     # ---------- 1.4.3d co-exists with a/b/c ----------
 
     def test_143d_wins_when_both_could_apply(self):
         """If 1.4.3d holds AND a/b/c also applies, the result still
-        passes — both exemption paths reach the same is_met=True.
-        1.4.3d's exemption is broader (covers 1.4.4 too)."""
+        passes — both exemption paths reach the same is_met=True."""
         from data.norms import apply_143abc_exemption
 
         # 1.4.3d sub-criteria met
@@ -322,12 +344,12 @@ class TestRule_1_4_3abc:
         # Both exemption paths active.
         assert res.is_143d_met
         assert res.is_143_exempt_via_abc
-        # is_met passes via the broader 1.4.3d (which covers 1.4.4).
         assert res.is_met
 
-    def test_abc_alone_blocks_when_1_4_4_violated(self):
-        """When 1.4.3d does NOT hold and 1.4.4 also fails, a/b/c alone
-        cannot save the norm — 1.4.4 still applies."""
+    def test_abc_alone_rescues_when_1_4_4_violated(self):
+        """When 1.4.3d does NOT hold, a/b/c alone still saves the norm
+        even with 1.4.4 violations — the exemption covers the whole
+        foreigner requirement."""
         from data.norms import apply_143abc_exemption
 
         res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
@@ -338,7 +360,96 @@ class TestRule_1_4_3abc:
         apply_143abc_exemption(norms, '1.4.3a', Federation('FRA'), Federation('FRA'))
         assert not res.is_143d_met
         assert res.is_143_exempt_via_abc
-        assert not res.is_met  # 1.4.4 still applies, blocks
+        assert res.is_met
+
+    def _failing_143_and_144_result(self) -> NormCheckResult:
+        """The real-world shape FIDE confirmed (Interclubs / national team
+        championship): a player whose mix fails BOTH the 1.4.3 federation
+        count and BOTH 1.4.4 caps (3/5 own-fed, 2/3 one-fed), with 1.4.3d
+        not met, but everything else (games, titles, score, Ra, Rp) fine.
+        Only the foreigner requirement stands between them and the norm."""
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.not_enough_federations = 'violation'  # 1.4.3
+        res.too_many_own_federation = 'violation'  # 1.4.4 (3/5)
+        res.too_many_one_federation = (Federation('FRA'), 'violation')  # 1.4.4 (2/3)
+        res.not_enough_foreign_players = 'violation'  # → 1.4.3d NOT met
+        return res
+
+    @pytest.mark.parametrize('code', ['1.4.3a', '1.4.3b', '1.4.3c'])
+    def test_abc_waives_full_foreigner_requirement(self, code: str):
+        """FIDE QC confirmed: the 1.4.3a/b/c exemptions waive the WHOLE
+        foreigner requirement — 1.4.3 AND both 1.4.4 caps together (1.4.3e
+        "the normal foreigner requirement. (See 1.4.3 and 1.4.4)"). A
+        result failing all three, with 1.4.3d not met, is met under any of
+        a/b/c."""
+        from data.norms import apply_143abc_exemption
+
+        res = self._failing_143_and_144_result()
+        assert not res.is_met  # blocked before the exemption
+        apply_143abc_exemption(
+            {TitleNorm.GM: res}, code, Federation('FRA'), Federation('FRA')
+        )
+        assert res.rule_143_exemption == code[-1]
+        assert not res.is_143d_met  # the rescue is NOT via 1.4.3d
+        assert res.is_met
+
+    def test_abc_waiver_does_not_mutate_violation_flags(self):
+        """The exemption is honoured at the ``is_met`` layer — the
+        underlying 1.4.3 / 1.4.4 violation flags remain set so the IT1 /
+        calculation-details views can still show the raw figures and the
+        'exempt' badge side by side."""
+        from data.norms import apply_143abc_exemption
+
+        res = self._failing_143_and_144_result()
+        apply_143abc_exemption(
+            {TitleNorm.GM: res}, '1.4.3b', Federation('FRA'), Federation('FRA')
+        )
+        assert res.is_met
+        # Data untouched: only the verdict changed, not the measured facts.
+        assert res.not_enough_federations
+        assert res.too_many_own_federation
+        assert res.too_many_one_federation
+
+    # ---------- 1.4.4 still enforced when NO exemption applies ----------
+
+    def test_no_exemption_lets_144_own_cap_block(self):
+        """Without any 1.4.3 exemption, the 1.4.4 own-federation cap
+        blocks the norm — the waiver is exemption-gated, not unconditional."""
+        from data.norms import apply_143abc_exemption
+
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.too_many_own_federation = 'violation'
+        res.not_enough_foreign_players = 'violation'  # → 1.4.3d NOT met
+        norms = {TitleNorm.GM: res}
+        apply_143abc_exemption(norms, 'none', Federation('FRA'), Federation('FRA'))
+        assert not res.is_143d_met
+        assert not res.is_143_exempt_via_abc
+        assert not res.is_met
+
+    def test_no_exemption_lets_144_one_fed_cap_block(self):
+        """Without any 1.4.3 exemption, the 1.4.4 one-federation cap blocks."""
+        from data.norms import apply_143abc_exemption
+
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.too_many_one_federation = (Federation('FRA'), 'violation')
+        res.not_enough_foreign_players = 'violation'  # → 1.4.3d NOT met
+        norms = {TitleNorm.GM: res}
+        apply_143abc_exemption(norms, 'none', Federation('FRA'), Federation('FRA'))
+        assert not res.is_143_exempt_via_abc
+        assert not res.is_met
+
+    def test_foreign_player_not_exempt_still_blocked_by_144(self):
+        """1.4.3a/b are scoped to the registering federation: a foreign
+        player gets no exemption, so 1.4.4 still blocks even though the
+        arbiter selected the national-championship event type."""
+        from data.norms import apply_143abc_exemption
+
+        res = self._failing_143_and_144_result()
+        norms = {TitleNorm.GM: res}
+        # Event registered by FRA, applicant is USA → 1.4.3b doesn't apply.
+        apply_143abc_exemption(norms, '1.4.3b', Federation('USA'), Federation('FRA'))
+        assert res.rule_143_exemption is None
+        assert not res.is_met
 
     def test_unknown_exemption_code_is_noop(self):
         """An unknown code (shouldn't happen via UI; validate() catches it)
@@ -592,13 +703,14 @@ def _player_with_pairings(
     *,
     federation: str = 'FRA',
     title: PlayerTitle = PlayerTitle.NONE,
+    women_title: PlayerTitle = PlayerTitle.NONE,
     gender=None,
     rounds: int,
-    pairings: dict[int, tuple[FakeOpponent | None, Result]],
+    pairings: Mapping[int, tuple[FakeOpponent | None, Result]],
     pairing_system=None,
     pairing_variation=None,
     tournament_players_by_id: dict | None = None,
-):
+) -> TournamentPlayer:
     """Construct a fake TournamentPlayer-like with controlled pairings.
 
     Used by tests that need to exercise `collect_inputs` filtering logic
@@ -611,10 +723,15 @@ def _player_with_pairings(
     fake_pairings = {
         rnd: _fake_pairing(result, opp) for rnd, (opp, result) in pairings.items()
     }
+    open_title = PlayerTitle(title)
+    women = PlayerTitle(women_title)
     player = SimpleNamespace(
         federation=Federation(federation),
         gender=gender or PlayerGender.MAN,
-        title=PlayerTitle(title),
+        title=open_title,
+        women_title=women,
+        strongest_title=max(open_title, women, key=lambda t: t.sort_index),
+        held_titles=frozenset(t for t in (open_title, women) if t != PlayerTitle.NONE),
         event=SimpleNamespace(federation=federation),
         tournament=SimpleNamespace(
             rounds=rounds,
@@ -630,7 +747,7 @@ def _player_with_pairings(
         ),
         pairings_by_round=fake_pairings,
     )
-    return player
+    return as_tournament_player(player)
 
 
 # ===========================================================================
@@ -678,12 +795,17 @@ class TestRule_1_4_2a_NON_excluded:
 
 
 class TestRule_1_4_2a_FID_nuance:
-    """The dev-reviewed clause: FID is a 'real' federation for counting
-    purposes (1.4.3) but NOT a foreign player (1.4.3d/1.5.6a)."""
+    """FIDE QC clarification (2026): "FID is not considered a federation.
+    FID players are disregarded." A game against a FID opponent is still
+    accepted (it counts towards games played, titled opponents, Ra, score),
+    but FID never enters the federation mix — neither as a foreign
+    federation for 1.4.3 / 1.4.3d nor as a federation that can breach the
+    1.4.4 caps. (RUS/BLR are shown as FID but counted under their own flag;
+    the arbiter corrects the flag in the data.)"""
 
-    def test_fid_opponent_counts_in_federations_counter_for_1_4_3(self):
-        """1.4.3 cares about distinct federations in the applicant's mix.
-        FID is a valid FIDE federation, so it counts."""
+    def test_fid_opponent_not_counted_as_a_federation_for_1_4_3(self):
+        """FID is not a federation: a FID opponent does not add to the
+        distinct-federation tally, though the game itself is kept."""
         usa_opp = _gm(1, federation='USA')
         fid_opp = _gm(2, federation='FID')
         player = _player_with_pairings(
@@ -695,12 +817,30 @@ class TestRule_1_4_2a_FID_nuance:
         )
         evaluator = TitleNormEvaluator(player)
         inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
-        # FID DOES count as a federation in the mix.
-        assert Federation('FID') in inputs.federations_counter
-        assert inputs.federations_counter[Federation('FID')] == 1
-        # The 1.4.3 num_feds count therefore sees 2 distinct (USA + FID).
+        # FID is NOT in the federation mix.
+        assert Federation('FID') not in inputs.federations_counter
+        # ...but the game is still counted (played + the opponent's title).
+        assert inputs.played_games == 2
+        assert fid_opp in inputs.opponents
+        # 1.4.3 sees only USA → one distinct federation.
         _, num_feds, _own = evaluator.federation_count_requirement(inputs)
-        assert num_feds == 2
+        assert num_feds == 1
+
+    def test_fid_majority_does_not_breach_1_4_4_one_fed_cap(self):
+        """ ">2/3 of the opponents from one federation" cannot be triggered
+        by FID, since FID is not a federation. A field of mostly FID
+        opponents passes the 1.4.4 one-federation cap."""
+        pairings = {1: (_gm(1, federation='USA'), Result.DRAW)}
+        for r in range(2, 10):  # 8 FID opponents out of 9
+            pairings[r] = (_gm(r, federation='FID'), Result.DRAW)
+        player = _player_with_pairings(rounds=9, pairings=pairings)
+        evaluator = TitleNormEvaluator(player)
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        passes, top_fed, _count = evaluator.top_federation_requirement(
+            inputs, TitleNorm.GM
+        )
+        assert passes, 'FID majority must not breach the 2/3 one-federation cap'
+        assert top_fed in (None, Federation('USA'))
 
     def test_fid_player_does_not_count_in_1_4_3d_foreign_count(self):
         """1.4.3d's per-round count of "foreign rated players" is filtered:
@@ -722,14 +862,14 @@ class TestRule_1_4_2a_FID_nuance:
         players = {}
         for i in range(1, 5):
             fed = ['USA', 'USA', 'USA', 'FID'][i - 1]
-            players[i] = SimpleNamespace(
+            players[i] = _player_ns(
                 rating_type=PlayerRatingType.FIDE,
                 federation=Federation(fed),
                 title=PlayerTitle.GRANDMASTER,
                 pairings_by_round={r: _round_pairing() for r in range(1, 10)},
             )
         # Add a host-federation player (excluded by 1.4.3d's host-fed filter).
-        players[5] = SimpleNamespace(
+        players[5] = _player_ns(
             rating_type=PlayerRatingType.FIDE,
             federation=Federation('FRA'),
             title=PlayerTitle.GRANDMASTER,
@@ -741,7 +881,7 @@ class TestRule_1_4_2a_FID_nuance:
             rounds=9,
             tournament_players_by_id=players,
         )
-        exemption = compute_big_tournament_exemption(tournament)
+        exemption = compute_big_tournament_exemption(as_tournament(tournament))
         # 1.4.2a: FID is accepted but doesn't count as a foreign player.
         # → foreigners excludes BOTH the host-fed (FRA) AND the FID player.
         # Only the 3 USA players qualify.
@@ -1064,7 +1204,7 @@ class TestRule_1_5_6a:
 
         players = {}
         for i, rating in enumerate(ratings, start=1):
-            players[i] = SimpleNamespace(
+            players[i] = _player_ns(
                 rating_type=PlayerRatingType.FIDE,
                 federation=Federation('USA'),  # all foreign (irrelevant here)
                 title=PlayerTitle.NONE,
@@ -1122,7 +1262,7 @@ class TestRule_1_5_6a:
             pairings = {
                 r: _round_pairing(missed=(i == 1 and r in (1, 2))) for r in range(1, 10)
             }
-            players[i] = SimpleNamespace(
+            players[i] = _player_ns(
                 rating_type=PlayerRatingType.FIDE,
                 federation=Federation('USA'),
                 title=PlayerTitle.NONE,
@@ -1136,7 +1276,59 @@ class TestRule_1_5_6a:
             tournament_players_by_id=players,
         )
         # Player 1 missed >1 round → excluded → 39 eligible players → fails.
-        assert compute_high_level_tournament(tournament) is False
+        assert compute_high_level_tournament(as_tournament(tournament)) is False
+
+    def test_in_progress_round_keeps_completed_rounds_correct(self):
+        """A round whose results are still pending must not count as a missed
+        round. Otherwise a player who already missed one round would reach two
+        misses, drop out of the eligible set, and corrupt the counts of the
+        already-completed rounds until every result is entered."""
+        from data.norms import compute_high_level_tournament_trail
+        from data.pairings.systems import SwissPairingSystem
+
+        def _pairing(result):
+            return SimpleNamespace(
+                result=result,
+                opponent=None,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        players = {}
+        for i in range(1, 41):
+            pairings = {}
+            for r in range(1, 10):
+                if r == 9:
+                    result = Result.NO_RESULT  # round 9 in progress
+                elif i == 1 and r == 3:
+                    result = Result.ZERO_POINT_BYE  # player 1's single miss
+                else:
+                    result = Result.DRAW
+                pairings[r] = _pairing(result)
+            players[i] = _player_ns(
+                rating_type=PlayerRatingType.FIDE,
+                federation=Federation('USA'),
+                title=PlayerTitle.NONE,
+                rating=2200,
+                pairings_by_round=pairings,
+            )
+        tournament = SimpleNamespace(
+            event=SimpleNamespace(federation='FRA'),
+            rounds=9,
+            pairing_system=SwissPairingSystem(),
+            tournament_players_by_id=players,
+        )
+        present_by_round = {
+            row.round_: row.fide_rated_present
+            for row in compute_high_level_tournament_trail(as_tournament(tournament))
+        }
+        # Player 1 (one bye) stays eligible despite the pending round 9, so the
+        # completed rounds still count all 40 eligible players (round 3 shows 39
+        # only because player 1 is absent that round).
+        assert present_by_round[1] == 40
+        assert present_by_round[8] == 40
+        assert present_by_round[3] == 39
+        assert present_by_round[9] == 0
 
     def test_not_high_level_for_round_robin(self):
         """1.5.6a is Swiss-only. A 40-player Round-Robin that would pass
@@ -1173,7 +1365,7 @@ class TestRule_1_5_6a:
                 )
                 for r in range(1, 10)
             }
-            players[i] = SimpleNamespace(
+            players[i] = _player_ns(
                 rating_type=PlayerRatingType.FIDE,
                 federation=Federation('USA'),
                 title=PlayerTitle.NONE,
@@ -1188,7 +1380,7 @@ class TestRule_1_5_6a:
         )
         # Despite player #40 having a PAB in round 5, every round still
         # has 40 "present" players → 1.5.6a passes.
-        assert compute_high_level_tournament(tournament) is True
+        assert compute_high_level_tournament(as_tournament(tournament)) is True
 
 
 # ===========================================================================
@@ -1294,7 +1486,7 @@ class TestRule_1_4_3d_eligibility:
                 played=not missed,
             )
 
-        return SimpleNamespace(
+        return _player_ns(
             rating_type=PlayerRatingType.FIDE,
             federation=Federation(federation),
             title=PlayerTitle.GRANDMASTER,
@@ -1354,6 +1546,51 @@ class TestRule_1_4_3d_eligibility:
         # The doomed player contributes to NO round. Every round has 11.
         assert exemption.foreigners == 11
 
+    def test_in_progress_round_keeps_completed_rounds_correct(self):
+        """A round whose results are still pending must not count as a missed
+        round, so a player with one bye stays eligible and the completed
+        rounds keep their full counts while the current round is played."""
+        from data.norms import compute_big_tournament_exemption_trail
+
+        def _pairing(result):
+            return SimpleNamespace(
+                result=result,
+                opponent=None,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        def _player(federation, bye_round=None):
+            pairings = {}
+            for r in range(1, 10):
+                if r == 9:
+                    result = Result.NO_RESULT  # round 9 in progress
+                elif r == bye_round:
+                    result = Result.ZERO_POINT_BYE
+                else:
+                    result = Result.DRAW
+                pairings[r] = _pairing(result)
+            return _player_ns(
+                rating_type=PlayerRatingType.FIDE,
+                federation=Federation(federation),
+                title=PlayerTitle.GRANDMASTER,
+                rating=2500,
+                pairings_by_round=pairings,
+            )
+
+        players = [_player('USA') for _ in range(3)]
+        players.append(_player('USA', bye_round=3))  # one bye → still eligible
+        players += [_player('GER') for _ in range(4)]
+        players += [_player('ESP') for _ in range(4)]
+        foreigners_by_round = {
+            row.round_: row.foreigners
+            for row in compute_big_tournament_exemption_trail(self._tournament(players))
+        }
+        assert foreigners_by_round[1] == 12
+        assert foreigners_by_round[8] == 12
+        assert foreigners_by_round[3] == 11  # bye player absent that round
+        assert foreigners_by_round[9] == 0
+
     def test_pab_does_not_count_as_missed_round(self):
         """Spec: "players will be counted only if they miss at most one
         round (excluding pairing allocated byes)" — PAB rounds aren't
@@ -1374,7 +1611,7 @@ class TestRule_1_4_3d_eligibility:
             )
 
         # One player has 3 PABs (way over 1) plus all-played → still eligible.
-        special = SimpleNamespace(
+        special = _player_ns(
             rating_type=PlayerRatingType.FIDE,
             federation=Federation('USA'),
             title=PlayerTitle.GRANDMASTER,
@@ -1403,6 +1640,8 @@ def _forecaster_with_pairings(
     pairings: dict,
     federation: str = 'FRA',
     title: PlayerTitle = PlayerTitle.NONE,
+    women_title: PlayerTitle = PlayerTitle.NONE,
+    gender=None,
     pairing_system=None,
 ):
     """Build a fake TournamentPlayer + TitleNormForecaster from pairings.
@@ -1422,10 +1661,11 @@ def _forecaster_with_pairings(
     fake_pairings = {
         rnd: _fake_pairing(result, opp) for rnd, (opp, result) in pairings.items()
     }
-    player = SimpleNamespace(
+    player = _player_ns(
         federation=Federation(federation),
-        gender=PlayerGender.MAN,
+        gender=gender or PlayerGender.MAN,
         title=PlayerTitle(title),
+        women_title=PlayerTitle(women_title),
         event=SimpleNamespace(federation=federation),
         tournament=SimpleNamespace(
             rounds=rounds,
@@ -1439,7 +1679,48 @@ def _forecaster_with_pairings(
         ),
         pairings_by_round=fake_pairings,
     )
-    return TitleNormForecaster(player)
+    return TitleNormForecaster(as_tournament_player(player))
+
+
+class TestForecasterTitleLadders:
+    """Open (CM<FM<IM<GM) and women (WCM<WFM<WIM<WGM) titles are separate
+    ladders. A women norm is chased against the women title, an open norm
+    against the open title — so an FM with no women title can still chase
+    WIM, and a WGM can still chase IM."""
+
+    def test_fm_woman_uses_women_title_for_women_norms(self):
+        fc = _forecaster_with_pairings(
+            rounds=9, pairings={}, title=PlayerTitle.FIDE_MASTER
+        )
+        # Women ladder: she holds no women title.
+        assert fc._current_ladder_title(TitleNorm.WIM) == PlayerTitle.NONE
+        assert fc._current_ladder_title(TitleNorm.WGM) == PlayerTitle.NONE
+        # A WIM norm is therefore still above her → chaseable-eligible.
+        assert (
+            TitleNorm.WIM.player_title.sort_index
+            > fc._current_ladder_title(TitleNorm.WIM).sort_index
+        )
+        # Open ladder still sees her FM for open norms.
+        assert fc._current_ladder_title(TitleNorm.IM) == PlayerTitle.FIDE_MASTER
+        assert fc._current_ladder_title(TitleNorm.GM) == PlayerTitle.FIDE_MASTER
+
+    def test_wgm_woman_open_norms_use_open_title(self):
+        fc = _forecaster_with_pairings(
+            rounds=9,
+            pairings={},
+            women_title=PlayerTitle.WOMAN_GRANDMASTER,
+        )
+        # Women ladder: WGM already held → WIM/WGM are not above her.
+        assert (
+            TitleNorm.WIM.player_title.sort_index
+            <= fc._current_ladder_title(TitleNorm.WIM).sort_index
+        )
+        # Open ladder: no open title → IM is above her → chaseable-eligible.
+        assert fc._current_ladder_title(TitleNorm.IM) == PlayerTitle.NONE
+        assert (
+            TitleNorm.IM.player_title.sort_index
+            > fc._current_ladder_title(TitleNorm.IM).sort_index
+        )
 
 
 class TestForecasterCanForecastRound:
@@ -1906,7 +2187,7 @@ class TestRoundAuditTrail:
 
     def test_search_marks_dropped_rounds_in_audit(self):
         """When the subset search drops rounds via 1.4.1e/f, the result's
-        audit lists those rounds as DROPPED / ignored_via_1_4_1ef."""
+        audit lists those rounds as DROPPED with a 1.4.1e or 1.4.1f reason."""
         from data.norms.inputs import NormInputs, RoundDecision
 
         # Drive `_search_subsets` directly so we don't have to stub
@@ -1937,7 +2218,7 @@ class TestRoundAuditTrail:
         inputs.round_audit = [
             RoundAuditEntry(
                 round_=r,
-                opponent=opp,
+                opponent=as_tournament_player(opp),
                 raw_result=res,
                 effective_result=res,
                 decision=RoundDecision.INCLUDED,
@@ -1953,7 +2234,10 @@ class TestRoundAuditTrail:
             for r in winner.ignored_rounds_via_search:
                 entry = next(e for e in winner.round_audit if e.round_ == r)
                 assert entry.decision == RoundDecision.DROPPED
-                assert entry.reason_key == 'ignored_via_1_4_1ef'
+                assert entry.reason_key in (
+                    'ignored_via_1_4_1e',
+                    'ignored_via_1_4_1f',
+                )
                 assert entry.effective_result is None
             for entry in winner.round_audit:
                 if entry.round_ not in winner.ignored_rounds_via_search:
@@ -2007,7 +2291,7 @@ class TestCalculationDetailsHooks:
         from data.pairings.systems import SwissPairingSystem
         from utils.enum import PlayerGender
 
-        player = SimpleNamespace(
+        player = _player_ns(
             federation=Federation('FRA'),
             gender=PlayerGender.MAN,
             title=PlayerTitle.NONE,
@@ -2025,7 +2309,7 @@ class TestCalculationDetailsHooks:
             ),
             pairings_by_round={
                 r: SimpleNamespace(
-                    opponent=opp,
+                    opponent=as_tournament_player(opp),
                     result=res,
                     unplayed=res.is_unplayed,
                     played=not res.is_unplayed,
@@ -2033,7 +2317,7 @@ class TestCalculationDetailsHooks:
                 for r, (opp, res) in pairings.items()
             },
         )
-        evaluator = TitleNormEvaluator(player)
+        evaluator = TitleNormEvaluator(as_tournament_player(player))
         results = evaluator.evaluate()
         # IM is reachable; check whichever norm picked up 1.4.2c.
         for tn, res in results.items():
@@ -2138,11 +2422,11 @@ class TestRule_1_4_3abc_EndToEnd:
         }
         return _player_with_pairings(federation=federation, rounds=9, pairings=pairings)
 
-    def test_143c_via_evaluator_does_NOT_rescue_when_144_fails(self):
-        """1.4.3c (zonal) exempts 1.4.3 only — 1.4.4 still applies.
-        Setup: applicant from FRA, all 9 opponents also from FRA.
-        Both 1.4.3 (only 1 fed) and 1.4.4 own-fed cap (9/9 from own)
-        fail. 1.4.3c can't rescue because 1.4.4 still blocks."""
+    def test_143c_via_evaluator_rescues_when_144_fails(self):
+        """1.4.3c (zonal) waives the foreigner requirement — 1.4.3 AND
+        1.4.4 (1.4.3e). Setup: applicant from FRA, all 9 opponents also
+        from FRA. Both 1.4.3 (only 1 fed) and 1.4.4 own-fed cap (9/9
+        from own) fail; 1.4.3c rescues both."""
         from data.norms import TitleNormEvaluator, apply_143abc_exemption
 
         player = self._player_failing_143_only(federation='FRA')
@@ -2166,8 +2450,7 @@ class TestRule_1_4_3abc_EndToEnd:
         )
         assert res.rule_143_exemption == 'c'
         assert res.is_143_exempt_via_abc
-        # Still NOT met because 1.4.4 wasn't exempted.
-        assert not res.is_met, '1.4.4 own-fed cap still applies under 1.4.3c'
+        assert res.is_met, '1.4.3c waives both 1.4.3 and 1.4.4'
 
     def test_143a_via_evaluator_rescues_only_event_fed_players(self):
         """National championship final: same opponent mix, two players.
@@ -2247,14 +2530,14 @@ class TestRule_1_4_3abc_EndToEnd:
         def _fake_pairing(result, opp):
             return SimpleNamespace(
                 result=result,
-                opponent=opp,
+                opponent=as_tournament_player(opp),
                 unplayed=result.is_unplayed,
                 played=not result.is_unplayed,
             )
 
         from utils.types import BigTournamentExemption as _Btx
 
-        player = SimpleNamespace(
+        player = _player_ns(
             federation=Federation('FRA'),
             gender=PlayerGender.MAN,
             title=PlayerTitle.NONE,
@@ -2274,7 +2557,7 @@ class TestRule_1_4_3abc_EndToEnd:
 
         # Without exemption → 1.4.3 fails (single foreign fed) → no norm
         # chaseable regardless of round 9 outcome.
-        plain = TitleNormForecaster(player)
+        plain = TitleNormForecaster(as_tournament_player(player))
         chaseable_plain = plain.chaseable_norms(9)
         assert TitleNorm.GM not in chaseable_plain, (
             'Without 1.4.3c, single-foreign-fed mix fails 1.4.3 → no chaseable GM'
@@ -2285,7 +2568,9 @@ class TestRule_1_4_3abc_EndToEnd:
         # whether 1.4.4 also passes — covered by the unit tests in
         # `TestRule_1_4_3abc`. Here we verify the forecaster threads the
         # exemption code into each searcher run.)
-        exempt = TitleNormForecaster(player, rule_143_exemption='1.4.3c')
+        exempt = TitleNormForecaster(
+            as_tournament_player(player), rule_143_exemption='1.4.3c'
+        )
         for outcome_result in exempt.forecast_round(9).values():
             assert outcome_result[TitleNorm.GM].is_143_exempt_via_abc, (
                 'Forecaster must apply rule_143_exemption to every per-outcome result'
@@ -2342,7 +2627,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
         def _fake_pairing(result, opp):
             return SimpleNamespace(
                 result=result,
-                opponent=opp,
+                opponent=as_tournament_player(opp),
                 unplayed=result.is_unplayed,
                 played=not result.is_unplayed,
             )
@@ -2352,7 +2637,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
         }
         pairings_dict[9] = _fake_pairing(Result.FORFEIT_WIN, geo_opp)
 
-        player = SimpleNamespace(
+        player = _player_ns(
             federation=Federation('FRA'),  # not in any opponent's fed
             gender=PlayerGender.MAN,
             title=PlayerTitle.NONE,
@@ -2369,7 +2654,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
             pairings_by_round=pairings_dict,
         )
 
-        searcher = TitleNormSubsetSearcher(player)
+        searcher = TitleNormSubsetSearcher(as_tournament_player(player))
         results = searcher.evaluate()
         gm_result = results[TitleNorm.GM]
 

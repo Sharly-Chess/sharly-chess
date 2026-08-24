@@ -1,4 +1,5 @@
 import argparse
+import ctypes
 import os
 from pathlib import Path
 import sys
@@ -13,51 +14,10 @@ if sys.stderr is None:
 
 def default_workdir() -> Path:
     """Determine the default working directory (where events, logs, etc. are stored)."""
-    import os
-
     # Running as PyInstaller frozen?
     if getattr(sys, 'frozen', False):
-        if sys.platform == 'linux':
-            # Case: Linux AppImage - return directory containing the AppImage file
-            appdir = os.environ.get('APPDIR')
-            if appdir:
-                # AppImage sets APPDIR to the mount point
-                # We want the directory where the AppImage file is located (with events, logs, etc.)
-                # The AppRun script changes to this directory, so use current working directory
-                current = Path.cwd()
-
-                # Check if current directory has user folders (events, logs, etc.)
-                # This is the most reliable indicator since AppRun changes to this directory
-                if (current / 'events').exists() or (current / 'logs').exists():
-                    return current
-
-                # Try ARGV0 to get the AppImage file location
-                argv0 = os.environ.get('ARGV0')
-                if argv0:
-                    argv0_path = Path(argv0)
-                    # If ARGV0 is the AppImage file itself, get its parent
-                    if argv0_path.exists() and argv0_path.suffix == '.AppImage':
-                        appimage_dir = argv0_path.resolve().parent
-                        if appimage_dir.exists():
-                            return appimage_dir
-                    # If ARGV0 is a script, try to find the AppImage in the same directory
-                    elif argv0_path.exists():
-                        appimage_dir = argv0_path.resolve().parent
-                        # Look for AppImage file in this directory
-                        for appimage_file in appimage_dir.glob('*.AppImage'):
-                            return appimage_dir
-
-                # Fallback: check parent of current directory
-                if (current.parent / 'events').exists() or (
-                    current.parent / 'logs'
-                ).exists():
-                    return current.parent
-
-                # Last fallback: return current working directory
-                # (AppRun script should have set this to the AppImage directory)
-                return current
-        elif sys.platform == 'darwin':
-            exe = Path(sys.executable).resolve()
+        exe = Path(sys.executable).resolve()
+        if sys.platform == 'darwin':
             # Case: macOS .app onedir
             # .../My.app/Contents/MacOS/exe
             if (
@@ -69,7 +29,7 @@ def default_workdir() -> Path:
             # Case: onefile or frozen onedir (not .app)
             return exe.parent
         else:
-            return Path(sys.executable).resolve().parent
+            return exe.parent
 
     # Dev/unfrozen
     return Path.cwd()
@@ -83,9 +43,40 @@ def init_script() -> list[str]:
 
     # Has to be executed before plugin_manager to avoid initializing from the wrong path
     path_parser = argparse.ArgumentParser(add_help=False)
-    path_parser.add_argument('--path', '-p', default=str(default_workdir()))
+    path_parser.add_argument('--path', '-p')
     args, remaining_args = path_parser.parse_known_args()
-    os.chdir(args.path)
+    if args.path:
+        path = Path(args.path)
+        os.environ['SC_MANUAL_PATH_USED'] = '1'
+    else:
+        path = default_workdir()
+    path.mkdir(parents=True, exist_ok=True)
+    os.chdir(str(path))
     load_dotenv()
 
     return remaining_args
+
+
+def check_windows_defender_exception(arguments: list[str]):
+    # Intended to be used while the program is already running, so has to run before any log import
+    if sys.platform != 'win32':
+        return arguments
+    defender_parser = argparse.ArgumentParser(add_help=False)
+    defender_parser.add_argument(
+        '--win-defender-exception-path',
+        type=str,
+    )
+    args, remaining_args = defender_parser.parse_known_args(arguments)
+    def_path = args.win_defender_exception_path
+    if not def_path:
+        return remaining_args
+    params = [
+        '/C',
+        'powershell',
+        '-Command',
+        f'"Add-MpPreference -ExclusionPath """{def_path}""" -Force"',
+    ]
+    result = ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
+        None, 'runas', 'cmd.exe', ' '.join(params), None, 0
+    )
+    sys.exit(0 if result > 32 else 1)

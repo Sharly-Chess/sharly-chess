@@ -31,6 +31,30 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {# Where the sub-modals (tags, category sets) come back to. Built
+                   here, the only place with the action / tab / event context,
+                   and carried along with the rest of the form. #}
+                {% if action == 'update' %}
+                    {% set event_return_url = url_for(
+                        'admin-event-modal-restore',
+                        action=action,
+                        admin_tab=admin_tab or '',
+                        event_uniq_id=admin_event.uniq_id,
+                    ) %}
+                {% elif action == 'clone' %}
+                    {% set event_return_url = url_for(
+                        'admin-event-modal-restore',
+                        action=action,
+                        event_uniq_id=admin_event.uniq_id,
+                    ) %}
+                {% else %}
+                    {% set event_return_url = url_for(
+                        'admin-event-modal-restore',
+                        action=action,
+                        admin_tab=admin_tab or 'home',
+                    ) %}
+                {% endif %}
+                <input type="hidden" name="event_return_url" value="{{ event_return_url }}">
                 {% if action == 'clone' %}
                     <h4>
                         {{ _('Duplication settings') }}
@@ -87,7 +111,11 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div
+                        class="col-12 col-md-6"
+                        id="allow-multi-tournament-players-col"
+                        {% if data['event_type'] == 'TEAM' %}style="display: none;"{% endif %}
+                    >
                         {{ admin_macros.switch_input(
                             name='allow_multi_tournament_players',
                             label='',
@@ -137,6 +165,26 @@
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
+                            name='event_type',
+                            label=_('Event type:'),
+                            tooltip_text=_(
+                                'Choose between an individual or team event. '
+                                'Cannot be changed after the event has been created.'
+                            ),
+                            select_options=event_type_options,
+                            disabled=not client.can_update_event or event_type_locked,
+                            input_tooltip=(
+                                _('The event type cannot be changed after creation.')
+                                if event_type_locked else ''
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                        {% if event_type_locked %}
+                            <input type="hidden" name="event_type" value="{{ data['event_type'] }}">
+                        {% endif %}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
                             name='player_rating_type',
                             label=_('Player ratings to use by default:'),
                             tooltip_text=_(
@@ -147,7 +195,10 @@
                         ) }}
                         {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
                     </div>
-                    <div class="col-12 col-md-6">
+                </div>
+
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
                         {{ admin_macros.text_input(
                             name='location',
                             label=_('%(string)s:', string=_('Location')),
@@ -155,6 +206,12 @@
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
+                    </div>
+                </div>
+
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {% include 'event_tags_form.html' %}
                     </div>
                 </div>
                 <button
@@ -271,6 +328,12 @@
                                 class="plugin-container
                                     {% if plugin.federation %}
                                         federation-plugin federation-plugin-{{ plugin.federation }}
+                                    {% endif %}
+                                    {% if plugin.supported_event_types is not none %}
+                                        event-type-plugin
+                                        {%- for supported_type in plugin.supported_event_types %}
+                                        event-type-plugin-{{ supported_type.value }}
+                                        {%- endfor %}
                                     {% endif %}"
                             >
                                 {% set used_by_tournaments_count = plugin.used_by_tournaments_count(admin_event) if admin_event else 0 %}
@@ -307,23 +370,44 @@
                     </div>
                     <script>
                         triggerModalInitEvent('.plugin-switch-input', 'change', [false]);
-                        $('#federation').change(function () {
-                            const federation = $(this).val();
-                            const pluginsToHide = $('.federation-plugin:not(.federation-plugin-' + federation + ')');
-                            pluginsToHide.hide();
-                            const hideSwitches = pluginsToHide.find('.plugin-switch-input');
-                            hideSwitches.prop('checked', false);
-                            hideSwitches.trigger('change', [false]);
-                            const pluginsToShow = $('.federation-plugin-' + federation);
-                            pluginsToShow.show();
-                            const onSwitches = pluginsToShow.find(
-                                '.plugin-switch-input[data-user-state="undefined"][data-default-state="true"], ' +
-                                '.plugin-switch-input[data-user-state="true"]'
-                            );
-                            onSwitches.prop('checked', true);
-                            onSwitches.trigger('change', [false]);
-                            $('#plugins-container').show();
+                        // A plugin is shown only if it matches BOTH the
+                        // selected federation and the selected event type.
+                        function refreshPluginVisibility() {
+                            const federation = $('#federation').val();
+                            const eventType = $('#event-type').val();
+                            $('.plugin-container').each(function () {
+                                const $container = $(this);
+                                const allowed = (
+                                    !$container.hasClass('federation-plugin')
+                                    || $container.hasClass('federation-plugin-' + federation)
+                                ) && (
+                                    !$container.hasClass('event-type-plugin')
+                                    || $container.hasClass('event-type-plugin-' + eventType)
+                                );
+                                if (allowed) {
+                                    $container.show();
+                                    const onSwitches = $container.find(
+                                        '.plugin-switch-input[data-user-state="undefined"][data-default-state="true"], ' +
+                                        '.plugin-switch-input[data-user-state="true"]'
+                                    );
+                                    onSwitches.prop('checked', true);
+                                    onSwitches.trigger('change', [false]);
+                                } else {
+                                    $container.hide();
+                                    const offSwitches = $container.find('.plugin-switch-input');
+                                    offSwitches.prop('checked', false);
+                                    offSwitches.trigger('change', [false]);
+                                }
+                            });
                             $('#plugins-container').toggle($('.plugin-container:visible').length > 0);
+                        }
+                        $('#federation').change(refreshPluginVisibility);
+                        $('#event-type').change(function () {
+                            // Multi-tournament players make no sense for team
+                            // events — hide the switch when the type is TEAM.
+                            $('#allow-multi-tournament-players-col')
+                                .toggle($(this).val() !== 'TEAM');
+                            refreshPluginVisibility();
                         });
                         triggerModalInitEvent('#federation');
                     </script>
@@ -332,6 +416,18 @@
         </div>
 
         <div class="modal-footer">
+            {% if action == 'update' and client.can_create_events %}
+                <button
+                    type="button"
+                    class="btn btn-outline-primary text-nowrap me-auto"
+                    hx-get="{{ url_for('admin-event-modal', action='clone', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="bi-copy pe-1"></i>
+                    {{ _('Duplicate') }}
+                </button>
+            {% endif %}
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"

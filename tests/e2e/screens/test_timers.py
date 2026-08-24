@@ -29,10 +29,12 @@ class TestTimersFunctionality:
         page.locator('#modal-wrapper div.modal-header').click()
         TestUtils.button_by_text(hours_modal, 'Back').click()
 
-        card = page.locator(f"div.card:has-text('{name}')")
-        expect(card).to_be_visible()
+        item = page.get_by_test_id('timers-item').filter(has_text=name)
+        expect(item).to_be_visible()
 
-        button = card.locator('button[hx-get*="delete"]')
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
+        expect(
+            page.get_by_test_id('timers-item').filter(has_text=name)
+        ).not_to_be_attached()

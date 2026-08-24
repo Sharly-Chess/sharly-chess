@@ -5,7 +5,6 @@ import re
 import subprocess
 import sys
 from copy import copy
-from pathlib import Path
 from typing import Optional, overload, TYPE_CHECKING
 
 import jinja2
@@ -14,8 +13,6 @@ import uvicorn
 from packaging.version import Version
 
 from common import (
-    BASE_DIR,
-    EVENTS_DIR,
     SHARLY_CHESS_VERSION,
     TEST_ENV,
     enable_experimental_features,
@@ -34,14 +31,16 @@ from common.network import find_lan_interfaces, LOCALHOST_IP
 from common.singleton import Singleton
 from plugins.manager import plugin_manager
 from utils.date_formatter import DateFormatter
-from utils.enum import Result
+from utils.enum import Result, Extension
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
 from utils.date_time import DateFormatterManager
+from utils.program_variables import ProgramVar
 
 if TYPE_CHECKING:
     from data.player import Federation
     from data.player_categories import PlayerCategorySet
+    from data.tag import Tag
     from data.tie_breaks.sets import TieBreakSet
 
 logger: logging.Logger = get_logger()
@@ -147,6 +146,9 @@ class SharlyChessConfig(metaclass=Singleton):
     @staticmethod
     def _get_user_locale(system_user_locale: str | None) -> str:
         """Returns the locale to set in Sharly Chess."""
+        setup_locale = ProgramVar.LOCALE.read_value()
+        if setup_locale:
+            return setup_locale
         if system_user_locale is not None:
             user_locale: str = system_user_locale[:2]
             if user_locale in locales:
@@ -166,6 +168,7 @@ class SharlyChessConfig(metaclass=Singleton):
                 config_database.update_stored_config(stored_config)
         if TEST_ENV:
             stored_config.federation = SharlyChessConfig.tests_federation
+        assert stored_config.locale is not None
         set_locale(stored_config.locale)
         set_logging_config(
             console_log_level=stored_config.console_log_level,
@@ -222,6 +225,17 @@ class SharlyChessConfig(metaclass=Singleton):
     @property
     def launch_browser(self) -> bool:
         return self.stored_config.launch_browser and not TEST_ENV
+
+    @property
+    def check_beta_versions(self) -> bool:
+        return self.stored_config.check_beta_versions
+
+    @property
+    def last_notified_version(self) -> Version | None:
+        stored_value = self.stored_config.last_notified_version
+        if not stored_value:
+            return None
+        return Version(stored_value)
 
     @property
     def federation(self) -> Optional['Federation']:
@@ -281,6 +295,28 @@ class SharlyChessConfig(metaclass=Singleton):
         ]
 
     @property
+    def tags(self) -> list['Tag']:
+        """The event tags defined for this installation, in the order the
+        user arranged them in — the order they are listed in everywhere."""
+        from data.tag import Tag
+
+        return [
+            Tag(id=stored_tag.id or 0, name=stored_tag.name, color=stored_tag.color)
+            for stored_tag in self.stored_config.stored_tags
+        ]
+
+    @property
+    def tags_by_id(self) -> dict[int, 'Tag']:
+        return {tag.id: tag for tag in self.tags}
+
+    def resolve_tags(self, tag_ids: list[int]) -> list['Tag']:
+        """The tags matching `tag_ids`, in the same order as :attr:`tags`. Ids
+        that no longer resolve (a deleted tag, or an event imported from
+        another installation) are ignored."""
+        wanted = set(tag_ids)
+        return [tag for tag in self.tags if tag.id in wanted]
+
+    @property
     def custom_tie_break_sets(self) -> list['TieBreakSet']:
         from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
         from database.sqlite.event.event_store import StoredTieBreak
@@ -335,6 +371,9 @@ class SharlyChessConfig(metaclass=Singleton):
     """ The URL of the project. """
     web_url: str = 'https://sharly-chess.com'
 
+    """ The URL of the donation website. """
+    donate_url: str = 'https://donations.sharly-chess.com'
+
     """ The contact email. """
     mail: str = 'contact@sharly-chess.com'
 
@@ -359,62 +398,7 @@ class SharlyChessConfig(metaclass=Singleton):
         """The project of the application."""
         return _('Sharly Chess project')
 
-    # The extension of event databases (Sharly Chess Event).
-    event_database_ext: str = 'sce'
-
-    # The old extension of event databases (used to recover data from previous releases).
-    event_database_old_ext: str = 'db'
-
-    # The name of the folder for the archived events.
-    archives_folder: str = 'archives'
-
-    event_archive_base_path = EVENTS_DIR / archives_folder
-
-    # The extension of archives event databases (Sharly Chess Archive).
-    event_archive_ext: str = 'sca'
-
-    # The base path where event database backups are stored.
-    event_backup_base_path: Path = EVENTS_DIR / 'backups'
-
-    # The extension of backup event databases.
-    event_backup_ext: str = 'backup'
-
-    # The extension of federation databases.
-    federation_database_ext: str = 'db'
-
-    # The name of the folder for the custom files, used to
-    # recover custom files from previously installed releases.
-    custom_folder: str = 'custom'
-
-    # The path to the user custom files.
-    custom_path: Path = Path().absolute() / custom_folder
-
-    # The path to the embedded custom files.
-    embedded_custom_path: Path = BASE_DIR / 'src' / custom_folder
-
-    # The path to raw SQL files.
-    database_sql_path: Path = BASE_DIR / 'src' / 'database' / 'sql'
-
-    # The path of the examples.
-    examples_path = BASE_DIR / 'examples'
-
-    # The path of the files used to generate example event databases.
-    example_events_path = examples_path / 'events'
-
     uniq_id_regex = re.compile(r'^[0-9a-zA-Z_\-]+$')
-
-    # The path of the embedded place cards template files.
-    embedded_place_cards_path: Path = (
-        BASE_DIR / 'src/web/templates/admin/print/place_cards'
-    )
-
-    # The path of the custom place cards template files.
-    custom_place_cards_path: Path = custom_path / 'place_cards'
-
-    # The path of the files used to generate example event databases.
-    example_place_cards_path = examples_path / 'place_cards'
-
-    place_card_template_ext: str = 'template'
 
     # The versions of the libraries for which the version can be easily extracted.
     litestar_version: Version = Version(litestar.__version__.formatted(short=True))
@@ -437,6 +421,10 @@ class SharlyChessConfig(metaclass=Singleton):
     select2_version = Version('4.0.13')
     select2_bootstrap_theme_version = Version('1.3.0')
     air_datepicker_version = Version('3.6.0')
+
+    @property
+    def event_database_ext(self) -> Extension:
+        return Extension.EVENT_DB
 
     @overload
     def app_url(self, ip: str) -> str: ...
@@ -603,6 +591,7 @@ class SharlyChessConfig(metaclass=Singleton):
             'CRC': _('Costa Rica'),
             'CRO': _('Croatia'),
             'CUB': _('Cuba'),
+            'CUR': _('Curacao'),
             'CYP': _('Cyprus'),
             'CZE': _('Czech Republic'),
             'DEN': _('Denmark'),

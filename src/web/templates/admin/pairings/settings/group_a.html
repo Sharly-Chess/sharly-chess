@@ -1,0 +1,132 @@
+{% set are_groups_editable = admin_tournament.pairing_variation.are_groups_editable %}
+<h4>
+    {{ _('Acceleration groups') }}
+    <i
+        class="bi-info-circle-fill ps-1 text-body"
+        style="font-size: 90%"
+        {{ macros.tooltip_attributes(
+            '', _(
+                'Virtual points are granted to players according to their group. '
+                'Those points only are used for pairing, not for ranking.'
+            ), 'top'
+        ) }}
+    ></i>
+</h4>
+<div class="row">
+    <div class="col-12">
+        {% set recommended = setting.default_value(admin_tournament) %}
+        {{ admin_macros.integer_range_input(
+            name=setting.id,
+            label=_('%(string)s:', string=setting.name),
+            help_text=(
+                _(
+                    'Pairing number range of the group (recommended: %(min)d-%(max)d).',
+                    min=recommended[0],
+                    max=recommended[1],
+                ) if are_groups_editable else
+                _('Pairing number range of players in the group.')
+            ),
+            tooltip_text=admin_tournament.pairing_variation.get_group_a_tooltip(admin_tournament),
+            input_tooltip=(
+                '' if are_groups_editable else
+                _('Groups can\'t be edited for this pairing system.')
+            ),
+            min_disabled=true,
+            data=data,
+            errors=errors,
+        ) }}
+    </div>
+    <div id="GROUP-A-{{ setting.group_count() }}-r1" class="col-12 form-text mt-0">
+    </div>
+</div>
+<script>
+    {% set a_min_field = 'GROUP-A-' ~ setting.group_count() ~ '-min' %}
+    {% set a_max_field = 'GROUP-A-' ~ setting.group_count() ~ '-max' %}
+    {% set a_r1_field = 'GROUP-A-' ~ setting.group_count() ~ '-r1' %}
+    {% set b_min_field = 'GROUP-B-' ~ setting.group_count() ~ '-min' %}
+    {% set b_max_field = 'GROUP-B-' ~ setting.group_count() ~ '-max' %}
+    {% set b_r1_field = 'GROUP-B-' ~ setting.group_count() ~ '-r1' %}
+    {% if setting.group_count() > 2 %}
+        {% set c_min_field = 'GROUP-C-' ~ setting.group_count() ~ '-min' if setting.group_count() > 2 else '' %}
+        {% set c_max_field = 'GROUP-C-' ~ setting.group_count() ~ '-max' if setting.group_count() > 2 else '' %}
+        {% set c_r1_field = 'GROUP-C-' ~ setting.group_count() ~ '-r1' if setting.group_count() > 2 else '' %}
+    {% endif %}
+    function getPairingNumbersCount(pairingNumbers, minPairingNumber, maxPairingNumber) {
+        console.log('getPairingNumbersCount(pairingNumbers=' + pairingNumbers + ', minPairingNumber=' + minPairingNumber + ', maxPairingNumber=' + maxPairingNumber + ')...')
+        pairingNumbersCount = 0;
+        pairingNumbers.forEach(function (pairingNumber, index) {
+            if (pairingNumber < minPairingNumber) {
+                console.log('pairingNumber=' + pairingNumber + ' < ' + minPairingNumber);
+                return;
+            }
+            if (pairingNumber > maxPairingNumber) {
+                console.log('pairingNumber=' + pairingNumber + ' > ' + maxPairingNumber);
+                return;
+            }
+            console.log('pairingNumber=' + pairingNumber + ' OK');
+            pairingNumbersCount++;
+        });
+        console.log('getPairingNumbersCount(pairingNumbers=' + pairingNumbers + ', minPairingNumber=' + minPairingNumber + ', maxPairingNumber=' + maxPairingNumber + ') => ' + pairingNumbersCount)
+        return pairingNumbersCount;
+    }
+    function getFieldIntValue(field) {
+        console.log('getFieldIntValue(field=' + field + ') => ' + parseInt($('#' + field).val(), 10))
+        return parseInt($('#' + field).val(), 10);
+    }
+    if (!String.prototype.format) {
+        String.prototype.format = function() {
+            var args = arguments;
+            return this.replace(/{(\d+)}/g, function(match, number) {
+                return typeof args[number] != 'undefined'
+                ? args[number]
+                : match
+                ;
+            });
+        };
+    }
+    function updateR1Field(r1PairingNumbers, minField, maxField, r1Field, warnIfOdd) {
+        count = getPairingNumbersCount(
+            r1PairingNumbers,
+            getFieldIntValue(minField),
+            getFieldIntValue(maxField)
+        );
+        if (count % 2 == 1 && warnIfOdd) {
+            text = "{{ _('Players in this group at round #1: {0} (odd number).') }}";
+            $('#' + r1Field).addClass('text-warning');
+        } else {
+            text = "{{ _('Players in this group at round #1: {0}.') }}";
+            $('#' + r1Field).removeClass('text-warning');
+        }
+        $('#' + r1Field).html(text.format(count));
+    }
+    function updateR1Fields() {
+        r1PairingNumbers = {{ r1_present_pairing_numbers | tojson }};
+        updateR1Field(
+            r1PairingNumbers,
+            '{{ a_min_field }}',
+            '{{ a_max_field }}',
+            '{{ a_r1_field }}',
+            true
+        );
+        updateR1Field(
+            r1PairingNumbers,
+            '{{ b_min_field }}',
+            '{{ b_max_field }}',
+            '{{ b_r1_field }}',
+            {% if setting.group_count() > 2 %}
+                true
+            {% else %}
+                false
+            {% endif %}
+        );
+        {% if setting.group_count() > 2 %}
+            updateR1Field(
+                r1PairingNumbers,
+                '{{ c_min_field }}',
+                '{{ c_max_field }}',
+                '{{ c_r1_field }}',
+                false
+            );
+        {% endif %}
+    }
+</script>

@@ -251,11 +251,24 @@ class TitleNormEvaluator:
                     )
                 )
                 continue
-            inputs.federations_counter[opponent.federation] += 1
+            # 1.4.2a — players with federation 'FID' are accepted (the game
+            # counts towards games played, titled opponents, Ra, score) but
+            # FID "is not considered a federation": it must not enter the
+            # federation mix. So it counts neither towards 1.4.3's foreign-
+            # federation tally nor as a federation that can breach the 1.4.4
+            # caps. (FIDE QC clarification, 2026.) RUS/BLR players are shown
+            # as FID but count under their own flag — the arbiter corrects
+            # the flag in the data; nothing special is done here.
+            if opponent.federation == Federation('FID'):
+                inputs.fid_count += 1
+            else:
+                inputs.federations_counter[opponent.federation] += 1
 
-            # 1.4.5a — CM/WCM are NOT counted as title-holders.
-            if opponent.title in TitleNorm.TITLE_HOLDERS:
-                inputs.titles_counter[opponent.title] += 1
+            # 1.4.5a — CM/WCM are NOT counted as title-holders. Both the
+            # open and women titles count (e.g. an IM + WIM opponent).
+            for title in opponent.held_titles:
+                if title in TitleNorm.TITLE_HOLDERS:
+                    inputs.titles_counter[title] += 1
 
             # 1.4.2c — the last-round forfeit-against is scored as a LOSS.
             applied_142c = (
@@ -342,8 +355,16 @@ class TitleNormEvaluator:
         """1.4.5a — at least 50% of opponents are title-holders (CM/WCM
         excluded; the inputs already filter those out via TITLE_HOLDERS).
         Threshold scales with played_games per spec wording "50% of the
-        opponents". Returns (passes, num_title_holders)."""
-        num_titles = sum(inputs.titles_counter.values())
+        opponents". Returns (passes, num_title_holders).
+
+        Counts each opponent once, even if they hold both an open and a
+        women title-holder title (the per-title `titles_counter` used for
+        display may count such an opponent under both)."""
+        num_titles = sum(
+            1
+            for opponent in inputs.opponents
+            if any(title in TitleNorm.TITLE_HOLDERS for title in opponent.held_titles)
+        )
         return (
             num_titles >= tn.minimum_title_holders(inputs.played_games),
             num_titles,
@@ -354,8 +375,17 @@ class TitleNormEvaluator:
     ) -> tuple[bool, int]:
         """1.4.5b-e — minimum count of opponents holding the norm's required
         title set (GM norm needs at least 1/3 GMs, min 3; etc.). Threshold
-        scales with played_games. Returns (passes, count_met)."""
-        count = sum(inputs.titles_counter.get(t, 0) for t in tn.required_titles)
+        scales with played_games. Returns (passes, count_met).
+
+        Counts each opponent once if either of their titles is in the
+        norm's required set — e.g. for a WIM norm an opponent's WIM women
+        title qualifies even when their open title does not (or is unset)."""
+        required = frozenset(tn.required_titles)
+        count = sum(
+            1
+            for opponent in inputs.opponents
+            if not opponent.held_titles.isdisjoint(required)
+        )
         return (
             count >= tn.minimum_required_titles(self.tournament, inputs.played_games),
             count,
@@ -441,6 +471,7 @@ class TitleNormEvaluator:
             Federation(self.player.event.federation), 0
         )
         res.federations_count = num_feds
+        res.fid_count = inputs.fid_count
 
         if not self.own_federation_requirement(inputs, tn):
             res.too_many_own_federation = _(

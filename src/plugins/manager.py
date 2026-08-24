@@ -26,23 +26,23 @@ class AppPluginManager(PluginManager):
         from plugins.chess_results.chess_results import ChessResultsPlugin
         from plugins.ffe.ffe import FfePlugin
         from plugins.chessevent.chessevent import ChessEventPlugin
-        from plugins.pairing_acceleration.pairing_acceleration import (
-            PairingAccelerationPlugin,
-        )
         from plugins.handicap_games.handicap_games import (
             HandicapGamesPlugin,
         )
         from plugins.fra_schools.fra_schools import FRASchoolsPlugin
         from plugins.sce.sce import SCEPlugin
+        from plugins.chess960.chess960 import Chess960Plugin
+        from plugins.custom_upload.custom_upload import CustomUploadPlugin
 
         plugins = [
             SCEPlugin(),
-            PairingAccelerationPlugin(),
             ChessResultsPlugin(),
             FfePlugin(),
             ChessEventPlugin(),
             FRASchoolsPlugin(),
             HandicapGamesPlugin(),
+            Chess960Plugin(),
+            CustomUploadPlugin(),
         ]
         return {plugin.id: plugin for plugin in plugins}
 
@@ -130,10 +130,13 @@ class AppPluginManager(PluginManager):
     def hook_for_event(self, event: Optional['Event'], hook_name: str):
         remove_plugins = []
         if event:
+            # event.enabled_plugins (not the raw stored list) so plugins
+            # that don't support the event's type stay out of the hooks.
+            event_plugin_ids = {plugin.id for plugin in event.enabled_plugins}
             remove_plugins = [
                 plugin
                 for plugin in self.enabled_plugins
-                if plugin.id not in event.stored_event.enabled_plugins
+                if plugin.id not in event_plugin_ids
             ]
         return self.subset_hook_caller(hook_name, remove_plugins)
 

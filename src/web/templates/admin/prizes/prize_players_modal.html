@@ -9,6 +9,12 @@
             <h2 class="modal-title">
                 {{ _('Players of category [%(category)s]', category=admin_prize_category.name) }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
             <h4>
@@ -50,8 +56,17 @@
                             {{ _('Club') }}
                         </th>
                         <th scope="col">
-                            {{ _('Pts *** POINTS COLUMN HEADER') }}
+                            {{ admin_tournament.leading_tie_break.acronym }}
                         </th>
+                        {% if admin_prize_category.ranks_by_average_performance %}
+                            <th scope="col">
+                                {{ _('Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER') }}
+                            </th>
+                        {% elif admin_prize_category.ranks_by_best_round_performance %}
+                            <th scope="col">
+                                {{ _('Peak perf. *** PEAK PERFORMANCE COLUMN HEADER') }}
+                            </th>
+                        {% endif %}
                          <th scope="col">
                             {{ _('Prize *** PRIZE COLUMN HEADER') }}
                         </th>
@@ -97,8 +112,16 @@
                                 {{ player.club.name }}
                             </td>
                             <td class="{{ prize_class }}">
-                                {{ player.points_str }}
+                                {{ player.leading_tie_break_value }}
                             </td>
+                            {% if not admin_prize_category.ranks_by_final_standing %}
+                                {% set metric = admin_prize_category.ranking_metric(player) %}
+                                <td class="{{ prize_class }}">
+                                    {% if metric is not none %}
+                                        {{ "%+.2f"|format(metric) }}
+                                    {% endif %}
+                                </td>
+                            {% endif %}
                             <td class="{{ prize_class }}">
                                 {% if assigned_prize %}
                                     {{ assigned_prize.name }}
@@ -121,16 +144,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
-        <div class="modal-footer">
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
         </div>
     </div>
 </div>

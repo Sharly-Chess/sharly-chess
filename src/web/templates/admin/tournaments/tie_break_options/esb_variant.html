@@ -1,0 +1,21 @@
+{# Without match points, only the GP×GP variant (EGGSB) is meaningful;
+   force it via a hidden field rather than offering MP-bearing
+   choices. #}
+{% if not admin_tournament.pairing_system.supports_match_points %}
+<input type="hidden" name="{{ option.id }}" value="EGGSB"/>
+{% else %}
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('ESB variant')),
+        tooltip_text=_(
+            'Which combination of opponent score × own score is used. '
+            'Match points (MP) reward winning the match; game points '
+            '(GP) reward the margin of victory.'
+        ),
+        select_options=option.variant_options,
+        tooltip_select=true,
+        data=data, errors=errors
+    ) }}
+</div>
+{% endif %}

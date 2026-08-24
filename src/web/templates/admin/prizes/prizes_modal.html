@@ -7,20 +7,76 @@
             <h2 class="modal-title">
                 {{ _('Prize list') }}
             </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
         </div>
         <div class="modal-body">
+            <div class="d-flex gap-2 mb-3 justify-content-end">
+                {% if not admin_prize_category.is_main %}
+                    <span
+                        {{ macros.tooltip_attributes(
+                            'info',
+                            _('Define the criteria for players to belong to this category.'),
+                            'top'
+                        ) }}
+                    >
+                        <button
+                            class="btn btn-outline-primary"
+                            hx-get="{{ url_for(
+                                'admin-prize-criteria-modal'
+                                if admin_prize_category.criteria else
+                                'admin-prize-criterion-create-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id,
+                                prize_category_id=admin_prize_category.id,
+                            ) }}"
+                            hx-indicator="#please-wait"
+                        >
+                            <i class="bi-filter pe-1"></i>
+                            {{ _('Criteria') }}
+                        </button>
+                    </span>
+                {% endif %}
+                <button
+                    class="btn btn-primary text-nowrap"
+                    hx-get="{{ url_for(
+                        'admin-prize-create-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        prize_group_id=admin_prize_group.id,
+                        prize_category_id=admin_prize_category.id,
+                    ) }}"
+                    hx-indicator="#please-wait"
+                    {{ macros.tooltip_attributes('info', _('Add a prize to the list.'), 'top') }}
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Add') }}
+                </button>
+            </div>
             <h4 class="mb-3">
                 {{ _('%(string)s:', string=_('Category')) }}
                 {{ admin_prize_category.name }}
             </h4>
+            {% if admin_prize_category.prizes|length > 1
+                and (admin_prize_category.total_monetary_value
+                    or admin_prize_category.total_non_monetary_value) %}
+                <div class="text-secondary mb-3">
+                    {{ macros.prize_totals_line(
+                        admin_prize_category.format_total_monetary_value(prize_currency)
+                            if admin_prize_category.total_monetary_value else None,
+                        admin_prize_category.format_total_non_monetary_value(prize_currency)
+                            if admin_prize_category.total_non_monetary_value else None,
+                    ) }}
+                </div>
+            {% endif %}
             <div class="d-flex flex-column gap-2">
                 {% if not admin_prize_category.prizes %}
                     <div class="text-danger">{{ _('No prizes.') }}</div>
-                {% else %}
-                    <b class="mb-1">
-                        {{ _('%(string)s:', string=_('Total prize value')) }}&nbsp;
-                        {{ admin_prize_category.format_total_prize_value(prize_currency) }}
-                    </b>
                 {% endif %}
                 {% for prize in admin_prize_category.sorted_prizes %}
                     <div class="border border-secondary bg-body-tertiary">
@@ -69,58 +125,6 @@
                     </div>
                 {% endfor %}
             </div>
-        </div>
-        <div class="modal-footer">
-            {% if not admin_prize_category.is_main %}
-                <span
-                    {{ macros.tooltip_attributes(
-                        'info',
-                        _('Define the criteria for players to belong to this category.'),
-                        'top'
-                    ) }}
-                >
-                    <button
-                        class="btn btn-outline-primary"
-                        hx-get="{{ url_for(
-                            'admin-prize-criteria-modal'
-                            if admin_prize_category.criteria else
-                            'admin-prize-criterion-create-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            prize_group_id=admin_prize_group.id,
-                            prize_category_id=admin_prize_category.id,
-                        ) }}"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-filter pe-1"></i>
-                        {{ _('Criteria') }}
-                    </button>
-                </span>
-            {% endif %}
-            <div class="flex-grow-1"></div>
-            <button
-                type="button"
-                class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
-            >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
-            </button>
-            <button
-                class="btn btn-primary text-nowrap"
-                hx-get="{{ url_for(
-                    'admin-prize-create-modal',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    prize_group_id=admin_prize_group.id,
-                    prize_category_id=admin_prize_category.id,
-                ) }}"
-                hx-indicator="#please-wait"
-                {{ macros.tooltip_attributes('info', _('Add a prize to the list.'), 'top') }}
-            >
-                <i class="bi-plus-square-fill pe-1"></i>
-                {{ _('Add') }}
-            </button>
         </div>
     </div>
 </div>

@@ -4,7 +4,7 @@ from typing import Annotated, Any
 
 from litestar import post, get
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath
 from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
@@ -46,7 +46,7 @@ class FfeTournamentController(BaseEventAdminController):
     )
     async def htmx_ffe_test_auth(
         self,
-        event_uniq_id: str,
+        event_uniq_id: FromPath[str],
         data: Annotated[
             dict[str, Any],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -95,7 +95,7 @@ class FfeTournamentController(BaseEventAdminController):
     async def htmx_ffe_make_visible(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -123,7 +123,7 @@ class FfeTournamentController(BaseEventAdminController):
     async def htmx_ffe_upload_tournament(
         self,
         request: HTMXRequest,
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -152,8 +152,8 @@ class FfeTournamentController(BaseEventAdminController):
     async def htmx_ffe_extract_fees(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
+        event_uniq_id: FromPath[str],
+        tournament_id: FromPath[int],
     ) -> Template | ClientRedirect:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -191,8 +191,8 @@ class FfeTournamentController(BaseEventAdminController):
     async def ffe_download_fees(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
+        event_uniq_id: FromPath[str],
+        tournament_id: FromPath[int],
     ) -> Template | File:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()

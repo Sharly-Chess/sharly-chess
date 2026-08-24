@@ -1,0 +1,8 @@
+{% set event_id = chessevent_utils.resolve_event_id(tournament) %}
+<span class="d-inline-flex align-items-center flex-wrap gap-2">
+    <a
+        href="https://chessevent.echecs-bretagne.fr/public/inscrList.php?event={{ event_id }}"
+        target="_blank"
+        {{ macros.tooltip_attributes('', _('Public page of the tournament.')) }}
+    ><i class="bi bi-box-arrow-up-right"></i></a>
+</span>

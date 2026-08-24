@@ -1,5 +1,10 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('timers') %}
+{% set collection_view_mode = get_admin_collection_view_mode('timers') %}
+{% set collection_show_details = get_admin_collection_show_details('timers') %}
+{% set collection_url = url_for('admin-event-timers-tab', event_uniq_id=admin_event.uniq_id) %}
+
 {% block top_left_nav %}
     {{ admin_macros.admin_title(_('Timers'), 'screens-timers') }}
     <script>
@@ -8,6 +13,7 @@
 {% endblock %}
 
 {% block top_right_nav %}
+    {% include '/admin/common/collection_controls.html' %}
     <span {{ macros.tooltip_attributes('info', _('Default timer settings'), 'bottom') }}
         <button
             class="btn btn-outline-primary text-nowrap"
@@ -42,26 +48,23 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row gy-2 gx-3">
-        {% if admin_event.timers_by_name %}
-            {% for timer in admin_event.timers_by_name.values() %}
-                {% include 'timer_card.html' %}
-            {% endfor %}
-        {% else %}
-            <div class="mx-auto" style="max-width: 500px;">
-                <h5 class="mt-2 my-5 text-center">
-                    {{ _('No timers') }}
-                </h5>
-                <p>
-                    {{ _('Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event.') }}
-                </p>
-                <p>
-                    {{ _('Once created, you can select the timer to display in the settings of each screen, family or rotator.') }}
-                </p>
-                <p>
-                    {{ _('Create a timer now to get started.') }}
-                </p>
-            </div>
-        {% endif %}
-    </div>
+    {% with
+        items=admin_event.timers_by_name.values(),
+        empty_message=_('No timers'),
+        sortable=false,
+        show_details=collection_show_details
+    %}
+        {% include '/admin/common/collection.html' %}
+    {% endwith %}
+    {% if not admin_event.timers_by_name %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <p>
+                {{ _('Timers can be placed on any screen, multi-screen or rotator to display a count down to the next round or other important event.') }}
+            </p>
+            <p>
+                {{ _('Once created, you can select the timer to display in the settings of each screen, multi-screen or rotator.') }}
+            </p>
+            <p>{{ _('Create a timer now to get started.') }}</p>
+        </div>
+    {% endif %}
 {% endblock %}

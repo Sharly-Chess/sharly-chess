@@ -1,0 +1,8 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Sort by:'),
+        select_options=option.team_grid_sorter_options,
+        data=data, errors=errors
+    ) }}
+</div>

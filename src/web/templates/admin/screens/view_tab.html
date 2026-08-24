@@ -1,5 +1,10 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('screens') %}
+{% set collection_view_mode = get_admin_collection_view_mode('screens') %}
+{% set collection_show_details = get_admin_collection_show_details('screens') %}
+{% set collection_url = url_for(admin_event_tab, event_uniq_id=admin_event.uniq_id) %}
+
 {% block top_left_nav %}
     {% if client.can_view_public_screens %}
         {{ admin_macros.admin_title(admin_screen_type_data.title) }}
@@ -7,21 +12,16 @@
 {% endblock %}
 
 {% block top_right_nav %}
+    {% include '/admin/common/collection_controls.html' %}
 {% endblock %}
 
 {% block cards_container_cards %}
-    {% if admin_screen_type_data.screens %}
-        <div class="row gy-2 gx-3 mb-4">
-            {% for screen in admin_screen_type_data.screens %}
-                {% with
-                    card_url=url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id),
-                    card_class='border-danger' if screen.private else '',
-                    card_background_url=screen.background_url,
-                    card_background_color=screen.background_color
-                %}
-                    {% include 'screen_card.html' %}
-                {% endwith %}
-            {% endfor %}
-        </div>
-    {% endif %}
+    {% with
+        items=admin_screen_type_data.screens,
+        empty_message=_('No screens'),
+        sortable=false,
+        show_details=collection_show_details
+    %}
+        {% include '/admin/common/collection.html' %}
+    {% endwith %}
 {% endblock %}

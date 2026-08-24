@@ -4,6 +4,7 @@ from typing import Self
 
 from data.pairing import Pairing
 from data.pairings import PairingVariation, variations
+from data.pairings.scheveningen import ScheveningenPairingSystem
 from data.pairings.systems import (
     RoundRobinPairingSystem,
     SwissPairingSystem,
@@ -20,7 +21,7 @@ from plugins.ffe.ffe_tie_breaks import (
     MedianPapiBuchholzType,
 )
 from plugins.ffe.utils import PlayerFFELicence
-from plugins.pairing_acceleration import pairing_variations as accelerations
+from data.pairings import acceleration as accelerations
 from utils import CoreMapper
 from utils.enum import (
     TournamentRating,
@@ -53,7 +54,10 @@ class PapiPairingVariation(CoreMapper[str, PairingVariation]):
         if papi_key := super().get_outer_value(core_object):
             return papi_key
         pairing_system = core_object.system()
-        if pairing_system == SwissPairingSystem():
+        # A Scheveningen is exported as an individual Swiss.
+        if pairing_system == SwissPairingSystem() or isinstance(
+            pairing_system, ScheveningenPairingSystem
+        ):
             core_object = variations.StandardSwissVariation()
         elif pairing_system == RoundRobinPairingSystem():
             core_object = variations.BergerRoundRobinVariation()
@@ -67,6 +71,14 @@ class PapiPairingSystem(CoreMapper[str, PairingSystem]):
             'Suisse': SwissPairingSystem(),
             'ToutesRondes': RoundRobinPairingSystem(),
         }
+
+    @classmethod
+    def get_outer_value(cls, core_object: PairingSystem) -> str | None:
+        # A Scheveningen has no Papi type of its own; it is exported as an
+        # individual Swiss.
+        if isinstance(core_object, ScheveningenPairingSystem):
+            return 'Suisse'
+        return super().get_outer_value(core_object)
 
 
 class PapiTieBreak(CoreMapper[str, TieBreak]):
@@ -91,6 +103,21 @@ class PapiTieBreak(CoreMapper[str, TieBreak]):
             'Koya': tie_breaks.KoyaTieBreak(),
             'Manuel': tie_breaks.ManualTieBreak(),
         }
+
+    @classmethod
+    def get_outer_value(
+        cls,
+        core_object: TieBreak,
+        three_points_for_a_win: bool = False,
+    ) -> str | None:
+        if (
+            core_object.id == tie_breaks.SonnebornBergerTieBreak().id
+            and three_points_for_a_win
+        ):
+            # Three points for a win is not taken into account for Sonneborn Berger
+            # in Papi, so in those cases it needs to be overridden with the SC ranking
+            return None
+        return super().get_outer_value(core_object)
 
 
 class PapiTournamentRating(CoreMapper[str, TournamentRating]):
@@ -318,7 +345,7 @@ class PapiRound:
     @staticmethod
     def is_convertible_to_papi(result: Result, tournament: Tournament) -> bool:
         try:
-            PapiRound._result_to_papi_result(result, tournament.pab_value)
+            PapiRound._result_to_papi_result(result, tournament.pab_equivalent_result)
             return True
         except ValueError:
             return False

@@ -11,9 +11,11 @@ from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer
-from data.tie_breaks import TieBreak, TieBreakOption
-from data.tie_breaks.categories import TieBreakCategory
+from data.tie_breaks import TeamTieBreak, TieBreak, TieBreakOption
+from data.tie_breaks.categories import TeamScoreCategory, TieBreakCategory
 from data.tie_breaks.options import SilentTieBreakOption
+from data.tie_breaks.team_records import TeamRecord
+from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
 from data.tie_breaks.tie_breaks import (
     TournamentPerformanceRatingTieBreak,
     KashdanTieBreak,
@@ -92,6 +94,9 @@ class BasePapiTieBreak(TieBreak, ABC):
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
         return self.base_tie_break.forbidden_pairing_systems
 
+    def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
+        return self.base_tie_break.is_compatible_with(pairing_system)
+
 
 class PapiPerformanceTieBreak(BasePapiTieBreak):
     @staticmethod
@@ -156,15 +161,19 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         max_possible_points = tournament.win_points * after_round
 
         # Only points from played games should be counted
+        points_by_player_id = {
+            player.id: self._points_after(player, after_round)
+            for player in tournament.players
+        }
         players = sorted(
             tournament.players,
-            key=lambda player: self._points_after(player, after_round),
+            key=lambda player: points_by_player_id[player.id],
         )
         players_by_points: dict[float, list[TournamentPlayer]] = {
             points: list(group)
             for points, group in groupby(
                 players,
-                key=lambda player: self._points_after(player, after_round),
+                key=lambda player: points_by_player_id[player.id],
             )
         }
 
@@ -261,7 +270,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
             score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
-        max_score = len(ratings) * Result.WIN.points(tournament.point_values)
+        max_score = len(ratings) * tournament.win_points
         average = sum(ratings) / len(ratings)
         fractional_score = score / max_score
         bonus = self._performance_bonus(fractional_score)
@@ -523,26 +532,35 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
         tournament: 'Tournament' = player.tournament
         if after_round is None:
             after_round = max(player.pairings)
+        caching = tournament._compute_caching_enabled
+        cache_key = ('ffe_papi_adjusted_score', after_round)
+        if caching:
+            cached = player._compute_cache.get(cache_key)
+            if cached is not None:
+                return cached
         if tournament.pairing_system == RoundRobinPairingSystem():
-            return player.points_after(after_round)
-        score = 0.0
-        for round_index, pairing in player.pairings.items():
-            if round_index > after_round:
-                continue
-            if pairing.unplayed:
-                score += Result.DRAW.points(tournament.point_values)
-                continue
-            if pairing.requested_bye:
-                if all(
-                    p.voluntary_unplayed
-                    for index, p in player.pairings.items()
-                    if round_index < index <= after_round
-                ):
-                    score += Result.DRAW.points(tournament.point_values)
+            score = player.points_after(after_round)
+        else:
+            score = 0.0
+            for round_index, pairing in player.pairings.items():
+                if round_index > after_round:
+                    continue
+                if pairing.unplayed:
+                    score += tournament.draw_points
+                    continue
+                if pairing.requested_bye:
+                    if all(
+                        p.voluntary_unplayed
+                        for index, p in player.pairings.items()
+                        if round_index < index <= after_round
+                    ):
+                        score += tournament.draw_points
+                    else:
+                        score += pairing.result.points(tournament.point_values)
                 else:
                     score += pairing.result.points(tournament.point_values)
-            else:
-                score += pairing.result.points(tournament.point_values)
+        if caching:
+            player._compute_cache[cache_key] = score
         return score
 
     @staticmethod
@@ -670,3 +688,437 @@ class PapiSumOfBuchholzTieBreak(BasePapiTieBreak):
             for opponent in opponents
             if opponent is not None
         )
+
+
+# -----------------------------------------------------------------------------
+# Team tie-breaks
+# -----------------------------------------------------------------------------
+
+
+class BerlinTieBreak(TeamTieBreak):
+    """FFE *Coefficient d'échiquier* / Berlin (Règlement FFE §11.1).
+
+    Each board carries a coefficient: bottom board = 1, second-to-last
+    = 2, ..., top board = ``team_player_count``. A team's Berlin
+    score is the sum over every played round of (board score ×
+    coefficient). The intent is to weight the top boards: a win on
+    board 1 contributes more than a win on the last board.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-BERLIN'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Berlin')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'Be'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_BERLIN'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            "Each board's score is multiplied by a coefficient — the "
+            'top board by N, the next by N-1, and so on down to the '
+            'bottom board by 1 — then summed across all rounds. '
+            'Rewards results on the higher boards (FFE rules §11.1).'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        boards = tournament_context.team_player_count
+        total = 0.0
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            for board_index, score in enumerate(match.board_scores):
+                if board_index >= boards:
+                    break
+                coefficient = boards - board_index
+                total += score * coefficient
+        return total
+
+
+class GamePointsDifferentialTieBreak(TeamTieBreak):
+    """FFE *Différentiel des points de parties* (Règlement Coupe
+    Loubatière §4.4.a) — sum over all rounds of (points_for −
+    points_against).
+
+    Per match each side's raw board-score total is first clamped to a
+    floor of 0 (a forfeit can drive a raw total negative); the clamped
+    own total is the match's *points for* and the clamped opponent
+    total its *points against*. ``gains``/``pertes`` in the regulation
+    are these two sides of the adjusted match score — not counts of
+    won/lost games.
+
+    For PLAYED matches the opponent total comes from the paired team's
+    record in the same round. For byes (PAB / HPB / +F / -F / ZPB)
+    there is no opponent, so points_against is 0 and the differential
+    is the team's own (clamped) score."""
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-GP-DIFFERENTIAL'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Game points differential')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'd'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_GP_DIFF'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Sum over every round of (points for − points against), '
+            'where each match score is floored at 0 before the '
+            'subtraction. Byes count the awarded score against nothing.'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        total = 0.0
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            opponent_gp = 0.0
+            if match.played and match.opponent_id is not None:
+                opponent = all_records.get(match.opponent_id)
+                if opponent is not None:
+                    opp_match = opponent.match_at(match.round_)
+                    if opp_match is not None:
+                        opponent_gp = opp_match.own_gp
+            # Clamp each side's raw match total to 0 (a forfeit can
+            # push it negative), then take points_for − points_against.
+            total += max(0.0, match.own_gp) - max(0.0, opponent_gp)
+        return total
+
+
+class GamePointsForTieBreak(TeamTieBreak):
+    """FFE *Points de parties « pour »* (Règlement Coupe Loubatière
+    §4.4.a) — sum over all rounds of the team's *points for*: each
+    match's own raw board-score total floored at 0 (the same clamped
+    value used by the differential). Distinct from the plain
+    game-points total, which doesn't clamp negative match scores."""
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-GP-FOR'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Game points "for"')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'p'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_GP_FOR'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            "Sum over every round of the team's points for — each "
+            'match score floored at 0. FFE Loubatière Cup rules §4.4.a.'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        return sum(
+            max(0.0, match.own_gp)
+            for match in team_record.matches
+            if match.round_ <= after_round
+        )
+
+
+class BoardDifferentialTieBreak(TeamTieBreak):
+    """FFE *Somme des différentiels par échiquier* (Championnat de France
+    Féminin des Clubs, règlement F01 §4.4.a).
+
+    The last step of the official departage: once match points, the
+    overall differential and the points "pour" have all left teams
+    level, the tied teams are compared on the sum of their board-1
+    differentials, then — for those still level — on board 2, and so on
+    down the boards.
+
+    A board's differential for one match is the team's own score on that
+    board minus the opponent's on the same board, so it is unaffected by
+    the match-level flooring :class:`GamePointsDifferentialTieBreak`
+    applies. A round with no opponent (bye, exemption) has nothing to
+    subtract; such rounds award match-level points rather than board
+    scores, so in practice they contribute nothing.
+
+    This compares tied teams against one another rather than producing a
+    scalar, so the value is a within-group rank delta (0 = worst of the
+    group, larger = better), as for Extended Direct Encounter.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-BOARD-DIFFERENTIAL'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Board differentials')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'dEch'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_BOARD_DIFF'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Compares the tied teams on the sum of their differentials on '
+            'board 1; those still level are then compared on board 2, and '
+            'so on down the boards (FFE rules §4.4.a).'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    @property
+    def is_computed_per_team(self) -> bool:
+        return False
+
+    @property
+    def display_rank_delta(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        return 0.0
+
+    def compute_all_team_values(
+        self,
+        tied_groups: list[list[TeamRecord]],
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> dict[int, float]:
+        values: dict[int, float] = {}
+        for group in tied_groups:
+            differentials = {
+                record.team_id: self._board_differentials(
+                    record, all_records, tournament_context, after_round
+                )
+                for record in group
+            }
+            # Ascending, so the worst of the group lands on 0; teams whose
+            # board differentials match all the way down stay level.
+            ordered = sorted(group, key=lambda record: differentials[record.team_id])
+            rank = 0
+            previous: tuple[float, ...] | None = None
+            for index, record in enumerate(ordered):
+                current = differentials[record.team_id]
+                if previous is not None and current != previous:
+                    rank = index
+                values[record.team_id] = float(rank)
+                previous = current
+        return values
+
+    @staticmethod
+    def _board_differentials(
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        after_round: int,
+    ) -> tuple[float, ...]:
+        """Sum of (own board score − opponent board score) for each
+        board, board 1 first — the tuple the tied teams are compared on."""
+        boards = tournament_context.team_player_count
+        totals = [0.0] * boards
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            opponent_scores: tuple[float, ...] = ()
+            if match.played and match.opponent_id is not None:
+                opponent = all_records.get(match.opponent_id)
+                if opponent is not None:
+                    opponent_match = opponent.match_at(match.round_)
+                    if opponent_match is not None:
+                        opponent_scores = opponent_match.board_scores
+            for board_index in range(boards):
+                own = (
+                    match.board_scores[board_index]
+                    if board_index < len(match.board_scores)
+                    else 0.0
+                )
+                against = (
+                    opponent_scores[board_index]
+                    if board_index < len(opponent_scores)
+                    else 0.0
+                )
+                totals[board_index] += own - against
+        return tuple(totals)
+
+
+class LowestOwnAverageRatingTieBreak(TeamTieBreak):
+    """FFE *Moyenne des derniers Elo diffusés (au prorata des
+    participations), la plus basse* (Règlement Coupe Loubatière /
+    Parité §4.4) — the team with the lowest weighted-average own-Elo
+    wins the tie-break.
+
+    The average is over every (player, round) pair where the player
+    was fielded on a board (= weighting by participations). Per-round
+    ratings come from :attr:`TeamMatchRecord.board_ratings`, set in
+    parallel to ``board_scores``. The tie-break returns the negation
+    of the average so the standings sort (always descending) picks the
+    *lowest* team first.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-OWN-AVG-ELO'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Lowest own average rating')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'Elo'
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_FFE_OWN_ELO'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            "The team's own players' average rating, weighted by "
+            'their per-round board appearances. The team with the '
+            'lowest average wins the tie-break (lower is better).'
+        )
+
+    @property
+    def display_absolute_value(self) -> bool:
+        # The compute returns -avg so the descending sort works; the
+        # ranking screen should display the actual rating, not the
+        # negated value.
+        return True
+
+    @property
+    def display_decimals(self) -> int | None:
+        # An average rating — show 2 decimals, not the ½/¼/¾ points glyphs.
+        return 2
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        total = 0
+        count = 0
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            for rating in match.board_ratings:
+                if rating is None:
+                    continue
+                total += rating
+                count += 1
+        if not count:
+            return 0.0
+        return -total / count

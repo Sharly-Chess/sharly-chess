@@ -8,33 +8,55 @@ the server without duplicating server logic.
 from __future__ import annotations
 
 import asyncio
+import ctypes
 import io
 import json
+import locale
 import logging
 import os
 import queue
 import re
+import subprocess
 import sys
 import threading
 import webbrowser
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Any
 from PIL import Image as PILImage
 
 import toga
+from packaging.version import Version
+from toga import TextInput
 from toga.sources import ListSource
 from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 import qrcode
 
 import web
-from common import SHARLY_CHESS_VERSION, BASE_DIR
-from common.i18n import _
+from common import (
+    SHARLY_CHESS_VERSION,
+    BASE_DIR,
+    LOG_DIR,
+    FLATPAK_ID,
+    DATA_DIR,
+    DEVEL_ENV,
+    MANUAL_PATH_USED,
+)
+from common.i18n import _, ngettext
+from common.logger import get_logger
+from common.updaters.sparkle_updater import SparkleUpdater
+from common.updaters.version_updater import VersionUpdater
+from common.updaters.windows_updater import WindowsUpdater
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
+from utils import Utils
+from utils.program_variables import ProgramVar
 from web.server_engine import ServerEngine
 from common.sharly_chess_config import SharlyChessConfig
+
+logger = get_logger()
 
 # ---------- Minimal ANSI → HTML conversion for WebView ----------
 ANSI_SPLIT = r'\x1b\[([0-9;]*)[mK]'
@@ -264,7 +286,9 @@ class SharlyChessServerToga(toga.App):
 
     instance: Optional['SharlyChessServerToga'] = None
 
-    def __init__(self, *, debug: bool = False, port: int | None = None):
+    def __init__(
+        self, *, debug: bool = False, profile: bool = False, port: int | None = None
+    ):
         SharlyChessServerToga.instance = self
         icon_file_name: str | None = None
         web_dir = BASE_DIR / 'src' / 'web'
@@ -283,7 +307,7 @@ class SharlyChessServerToga(toga.App):
         icon_path = web_dir / 'static' / 'images' / icon_file_name
 
         # Use FLATPAK_ID if available to match the sandbox ID
-        app_id = os.environ.get('FLATPAK_ID', 'com.sharlychess.app')
+        app_id = FLATPAK_ID or 'com.sharlychess.app'
 
         super().__init__(
             formal_name='Sharly Chess',
@@ -293,7 +317,14 @@ class SharlyChessServerToga(toga.App):
             version=str(SHARLY_CHESS_VERSION),
         )
         self.debug = debug
+        self.profile = profile
         self.port = port
+
+        self.gui_loop = asyncio.get_event_loop()
+        self.server_loop = asyncio.SelectorEventLoop()
+
+        # reset the locale after having called toga.App.__init__(), needed by Togo 0.5.3+
+        locale.setlocale(locale.LC_ALL, (None, None))
 
         self._logview_ready = False
         self._pending_js: list[str] = []
@@ -302,87 +333,202 @@ class SharlyChessServerToga(toga.App):
         self.server_thread: Optional[threading.Thread] = None
         self.serve_task: asyncio.Task | None = None
         self.server_running = False
-        self.sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
 
         # Thread-safe communication
         self.message_queue: queue.Queue[tuple[str, str, Optional[str]]] = queue.Queue()
-        self.networks_visible = False
-        self.log_cleared = False
-        self.log_visible = False
-        self.compact_size = (400, 100)
+        self.compact_size = (450, 100)
         self.expanded_size = (1200, 700)
+
+        # Styles
+        self.menu_button_style = Pack(
+            font_weight='bold',
+            font_size=10,
+        )
+        self.active_menu_button_style = Pack(
+            font_weight='bold',
+            font_size=10,
+            background_color='#0078d7',
+            color='#ffffff',
+        )
+        self.button_style = Pack()
+        self.active_button_style = Pack(
+            background_color='#0078d7',
+            color='#ffffff',
+        )
 
         # GUI elements (initialized in startup)
         self.main_box: Optional[toga.Box] = None
-        self.browser_btn: Optional[toga.Button] = None
-        self.toggle_network_btn: Optional[toga.Button] = None
-        self.website_btn: Optional[toga.Button] = None
-        self.clear_btn: Optional[toga.Button] = None
-        self.toggle_log_btn: Optional[toga.Button] = None
-        self.log_view: Optional[toga.Box] = None
-        self.html_view: Optional[toga.WebView] = None
-        self.log_level_select: Optional[toga.Selection] = None
-        self.launch_browser_switch: Optional[toga.Switch] = None
-        self.color_switch: Optional[toga.Switch] = None
-        self.show_level_switch: Optional[toga.Switch] = None
-        self.show_time_switch: Optional[toga.Switch] = None
-        self.info_view: Optional[toga.Box] = None
-        self.main_buttons_section: Optional[toga.Box] = None
-        self.networks_section: Optional[toga.Box] = None
+
+        # Menu buttons
+        self.menu_home_btn: Optional[toga.Button] = None
+        self.menu_networks_btn: Optional[toga.Button] = None
+        self.menu_logs_btn: Optional[toga.Button] = None
+        self.menu_settings_btn: Optional[toga.Button] = None
+        self.active_view_name: str | None = None
+
+        # Home view
+        self.home_view: Optional[toga.Box] = None
+        self.server_state_container: Optional[toga.Box] = None
+        self.update_available_box: Optional[toga.Box] = None
+        self.home_main_label: Optional[toga.Label] = None
+        self.home_progress_bar: Optional[toga.ProgressBar] = None
+
+        # Networks view
         self.networks_view: Optional[toga.Box] = None
-        self.progress_bar: Optional[toga.ProgressBar] = None
         self.lan_ifaces: list[dict[str, str]] | None = None
+
+        # Logs view
+        self.logs_view: Optional[toga.Box] = None
+        self.html_view: Optional[toga.WebView] = None
+        self.log_settings_btn: Optional[toga.Button] = None
+        self.log_settings_container: Optional[toga.Box] = None
+        self.log_settings: Optional[toga.Box] = None
+        self.log_level_select: Optional[toga.Selection] = None
+        self.log_color_switch: Optional[toga.Switch] = None
+        self.show_log_level_switch: Optional[toga.Switch] = None
+        self.show_log_time_switch: Optional[toga.Switch] = None
+
+        # Settings view
+        self.settings_view: Optional[toga.Box] = None
+        self.launch_browser_switch: Optional[toga.Switch] = None
+        self.data_path_input: Optional[TextInput] = None
+        self.data_path_move_button: Optional[toga.Button] = None
+        self.check_beta_switch: Optional[toga.Switch] = None
+        self.latest_version_label: Optional[toga.Label] = None
+        self.latest_version_btn: Optional[toga.Button] = None
+        self.version_search_ongoing = False
+
+    @property
+    def menu_buttons(self) -> list:
+        return [
+            self.menu_home_btn,
+            self.menu_networks_btn,
+            self.menu_logs_btn,
+            self.menu_settings_btn,
+        ]
+
+    @property
+    def menu_views(self) -> list:
+        return [
+            self.home_view,
+            self.networks_view,
+            self.logs_view,
+            self.settings_view,
+        ]
+
+    @property
+    def compact_view_style(self) -> Pack:
+        margin = 10
+        return Pack(
+            direction=COLUMN,
+            margin=margin,
+            align_items='center',
+            width=self.compact_size[0] - margin * 2,
+        )
 
     # --- Toga lifecycle ---
     def startup(self):
         SharlyChessConfig().load_and_set_env()
-        config = SharlyChessConfig()
 
-        # Delete unused menus
-        for cmd in list(self.commands):
-            grp = getattr(cmd, 'group', None)
-            id_ = getattr(cmd, 'id', None)
-            if id_ and grp is not toga.Group.APP:
-                del self.commands[id_]
-
-        # Toolbar (buttons row)
-        btn_row = toga.Box(style=Pack(direction=ROW, margin=(0, 0, 8, 0)))
-        self.browser_btn = toga.Button(
-            text=_('Open Admin Interface'), on_press=self._open_browser
+        # Menu buttons
+        self.menu_home_btn = toga.Button(
+            _('Home'),
+            style=self.active_menu_button_style,
+            on_press=self._show_home_view,
         )
-        self.browser_btn.enabled = False
-        self.toggle_network_btn = toga.Button(
-            text=_('See Networks'), on_press=self._toggle_networks_view
+        self.menu_networks_btn = toga.Button(
+            _('Networks'),
+            style=self.menu_button_style,
+            enabled=False,
+            on_press=self._show_networks_view,
         )
-        self.website_btn = toga.Button(
-            text=_('Open documentation'), on_press=self._open_website
+        self.menu_logs_btn = toga.Button(
+            _('Logs'),
+            style=self.menu_button_style,
+            on_press=self._show_logs_view,
+            enabled=False,
         )
-        self.clear_btn = toga.Button(text=_('Clear Log'), on_press=self._clear_log)
-        self.clear_btn.style.visibility = 'hidden'
-
-        self.toggle_log_btn = toga.Button(
-            text=_('Show Log'),
-            on_press=self._toggle_log_view,
+        self.menu_settings_btn = toga.Button(
+            _('Settings'),
+            style=self.menu_button_style,
+            on_press=self._show_settings_view,
+            enabled=False,
         )
 
-        for b in (
-            self.website_btn,
-            self.clear_btn,
-            self.toggle_log_btn,
-        ):
-            b.style.margin_right = 4
+        # Home View
+        self.home_view = toga.Box(style=self.compact_view_style, gap=7)
 
-        btn_row.add(self.website_btn)
-        btn_row.add(self.toggle_log_btn)
-        btn_row.add(self.clear_btn)
+        self.update_available_box = toga.Box(
+            children=[
+                toga.Label(_('Updates are available!'), font_weight='bold'),
+                toga.Button(
+                    _('Install'),
+                    on_press=self._show_update_dialog,
+                    font_weight='bold',
+                ),
+                toga.Button(
+                    _('Changelog'),
+                    on_press=self._open_changelog,
+                    font_weight='bold',
+                ),
+            ],
+            align_items='center',
+            gap=2,
+        )
+        self.home_main_label = toga.Label(
+            _('Application startup...'), text_align='center'
+        )
+        self.server_state_container = toga.Box(
+            style=Pack(direction=COLUMN, align_items='center')
+        )
+        self.home_progress_bar = toga.ProgressBar()
+        self.home_progress_bar.max = None
+        self.server_state_container.add(self.home_progress_bar)
+        help_label = toga.Label(_('Need help?'))
+        doc_btn = toga.Button(_('Documentation'), on_press=self._open_documentation)
+        discord_btn = toga.Button('Discord', on_press=self._open_discord)
+        mail_btn = toga.Button(_('Mail'), on_press=self._open_mail)
+        donate_btn = toga.Button(
+            f'❤️ {_("Support the Sharly Chess project")}',
+            style=Pack(font_weight='bold'),
+            on_press=self._open_donate,
+        )
+        self.home_view.add(
+            self.home_main_label,
+            self.server_state_container,
+            toga.Divider(style=Pack(margin=(5, 0))),
+            toga.Box(
+                children=[help_label, doc_btn, discord_btn, mail_btn],
+                gap=5,
+                align_items='center',
+            ),
+            toga.Divider(style=Pack(margin=(5, 0))),
+            toga.Box(
+                children=[donate_btn],
+                gap=5,
+                align_items='center',
+            ),
+        )
+
+        # Networks view
+        self.networks_view = toga.Box(style=self.compact_view_style)
 
         # Log view: WebView with HTML for ANSI color support
         self.html_view = toga.WebView(
             style=Pack(flex=1), on_webview_load=self._on_logview_load
         )
-        self.log_view = toga.Box(style=Pack(direction=COLUMN, flex=1))
-        controls = toga.Box(style=Pack(direction=ROW, margin_bottom=10, gap=10))
-
+        self.logs_view = toga.Box(style=Pack(direction=COLUMN, flex=1))
+        log_buttons = toga.Box(style=Pack(direction=ROW, margin=(10, 0), gap=5))
+        self.log_settings_btn = toga.Button(
+            text=_('Log settings'),
+            style=self.button_style,
+            on_press=self._toggle_log_settings,
+        )
+        clear_logs_btn = toga.Button(text=_('Clear logs'), on_press=self._clear_log)
+        log_files_btn = toga.Button(_('Access log files'), on_press=self._open_logs_dir)
+        log_buttons.add(self.log_settings_btn, clear_logs_btn, log_files_btn)
+        self.logs_view.add(log_buttons)
+        config = SharlyChessConfig()
         log_level_options = [
             {'level': console_log_level, 'text': console_log_level_str}
             for console_log_level, console_log_level_str in config.console_log_levels.items()
@@ -392,110 +538,472 @@ class SharlyChessServerToga(toga.App):
             accessor='text',
             on_change=self._on_level_change,
         )
+        log_level = toga.Box(
+            children=[
+                toga.Label(_('Minimum level:')),
+                self.log_level_select,
+            ],
+            margin_right=5,
+            gap=2,
+            align_items='center',
+        )
         assert isinstance(self.log_level_select.items, ListSource)
         self.log_level_select.value = self.log_level_select.items.find(
             data={'level': config.console_log_level}
         )
-        controls.add(self.log_level_select)
-        self.color_switch = toga.Switch(
-            text=_('Log-level specific colors'),
+        self.log_color_switch = toga.Switch(
+            text=_('Level specific colors'),
             value=config.console_color,
-            on_change=self._on_color_switch_change,
+            on_change=self._on_log_color_switch_change,
         )
-        controls.add(self.color_switch)
-        self.show_level_switch = toga.Switch(
-            text=_('Show logging level'),
+        self.show_log_level_switch = toga.Switch(
+            text=_('Show level'),
             value=config.console_show_level,
-            on_change=self._on_show_level_switch_change,
+            on_change=self._on_show_log_level_switch_change,
         )
-        controls.add(self.show_level_switch)
-        self.show_time_switch = toga.Switch(
+        self.show_log_time_switch = toga.Switch(
             text=_('Date and time'),
             value=config.console_show_date,
             on_change=self._on_show_date_switch_change,
         )
-        controls.add(self.show_time_switch)
+        self.log_settings = toga.Box(
+            direction=ROW,
+            margin_bottom=10,
+            visibility='hidden',
+            align_items='center',
+            gap=20,
+        )
+        self.log_settings.add(
+            log_level,
+            self.log_color_switch,
+            self.show_log_level_switch,
+            self.show_log_time_switch,
+        )
+        self.log_settings_container = toga.Box()
+        self.logs_view.add(self.log_settings_container)
+        self.logs_view.add(self.html_view)
 
-        self.log_view.add(controls)
-        self.log_view.add(self.html_view)
-
-        self.info_view = toga.Box(
-            style=Pack(direction=COLUMN, margin=10, align_items='center')
-        )
-        self.info_view.add(
-            toga.Label(text=_('Sharly Chess Server'), style=Pack(margin_bottom=7))
-        )
-        self.info_view.add(
-            toga.Label(
-                text=_('Version: {version}').format(version=SHARLY_CHESS_VERSION),
-                style=Pack(margin_bottom=7),
-            )
-        )
-        self.info_view.add(
-            toga.Label(
-                text=_('Warning: closing this window will stop Sharly Chess.'),
-                style=Pack(margin_bottom=7),
-            )
-        )
+        # Settings view
+        self.settings_view = toga.Box(style=self.compact_view_style, gap=7)
         self.launch_browser_switch = toga.Switch(
             text=_('Launch a browser on startup'),
             value=config.launch_browser,
             on_change=self._on_launch_browser_switch_change,
         )
-        self.info_view.add(self.launch_browser_switch)
 
-        self.progress_bar = toga.ProgressBar(style=Pack(margin_top=10))
-        self.progress_bar.max = None
-        self.info_view.add(self.progress_bar)
-
-        self.main_buttons_section = toga.Box(
-            style=Pack(direction=COLUMN, margin_top=10, align_items='center')
+        self.data_path_input = toga.TextInput(
+            value=str(DATA_DIR.absolute()),
+            readonly=True,
+            width=self.compact_size[0] - 20,
         )
-
-        section_buttons = toga.Box(
-            style=Pack(direction=COLUMN, margin_top=10, gap=5, align_items='center')
+        if sys.platform == 'darwin':
+            # toga maps TextInput to an NSTextField that wraps a long value
+            # onto a second line instead of clipping it, and readonly leaves
+            # it unselectable so there's no cursor to scroll with. Force the
+            # cell into single-line + scrollable mode and make the field
+            # selectable (but not editable), so a long path stays on one line
+            # and can be clicked into and scrolled, matching the Windows field.
+            native = self.data_path_input._impl.native
+            cell = native.cell
+            cell.usesSingleLineMode = True
+            cell.scrollable = True
+            cell.wraps = False
+            native.selectable = True
+        data_path_buttons = [
+            toga.Button(_('Open'), on_press=self._open_data_path_explorer)
+        ]
+        if MANUAL_PATH_USED:
+            self.data_path_input.enabled = False
+        else:
+            self.data_path_move_button = toga.Button(
+                _('Move'), on_press=self._handle_data_path_selection
+            )
+            data_path_buttons.append(self.data_path_move_button)
+        current_version_message = _('Current version: Sharly Chess {version}').format(
+            version=SHARLY_CHESS_VERSION
         )
-        section_buttons.add(self.browser_btn)
-        section_buttons.add(self.toggle_network_btn)
-        self.main_buttons_section.add(section_buttons)
-
-        self.networks_section = toga.Box(
-            style=Pack(direction=COLUMN, margin_top=10, align_items='center')
+        self.check_beta_switch = toga.Switch(
+            text=_('Include beta versions in updates'),
+            value=config.check_beta_versions,
+            on_change=self._on_check_beta_switch_change,
+        )
+        self.latest_version_label = toga.Label(
+            '', text_align='center'
+        )  # initialized later
+        self.latest_version_btn = toga.Button(
+            _('Search for updates'), on_press=self._search_for_updates
+        )
+        changelog_button = toga.Button(_('Changelog'), on_press=self._open_changelog)
+        title_style = Pack(font_weight='bold', font_size=10, text_align='center')
+        self.settings_view.add(
+            toga.Label(_('General'), style=title_style),
+            toga.Box(children=[self.launch_browser_switch]),
+            toga.Divider(margin=(5, 0)),
+            toga.Label(_('Data folder'), style=title_style),
+            self.data_path_input,
+            toga.Box(
+                direction=ROW,
+                children=data_path_buttons,
+                gap=10,
+            ),
+            toga.Divider(margin=(5, 0)),
+            toga.Label(_('Updates'), style=title_style),
+            toga.Label(current_version_message, text_align='center'),
+            self.latest_version_label,
+            toga.Box(
+                children=[self.latest_version_btn, changelog_button],
+                gap=10,
+            ),
+            toga.Box(children=[self.check_beta_switch]),
         )
 
         # Layout container
-        self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=10))
+        self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=(5, 10, 10, 10)))
+        btn_row = toga.Box(style=Pack(direction=ROW, gap=7))
+        for button in self.menu_buttons:
+            btn_row.add(button)
         self.main_box.add(btn_row)
-        self.main_box.add(self.info_view)
+        self.main_box.add(self.home_view)
 
-        self.main_window = toga.MainWindow(
-            title=_('Sharly Chess server'),
+        # Window class used instead of MainWindow to avoid having a toolbar
+        # See https://github.com/beeware/toga/issues/1870#issuecomment-2272534628
+        self.main_window = toga.Window(  # type: ignore
+            title='Sharly Chess',
             size=self.compact_size,
             content=self.main_box,
-            on_gain_focus=self._noop,
-            on_lose_focus=self._noop,
         )
-
-        assert isinstance(self.main_window, toga.MainWindow)
+        assert isinstance(self.main_window, toga.Window)
         self.main_window.show()
-        self.compact_size = self.main_window.size
 
     def update_from_sharly_chess_config(self):
-        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-        assert self.launch_browser_switch is not None
-        self.launch_browser_switch.value = sharly_chess_config.launch_browser
-        assert self.log_level_select is not None and isinstance(
-            self.log_level_select.items, ListSource
+        def config_update():
+            config = SharlyChessConfig()
+            assert self.launch_browser_switch is not None
+            self.launch_browser_switch.value = config.launch_browser
+            assert self.log_level_select is not None and isinstance(
+                self.log_level_select.items, ListSource
+            )
+            self.log_level_select.value = self.log_level_select.items.find(
+                data={'level': config.console_log_level}
+            )
+            assert self.log_color_switch is not None
+            self.log_color_switch.value = config.console_color
+            assert self.show_log_level_switch is not None
+            self.show_log_level_switch.value = config.console_show_level
+            assert self.show_log_time_switch is not None
+            self.show_log_time_switch.value = config.console_show_date
+            assert self.check_beta_switch is not None
+            self.check_beta_switch.value = config.check_beta_versions
+
+        self.gui_loop.call_soon_threadsafe(config_update)
+
+    def _show_view(self, name: str, is_compact_window: bool = True):
+        if self.active_view_name == name:
+            return
+        assert self.main_box is not None
+        for menu_view in self.menu_views:
+            if menu_view in self.main_box.children:
+                self.main_box.remove(menu_view)
+        view: toga.Box = getattr(self, f'{name}_view')
+        self.main_box.add(view)
+        for btn in self.menu_buttons:
+            btn.style = self.menu_button_style
+        view_btn: toga.Button = getattr(self, f'menu_{name}_btn')
+        view_btn.style = self.active_menu_button_style
+        self.active_view_name = name
+        assert isinstance(self.main_window, toga.Window)
+        self.main_window.size = (
+            self.compact_size if is_compact_window else self.expanded_size
         )
-        self.log_level_select.value = self.log_level_select.items.find(
-            data={'level': sharly_chess_config.console_log_level}
+
+    def _show_home_view(self, widget):
+        self._show_view('home')
+
+    def _show_logs_view(self, widget):
+        self._show_view('logs', is_compact_window=False)
+        assert self.html_view is not None
+        self.html_view.refresh()
+
+    def _show_networks_view(self, widget):
+        self._show_view('networks')
+        self._refresh_networks_view(hard_refresh=False)
+
+    def _show_settings_view(self, widget):
+        self._show_view('settings')
+        self._update_latest_version_components()
+
+    def _toggle_log_settings(self, widget):
+        assert self.log_settings_container is not None
+        assert self.log_settings is not None
+        assert self.log_settings_btn is not None
+        if self.log_settings in self.log_settings_container.children:
+            self.log_settings_container.remove(self.log_settings)
+            self.log_settings_btn.style = self.button_style
+        else:
+            self.log_settings_container.add(self.log_settings)
+            self.log_settings_btn.style = self.active_button_style
+
+    def _open_data_path_explorer(self, widget):
+        self._open_dir_in_explorer(DATA_DIR)
+
+    async def _handle_data_path_selection(self, widget):
+        folder_dialog = toga.SelectFolderDialog('', initial_directory=DATA_DIR)
+        assert isinstance(self.main_window, toga.Window)
+        new_data_dir: Path | None = await self.main_window.dialog(folder_dialog)
+        if new_data_dir is None or new_data_dir == DATA_DIR:
+            return
+
+        error: str | None = None
+        if any(new_data_dir.iterdir()):
+            # Directory is not empty
+            error = _('This folder is not empty.')
+        if not os.access(new_data_dir, os.W_OK):
+            # directory is not writable
+            error = _('You do not have write permission on this folder.')
+        if DATA_DIR in new_data_dir.parents:
+            error = _("The new folder can't be a sub folder of the current folder.")
+        if error:
+            error_dialog = toga.ErrorDialog(_('Invalid folder'), error)
+            await self.main_window.dialog(error_dialog)
+            return
+        confirm_dialog = toga.ConfirmDialog(
+            _('Data folder'),
+            _('Confirm the new data folder "{folder}"?').format(folder=new_data_dir)
+            + '\n'
+            + _('Restarting will be required to complete the move.'),
         )
-        assert self.color_switch is not None
-        self.color_switch.value = sharly_chess_config.console_color
-        assert self.show_level_switch is not None
-        self.show_level_switch.value = sharly_chess_config.console_show_level
-        assert self.show_time_switch is not None
-        self.show_time_switch.value = sharly_chess_config.console_show_date
+        if not await self.main_window.dialog(confirm_dialog):
+            return
+        ProgramVar.write_variables(
+            {
+                ProgramVar.DATA_DIR: str(new_data_dir),
+                ProgramVar.PREVIOUS_DATA_DIR: str(DATA_DIR),
+            }
+        )
+
+        assert self.settings_view is not None
+        assert self.data_path_input is not None
+        assert self.data_path_move_button is not None
+        self.data_path_input.enabled = False
+        self.data_path_move_button.enabled = False
+        self.settings_view.index(self.data_path_input)
+        self.settings_view.insert(
+            self.settings_view.index(self.data_path_input) + 2,
+            toga.Label(
+                _('Restart to complete the move'),
+                color='red',
+                font_weight='bold',
+                text_align='center',
+            ),
+        )
+        if sys.platform == 'win32':
+            await self._ask_windows_defender_exception(new_data_dir)
+
+    async def _ask_windows_defender_exception(self, new_data_dir: Path):
+        assert isinstance(self.main_window, toga.Window)
+        await asyncio.sleep(0.1)
+        process = Utils.run_process(
+            [
+                'powershell',
+                '-Command',
+                'Get-MpComputerStatus | Select-Object -ExpandProperty AMServiceEnabled',
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if 'True' not in process.stdout:
+            return
+        message = _(
+            'Do you want to add the new data folder '
+            'to the Microsoft Defender exception list?'
+        )
+        message += '\n' + _(
+            'This will improve performances. You must have administrator rights.'
+        )
+        question_dialog = toga.QuestionDialog(
+            self._dialog_title('Microsoft Defender'), message
+        )
+        if not await self.main_window.dialog(question_dialog):
+            return
+
+        # Go through sharly-chess.exe instead of directly cmd.exe
+        # For the name requesting the elevation to be "Sharly Chess"
+        # instead of "Command Line Interface"
+        params = ['--win-defender-exception-path', f'"{new_data_dir}"']
+        if DEVEL_ENV:
+            params.insert(0, f'"{sys.argv[0]}"')
+        # Type error when not running on windows
+        result = ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
+            None, 'runas', sys.executable, ' '.join(params), None, 0
+        )
+        if result > 32:
+            info_dialog = toga.InfoDialog(
+                self._dialog_title('Microsoft Defender'),
+                _(
+                    'The data folder has been successfully added '
+                    'to the Microsoft Defender exception list.'
+                ),
+            )
+            await self.main_window.dialog(info_dialog)
+        else:
+            error_dialog = toga.ErrorDialog(
+                self._dialog_title(_('Error')),
+                _(
+                    'The data folder could not be added to '
+                    'the Microsoft Defender exception list.'
+                ),
+            )
+            await self.main_window.dialog(error_dialog)
+
+    @staticmethod
+    def _last_search_message(last_search_at: datetime) -> str:
+        search_delta = datetime.now() - last_search_at
+        minutes = search_delta.seconds // 60
+        hours = minutes // 60
+        if hours:
+            return ngettext(
+                'last search an hour ago',
+                'last search {count} hours ago',
+                hours,
+            ).format(count=hours)
+        if not minutes:
+            return _('last search just now')
+        return ngettext(
+            'last search a minute ago',
+            'last search {count} minutes ago',
+            minutes,
+        ).format(count=minutes)
+
+    def _update_latest_version_components(self):
+        assert self.latest_version_btn is not None
+        assert self.latest_version_label is not None
+        assert self.update_available_box is not None
+        assert self.home_view is not None
+
+        skip_settings = self.active_view_name != 'settings'
+        latest = VersionUpdater.LATEST_VERSION
+        search_ongoing = self.version_search_ongoing
+        searched_at = VersionUpdater.LATEST_VERSION_SEARCHED_AT
+        if search_ongoing:
+            message = _('Searching for updates...')
+        elif not searched_at:
+            message = _('Update search failed (no internet)')
+        elif latest and latest > SHARLY_CHESS_VERSION:
+            message = _('Updates are available!')
+            if self.update_available_box not in self.home_view.children:
+                self.home_view.insert(0, self.update_available_box)
+            if not skip_settings:
+                self.latest_version_label.style.font_weight = 'bold'
+                self.latest_version_btn.text = _('Install')
+                self.latest_version_btn.on_press = self._show_update_dialog
+        else:
+            message = _('No available update')
+            message += f' ({self._last_search_message(searched_at)})'
+
+        if not skip_settings:
+            self.latest_version_label.text = message
+            self.latest_version_label.enabled = not search_ongoing
+            self.latest_version_btn.enabled = not search_ongoing
+
+    async def _search_for_updates(
+        self,
+        widget: toga.Widget | None = None,
+        is_startup: bool = False,
+    ):
+        if self.version_search_ongoing:
+            return
+
+        self.version_search_ongoing = True
+        self._update_latest_version_components()
+
+        async def run_search():
+            config = SharlyChessConfig()
+            try:
+                check_beta = config.check_beta_versions
+                VersionUpdater.search_for_latest_version(check_beta)
+            finally:
+                self.version_search_ongoing = False
+                self._update_latest_version_components()
+            if not is_startup or DEVEL_ENV:
+                return
+            latest = VersionUpdater.LATEST_VERSION
+            last_notif = config.last_notified_version
+            if (
+                latest
+                and latest > SHARLY_CHESS_VERSION
+                and (not last_notif or last_notif < latest)
+            ):
+                self._update_config('last_notified_version', str(latest))
+                await self._show_update_dialog(None)
+
+        asyncio.run_coroutine_threadsafe(run_search(), self.gui_loop)
+
+    @staticmethod
+    def _dialog_title(subtitle: str) -> str:
+        return f'Sharly Chess - {subtitle}'
+
+    async def _show_update_dialog(self, widget):
+        assert isinstance(self.main_window, toga.Window)
+        latest = VersionUpdater.LATEST_VERSION
+        assert latest is not None
+        if sys.platform == 'darwin':
+            if DEVEL_ENV:
+                error_dialog = toga.ErrorDialog(
+                    title=self._dialog_title(_('Error')),
+                    message=(
+                        'Sharly Chess is currently running in '
+                        'development and does not support updating.'
+                    ),
+                )
+                await self.main_window.dialog(error_dialog)
+                return
+            # Sparkle has its own dialog asking the user
+            # if they want to install the new version or not
+            await self._run_sparkle_updater(latest)
+            return
+
+        title = self._dialog_title(_('Updates'))
+        message = _('Sharly Chess {latest} is available, you have {current}.').format(
+            latest=latest, current=SHARLY_CHESS_VERSION
+        )
+        if sys.platform == 'win32':
+            message += '\n' + _('Do you want to install the update now?')
+            question_dialog = toga.QuestionDialog(title, message)
+            if not await self.main_window.dialog(question_dialog):
+                return
+            if WindowsUpdater.download():
+                self.quit_app(post_exit_task=WindowsUpdater.run)
+                return
+            title = self._dialog_title(_('Error'))
+            message = _(
+                'The update could not be downloaded. Consult the logs for more details.'
+            )
+            await self.main_window.dialog(toga.ErrorDialog(title, message))
+        else:
+            message += '\n' + _('Use Flatpak to handle updates.')
+            await self.main_window.dialog(toga.InfoDialog(title, message))
+
+    async def _run_sparkle_updater(self, version: Version):
+        """Runs the Sparkle updater, ask a retry if it fails."""
+        assert isinstance(self.main_window, toga.Window)
+        while True:
+            if SparkleUpdater.check_for_update(version):
+                return
+            title = self._dialog_title(_('Error'))
+            message = _(
+                'An update of Sharly Chess is available, '
+                'but the updater tool (Sparkle) failed.'
+            )
+            message += ' ' + _(
+                'Please consider contacting support, '
+                'or installing the new version manually.'
+            )
+            if not SparkleUpdater.is_retryable():
+                await self.main_window.dialog(toga.ErrorDialog(title, message))
+                return
+            message += '\n\n' + _('Do you want to try again?')
+            if not (await self.main_window.dialog(toga.QuestionDialog(title, message))):
+                return
 
     def on_running(self):
         # Logging handler
@@ -504,10 +1012,13 @@ class SharlyChessServerToga(toga.App):
         self.gui_handler = GUILogHandler(self)
         self.gui_handler.setLevel(logging.DEBUG)
 
-        assert self.progress_bar is not None
-        self.progress_bar.value = 1
-        self.progress_bar.start()
-
+        assert self.home_progress_bar is not None
+        self.home_progress_bar.value = 1
+        self.home_progress_bar.start()
+        # Look for updates. Run asynchronously to speed up server startup
+        asyncio.run_coroutine_threadsafe(
+            self._search_for_updates(is_startup=True), self.server_loop
+        )
         # Start message processing and kick the server immediately
         asyncio.create_task(self._process_message_queue())
         if not self.server_running:
@@ -519,59 +1030,65 @@ class SharlyChessServerToga(toga.App):
         return button
 
     def on_server_ready(self):
-        assert self.browser_btn is not None
-        self.browser_btn.enabled = True
+        assert self.home_main_label is not None
+        assert self.home_progress_bar is not None
+        assert self.server_state_container is not None
+        self.home_progress_bar.stop()
+        self.home_main_label.text = _(
+            'Warning: closing this window will stop Sharly Chess.'
+        )
+        self.server_state_container.clear()
+        self.server_state_container.add(
+            toga.Box(
+                style=Pack(direction=ROW, align_items='center'),
+                children=[
+                    toga.Button(
+                        _('Open application (browser)'),
+                        on_press=self._open_browser,
+                    ),
+                ],
+            )
+        )
 
-        assert self.progress_bar is not None
-        assert self.info_view is not None
-        self.progress_bar.stop()
-        self.info_view.remove(self.progress_bar)
+        for button in self.menu_buttons:
+            button.enabled = True
 
-        assert self.main_buttons_section is not None
-        main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
-        main_buttons_wrapper.add(self.main_buttons_section)
-        self.info_view.add(main_buttons_wrapper)
-
-        self._refresh_networks_section()
-
-    def _refresh_networks_section(self, widget: Any = None, **kwargs):
-        assert self.networks_section is not None
+    def _refresh_networks_view(
+        self, widget: Any = None, hard_refresh: bool = True, **kwargs
+    ):
+        assert self.networks_view is not None
         config = SharlyChessConfig()
-        lan_ifaces: list[dict[str, str]] = SharlyChessConfig().lan_ifaces
+        lan_ifaces = SharlyChessConfig().lan_ifaces
         if (
-            self.lan_ifaces is None and lan_ifaces == self.lan_ifaces
+            not hard_refresh
+            and self.lan_ifaces is not None
+            and lan_ifaces == self.lan_ifaces
         ):  # don't do anything if networks did not change
             return
-        self.networks_section.clear()
-        refresh_box = toga.Box(style=Pack(direction=ROW, align_items='center'))
-        refresh_box.add(
-            toga.Button(text=_('Refresh'), on_press=self._refresh_networks_section)
-        )
-        self.networks_section.add(refresh_box)
+        self.lan_ifaces = lan_ifaces
+        self.networks_view.clear()
+
         if lan_ifaces:
-            self.lan_ifaces = lan_ifaces
-            self.networks_section.add(
+            self.networks_view.add(
                 toga.Label(
                     text=_(
                         'You may also connect to this server from other devices using'
                     ),
-                    margin_top=10,
                     align_items='center',
                     text_align='center',
                 )
             )
-            self.networks_section.add(
+            self.networks_view.add(
                 toga.Label(
-                    text=_('the address of this server on your available networks:'),
+                    text=_(
+                        'the server address on the networks to which it is connected:'
+                    ),
                     align_items='center',
                     text_align='center',
                 )
             )
-
-            self.networks_view = toga.Box(
-                style=Pack(direction=ROW, margin_top=15, gap=10)
-            )
-            self.networks_section.add(self.networks_view)
+            network_section = toga.Box(style=Pack(direction=ROW, margin_top=15, gap=10))
+            self.networks_view.add(network_section)
             for item in self.lan_ifaces:
                 url = config.app_url(item['ip'])
                 network_item = toga.Box(
@@ -590,9 +1107,9 @@ class SharlyChessServerToga(toga.App):
                 network_item.add(qr_widget)
                 network_item.add(self.make_link_button(url))
                 network_item.add(toga.Label(text=label, align_items='center'))
-                self.networks_view.add(network_item)
+                network_section.add(network_item)
         else:
-            self.networks_section.add(
+            self.networks_view.add(
                 toga.Label(
                     text=_(
                         'No network detected, use the Refresh button when connected.'
@@ -602,7 +1119,16 @@ class SharlyChessServerToga(toga.App):
                     text_align='center',
                 )
             )
-        assert isinstance(self.main_window, toga.MainWindow)
+        refresh_box = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        refresh_box.add(
+            toga.Button(
+                text=_('Refresh networks'),
+                on_press=self._refresh_networks_view,
+                style=Pack(margin_top=10, font_weight='bold'),
+            )
+        )
+        self.networks_view.add(refresh_box)
+        assert isinstance(self.main_window, toga.Window)
         self.main_window.size = self.compact_size
 
     def _noop(self, widget: toga.Widget):
@@ -660,13 +1186,11 @@ class SharlyChessServerToga(toga.App):
         self.server_running = True
 
         # Start server in background thread
-        self.gui_loop = asyncio.get_event_loop()
         self.server_thread = threading.Thread(target=self._run_server, daemon=True)
         self.server_thread.start()
 
     def _run_server(self) -> None:
         # IMPORTANT: bypass Toga's event-loop policy in this *background* thread
-        self.server_loop = asyncio.SelectorEventLoop()
         loop = self.server_loop
         if sys.platform != 'linux':
             asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
@@ -677,6 +1201,7 @@ class SharlyChessServerToga(toga.App):
 
         engine = ServerEngine(
             debug=self.debug,
+            profile=self.profile,
             port=self.port,
             loop=loop,
             handle_signals=False,
@@ -701,73 +1226,33 @@ class SharlyChessServerToga(toga.App):
 
     def _open_browser(self, widget: Any = None, **kwargs) -> None:
         try:
-            url = self.sharly_chess_config.local_url
+            url = SharlyChessConfig().local_url
             webbrowser.open(url)
             self.add_log_message(f'Opening browser: {url}', 'success')
         except Exception as e:
             self.add_log_message(f'Failed to open browser: {e}', 'error')
 
-    def _open_website(self, widget: Any = None, **kwargs) -> None:
-        webbrowser.open(_('*** Doc Link'))
+    @staticmethod
+    def _open_documentation(widget: Any = None, **kwargs) -> None:
+        webbrowser.open(_('https://sharly-chess.com/getting-started/'))
 
-    def _toggle_networks_view(self, widget: Any = None, **kwargs):
-        self.networks_visible = not self.networks_visible
+    @staticmethod
+    def _open_changelog(widget: Any = None, **kwargs) -> None:
+        webbrowser.open(_('https://sharly-chess.com/changelog/'))
 
-        # Show/hide networks view
-        assert self.networks_section is not None
-        assert self.info_view is not None
-        if self.networks_visible:
-            assert self.info_view is not None
-            if self.networks_section not in self.info_view.children:
-                self.info_view.add(self.networks_section)
-            self._refresh_networks_section()
-        else:
-            if self.networks_section in self.info_view.children:
-                self.info_view.remove(self.networks_section)
+    @staticmethod
+    def _open_discord(widget):
+        webbrowser.open('https://discord.gg/ezvxaCwUmw')
 
-        assert isinstance(self.main_window, toga.MainWindow)
-        self.main_window.size = self.compact_size
+    @staticmethod
+    def _open_mail(widget):
+        webbrowser.open('mailto:support@sharly-chess.com')
 
-        # Update the network buttons' label
-        assert self.toggle_network_btn is not None
-        self.toggle_network_btn.text = (
-            _('Hide Networks') if self.networks_visible else _('See Networks')
-        )
-
-    def _toggle_log_view(self, widget: Any = None, **kwargs):
-        self.log_visible = not self.log_visible
-
-        # Show/hide log view
-        assert self.log_view is not None
-        self.log_view.style.visibility = 'visible' if self.log_visible else 'hidden'
-        assert self.clear_btn is not None
-        self.clear_btn.style.visibility = 'visible' if self.log_visible else 'hidden'
-        assert self.html_view is not None
-        self.html_view.refresh()
-
-        # Update button label
-        assert self.toggle_log_btn is not None
-        self.toggle_log_btn.text = _('Hide Log') if self.log_visible else _('Show Log')
-
-        # Resize window to fit content
-        assert isinstance(self.main_window, toga.MainWindow)
-        assert self.main_box is not None
-        assert self.info_view is not None
-        if self.log_visible:
-            if self.log_view not in self.main_box.children:
-                self.main_box.add(self.log_view)
-            if self.info_view in self.main_box.children:
-                self.main_box.remove(self.info_view)
-            self.main_window.size = self.expanded_size
-        else:
-            if self.log_view in self.main_box.children:
-                self.main_box.remove(self.log_view)
-            if self.info_view not in self.main_box.children:
-                self.main_box.add(self.info_view)
-            self.main_window.size = self.compact_size
+    @staticmethod
+    def _open_donate(widget: Any = None, **kwargs) -> None:
+        webbrowser.open(SharlyChessConfig().donate_url)
 
     def _clear_log(self, widget: Any = None, **kwargs) -> None:
-        self.log_cleared = True
         try:
             while True:
                 self.message_queue.get_nowait()
@@ -784,7 +1269,22 @@ class SharlyChessServerToga(toga.App):
 
         self._eval_or_buffer_js(js)
 
-    def _update_config(self, field: str, value):
+    @staticmethod
+    def _open_dir_in_explorer(dir_path: Path):
+        match sys.platform:
+            case 'win32':
+                subprocess.Popen(f'explorer "{dir_path}"')
+            case 'darwin':
+                subprocess.Popen(['open', str(dir_path)])
+            case 'linux':
+                subprocess.Popen(['xdg-open', str(dir_path)])
+
+    @classmethod
+    def _open_logs_dir(cls, widget):
+        cls._open_dir_in_explorer(LOG_DIR)
+
+    @staticmethod
+    def _update_config(field: str, value):
         stored_config = SharlyChessConfig().stored_config
         setattr(stored_config, field, value)
         with ConfigDatabase(write=True) as config_database:
@@ -794,10 +1294,10 @@ class SharlyChessServerToga(toga.App):
     def _on_level_change(self, widget: toga.Selection, **kwargs):
         self._update_config('console_log_level', getattr(widget.value, 'level'))
 
-    def _on_color_switch_change(self, widget: toga.Switch, **kwargs):
+    def _on_log_color_switch_change(self, widget: toga.Switch, **kwargs):
         self._update_config('console_color', widget.value)
 
-    def _on_show_level_switch_change(self, widget: toga.Switch, **kwargs):
+    def _on_show_log_level_switch_change(self, widget: toga.Switch, **kwargs):
         self._update_config('console_show_level', widget.value)
 
     def _on_show_date_switch_change(self, widget: toga.Switch, **kwargs):
@@ -806,18 +1306,20 @@ class SharlyChessServerToga(toga.App):
     def _on_launch_browser_switch_change(self, widget: toga.Switch, **kwargs):
         self._update_config('launch_browser', widget.value)
 
+    def _on_check_beta_switch_change(self, widget: toga.Switch, **kwargs):
+        self._update_config('check_beta_versions', widget.value)
+
     # --- Interactive prompts ---
-    def handle_interactive_yn(self, question: str, yes_is_default: bool) -> bool:
+    def handle_interactive_yn(
+        self, title: str, question: str, yes_is_default: bool
+    ) -> bool:
         """Blocking Yes/No prompt callable from background threads."""
         text = question + '?'
 
         async def _ask_on_ui():
             # Show the dialog on the main window; returns True/False
-            assert isinstance(self.main_window, toga.MainWindow)
-            dialog = toga.QuestionDialog(
-                title=_('Server Setup'),
-                message=text,
-            )
+            assert isinstance(self.main_window, toga.Window)
+            dialog = toga.QuestionDialog(title=self._dialog_title(title), message=text)
             return await self.main_window.dialog(dialog)
 
         # Schedule the coroutine on the UI loop and wait for the result
@@ -827,105 +1329,22 @@ class SharlyChessServerToga(toga.App):
         except Exception:
             return yes_is_default
 
-    def handle_interactive_choices(
-        self, question: str, choices: dict[str, str], default: str
-    ) -> str | None:
-        """
-        Blocking wrapper callable from worker threads.
-        Shows a Toga dialog on the UI loop and returns the selected KEY (or None).
-        """
-
-        async def _ask_on_ui() -> str | None:
-            # Build a transient window as a custom dialog
-            win = toga.Window(title=_('Server Setup'), closable=False, size=(100, 100))
-
-            # Map keys <-> display texts
-            keys = list(choices.keys())
-            texts = [choices[k] for k in keys]
-
-            # Selection widget (dropdown)
-            sel = toga.Selection(items=texts, style=Pack(flex=1))
-
-            # Set default if present
-            if default in choices:
-                sel.value = choices[default]
-
-            # Result future to complete when user acts
-            loop = asyncio.get_running_loop()
-            finished: asyncio.Future[str | None] = loop.create_future()
-
-            def do_ok(widget, **kwargs):
-                try:
-                    val_text = sel.value
-                    # Map back to key
-                    selected_key = None
-                    if val_text is not None:
-                        assert isinstance(val_text, str)
-                        try:
-                            idx = texts.index(val_text)
-                            selected_key = keys[idx]
-                        except ValueError:
-                            selected_key = None
-                    if not finished.done():
-                        finished.set_result(selected_key)
-                finally:
-                    win.close()
-
-            # Layout
-            question_lbl = toga.Label(question, style=Pack(margin_bottom=10))
-            btn_ok = toga.Button('OK', on_press=do_ok, style=Pack(margin_top=6))
-
-            btn_row = toga.Box(
-                children=[btn_ok],
-                style=Pack(direction=ROW, width=500, align_items='end'),
-            )
-            content = toga.Box(
-                children=[question_lbl, sel, btn_row],
-                style=Pack(direction=COLUMN, width=400, margin=10),
-            )
-            win.content = content
-
-            # Show and wait
-            win.show()
-            return await finished
-
-        # Schedule on UI loop and block here (worker thread)
-        fut = asyncio.run_coroutine_threadsafe(_ask_on_ui(), self.loop)
-        try:
-            return fut.result()
-        except Exception:
-            return None
-
-    def handle_interactive_message(self, message: str) -> bool:
-        """Blocking Yes/No prompt callable from background threads."""
-
-        async def _message_on_ui():
-            # Show the dialog on the main window; returns True/False
-            assert isinstance(self.main_window, toga.MainWindow)
-            dialog = toga.InfoDialog(
-                title='Sharly Chess',
-                message=message,
-            )
-            return await self.main_window.dialog(dialog)
-
-        # Schedule the coroutine on the UI loop and wait for the result
-        fut = asyncio.run_coroutine_threadsafe(_message_on_ui(), self.loop)
-        try:
-            return fut.result() is None
-        except Exception:
-            return False
-
-    def quit_app(self) -> None:
+    def quit_app(self, post_exit_task: Callable | None = None) -> None:
         loop = self.server_loop
         if loop is None or loop.is_closed():
             return
 
         def _stop() -> None:
             # Cancel the main server task
+            if ServerEngine.server:
+                asyncio.run_coroutine_threadsafe(ServerEngine.server.shutdown(), loop)
             task = self.serve_task
             if task is not None and not task.done():
                 task.cancel()
             loop.stop()
+            self.exit()
+            if post_exit_task:
+                post_exit_task()
 
         loop.call_soon_threadsafe(_stop)
 

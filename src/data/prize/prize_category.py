@@ -20,6 +20,7 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
 )
 from utils import Utils
+from utils.enum import PrizeCategoryRankingBasis
 
 if TYPE_CHECKING:
     from data.prize.prize_group import PrizeGroup
@@ -89,6 +90,26 @@ class PrizeCategory:
         return self.stored_prize_category.index
 
     @property
+    def ranking_basis(self) -> PrizeCategoryRankingBasis:
+        return PrizeCategoryRankingBasis(self.stored_prize_category.ranking_basis)
+
+    @property
+    def ranks_by_final_standing(self) -> bool:
+        return self.ranking_basis == PrizeCategoryRankingBasis.FINAL_STANDING
+
+    @property
+    def ranks_by_average_performance(self) -> bool:
+        return self.ranking_basis == PrizeCategoryRankingBasis.AVERAGE_PERFORMANCE
+
+    @property
+    def ranks_by_best_round_performance(self) -> bool:
+        return self.ranking_basis == PrizeCategoryRankingBasis.BEST_ROUND_PERFORMANCE
+
+    @property
+    def ranking_basis_name(self) -> str:
+        return self.ranking_basis.name
+
+    @property
     def prize_sharing(self) -> PrizeSharing:
         return PrizeSharingManager().get_object(
             self.stored_prize_category.prize_sharing
@@ -134,12 +155,34 @@ class PrizeCategory:
             if self.player_matches_criteria(tournament_player)
         ]
 
+    def ranking_metric(self, tournament_player: TournamentPlayer) -> float | None:
+        """The value used to rank a player within this category, according to
+        the category's ranking basis. ``None`` for a performance basis when the
+        player has played no game. ``None`` for the final-standing basis (the
+        standing is expressed through the player rank, not a metric)."""
+        match self.ranking_basis:
+            case PrizeCategoryRankingBasis.AVERAGE_PERFORMANCE:
+                return tournament_player.average_round_performance
+            case PrizeCategoryRankingBasis.BEST_ROUND_PERFORMANCE:
+                return tournament_player.best_round_performance
+            case _:
+                return None
+
     @property
     def sorted_tournament_players(self) -> list[TournamentPlayer]:
-        return sorted(
-            self.tournament_players,
-            key=lambda tournament_player: tournament_player.rank,
-        )
+        if self.ranking_basis == PrizeCategoryRankingBasis.FINAL_STANDING:
+            return sorted(
+                self.tournament_players,
+                key=lambda tournament_player: tournament_player.rank,
+            )
+
+        # Performance bases: highest metric first, players with no performance
+        # last, ties broken by the tournament final standing.
+        def sort_key(tournament_player: TournamentPlayer) -> tuple[bool, float, int]:
+            metric = self.ranking_metric(tournament_player)
+            return (metric is None, -(metric or 0.0), tournament_player.rank)
+
+        return sorted(self.tournament_players, key=sort_key)
 
     @property
     def criteria_string(self) -> str:
@@ -154,14 +197,18 @@ class PrizeCategory:
         return any(not prize.is_monetary for prize in self.prizes)
 
     @property
-    def total_prize_value(self) -> float:
-        return sum(prize.value for prize in self.prizes)
+    def total_monetary_value(self) -> float:
+        return sum(prize.monetary_value for prize in self.prizes)
 
-    def format_total_prize_value(self, currency: str) -> str:
-        if self.has_non_monetary_prizes:
-            value = self.total_prize_value
-            return str(int(value)) if value.is_integer() else f'{value:.2f}'
-        return Utils.currency_value_str(self.total_prize_value, currency)
+    @property
+    def total_non_monetary_value(self) -> float:
+        return sum(prize.non_monetary_value for prize in self.prizes)
+
+    def format_total_monetary_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_monetary_value, currency)
+
+    def format_total_non_monetary_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_non_monetary_value, currency)
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_group.get_event_database()

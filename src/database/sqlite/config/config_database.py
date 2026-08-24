@@ -1,11 +1,10 @@
 from functools import cached_property
 from logging import Logger
-from pathlib import Path
-from typing import Any, TYPE_CHECKING, ClassVar
+from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
-from common import EVENTS_DIR
+from common import CONFIG_FILE
 from common.exception import SharlyChessException
 from common.logger import get_logger
 from database.sqlite.config import migrations
@@ -14,6 +13,7 @@ from database.sqlite.config.config_store import (
     StoredPlugin,
     StoredLocalSourceDatabase,
     StoredPlayerCategorySet,
+    StoredTag,
     StoredTieBreakSet,
 )
 from database.sqlite.migration_database import MigrationDatabase
@@ -27,15 +27,11 @@ logger: Logger = get_logger()
 class ConfigDatabase(MigrationDatabase):
     """The SQLite database class for Sharly Chess config."""
 
-    # The name of the file holding the configuration of the application.
-    config_database_name: ClassVar[str] = '.scc'
-    # The file holding the configuration of the application.
-    config_database_path: ClassVar[Path] = EVENTS_DIR / config_database_name
     is_setup = False
 
     def __init__(self, write: bool = False, enable_foreign_keys: bool = True):
         super().__init__(
-            self.config_database_path,
+            CONFIG_FILE,
             write,
             enable_foreign_keys=enable_foreign_keys,
         )
@@ -97,6 +93,10 @@ class ConfigDatabase(MigrationDatabase):
             experimental=self.load_bool_from_database_field(row['experimental']),
             federation=row['federation'],
             launch_browser=self.load_bool_from_database_field(row['launch_browser']),
+            check_beta_versions=self.load_bool_from_database_field(
+                row['check_beta_versions']
+            ),
+            last_notified_version=row['last_notified_version'],
             locale=row['locale'],
             date_formatter=row['date_formatter'],
         )
@@ -107,6 +107,7 @@ class ConfigDatabase(MigrationDatabase):
         stored_config = self._row_to_stored_config(self.fetchone())
         stored_config.stored_player_category_sets = self.load_player_category_sets()
         stored_config.stored_tie_break_sets = self.load_stored_tie_break_sets()
+        stored_config.stored_tags = self.load_stored_tags()
         return stored_config
 
     def load_stored_config(self) -> StoredConfig:
@@ -125,6 +126,8 @@ class ConfigDatabase(MigrationDatabase):
                 'experimental',
                 'launch_browser',
                 'federation',
+                'check_beta_versions',
+                'last_notified_version',
                 'locale',
                 'date_formatter',
             ],
@@ -360,3 +363,54 @@ class ConfigDatabase(MigrationDatabase):
             'DELETE FROM `tie_break_set` WHERE `id` = ?',
             (tie_break_set_id,),
         )
+
+    # ---------------------------------------------------------------------------------
+    # StoredTag
+    # ---------------------------------------------------------------------------------
+
+    @staticmethod
+    def _row_to_stored_tag(row: dict[str, Any]) -> StoredTag:
+        return StoredTag(
+            id=row['id'],
+            name=row['name'],
+            color=row['color'],
+            index=row['index'],
+        )
+
+    def load_stored_tags(self) -> list[StoredTag]:
+        # The tags are arranged by hand, and that order is the one they are
+        # listed in everywhere. `id` only settles the indexes a migration or
+        # a deletion may have left equal.
+        self.execute('SELECT * FROM `tag` ORDER BY `index`, `id`')
+        return [self._row_to_stored_tag(row) for row in self.fetchall()]
+
+    def add_stored_tag(self, stored_tag: StoredTag) -> int:
+        # A new tag goes last, where the user will look for it.
+        self.execute('SELECT COALESCE(MAX(`index`), -1) + 1 AS `index` FROM `tag`')
+        self.execute(
+            'INSERT INTO `tag` (`name`, `color`, `index`) VALUES (?, ?, ?)',
+            (stored_tag.name, stored_tag.color, self.fetchone()['index']),
+        )
+        id_ = self._last_inserted_id()
+        if id_ is None:
+            raise RuntimeError('Tag insertion failed')
+        return id_
+
+    def update_stored_tag(self, stored_tag: StoredTag):
+        """Updates the name and the colour; the rank is set by
+        :meth:`reorder_stored_tags` alone."""
+        assert stored_tag.id is not None
+        self.execute(
+            'UPDATE `tag` SET `name` = ?, `color` = ? WHERE `id` = ?',
+            (stored_tag.name, stored_tag.color, stored_tag.id),
+        )
+
+    def reorder_stored_tags(self, tag_ids: list[int]):
+        """Ranks the tags in the order given. Ids that no longer exist are
+        ignored, and tags missing from the list keep their rank — the caller
+        is a drag-and-drop, which sends the whole list."""
+        for index, tag_id in enumerate(tag_ids):
+            self.execute('UPDATE `tag` SET `index` = ? WHERE `id` = ?', (index, tag_id))
+
+    def delete_stored_tag(self, tag_id: int):
+        self.execute('DELETE FROM `tag` WHERE `id` = ?', (tag_id,))

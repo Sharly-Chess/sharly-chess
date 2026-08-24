@@ -459,7 +459,7 @@ class SCESession(Session):
                 PLUGIN_NAME: SCEPlayerPluginData(id=sce_id).to_stored_value(),
             },
         )
-        sync_data.augment_stored_player(stored_player, tournament)
+        sync_data.augment_stored_player(stored_player, tournament, database=database)
         duplicate_player = self.event.get_player_duplicate(stored_player, tournament)
         if not duplicate_player:
             stored_player.id = database.add_stored_player(stored_player)

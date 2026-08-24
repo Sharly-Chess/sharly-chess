@@ -12,6 +12,68 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+class Extension(StrEnum):
+    EVENT_DB = 'sce'
+    LEGACY_EVENT_DB = 'db'
+    ARCHIVE = 'sca'
+    BACKUP = 'backup'
+    SOURCE_DB = 'db'
+    TEMPLATE = 'template'
+
+
+class PrizeCategoryRankingBasis(StrEnum):
+    """How a prize category orders its eligible players before prizes are
+    assigned: by the tournament final standing (points + tie-breaks), by the
+    players' average per-round performance indicator, or by their best
+    single-round performance indicator. Non-standing bases let a category
+    reward performance rather than final position."""
+
+    FINAL_STANDING = 'final_standing'
+    AVERAGE_PERFORMANCE = 'average_performance'
+    BEST_ROUND_PERFORMANCE = 'best_round_performance'
+
+    @property
+    def name(self) -> str:
+        match self:
+            case PrizeCategoryRankingBasis.FINAL_STANDING:
+                return _('By final standing')
+            case PrizeCategoryRankingBasis.AVERAGE_PERFORMANCE:
+                return _('By average performance')
+            case PrizeCategoryRankingBasis.BEST_ROUND_PERFORMANCE:
+                return _('By best single-round performance')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @classmethod
+    def options(cls) -> dict[str, str]:
+        """Value → translated label, for form selects (final standing first)."""
+        return {basis.value: basis.name for basis in cls}
+
+
+class BoardSelectionMode(StrEnum):
+    """How a board screen selects and orders its boards: by first/last pairing
+    position (fixed boards keep their pairing slot), by first/last board
+    number, or by an explicit list of board numbers."""
+
+    PAIRING = 'pairing'
+    BOARD_NUMBER = 'board'
+    SPECIFIC = 'specific'
+
+    @classmethod
+    def options(cls, *, include_specific: bool = True) -> dict[str, str]:
+        """Value → translated label, for form selects (default first).
+        ``include_specific`` is False for families (no board-numbers field)."""
+        options: dict[str, str] = {
+            cls.PAIRING: _(
+                'By first / last pairing (fixed boards keep their pairing position)'
+            ),
+            cls.BOARD_NUMBER: _('By first / last board number'),
+        }
+        if include_specific:
+            options[cls.SPECIFIC] = _('By specific board numbers')
+        return options
+
+
 class Result(IntEnum):
     """An enum representing the results in the database. Should be subclassed if the point value is not the default."""
 
@@ -48,7 +110,8 @@ class Result(IntEnum):
                 return '½-½'
             case Result.HALF_POINT_BYE:
                 return '½-F'
-            case Result.NO_RESULT | Result.ZERO_POINT_BYE:
+            case Result.NO_RESULT | Result.ZERO_POINT_BYE | Result.REST_GAME:
+                # A rest game is no game — nothing to display.
                 return ''
             case Result.FORFEIT_LOSS:
                 return 'F-1'
@@ -60,8 +123,6 @@ class Result(IntEnum):
                 return '1-F'
             case Result.DOUBLE_FORFEIT:
                 return 'F-F'
-            case Result.REST_GAME:
-                return '0-F'
             case Result.UNRATED_WIN:
                 return '1-0 (U)'
             case Result.UNRATED_LOSS:
@@ -275,6 +336,10 @@ class Result(IntEnum):
 
     @property
     def to_berger_table(self) -> str:
+        # Berger grids read nicer with ½ for a draw (matching the Pts and
+        # tie-break columns) than the TRF '=' symbol.
+        if self.is_draw:
+            return '½'
         return self.to_trf
 
     @property
@@ -644,6 +709,18 @@ class PlayerRatingType(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    @property
+    def form_key(self) -> str:
+        match self:
+            case PlayerRatingType.ESTIMATED:
+                return 'estimated'
+            case PlayerRatingType.NATIONAL:
+                return 'national'
+            case PlayerRatingType.FIDE:
+                return 'fide'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
     @classmethod
     def from_key(cls, key: str) -> Self:
         match key.lower():
@@ -656,22 +733,40 @@ class PlayerRatingType(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {key}')
 
+    @property
+    def min_value(self) -> int:
+        match self:
+            case PlayerRatingType.FIDE:
+                return 1400
+            case PlayerRatingType.NATIONAL | PlayerRatingType.ESTIMATED:
+                return 1
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def max_value(self) -> int:
+        return 9999
+
     def __str__(self) -> str:
         return self.short_name
 
 
 class PlayerTitle(StrEnum):
-    """The possible FIDE player titles: GM, WGM, IM, WIM, FM, WFM, CM, WCM.
-    Also includes the "no title" case."""
+    """The possible FIDE player titles: GM, IM, WGM, FM, WIM, CM, WFM, WCM.
+    Also includes the "no title" case.
+
+    Declaration order is weakest-to-strongest, so `sort_index` (the list
+    position) ranks titles by strength: GM > IM > WGM > FM > WIM > CM >
+    WFM > WCM."""
 
     NONE = ''
     WOMAN_CANDIDATE_MASTER = 'WCM'
-    CANDIDATE_MASTER = 'CM'
     WOMAN_FIDE_MASTER = 'WFM'
-    FIDE_MASTER = 'FM'
+    CANDIDATE_MASTER = 'CM'
     WOMAN_INTERNATIONAL_MASTER = 'WIM'
-    INTERNATIONAL_MASTER = 'IM'
+    FIDE_MASTER = 'FM'
     WOMAN_GRANDMASTER = 'WGM'
+    INTERNATIONAL_MASTER = 'IM'
     GRANDMASTER = 'GM'
 
     @property
@@ -686,6 +781,50 @@ class PlayerTitle(StrEnum):
             return cls(value)
         except ValueError:
             return cls.NONE
+
+    @property
+    def is_women(self) -> bool:
+        """True for the women-only titles (WCM, WFM, WIM, WGM)."""
+        return self in (
+            PlayerTitle.WOMAN_CANDIDATE_MASTER,
+            PlayerTitle.WOMAN_FIDE_MASTER,
+            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            PlayerTitle.WOMAN_GRANDMASTER,
+        )
+
+    @classmethod
+    def open_titles(cls) -> list['PlayerTitle']:
+        """NONE + the open titles (CM, FM, IM, GM), weakest-to-strongest."""
+        return [title for title in cls if not title.is_women]
+
+    @classmethod
+    def women_titles(cls) -> list['PlayerTitle']:
+        """NONE + the women titles (WCM, WFM, WIM, WGM), weakest-to-strongest."""
+        return [cls.NONE] + [title for title in cls if title.is_women]
+
+    @property
+    def fide_tier(self) -> int:
+        """Rank on the combined FIDE ladder, where each women title sits at
+        the same tier as the open title one letter below it (WGM≈IM, WIM≈FM,
+        WFM≈CM). Used to decide whether an open title outranks a women title
+        for display: an open title with a strictly higher tier makes the
+        women title redundant (GM hides WGM, IM hides WIM), while equal tiers
+        (FM and WIM) are shown together."""
+        match self:
+            case PlayerTitle.NONE:
+                return 0
+            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
+                return 1
+            case PlayerTitle.WOMAN_FIDE_MASTER | PlayerTitle.CANDIDATE_MASTER:
+                return 2
+            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER | PlayerTitle.FIDE_MASTER:
+                return 3
+            case PlayerTitle.WOMAN_GRANDMASTER | PlayerTitle.INTERNATIONAL_MASTER:
+                return 4
+            case PlayerTitle.GRANDMASTER:
+                return 5
+            case _:
+                raise ValueError(f'Unknown title: {self}')
 
     @property
     def name(self) -> str:
@@ -737,6 +876,19 @@ class PlayerTitle(StrEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+    @property
+    def open_value(self) -> str:
+        """This title's stored value for the open-title slot — empty when it
+        is a women title. Lets a single source title be routed into the
+        separate `title` / `women_title` fields."""
+        return PlayerTitle.NONE.value if self.is_women else self.value
+
+    @property
+    def women_value(self) -> str:
+        """This title's stored value for the women-title slot — empty when it
+        is an open title."""
+        return self.value if self.is_women else PlayerTitle.NONE.value
 
 
 class FideArbiterTitle(StrEnum):
@@ -799,9 +951,93 @@ class FideArbiterTitle(StrEnum):
         return self.value
 
 
+class EventType(StrEnum):
+    """The type of competition an event hosts."""
+
+    INDIVIDUAL = 'INDIVIDUAL'
+    TEAM = 'TEAM'
+
+    def __str__(self) -> str:
+        match self:
+            case EventType.INDIVIDUAL:
+                return _('Individual')
+            case EventType.TEAM:
+                return _('Team')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+class ScoreType(StrEnum):
+    """Which score basis a team tournament uses (FIDE 1.2.1)."""
+
+    MATCH_POINTS = 'MATCH_POINTS'
+    GAME_POINTS = 'GAME_POINTS'
+
+    def __str__(self) -> str:
+        match self:
+            case ScoreType.MATCH_POINTS:
+                return _('Match points')
+            case ScoreType.GAME_POINTS:
+                return _('Game points')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+class TeamColourType(StrEnum):
+    """Team colour-preference rule used when pairing (FIDE C.04.6 §1.7).
+    Type A: simple preferences — a team either has a colour preference
+    or doesn't. Type B: adds a *mild* preference level on top of the
+    *strong* one, so the pairing engine can break ties between teams
+    that would otherwise look identical under Type A. ``NONE``: colour
+    preferences are not used at all (the team competition rules can
+    require this). The TRF26 192 encoded type embeds this as
+    ``FIDE_TEAM_TYPEA_…`` / ``FIDE_TEAM_TYPEB_…`` / ``FIDE_TEAM_…``."""
+
+    A = 'A'
+    B = 'B'
+    NONE = 'NONE'
+
+    def __str__(self) -> str:
+        match self:
+            case TeamColourType.A:
+                return _('Type A (simple preferences)')
+            case TeamColourType.B:
+                return _('Type B (strong + mild preferences)')
+            case TeamColourType.NONE:
+                return _('None (no colour preferences)')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+class TeamSortMode(StrEnum):
+    """How the teams of a not-yet-paired team tournament are ordered
+    (which sets their pairing numbers). ``MANUAL`` keeps the arbiter's
+    drag-and-drop order; the others re-sort automatically as teams are
+    added or rosters change."""
+
+    MANUAL = 'MANUAL'
+    TEAM_AVERAGE_RATING = 'TEAM_AVERAGE_RATING'
+    LINEUP_AVERAGE_RATING = 'LINEUP_AVERAGE_RATING'
+    RANDOM = 'RANDOM'
+
+    def __str__(self) -> str:
+        match self:
+            case TeamSortMode.MANUAL:
+                return _('Manual')
+            case TeamSortMode.TEAM_AVERAGE_RATING:
+                return _('Average rating of entire team')
+            case TeamSortMode.LINEUP_AVERAGE_RATING:
+                return _('Average rating of round #1 lineup')
+            case TeamSortMode.RANDOM:
+                return _('Random')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
     DEPUTY_ARBITER = 'deputy_arbiter'
+    ARBITER = 'arbiter'
     ORGANISER = 'organiser'
 
     @property
@@ -814,7 +1050,8 @@ class RoleType(StrEnum):
         order_map = {
             RoleType.CHIEF_ARBITER: 0,
             RoleType.DEPUTY_ARBITER: 1,
-            RoleType.ORGANISER: 2,
+            RoleType.ARBITER: 2,
+            RoleType.ORGANISER: 3,
         }
         return order_map[self]
 
@@ -824,6 +1061,8 @@ class RoleType(StrEnum):
                 return _('Chief arbiter')
             case RoleType.DEPUTY_ARBITER:
                 return _('Deputy arbiter')
+            case RoleType.ARBITER:
+                return _('Arbiter')
             case RoleType.ORGANISER:
                 return _('Organiser')
             case _:
@@ -1023,94 +1262,57 @@ class BoardColor(StrEnum):
         return self.name
 
 
-class ScreenType(StrEnum):
-    CHECK_IN = 'check-in'
-    INPUT = 'input'
-    BOARDS = 'boards'
-    PLAYERS = 'players'
-    RESULTS = 'results'
-    RANKING = 'ranking'
-    IMAGE = 'image'
+class TeamByeType(StrEnum):
+    """Bye marker stored on a ``team_board`` envelope with no opponent.
+    ``PAB`` is the engine-allocated bye (scored per the tournament's PAB
+    configuration in Swiss, a pointless rest game in round-robin
+    systems); the others are arbiter-set manual byes."""
+
+    PAB = 'PAB'
+    HPB = 'HPB'
+    FPB = 'FPB'
+    ZPB = 'ZPB'
 
     @classmethod
-    def screen_types(cls) -> tuple[Self, ...]:
-        return tuple(cls(st) for st in cls)
+    def manual_bye_types(cls) -> tuple['TeamByeType', ...]:
+        return (cls.HPB, cls.FPB, cls.ZPB)
+
+
+class MenuSubmenuMode(StrEnum):
+    """How a menu presents its multi-screens (families) in the navigation
+    bar: automatically, always as a dropdown submenu, or always expanded
+    inline."""
+
+    AUTOMATIC = 'automatic'
+    DROPDOWN = 'dropdown'
+    NO_DROPDOWN = 'no_dropdown'
 
     @property
     def name(self) -> str:
         match self:
-            case ScreenType.BOARDS:
-                return _('Pairings by board')
-            case ScreenType.CHECK_IN:
-                return _('Check-in')
-            case ScreenType.INPUT:
-                return _('Results entry')
-            case ScreenType.PLAYERS:
-                return _('Pairings by player')
-            case ScreenType.RESULTS:
-                return _('Last results')
-            case ScreenType.RANKING:
-                return _('Ranking')
-            case ScreenType.IMAGE:
-                return _('Image')
+            case MenuSubmenuMode.AUTOMATIC:
+                return _('Automatic')
+            case MenuSubmenuMode.DROPDOWN:
+                return _('Use dropdowns')
+            case MenuSubmenuMode.NO_DROPDOWN:
+                return _('No dropdowns')
             case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    def __str__(self) -> str:
-        return self.name
+                raise ValueError(f'Invalid submenu mode: {self}')
 
     @property
-    def icon_str(self) -> str:
+    def tooltip(self) -> str:
         match self:
-            case self.BOARDS:
-                return 'bi-card-list'
-            case self.CHECK_IN:
-                return 'bi-check-square'
-            case self.INPUT:
-                return 'bi-pencil'
-            case self.PLAYERS:
-                return 'bi-people'
-            case self.RESULTS:
-                return 'bi-1-square'
-            case self.RANKING:
-                return 'bi-trophy'
-            case self.IMAGE:
-                return 'bi-image'
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    @property
-    def tooltip_text(self) -> str:
-        match self:
-            case self.BOARDS:
-                return _('Boards screens show pairings by board number.')
-            case self.CHECK_IN:
-                return _('Check-in screens allow players to check-in or out.')
-            case self.INPUT:
+            case MenuSubmenuMode.AUTOMATIC:
                 return _(
-                    'Input screens show pairings by board number and allow people to enter results.'
+                    'Multi-screens appear as dropdowns when the menu holds '
+                    'more than one, otherwise they are expanded inline.'
                 )
-            case self.PLAYERS:
-                return _('Players screens show pairings by alphabetical order.')
-            case self.RESULTS:
-                return _('Results screens show the last results (most recent first).')
-            case self.RANKING:
-                return _('Ranking screens show the players by rank.')
-            case self.IMAGE:
-                return _('Image screens show an image (local or remote).')
+            case MenuSubmenuMode.DROPDOWN:
+                return _('Multi-screens always appear as dropdown submenus.')
+            case MenuSubmenuMode.NO_DROPDOWN:
+                return _('Multi-screens are always expanded inline.')
             case _:
-                raise ValueError(f'Invalid screen type: {self}')
-
-    @property
-    def families_allowed(self) -> bool:
-        """Returns True if the screen type can be used for families, False otherwise."""
-        match self:
-            case self.BOARDS | self.INPUT | self.PLAYERS | self.RANKING | self.CHECK_IN:
-                return True
-            case self.RESULTS | self.IMAGE:
-                return False
-            case _:
-                raise ValueError(f'Invalid screen type: {self}')
+                raise ValueError(f'Invalid submenu mode: {self}')
 
 
 class PlayersScreenPlayerFormat(IntEnum):
@@ -1172,7 +1374,7 @@ class PlayersScreenPlayerFormat(IntEnum):
         player: 'TournamentPlayer',
     ) -> str:
         return self.format_string.format(
-            title=player.title.short_name,
+            title=player.display_title,
             full_name=player.full_name,
             rating=player.rating,
             rating_type=player.rating_type.short_name,
@@ -1302,7 +1504,7 @@ class PlayersScreenOpponentFormat(IntEnum):
         tournament_player: 'TournamentPlayer',
     ) -> str:
         return self.format_string.format(
-            title=tournament_player.title.short_name,
+            title=tournament_player.display_title,
             full_name=tournament_player.full_name,
             rating=tournament_player.rating,
             rating_type=tournament_player.rating_type.short_name,

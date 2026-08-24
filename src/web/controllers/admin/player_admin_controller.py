@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Annotated, Any, Iterable
 
 import chardet
+from litestar.di import NamedDependency
 from litestar.exceptions import NotFoundException, ClientException
 
 from common.i18n.utils import normalized_key
@@ -17,7 +18,7 @@ from common.i18n.utils import normalized_key
 from litestar import get, patch, delete, post, Response
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
@@ -39,9 +40,14 @@ from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
 from data.print_documents.documents import (
     PlayerListPrintDocument,
 )
+from data.teams.team import RosterFullError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredPlayer, StoredTournamentPlayer
+from database.sqlite.event.event_store import (
+    StoredPlayer,
+    StoredTeam,
+    StoredTournamentPlayer,
+)
 from utils import Utils
 from utils.date_time import format_date
 from utils.enum import (
@@ -188,6 +194,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
     def carry_over_fields(self) -> list[str]:
         fields = [
             'tournament_id',
+            'team_id',
             'mail',
             'phone',
             'comment',
@@ -339,7 +346,7 @@ class PlayerAdminController(BaseEventAdminController):
         disabled_column_ids = [
             column.id
             for column in handler.columns
-            if not column.is_enabled_for_tournaments(allowed_tournaments)
+            if not column.is_enabled_for_event(event, allowed_tournaments)
             or not column.is_enabled_for_players(allowed_players)
         ]
         SessionPlayersDisabledColumns(request, event).set(disabled_column_ids)
@@ -513,7 +520,9 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-columns',
     )
     async def htmx_admin_event_players_columns(
-        self, request: HTMXRequest, column_ids: list[str]
+        self,
+        request: HTMXRequest,
+        column_ids: FromQuery[list[str]],
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -551,8 +560,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_event_players_set_filter(
         self,
         request: HTMXRequest,
-        column_id: str,
-        filters: list[str],
+        column_id: FromPath[str],
+        filters: FromQuery[list[str]],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, column_id=column_id)
         event = web_context.get_admin_event()
@@ -576,7 +585,9 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-sort',
     )
     async def htmx_admin_event_players_sort(
-        self, request: HTMXRequest, column_id: str
+        self,
+        request: HTMXRequest,
+        column_id: FromPath[str],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, column_id=column_id)
         event = web_context.get_admin_event()
@@ -600,7 +611,9 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-search',
     )
     async def htmx_admin_event_players_search(
-        self, request: HTMXRequest, search: str | None = None
+        self,
+        request: HTMXRequest,
+        search: FromQuery[str | None] = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
@@ -627,7 +640,9 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-page',
     )
     async def htmx_admin_event_players_page(
-        self, request: HTMXRequest, page: int
+        self,
+        request: HTMXRequest,
+        page: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
         template_context = self._player_table_page_context(web_context, page)
@@ -643,8 +658,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_row(
         self,
         request: HTMXRequest,
-        player_id: int,
-        close_modal: int = 1,
+        player_id: FromPath[int],
+        close_modal: FromQuery[int] = 1,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         return self._render_player_table_row(web_context, close_modal=bool(close_modal))
@@ -688,6 +703,7 @@ class PlayerAdminController(BaseEventAdminController):
                 tr: PlayerRating(estimated=0) for tr in TournamentRating
             }
             title = PlayerTitle.NONE.value
+            women_title = PlayerTitle.NONE.value
             federation = event.federation
             club: str | None = None
             fide_id: int | None = None
@@ -717,6 +733,7 @@ class PlayerAdminController(BaseEventAdminController):
                             PlayerRating.from_stored_value(rating)
                         )
                     title = stored_player.title
+                    women_title = stored_player.women_title
                     federation = stored_player.federation
                     club = stored_player.club
                     fide_id = stored_player.fide_id or None
@@ -733,7 +750,15 @@ class PlayerAdminController(BaseEventAdminController):
                     tournament_id = event.sorted_not_finished_tournaments[0].id
             else:
                 assert admin_player is not None
-                tournament_id = admin_player.single_tournament.id
+                if event.is_team_event:
+                    tournament_id = (
+                        admin_player.team.tournament_id
+                        if admin_player.team is not None
+                        and admin_player.team.tournament_id is not None
+                        else None
+                    )
+                else:
+                    tournament_id = admin_player.single_tournament.id
 
             rating_data: dict[str, Any] = {}
             for tournament_rating in TournamentRating:
@@ -754,13 +779,21 @@ class PlayerAdminController(BaseEventAdminController):
                     stored_plugin_data.get(plugin_id, {})
                 ).to_form_data(action=action if not search_stored_player else None)
 
+            team_id_value: int | None = None
+            if event.is_team_event:
+                if admin_player is not None:
+                    team_id_value = admin_player.team_id
+                elif action == FormAction.CREATE and len(event.sorted_teams) == 1:
+                    team_id_value = event.sorted_teams[0].id
             data = WebContext.values_dict_to_form_data(
                 {
                     'last_name': last_name,
                     'first_name': first_name,
                     'gender': gender,
                     'tournament_id': tournament_id,
+                    'team_id': team_id_value or '',
                     'title': title,
+                    'women_title': women_title,
                     'federation': federation,
                     'fide_id': fide_id,
                     'club': club,
@@ -787,9 +820,50 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament_options |= {'': '-'}
         else:
             assert admin_player is not None
-            if admin_player.single_tournament not in tournaments:
-                tournaments.insert(0, admin_player.single_tournament)
+            player_tournament = admin_player.optional_single_tournament
+            if player_tournament is not None and player_tournament not in tournaments:
+                tournaments.insert(0, player_tournament)
         tournament_options |= web_context.get_tournament_options(tournaments)
+
+        # A player already placed on a board can't change team — moving
+        # them would orphan their board(s). Lock the team picker then.
+        team_locked = (
+            event.is_team_event
+            and admin_player is not None
+            and admin_player.has_been_paired
+        )
+
+        team_options: dict[str, str | dict[str, str]] = {'': '-'}
+        if event.is_team_event:
+            # Group teams by tournament so the picker matches the
+            # team-admin layout. Teams not yet attached to a tournament
+            # land under "Unassigned".
+            tournaments_by_id = event.tournaments_by_id
+            unassigned_teams_found: bool = any(
+                team.tournament_id is None
+                or team.tournament_id not in tournaments_by_id
+                for team in event.sorted_teams
+            )
+            multi_labels: bool = len(tournaments_by_id) > 1 or unassigned_teams_found
+            if multi_labels:
+                teams_by_tournament_label: dict[str, dict[str, str]] = {}
+                for team in event.sorted_teams:
+                    if (
+                        team.tournament_id is not None
+                        and team.tournament_id in tournaments_by_id
+                    ):
+                        label = tournaments_by_id[team.tournament_id or 0].name
+                    else:
+                        label = _('Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT')
+                    teams_by_tournament_label.setdefault(label, {})[str(team.id)] = (
+                        team.name
+                    )
+                # Sorted alphabetically so the order is stable across renders.
+                for label in sorted(teams_by_tournament_label):
+                    team_options[label] = teams_by_tournament_label[label]
+            else:
+                for team in event.sorted_teams:
+                    team_options[str(team.id)] = team.name
         plugin_templates_by_section: dict[str, list[str]] = defaultdict(list)
         plugin_manager.hook_for_event(event, 'insert_player_form_fields_template')(
             templates_by_section=plugin_templates_by_section
@@ -817,18 +891,27 @@ class PlayerAdminController(BaseEventAdminController):
                 },
             },
             'rating_type_labels': {
-                'fide': PlayerRatingType.FIDE.short_name,
-                'national': PlayerRatingType.NATIONAL.short_name,
-                'estimated': PlayerRatingType.ESTIMATED.short_name,
+                prt.form_key: prt.short_name for prt in PlayerRatingType
             },
             'title_options': {
                 str(t.value): f'{t.short_name} - {t.name}'
                 if t.short_name
                 else f'{t.name}'
-                for t in PlayerTitle
+                for t in PlayerTitle.open_titles()
             },
+            'women_title_options': {
+                str(t.value): f'{t.short_name} - {t.name}'
+                if t.short_name
+                else f'{t.name}'
+                for t in PlayerTitle.women_titles()
+            },
+            # The women title field is only shown for women players.
+            'woman_gender_value': PlayerGender.WOMAN.value,
             'federation_options': cls._get_federation_options(),
             'tournament_options': tournament_options,
+            'team_options': team_options,
+            'team_locked': team_locked,
+            'is_team_event': event.is_team_event,
             'selected_data_source': SessionPlayersActiveDataSource(request).get(),
             'plugin_templates_by_section': plugin_templates_by_section,
             'previous_player': (
@@ -886,10 +969,7 @@ class PlayerAdminController(BaseEventAdminController):
         return stored_player, errors
 
     @post(
-        path=[
-            '/player-modal/from-search/{event_uniq_id:str}/'
-            '{data_source_id:str}/{player_source_id:str}',
-        ],
+        path='/player-modal/from-search/{event_uniq_id:str}/{data_source_id:str}/{player_source_id:str}',
         name='player-modal-from-search',
     )
     async def htmx_player_modal_from_search(
@@ -899,8 +979,8 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        data_source_id: str,
-        player_source_id: str,
+        data_source_id: FromPath[str],
+        player_source_id: FromPath[str],
     ) -> Template:
         player_id = WebContext.form_data_to_int(data, 'player_id')
         web_context = PlayerAdminWebContext(
@@ -928,9 +1008,9 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_modal(
         self,
         request: HTMXRequest,
-        action: str,
-        player_id: int,
-        redirect_to: str | None = None,
+        action: FromPath[str],
+        player_id: FromPath[int],
+        redirect_to: FromQuery[str | None] = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         return self._render_players_form_modal(
@@ -945,7 +1025,7 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_delete_modal(
         self,
         request: HTMXRequest,
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         return self._admin_base_event_render(
@@ -964,6 +1044,20 @@ class PlayerAdminController(BaseEventAdminController):
         errors = cls._validate_player_form_data(web_context, action, data)
         if errors:
             return None, errors
+        if event.is_team_event:
+            team_id = WebContext.form_data_to_int(data, 'team_id')
+            team = event.teams_by_id.get(team_id) if team_id else None
+            tournament = team.tournament if team is not None else None
+            stored_player = cls._stored_player_from_data(data, tournament, player)
+            if any(
+                cls._matches_existing_player(
+                    stored_player, p, player.id if player else None
+                )
+                for p in event.players_by_id.values()
+            ):
+                errors['alert'] = _('This player already exists in the event.')
+                return None, errors
+            return stored_player, errors
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
         stored_player = cls._stored_player_from_data(data, tournament, player)
         if event.get_player_duplicate(
@@ -979,6 +1073,19 @@ class PlayerAdminController(BaseEventAdminController):
             return None, errors
         return stored_player, errors
 
+    @staticmethod
+    def _matches_existing_player(
+        stored: StoredPlayer, existing: Player, current_player_id: int | None
+    ) -> bool:
+        if existing.id == current_player_id:
+            return False
+        if (
+            stored.first_name == existing.first_name
+            and stored.last_name == existing.last_name
+        ):
+            return True
+        return False
+
     @classmethod
     def _validate_player_form_data(
         cls,
@@ -988,27 +1095,46 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> dict[str, str]:
         event = web_context.get_admin_event()
         errors: dict[str, str] = {}
-        tournament: Tournament | None = None
-        field = 'tournament_id'
-        try:
-            tournament_id = WebContext.form_data_to_int(data, field)
-            if not tournament_id:
-                raise ValueError('Tournament ID not supplied')
-            tournament = event.tournaments_by_id[tournament_id]
-        except (ValueError, KeyError):
-            errors[field] = _('Please choose the tournament.')
-        if action != FormAction.CREATE and tournament is not None:
-            player = web_context.get_admin_player()
-            if tournament.id != player.single_tournament.id:
-                try:
-                    cls._validate_player_tournament_move(
-                        event,
-                        player,
-                        player.single_tournament,
-                        tournament,
-                    )
-                except ValueError as e:
-                    errors[field] = str(e)
+        if event.is_team_event:
+            field = 'team_id'
+            team_id = WebContext.form_data_to_int(data, field)
+            if team_id and team_id not in event.teams_by_id:
+                errors[field] = _('Unknown team.')
+            elif team_id:
+                target_team = event.teams_by_id[team_id]
+                player = web_context.admin_player
+                already_on_team = player is not None and player.team_id == team_id
+                max_size = target_team.roster_max_size
+                if (
+                    not already_on_team
+                    and max_size is not None
+                    and len(target_team.players) >= max_size
+                ):
+                    errors[field] = _(
+                        'Team [{team}] is full ({max} players max).'
+                    ).format(team=target_team.name, max=max_size)
+        else:
+            tournament: Tournament | None = None
+            field = 'tournament_id'
+            try:
+                tournament_id = WebContext.form_data_to_int(data, field)
+                if not tournament_id:
+                    raise ValueError('Tournament ID not supplied')
+                tournament = event.tournaments_by_id[tournament_id]
+            except (ValueError, KeyError):
+                errors[field] = _('Please choose the tournament.')
+            if action != FormAction.CREATE and tournament is not None:
+                player = web_context.get_admin_player()
+                if tournament.id != player.single_tournament.id:
+                    try:
+                        cls._validate_player_tournament_move(
+                            event,
+                            player,
+                            player.single_tournament,
+                            tournament,
+                        )
+                    except ValueError as e:
+                        errors[field] = str(e)
 
         last_name = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
@@ -1050,6 +1176,13 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
+        try:
+            if value := WebContext.form_data_to_str(data, field := 'women_title'):
+                PlayerTitle(value)
+        except ValueError:
+            # should never happen, not translated.
+            errors[field] = f'Invalid title value [{data[field]}].'
+            data[field] = ''
         federation = WebContext.form_data_to_str(data, field := 'federation', '')
         if federation not in SharlyChessConfig().federations:
             # should never happen, not translated.
@@ -1079,6 +1212,24 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
+        for tr in TournamentRating:
+            for prt in PlayerRatingType:
+                try:
+                    WebContext.form_data_to_int(
+                        data,
+                        field := f'{tr.form_key}_rating_{prt.form_key}',
+                        minimum=prt.min_value,
+                        maximum=prt.max_value,
+                    )
+                except ValueError:
+                    errors[field] = _(
+                        'Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}]).'
+                    ).format(
+                        rating_type=prt.name,
+                        rating=data[field],
+                        min=prt.min_value,
+                        max=prt.max_value,
+                    )
         plugin_manager.hook_for_event(event, 'validate_player_form_fields')(
             data=data, errors=errors
         )
@@ -1088,7 +1239,7 @@ class PlayerAdminController(BaseEventAdminController):
     def _stored_player_from_data(
         cls,
         data: dict[str, str],
-        tournament: Tournament,
+        tournament: Tournament | None,
         player: Player | None = None,
     ) -> StoredPlayer:
         date_of_birth: date | None = None
@@ -1125,6 +1276,8 @@ class PlayerAdminController(BaseEventAdminController):
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
             title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
+            women_title=WebContext.form_data_to_str(data, 'women_title')
+            or PlayerTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
                     estimated=WebContext.form_data_to_int(
@@ -1142,10 +1295,19 @@ class PlayerAdminController(BaseEventAdminController):
             },
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
             federation=WebContext.form_data_to_str(data, 'federation') or '',
-            club=WebContext.form_data_to_str(data, 'club') or '',
+            club=(WebContext.form_data_to_str(data, 'club') or '').strip(),
             fixed=WebContext.form_data_to_int(data, 'fixed'),
+            # Carry the existing team membership through the rebuild; team
+            # changes are applied separately (and skipped for paired
+            # players) so it must not be wiped here.
+            team_id=player.team_id if player else None,
+            team_index=player.team_index if player else None,
             plugin_data=plugin_data,
-            check_in=player.check_in if player else tournament.default_player_check_in,
+            check_in=(
+                player.check_in
+                if player
+                else (tournament.default_player_check_in if tournament else False)
+            ),
         )
 
     @post(
@@ -1173,20 +1335,43 @@ class PlayerAdminController(BaseEventAdminController):
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
-        tournament = event.tournaments_by_id[tournament_id]
-        player_id = event.add_player(stored_player, [tournament])
-        self.set_players_search_results(web_context)
-        player = tournament.tournament_players_by_id[player_id]
         warning_message: str | None = None
-        if not player.matches_tournament_criteria:
-            warning_message = _(
-                'Player [{player}] has been created, but '
-                'does not match tournament criteria: {names}'
-            ).format(
-                player=player.full_name,
-                names=player.failing_tournament_criteria_message,
-            )
+        if event.is_team_event:
+            team_id = WebContext.form_data_to_int(data, 'team_id')
+            player_id = event.add_player(stored_player, [])
+            self.set_players_search_results(web_context)
+            if team_id and team_id in event.teams_by_id:
+                team = event.teams_by_id[team_id]
+                event_player = event.players_by_id[player_id]
+                try:
+                    with EventDatabase(event.uniq_id, True) as database:
+                        team.add_player(event_player, database)
+                        tournament = team.tournament
+                        if tournament is not None:
+                            tournament.resort_teams(database)
+                except RosterFullError as err:
+                    warning_message = _(
+                        'Player [{player}] has been created, but team '
+                        '[{team}] is full ({max} players max).'
+                    ).format(
+                        player=event_player.full_name,
+                        team=team.name,
+                        max=err.max_size,
+                    )
+        else:
+            tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
+            tournament = event.tournaments_by_id[tournament_id]
+            player_id = event.add_player(stored_player, [tournament])
+            self.set_players_search_results(web_context)
+            player = tournament.tournament_players_by_id[player_id]
+            if not player.matches_tournament_criteria:
+                warning_message = _(
+                    'Player [{player}] has been created, but '
+                    'does not match tournament criteria: {names}'
+                ).format(
+                    player=player.full_name,
+                    names=player.failing_tournament_criteria_message,
+                )
 
         if add_other:
             return self._render_players_form_modal(
@@ -1202,10 +1387,11 @@ class PlayerAdminController(BaseEventAdminController):
         if warning_message:
             Message.warning(request, warning_message)
         else:
+            created_player = event.players_by_id[player_id]
             Message.success(
                 request,
                 _('Player [{player}] has been created.').format(
-                    player=player.full_name
+                    player=created_player.full_name
                 ),
             )
         return self._render_players_tab(web_context)
@@ -1224,12 +1410,37 @@ class PlayerAdminController(BaseEventAdminController):
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
-        tournament = event.tournaments_by_id[tournament_id]
         event.update_player(player, stored_player)
-        previous_tournament = player.single_tournament
-        if tournament.id != previous_tournament.id:
-            event.move_player_to_tournament(player, tournament)
+        if event.is_team_event:
+            # Team membership is set via the team picker; a paired player's
+            # team is locked (moving them would orphan their boards), so we
+            # only reassign when not yet paired. Team events never use the
+            # individual tournament-assignment path below.
+            if not player.has_been_paired:
+                team_id = WebContext.form_data_to_int(data, 'team_id')
+                new_team = event.teams_by_id.get(team_id) if team_id else None
+                current_team = player.team
+                if new_team is not current_team:
+                    try:
+                        with EventDatabase(event.uniq_id, True) as database:
+                            if current_team is not None and new_team is None:
+                                current_team.remove_player(player, database)
+                            elif new_team is not None:
+                                new_team.add_player(player, database)
+                            for affected in (current_team, new_team):
+                                if affected is not None and affected.tournament:
+                                    affected.tournament.resort_teams(database)
+                    except RosterFullError:
+                        # Normally prevented by _validate_player_form_data
+                        # (which keeps the modal open with a field error);
+                        # this is just a safety net against races.
+                        pass
+        else:
+            tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
+            tournament = event.tournaments_by_id[tournament_id]
+            previous_tournament = player.single_tournament
+            if tournament.id != previous_tournament.id:
+                event.move_player_to_tournament(player, tournament)
 
         redirect_to = WebContext.form_data_to_str(data, 'redirect_to')
         if redirect_to:
@@ -1253,7 +1464,7 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template | Redirect:
         return self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
@@ -1274,7 +1485,7 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template | Redirect:
         return self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
@@ -1287,21 +1498,23 @@ class PlayerAdminController(BaseEventAdminController):
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_player_delete(
-        self, request: HTMXRequest, player_id: int
+        self,
+        request: HTMXRequest,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
-        tournament = player.single_tournament
+        tournament_player = player.optional_single_tournament_player
         event = web_context.get_admin_event()
         deleted_player_id: int | None = None
-        if player.single_tournament_player.has_real_pairings:
+        if tournament_player is not None and tournament_player.has_real_pairings:
             Message.error(
                 request,
                 _(
                     'Player [{player}] has pairings in tournament [{tournament}].'
                 ).format(
                     player=player.full_name,
-                    tournament=tournament.name,
+                    tournament=tournament_player.tournament.name,
                 ),
             )
         else:
@@ -1420,7 +1633,9 @@ class PlayerAdminController(BaseEventAdminController):
         guards=[PlayerTournamentActionGuard(AuthAction.UPDATE_PLAYERS_HISTORY)],
     )
     async def htmx_admin_record_modal(
-        self, request: HTMXRequest, player_id: int
+        self,
+        request: HTMXRequest,
+        player_id: FromPath[int],
     ) -> Template:
         return self._render_player_records_modal(
             PlayerAdminWebContext(request, player_id)
@@ -1434,8 +1649,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_records_check_in_player(
         self,
         request: HTMXRequest,
-        channels: ChannelsPlugin,
-        player_id: int,
+        channels: NamedDependency[ChannelsPlugin],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_tournament_player()
@@ -1452,7 +1667,7 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_withdraw_player(
         self,
         request: HTMXRequest,
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_tournament_player()
@@ -1467,7 +1682,7 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_return_player(
         self,
         request: HTMXRequest,
-        player_id: int,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_tournament_player()
@@ -1482,9 +1697,9 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_player_set_bye(
         self,
         request: HTMXRequest,
-        player_id: int,
-        round: int,
-        result: int,
+        player_id: FromPath[int],
+        round: FromPath[int],
+        result: FromQuery[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
@@ -1566,8 +1781,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_player_table_check_in_player(
         self,
         request: HTMXRequest,
-        channels: ChannelsPlugin,
-        player_id: int,
+        channels: NamedDependency[ChannelsPlugin],
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_tournament_player()
@@ -1591,7 +1806,9 @@ class PlayerAdminController(BaseEventAdminController):
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_check_in_player_modal(
-        self, request: HTMXRequest, player_id: int
+        self,
+        request: HTMXRequest,
+        player_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id=player_id)
         return self._admin_base_event_render(
@@ -1604,7 +1821,9 @@ class PlayerAdminController(BaseEventAdminController):
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_check_in_tournament_reset_modal(
-        self, request: HTMXRequest, tournament_id: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         return self._admin_base_event_render(
@@ -1622,7 +1841,7 @@ class PlayerAdminController(BaseEventAdminController):
         data: Annotated[
             dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -1648,7 +1867,7 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
@@ -1718,6 +1937,7 @@ class PlayerAdminController(BaseEventAdminController):
             'started_tournament_ids': [
                 str(tournament.id) for tournament in tournaments if tournament.started
             ],
+            'is_team_event': event.is_team_event,
             'tournament_options': tournament_options,
             'data_source_options': {
                 data_source.id: data_source.name for data_source in data_sources
@@ -1764,8 +1984,11 @@ class PlayerAdminController(BaseEventAdminController):
             if reader.fieldnames:
                 content_by_column = {header: [] for header in reader.fieldnames}
                 for row in reader:
-                    for header in reader.fieldnames:
-                        content_by_column[header].append(row[header].strip())
+                    if any(row[header] for header in reader.fieldnames):
+                        for header in reader.fieldnames:
+                            content_by_column[header].append(
+                                (row[header] or '').strip()
+                            )
         return content_by_column
 
     @classmethod
@@ -1779,17 +2002,27 @@ class PlayerAdminController(BaseEventAdminController):
         for column in used_columns:
             column.update_from_used_columns(used_columns)
         event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
+        # A team event imports players at the event level (their team —
+        # not a tournament — places them), so there may be no tournament.
+        tournament = web_context.admin_tournament
         data_source = web_context.admin_data_source
         unique_values_by_column_id: dict[str, list[str]] = defaultdict(list)
-        check_duplicate_players: list[TournamentPlayer] = []
-        for player in event.tournament_players:
-            if player.tournament.id == tournament.id:
-                if overwrite_players:
+        check_duplicate_players: list[Player] = []
+        if tournament is not None:
+            for tournament_player in event.tournament_players:
+                same_tournament = tournament_player.tournament.id == tournament.id
+                if same_tournament and overwrite_players:
+                    # Deleted by the import before its own rows land.
                     continue
-            elif event.allow_multi_tournament_players:
-                continue
-            check_duplicate_players.append(player)
+                if not same_tournament and event.allow_multi_tournament_players:
+                    continue
+                check_duplicate_players.append(tournament_player)
+        elif not overwrite_players:
+            # A team event imports at the event level, so a clash is with
+            # the event's players. Not `event.tournament_players`: a team
+            # places its players and need not belong to a tournament, so
+            # that list misses everyone in an unassigned team.
+            check_duplicate_players = list(event.players)
         name_keys: list[tuple] = [
             (player.last_name, player.first_name, player.date_of_birth)
             for player in check_duplicate_players
@@ -1811,7 +2044,11 @@ class PlayerAdminController(BaseEventAdminController):
             stored_player = StoredPlayer(
                 id=None,
                 federation=event.federation,
-                check_in=tournament.default_player_check_in,
+                check_in=(
+                    tournament.default_player_check_in
+                    if tournament is not None
+                    else False
+                ),
             )
             for column in used_columns:
                 if column.is_informative:
@@ -1841,7 +2078,9 @@ class PlayerAdminController(BaseEventAdminController):
                             message.format(
                                 column=column.id,
                                 value=value,
-                                tournament=tournament.name,
+                                tournament=tournament.name
+                                if tournament
+                                else event.name,
                             )
                         )
                 except SharlyChessException as error:
@@ -1869,7 +2108,7 @@ class PlayerAdminController(BaseEventAdminController):
                                 format_date(stored_player.date_of_birth),
                             ]
                         ),
-                        tournament=tournament.name,
+                        tournament=tournament.name if tournament else event.name,
                     )
             if index in import_errors_by_index:
                 continue
@@ -1912,6 +2151,24 @@ class PlayerAdminController(BaseEventAdminController):
                         tournament, stored_player, value
                     )
                 stored_players_by_index[index] = stored_player
+
+        for index, stored_player in stored_players_by_index.items():
+            for tr in TournamentRating:
+                for prt in PlayerRatingType:
+                    ratings = stored_player.ratings.get(tr.value, {})
+                    if prt.form_key in ratings:
+                        rating = ratings[prt.form_key]
+                        if rating and not (prt.min_value <= rating <= prt.max_value):
+                            import_errors_by_index[index][
+                                f'{tr.form_key}_{prt.key}'
+                            ] = _(
+                                'Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}]).'
+                            ).format(
+                                rating_type=prt.name,
+                                rating=rating,
+                                min=prt.min_value,
+                                max=prt.max_value,
+                            )
 
         return stored_players_by_index, import_errors_by_index, duplicated_indexes
 
@@ -1984,7 +2241,9 @@ class PlayerAdminController(BaseEventAdminController):
         tournament_id = web_context.form_data_to_int(
             normalized_data, field := 'tournament_id'
         )
-        if not tournament_id:
+        # Team events import at the event level — a team (not a
+        # tournament) places each player — so no tournament is required.
+        if not tournament_id and not event.is_team_event:
             errors[field] = _('This field is required.')
         file_path = WebContext.form_data_to_path(normalized_data, field := 'file')
         content_by_column_id: dict[str, list[str]] = {}
@@ -2050,19 +2309,70 @@ class PlayerAdminController(BaseEventAdminController):
     ):
         request = web_context.request
         event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
+        tournament = web_context.admin_tournament
+        team_mode = event.is_team_event
         if stored_players:
+            # Team events import players at the event level: no
+            # ``tournament_player`` row (the synthetic loader derives one
+            # from team membership). A team name on the row matches an
+            # existing team by name event-wide (created on first sight,
+            # attached to the team tournament when there is one).
+            team_id_by_name: dict[str, int] = {}
+            next_team_index: dict[int, int] = {}
+            if team_mode:
+                for team in event.teams:
+                    team_id_by_name.setdefault(team.name, team.id)
+                    next_team_index[team.id] = len(team.players)
+                if overwrite_players:
+                    # The import is about to empty those teams, so their
+                    # board order restarts from the top.
+                    emptied = (
+                        tournament.teams if tournament is not None else event.teams
+                    )
+                    for team in emptied:
+                        next_team_index[team.id] = 0
             with EventDatabase(event.uniq_id, True) as database:
                 if overwrite_players:
-                    database.delete_players_in_tournament(tournament.id)
+                    if tournament is not None:
+                        database.delete_players_in_tournament(tournament.id)
+                    else:
+                        # A team event imports at the event level — its
+                        # players are placed by team, not by tournament —
+                        # so there is no tournament to clear and "delete
+                        # the existing players" means the event's.
+                        database.delete_all_stored_players()
                 for stored_player in stored_players:
                     player_id = database.add_stored_player(stored_player)
-                    database.add_stored_tournament_player(
-                        StoredTournamentPlayer(
-                            player_id=player_id,
-                            tournament_id=tournament.id,
+                    if not team_mode:
+                        assert tournament is not None
+                        database.add_stored_tournament_player(
+                            StoredTournamentPlayer(
+                                player_id=player_id,
+                                tournament_id=tournament.id,
+                            )
                         )
-                    )
+                        continue
+                    team_name = stored_player.transient_team_name
+                    if team_name:
+                        team_id = team_id_by_name.get(team_name)
+                        if team_id is None:
+                            team_id = database.add_stored_team(
+                                StoredTeam(
+                                    id=None,
+                                    name=team_name,
+                                    tournament_id=(
+                                        tournament.id
+                                        if tournament is not None
+                                        else None
+                                    ),
+                                )
+                            )
+                            team_id_by_name[team_name] = team_id
+                            next_team_index[team_id] = 0
+                        database.set_player_team(
+                            player_id, team_id, next_team_index[team_id]
+                        )
+                        next_team_index[team_id] += 1
                 if any(column.save_stored_event for column in used_columns):
                     database.update_stored_event(event.stored_event)
             Message.success(
@@ -2080,7 +2390,11 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/import-players/{event_uniq_id:str}/{tournament_id:int}',
+        path=[
+            # Team events import at the event level, with no tournament.
+            '/import-players/{event_uniq_id:str}',
+            '/import-players/{event_uniq_id:str}/{tournament_id:int}',
+        ],
         name='import-players',
     )
     async def import_players(
@@ -2089,7 +2403,7 @@ class PlayerAdminController(BaseEventAdminController):
         data: Annotated[
             dict[str, str | list[str]], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
+        tournament_id: FromPath[int | None] = None,
     ) -> HTMXTemplate:
         flat_data = WebContext.flatten_list_data(data)
         web_context = PlayerAdminWebContext(
@@ -2098,14 +2412,20 @@ class PlayerAdminController(BaseEventAdminController):
             data_source_id=WebContext.form_data_to_str(flat_data, 'data_source'),
         )
         event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
+        tournament = web_context.admin_tournament
         data_source = web_context.admin_data_source
         file_path = WebContext.form_data_to_path(flat_data, 'file_path')
         assert file_path is not None
         row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
         overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
-        if overwrite_players and tournament.started:
-            raise ClientException('Overwrite is forbidden on started tournaments.')
+        if overwrite_players:
+            started = (
+                [tournament]
+                if tournament is not None
+                else list(event.tournaments_by_id.values())
+            )
+            if any(candidate.started for candidate in started):
+                raise ClientException('Overwrite is forbidden on started tournaments.')
         columns = PlayerDatasheetColumnHandler(event, data_source).columns
         content_by_column_id = self._read_csv_file(file_path)
         used_columns = [
@@ -2140,8 +2460,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_move(
         self,
         request: HTMXRequest,
-        player_id: int,
-        tournament_id: int,
+        player_id: FromPath[int],
+        tournament_id: FromPath[int],
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id, tournament_id)
         admin_player = web_context.get_admin_player()
@@ -2214,7 +2534,10 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-player-history-popover',
     )
     async def htmx_admin_history_popover(
-        self, request: HTMXRequest, tournament_id: int, player_id: int
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        player_id: FromPath[int],
     ) -> Template:
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request, player_id, tournament_id
@@ -2243,8 +2566,8 @@ class PlayerAdminController(BaseEventAdminController):
             dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        data_source_id: str,
-        tab: str,
+        data_source_id: FromPath[str],
+        tab: FromPath[str],
     ) -> Template | Redirect:
         web_context = PlayerAdminWebContext(request, data_source_id=data_source_id)
         event = web_context.get_admin_event()
@@ -2304,9 +2627,9 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_event_players_diff_modal(
         self,
         request: HTMXRequest,
-        data_source_id: str,
-        tab: str,
-        tournament_id: int | None = None,
+        data_source_id: FromPath[str],
+        tab: FromPath[str],
+        tournament_id: FromQuery[int | None] = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request,
@@ -2353,9 +2676,9 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_players_refresh_message(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        reason: str,
-        ignore: bool = False,
+        event_uniq_id: FromPath[str],
+        reason: FromPath[str],
+        ignore: FromQuery[bool] = False,
     ) -> Template:
         if ignore:
             return HTMXTemplate(template_name='/common/empty.html')
@@ -2380,11 +2703,11 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_search_player(
         self,
         request: HTMXRequest,
-        data_source_id: str,
-        player_id: int | None,
-        search: str,
-        page: int = 0,
-        usage: str = 'player',
+        data_source_id: FromQuery[str],
+        player_id: FromQuery[int | None],
+        search: FromQuery[str],
+        page: FromPath[int] = 0,
+        usage: FromQuery[str] = 'player',
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -2421,6 +2744,18 @@ class PlayerAdminController(BaseEventAdminController):
             },
         )
 
+    @staticmethod
+    def _players_export_sort_key(player: Player) -> Any:
+        if player.event.is_team_event:
+            return (
+                player.event.teams_by_id[player.team_id].name
+                if player.team_id
+                else '|',  # players with no team at the end
+                player.team_index,
+            )
+        else:
+            return player.last_name, player.first_name
+
     @get(
         path=[
             '/event-export-players/{event_uniq_id:str}/{exporter_id:str}',
@@ -2431,8 +2766,8 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_event_export_players(
         self,
         request: HTMXRequest,
-        tournament_id: int | None,
-        exporter_id: str,
+        tournament_id: FromPath[int | None],
+        exporter_id: FromPath[str],
     ) -> Response[str] | File:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         event = web_context.get_admin_event()
@@ -2446,6 +2781,7 @@ class PlayerAdminController(BaseEventAdminController):
                 for player_id in search_results
                 if player_id in event.players_by_id
             ]
+        players = sorted(players, key=self._players_export_sort_key)
         try:
             exporter = PlayerExporterManager().get_object(exporter_id)
         except KeyError:

@@ -49,13 +49,27 @@ class Prize:
         return self.type.is_monetary
 
     @property
+    def complementary_value(self) -> float | None:
+        return self.stored_prize.complementary_value
+
+    @property
+    def monetary_value(self) -> float:
+        return self.value if self.is_monetary else 0.0
+
+    @property
+    def non_monetary_value(self) -> float:
+        if not self.is_monetary:
+            return self.value
+        return self.complementary_value if self.complementary_value is not None else 0.0
+
+    @property
     def name(self) -> str:
         return self.type.get_prize_name(self.value, self.description, self.currency)
 
     @property
     def full_name(self) -> str:
         return self.type.get_prize_full_name(
-            self.value, self.description, self.currency
+            self.value, self.description, self.currency, self.complementary_value
         )
 
     @cached_property

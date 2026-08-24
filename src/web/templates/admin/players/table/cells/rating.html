@@ -1,4 +1,9 @@
-{% if tournament_player.rating_is_overridden(tournament.rating, tournament.player_rating_type) %}
+{% if not tournament_player %}
+    {# No tournament yet (player without a team, or team unassigned):
+       the event-default rating, following the event's cadence. #}
+    {% set _default_rating = player.event_default_rating_and_type %}
+    {% if _default_rating.value %}{{ _default_rating }}{% else %}<span class="text-muted">—</span>{% endif %}
+{% elif tournament_player.rating_is_overridden(tournament.rating, tournament.player_rating_type) %}
     <span {{ macros.tooltip_attributes('info', _('Standard rating used.'), 'right') }}>
         {{ tournament_player.rating_str }} <sup>*</sup>
     </span>

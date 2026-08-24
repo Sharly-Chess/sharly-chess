@@ -43,14 +43,13 @@ class FideDatabase(LocalSourcePlayerDatabase):
     def static_name() -> str:
         return _('FIDE')
 
-    @property
-    def min_recovery_version(self) -> Version:
-        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/1739
-        return Version('3.6.0')
+    @staticmethod
+    def version() -> Version:
+        return Version('2')
 
     @property
     def _source_file_name(self) -> str:
-        return 'fide_players_v1.db'
+        return 'fide_players_v2.db'
 
     @classmethod
     def credentials_file(cls) -> Path:
@@ -99,6 +98,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
+            women_title=row['fide_women_title'],
             transient_arbiter_titles={'fide': row['fide_arbiter_title']},
             ratings=ratings,
             fide_id=row['fide_id'],
@@ -211,3 +211,12 @@ class FideDatabase(LocalSourcePlayerDatabase):
             tuple(player_fide_ids),
         )
         return [self._get_player_from_row(row) for row in self.fetchall()]
+
+    # ---------------------------------------------------------------------------------
+    # Legacy
+    # ---------------------------------------------------------------------------------
+
+    @property
+    def legacy_min_recovery_version(self) -> Version:
+        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/1739
+        return Version('3.6.0')

@@ -27,6 +27,8 @@ logger = get_logger()
 class Client:
     """A class that represents a client, built from an HTTP request."""
 
+    request: HTMXRequest | None
+
     def __init__(
         self,
         request: HTMXRequest,
@@ -48,6 +50,7 @@ class Client:
             return Account.predefined_administrator_account()
         if not self.event:
             return Account.predefined_anonymous_account()
+        assert self.request is not None
         account_id_handler = SessionUserAccountId(self.request, self.event)
         account_id = account_id_handler.get()
         accounts_by_id = self.event.active_user_accounts_by_id
@@ -64,6 +67,18 @@ class Client:
             hash_handler.unset()
             return self.event.anonymous_account
         return account
+
+    @classmethod
+    def for_event_administrator(cls, event: 'Event') -> 'Client':
+        """Build a request-less client with the event administrator account, for
+        background tasks (e.g. plugin auto-uploads) that need to render documents
+        or check permissions outside of an HTTP request."""
+        client = cls.__new__(cls)
+        client.request = None
+        client.host = LOCALHOST_IP
+        client.event = event
+        client.account = event.administrator_account
+        return client
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}(account={self.account}, host={self.host})'
@@ -197,6 +212,11 @@ class Client:
     def can_view_detailed_event_cards(self) -> bool:
         """Returns true if the client can view the details on the event cards."""
         return AuthAction.VIEW_DETAILED_EVENT_CARDS in self.allowed_actions
+
+    @property
+    def can_create_events(self) -> bool:
+        """Returns true if the client can create and duplicate events."""
+        return AuthAction.CREATE_EVENTS in self.allowed_actions
 
     @property
     def can_manage_events(self) -> bool:

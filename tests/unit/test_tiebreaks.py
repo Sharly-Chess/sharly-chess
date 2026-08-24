@@ -14,7 +14,7 @@ from data.tie_breaks.options import (
     LegacyMarch2026TieBreakOption,
 )
 from data.tournament import Tournament
-from data.player import Player
+from data.player import TournamentPlayer
 from plugins.ffe import ffe_tie_breaks
 from plugins.ffe.ffe_tie_breaks import (
     PapiBuchholzTypeOption,
@@ -56,7 +56,7 @@ class TieBreakTestCase(TestCase, ABC):
 
     def get_player_values(
         self,
-        compute_player_value: Callable[[Player], Any],
+        compute_player_value: Callable[[TournamentPlayer], Any],
         exclude_ids: list[int] | None = None,
         only_ids: list[int] | None = None,
     ) -> dict[int, Any]:
@@ -86,8 +86,11 @@ class TieBreakTestCase(TestCase, ABC):
     def get_direct_encounter_player_values(self):
         self.tournament.compute_tournament_player_ranks()
         tie_break_ = tie_breaks.DirectEncounterTieBreak()
+        # Direct encounter resolves the players still tied when it is
+        # reached, so it is applied after the points — index 1, the
+        # points being the criterion at index 0.
         return tie_break_.compute_all_player_values(
-            self.tournament, 0, after_round=self.tournament.rounds
+            self.tournament, 1, after_round=self.tournament.rounds
         )
 
 

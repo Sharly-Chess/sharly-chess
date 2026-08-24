@@ -1,0 +1,26 @@
+{% set tournament_ffe_data = ffe_utils.get_tournament_plugin_data(tournament) %}
+<span class="d-inline-flex align-items-center flex-wrap gap-2">
+    <span class="text-nowrap">
+        {{ tournament_ffe_data.ffe_id }}
+        <a
+            href="{{ ffe_utils.tournament_url(tournament_ffe_data.ffe_id) }}"
+            target="_blank"
+            {{ macros.tooltip_attributes('', _('Public page of the tournament.')) }}
+        ><i class="bi bi-box-arrow-up-right"></i></a>
+    </span>
+    {% set auto_upload = ffe_utils.resolve_auto_upload(tournament) %}
+    <i
+        class="bi-cloud-arrow-up-fill {% if not auto_upload %}text-secondary{% endif %}"
+        style="transform: scale(1.1)"
+        {{ macros.tooltip_attributes(
+            'info', _('Auto-upload enabled') if auto_upload else _('Auto-upload disabled'), 'top'
+        ) }}
+    ></i>
+    {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
+    {% if ffe_actions_unavailable_message %}
+        <i
+            class="bi-exclamation-triangle-fill text-danger"
+            {{ macros.tooltip_attributes('warning', ffe_actions_unavailable_message, 'top') }}
+        ></i>
+    {% endif %}
+</span>

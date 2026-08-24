@@ -1,11 +1,16 @@
 from dataclasses import dataclass, field
 from datetime import date
 from functools import cached_property
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from database.sqlite.event.event_store import BaseStoredEvent
 from plugins.manager import plugin_manager
 from plugins.utils import Plugin
+from utils.enum import EventType
+
+if TYPE_CHECKING:
+    from data.tag import Tag
 
 
 @dataclass
@@ -17,10 +22,22 @@ class EventMetadata(BaseStoredEvent):
     stop_date: date = field(default_factory=date.today)
     tournament_count: int = 0
     player_count: int = 0
+    team_count: int = 0
     timer_count: int = 0
     screen_count: int = 0
     family_count: int = 0
     rotator_count: int = 0
+
+    @property
+    def is_team_event(self) -> bool:
+        return self.event_type == EventType.TEAM
+
+    @property
+    def tags(self) -> list['Tag']:
+        """The tags of the event; unknown ids are ignored (see data.tag)."""
+        from common.sharly_chess_config import SharlyChessConfig
+
+        return SharlyChessConfig().resolve_tags(self.tag_ids)
 
     @property
     def plugins(self) -> list[Plugin]:

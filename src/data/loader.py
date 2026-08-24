@@ -1,5 +1,7 @@
 import re
 import shutil
+import sqlite3
+from time import perf_counter
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -15,10 +17,11 @@ from packaging.version import Version
 from common import (
     SHARLY_CHESS_VERSION,
     EVENTS_DIR,
+    ARCHIVES_DIR,
+    BACKUP_BASE_DIR,
 )
 from common.exception import SharlyChessException
 from common.i18n.utils import normalized_key
-from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 from data.event import Event
 from data.event_metadata import EventMetadata
@@ -26,6 +29,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.date_time import get_date_timestamp, format_datetime
+from utils.enum import Extension
 
 logger: Logger = get_logger()
 
@@ -49,30 +53,38 @@ class EventLoader:
         cls.load_event_ids()
 
     @classmethod
-    def load_event_ids(cls, uniq_id: str | None = None):
+    def load_event_ids(cls, uniq_id: str | None = None) -> dict[str, EventMetadata]:
         event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         cls._clean_not_existing_event_database_files(cls._valid_event_ids)
         cls._clean_not_existing_event_database_files(cls._invalid_uniq_ids)
         known_event_ids = cls._valid_event_ids | cls._invalid_uniq_ids
+        metadata_by_event_id: dict[str, EventMetadata] = {}
         for event_id in event_ids:
             if event_id in known_event_ids:
                 continue
             try:
-                cls.check_event_database(event_id)
+                metadata_by_event_id[event_id] = cls.check_event_database(event_id)
                 cls._valid_event_ids.add(event_id)
             except SharlyChessException as e:
                 logger.exception(e)
                 cls._invalid_uniq_ids.add(event_id)
+        return metadata_by_event_id
 
     @classmethod
-    def check_event_database(cls, event_uniq_id: str):
+    def check_event_database(cls, event_uniq_id: str) -> EventMetadata:
         """Check the validity of an event database, raises a SharlyChessError if it is not."""
         database = EventDatabase(event_uniq_id)
         if not database.is_sqlite_file():
             raise SharlyChessException(
                 f'File {database.file} is not a SQLite database.'
             )
-        if not database.check_status():
+        try:
+            needs_upgrade = not database.check_status()
+        except sqlite3.DatabaseError as e:
+            raise SharlyChessException(
+                f'File {database.file} is a corrupted SQLite database: {e}'
+            ) from e
+        if needs_upgrade:
             database.upgrade()
         with EventDatabase(event_uniq_id) as database:
             stored_event = database.load_stored_event_metadata()
@@ -81,6 +93,7 @@ class EventLoader:
                 raise SharlyChessException(
                     f'Event [{event_uniq_id}] - Unknown plugin [{plugin_id}]'
                 )
+        return stored_event
 
     def import_event(self, file_path: Path) -> str:
         """Import an event. Raise a SharlyChessException if it fails,
@@ -90,6 +103,10 @@ class EventLoader:
         shutil.move(file_path, new_path)
         try:
             EventLoader.check_event_database(uniq_id)
+            # Tag ids are only meaningful within the installation that
+            # defined them, so an imported event starts with no tags.
+            with EventDatabase(uniq_id, write=True) as database:
+                database.delete_all_tags()
             return uniq_id
         except Exception as e:
             new_path.unlink(missing_ok=True)
@@ -121,7 +138,7 @@ class EventLoader:
     @classmethod
     def all_event_ids(cls) -> list[str]:
         ids: list[str] = []
-        for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_database_ext}'):
+        for file in EVENTS_DIR.glob(f'*.{Extension.EVENT_DB}'):
             uniq_id = cls.format_uniq_id(file.stem)
             if uniq_id != file.stem:
                 index: int = 1
@@ -145,10 +162,20 @@ class EventLoader:
         )
 
     def load_event(self, uniq_id: str) -> Event:
-        self.load_event_ids(uniq_id)
-        with EventDatabase(uniq_id) as event_database:
-            event = Event(event_database.load_stored_event())
-        return event
+        from web.performance import current_request_performance, record_event_load
+
+        if current_request_performance() is None:
+            self.load_event_ids(uniq_id)
+            with EventDatabase(uniq_id) as event_database:
+                return Event(event_database.load_stored_event())
+        start = perf_counter()
+        try:
+            self.load_event_ids(uniq_id)
+            with EventDatabase(uniq_id) as event_database:
+                event = Event(event_database.load_stored_event())
+            return event
+        finally:
+            record_event_load(perf_counter() - start)
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
@@ -162,6 +189,18 @@ class EventLoader:
         status: Literal['passed', 'current', 'coming'] | None = None,
         public_only: bool = False,
     ) -> list[EventMetadata]:
+        return cls.select_events_metadata(
+            cls._filter_events_metadata([]), status, public_only=public_only
+        )
+
+    @staticmethod
+    def select_events_metadata(
+        events_metadata: list[EventMetadata],
+        status: Literal['passed', 'current', 'coming'] | None = None,
+        *,
+        public_only: bool = False,
+    ) -> list[EventMetadata]:
+        """Filter and sort already-loaded metadata without reopening databases."""
         conditions: list[Callable[[EventMetadata], bool]] = []
         if public_only:
             conditions.append(lambda event: event.public)
@@ -178,7 +217,11 @@ class EventLoader:
             case 'coming':
                 conditions.append(lambda event: today < event.start_date)
         return sorted(
-            cls._filter_events_metadata(conditions),
+            (
+                event_metadata
+                for event_metadata in events_metadata
+                if all(condition(event_metadata) for condition in conditions)
+            ),
             key=lambda event: (
                 get_date_timestamp(event.stop_date) * sort_order,
                 get_date_timestamp(event.start_date) * sort_order,
@@ -190,9 +233,10 @@ class EventLoader:
     def _filter_events_metadata(
         cls, conditions: list[Callable[[EventMetadata], bool]]
     ) -> list[EventMetadata]:
-        cls.load_event_ids()
+        metadata_by_event_id = cls.load_event_ids()
         events_metadata = [
-            cls.load_event_metadata(uniq_id) for uniq_id in cls._valid_event_ids
+            metadata_by_event_id.get(uniq_id) or cls.load_event_metadata(uniq_id)
+            for uniq_id in cls._valid_event_ids
         ]
         return [
             event_metadata
@@ -239,9 +283,7 @@ class ArchiveLoader:
         return sorted(
             [
                 Archive(file, file.stem, datetime.fromtimestamp(file.lstat().st_ctime))
-                for file in SharlyChessConfig.event_archive_base_path.glob(
-                    f'*.{SharlyChessConfig.event_archive_ext}'
-                )
+                for file in ARCHIVES_DIR.glob(f'*.{Extension.ARCHIVE}')
             ],
             key=lambda archive: archive.date,
         )
@@ -260,10 +302,7 @@ class ArchiveLoader:
 
     @staticmethod
     def get_archive_path(archive_name: str) -> Path:
-        return (
-            SharlyChessConfig.event_archive_base_path
-            / f'{archive_name}.{SharlyChessConfig.event_archive_ext}'
-        )
+        return ARCHIVES_DIR / f'{archive_name}.{Extension.ARCHIVE}'
 
 
 @dataclass
@@ -275,11 +314,7 @@ class EventBackup:
 
     @property
     def file(self) -> Path:
-        return (
-            SharlyChessConfig.event_backup_base_path
-            / self.version.public
-            / f'{self.name}.{SharlyChessConfig.event_backup_ext}'
-        )
+        return BACKUP_BASE_DIR / self.version.public / f'{self.name}.{Extension.BACKUP}'
 
     @property
     def exists(self) -> bool:
@@ -296,12 +331,12 @@ class EventBackupLoader:
     """This class helps loading backups (copied events)."""
 
     def __init__(self):
-        SharlyChessConfig.event_backup_base_path.mkdir(exist_ok=True, parents=True)
+        BACKUP_BASE_DIR.mkdir(exist_ok=True, parents=True)
 
     @staticmethod
     def event_backups(event_id: str) -> list[EventBackup]:
         backups: list[EventBackup] = []
-        for version_dir in SharlyChessConfig.event_backup_base_path.iterdir():
+        for version_dir in BACKUP_BASE_DIR.iterdir():
             if not version_dir.is_dir():
                 continue
             backup = EventBackup(event_id, Version(version_dir.name))
@@ -311,20 +346,20 @@ class EventBackupLoader:
 
     @staticmethod
     def version_backups(version: Version) -> list[EventBackup]:
-        version_dir: Path = SharlyChessConfig.event_backup_base_path / version.public
+        version_dir = BACKUP_BASE_DIR / version.public
         return [
             EventBackup(file.stem, version)
-            for file in version_dir.glob(f'*.{SharlyChessConfig.event_backup_ext}')
+            for file in version_dir.glob(f'*.{Extension.BACKUP}')
         ]
 
     def versions(self, event_id: str | None = None) -> list[Version]:
-        if not SharlyChessConfig.event_backup_base_path.exists():
+        if not BACKUP_BASE_DIR.exists():
             return []
         if event_id:
             return [backup.version for backup in self.event_backups(event_id)]
         return [
             Version(version_dir.name)
-            for version_dir in SharlyChessConfig.event_backup_base_path.iterdir()
+            for version_dir in BACKUP_BASE_DIR.iterdir()
             if version_dir.is_dir()
         ]
 

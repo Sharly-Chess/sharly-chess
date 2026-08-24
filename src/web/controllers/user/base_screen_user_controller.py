@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import cached_property
 from logging import Logger
 from typing import Any
 
@@ -7,14 +8,12 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.columns.board_table import BoardColumn, ScreenResultColumn
-from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
-from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
-from data.display_controller import DisplayController
-from data.family import Family
-from data.rotator import Rotator
-from data.screen import Screen
-from utils.enum import ScreenType
+from data.columns.board_table import BoardColumn
+from data.columns.player_table import TournamentPlayerTableColumn
+from data.screens.display_controller import DisplayController
+from data.screens.family import Family
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from web.controllers.user.base_user_controller import BaseUserController
 from web.controllers.user.event_user_controller import (
     EventUserWebContext,
@@ -47,10 +46,14 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
     def screen(self) -> Screen:
         pass
 
-    @property
-    def background_image(self) -> str | None:
-        if self.screen:
-            return self.screen.background_image
+    @cached_property
+    def family(self) -> Family | None:
+        if ':' in self.screen.uniq_id:
+            family_uniq_id: str = self.screen.uniq_id.split(':')[0]
+            try:
+                return self.user_event.families_by_uniq_id[family_uniq_id]
+            except KeyError:
+                raise NotFoundException(f'Family [{family_uniq_id}] not found.')
         return None
 
     @property
@@ -69,7 +72,9 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
         return super().template_context | {
             'rotator': self.rotator,
             'rotator_screen_index': self.rotator_screen_index,
+            'is_rotator': self.is_rotator,
             'screen': self.screen,
+            'family': self.family,
             'display_controller': self.display_controller,
         }
 
@@ -78,7 +83,7 @@ class ScreenUserWebContext(ScreenEntityUserWebContext):
     def __init__(self, request: HTMXRequest):
         super().__init__(request)
         self._screen: Screen = RequestUtils.get_screen(request)
-        self.user_event_tab = self.screen.type.value
+        self.user_event_tab = self.screen.type
 
     @property
     def screen(self) -> Screen:
@@ -126,28 +131,14 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
         return self._screen
 
 
-class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
-    def __init__(self, request: HTMXRequest):
-        super().__init__(request)
-        self.family: Family | None = None
-        if ':' in self.screen.uniq_id:
-            family_uniq_id: str = self.screen.uniq_id.split(':')[0]
-            try:
-                self.family = self.user_event.families_by_uniq_id[family_uniq_id]
-            except KeyError:
-                raise NotFoundException(f'Family [{family_uniq_id}] not found.')
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        return super().template_context | {
-            'family': self.family,
-        }
-
-
 class BaseScreenUserController(BaseUserController):
     @classmethod
     def _user_screen_render(
-        cls, web_context: ScreenEntityUserWebContext
+        cls,
+        web_context: ScreenEntityUserWebContext,
+        *,
+        template_name: str = 'user/screen.html',
+        trigger_event: str | None = None,
     ) -> HTMXTemplate:
         columns_by_tournament_id: dict[
             int, list[TournamentPlayerTableColumn] | list[BoardColumn]
@@ -155,43 +146,16 @@ class BaseScreenUserController(BaseUserController):
         event = web_context.user_event
         if web_context.screen:
             screen = web_context.screen
+            screen_type = screen.screen_type
             for tournament in {
                 screen_set.tournament for screen_set in screen.sorted_screen_sets
             }:
-                if screen.type != ScreenType.RANKING:
-                    tournament.set_for_round()
-                if screen.type == ScreenType.RANKING:
-                    ranking_round = tournament.correct_ranking_round(
-                        screen.ranking_round
-                    )
-                    tournament.compute_tournament_player_ranks(
-                        after_round=ranking_round
-                    )
-                    column_handler = PlayerColumnHandler(event, ColumnUsage.SCREEN)
-                    if screen.ranking_crosstable:
-                        columns = column_handler.get_player_crosstable_columns(
-                            tournament, ranking_round
-                        )
-                    else:
-                        columns = column_handler.get_player_ranking_columns(tournament)
+                columns = screen_type.build_columns(screen, tournament, event)
+                if columns is not None:
                     columns_by_tournament_id[tournament.id] = columns
-                elif screen.type in (ScreenType.BOARDS, ScreenType.INPUT):
-                    if tournament.current_round == 0:
-                        continue
-                    columns_by_tournament_id[tournament.id] = BoardColumnHandler(
-                        ColumnUsage.SCREEN
-                    ).get_pairings_columns(
-                        tournament,
-                        tournament.current_round,
-                        ScreenResultColumn,
-                        show_illegal_moves=(
-                            screen.type == ScreenType.INPUT
-                            and tournament.record_illegal_moves > 0
-                        ),
-                    )
         request = web_context.request
         return HTMXTemplate(
-            template_name='user/screen.html',
+            template_name=template_name,
             context=web_context.template_context
             | {
                 'last_result_updated': SessionLastResultUpdated(request).get(),
@@ -202,4 +166,6 @@ class BaseScreenUserController(BaseUserController):
                 'messages': Message.messages(request),
                 'columns_by_tournament_id': columns_by_tournament_id,
             },
+            trigger_event=trigger_event,
+            after='settle' if trigger_event else None,
         )

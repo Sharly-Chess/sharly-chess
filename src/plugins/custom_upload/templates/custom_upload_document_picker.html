@@ -1,0 +1,85 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div id="document-picker-modal" class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">
+                <h2 class="mb-4">
+                    {{ _('Custom location') }} - {{ _('Edit document') if edit_id else _('Add document') }}
+                </h2>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-post="{{ url_for('custom-upload-document-confirm', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="#modal-wrapper"
+                hx-indicator="#please-wait"
+            >
+                {% if edit_id %}
+                    <input type="hidden" name="edit_id" value="{{ edit_id }}">
+                {% endif %}
+
+                {% include '/admin/event/_document_picker_fields.html' %}
+
+                <div class="row gy-2 gx-3 mt-1">
+                    <div class="col-12">
+                        {% set server_path_placeholder = _(
+                            '%(default_server_path)s by default', default_server_path=default_server_path
+                        ) if default_server_path else _('Empty by default (login folder)') %}
+                        {{ admin_macros.text_input(
+                        name='server_path',
+                        label=_('Server path:'),
+                        placeholder=server_path_placeholder,
+                        hx_indicator="unset",
+                        data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                        name='target_filename',
+                        label=_('Filename on server:'),
+                        placeholder=_('E.g.: pairings_myTournament_round_1 (optional)'),
+                        data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap me-auto"
+                hx-get="{{ url_for('custom-upload-modal', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="#modal-wrapper"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <span id="submit-button-container">
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    {% if edit_id %}
+                        <i class="bi-floppy-fill pe-1"></i>
+                        {{ _('Save') }}
+                    {% else %}
+                        <i class="bi-plus-circle pe-1"></i>
+                        {{ _('Add to list') }}
+                    {% endif %}
+                </button>
+            </span>
+        </div>
+    </div>
+</div>

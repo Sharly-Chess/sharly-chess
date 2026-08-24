@@ -20,11 +20,9 @@ jobs:
     uses: ./.github/workflows/full_tests.yml
 
   export-sharly-chess-windows:
-    # Next job export-sharly-chess-windows needs to run on a Windows self-hosted GitHub runner
-    # for cloud code-signing. If the job doesn't start, it is probably because GitHub did not
-    # find a self-hosted runner with label 'your-github-id'.
-    # In this case, check the labels of your runners.
-    runs-on: ${{ github.actor }}
+    # Code signing is done inline via Azure Trusted Signing (service-principal
+    # auth), so this runs on a standard GitHub-hosted Windows runner.
+    runs-on: windows-latest
     steps:
       # Get the current date to set the title of the release
       - name: Get current date
@@ -33,9 +31,9 @@ jobs:
         with:
           format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Setup Python
-        uses: actions/setup-python@v5.5.0
+        uses: actions/setup-python@v6
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           # NOTE(pascalaubry): on Windows self-hosted runners, the first install fails:
@@ -94,18 +92,53 @@ jobs:
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
-      - name: Generate ZIP file
+      - name: Build project
         shell: powershell
-        env:
-          WINDOWS_SIGNTOOL_CERT_FINGERPRINT: ${{ secrets.WINDOWS_SIGNTOOL_CERT_FINGERPRINT }}
         run: |
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}" --windows-signtool-cert-fingerprint="$env:WINDOWS_SIGNTOOL_CERT_FINGERPRINT"
+          python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}"
+      # Inno must sign the installer/updater AND the generated uninstaller
+      # (unins000.exe) via its own SignTool — the external action can't reach it.
+      # Install Inno + the Trusted Signing dlib and expose the paths azuresign.cmd needs.
+      - name: Install Inno Setup and Trusted Signing tooling
+        shell: pwsh
+        run: |
+          choco install innosetup nuget.commandline --no-progress -y
+          nuget install Microsoft.ArtifactSigning.Client -Version 1.0.128 -OutputDirectory "$env:RUNNER_TEMP\ts" -ExcludeVersion
+          $dlib = (Get-ChildItem "$env:RUNNER_TEMP\ts" -Recurse -Filter Azure.CodeSigning.Dlib.dll | Select-Object -First 1).FullName
+          $signtool = (Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe' | Sort-Object FullName -Descending | Select-Object -First 1).FullName
+          $meta = "$env:RUNNER_TEMP\ts-metadata.json"
+          @{ Endpoint = 'https://weu.codesigning.azure.net/'; CodeSigningAccountName = 'sharly-chess-signing'; CertificateProfileName = 'SharlyChessProfile' } | ConvertTo-Json | Set-Content -Path $meta -Encoding utf8
+          "SIGNTOOL=$signtool" | Out-File $env:GITHUB_ENV -Append
+          "TS_DLIB=$dlib"      | Out-File $env:GITHUB_ENV -Append
+          "TS_METADATA=$meta"  | Out-File $env:GITHUB_ENV -Append
+          "ISCC=C:\Program Files (x86)\Inno Setup 6\ISCC.exe" | Out-File $env:GITHUB_ENV -Append
+          Write-Host "signtool=$signtool"; Write-Host "dlib=$dlib"
+      - name: Compile Installer
+        shell: pwsh
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: |
+          & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=0 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `$f" windows-setup.iss
+      - name: Compile Updater
+        shell: pwsh
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: |
+          & "$env:ISCC" /DAppVersion=${{ steps.version.outputs.version }} /DIsUpdate=1 /DUseSignTool=yes "/Sazuresign=${{ github.workspace }}\scripts\export\windows\azuresign.cmd `$f" windows-setup.iss
+
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: |
-            export/sharly-chess-${{ steps.version.outputs.version }}.zip
+            export/sharly-chess-installer-${{ steps.version.outputs.version }}.exe
+            export/sharly-chess-updater-${{ steps.version.outputs.version }}.exe
+
+
 
   export-sharly-chess-linux:
     runs-on: ${{ matrix.runner }}
@@ -123,7 +156,7 @@ jobs:
       XDG_RUNTIME_DIR: /tmp/flatpak-runtime
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Install system dependencies
@@ -211,7 +244,7 @@ jobs:
             com.sharlychess.SharlyChess \
             --arch=${{ matrix.flatpak_arch }}
       - name: Upload .flatpak bundle artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}
           path: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}.flatpak
@@ -220,7 +253,7 @@ jobs:
         shell: bash
         run: tar -czf repo-${{ matrix.arch }}.tar.gz repo-staging
       - name: Upload OSTree artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ostree-${{ matrix.arch }}
           path: repo-${{ matrix.arch }}.tar.gz
@@ -234,21 +267,7 @@ jobs:
       group: gh-pages-publish
       cancel-in-progress: false
     steps:
-      - name: Checkout gh-pages
-        uses: actions/checkout@v4.2.2
-        with:
-          ref: gh-pages
-          path: flatpak-repo-publish
-      - name: Download x86_64 OSTree
-        uses: actions/download-artifact@v4
-        with:
-          name: ostree-x86_64
-      - name: Download arm64 OSTree
-        uses: actions/download-artifact@v4
-        with:
-          name: ostree-arm64
-      - name: Install OSTree tools
-        run: sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder ostree
+      # Decide first, before any expensive work, so pre-releases exit in seconds.
       - name: Set version
         shell: bash
         run: |
@@ -258,11 +277,40 @@ jobs:
             VERSION="${{ github.ref_name }}"
           fi
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          # Only final X.Y.Z releases are published to the stable Flatpak repo;
+          # pre-releases (dev/a/b/rc) build but must not reach master.
+          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "IS_STABLE=true" >> $GITHUB_ENV
+          else
+            echo "IS_STABLE=false" >> $GITHUB_ENV
+            echo "::notice::$VERSION is a pre-release; skipping gh-pages Flatpak publish."
+          fi
+      - name: Checkout gh-pages
+        if: env.IS_STABLE == 'true'
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: flatpak-repo-publish
+      - name: Download x86_64 OSTree
+        if: env.IS_STABLE == 'true'
+        uses: actions/download-artifact@v7
+        with:
+          name: ostree-x86_64
+      - name: Download arm64 OSTree
+        if: env.IS_STABLE == 'true'
+        uses: actions/download-artifact@v7
+        with:
+          name: ostree-arm64
+      - name: Install OSTree tools
+        if: env.IS_STABLE == 'true'
+        run: sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder ostree
       - name: Import GPG key
+        if: env.IS_STABLE == 'true'
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: gpg --batch --import <(echo "$GPG_PRIVATE_KEY")
       - name: Merge OSTree repositories and sign
+        if: env.IS_STABLE == 'true'
         shell: bash
         run: |
           # Initialize the target repo if it doesn't exist
@@ -325,6 +373,7 @@ jobs:
             --gpg-homedir="$HOME/.gnupg" \
             flatpak-repo-publish/repo
       - name: Generate .flatpakrepo files
+        if: env.IS_STABLE == 'true'
         shell: bash
         run: |
           touch flatpak-repo-publish/.nojekyll
@@ -344,6 +393,7 @@ jobs:
           EOF
 
       - name: Push to GitHub Pages
+        if: env.IS_STABLE == 'true'
         working-directory: flatpak-repo-publish
         shell: bash
         run: |
@@ -379,9 +429,9 @@ jobs:
         with:
           format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Setup Python
-        uses: actions/setup-python@v5.5.0
+        uses: actions/setup-python@v6
         with:
           # Version range or exact version of Python or PyPy to use, using SemVer's version range syntax. Reads from .python-version if unset.
           python-version: 3.13
@@ -438,7 +488,7 @@ jobs:
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
-      - name: Build, Sign, and Notarize macOS App
+      - name: Build, Sign, and Submit macOS App to notary
         shell: bash
         env:
           # Map GitHub secrets to environment variables expected by the script
@@ -447,33 +497,170 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_DEVELOPER_USERNAME }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Sparkle public key, embedded in the bundle as SUPublicEDKey
+          SPARKLE_ED_PUBLIC_KEY: ${{ secrets.SPARKLE_ED_PUBLIC_KEY }}
         run: |
+          # Vendor Sparkle (framework to embed + tools) before building
+          echo "Vendoring Sparkle..."
+          bash scripts/export/macos/fetch_sparkle.sh
+
           # Build the application first
           echo "Building application with preserved artifacts..."
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
+          python scripts/export/build.py --github-version="${{ steps.version.outputs.version }}"
 
-          # Run the build and notarize script
-          echo "Running signing and notarization script..."
+          # Sign + submit to the notary WITHOUT waiting. Apple's queue can take
+          # hours; the notarize-macos job awaits acceptance and staples. Keeping
+          # the wait out of this job means build minutes don't stack onto it.
+          echo "Running signing + async-submit script..."
           chmod +x scripts/export/macos/build_and_notarize.sh
-          ./scripts/export/macos/build_and_notarize.sh
+          ./scripts/export/macos/build_and_notarize.sh --submit-only
       - name: Clean up macOS build artifacts
         shell: bash
         run: |
           echo "Cleaning up macOS build artifacts..."
-          # Preserve the DMG file but clean up other build artifacts
+          # Preserve the DMG and the notary submission id, drop the rest.
+          mkdir -p export
           find dist/ -name "*.dmg" -exec mv {} export/ \;
+          mv dist/notary-submission-id.txt export/notary-submission-id.txt
           rm -rf dist/
           rm -rf build/
           rm -f *.spec
+      - name: Upload unstapled DMG + submission id
+        uses: actions/upload-artifact@v6
+        with:
+          # Intermediate artifact consumed by the notarize-macos job. Signed and
+          # submitted but not yet stapled; not attached to the release.
+          name: sharly-chess-${{ steps.version.outputs.version }}-macos-unstapled
+          path: |
+            export/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
+            export/notary-submission-id.txt
+          retention-days: 1
+
+  notarize-macos:
+    name: Await notarization, staple, and generate appcast
+    needs: [export-sharly-chess-macos]
+    runs-on: macos-latest
+    # Apple's notary queue is the only thing this job waits on. Give it close to
+    # the 6h hosted-runner ceiling so a slow Apple day still fits. If it does
+    # time out, re-run just this job — the build artifact is already uploaded.
+    timeout-minutes: 350
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Set version variable
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${{ github.ref_name }}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Using version: ${VERSION}"
+      - name: Download unstapled DMG + submission id
+        uses: actions/download-artifact@v7
+        with:
+          name: sharly-chess-${{ steps.version.outputs.version }}-macos-unstapled
+          path: export/
+      - name: Await notarization and staple
+        shell: bash
+        env:
+          APPLE_ID: ${{ secrets.APPLE_DEVELOPER_USERNAME }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          DMG_PATH="export/sharly-chess-${VERSION}-mac.dmg"
+          SUBMISSION_ID="$(cat export/notary-submission-id.txt)"
+          echo "Awaiting submission $SUBMISSION_ID ..."
+          # Poll instead of a single `notarytool wait`: a long-lived wait dies on
+          # any transient network/API blip and fails the step even though Apple is
+          # still processing. Polling `info` lets us swallow those blips and only
+          # give up when Apple returns a terminal state or the job budget runs out.
+          # Leave margin under timeout-minutes so a re-run is triggered cleanly
+          # rather than the runner being hard-killed mid-poll.
+          DEADLINE=$(( $(date +%s) + 330 * 60 ))
+          POLL_INTERVAL=60
+          consecutive_errors=0
+          STATUS=""
+          while :; do
+            INFO=$(xcrun notarytool info "$SUBMISSION_ID" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID" 2>&1) || INFO=""
+            STATUS=$(printf '%s' "$INFO" | grep -i "status:" | head -1 | awk -F': *' '{print $2}')
+            echo "Notary status: ${STATUS:-<transient error>}"
+            case "$STATUS" in
+              Accepted) break ;;
+              Invalid|Rejected) break ;;
+              *)
+                # Empty status = transient error (network/auth blip). Tolerate a
+                # run of them, but bail if Apple keeps failing us so a re-run starts.
+                if [ -z "$STATUS" ]; then
+                  consecutive_errors=$((consecutive_errors + 1))
+                  echo "$INFO"
+                  if [ "$consecutive_errors" -ge 10 ]; then
+                    echo "Error: 10 consecutive notarytool failures. Re-run this job."
+                    exit 1
+                  fi
+                else
+                  consecutive_errors=0
+                fi
+                ;;
+            esac
+            if [ "$(date +%s)" -ge "$DEADLINE" ]; then
+              echo "Error: still not terminal near job timeout. Re-run this job."
+              exit 1
+            fi
+            sleep "$POLL_INTERVAL"
+          done
+          if [ "$STATUS" != "Accepted" ]; then
+            echo "Error: notarization not Accepted (status: $STATUS). Fetching logs..."
+            xcrun notarytool log "$SUBMISSION_ID" \
+              --apple-id "$APPLE_ID" \
+              --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+              --team-id "$APPLE_TEAM_ID" || true
+            exit 1
+          fi
+          echo "Stapling ticket..."
+          xcrun stapler staple "$DMG_PATH"
+          xcrun stapler validate "$DMG_PATH"
+          echo "Stapling complete."
+      - name: Generate Sparkle appcast
+        shell: bash
+        env:
+          SPARKLE_ED_PRIVATE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # generate_appcast lives in the vendored Sparkle tools; fetch them here
+          # since this job runs on a fresh runner without the build's vendor dir.
+          echo "Vendoring Sparkle tools..."
+          bash scripts/export/macos/fetch_sparkle.sh
+          # Isolate the (now stapled) DMG so generate_appcast signs those exact
+          # bytes. The EdDSA key goes to a temp file for --ed-key-file.
+          mkdir -p sparkle-feed
+          cp "export/sharly-chess-${VERSION}-mac.dmg" sparkle-feed/
+          KEY_FILE="$(mktemp)"
+          trap 'rm -f "$KEY_FILE"' EXIT
+          # Keep only base64 characters: strips whitespace and paste artifacts
+          # (e.g. a shell's no-newline "%" marker) the strict decoder rejects.
+          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" | tr -cd 'A-Za-z0-9+/=' > "$KEY_FILE"
+          vendor/sparkle/bin/generate_appcast \
+            --ed-key-file "$KEY_FILE" \
+            --download-url-prefix "https://github.com/Sharly-Chess/sharly-chess/releases/download/${VERSION}/" \
+            sparkle-feed/
+          cp sparkle-feed/appcast.xml export/appcast.xml
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: |
-            export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            export/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
+            export/appcast.xml
 
   create-release:
-    needs: [tests, export-sharly-chess-windows, export-sharly-chess-macos, export-sharly-chess-linux, publish-linux-flatpak]
+    needs: [tests, export-sharly-chess-windows, notarize-macos, export-sharly-chess-linux, publish-linux-flatpak]
     runs-on: ubuntu-latest
     steps:
       - name: Get current date
@@ -493,19 +680,19 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "Using version: ${VERSION}"
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-windows
           path: export-windows/
       - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: export-macos/
       - name: Download Linux Flatpak artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           pattern: sharly-chess-${{ steps.version.outputs.version }}-linux-*
           path: export-linux/
@@ -514,22 +701,27 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p release-files
           # Windows
-          cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
+          cp export-windows/sharly-chess-installer-${VERSION}.exe release-files/
+          cp export-windows/sharly-chess-updater-${VERSION}.exe release-files/
           # macOS
-          cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
+          cp export-macos/sharly-chess-${VERSION}-mac.dmg release-files/sharly-chess-${VERSION}-mac.dmg
+          # macOS Sparkle appcast (the app fetches this per-release to self-update)
+          cp export-macos/appcast.xml release-files/appcast.xml
           # Linux Flatpak bundles
           cp export-linux/sharly-chess-${VERSION}-linux-x86_64/sharly-chess-${VERSION}-linux-x86_64.flatpak release-files/
           cp export-linux/sharly-chess-${VERSION}-linux-arm64/sharly-chess-${VERSION}-linux-arm64.flatpak release-files/
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: "Version ${{ steps.version.outputs.version }} (${{ steps.date.outputs.year }}-${{ steps.date.outputs.month }}-${{ steps.date.outputs.day }})"
           draft: true
-          prerelease: contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc')
+          prerelease: ${{ contains(steps.version.outputs.version, 'a') || contains(steps.version.outputs.version, 'b') || contains(steps.version.outputs.version, 'rc') }}
           files: |
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            release-files/sharly-chess-installer-${{ steps.version.outputs.version }}.exe
+            release-files/sharly-chess-updater-${{ steps.version.outputs.version }}.exe
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-mac.dmg
+            release-files/appcast.xml
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.flatpak
             release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-arm64.flatpak
           body_path: RELEASE_NOTES.md

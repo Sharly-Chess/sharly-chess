@@ -19,12 +19,14 @@ from data.access_levels.client import Client
 from data.access_levels.manager import AccessLevelManager
 from data.account import Account
 from data.board import Board
-from data.display_controller import DisplayController
+from data.screens.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
 from data.player import TournamentPlayer, Player
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.rotator import Rotator
+from data.screens.menu import Menu
+from data.screens.screen import Screen
+from data.teams.team import Team
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils.enum import Result
@@ -109,6 +111,13 @@ class RequestUtils:
         request.state[cls.REQUEST_SCREEN_ATTR] = screen
         return screen
 
+    @classmethod
+    def get_optional_screen(cls, request: HTMXRequest) -> Screen | None:
+        try:
+            return cls.get_screen(request)
+        except ValidationException:
+            return None
+
     REQUEST_ROTATOR_ATTR: str = 'sharly_chess_rotator'
     ROTATOR_ID_PARAM: str = 'rotator_id'
 
@@ -128,6 +137,28 @@ class RequestUtils:
     def get_optional_rotator(cls, request: HTMXRequest) -> Rotator | None:
         try:
             return cls.get_rotator(request)
+        except ValidationException:
+            return None
+
+    REQUEST_MENU_ATTR: str = 'sharly_chess_menu'
+    MENU_ID_PARAM: str = 'menu_id'
+
+    @classmethod
+    def get_menu(cls, request: HTMXRequest) -> Menu:
+        if cls.REQUEST_MENU_ATTR in request.state:
+            return request.state[cls.REQUEST_MENU_ATTR]
+        menu_id = cls._get_request_param(request, cls.MENU_ID_PARAM)
+        try:
+            menu = cls.get_event(request).menus_by_id[menu_id]
+        except KeyError:
+            raise NotFoundException(f'Menu [{menu_id}] not found.')
+        request.state[cls.REQUEST_MENU_ATTR] = menu
+        return menu
+
+    @classmethod
+    def get_optional_menu(cls, request: HTMXRequest) -> Menu | None:
+        try:
+            return cls.get_menu(request)
         except ValidationException:
             return None
 
@@ -151,6 +182,37 @@ class RequestUtils:
             )
         request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR] = display_controller
         return display_controller
+
+    @classmethod
+    def get_optional_display_controller(
+        cls, request: HTMXRequest
+    ) -> DisplayController | None:
+        try:
+            return cls.get_display_controller(request)
+        except ValidationException:
+            return None
+
+    REQUEST_TEAM_ATTR: str = 'sharly_chess_team'
+    TEAM_ID_PARAM: str = 'team_id'
+
+    @classmethod
+    def get_team(cls, request: HTMXRequest) -> Team:
+        if cls.REQUEST_TEAM_ATTR in request.state:
+            return request.state[cls.REQUEST_TEAM_ATTR]
+        team_id = cls._get_request_param(request, cls.TEAM_ID_PARAM)
+        try:
+            team = cls.get_event(request).teams_by_id[team_id]
+        except KeyError:
+            raise NotFoundException(f'Team [{team_id}] not found.')
+        request.state[cls.REQUEST_TEAM_ATTR] = team
+        return team
+
+    @classmethod
+    def get_optional_team(cls, request: HTMXRequest) -> Team | None:
+        try:
+            return cls.get_team(request)
+        except ValidationException:
+            return None
 
     REQUEST_TOURNAMENT_ATTR: str = 'sharly_chess_tournament'
     TOURNAMENT_ID_PARAM: str = 'tournament_id'
@@ -186,24 +248,29 @@ class RequestUtils:
 
     @classmethod
     def get_board(cls, request: HTMXRequest) -> Board:
-        # TODO (Molrn) use board IDs instead of board index in every request
+        # TODO (Molrn) use board IDs instead of board index in every request.
+        # In the meantime, accept either the DB identifier or the legacy
+        # display id (index + 1). Team events require the DB identifier
+        # because the legacy id collides across team blocks.
         if cls.REQUEST_BOARD_ATTR in request.state:
             return request.state[cls.REQUEST_BOARD_ATTR]
         tournament: Tournament = cls.get_tournament(request)
-        board_index = cls._get_request_param(request, cls.BOARD_INDEX_PARAM)
+        board_id_param = cls._get_request_param(request, cls.BOARD_INDEX_PARAM)
         round_ = request.path_params.get(cls.ROUND_PARAM, tournament.current_round)
         if not 0 <= round_ <= tournament.rounds:
             raise ValidationException(f'Invalid round number [{round_}].')
+        round_boards = tournament.get_round_boards(round_)
         board = next(
-            (
-                board_
-                for board_ in tournament.get_round_boards(round_)
-                if board_.id == board_index
-            ),
+            (board_ for board_ in round_boards if board_.identifier == board_id_param),
             None,
         )
+        if board is None and not tournament.event.is_team_event:
+            board = next(
+                (board_ for board_ in round_boards if board_.id == board_id_param),
+                None,
+            )
         if not board:
-            raise NotFoundException(f'Board [{board_index}] not found.')
+            raise NotFoundException(f'Board [{board_id_param}] not found.')
         request.state[cls.REQUEST_BOARD_ATTR] = board
         return board
 

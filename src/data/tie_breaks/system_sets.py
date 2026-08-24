@@ -9,12 +9,25 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from common.i18n import _
-from data.pairings.systems import SwissPairingSystem, RoundRobinPairingSystem
+from data.pairings.scheveningen import ScheveningenPairingSystem
+from data.pairings.systems import (
+    SwissPairingSystem,
+    RoundRobinPairingSystem,
+    TeamSwissPairingSystem,
+    TeamRoundRobinPairingSystem,
+)
 from data.tie_breaks import tie_breaks
+from data.tie_breaks import team_tie_breaks
 from data.tie_breaks.cutters import Cut1TieBreakCutter
 from data.tie_breaks.options import (
     CutterWithMedianTieBreakOption,
     EstimatedRatingsTieBreakOption,
+)
+from data.tie_breaks.team_tie_breaks import (
+    EDEKnockoutTieBreakOption,
+    EDEKnockoutVariant,
+    ESBVariantTieBreakOption,
+    ESBVariant,
 )
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
@@ -38,6 +51,7 @@ def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
             key='swiss-sc-recommendation',
             name=_('Sharly Chess recommendation'),
             tie_breaks=[
+                tie_breaks.PointsTieBreak(),
                 tie_breaks.StandardBuchholzTieBreak(
                     [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
                 ),
@@ -51,6 +65,7 @@ def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
             key='swiss-fide-recommendation-2019',
             name=_('FIDE recommendation (2019)'),
             tie_breaks=[
+                tie_breaks.PointsTieBreak(),
                 tie_breaks.StandardBuchholzTieBreak(
                     [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
                 ),
@@ -66,6 +81,7 @@ def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
             key='swiss-fide-recommendation-2019-unrated',
             name=_('FIDE recommendation - Unrated (2019)'),
             tie_breaks=[
+                tie_breaks.PointsTieBreak(),
                 tie_breaks.StandardBuchholzTieBreak(
                     [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
                 ),
@@ -93,10 +109,138 @@ def _round_robin_system_sets() -> list['SystemTieBreakSet']:
             key='rr-fide-recommendation-2019',
             name=_('FIDE recommendation (2019)'),
             tie_breaks=[
+                tie_breaks.PointsTieBreak(),
                 tie_breaks.DirectEncounterTieBreak(),
                 tie_breaks.WinsTieBreak(),
                 tie_breaks.SonnebornBergerTieBreak(),
                 tie_breaks.KoyaTieBreak(),
+            ],
+        ),
+    ]
+    return system_sets
+
+
+def _team_swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
+    """
+    Sharly Chess recommandations for team Swiss tournaments are:
+    1. PTS
+    2. EDEBT (EDE + BC + TBR)
+    3. MPvGP
+    4. BH
+    Notes:
+        - this set is OK whatever the primary score is (MP or GP)
+        - this set is not the one used by FFE, but an FFE-specific EDE must be implemented based on FFE team tie-breaks
+    """
+    system_sets: list[SystemTieBreakSet] = [
+        SystemTieBreakSet(
+            key='team-swiss-sc-recommendation',
+            name=_('Sharly Chess recommendation'),
+            tie_breaks=[
+                tie_breaks.PointsTieBreak(),
+                team_tie_breaks.ExtendedDirectEncounterTieBreak(
+                    [
+                        EDEKnockoutTieBreakOption(EDEKnockoutVariant.EDEBT),
+                    ]
+                ),
+                team_tie_breaks.MatchPointsVsGamePointsTieBreak(),
+                tie_breaks.StandardBuchholzTieBreak(),
+            ],
+        ),
+    ]
+    plugin_manager.hook_for_event(event, 'insert_team_swiss_system_tie_break_sets')(
+        system_sets=system_sets
+    )
+    return system_sets
+
+
+def _team_round_robin_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
+    """
+    Sharly Chess recommandations for team RR tournaments are:
+    - when the primary score is MP
+        1. PTS
+        2. MPvGP
+        3. EDEBT (EDE + BC + TBR)
+        4. EMGSB
+        5. EGMSB
+    - when the primary score is GP
+        1. PTS
+        2. MPvGP
+        3. EDEBT (EDE + BC + TBR)
+        4. EGMSB
+        5. EMGSB
+    Note: this set is not the one used by FFE, but an FFE-specific EDE must be implemented based on FFE team tie-breaks
+    """
+    system_sets: list[SystemTieBreakSet] = [
+        SystemTieBreakSet(
+            key='team-rr-sc-recommendation-priamry-score-mp',
+            name=_('Sharly Chess recommendation (MP as primary score)'),
+            tie_breaks=[
+                tie_breaks.PointsTieBreak(),
+                team_tie_breaks.MatchPointsVsGamePointsTieBreak(),
+                team_tie_breaks.ExtendedDirectEncounterTieBreak(
+                    [
+                        EDEKnockoutTieBreakOption(EDEKnockoutVariant.EDEBT),
+                    ]
+                ),
+                team_tie_breaks.ExtendedSonnebornBergerTeamTieBreak(
+                    [
+                        ESBVariantTieBreakOption(ESBVariant.EMGSB),
+                    ]
+                ),
+                team_tie_breaks.ExtendedSonnebornBergerTeamTieBreak(
+                    [
+                        ESBVariantTieBreakOption(ESBVariant.EGMSB),
+                    ]
+                ),
+            ],
+        ),
+        SystemTieBreakSet(
+            key='team-rr-sc-recommendation-priamry-score-gp',
+            name=_('Sharly Chess recommendation (GP as primary score)'),
+            tie_breaks=[
+                tie_breaks.PointsTieBreak(),
+                team_tie_breaks.MatchPointsVsGamePointsTieBreak(),
+                team_tie_breaks.ExtendedDirectEncounterTieBreak(
+                    [
+                        EDEKnockoutTieBreakOption(EDEKnockoutVariant.EDEBT),
+                    ]
+                ),
+                team_tie_breaks.ExtendedSonnebornBergerTeamTieBreak(
+                    [
+                        ESBVariantTieBreakOption(ESBVariant.EGMSB),
+                    ]
+                ),
+                team_tie_breaks.ExtendedSonnebornBergerTeamTieBreak(
+                    [
+                        ESBVariantTieBreakOption(ESBVariant.EMGSB),
+                    ]
+                ),
+            ],
+        ),
+    ]
+    plugin_manager.hook_for_event(
+        event, 'insert_team_round_robin_system_tie_break_sets'
+    )(system_sets=system_sets)
+    return system_sets
+
+
+def _team_scheveningen_system_sets() -> list['SystemTieBreakSet']:
+    """
+    Sharly Chess recommandations for Scheveningen tournaments are:
+    1. PTS
+    2. MPvGP
+    3. BC
+    4. TBR
+    """
+    system_sets: list[SystemTieBreakSet] = [
+        SystemTieBreakSet(
+            key='team-scheveningen-sc-recommendation',
+            name=_('Sharly Chess recommendation'),
+            tie_breaks=[
+                tie_breaks.PointsTieBreak(),
+                team_tie_breaks.MatchPointsVsGamePointsTieBreak(),
+                team_tie_breaks.BoardCountTieBreak(),
+                team_tie_breaks.TopBoardResultsTieBreak(),
             ],
         ),
     ]
@@ -114,6 +258,12 @@ def build_system_tie_break_sets(tournament: 'Tournament') -> list['TieBreakSet']
         system_sets = _swiss_system_sets(event)
     elif system_id == RoundRobinPairingSystem().id:
         system_sets = _round_robin_system_sets()
+    elif system_id == TeamSwissPairingSystem().id:
+        system_sets = _team_swiss_system_sets(event)
+    elif system_id == TeamRoundRobinPairingSystem().id:
+        system_sets = _team_round_robin_system_sets(event)
+    elif system_id == ScheveningenPairingSystem().id:
+        system_sets = _team_scheveningen_system_sets()
     return [
         TieBreakSet(
             key=system_set.key,

@@ -1,16 +1,28 @@
+import xml.etree.ElementTree as ET
+from sqlite3 import IntegrityError
 from unittest import TestCase
+from unittest.mock import patch
 
 import pytest
 
 from data.event import Event
 from data.loader import EventLoader
 from data.tie_breaks import TieBreakManager, TieBreak
-from data.tie_breaks.tie_breaks import StandardBuchholzTieBreak, WinsTieBreak
+from data.tie_breaks.tie_breaks import (
+    PointsTieBreak,
+    StandardBuchholzTieBreak,
+    WinsTieBreak,
+)
 from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredAccount, StoredRole
 from plugins.chess_results.chess_results_mappers import ChessResultsTieBreak
+from plugins.chess_results.chess_results_session import ChessResultsSession
+from plugins.chess_results.utils import CRUtils
 from plugins.ffe.ffe_tie_breaks import PapiPerformanceTieBreak
 from plugins.ffe.papi_converter import PapiConverter
 from tests.test_config import TestUtils
+from utils.enum import RoleType
 
 
 EVENT_ID = 'test-tournament-exporters-event'
@@ -44,13 +56,65 @@ class TournamentExporterTestCase(TestCase):
             except NotImplementedError:
                 self.fail(f'Tie-break [{tie_break.id}] not handled.')
 
+    def test_chess_results_exports_each_arbiter_role(self):
+        assert self.tournament.id is not None
+
+        account_by_role = {}
+        for role_type, first_name in (
+            (RoleType.CHIEF_ARBITER, 'Chief'),
+            (RoleType.DEPUTY_ARBITER, 'Deputy'),
+            (RoleType.ARBITER, 'Simple'),
+        ):
+            account_by_role[role_type] = self.event.create_account(
+                StoredAccount(
+                    id=None,
+                    active=True,
+                    first_name=first_name,
+                    last_name='Arbiter',
+                    stored_roles=[
+                        StoredRole(
+                            account_id=None,
+                            role=role_type.value,
+                            tournament_ids=[self.tournament.id],
+                        )
+                    ],
+                )
+            )
+
+        with patch.object(CRUtils, 'encrypt', return_value='encrypted-test-sid'):
+            xml = ChessResultsSession(self.tournament).build_tournament_xml(
+                self.tournament,
+                sid='test-sid',
+                tnr='test-key',
+                creator_id='test-creator',
+                state=None,
+            )
+        tournament_data = ET.fromstring(xml).find('./tournamentdata/tournament')
+        assert tournament_data is not None
+        assert tournament_data.attrib['chiefarbiter'] == 'Arbiter, Chief'
+        assert tournament_data.attrib['deputyarbiter'] == 'Arbiter, Deputy'
+        assert tournament_data.attrib['arbiter'] == 'Arbiter, Simple'
+        assert self.tournament.arbiters == [account_by_role[RoleType.ARBITER]]
+
+        simple_arbiter = account_by_role[RoleType.ARBITER]
+        with EventDatabase(EVENT_ID, write=True) as database:
+            with self.assertRaises(IntegrityError):
+                database.add_stored_roles(
+                    simple_arbiter.id,
+                    RoleType.DEPUTY_ARBITER.value,
+                    [self.tournament.id],
+                )
+
     # -------------------------------------------------------------------------
     # Papi
     # -------------------------------------------------------------------------
 
     def _set_tie_breaks(self, tie_breaks: list[TieBreak]):
+        """Rank on the points, then on *tie_breaks* — the points being a
+        criterion of their own now, they are stated rather than implied."""
+        ordered = [PointsTieBreak()] + tie_breaks
         self.tournament.tie_breaks_by_id = {
-            index + 1: tie_break for index, tie_break in enumerate(tie_breaks)
+            index + 1: tie_break for index, tie_break in enumerate(ordered)
         }
 
     def test_papi_manual_tie_break_pairing_number(self):

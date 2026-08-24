@@ -1,4 +1,10 @@
 {% extends '../../common/admin_cards_container.html' %}
+{% import '/admin/common/collection_macros.j2' as collection_macros with context %}
+
+{% set collection = get_admin_collection_spec('screens') %}
+{% set collection_view_mode = get_admin_collection_view_mode('screens') %}
+{% set collection_show_details = get_admin_collection_show_details('screens') %}
+{% set collection_url = url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) %}
 
 {% block top_left_nav %}
     {% if client.can_manage_screens %}
@@ -14,7 +20,7 @@
         {% with id='show-family-screens', name='show_family_screens', show=show_family_screens %}
             <div
                 class="form-check form-switch d-inline-block pe-2"
-                {{ macros.tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Show/hide the screens created from multi-screens.'), 'top') }}
             >
                 <input
                     hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
@@ -26,27 +32,10 @@
                     id="{{ id }}"
                     {% if show %}checked{% endif %}
                 />
-                <label for="{{ id }}" class="form-check-label"> {{ _('Families') }}</label>
+                <label for="{{ id }}" class="form-check-label"> {{ _('Multi-Screens') }}</label>
             </div>
         {% endwith %}
-        {% with id='show-details', name='show_details', show=show_details %}
-            <div
-                class="form-check form-switch d-inline-block pe-2"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
-            >
-                <input
-                    hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %}
-                />
-                <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-            </div>
-        {% endwith %}
+        {% include '/admin/common/collection_controls.html' %}
         {% include '/admin/common/screens_config_button.html' %}
         <span
             class="dropdown-end"
@@ -62,7 +51,7 @@
             </button>
             <ul class="dropdown-menu">
                 {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
-                    {% set screen_type_create_enabled=admin_event.tournaments_by_id or screen_type.value in ['image', 'results'] %}
+                    {% set screen_type_create_enabled=admin_event.tournaments_by_id or not screen_type.has_screen_sets %}
                     <span
                         {% if not screen_type_create_enabled %}
                             {{ macros.tooltip_attributes('info', _('You must create a tournament before creating these screens.'), 'left') }}
@@ -119,54 +108,96 @@
                     {% endif %}
                 </div>
             {% else %}
+                {% set hidden_list_columns = [] if show_family_screens else ['source'] %}
+                {% if collection_view_mode.value == 'list' %}
+                    <div class="admin-collection-list-scroll screens-collection-list-scroll">
+                        <div
+                            class="screens-collection-list-sections"
+                            style="--collection-list-columns: {{ collection_macros.list_grid_template(
+                                collection,
+                                hidden_list_columns,
+                            ) }};"
+                        >
+                {% endif %}
                 {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
-                    {% set expanded=screen_type in admin_screens_screen_types %}
-                    <div class="row gy-2 gx-3">
-                        <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not screen_type in admin_screens_screen_types %}text-secondary{% endif %}">
-                            {% with id='admin-screens-show-'~screen_type, name='admin_screens_show_'~screen_type %}
-                                <button
-                                    type="button"
-                                    data-testid="accordion-screen-type-{{ screen_type.value }}"
-                                    class="collapse-button {% if not expanded %}collapsed{% endif %}"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#{{ id }}"
-                                    aria-expanded="{{ 'true' if expanded else 'false' }}"
-                                    hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
-                                    hx-vals='js:{ {{name}}: !$(event.target).closest("button").hasClass("collapsed")}'
-                                    hx-headers='{"HX-Swap-Mode":"none"}'
-                                    hx-swap="none"
-                                >
-                                    <span
-                                        class="form-check-label d-inline-flex align-items-center gap-2"
-                                    >
-                                        <i class="bi bi-chevron-down"></i>
-                                        {{ macros.screen_type_icon(screen_type, false) }}
-                                        {{ screen_type_data.title }}
-                                    </span>
-                                </button>
-                            {% endwith %}
-                        </div>
-                    </div>
-
-                    <div class="collapse {% if expanded %}show{% endif %}" id="admin-screens-show-{{ screen_type.value }}">
-                        <div class="row gy-2 gx-3 mb-4">
-                            {% if screen_type_data.screens %}
-                                {% for screen in screen_type_data.screens %}
-                                    {% with
-                                        card_class='' if not screen.family else 'bg-secondary-subtle text-secondary'
-                                    %}
-                                        {% include 'screen_card.html' %}
+                    {% if screen_type_data.screens %}
+                        {% set expanded = screen_type.value in admin_screens_screen_types %}
+                        <div class="screens-collection-list-section">
+                            <div class="row gy-2 gx-3 screens-collection-section-heading">
+                                <div class="col-12 fs-5 text-nowrap d-inline-flex align-items-center gap-4 mb-2 {% if not expanded %}text-secondary{% endif %}">
+                                    {% with id='admin-screens-show-'~screen_type.value, name='admin_screens_show_'~screen_type.value %}
+                                        <button
+                                            type="button"
+                                            data-testid="accordion-screen-type-{{ screen_type.value }}"
+                                            class="collapse-button {% if not expanded %}collapsed{% endif %}"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#{{ id }}"
+                                            aria-expanded="{{ 'true' if expanded else 'false' }}"
+                                            hx-get="{{ url_for('admin-event-screens-tab', event_uniq_id=admin_event.uniq_id) }}"
+                                            hx-vals='js:{ {{name}}: !$(event.target).closest("button").hasClass("collapsed")}'
+                                            hx-headers='{"HX-Swap-Mode":"none"}'
+                                            hx-swap="none"
+                                        >
+                                            <span
+                                                class="form-check-label d-inline-flex align-items-center gap-2"
+                                            >
+                                                <i class="bi bi-chevron-down"></i>
+                                                {{ macros.screen_type_icon(screen_type, false) }}
+                                                {{ screen_type_data.title }}
+                                            </span>
+                                        </button>
                                     {% endwith %}
-                                {% endfor %}
-                            {% else %}
-                                <div class="col-12 my-3 mb-0">
-                                    {{ _('No such screens.') }}
                                 </div>
-                            {% endif %}
+                            </div>
+
+                            <div class="collapse {% if expanded %}show{% endif %}" id="admin-screens-show-{{ screen_type.value }}">
+                                <div class="mb-4 screens-collection-section-content">
+                                    {% with
+                                        items=screen_type_data.screens,
+                                        empty_message='',
+                                        sortable=false,
+                                        show_details=collection_show_details,
+                                        hidden_list_columns=hidden_list_columns
+                                    %}
+                                        {% include '/admin/common/collection.html' %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {% if collection_view_mode.value == 'list' %}
                         </div>
                     </div>
-                {% endfor %}
+                {% endif %}
             {% endif %}
         {% endwith %}
+    {% endif %}
+    {% if scroll_to_screen_id %}
+        <script>
+            (function () {
+                function reveal() {
+                    const card = document.getElementById('collection-screens-item-{{ scroll_to_screen_id }}');
+                    if (!card) {
+                        return;
+                    }
+                    const section = card.closest('.collapse');
+                    if (section) {
+                        if (window.bootstrap && window.bootstrap.Collapse) {
+                            window.bootstrap.Collapse.getOrCreateInstance(section, { toggle: false }).show();
+                        } else {
+                            section.classList.add('show');
+                        }
+                        const button = document.querySelector('[data-bs-target="#' + section.id + '"]');
+                        if (button) {
+                            button.classList.remove('collapsed');
+                            button.setAttribute('aria-expanded', 'true');
+                        }
+                    }
+                    card.scrollIntoView({ behavior: 'instant', block: 'center' });
+                }
+                requestAnimationFrame(reveal);
+            })();
+        </script>
     {% endif %}
 {% endblock %}

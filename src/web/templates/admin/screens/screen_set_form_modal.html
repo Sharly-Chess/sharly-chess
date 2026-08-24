@@ -1,0 +1,184 @@
+<div
+    id="admin-screen-set-form-modal"
+    class="modal-dialog modal-dialog-scrollable admin-screen-sets-modal"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit set') }}
+                {% else %}
+                    {{ _('Create set') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Screen')) }}
+                {{ admin_screen.name }}
+            </h4>
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                {% if action == 'update' %}
+                    hx-patch="{{ url_for(
+                        'admin-screen-set-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        screen_id=admin_screen.id,
+                        screen_set_id=admin_screen_set.id,
+                    ) }}"
+                {% else %}
+                    hx-post="{{ url_for(
+                        'admin-screen-set-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        screen_id=admin_screen.id,
+                    ) }}"
+                {% endif %}
+            >
+                <h4>
+                    {{ _('Properties') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6 mb-2">
+                        {{ admin_macros.select_input(
+                            name='tournament_id',
+                            label=_('Tournament:'),
+                            select_options=tournament_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        {% set is_team = admin_event.is_team_event %}
+                        {% if admin_screen.screen_type.board_based %}
+                            {% set name_placeholder = _('E.g.: Matches %%f to %%l') if is_team else _('E.g.: Boards %%f to %%l') %}
+                        {% else %}
+                            {% set name_placeholder = _('E.g.: Teams %%f to %%l') if is_team else _('E.g.: Players %%f to %%l') %}
+                        {% endif %}
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('Name:'),
+                            placeholder=name_placeholder,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                {% if admin_screen.screen_type.has_screen_sets %}
+                    {% set is_team = admin_event.is_team_event %}
+                    {% set is_team_matches = is_team and admin_screen.screen_type.board_based %}
+                    {% set sel = admin_screen.screen_type.selection_labels(is_team, is_team_matches) %}
+                    {% set show_board_selection = admin_screen.screen_type.supports_fixed_boards and not is_team_matches %}
+                    <h4 class="mt-4">
+                        {{ sel.header }}
+                    </h4>
+                    <div class="row gy-2 gx-3">
+                        {% if show_board_selection %}
+                            <div class="col-12">
+                                {{ admin_macros.select_input(
+                                    name='fixed_board_order',
+                                    label=_('Board selection:'),
+                                    select_options=admin_screen.screen_type.board_selection_options(true),
+                                    tooltip_text=_('How the boards shown by this set are chosen and ordered.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
+                        <div class="col-6 board-range-field">
+                            {{ admin_macros.number_input(
+                                name='first',
+                                label=sel.first_label,
+                                placeholder=1,
+                                tooltip_text=sel.first_tooltip,
+                                data=data, errors=errors,
+                                min=1
+                            ) }}
+                        </div>
+                        <div class="col-6 board-range-field">
+                            {{ admin_macros.number_input(
+                                name='last',
+                                label=sel.last_label,
+                                placeholder=_('last'),
+                                tooltip_text=sel.last_tooltip,
+                                data=data, errors=errors,
+                                min=1
+                            ) }}
+                        </div>
+                        {% if show_board_selection %}
+                            <div class="col-12 board-specific-field">
+                                {{ admin_macros.text_input(
+                                    name='fixed_boards_str',
+                                    label=_('Board numbers:'),
+                                    placeholder=_('E.g.: %(string)s', string='501, 502'),
+                                    tooltip_text=_('Comma-separated board numbers to show.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if show_board_selection %}
+                        <script>
+                            (() => {
+                                const $modal = $('.modal');
+                                const $select = $modal.find('#fixed-board-order');
+                                const labels = {
+                                    pairing: {
+                                        first: "{{ _('First pairing:') }}",
+                                        last: "{{ _('Last pairing:') }}",
+                                    },
+                                    board: {
+                                        first: "{{ _('First board:') }}",
+                                        last: "{{ _('Last board:') }}",
+                                    },
+                                };
+                                function apply() {
+                                    const mode = $select.val();
+                                    const specific = mode === 'specific';
+                                    $modal.find('.board-range-field').toggle(!specific);
+                                    $modal.find('.board-specific-field').toggle(specific);
+                                    const label = labels[mode] || labels.board;
+                                    $modal.find('#first-label-text').text(label.first);
+                                    $modal.find('#last-label-text').text(label.last);
+                                }
+                                $select.on('change', apply);
+                                apply();
+                            })();
+                        </script>
+                    {% endif %}
+                {% endif %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-screen-sets-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    screen_id=admin_screen.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                {% if action == 'update' %}
+                    <i class="bi bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
+                {% else %}
+                    <i class="bi-plus-square-fill pe-1"></i>
+                    {{ _('Create') }}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

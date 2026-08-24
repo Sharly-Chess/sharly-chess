@@ -23,8 +23,13 @@ from data.print_documents.place_cards.types import (
     PlayerCardType,
     BoardCardType,
     PairingCardType,
+    TeamCardType,
 )
-from data.print_documents.player_sorters import GridPlayerSorter, ListPlayerSorter
+from data.print_documents.player_sorters import (
+    GridPlayerSorter,
+    ListPlayerSorter,
+    TeamGridSorter,
+)
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from data.print_documents.individual_teams import IndividualTeamType
@@ -39,12 +44,18 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PlayerListPrintDocument,
             documents.PlayerCheckinListPrintDocument,
             documents.PairingPrintDocument,
+            documents.RoundRobinSchedulePrintDocument,
+            documents.MolterTablePrintDocument,
+            documents.ScheveningenTablePrintDocument,
+            documents.MatchSheetsPrintDocument,
             documents.ResultPrintDocument,
             documents.PlayerRankingPrintDocument,
+            documents.TeamRankingPrintDocument,
             documents.IndividuelTeamRankingPrintDocument,
             documents.PlayerCrosstablePrintDocument,
-            documents.PlayerRoundPerformanceIndicatorPrintDocument,
             documents.BergerGridPrintDocument,
+            documents.TeamBergerGridPrintDocument,
+            documents.PlayerRoundPerformanceIndicatorPrintDocument,
             documents.PrizeListPrintDocument,
             documents.PrizeAssignmentPrintDocument,
             documents.PrizeReceiptsPrintDocument,
@@ -73,15 +84,22 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.MandatoryPlayerPrintOption,
             options.OptionalPlayerPrintOption,
             options.OptionalPlayersPrintOption,
+            options.OptionalTeamsPrintOption,
             options.PairingStylePrintOption,
             options.RoundPrintOption,
+            options.MatchSheetSelectionPrintOption,
+            options.MatchSheetArbiterPrintOption,
+            options.TeamBergerGridPlayersPrintOption,
             options.PlayerSplitPrintOption,
             options.GridPlayerSortPrintOption,
+            options.TeamGridSortPrintOption,
             options.ListPlayerSortPrintOption,
             options.ShowWarningsPrintOption,
             options.NonMonetaryPrintOption,
+            options.FederationPrintOption,
             options.ClubThresholdPrintOption,
             options.Rule143ExemptionPrintOption,
+            options.NormsForecastSortPrintOption,
             options.QRCodeNetworkPrintOption,
             options.PlaceCardBoardNumbersPrintOption,
             options.PlaceCardMirrorPrintOption,
@@ -92,6 +110,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.IndividualTeamMinGenderCountPrintOption,
             options.IndividualTeamMaxPerEntityPrintOption,
             options.IndividualTeamDisplayIncompletePrintOption,
+            options.FixedBoardOrderPrintOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_print_option')(
             print_options=print_options
@@ -126,6 +145,16 @@ class PrintGridPlayerSorterManager(EventBoundEntityManager[GridPlayerSorter]):
             player_sorters.StartingRankGridPlayerSorter,
             player_sorters.NameGridPlayerSorter,
             player_sorters.PairingNumberGridPlayerSorter,
+        ]
+
+
+class PrintTeamGridSorterManager(EventBoundEntityManager[TeamGridSorter]):
+    @override
+    def entity_types(self) -> list[type[TeamGridSorter]]:
+        return [
+            player_sorters.RankTeamGridSorter,
+            player_sorters.PairingNumberTeamGridSorter,
+            player_sorters.NameTeamGridSorter,
         ]
 
 
@@ -166,6 +195,7 @@ class PrintPlaceCardTypeManager(EntityManager[PlaceCardType]):
             PlayerCardType,
             BoardCardType,
             PairingCardType,
+            TeamCardType,
         ]
 
 

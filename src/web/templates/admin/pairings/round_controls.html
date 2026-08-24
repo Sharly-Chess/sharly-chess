@@ -8,7 +8,7 @@
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
                 hx-on::after-request="window.scrollTo(0, 0)"
-                {% if admin_round <= 1 %}
+                {% if admin_round <= 1 and not display_rankings %}
                     disabled
                 {% else %}
                     hx-trigger="click, SC_Ctrl_Shift_ArrowLeft from:body"
@@ -26,7 +26,7 @@
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
                 hx-on::after-request="window.scrollTo(0, 0)"
-                {% if admin_round <= 1 %}
+                {% if admin_round <= 1 and not display_rankings %}
                     disabled
                 {% else %}
                     hx-trigger="click, SC_Shift_ArrowLeft from:body"
@@ -62,7 +62,7 @@
         <span {{ macros.tooltip_attributes('info', _('Next round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
-                {% if admin_tournament.pairing_system.show_unfinished_round_modal and not admin_tournament.is_round_finished(admin_round) %}
+                {% if admin_tournament.pairing_system.show_unfinished_round_modal and (not (admin_tournament.round_has_pairings(admin_round) and admin_tournament.is_round_finished(admin_round)) or admin_tournament.unboarded_holes(admin_round)) %}
                     hx-get="{{ url_for('admin-pairings-unfinished-round-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"

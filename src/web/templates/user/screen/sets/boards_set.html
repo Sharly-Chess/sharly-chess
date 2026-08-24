@@ -1,4 +1,12 @@
 {% set tournament = screen_set.tournament %}
+{% if not tournament.started %}
+    <div
+        class="boards-set not-started-message d-flex flex-column align-items-center justify-content-center text-center"
+        style="min-height: 70vh;"
+    >
+        <h2>{{ _('The tournament has not yet started.') }}</h2>
+    </div>
+{% else %}
 <div class="boards-set">
     <h2 class="set-title text-center">
         {% if tournament.current_round %}
@@ -25,9 +33,15 @@
         {% endif %}
     </h2>
     {% set board_columns = columns_by_tournament_id[tournament.id] %}
+    {# Match blocks only exist for team-vs-team pairing systems; flat
+       fixed-table systems (e.g. Molter) render the individual board
+       list even in a team event. #}
+    {% if tournament.is_team_tournament and tournament.pairing_system.paired_by_team %}
+        {% include '/user/screen/sets/team_matches_set.html' %}
+    {% else %}
     <div class="row gy-2 gx-3 screen-set-row mx-0">
         {% for boards in screen_set.boards_lists %}
-            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
+            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %} {% if not loop.first %}border-start border-2 border-dark{% endif %}">
                 <div
                     class="d-grid grid-striped"
                     style="grid-template-columns: {% for column in board_columns %}{{ column.grid_column_template }} {% endfor %};"
@@ -41,7 +55,7 @@
                     {% for board in boards %}
                         {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
                         {% set editable =
-                            screen.type == 'input'
+                            screen.screen_type.allows_result_input
                             and board.black_tournament_player
                             and (
                                 client.can_update_results(tournament.id)
@@ -49,6 +63,22 @@
                                 (not board.result_str and client.can_enter_results(tournament.id))
                             )
                         %}
+                        {% if editable %}
+                            {% set result_url = url_for(
+                                'user-result-modal',
+                                event_uniq_id=user_event.uniq_id,
+                                display_controller_id=display_controller.id,
+                                tournament_id=tournament.id,
+                                board_id=board.id
+                            ) if display_controller else url_for(
+                                'user-result-modal',
+                                is_screen=1,
+                                event_uniq_id=user_event.uniq_id,
+                                screen_uniq_id=screen.uniq_id,
+                                tournament_id=tournament.id,
+                                board_id=board.identifier
+                            ) %}
+                        {% endif %}
                         <div
                             id="tournament-{{ tournament.id }}-board-{{ board.id }}-row"
                             class="
@@ -56,25 +86,17 @@
                                 {% if editable %}editable{% endif %}
                                 {% if client.can_set_special_results(tournament.id) %}special-results-allowed{% endif %}
                                 {% if board.result_str %}result-set{% else %}result-not-set fw-bold{% endif %}
-                                {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.id %}last_result_updated{% endif %}"
+                                {% if last_result_updated and last_result_updated.expiration > now and last_result_updated.tournament_id == tournament.id and last_result_updated.round == tournament.current_round and last_result_updated.board_id == board.identifier %}last_result_updated{% endif %}"
+                            {% if editable %}
+                                hx-get="{{ result_url }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                            {% endif %}
                         >
                             {% for column in board_columns %}
-                                <div
-                                    class="{{ column.get_cell_classes(board) }}"
-                                    {% if editable and column.edit_result_on_click %}
-                                        hx-get="{{ url_for(
-                                            'user-result-modal',
-                                            event_uniq_id=user_event.uniq_id,
-                                            screen_uniq_id=screen.uniq_id,
-                                            tournament_id=tournament.id,
-                                            board_id=board.id
-                                        ) }}"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-wrapper"
-                                    {% endif %}
-                                >
+                                <div class="{{ column.get_cell_classes(board) }}">
                                     {% if column.cell_template %}
                                         {% include column.cell_template %}
                                     {% else %}
@@ -89,4 +111,6 @@
             </div>
         {% endfor %}
     </div>
+    {% endif %}
 </div>
+{% endif %}

@@ -6,23 +6,48 @@
         hx-swap-oob="true"
     {% endif %}
 >
+    {% set hide_player_points = (
+        admin_tournament.event.is_team_event
+        and admin_tournament.pairing_system.paired_by_team
+    ) %}
+    {% set board_header = _(
+        'Board (%(remaining)d)',
+        remaining=admin_tournament.boards_without_result(admin_round)|length
+    ) %}
     <tr>
         <th class="text-nowrap">
-            {{ _(
-                'Board (%(remaining)d)',
-                remaining=admin_tournament.boards_without_result(admin_round)|length
-            ) }}
+            {% if admin_boards_sortable %}
+                <a
+                    role="button"
+                    class="text-decoration-none text-reset"
+                    hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-vals='{"board_sort": "{{ 'natural' if admin_board_sort != 'natural' else 'board' }}"}'
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="tooltip"
+                    data-bs-title="{{ _('Sort by pairing order') if admin_board_sort != 'natural' else _('Sort by board number') }}"
+                >
+                    {{ board_header }}
+                    <i class="bi {{ 'bi-sort-numeric-down' if admin_board_sort != 'natural' else 'bi-sort-down' }}"></i>
+                </a>
+            {% else %}
+                {{ board_header }}
+            {% endif %}
         </th>
-        <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
-        {% if admin_tournament.print_real_points(admin_round) %}
-            <th>&nbsp;</th>
+        {% if not hide_player_points %}
+            <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
+            {% if admin_tournament.print_real_points(admin_round) %}
+                <th>&nbsp;</th>
+            {% endif %}
         {% endif %}
         <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('White') }}</th>
         <th class="text-center">{{ _('Result') }}</th>
         <th {% if admin_tournament.record_illegal_moves %}colspan="2"{% endif %}>{{ _('Black') }}</th>
-        {% if admin_tournament.print_real_points(admin_round) %}
-            <th>&nbsp;</th>
+        {% if not hide_player_points %}
+            {% if admin_tournament.print_real_points(admin_round) %}
+                <th>&nbsp;</th>
+            {% endif %}
+            <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
         {% endif %}
-        <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
     </tr>
 </thead>

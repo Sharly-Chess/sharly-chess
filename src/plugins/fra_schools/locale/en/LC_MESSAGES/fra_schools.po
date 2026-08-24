@@ -2,6 +2,9 @@
 msgid "%(string)s:"
 msgstr ""
 
+msgid "Academic phase"
+msgstr ""
+
 msgid "Add"
 msgstr ""
 
@@ -29,16 +32,30 @@ msgstr ""
 msgid "Code"
 msgstr ""
 
+msgid "Compares the number of games won on board 1; if equal, on board 2, then board 3, and so on down the boards (French school championship, art. 5.3.3)."
+msgstr ""
+
 msgid "Delete"
 msgstr ""
 
 msgid "Edit the selected French school."
 msgstr ""
 
+#, python-brace-format
 msgid "Exclude: {values}"
 msgstr ""
 
+msgid "FFE 8-board school team championship. Roster of 8 to 10 pupils with at least 2 girls and 2 boys, draws are not counted in the score, 9-round Swiss for the national final."
+msgstr ""
+
 msgid "FFE Scholar Championship"
+msgstr ""
+
+#, python-brace-format
+msgid "FIDE-rated player listed after an unrated one: {names}."
+msgstr ""
+
+msgid "French School Championship"
 msgstr ""
 
 msgid "French School Competitions"
@@ -62,10 +79,14 @@ msgstr ""
 msgid "Include incomplete teams"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
 msgid "Loading more results…"
+msgstr ""
+
+msgid "Match lost by forfeit, counted as 0 match points."
 msgstr ""
 
 msgid "Max. teams per school:"
@@ -80,12 +101,34 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+msgid "National final"
+msgstr ""
+
+#, python-brace-format
+msgid "Need at least {min} boys on the roster ({n} listed)."
+msgstr ""
+
+#, python-brace-format
+msgid "Need at least {min} girls on the roster ({n} listed)."
+msgstr ""
+
+msgid "Negative game-point total brought back to 0."
+msgstr ""
+
+msgid "Phase"
+msgstr ""
+
+#, python-brace-format
+msgid "Player without an A or B FFE licence: {names}."
+msgstr ""
+
 msgid "Please validate the French school to continue."
 msgstr ""
 
 msgid "Postal code"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking by school after round #{round}"
 msgstr ""
 
@@ -141,8 +184,18 @@ msgstr ""
 msgid "Update the school [%(school_name)s]"
 msgstr ""
 
+msgid "Wins by board order"
+msgstr ""
+
+#, python-brace-format
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{n} board forfeited above a board on which a game was played, counted as -1."
+msgid_plural "{n} boards forfeited above a board on which a game was played, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
 

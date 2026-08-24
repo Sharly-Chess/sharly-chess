@@ -1,0 +1,26 @@
+{% if data.hide_round %}
+    <div class="text-secondary">
+        {% if not data.ranking_round %}
+            {{ _('Round: the last finished round') }}
+        {% endif %}
+    </div>
+{% else %}
+    <div class="{% if not data.ranking_round %}text-secondary{% endif %}">
+        {% if data.ranking_round %}
+            {{ _('Round: %(round)d', round=data.ranking_round) }}
+        {% else %}
+            {{ _('Round: the last finished round') }}
+        {% endif %}
+    </div>
+{% endif %}
+{% if data.ranking_min_points or data.ranking_max_points %}
+    <div>
+        {% if data.ranking_min_points and data.ranking_max_points %}
+            {{ _('Points: %(min)s to %(max)s', min='%.2f'|format(data.ranking_min_points), max='%.2f'|format(data.ranking_max_points)) }}
+        {% elif data.ranking_min_points %}
+            {{ _('Points: %(min)s or more', min='%.2f'|format(data.ranking_min_points)) }}
+        {% else %}
+            {{ _('Points: up to %(max)s', max='%.2f'|format(data.ranking_max_points)) }}
+        {% endif %}
+    </div>
+{% endif %}

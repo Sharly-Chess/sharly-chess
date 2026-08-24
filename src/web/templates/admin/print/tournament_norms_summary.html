@@ -44,7 +44,7 @@
                 font-weight: 600;
                 text-align: left;
             }
-            td.center {
+            .center {
                 text-align: center;
             }
             td.right {
@@ -154,16 +154,16 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>{{ _('Player') }}</th>
-                            <th>{{ _('FIDE ID') }}</th>
-                            <th>{{ _('Fed') }}</th>
-                            <th>{{ _('Title') }}</th>
-                            <th>{{ _('Norm(s) Achieved') }}</th>
-                            <th class="center">{{ _('Played') }}</th>
-                            <th class="center">{{ _('Score') }}</th>
-                            <th class="center">{{ _('Ra') }}</th>
-                            <th class="center">{{ _('Rp') }}</th>
-                            <th>{{ _('Notes') }}</th>
+                            <th>{{ _('Name *** NAME COLUMN HEADER') }}</th>
+                            <th>{{ _('FIDE ID *** FIDE ID COLUMN HEADER') }}</th>
+                            <th>{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                            <th>{{ _('Title *** TITLE COLUMN HEADER') }}</th>
+                            <th>{{ _('Norm(s) Achieved *** NORMS ACHIEVED COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Played *** GAMES PLAYED COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Score *** SCORE COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Ra *** AVERAGE OPPONENT RATING COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Rp *** PERFORMANCE RATING COLUMN HEADER') }}</th>
+                            <th>{{ _('Notes *** NOTES COLUMN HEADER') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -196,7 +196,7 @@
                                             {{ player.federation }}
                                         </td>
                                         <td rowspan="{{ entry.norms | length }}" class="center">
-                                            {{ player.title.short_name or '-' }}
+                                            {{ player.display_title or '-' }}
                                         </td>
                                     {% endif %}
                                     <td class="center">
@@ -260,17 +260,21 @@
                 </p>
             {% else %}
                 <p style="margin: 0.5rem 0 1rem 0; font-style: italic; color: #444;">
-                    {{ _('What the player needs in round {round} to achieve each norm. "any OTB result" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). "norm secured — round optional" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it.').format(round=forecast_round) }}
+                    {{ _('What the player needs in round {round} to achieve each norm. "any OTB result" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). "norm already achieved" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e).').format(round=forecast_round) }}
                 </p>
                 <table>
                     <thead>
                         <tr>
-                            <th>{{ _('Player') }}</th>
-                            <th>{{ _('Fed') }}</th>
-                            <th>{{ _('Title') }}</th>
-                            <th>{{ _('Opponent (R{round})').format(round=forecast_round) }}</th>
-                            <th>{{ _('Norm') }}</th>
-                            <th class="center">{{ _('Needs') }}</th>
+                            {% if sort_mode == 'table' %}
+                                <th class="center">{{ _('Bd. *** BOARD NUMBER COLUMN HEADER') }}</th>
+                            {% endif %}
+                            <th class="center">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+                            <th>{{ _('Name *** NAME COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Title *** TITLE COLUMN HEADER') }}</th>
+                            <th>{{ _('Opponent (R{round}) *** OPPONENT COLUMN HEADER').format(round=forecast_round) }}</th>
+                            <th class="center">{{ _('Norm *** NORM COLUMN HEADER') }}</th>
+                            <th class="center">{{ _('Needs *** NORM REQUIREMENT COLUMN HEADER') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -280,6 +284,14 @@
                             {% for tn, required in entry.requirements.items() %}
                                 <tr>
                                     {% if loop.first %}
+                                        {% if sort_mode == 'table' %}
+                                            <td rowspan="{{ entry.requirements | length }}" class="center">
+                                                {{ entry.board_number if entry.board_number is not none else '-' }}
+                                            </td>
+                                        {% endif %}
+                                        <td rowspan="{{ entry.requirements | length }}" class="center">
+                                            {{ entry.rank }}
+                                        </td>
                                         <td rowspan="{{ entry.requirements | length }}">
                                             {{ player.full_name }}
                                         </td>
@@ -287,12 +299,12 @@
                                             {{ player.federation }}
                                         </td>
                                         <td rowspan="{{ entry.requirements | length }}" class="center">
-                                            {{ player.title.short_name or '-' }}
+                                            {{ player.display_title or '-' }}
                                         </td>
                                         <td rowspan="{{ entry.requirements | length }}">
                                             {{ opp.full_name }}
                                             <span class="note">
-                                                {{ opp.title.short_name or '' }}
+                                                {{ opp.display_title or '' }}
                                                 {% if opp.rating %}({{ opp.rating }}){% endif %}
                                                 — {{ opp.federation }}
                                             </span>
@@ -302,8 +314,8 @@
                                         <span class="norm-badge">{{ tn.name }}</span>
                                     </td>
                                     <td class="center requirement">
-                                        {% if not required.play_required %}
-                                            <span class="req-secured">{{ _('norm secured — round optional') }}</span>
+                                        {% if entry.achieved or not required.play_required %}
+                                            <span class="req-secured">{{ _('norm already achieved') }}</span>
                                         {% elif required.minimum_outcome == Result.LOSS %}
                                             <span class="req-any">{{ _('any OTB result') }}</span>
                                         {% elif required.minimum_outcome == Result.DRAW %}

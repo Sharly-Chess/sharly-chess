@@ -6,16 +6,16 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.access_levels.client_tracker import ClientTracker
-from data.display_controller import DisplayController
+from data.screens.display_controller import DisplayController
 from data.event import Event
 from data.pairings.managers import plugin_manager
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from data.tournament import Tournament
+from data.screens.manager import ScreenTypeManager
 from plugins.utils import NavDataTransferItem
 from utils.enum import (
     FormAction,
-    ScreenType,
     PlayersScreenPlayerFormat,
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
@@ -133,6 +133,16 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB")} from:body',
                 },
             }
+        if event.is_team_event and self.client.can_view_tournaments_tab:
+            nav_tabs |= {
+                'admin-event-teams-tab': {
+                    'title': _('Teams ({num})').format(
+                        num=len(event.teams_by_id) or '-'
+                    ),
+                    'template': 'teams/tab.html',
+                    'icon_class': 'bi-flag-fill',
+                },
+            }
         if self.client.can_view_pairings_tab:
             nav_tabs |= {
                 'admin-event-pairings-tab': {
@@ -142,7 +152,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB")} from:body',
                 },
             }
-        if self.client.can_view_prizes_tab:
+        if self.client.can_view_prizes_tab and not event.is_team_event:
             nav_tabs |= {
                 'admin-event-prizes-tab': {
                     'title': _('Prizes *** WITH_SHORTCUT_INDICATION'),
@@ -166,10 +176,16 @@ class BaseEventAdminWebContext(AdminWebContext):
                         },
                         'admin-event-families-tab': {
                             'title': _(
-                                'Families ({num}) *** WITH_SHORTCUT_INDICATION'
+                                'Multi-Screens ({num}) *** WITH_SHORTCUT_INDICATION'
                             ).format(num=len(event.families_by_id) or '-'),
                             'template': 'families/tab.html',
-                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB")} from:body',
+                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE MULTI-SCREENS TAB")} from:body',
+                        },
+                        'admin-event-menus-tab': {
+                            'title': _('Menus ({num})').format(
+                                num=len(event.menus_by_id) or '-'
+                            ),
+                            'template': 'menus/tab.html',
                         },
                         'admin-event-rotators-tab': {
                             'title': _(
@@ -179,11 +195,10 @@ class BaseEventAdminWebContext(AdminWebContext):
                             'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB")} from:body',
                         },
                         'admin-event-timers-tab': {
-                            'title': _(
-                                'Timers ({num}) *** WITH_SHORTCUT_INDICATION'
-                            ).format(num=len(event.timers_by_id) or '-'),
+                            'title': _('Timers ({num})').format(
+                                num=len(event.timers_by_id) or '-'
+                            ),
                             'template': 'timers/tab.html',
-                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE TIMERS TAB")} from:body',
                         },
                         'admin-event-display-controllers-tab': {
                             'title': _(
@@ -196,7 +211,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                 },
             }
         elif self.client.can_view_public_screens:
-            sorted_screens_by_screen_type: dict[ScreenType, list[Screen]]
+            sorted_screens_by_screen_type: dict[str, list[Screen]]
             rotators: list[Rotator]
             display_controllers: list[DisplayController]
             if self.client.can_view_private_screens:
@@ -209,13 +224,25 @@ class BaseEventAdminWebContext(AdminWebContext):
                 )
                 rotators = event.public_sorted_rotators
                 display_controllers = event.sorted_public_display_controllers
-            for screen_type in ScreenType:
-                screens = sorted_screens_by_screen_type[screen_type]
-                nav_tabs[f'admin-event-{screen_type.value}-screens-tab'] = {
+            for screen_type in ScreenTypeManager(event).objects():
+                screens = sorted_screens_by_screen_type[screen_type.id]
+                nav_tabs[f'admin-event-{screen_type.id}-screens-tab'] = {
                     'title': f'{screen_type.name} ({len(screens) or "-"})',
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
                     'icon_class': screen_type.icon_str,
+                }
+            # The Menus tab is a staff/config view; hide it from public
+            # (network) viewers who can only see public screens.
+            if self.client.can_view_private_screens:
+                menus = event.sorted_menus
+                nav_tabs |= {
+                    'admin-event-menus-tab': {
+                        'title': _('Menus ({num})').format(num=len(menus) or '-'),
+                        'template': 'menus/tab.html',
+                        'disabled': not menus,
+                        'icon_class': 'bi-list-nested',
+                    },
                 }
             nav_tabs |= {
                 'admin-event-rotators-tab': {
@@ -340,44 +367,3 @@ class BaseEventAdminController(BaseAdminController):
             template_name='admin/event_layout.html',
             context=template_context,
         )
-
-    @staticmethod
-    def get_default_players_screen_player_format(
-        event: Event,
-    ) -> PlayersScreenPlayerFormat:
-        return (
-            plugin_manager.hook_for_event(
-                event, 'get_default_players_screen_player_format'
-            )()
-            or PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
-        )
-
-    @staticmethod
-    def get_default_players_screen_board_format(
-        event: Event,
-    ) -> PlayersScreenBoardFormat:
-        return (
-            plugin_manager.hook_for_event(
-                event, 'get_default_players_screen_board_format'
-            )()
-            or PlayersScreenBoardFormat.FULL
-        )
-
-    @staticmethod
-    def get_default_players_screen_opponent_format(
-        event: Event,
-    ) -> PlayersScreenOpponentFormat:
-        return (
-            plugin_manager.hook_for_event(
-                event, 'get_default_players_screen_opponent_format'
-            )()
-            or PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS
-        )
-
-    @staticmethod
-    def get_default_players_screen_columns(
-        event: Event,
-    ) -> int | None:
-        return plugin_manager.hook_for_event(
-            event, 'get_default_players_screen_columns'
-        )()

@@ -17,6 +17,7 @@ from data.input_output.player_updater_fields import (
     PlayerUpdaterField,
     FideIDUpdaterField,
     TitleUpdaterField,
+    WomenTitleUpdaterField,
     NameUpdaterField,
     CategoryUpdaterField,
     GenderPlayerUpdater,
@@ -164,6 +165,7 @@ class _FfeDataSource(ABC):
             FfeLicenceUpdaterField(),
             FideIDUpdaterField(),
             TitleUpdaterField(),
+            WomenTitleUpdaterField(),
             NameUpdaterField(),
             CategoryUpdaterField(),
             GenderPlayerUpdater(),
@@ -248,6 +250,7 @@ class _FfeDataSource(ABC):
     def _imported_datasheet_columns(self) -> list[DatasheetColumn]:
         columns: list[DatasheetColumn] = [
             pds.TitleColumn(),
+            pds.WomenTitleColumn(),
             pds.LastNameColumn(),
             pds.FirstNameColumn(),
             pds.DateOfBirthColumn(),

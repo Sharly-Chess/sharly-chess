@@ -1,21 +1,36 @@
 import json
-from abc import abstractmethod
+import tempfile
+from abc import abstractmethod, ABC
 from functools import partial
 from json import JSONDecodeError
+from pathlib import Path
+from types import UnionType
+from typing import Any
 
+from requests import Response, get
+
+from common.logger import get_logger
 from common.exception import SharlyChessException, DictReaderException, ImporterError
 from common.i18n import _
 from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
+from data.input_output.tournament_importer_options import TournamentImporterOption
 from data.input_output.tournament_importers import FileTournamentImporter
+from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from plugins.ffe import PLUGIN_NAME
+from utils.enum import EventType
 from plugins.ffe.papi_converter import PapiConverter, PapiData
 from plugins.manager import plugin_manager
-from plugins.pairing_acceleration.utils import PairingAccelerationUtils
+from data.pairings.acceleration import AccelerationUtils
+
+logger = get_logger()
 
 
 class FfeTournamentImporter(FileTournamentImporter):
+    # Papi (and its JSON twin) is an individual-tournament format.
+    supported_event_types = [EventType.INDIVIDUAL]
+
     @classmethod
     def static_id(cls) -> str:
         return f'{PLUGIN_NAME}-{cls.sub_id()}'
@@ -49,7 +64,7 @@ class FfeTournamentImporter(FileTournamentImporter):
             self.post_import_task.insert(
                 0,
                 partial(
-                    PairingAccelerationUtils.set_pairing_settings_from_rating_threshold,
+                    AccelerationUtils.set_pairing_settings_from_rating_threshold,
                     rating_threshold=rating_threshold_1,
                 ),
             )
@@ -57,7 +72,7 @@ class FfeTournamentImporter(FileTournamentImporter):
             self.post_import_task.insert(
                 0,
                 partial(
-                    PairingAccelerationUtils.set_pairing_settings_from_dual_rating_thresholds,
+                    AccelerationUtils.set_pairing_settings_from_dual_rating_thresholds,
                     lower_rating_threshold=rating_threshold_2,
                     upper_rating_threshold=rating_threshold_1,
                 ),
@@ -143,3 +158,114 @@ class PapiJsonTournamentImporter(FfeTournamentImporter):
             raise SharlyChessException(f'Error while reading JSON file: {error}')
         except DictReaderException as exception:
             raise ImporterError(str(exception))
+
+
+class FfeImporterOption(TournamentImporterOption, ABC):
+    @classmethod
+    def static_id(cls) -> str:
+        return f'{PLUGIN_NAME}_{cls.sub_id()}'
+
+    @staticmethod
+    @abstractmethod
+    def sub_id() -> str:
+        """ID of option (unique amongst the other FFE options)"""
+
+    @property
+    def template_name(self) -> str:
+        return f'/ffe_tournament_importer_options/{self.template_file_name}.html'
+
+    @property
+    def template_file_name(self) -> str:
+        return self.sub_id()
+
+
+class FfeTournamentIdOption(FfeImporterOption):
+    @staticmethod
+    def sub_id() -> str:
+        return 'tournament_id'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    def get_default_value(self, tournament: Tournament | None = None) -> Any:
+        return None
+
+
+class OnlineTournamentImporter(FfeTournamentImporter):
+    @staticmethod
+    def sub_id() -> str:
+        return 'online'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Online FFE tournament')
+
+    @property
+    def modal_title(self) -> str:
+        return _('Import online FFE tournament')
+
+    @staticmethod
+    def available_options() -> list[type[TournamentImporterOption]]:
+        return [
+            FfeTournamentIdOption,
+        ]
+
+    def load_stored_tournament(
+        self, event: Event, stored_tournament: StoredTournament | None = None
+    ) -> tuple[StoredTournament, list[StoredPlayer]]:
+        (tournament_id,) = self.get_option_values()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target: Path = Path(tmpdir) / f'{tournament_id}.papi'
+            url: str = f'https://www.echecs.asso.fr/Tournois/Id/{tournament_id}/{tournament_id}.papi'
+            logger.info('Downloading [%s]...', url)
+            try:
+                response: Response = get(
+                    url, allow_redirects=True, timeout=60, stream=True
+                )
+                match response.status_code:
+                    case 200:
+                        total = int(response.headers.get('content-length', 0))
+                        logger.info('Receiving %.1f MB...', total / 1_048_576)
+                        received = 0
+                        with open(target, 'wb') as f:
+                            for chunk in response.iter_content(chunk_size=1024 * 1024):
+                                f.write(chunk)
+                                received += len(chunk)
+                                logger.debug(
+                                    'Downloaded %d / %d bytes.',
+                                    received,
+                                    total,
+                                )
+                        logger.info(
+                            'Download complete (%.1f MB).',
+                            received / 1_048_576,
+                        )
+                        papi_data = PapiConverter().read_papi_file(target)
+                        self._add_rating_threshold_task(papi_data)
+                        return self.read_papi_data(event, papi_data, stored_tournament)
+                    case 404:
+                        logger.error('Tournament [%d] not found.', tournament_id)
+                        raise ImporterError(
+                            _('Tournament [{tournament_id}] not found.').format(
+                                tournament_id=tournament_id
+                            )
+                        )
+                    case _:
+                        logger.error(
+                            'Could not download [{%s}], error code {%d}.',
+                            url,
+                            response.status_code,
+                        )
+                        raise ImporterError(
+                            _('Could not download [{url}], error code {code}.').format(
+                                url=url, code=response.status_code
+                            )
+                        )
+            except ConnectionError as exception:
+                logger.exception('Could not download [%s]', url, exception)
+                raise ImporterError(
+                    _('Could not download [{url}]: {error}.').format(
+                        url=url, error=exception
+                    )
+                )

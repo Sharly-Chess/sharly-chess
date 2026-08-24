@@ -238,6 +238,12 @@ class SessionRotatorsShowDetails(BoolSessionVariable):
         return 'rotators_show_details'
 
 
+class SessionMenusShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'menus_show_details'
+
+
 class SessionAccountsShowDetails(BoolSessionVariable):
     @property
     def key(self) -> str:
@@ -262,6 +268,50 @@ class SessionEventsShowDetails(BoolSessionVariable):
         return 'events_show_details'
 
 
+class SessionAdminCollectionViewMode(SubKeySessionVariable[str]):
+    """The preferred projection for each card-based admin collection."""
+
+    @property
+    def key(self) -> str:
+        return 'admin_collection_view_modes'
+
+    @property
+    def default_value(self) -> str:
+        return 'list'
+
+
+class SessionAdminCollectionShowDetails(SubKeySessionVariable[bool]):
+    """Whether every item in an admin collection should expose its details."""
+
+    @property
+    def key(self) -> str:
+        return 'admin_collection_show_details'
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
+class SessionTeamsShowRoster(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_show_roster'
+
+    @property
+    def default_value(self) -> bool:
+        return True
+
+
+class SessionTeamsShowLineup(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_show_lineup'
+
+    @property
+    def default_value(self) -> bool:
+        return True
+
+
 class SessionTimersAddOtherActive(BoolSessionVariable):
     @property
     def key(self) -> str:
@@ -280,10 +330,30 @@ class SessionTieBreakAddOtherActive(BoolSessionVariable):
         return 'tie_break_add_other_active'
 
 
+class SessionTagsAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'tags_add_other_active'
+
+
 class SessionPairingsShowWithoutResults(BoolSessionVariable):
     @property
     def key(self) -> str:
         return 'pairings_show_without_results'
+
+
+class SessionPairingsBoardSort(SessionVariable[str]):
+    """Board column ordering on the pairings tab when a tournament has fixed
+    boards and is numbered compactly: ``'board'`` (by display number, default)
+    or ``'natural'`` (pairing order)."""
+
+    @property
+    def key(self) -> str:
+        return 'pairings_board_sort'
+
+    @property
+    def default_value(self) -> str:
+        return 'board'
 
 
 class SessionScreensScreenTypes(SessionVariable[set[str]]):
@@ -299,6 +369,25 @@ class SessionScreensScreenTypes(SessionVariable[set[str]]):
         return set(super().get())
 
     def set(self, value: set[str]):
+        self.request.session[self.key] = list(value)
+
+
+class SessionEventsTags(SessionVariable[set[int]]):
+    """The ids of the tags the event lists are filtered on. An empty set
+    shows every event."""
+
+    @property
+    def key(self) -> str:
+        return 'events_tags'
+
+    @property
+    def default_value(self) -> set[int]:
+        return set()
+
+    def get(self) -> set[int]:
+        return set(super().get())
+
+    def set(self, value: set[int]):
         self.request.session[self.key] = list(value)
 
 
@@ -398,6 +487,12 @@ class SessionPlayersAddOtherActive(BoolSessionVariable):
     @property
     def key(self) -> str:
         return 'players_add_other_active'
+
+
+class SessionTeamsAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_add_other_active'
 
 
 class SessionPlayersImportUseDataSource(BoolSessionVariable):

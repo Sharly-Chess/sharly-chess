@@ -99,7 +99,7 @@ class TitleColumn(TournamentPlayerTableColumn):
         return '\u00a0'
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.title.short_name
+        return tournament_player.display_title
 
     @property
     def shared_classes(self) -> str:
@@ -205,6 +205,25 @@ class PointsColumn(TournamentPlayerTableColumn):
         return 'fw-bold text-center'
 
 
+class PrizeMetricColumn(TournamentPlayerTableColumn):
+    """Value column for the prize assignment document. Shows the metric each
+    category ranks by: points for a final-standing category, average or peak
+    performance for a performance-based one. The header and cell branch on the
+    ``prize_category`` in scope where the column is rendered."""
+
+    @property
+    def header_template(self) -> str | None:
+        return '/admin/print/cells/prize_metric_header.html'
+
+    @property
+    def cell_template(self) -> str | None:
+        return '/admin/print/cells/prize_metric.html'
+
+    @property
+    def shared_classes(self) -> str:
+        return 'fw-bold text-center'
+
+
 class AlphaPointsColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
@@ -274,7 +293,8 @@ class TieBreakColumn(TournamentPlayerTableColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-center'
+        emphasis = 'fw-bold ' if self.index == 0 else ''
+        return f'{emphasis}text-center'
 
 
 class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
@@ -297,7 +317,8 @@ class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-center'
+        emphasis = 'fw-bold ' if self.index == 0 else ''
+        return f'{emphasis}text-center'
 
 
 class PaidColumn(TournamentPlayerTableColumn):

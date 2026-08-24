@@ -1,0 +1,186 @@
+{% macro item_class(item, view) -%}
+    {%- if not item.screens_by_uniq_id -%}
+        collection-status-danger
+    {%- elif item.public -%}
+        collection-status-public
+    {%- else -%}
+        collection-status-private
+    {%- endif -%}
+{%- endmacro %}
+
+{% macro identity(item, view, placement) %}
+    <span class="d-inline-flex align-items-center gap-2 min-width-0">
+        {{ admin_macros.family_visibility_icon(item, '') }}
+        <span class="fw-bold text-truncate">{{ item.display_name }}</span>
+    </span>
+{% endmacro %}
+
+{% macro screen_type(item, view, placement) %}
+    <span class="d-inline-flex align-items-center gap-2">
+        {{ macros.screen_type_icon(item.screen_type, true) }}
+        <span class="text-truncate">{{ item.type_str }}</span>
+    </span>
+{% endmacro %}
+
+{% macro tournament(item, view, placement) %}
+    <span class="text-truncate" title="{{ item.tournament.name }}">{{ item.tournament.name }}</span>
+{% endmacro %}
+
+{% macro screen_count(item, view, placement) %}
+    <span class="{% if not item.screens_by_uniq_id %}text-danger{% endif %} text-nowrap">
+        <i class="bi-window pe-1"></i>
+        {{ ngettext(
+            '%(num)d screen',
+            '%(num)d screens',
+            item.screens_by_uniq_id|length,
+        ) }}
+    </span>
+{% endmacro %}
+
+{% macro screen_ranges(item, view, placement) %}
+    {% set family = item %}
+    {% if family.screens_by_uniq_id %}
+        <div class="d-flex flex-column gap-1">
+            {% for screen in family.screens_by_uniq_id.values() %}
+                <div>
+                    <span class="text-secondary">{{ loop.index }}.</span>
+                    {{ family.screen_type.family_screen_label(screen.sorted_screen_sets[0]) }}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-danger"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No screens') }}</div>
+    {% endif %}
+{% endmacro %}
+
+{% macro details(item, view, placement) %}
+    {% set family = item %}
+    {% set screen_type = family.screen_type %}
+    <div class="collection-details-grid {% if view == 'card' %}collection-details-grid-single{% endif %}">
+        <section class="collection-detail-section">
+            <h6>{{ _('Selection') }}</h6>
+            {% if view == 'card' %}
+                <div>{{ _('Tournament: %(tournament_name)s', tournament_name=family.tournament.name) }}</div>
+            {% endif %}
+            <div>{{ _('Selection: %(selection)s', selection=family.numbers_str) }}</div>
+            <div>
+                {{ _('Columns:') }}
+                {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
+            </div>
+        </section>
+        <section class="collection-detail-section">
+            <h6>{{ _('General configuration') }}</h6>
+            {% if screen_type.has_exit_button %}
+                <div>
+                    <i class="bi-x-circle pe-1"></i>
+                    {{ _('Exit button:') }} {{ _('yes') if family.input_exit_button else _('no') }}
+                </div>
+            {% endif %}
+            <div>
+                <i class="bi-hand-index pe-1"></i>
+                {{ _('Menu label: %(menu_label)s', menu_label=family.menu_label(family.in_multi_family_menu)) }}
+            </div>
+            <div class="{% if not family.timer %}text-secondary{% endif %}">
+                <i class="bi-clock-fill pe-1"></i>
+                {{
+                    _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name)
+                    if family.timer
+                    else _('Timer: none')
+                }}
+            </div>
+        </section>
+        {% if screen_type.card_detail_template %}
+            <section class="collection-detail-section collection-detail-wide">
+                <h6>{{ _('Display options') }}</h6>
+                {% set data = screen_type.family_card_context(family) %}
+                {% include screen_type.card_detail_template %}
+            </section>
+        {% endif %}
+        <section class="collection-detail-section collection-detail-wide">
+            <h6>{{ _('Alert message') }}</h6>
+            {% if family.message_text %}
+                <div
+                    class="px-2 alert-message screen-alert-message"
+                    style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+                >
+                    {{ family.message_text }}
+                    {% if family.message_default %}<span class="fst-italic">{{ _('(by default)') }}</span>{% endif %}
+                </div>
+            {% else %}
+                <span class="text-secondary fst-italic">
+                    {{ _('No alert message') }}
+                    {% if family.message_default %}{{ _('(by default)') }}{% endif %}
+                </span>
+            {% endif %}
+        </section>
+    </div>
+{% endmacro %}
+
+{% macro actions(item, view, placement) %}
+    {% set family = item %}
+    <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
+        <div>
+            {% if family.calculated_first_screen_id %}
+                <a
+                    class="btn btn-sm btn-outline-primary"
+                    href="{{ url_for(
+                        'user-screen',
+                        event_uniq_id=admin_event.uniq_id,
+                        screen_uniq_id=family.calculated_first_screen_id,
+                    ) }}"
+                    target="_blank"
+                    {{ macros.tooltip_attributes('info', _('Go to the first screen.'), 'top') }}
+                >
+                    <i class="bi-eye"></i>
+                </a>
+            {% endif %}
+        </div>
+        <div class="d-flex align-items-center gap-1">
+            {% call macros.action_tooltip('info', _('Edit the properties of the multi-screen.'), 'top') %}
+                <button
+                    class="btn btn-sm btn-outline-primary"
+                    hx-get="{{ url_for(
+                        'admin-family-modal',
+                        action='update',
+                        event_uniq_id=admin_event.uniq_id,
+                        family_id=family.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                ><i class="bi-pencil-fill"></i></button>
+            {% endcall %}
+            {% call macros.action_tooltip('info', _('Duplicate the multi-screen.'), 'top') %}
+                <button
+                    class="btn btn-sm btn-outline-primary"
+                    hx-get="{{ url_for(
+                        'admin-family-modal',
+                        action='clone',
+                        event_uniq_id=admin_event.uniq_id,
+                        family_id=family.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                ><i class="bi-copy"></i></button>
+            {% endcall %}
+            {% call macros.action_tooltip('info', _('Delete the multi-screen.'), 'top') %}
+                <button
+                    class="btn btn-sm btn-outline-danger"
+                    hx-get="{{ url_for(
+                        'admin-family-modal',
+                        action='delete',
+                        event_uniq_id=admin_event.uniq_id,
+                        family_id=family.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                ><i class="bi-trash-fill"></i></button>
+            {% endcall %}
+        </div>
+    </div>
+{% endmacro %}

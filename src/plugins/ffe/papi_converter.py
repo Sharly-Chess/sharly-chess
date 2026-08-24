@@ -16,6 +16,7 @@ from common.tool_installer import PapiConverterInstaller
 from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
 from data.pairings.engines import DoubleBergerPairingEngine
+from data.pairings.scheveningen import ScheveningenPairingSystem
 from data.pairings.variations import (
     BergerRoundRobinVariation,
     DoubleBergerRoundRobinVariation,
@@ -23,7 +24,7 @@ from data.pairings.variations import (
 )
 from data.player import TournamentPlayer, PlayerRating
 from data.player_categories import PlayerCategory
-from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
+from data.tie_breaks.tie_breaks import ManualTieBreak, PointsTieBreak, TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
     StoredTournament,
@@ -32,6 +33,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
+    set_stored_fields,
 )
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_mappers import (
@@ -51,9 +53,11 @@ from plugins.ffe.papi_mappers import (
 from plugins.ffe.utils import FFEUtils
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
 from plugins.manager import plugin_manager
-from plugins.pairing_acceleration.pairing_variations import (
+from data.pairings.acceleration import (
     BakuSwissVariation,
     AccelerationSwissVariation,
+    CustomAccelerationSwissVariation,
+    InitialScoreSwissVariation,
 )
 from utils import Utils
 from utils.enum import (
@@ -338,7 +342,7 @@ class PapiConverter:
                     else:
                         board_id = next_board_id
                         next_board_id += 1
-                        stored_board.id = board_id
+                        set_stored_fields(stored_board, id=board_id)
                         stored_boards_by_round[round_nb].append(stored_board)
                         if papi_round and papi_round.opponent is not None:
                             board_id_by_player_id_by_round[round_nb][
@@ -418,7 +422,21 @@ class PapiConverter:
                 )
             except KeyError:
                 raise_unknown_value('pointSystem', variables.pointSystem)
-        stored_tournament.three_points_for_a_win = three_points_for_a_win
+        if three_points_for_a_win:
+            game_points = {
+                Result.WIN.value: 3.0,
+                Result.DRAW.value: 1.0,
+                Result.LOSS.value: 0.0,
+            }
+        else:
+            game_points = {
+                Result.WIN.value: 1.0,
+                Result.DRAW.value: 0.5,
+                Result.LOSS.value: 0.0,
+            }
+        game_points[Result.ZERO_POINT_BYE.value] = 0.0
+        game_points[Result.PAIRING_ALLOCATED_BYE.value] = game_points[Result.WIN.value]
+        stored_tournament.game_points = game_points
         stored_tournament.location = variables.venue
         ffe_id = None
         if variables.homologation:
@@ -551,7 +569,8 @@ class PapiConverter:
             comment=papi_player.comment,
             owed=float(papi_player.owed or 0),
             paid=float(papi_player.paid or 0),
-            title=title.value,
+            title=title.open_value,
+            women_title=title.women_value,
             ratings=ratings,
             fide_id=fide_id,
             federation=papi_player.federation,
@@ -628,12 +647,26 @@ class PapiConverter:
             return _(
                 'The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website.'
             )
+        if isinstance(
+            pairing_variation,
+            (CustomAccelerationSwissVariation, InitialScoreSwissVariation),
+        ):
+            return _(
+                'The [{variation}] pairing system is not recognized by the FFE, '
+                'which derives acceleration from the ratings: the pairings '
+                'displayed on the FFE website may differ.'
+            ).format(variation=pairing_variation.name)
         return None
 
     @classmethod
-    def check_tiebreaks_warning(cls, tie_breaks: list[TieBreak]) -> str | None:
+    def check_tiebreaks_warning(
+        cls,
+        tie_breaks: list[TieBreak],
+        three_points_for_a_win: bool = False,
+    ) -> str | None:
         if len(tie_breaks) <= 3 and all(
-            PapiTieBreak.get_outer_value(tie_break) for tie_break in tie_breaks
+            PapiTieBreak.get_outer_value(tie_break, three_points_for_a_win)
+            for tie_break in tie_breaks
         ):
             return None
         return '<br/>'.join(
@@ -650,7 +683,20 @@ class PapiConverter:
         )
 
     @classmethod
+    def scheveningen_export_warning(cls, tournament: Tournament) -> str | None:
+        """The warning that a Scheveningen has no Papi form of its own and
+        is exported / uploaded as an individual Swiss. Shared by the export
+        modal and the tournament tab's pairing warning."""
+        if isinstance(tournament.pairing_system, ScheveningenPairingSystem):
+            return _(
+                'This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament.'
+            )
+        return None
+
+    @classmethod
     def check_pairing_warning(cls, tournament: Tournament) -> str | None:
+        if warning := cls.scheveningen_export_warning(tournament):
+            return warning
         if isinstance(tournament.pairing_variation, AccelerationSwissVariation):
             return _(
                 "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
@@ -676,9 +722,49 @@ class PapiConverter:
             ).format(rounds=rounds, max=cls.MAX_PAPI_ROUNDS)
         return None
 
+    # WIN / DRAW / LOSS presets the legacy Papi format can round-trip.
+    # Standard FIDE (1 / 0.5 / 0) and "3 points for a win" (3 / 1 / 0)
+    # are the only schemes the format was ever specified for; anything
+    # else is silently lost on import.
+    _SUPPORTED_GAME_POINT_PRESETS: tuple[tuple[float, float, float], ...] = (
+        (1.0, 0.5, 0.0),
+        (3.0, 1.0, 0.0),
+    )
+
     @classmethod
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
+        # A Scheveningen is the one team system that can be flattened to an
+        # individual Swiss (every player has one opponent per round), so it
+        # is exported that way; the other team systems have no Papi form.
+        if tournament.event.is_team_event and not isinstance(
+            tournament.pairing_system, ScheveningenPairingSystem
+        ):
+            return _('Papi export is not available for team events.')
+
+        # Papi ranks on the points and then on up to three tie-breaks;
+        # there is no way to express a criterion that outranks the score.
+        if not tournament.leads_on_points:
+            return _(
+                'Papi export requires the standings to be ranked on the points '
+                'first. This tournament ranks on [{tie_break}] before them, '
+                'which the Papi format cannot represent.'
+            ).format(tie_break=tournament.leading_tie_break.full_name)
+
+        win = tournament.win_points
+        draw = tournament.draw_points
+        loss = tournament.loss_points
+        if (win, draw, loss) not in cls._SUPPORTED_GAME_POINT_PRESETS:
+            return _(
+                'Papi export only supports the standard (1 / 0.5 / 0) or '
+                '"3 points for a win" (3 / 1 / 0) game-point scales. '
+                'Current values: {win} / {draw} / {loss}.'
+            ).format(
+                win=Utils.points_str(win),
+                draw=Utils.points_str(draw),
+                loss=Utils.points_str(loss),
+            )
+
         if rounds_blocker := cls.check_rounds(tournament.rounds):
             return rounds_blocker
 
@@ -687,15 +773,35 @@ class PapiConverter:
                 if msg := cls.check_result(player.pairings[round_].result, tournament):
                     return msg
 
+        # Papi has nowhere to record a bonus / penalty, so exporting a
+        # tournament that uses them would silently drop points and change
+        # the standings.
+        if any(
+            adjustment.delta
+            for adjustment in (
+                tournament.stored_tournament.stored_player_point_adjustments
+            )
+        ):
+            return _(
+                'Papi export does not support bonus / penalty points, which '
+                'this tournament uses.'
+            )
+
         return None
 
     @classmethod
     def papi_export_warning(cls, tournament: Tournament) -> str | None:
-        if warning := cls.check_tiebreaks_warning(tournament.tie_breaks):
-            return warning
+        warnings: list[str] = []
+        if warning := cls.scheveningen_export_warning(tournament):
+            warnings.append(warning)
+        if warning := cls.check_tiebreaks_warning(
+            tournament.tie_breaks,
+            three_points_for_a_win=tournament.win_points == 3.0,
+        ):
+            warnings.append(warning)
         if warning := cls.check_pairing_variation_warning(tournament.pairing_variation):
-            return warning
-        return None
+            warnings.append(warning)
+        return '<br/>'.join(warnings) or None
 
     def write_papi_file(
         self,
@@ -799,7 +905,7 @@ class PapiConverter:
             tiebreak2=papi_tiebreaks[1],
             tiebreak3=papi_tiebreaks[2],
             pointSystem=PapiThreePointsForAWin.get_outer_value(
-                tournament.three_points_for_a_win
+                tournament.win_points == 3.0
             ),
             arbiter='',
             timeControl=tournament.time_control_trf25,
@@ -822,7 +928,7 @@ class PapiConverter:
             papi_player = self._player_to_papi_player(
                 tournament_player,
                 player_id_to_index,
-                tournament.pab_value,
+                tournament.pab_equivalent_result,
                 manual_tiebreak_by_player_id.get(tournament_player.id, None),
                 anonymize_player_data,
             )
@@ -844,14 +950,28 @@ class PapiConverter:
         manual_index: int | None = None
         use_manual: bool = False
         for index, tiebreak in enumerate(tournament.tie_breaks):
+            if isinstance(tiebreak, PointsTieBreak):
+                # Papi always ranks on the points first and has no code
+                # for them, so they take no slot. Anywhere but first and
+                # the ranking is one Papi cannot express — fall back to
+                # the manual tie-break, which carries it exactly.
+                if index > 0:
+                    use_manual = True
+                    break
+                continue
             if tiebreak == ManualTieBreak():
                 manual_index = index
-            papi_tiebreak = PapiTieBreak.get_outer_value(tiebreak)
-            if index > 2 or not papi_tiebreak:
+            papi_tiebreak = PapiTieBreak.get_outer_value(
+                tiebreak, three_points_for_a_win=tournament.win_points == 3.0
+            )
+            if len(papi_tiebreaks) > 2 or not papi_tiebreak:
                 use_manual = True
                 break
             papi_tiebreaks.append(papi_tiebreak)
-        if use_manual:
+        if not tournament.started:
+            # Do not set a manual tie-break if the tournament is not started
+            pass
+        elif use_manual:
             # Replace the final Papi tie-break by a manual tie-break representing the SC ranking
             # This way, at least the last round is correct
             if manual_index is not None:
@@ -865,7 +985,7 @@ class PapiConverter:
                 manual_tiebreak_by_player_id[tournament_player.id] = (
                     player_count - tournament_player.rank + 1
                 )
-        elif len(papi_tiebreaks) < 3 and not manual_index:
+        elif len(papi_tiebreaks) < 3 and manual_index is None:
             # If a spot is available, add a manual tie-break representing the start rank
             # This way, the rankings are the same on all rounds
             papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
@@ -879,7 +999,7 @@ class PapiConverter:
                 manual_tiebreak_by_player_id[tournament_player.id] = (
                     player_count - index
                 )
-        elif manual_index:
+        elif manual_index is not None:
             # Setup the manual tie-break values from the stored value
             manual_tiebreak_by_player_id = {
                 tournament_player.id: tournament_player.manual_tiebreak
@@ -943,7 +1063,9 @@ class PapiConverter:
             comment=tournament_player.comment,
             owed=tournament_player.owed if tournament_player.owed != 0 else None,
             paid=tournament_player.paid if tournament_player.paid != 0 else None,
-            fideTitle=PapiPlayerTitle.get_outer_value(tournament_player.title),
+            fideTitle=PapiPlayerTitle.get_outer_value(
+                tournament_player.strongest_title
+            ),
             fideCode=str(tournament_player.fide_id)
             if tournament_player.fide_id
             else None,

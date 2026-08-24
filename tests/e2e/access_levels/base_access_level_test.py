@@ -9,12 +9,12 @@ from database.sqlite.event.event_database import EventDatabase
 from data.access_levels.access_levels import AccessLevel
 from common.sharly_chess_config import SharlyChessConfig
 from tests.e2e.access_levels.conftest import (
+    PRIVATE_EVENT_ID,
     PUBLIC_EVENT_ID,
     TOURNAMENT_ID,
     TOURNAMENT_UNPAIRED_ID,
 )
-from tests.test_config import TestUtils
-from utils.enum import ScreenType
+from tests.test_config import ScreenType, TestUtils
 
 
 class DisplayMode(IntEnum):
@@ -240,10 +240,11 @@ class BaseAccessLevelTest:
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
 
     def assert_access_to_visible_events(self, event_id: str, auth_page: Page):
-        """Asserts that the user can access the public event only"""
         auth_page.goto('/home')
-        expect(auth_page.locator('.card')).to_have_count(1)
         expect(auth_page.locator(f"div.card:has-text('{event_id}')")).to_be_visible()
+        expect(
+            auth_page.locator(f"div.card:has-text('{PRIVATE_EVENT_ID}')")
+        ).to_have_count(0)
 
     # --------------------------------------------------------------------------
     # Input Screens
@@ -287,12 +288,12 @@ class BaseAccessLevelTest:
                 expect(input_screens_button).to_be_visible()
                 input_screens_button.click()
 
-        card = page.locator(f"div.card:has-text('{screen.name}')")
+        item = page.get_by_test_id('screens-item').filter(has_text=screen.name)
 
         if can_access:
-            expect(card).to_be_visible()
+            expect(item).to_be_visible()
         else:
-            expect(card).not_to_be_visible()
+            expect(item).not_to_be_visible()
 
         if can_access:
             # Test access to the input screen
@@ -352,13 +353,10 @@ class BaseAccessLevelTest:
         row = rows.filter(has_text='ALYX')
         result_cell = row.locator('div.score')
         if not can_enter:
-            expect(result_cell).not_to_have_attribute(
-                'hx-get', re.compile(r'.*result-modal.*')
-            )
+            expect(row).not_to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
             return
 
-        # Try to open the modal
-        expect(result_cell).to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
+        expect(row).to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
         row.click()
         modal = self.auth_page.locator('.modal-dialog')
 
@@ -395,9 +393,7 @@ class BaseAccessLevelTest:
             clear_button.click()
             expect(result_cell).to_have_text('#1')
         else:
-            expect(result_cell).not_to_have_attribute(
-                'hx-get', re.compile(r'.*result-modal.*')
-            )
+            expect(row).not_to_have_attribute('hx-get', re.compile(r'.*result-modal.*'))
 
     def assert_can_set_illegal_moves_via_screen(
         self,
@@ -424,7 +420,7 @@ class BaseAccessLevelTest:
                 )
 
             api_request_context.put(
-                f'/view/add-illegal-move/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}/{self.paired_tournament.id}/{alyx.id}'
+                f'/view/add-illegal-move/1/{PUBLIC_EVENT_ID}/{self.paired_screen.uniq_id}/{self.paired_tournament.id}/{alyx.id}'
             )
             expect(illegal_move_icon).to_be_visible()
             expect(illegal_move_icon).not_to_have_attribute(

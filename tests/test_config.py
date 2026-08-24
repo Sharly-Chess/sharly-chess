@@ -1,14 +1,16 @@
 """Test configuration and utilities."""
 
 import re
+import shutil
 import time
+from enum import StrEnum
 from pathlib import Path
 from typing import Callable, Dict, Optional, Any
 from urllib import parse
 
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
 
-from common import BASE_DIR
+from common import BASE_DIR, TMP_DIR
 from data.board import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
@@ -19,13 +21,32 @@ from database.sqlite.event.event_store import (
     StoredTournament,
 )
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
+from data.screens.screen_types import (
+    CheckInScreenType,
+    InputScreenType,
+    BoardsScreenType,
+    PlayersScreenType,
+    ResultsScreenType,
+    RankingScreenType,
+    ImageScreenType,
+)
 from utils.enum import (
-    ScreenType,
-    Result,
     PlayersScreenPlayerFormat,
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
 )
+
+
+class ScreenType(StrEnum):
+    """Screen-type ids used by the tests to create screens and families."""
+
+    CHECK_IN = CheckInScreenType.static_id()
+    INPUT = InputScreenType.static_id()
+    BOARDS = BoardsScreenType.static_id()
+    PLAYERS = PlayersScreenType.static_id()
+    RESULTS = ResultsScreenType.static_id()
+    RANKING = RankingScreenType.static_id()
+    IMAGE = ImageScreenType.static_id()
 
 
 class TestConfig:
@@ -40,9 +61,6 @@ class TestConfig:
     # NOTE(Amaras): I set to 10s = 10_000 ms because we often had false-positive failures.
     # Hopefully 10s is long enough to ensure all failures are real failure cases.
     expect.set_options(timeout=10_000)
-
-    # Test data configuration
-    TEST_DATA_DIR = Path(__file__).parent / 'tmp'
 
     @classmethod
     def get_test_env_vars(cls) -> Dict[str, str]:
@@ -138,6 +156,23 @@ class TestUtils:
                     raise
                 time.sleep(delay_secs)
 
+    #: A fully-migrated, empty event database, built once and copied for
+    #: every event a test creates. See :meth:`_event_template_file`.
+    _event_template_path: Path | None = None
+
+    @classmethod
+    def _event_template_file(cls) -> Path:
+        """An empty event database to copy, built on first use."""
+        if cls._event_template_path is None:
+            source = EventDatabase('event-template')
+            source.file.unlink(missing_ok=True)
+            source.create()
+            template = TMP_DIR / source.file.name
+            template.unlink(missing_ok=True)
+            source.file.rename(template)
+            cls._event_template_path = template
+        return cls._event_template_path
+
     @classmethod
     def create_event(
         cls,
@@ -159,7 +194,7 @@ class TestUtils:
             }
         else:
             defaults |= {
-                'enabled_plugins': ['ffe', 'pairing_acceleration'],
+                'enabled_plugins': ['ffe'],
             }
 
         # Merge overrides
@@ -177,7 +212,7 @@ class TestUtils:
             )
             cls.check_api_response(res)
         else:
-            database.create()
+            shutil.copyfile(cls._event_template_file(), database.file)
             stored_event = StoredEvent(**data)
             with EventDatabase(uniq_id, write=True) as event_database:
                 event_database.update_stored_event(stored_event)
@@ -225,7 +260,6 @@ class TestUtils:
             'rating': 1,
             'stored_prize_groups': [],
             'plugin_data': None,
-            'pab_value': Result.WIN.value,
         }
 
         # Merge overrides
@@ -305,9 +339,7 @@ class TestUtils:
             'init_set_tournament_id': None,
             'columns': None,
             'font_size': None,
-            'menu_link': None,
             'menu_text': None,
-            'menu': None,
             'timer_id': None,
             'input_exit_button': None,
             'players_show_unpaired': None,
@@ -375,16 +407,14 @@ class TestUtils:
         overrides = overrides or {}
 
         # Provide defaults
-        defaults = {
+        defaults: dict[str, Any] = {
             'id': None,
             'uniq_id': uniq_id,
             'name': uniq_id,
             'tournament_id': tournament.id,
             'columns': None,
             'font_size': None,
-            'menu_link': True,
             'menu_text': '',
-            'menu': '@input',
             'timer_id': None,
             'input_exit_button': None,
             'players_show_unpaired': None,

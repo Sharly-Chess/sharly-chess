@@ -1,0 +1,49 @@
+{% extends '../../common/admin_cards_container.html' %}
+
+{% set collection = get_admin_collection_spec('menus') %}
+{% set collection_view_mode = get_admin_collection_view_mode('menus') %}
+{% set collection_show_details = get_admin_collection_show_details('menus') %}
+{% set collection_url = url_for('admin-event-menus-tab', event_uniq_id=admin_event.uniq_id) %}
+
+{% block top_left_nav %}
+    {{ admin_macros.admin_title(
+        _('Menus'),
+        'screens-menus' if client.can_manage_screens else ''
+    ) }}
+{% endblock %}
+
+{% block top_right_nav %}
+    {% if client.can_manage_screens %}
+        {% include '/admin/common/collection_controls.html' %}
+        <button
+            class="btn btn-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-menu-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+            hx-trigger="click, SC_Plus from:body"
+        >
+            <i class="bi-plus-square pe-1"></i>
+            {{ _('Create a menu') }}
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block cards_container_cards %}
+    {% with
+        items=admin_menus,
+        empty_message=_('No menus'),
+        sortable=false,
+        show_details=collection_show_details
+    %}
+        {% include '/admin/common/collection.html' %}
+    {% endwith %}
+    {% if not admin_menus and client.can_manage_screens %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <p>{{ _('Menus group screens together so users can navigate between them.') }}</p>
+            <p>{{ _('Add screens, multi-screens or whole screen types to a menu, then reorder them as you like.') }}</p>
+            <p>{{ _('Create a menu now to get started.') }}</p>
+        </div>
+    {% endif %}
+{% endblock %}

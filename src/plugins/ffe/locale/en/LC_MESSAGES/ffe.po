@@ -42,6 +42,14 @@ msgstr ""
 msgid "At least one league is expected."
 msgstr ""
 
+#, python-brace-format
+msgid "At most 3 men allowed on the roster ({n} listed)."
+msgstr ""
+
+#, python-brace-format
+msgid "At most 3 women allowed on the roster ({n} listed)."
+msgstr ""
+
 msgid "Auto-upload disabled"
 msgstr ""
 
@@ -54,7 +62,13 @@ msgstr "B - Leisure"
 msgid "Back"
 msgstr ""
 
+msgid "Berlin"
+msgstr ""
+
 msgid "Black pairings are supposed to have an opponent"
+msgstr ""
+
+msgid "Board differentials"
 msgstr ""
 
 msgid "Buchholz"
@@ -64,6 +78,9 @@ msgid "Buchholz cut"
 msgstr ""
 
 msgid "By default, tournaments are not visible on the FFE site."
+msgstr ""
+
+msgid "Bye"
 msgstr ""
 
 msgid "Cheating complaint"
@@ -84,16 +101,33 @@ msgstr ""
 msgid "Club Arbiter"
 msgstr ""
 
+msgid "Compares the tied teams on the sum of their differentials on board 1; those still level are then compared on board 2, and so on down the boards (FFE rules §4.4.a)."
+msgstr ""
+
 msgid "Connection French Chess Federation"
 msgstr ""
 
 msgid "Consult the logs for more details."
 msgstr ""
 
+#, python-brace-format
+msgid "Could not download [{url}], error code {code}."
+msgstr ""
+
+#, python-brace-format
+msgid "Could not download [{url}]: {error}."
+msgstr ""
+
 msgid "Cut *** TIE BREAK VARIATION"
 msgstr "Cut"
 
 msgid "DD/MM/YYYY"
+msgstr ""
+
+msgid "Departmental phase"
+msgstr ""
+
+msgid "Division"
 msgstr ""
 
 msgid "Download fees"
@@ -110,6 +144,9 @@ msgstr ""
 msgid "E.g.: %(string)s"
 msgstr ""
 
+msgid "Each board's score is multiplied by a coefficient — the top board by N, the next by N-1, and so on down to the bottom board by 1 — then summed across all rounds. Rewards results on the higher boards (FFE rules §11.1)."
+msgstr ""
+
 msgid "Edit the properties of the tournament."
 msgstr ""
 
@@ -119,6 +156,7 @@ msgstr ""
 msgid "Elite Arbiter (level 2)"
 msgstr ""
 
+#, python-brace-format
 msgid "Exclude: {values}"
 msgstr ""
 
@@ -126,6 +164,9 @@ msgid "Expired FFE licence"
 msgstr ""
 
 msgid "FFE"
+msgstr ""
+
+msgid "FFE 4-board team cup. 5-player roster cap, max Elo 1800 per player, mixed-system schedule (Swiss / Molter / round-robin)."
 msgstr ""
 
 msgid "FFE Form:"
@@ -137,6 +178,12 @@ msgstr ""
 msgid "FFE Licence no. *** LICENCE NUMBER"
 msgstr "FFE Licence no."
 
+msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team matches, mixed Suisse / Molter / round-robin schedule. Roster must consist of women players only."
+msgstr ""
+
+msgid "FFE Women championship (N1F / N2F)"
+msgstr ""
+
 msgid "FFE arbiter title"
 msgstr "Titre d'arbitre FFE"
 
@@ -147,10 +194,6 @@ msgid "FFE certification number not defined."
 msgstr ""
 
 msgid "FFE certification number:"
-msgstr ""
-
-#, python-format
-msgid "FFE certification number: %(ffe_id)d"
 msgstr ""
 
 msgid "FFE database (local)"
@@ -171,7 +214,14 @@ msgstr ""
 msgid "FFE licence B (leisure)"
 msgstr ""
 
+#, python-brace-format
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
+msgstr ""
+
+msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
+msgstr ""
+
+msgid "FFE pairing sheet"
 msgstr ""
 
 msgid "FFE password not defined."
@@ -183,6 +233,9 @@ msgstr ""
 msgid "FFE site"
 msgstr ""
 
+msgid "FFE tournament ID:"
+msgstr ""
+
 msgid "FFE upload"
 msgstr ""
 
@@ -190,6 +243,10 @@ msgid "FFE website could not be reached"
 msgstr ""
 
 msgid "FFE website could not be reached."
+msgstr ""
+
+#, python-brace-format
+msgid "FFE {id}"
 msgstr ""
 
 msgid "FIDE ID"
@@ -204,11 +261,16 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+msgid "Final"
+msgstr ""
+
+#, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "For a tournament with {rounds} rounds, the least significant value is removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
 msgstr[0] ""
@@ -226,6 +288,12 @@ msgstr ""
 msgid "Fédération Française des Échecs"
 msgstr ""
 
+msgid "Game points \"for\""
+msgstr ""
+
+msgid "Game points differential"
+msgstr ""
+
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
 msgstr ""
 
@@ -235,30 +303,44 @@ msgstr ""
 msgid "Import Papi file"
 msgstr ""
 
+msgid "Import online FFE tournament"
+msgstr ""
+
 msgid "Incompatible"
+msgstr ""
+
+msgid "Inter-departmental zone phase"
 msgstr ""
 
 msgid "Invalid FFE certification number or password."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
 msgid "JSON file (papi-converter format)"
 msgstr ""
 
+msgid "Jean-Claude Loubatière Cup"
+msgstr ""
+
 msgid "Last upload"
 msgstr ""
 
+#, python-brace-format
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
@@ -280,6 +362,9 @@ msgstr ""
 msgid "Leagues (FFE)"
 msgstr ""
 
+msgid "Leave empty tables for fixed boards:"
+msgstr ""
+
 msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."
 
@@ -295,7 +380,13 @@ msgstr ""
 msgid "Licence:"
 msgstr ""
 
+msgid "Lowest own average rating"
+msgstr ""
+
 msgid "Make visible on FFE site"
+msgstr ""
+
+msgid "Match lost by forfeit, counted as 0 match points."
 msgstr ""
 
 msgid "Max. teams per league:"
@@ -310,6 +401,9 @@ msgstr ""
 msgid "Minimum FFE licence required (only applies to players of the FRA federation)."
 msgstr ""
 
+msgid "Mixed Cup"
+msgstr ""
+
 msgid "Modified"
 msgstr ""
 
@@ -319,9 +413,27 @@ msgstr "N - Expired"
 msgid "Name"
 msgstr ""
 
+msgid "Nationale 1 Féminine"
+msgstr ""
+
+msgid "Nationale 2 Féminine, inter-departmental zone phase"
+msgstr ""
+
+msgid "Nationale 2 Féminine, second phase"
+msgstr ""
+
+#, python-brace-format
+msgid "Need at least 2 men on the roster ({n} listed)."
+msgstr ""
+
+#, python-brace-format
+msgid "Need at least 2 women on the roster ({n} listed)."
+msgstr ""
+
 msgid "Never uploaded"
 msgstr ""
 
+#, python-brace-format
 msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr ""
 
@@ -332,6 +444,10 @@ msgid "No changes detected since the last upload."
 msgstr ""
 
 msgid "No internet connection"
+msgstr ""
+
+#, python-brace-format
+msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
 msgstr ""
 
 msgid "No tournament configured for FFE upload."
@@ -346,6 +462,9 @@ msgstr ""
 msgid "Ongoing"
 msgstr ""
 
+msgid "Online FFE tournament"
+msgstr ""
+
 msgid "Open Arbiter (level 1)"
 msgstr ""
 
@@ -358,10 +477,47 @@ msgstr ""
 msgid "Page of the tournament on the FFE website."
 msgstr ""
 
+msgid "Papi export does not support bonus / penalty points, which this tournament uses."
+msgstr "Papi export does not support bonus / penalty points, which this tournament uses."
+
+msgid "Papi export is not available for team events."
+msgstr ""
+
+#, python-brace-format
+msgid "Papi export only supports the standard (1 / 0.5 / 0) or \"3 points for a win\" (3 / 1 / 0) game-point scales. Current values: {win} / {draw} / {loss}."
+msgstr ""
+
+#, python-brace-format
+msgid "Papi export requires the standings to be ranked on the points first. This tournament ranks on [{tie_break}] before them, which the Papi format cannot represent."
+msgstr ""
+
 msgid "Papi file"
 msgstr ""
 
 msgid "Pending"
+msgstr ""
+
+msgid "Phase"
+msgstr ""
+
+msgid "Phase 2"
+msgstr ""
+
+msgid "Phase 2 (a single team qualifies)"
+msgstr ""
+
+msgid "Phase 2 (two teams qualify)"
+msgstr ""
+
+msgid "Phase 3"
+msgstr ""
+
+#, python-brace-format
+msgid "Player rating above {cap}: {names}."
+msgstr ""
+
+#, python-brace-format
+msgid "Player without an A (competition) FFE licence: {names}."
 msgstr ""
 
 msgid "Players:"
@@ -370,15 +526,24 @@ msgstr ""
 msgid "Please select a file."
 msgstr ""
 
+msgid "Public page of the tournament."
+msgstr ""
+
+#, python-brace-format
 msgid "Ranking by league after round #{round}"
 msgstr ""
 
 msgid "Replace the player to update this field."
 msgstr ""
 
+#, python-brace-format
+msgid "Roster must consist of women players only: {names}."
+msgstr ""
+
 msgid "Rules successfully uploaded."
 msgstr ""
 
+#, python-brace-format
 msgid "Rules upload failed for tournament [{tournaments}]."
 msgid_plural "Rules upload failed for tournaments [{tournaments}]."
 msgstr[0] ""
@@ -402,6 +567,9 @@ msgstr ""
 msgid "Select the writer"
 msgstr ""
 
+msgid "Sets whether the Swiss complementary rules apply — only the N2F zone phase plays with them."
+msgstr ""
+
 msgid "Some of the tie-break values will not appear in the results on the FFE website."
 msgstr ""
 
@@ -412,6 +580,12 @@ msgid "Standard"
 msgstr ""
 
 msgid "Statuses"
+msgstr ""
+
+msgid "Sum over every round of (points for − points against), where each match score is floored at 0 before the subtraction. Byes count the awarded score against nothing."
+msgstr ""
+
+msgid "Sum over every round of the team's points for — each match score floored at 0. FFE Loubatière Cup rules §4.4.a."
 msgstr ""
 
 msgid "T1 Cover page"
@@ -444,13 +618,20 @@ msgstr ""
 msgid "The FFE always uses the FIDE rating when available."
 msgstr ""
 
+#, python-brace-format
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr ""
 
+#, python-brace-format
 msgid "The Papi format does not support result [{result}]."
 msgstr ""
 
+#, python-brace-format
 msgid "The [{tie_break}] tie-break as implemented in Papi."
+msgstr ""
+
+#, python-brace-format
+msgid "The [{variation}] pairing system is not recognized by the FFE, which derives acceleration from the ratings: the pairings displayed on the FFE website may differ."
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
@@ -459,7 +640,17 @@ msgstr ""
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
 msgstr ""
 
+msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
+msgstr ""
+
+msgid "This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
+msgstr ""
+
 msgid "Tournament"
+msgstr ""
+
+#, python-brace-format
+msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
 msgid "Tournament exempt from registration fees."
@@ -498,19 +689,25 @@ msgstr ""
 msgid "Trainee:"
 msgstr ""
 
+msgid "Transfer"
+msgstr ""
+
 msgid "Unknown league."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown player ID [{player_id}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown value (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown value [{value}]"
 msgstr ""
 
-msgid "Unrated *** SINGULAR"
+msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
 msgstr "Unrated"
 
 msgid "Up to date"
@@ -544,6 +741,12 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
+msgid "When enabled, a fixed board number leaves its natural table empty and keeps the same board numbering as the FFE website. When disabled, tables are renumbered so that no table is left empty."
+msgstr ""
+
+msgid "Won both of the first two matches"
+msgstr ""
+
 msgid "Writer:"
 msgstr ""
 
@@ -574,8 +777,21 @@ msgstr ""
 msgid "tournament most likely marked as finished on the FFE website"
 msgstr ""
 
+#, python-brace-format
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{n} forfeited board above a board on which a game was played, counted as -1."
+msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "{n} game lost by forfeit, counted as -1."
+msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
 

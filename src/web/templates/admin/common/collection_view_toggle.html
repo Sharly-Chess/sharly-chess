@@ -1,0 +1,30 @@
+<div class="btn-group collection-view-toggle" role="group" aria-label="{{ _('View mode') }}">
+    <button
+        class="btn {% if collection_view_mode.value == 'list' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+        type="button"
+        title="{{ _('List view') }}"
+        aria-label="{{ _('List view') }}"
+        aria-pressed="{{ 'true' if collection_view_mode.value == 'list' else 'false' }}"
+        hx-get="{{ collection_url }}"
+        hx-vals='{"collection_view": "list"}'
+        hx-target="body"
+        hx-push-url="false"
+        hx-indicator="#please-wait"
+    >
+        <i class="bi-list-ul"></i>
+    </button>
+    <button
+        class="btn {% if collection_view_mode.value == 'cards' %}btn-primary{% else %}btn-outline-primary{% endif %}"
+        type="button"
+        title="{{ _('Card view') }}"
+        aria-label="{{ _('Card view') }}"
+        aria-pressed="{{ 'true' if collection_view_mode.value == 'cards' else 'false' }}"
+        hx-get="{{ collection_url }}"
+        hx-vals='{"collection_view": "cards"}'
+        hx-target="body"
+        hx-push-url="false"
+        hx-indicator="#please-wait"
+    >
+        <i class="bi-grid-3x3-gap-fill"></i>
+    </button>
+</div>

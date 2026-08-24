@@ -1,8 +1,8 @@
 from database.sqlite.event.event_store import StoredTournament
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
-from tests.test_config import TestUtils
-from utils.enum import Result, ScreenType
+from tests.test_config import ScreenType, TestUtils
+from utils.enum import Result
 
 
 EVENT_ID = 'event-test-family-screen'
@@ -32,7 +32,7 @@ class TestFamilyScreensFunctionality:
 
     def test_create_and_delete_family_screen(self, page: Page):
         page.goto(f'/event/{EVENT_ID}/families')
-        TestUtils.button_by_text(page, 'Create a screen family').click()
+        TestUtils.button_by_text(page, 'Create a multi-screen').click()
         TestUtils.button_by_text(page, 'Results entry').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
@@ -40,13 +40,15 @@ class TestFamilyScreensFunctionality:
         name = 'Test family'
         modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
-        card = page.locator(f"div.card:has-text('{name}')")
-        expect(card).to_be_visible()
+        item = page.get_by_test_id('families-item').filter(has_text=name)
+        expect(item).to_be_visible()
 
-        button = card.locator('button[hx-get*="delete"]')
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
+        expect(
+            page.get_by_test_id('families-item').filter(has_text=name)
+        ).not_to_be_attached()
 
     def test_results_entry_family_by_parts(
         self,

@@ -1,7 +1,12 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('families') %}
+{% set collection_view_mode = get_admin_collection_view_mode('families') %}
+{% set collection_show_details = get_admin_collection_show_details('families') %}
+{% set collection_url = url_for('admin-event-families-tab', event_uniq_id=admin_event.uniq_id) %}
+
 {% block top_left_nav %}
-    {{ admin_macros.admin_title(_('Families'), 'screens-families') }}
+    {{ admin_macros.admin_title(_('Multi-Screens'), 'screens-multi-screens') }}
     <script>
         preparePrintModal()
     </script>
@@ -9,24 +14,7 @@
 
 {% block top_right_nav %}
     {% if client.can_manage_screens %}
-        {% with id='show-details', name='show_details', show=show_details %}
-            <div
-                class="form-check form-switch d-inline-block pe-3"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
-            >
-                <input
-                    hx-get="{{ url_for('admin-event-families-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %}
-                />
-                <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-            </div>
-        {% endwith %}
+        {% include '/admin/common/collection_controls.html' %}
     {% endif %}
     {% include '/admin/common/screens_config_button.html' %}
     <span
@@ -34,7 +22,7 @@
         {% if not admin_event.tournaments_by_id %}
             {{ macros.tooltip_attributes(
                 'info',
-                _('You must create a tournament before creating a screen family.'),
+                _('You must create a tournament before creating a multi-screen.'),
                 'left'
             ) }}
         {% endif %}
@@ -49,7 +37,7 @@
             {% endif %}
         >
             <i class="bi-plus-square pe-1"></i>
-            {{ _('Create a screen family') }}
+            {{ _('Create a multi-screen') }}
         </button>
         <ul class="dropdown-menu">
             {% for screen_type in family_screen_types %}
@@ -76,29 +64,22 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row gy-2 gx-3">
-        {% if admin_event.families_by_id %}
-            {% for family in admin_event.sorted_families %}
-                {% include 'family_card.html' %}
-            {% endfor %}
-        {% else %}
-            <div class="mx-auto" style="max-width: 500px;">
-                <h5 class="mt-2 my-5 text-center">
-                    {{ _('No screen families') }}
-                </h5>
-                <p>
-                    {{ _('Families are used to split a large amount of information across multiple screens.') }}
-                </p>
-                <p>
-                    {{ _('You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically.') }}
-                </p>
-                <p>
-                    {{ _('Unlike single Screens, families can only be used to display information about a single tournament.') }}
-                </p>
-                <p>
-                    {{ _('Create a family now to get started.') }}
-                </p>
-            </div>
-        {% endif %}
-    </div>
+    {% with
+        items=admin_event.sorted_families,
+        empty_message=_('No multi-screens'),
+        sortable=false,
+        show_details=collection_show_details
+    %}
+        {% include '/admin/common/collection.html' %}
+    {% endwith %}
+    {% if not admin_event.families_by_id %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <p>{{ _('Multi-Screens are used to split a large amount of information across multiple screens.') }}</p>
+            <p>
+                {{ _('You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically.') }}
+            </p>
+            <p>{{ _('Unlike single Screens, multi-screens can only be used to display information about a single tournament.') }}</p>
+            <p>{{ _('Create a multi-screen now to get started.') }}</p>
+        </div>
+    {% endif %}
 {% endblock %}

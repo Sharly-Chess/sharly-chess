@@ -33,10 +33,14 @@ from plugins.utils import (
     PluginData,
     NavDataTransferItem,
     Plugin,
+    TournamentConnectionField,
 )
+from web.admin.collection import ListColumn
 from web.controllers.base_controller import BaseController
+from utils.enum import EventType
 
 if TYPE_CHECKING:
+    from data.event import Event
     from data.player import TournamentPlayer, Player
     from data.tournament import Tournament
     from database.sqlite.event.event_store import (
@@ -44,6 +48,7 @@ if TYPE_CHECKING:
         StoredTournament,
         StoredPlayer,
     )
+    from web.admin.collection import AdminCollectionSpec
 
 logger = get_logger()
 
@@ -71,6 +76,7 @@ class SCEPluginHooks:
         event: Event,
         stored_player: 'StoredPlayer',
         sync_data: SCEPlayerSyncData,
+        database: EventDatabase | None,
     ):
         """Augment a stored player from SCE player shared data."""
 
@@ -97,6 +103,10 @@ class SCEPlugin(Plugin):
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME
+
+    @property
+    def supported_event_types(self) -> list[EventType]:
+        return [EventType.INDIVIDUAL]
 
     @staticmethod
     def static_name() -> str:
@@ -157,6 +167,16 @@ class SCEPlugin(Plugin):
         if PLUGIN_NAME not in stored_event.enabled_plugins:
             return
         stored_event.plugin_data[PLUGIN_NAME] = {}
+        # The plugin is only ever enabled by importing an event from
+        # Sharly-Chess.com, so an enabled plugin means "this event is linked".
+        # The duplicate is not, so disable it: otherwise the copy keeps
+        # advertising itself as linked and the fields controlled from
+        # Sharly-Chess.com stay locked for good.
+        stored_event.enabled_plugins = [
+            plugin_id
+            for plugin_id in stored_event.enabled_plugins
+            if plugin_id != PLUGIN_NAME
+        ]
         event_database.update_stored_event(stored_event)
         for stored_tournament in stored_event.stored_tournaments:
             stored_tournament.plugin_data[PLUGIN_NAME] = {}
@@ -178,12 +198,29 @@ class SCEPlugin(Plugin):
         return {'sce_utils': SCEUtils}
 
     @hookimpl
-    def get_tournament_card_connexion_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
+    ) -> TournamentConnectionField | None:
         if not SCEUtils.get_tournament_plugin_data(tournament).id:
             return None
-        return '/sce_tournament_card_connexion.html'
+        return TournamentConnectionField(
+            label=_('Sharly-Chess.com'),
+            template='/sce_tournament_connection_value.html',
+        )
+
+    @hookimpl
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: 'Event | None',
+    ) -> None:
+        if collection_key != 'tournaments':
+            return
+        collection_spec.ensure_list_column(
+            ListColumn('transfer', label=_('Transfer')),
+            before='actions',
+        )
 
     @hookimpl
     def on_tournament_data_updated(
@@ -289,7 +326,8 @@ class SCEPlugin(Plugin):
         if SCEUtils.resolve_last_sync_status(event).notify_error_status:
             return True
         for tournament in event.tournaments:
-            if SCEUtils.get_tournament_plugin_data(tournament).upload_failure_id:
+            plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            if plugin_data.id and plugin_data.upload_failure_id:
                 return True
         return False
 

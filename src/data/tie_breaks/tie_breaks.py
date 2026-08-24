@@ -33,13 +33,21 @@ from data.tie_breaks.options import (
     EstimatedRatingsTieBreakOption,
     ReversedTieBreakOption,
     LegacyMarch2026TieBreakOption,
+    TeamScoreTieBreakOption,
+)
+from data.tie_breaks.team_records import (
+    TeamMatchType,
+    TeamRecord,
+    adjust_opponent_total,
+    dummy_opponent_score,
 )
 from database.sqlite.event.event_store import StoredTieBreak
 from utils import Utils
-from utils.enum import BoardColor, Result
+from utils.enum import BoardColor, Result, ScoreType
 from utils.option import OptionHandler
 
 if TYPE_CHECKING:
+    from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
     from data.tournament import Tournament
 
 
@@ -62,6 +70,23 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     @abstractmethod
     def base_acronym(self) -> str:
         """Represents the tie-break in rankings documents, screens and tournament cards."""
+
+    @property
+    def picker_acronym(self) -> str:
+        """Acronym shown in the picker when the user is choosing a
+        tie-break type. Defaults to :attr:`base_acronym` — overridden
+        on tie-breaks whose ``base_acronym`` is variant-specific (e.g.
+        ``EMMSB`` for ESB) so the picker still names the *family*
+        rather than one of its variants."""
+        return self.base_acronym
+
+    @property
+    def picker_help_text(self) -> str:
+        """Tooltip shown in the picker. Defaults to
+        :attr:`base_help_text` — overridden on tie-breaks whose
+        ``base_help_text`` describes the configured variant rather
+        than the family."""
+        return self.base_help_text
 
     @property
     def acronym(self) -> str:
@@ -161,6 +186,13 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return False
 
     @property
+    def display_decimals(self) -> int | None:
+        """When set, the value is shown with this many decimal places (e.g.
+        an average rating) rather than the points formatter, which would turn
+        a fractional value into ½/¼/¾ glyphs."""
+        return None
+
+    @property
     def allow_multiple(self) -> bool:
         """Defines if the tie-break can be added multiple time with the same options."""
         return False
@@ -183,9 +215,26 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
 
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
-        """List of pairing systems for which the tie-break is not usable.
-        By default, tie-breaks can be used for all pairing systems."""
+        """Static list of pairing systems for which this tie-break
+        cannot run regardless of its options (e.g. Buchholz vs
+        round-robin). Default: empty.
+
+        For option-driven incompatibilities, override
+        ``TieBreakOption.is_compatible_with`` on the relevant option —
+        :meth:`is_compatible_with` aggregates both."""
         return []
+
+    def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
+        """Whether this tie-break (with its current options) can run on
+        the given pairing system. Combines the static
+        ``forbidden_pairing_systems`` list with each option's
+        ``is_compatible_with`` check."""
+        if pairing_system in self.forbidden_pairing_systems:
+            return False
+        for option_type in self.available_options():
+            if not self._get_option(option_type).is_compatible_with(pairing_system):
+                return False
+        return True
 
     def to_stored_value(self) -> StoredTieBreak:
         return StoredTieBreak(
@@ -212,8 +261,17 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
         games for the last round not determined over the board are considered as draws."""
         tournament: 'Tournament' = player.tournament
+        caching = tournament._compute_caching_enabled
+        cache_key = ('adjusted_score', after_round, adjust_fore)
+        if caching:
+            cached = player._compute_cache.get(cache_key)
+            if cached is not None:
+                return cached
         if tournament.pairing_system == RoundRobinPairingSystem():
-            return player.points_after(after_round)
+            score = player.points_after(after_round)
+            if caching:
+                player._compute_cache[cache_key] = score
+            return score
         score = 0.0
         for round_index, pairing in player.pairings.items():
             if round_index > after_round:
@@ -225,7 +283,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
                 ):
                     score += pairing.result.points(tournament.point_values)
                 else:
-                    score += Result.DRAW.points(tournament.point_values)
+                    score += tournament.draw_points
                 continue
             if pairing.requested_bye:
                 if all(
@@ -233,11 +291,13 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
                     for index, p in player.pairings.items()
                     if round_index < index <= after_round
                 ):
-                    score += Result.DRAW.points(tournament.point_values)
+                    score += tournament.draw_points
                 else:
                     score += pairing.result.points(tournament.point_values)
             else:
                 score += pairing.result.points(tournament.point_values)
+        if caching:
+            player._compute_cache[cache_key] = score
         return score
 
     @classmethod
@@ -249,13 +309,17 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         adjust_fore: bool = False,
         opponent: TournamentPlayer | None = None,
     ) -> float:
+        # Art. 16.4 offers two caps and they are alternatives: a forfeit
+        # (the only unplayed round with a scheduled opponent) caps at
+        # that opponent's adjusted score (16.4.1), every other unplayed
+        # round at the draw value times the rounds (16.4.2).
         if opponent:
             opponent_score = cls.adjusted_score(
                 opponent,
                 after_round=after_round,
                 adjust_fore=adjust_fore,
             )
-            dummy_score = min(dummy_score, opponent_score)
+            return min(dummy_score, opponent_score)
         return min(dummy_score, tournament.rounds * tournament.draw_points)
 
     @cached_property
@@ -266,6 +330,59 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     def is_used_for_team_ranking(self) -> bool:
         # Override this property for tie-breaks that should not be used for team ranking.
         return True
+
+    @property
+    def is_team_tiebreak(self) -> bool:
+        """True for team-only tie-breaks (MPvGP, ESB×4, EDE, SSSC,
+        Berlin) — those with no individual analog. Hidden from the
+        picker in individual events. False (default) on tie-breaks
+        that work in both individual and team mode (BH, FB, AOB, KS,
+        WIN, WON, PS, TPN — see :attr:`supports_team_mode`) and on
+        tie-breaks that are individual-only (DE, SB, ARO, ...)."""
+        return False
+
+    @property
+    def supports_team_mode(self) -> bool:
+        """True if the tie-break can be configured on a team event and
+        produces a per-team value via :meth:`compute_team_value`.
+        Always True on :class:`TeamTieBreak` subclasses (team-only)
+        and on the FIDE MTB26 "both" group — BH, FB, AOB, KS, WIN,
+        WON, PS, TPN — overridden case by case."""
+        return False
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> SupportsFloat:
+        """Compute the tie-break value for one team. Overridden by
+        every tie-break that returns True from
+        :attr:`supports_team_mode`. The default raises so a missing
+        override is caught loudly rather than silently returning
+        zero — :meth:`Tournament.team_standings` guards by checking
+        ``supports_team_mode`` before calling."""
+        raise NotImplementedError(
+            f'{type(self).__name__} does not implement compute_team_value '
+            f'(supports_team_mode returns False).'
+        )
+
+    def _team_score_type(self) -> ScoreType:
+        """Read ``TeamScoreTieBreakOption`` (MP/GP). MP is the FIDE
+        default. Returns ``ScoreType.MATCH_POINTS`` if the option is
+        absent — useful for tie-breaks that may be configured before
+        the option was added."""
+        try:
+            opt = self._get_option(TeamScoreTieBreakOption)
+        except KeyError:
+            return ScoreType.MATCH_POINTS
+        return (
+            ScoreType.GAME_POINTS
+            if opt.value == TeamScoreTieBreakOption.VALUE_GP
+            else ScoreType.MATCH_POINTS
+        )
 
 
 class PlayerRecordTieBreak(TieBreak, ABC):
@@ -289,6 +406,10 @@ class WinsTieBreak(PlayerRecordTieBreak):
     def static_name() -> str:
         return _('Number of wins')
 
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return [TeamScoreTieBreakOption]
+
     @property
     def base_acronym(self) -> str:
         return 'WIN'
@@ -310,6 +431,29 @@ class WinsTieBreak(PlayerRecordTieBreak):
             if round_index <= after_round
         )
 
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> int:
+        # WIN counts rounds with full win-points credited, including
+        # forfeit wins and pairing-allocated byes (FIDE 7.1: "with or
+        # without playing"). Uses MP (FIDE MTB26 table 2 — WIN only
+        # supports :MP for teams; the :GP variant is not in the spec).
+        win_mp = tournament_context.win_mp
+        return sum(
+            1
+            for match in team_record.matches
+            if match.round_ <= after_round and match.own_mp == win_mp
+        )
+
 
 class GamesWonTieBreak(PlayerRecordTieBreak):
     """The number of games a participant won 'over the board'.
@@ -322,6 +466,10 @@ class GamesWonTieBreak(PlayerRecordTieBreak):
     @staticmethod
     def static_name() -> str:
         return _('Number of games won')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return [TeamScoreTieBreakOption]
 
     @property
     def base_acronym(self) -> str:
@@ -338,6 +486,30 @@ class GamesWonTieBreak(PlayerRecordTieBreak):
             pairing.result == Result.WIN
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
+        )
+
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> int:
+        # WON for teams: matches won over the board — excludes forfeit
+        # wins (FIDE 7.2). Pairing-allocated byes also excluded since
+        # they aren't played.
+        win_mp = tournament_context.win_mp
+        return sum(
+            1
+            for match in team_record.matches
+            if match.round_ <= after_round
+            and match.match_type == TeamMatchType.PLAYED
+            and match.own_mp == win_mp
         )
 
 
@@ -419,7 +591,7 @@ class ProgressiveScoresTieBreak(PlayerRecordTieBreak):
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
-        return [CutterTieBreakOption]
+        return [CutterTieBreakOption, TeamScoreTieBreakOption]
 
     @cached_property
     def cutter(self) -> TieBreakCutter:
@@ -450,6 +622,39 @@ class ProgressiveScoresTieBreak(PlayerRecordTieBreak):
     ) -> float:
         return sum(
             player.points_after(r)
+            for r in range(1 + self.cutter.bottom_cut, after_round + 1)
+        )
+
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> float:
+        score_type = self._team_score_type()
+        # Cumulative team MP (or GP) after each round; first ``cutter.bottom_cut``
+        # rounds skipped (FIDE 7.5 cut variant).
+        own_attr = (
+            (lambda m: m.own_mp)
+            if score_type == ScoreType.MATCH_POINTS
+            else (lambda m: m.own_gp)
+        )
+        # Build the running cumulative score per round, then sum from the cut.
+        per_round: dict[int, float] = {}
+        running = 0.0
+        for match in sorted(team_record.matches, key=lambda m: m.round_):
+            if match.round_ > after_round:
+                break
+            running += own_attr(match)
+            per_round[match.round_] = running
+        return sum(
+            per_round.get(r, 0.0)
             for r in range(1 + self.cutter.bottom_cut, after_round + 1)
         )
 
@@ -532,6 +737,71 @@ class StandardPointsTieBreak(PlayerRecordTieBreak):
         return None
 
 
+class PointsTieBreak(PlayerRecordTieBreak):
+    """The points themselves, as a ranking criterion of their own.
+
+    TRF26 record 212 lists the criteria that *define the standings*, and
+    among the tie-break codes it accepts an extra one, ``PTS``, standing
+    for the number of points (the primary score in team competitions).
+    Its position in the list decides the ranking, so ``212 PTS,<rest>``
+    is the classic "points first, then tie-breaks" — the spec notes it is
+    the same as ``202 <rest>`` — while putting it lower lets another
+    criterion outrank the score.
+
+    It is therefore not a tie-break in the C.07 sense and appears in no
+    tie-break table; it exists so that the points can take their place in
+    the ordered list like anything else.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'POINTS'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Points')
+
+    @property
+    def base_acronym(self) -> str:
+        return 'PTS'
+
+    # `is_fide` is left True: it decides the OTHER_ prefix, and PTS is
+    # defined by FIDE in TRF26 itself, so it takes none — even though it
+    # appears in no tie-break table.
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'The points scored in the tournament (the primary score for '
+            'teams). Placed first it ranks the standings as usual; placed '
+            'lower, the criteria above it outrank the score.'
+        )
+
+    @property
+    def allow_multiple(self) -> bool:
+        # Ranking on the same score twice can never separate anyone.
+        return False
+
+    def compute_player_value(
+        self, player: TournamentPlayer, *, after_round: int
+    ) -> float:
+        return player.points_after(after_round)
+
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> float:
+        return team_record.total(tournament_context.primary_score)
+
+
 class PairingNumberTieBreak(PlayerRecordTieBreak):
     """The tournament pairing number in ascending or descending order.
     Default order is ascending.
@@ -582,6 +852,26 @@ class PairingNumberTieBreak(PlayerRecordTieBreak):
         if is_reversed:
             return pairing_number
         return -pairing_number
+
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> int:
+        # TPN for teams reads the team's pairing_number directly.
+        is_reversed = self.get_option_values()[0]
+        if team_record.pairing_number is None:
+            return 0
+        return (
+            team_record.pairing_number if is_reversed else -team_record.pairing_number
+        )
 
 
 class KashdanTieBreak(PlayerRecordTieBreak):
@@ -654,8 +944,8 @@ class OpponentRecordTieBreak(TieBreak, ABC):
 class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
-        """Buchholz depending on which opponents were played,
-        it gives the same results to all players in a RR tournament."""
+        """Buchholz depends on which opponents were played, so it
+        gives the same value to every player in a round-robin."""
         return [RoundRobinPairingSystem()]
 
     @cached_property
@@ -716,6 +1006,8 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
       - PLAYED_MODIFIER: When True, forfeit losses and wins are considered
     played against the scheduled opponent.
       - LEGACY_03_2026: Use the rules effective until March 2026 (legacy).
+      - TEAM_SCORE: In team events, picks MP or GP as the reference
+    score for the team-level computation (FIDE MTB26 ``BH:MP`` / ``BH:GP``).
     See FIDE Handbook C.07.8.1"""
 
     @staticmethod
@@ -732,7 +1024,92 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
             CutterWithMedianTieBreakOption,
             PlayedModifierTieBreakOption,
             LegacyMarch2026TieBreakOption,
+            TeamScoreTieBreakOption,
         ]
+
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> float:
+        top_cut = self.cutter.top_cut
+        bottom_cut = self.cutter.bottom_cut
+        if top_cut + bottom_cut >= after_round:
+            return 0.0
+        score_type = self._team_score_type()
+        # Art. 15.2: with pre-determined pairings, forfeits count as
+        # regular matches — the treatment the /P flag asks for.
+        played_modifier = (
+            self.played_modifier or tournament_context.predetermined_pairings
+        )
+        scores: list[float] = []
+        vur: list[float] = []
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            is_bye = match.match_type in (
+                TeamMatchType.PAB,
+                TeamMatchType.HPB,
+                TeamMatchType.ZPB,
+            )
+            should_add_dummy = (match.unplayed and not played_modifier) or (
+                played_modifier and is_bye
+            )
+            if should_add_dummy:
+                # Art. 16.4.1: a forfeit caps the dummy at the
+                # scheduled opponent's adjusted score; every other
+                # unplayed round caps at draw points × rounds (16.4.2).
+                opponent_adjusted = None
+                if not is_bye and match.opponent_id is not None:
+                    opponent_adjusted = adjust_opponent_total(
+                        all_records[match.opponent_id],
+                        score_type,
+                        after_round=after_round,
+                        draw_mp=tournament_context.draw_mp,
+                        draw_gp=tournament_context.draw_gp,
+                    )
+                value = dummy_opponent_score(
+                    team_record,
+                    score_type,
+                    after_round=after_round,
+                    rounds=tournament_context.rounds,
+                    draw_value=(
+                        tournament_context.draw_mp
+                        if score_type == ScoreType.MATCH_POINTS
+                        else tournament_context.draw_gp
+                    ),
+                    opponent_adjusted=opponent_adjusted,
+                    legacy=self.legacy_03_2026,
+                )
+                if match.voluntary_unplayed:
+                    vur.append(value)
+                else:
+                    scores.append(value)
+                continue
+            assert match.opponent_id is not None
+            opponent = all_records[match.opponent_id]
+            scores.append(
+                adjust_opponent_total(
+                    opponent,
+                    score_type,
+                    after_round=after_round,
+                    draw_mp=tournament_context.draw_mp,
+                    draw_gp=tournament_context.draw_gp,
+                )
+            )
+        vur.sort()
+        scores.sort()
+        combined = vur + scores
+        if top_cut:
+            return sum(combined[bottom_cut:-top_cut])
+        return sum(combined[bottom_cut:])
 
     @cached_property
     def cutter(self) -> TieBreakCutter:
@@ -762,9 +1139,14 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
 
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
+        # Art. 15.2: with pre-determined pairings, forfeits count as
+        # regular games — the treatment the /P flag asks for.
+        played_modifier = (
+            self.played_modifier or tournament.pairing_system.predetermined_pairings
+        )
         for round_index, pairing in pairings.items():
-            should_add_dummy = (pairing.unplayed and not self.played_modifier) or (
-                self.played_modifier
+            should_add_dummy = (pairing.unplayed and not played_modifier) or (
+                played_modifier
                 and pairing.result
                 in (
                     Result.HALF_POINT_BYE,
@@ -828,6 +1210,7 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
             CutterWithMedianTieBreakOption,
             PlayedModifierTieBreakOption,
             LegacyMarch2026TieBreakOption,
+            TeamScoreTieBreakOption,
         ]
 
     @cached_property
@@ -900,6 +1283,91 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
             return sum(scores[bottom_cut:-top_cut])
         return sum(scores[bottom_cut:])
 
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> float:
+        top_cut = self.cutter.top_cut
+        bottom_cut = self.cutter.bottom_cut
+        if top_cut + bottom_cut >= after_round:
+            return 0.0
+        score_type = self._team_score_type()
+        # Art. 15.2: with pre-determined pairings, forfeits count as
+        # regular matches — the treatment the /P flag asks for.
+        played_modifier = (
+            self.played_modifier or tournament_context.predetermined_pairings
+        )
+        scores: list[float] = []
+        vur: list[float] = []
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            is_bye = match.match_type in (
+                TeamMatchType.PAB,
+                TeamMatchType.HPB,
+                TeamMatchType.ZPB,
+            )
+            should_add_dummy = (match.unplayed and not played_modifier) or (
+                played_modifier and is_bye
+            )
+            if should_add_dummy:
+                # Art. 16.4.1: a forfeit caps the dummy at the
+                # scheduled opponent's adjusted score; every other
+                # unplayed round caps at draw points × rounds (16.4.2).
+                opponent_adjusted = None
+                if not is_bye and match.opponent_id is not None:
+                    opponent_adjusted = adjust_opponent_total(
+                        all_records[match.opponent_id],
+                        score_type,
+                        after_round=after_round,
+                        draw_mp=tournament_context.draw_mp,
+                        draw_gp=tournament_context.draw_gp,
+                    )
+                value = dummy_opponent_score(
+                    team_record,
+                    score_type,
+                    after_round=after_round,
+                    rounds=tournament_context.rounds,
+                    draw_value=(
+                        tournament_context.draw_mp
+                        if score_type == ScoreType.MATCH_POINTS
+                        else tournament_context.draw_gp
+                    ),
+                    opponent_adjusted=opponent_adjusted,
+                    legacy=self.legacy_03_2026,
+                )
+                if match.voluntary_unplayed:
+                    vur.append(value)
+                else:
+                    scores.append(value)
+                continue
+            assert match.opponent_id is not None
+            opponent = all_records[match.opponent_id]
+            scores.append(
+                adjust_opponent_total(
+                    opponent,
+                    score_type,
+                    after_round=after_round,
+                    draw_mp=tournament_context.draw_mp,
+                    draw_gp=tournament_context.draw_gp,
+                    adjust_fore=True,
+                )
+            )
+        vur.sort()
+        scores.sort()
+        combined = vur + scores
+        if top_cut:
+            return sum(combined[bottom_cut:-top_cut])
+        return sum(combined[bottom_cut:])
+
 
 class SumOfBuchholzTieBreak(BuchholzTieBreak):
     """The sum of Buchholz scores of the opponents.
@@ -920,6 +1388,7 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
         return [
             ForeModifierTieBreakOption,
             LegacyMarch2026TieBreakOption,
+            TeamScoreTieBreakOption,
         ]
 
     @cached_property
@@ -969,6 +1438,48 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
             if opponent is not None
         )
 
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> float:
+        # Non-FIDE-mandatory: sum (vs AOB's average) of each played
+        # opponent's own team-BH (or team-FB when /F). Mirrors AOB but
+        # without the /N division.
+        sub_options: list[TieBreakOption] = [
+            self._get_option(LegacyMarch2026TieBreakOption)
+        ]
+        try:
+            sub_options.append(self._get_option(TeamScoreTieBreakOption))
+        except KeyError:
+            pass
+        sub_tb: TieBreak = (
+            ForeBuchholzTieBreak(sub_options)
+            if self.fore_modifier
+            else StandardBuchholzTieBreak(sub_options)
+        )
+        return sum(
+            float(
+                sub_tb.compute_team_value(
+                    all_records[match.opponent_id],
+                    all_records,
+                    tournament_context,
+                    after_round=after_round,
+                )
+            )
+            for match in team_record.matches
+            if match.round_ <= after_round
+            and match.played
+            and match.opponent_id is not None
+        )
+
 
 class AverageOfBuchholzTieBreak(BuchholzTieBreak):
     """The average of opponents Buchholz scores.
@@ -989,6 +1500,7 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
         return [
             ForeModifierTieBreakOption,
             LegacyMarch2026TieBreakOption,
+            TeamScoreTieBreakOption,
         ]
 
     @cached_property
@@ -1035,6 +1547,55 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
             for opponent in opponents
             if opponent is not None
         ) / len(opponents)
+
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> float:
+        # AOB for teams: average of each played opponent's own team BH
+        # (FB if Fore modifier). Recurse: build a child Buchholz tie-break
+        # carrying the same team-score option and ask it for each
+        # opponent's value.
+        sub_options: list[TieBreakOption] = [
+            self._get_option(LegacyMarch2026TieBreakOption)
+        ]
+        try:
+            sub_options.append(self._get_option(TeamScoreTieBreakOption))
+        except KeyError:
+            pass
+        sub_tb: TieBreak = (
+            ForeBuchholzTieBreak(sub_options)
+            if self.fore_modifier
+            else StandardBuchholzTieBreak(sub_options)
+        )
+        opponent_records = [
+            all_records[match.opponent_id]
+            for match in team_record.matches
+            if match.round_ <= after_round
+            and match.played
+            and match.opponent_id is not None
+        ]
+        if not opponent_records:
+            return 0.0
+        return sum(
+            float(
+                sub_tb.compute_team_value(
+                    opponent,
+                    all_records,
+                    tournament_context,
+                    after_round=after_round,
+                )
+            )
+            for opponent in opponent_records
+        ) / len(opponent_records)
 
 
 class SonnebornBergerTieBreak(OpponentRecordTieBreak):
@@ -1214,7 +1775,7 @@ class KoyaTieBreak(OpponentRecordTieBreak):
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
-        return [KoyaLimitTieBreakOption]
+        return [KoyaLimitTieBreakOption, TeamScoreTieBreakOption]
 
     @cached_property
     def limit(self) -> int | None:
@@ -1250,10 +1811,10 @@ class KoyaTieBreak(OpponentRecordTieBreak):
         self, player: TournamentPlayer, *, after_round: int
     ) -> float:
         tournament: 'Tournament' = player.tournament
-        win_points = Result.WIN.points(tournament.point_values)
+        win_points = tournament.win_points
         score_limit = 0.5 * win_points * after_round
         if self.limit:
-            draw_points = Result.DRAW.points(tournament.point_values)
+            draw_points = tournament.draw_points
             score_limit += draw_points * self.limit
         pairings: dict[int, Pairing] = {
             round_index: pairing
@@ -1270,14 +1831,43 @@ class KoyaTieBreak(OpponentRecordTieBreak):
                 score += pairing.result.points(tournament.point_values)
         return score
 
+    @property
+    def supports_team_mode(self) -> bool:
+        return True
+
+    def compute_team_value(
+        self,
+        team_record: 'TeamRecord',
+        all_records: dict[int, 'TeamRecord'],
+        tournament_context: 'TeamTieBreakContext',
+        *,
+        after_round: int,
+    ) -> float:
+        score_type = self._team_score_type()
+        # 50% of max possible team score over ``after_round`` matches.
+        # For MP: win_mp × rounds × 0.5. For GP: team_player_count × rounds × 0.5.
+        if score_type == ScoreType.MATCH_POINTS:
+            max_per_round = tournament_context.win_mp
+            half_step = tournament_context.draw_mp
+        else:
+            max_per_round = float(tournament_context.team_player_count)
+            half_step = tournament_context.draw_gp / max(
+                tournament_context.team_player_count, 1
+            )
+        score_limit = 0.5 * max_per_round * after_round
+        if self.limit:
+            score_limit += half_step * self.limit
+        score = 0.0
+        for match in team_record.matches:
+            if match.round_ > after_round or match.opponent_id is None:
+                continue
+            opponent = all_records[match.opponent_id]
+            if opponent.total(score_type) >= score_limit:
+                score += team_record.own_against(match, score_type)
+        return score
+
 
 class OpponentRatingTieBreak(TieBreak, ABC):
-    @property
-    def forbidden_pairing_systems(self) -> list[PairingSystem]:
-        """All the players having played against everyone in a RR,
-        those tie-breaks give the same values for all players."""
-        return [RoundRobinPairingSystem()]
-
     @property
     def category(self) -> TieBreakCategory:
         return RatingCategory()
@@ -1418,7 +2008,7 @@ class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
             score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
-        max_score = len(ratings) * Result.WIN.points(tournament.point_values)
+        max_score = len(ratings) * tournament.win_points
         average = sum(ratings) / len(ratings)
         fractional_score = round(score / max_score, 2)
         bonus = Utils.performance_bonus(fractional_score)

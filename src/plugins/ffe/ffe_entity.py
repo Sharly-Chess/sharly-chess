@@ -26,15 +26,14 @@ from database.sqlite.event.event_store import StoredPlayer
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import PlayerFFELicence
 from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, FFE_LEAGUES
-from plugins.pairing_acceleration.pairing_settings import (
+from data.pairings.settings import (
     AccelerationGroup,
     AccelerationRule,
 )
-from plugins.pairing_acceleration.pairing_variations import (
+from data.pairings.acceleration import (
     Acceleration3GroupsSwissVariation,
 )
 from plugins.utils import PluginUtils
-from utils.enum import Result
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -132,13 +131,16 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
             group=cls.get_player_group(tournament, tournament_player),
             points=tournament_player.points_before(at_round),
             tournament_rounds=tournament.rounds,
-            draw_points=Result.DRAW.points(tournament.point_values),
-            win_points=Result.WIN.points(tournament.point_values),
+            draw_points=tournament.draw_points,
+            win_points=tournament.win_points,
         )
 
     def get_tournament_accelerated_rules(
-        self, rounds: int, draw_points: float, win_points: float
+        self, tournament: Tournament
     ) -> list[AccelerationRule]:
+        rounds = tournament.rounds
+        draw_points = tournament.draw_points
+        win_points = tournament.win_points
         rules: list[AccelerationRule] = []
         # Starting points: Group A - 2, Group B - 1, Group C - 0
         starting_vpoints_by_group = {
@@ -191,7 +193,7 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
     def _get_group_a_tooltip_lines(
         cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
-        win_points = Result.WIN.points(tournament.point_values)
+        win_points = tournament.win_points
         return [
             (cls._rounds_prefix(1, tournament.rounds - 2), 2 * win_points),
             (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
@@ -201,8 +203,8 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
     def _get_detailed_group_tooltip_lines(
         cls, tournament: Tournament, group: AccelerationGroup
     ) -> list[tuple[str, float | None]]:
-        draw_points = Result.DRAW.points(tournament.point_values)
-        win_points = Result.WIN.points(tournament.point_values)
+        draw_points = tournament.draw_points
+        win_points = tournament.win_points
         get_vpoints = partial(
             cls._compute_virtual_points,
             group=group,

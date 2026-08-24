@@ -16,7 +16,6 @@
                 {% for berger_number in range(1, tournament.player_count + 1) %}
                     <th>{{ berger_number }}</th>
                 {% endfor %}
-                <th class="result">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
                 {% for tie_break in tournament.tie_breaks %}
                     <th class="text-nowrap tie-break">{{ tie_break.acronym }}</th>
                 {% endfor %}
@@ -29,7 +28,7 @@
                 >
                     <td class=number">{{ grid_id_by_player_id[player_id] }}</td>
                     {% with player=tournament.tournament_players_by_id[player_id] %}
-                        <td class="player-title">{{ player.title }}</td>
+                        <td class="player-title">{{ player.display_title }}</td>
                         <td class="player">{{ player.full_name }}</td>
                         <td class="federation">{{ player.federation }}</td>
                         <td class="rating">{{ player.rating_str }}</td>
@@ -50,7 +49,6 @@
                             </td>
                         {% endif %}
                     {% endfor %}
-                    <td class="result">{{ document.grid_results_points(results) }}</td>
                     {% with player=tournament.tournament_players_by_id[player_id] %}
                         {% for tie_break_value in player.tie_break_values %}
                             <td class="tie-break text-nowrap">

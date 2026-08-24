@@ -68,6 +68,29 @@ FFE_LEAGUES: dict[str, str] = {
 
 
 class FFEUtils:
+    @staticmethod
+    def supports_ffe_transfer(tournament: Tournament) -> bool:
+        """Whether the FFE-site transfer (Papi upload and its fields) is
+        offered for this tournament. The transfer is Papi-based, so every
+        individual tournament qualifies; among the team systems only the
+        Scheveningen, which is uploaded as an individual Swiss."""
+        from data.pairings.scheveningen import ScheveningenPairingSystem
+
+        if not tournament.event.is_team_event:
+            return True
+        return isinstance(tournament.pairing_system, ScheveningenPairingSystem)
+
+    @staticmethod
+    def event_supports_ffe_transfer(event: Event) -> bool:
+        """Whether any tournament of the event offers the FFE-site transfer
+        — the test for the event-level transfer entry."""
+        if not event.is_team_event:
+            return True
+        return any(
+            FFEUtils.supports_ffe_transfer(tournament)
+            for tournament in event.tournaments
+        )
+
     @classmethod
     def resolve_auto_upload(cls, tournament: Tournament) -> bool:
         if not cls.get_event_plugin_data(tournament.event).auto_upload:
@@ -144,6 +167,10 @@ class FFEUtils:
     @classmethod
     def tournament_url(cls, ffe_id: int) -> str:
         return f'https://echecs.asso.fr/FicheTournoi.aspx?Ref={ffe_id}'
+
+    @classmethod
+    def player_url(cls, ffe_id: int) -> str:
+        return f'https://echecs.asso.fr/FicheJoueur.aspx?Id={ffe_id}'
 
     @classmethod
     def resolve_tournament_upload_statuses(
@@ -316,16 +343,19 @@ class FFEArbiterTitle(StrEnum):
 @dataclass
 class FfeEventPluginData(PluginData):
     auto_upload: bool = True
+    leave_fixed_board_holes: bool = True
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
             auto_upload=stored_value.get('auto_upload', False),
+            leave_fixed_board_holes=stored_value.get('leave_fixed_board_holes', True),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
             'auto_upload': self.auto_upload,
+            'leave_fixed_board_holes': self.leave_fixed_board_holes,
         }
 
     @classmethod
@@ -335,12 +365,25 @@ class FfeEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
+        if 'ffe_event_fields' in data:
+            leave_fixed_board_holes = WebContext.form_data_to_bool(
+                data, 'ffe_leave_fixed_board_holes'
+            )
+        elif previous_object is not None:
+            leave_fixed_board_holes = previous_object.leave_fixed_board_holes
+        else:
+            leave_fixed_board_holes = True
+        plugin_data = cls(leave_fixed_board_holes=leave_fixed_board_holes)
         if previous_object:
-            return previous_object
-        return cls()
+            plugin_data.auto_upload = previous_object.auto_upload
+        return plugin_data
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        return {}
+        return WebContext.values_dict_to_form_data(
+            {
+                'ffe_leave_fixed_board_holes': self.leave_fixed_board_holes,
+            }
+        )
 
 
 @dataclass
@@ -399,7 +442,7 @@ class FfeTournamentPluginData(PluginData):
             password=WebContext.form_data_to_str(data, 'ffe_password'),
         )
         if previous_object:
-            if action != 'clone':
+            if action != 'clone' and plugin_data.ffe_id and plugin_data.password:
                 plugin_data.last_upload_at = previous_object.last_upload_at
                 plugin_data.last_upload_attempt_at = (
                     previous_object.last_upload_attempt_at

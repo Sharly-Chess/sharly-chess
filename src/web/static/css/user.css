@@ -12,6 +12,12 @@
 
 .screen-set-row {
     flex-wrap: nowrap;
+    /* Centre the whole group of columns so the inter-column divider falls in
+       the gutter between the tables (screen middle for two columns), rather
+       than being pushed against the next table by per-column auto margins.
+       No effect on full-width (equal ``col``) layouts, which have no free
+       space to distribute. */
+    justify-content: center;
 }
 
 .user-screen-content {
@@ -84,17 +90,38 @@
     font-weight: bold;
 }
 .grid-striped .board-row,
-.grid-striped .player-row {
+.grid-striped .player-row,
+.grid-striped .result-row {
     display: contents;
 }
 .grid-striped .board-row > div,
-.grid-striped .player-row > div {
+.grid-striped .player-row > div,
+.grid-striped .result-row > div {
     padding: 0.25rem 0.25rem;
     border-bottom: 1px solid var(--bs-border-color);
 }
-.grid-striped > .board-row:nth-of-type(odd) > * {
+/* Only the truncating (text-truncate) player/tournament cells may shrink below
+   their content, so their names ellipsize; the fixed columns (time, board,
+   score) keep their content width and never overlap the next column. */
+.grid-striped .result-row > .text-truncate {
+    min-width: 0;
+}
+.grid-striped > .board-row:nth-of-type(odd) > *,
+.grid-striped > .player-row:nth-of-type(odd) > *,
+.grid-striped > .result-row:nth-of-type(odd) > * {
     color: var(--bs-table-striped-color);
     background-color: rgba(0, 0, 0, 0.05);
+}
+.board-color-chip {
+    display: inline-block;
+    width: 0.65em;
+    height: 0.65em;
+    margin-right: 0.35em;
+    border: 1px solid #555;
+    background-color: #fff;
+}
+.board-color-chip.black {
+    background-color: #000;
 }
 .input-screen .board-row.editable {
     cursor: pointer;
@@ -119,7 +146,8 @@
 .illegal-moves-cell.last_check_in_updated, .illegal-moves-cell.last_illegal_move_updated {
     color: red !important;
 }
-.board-row.last_result_updated > * {
+.board-row.last_result_updated > *,
+.board-row.last_result_updated .text-muted {
     color: red !important;
 }
 /*
@@ -139,6 +167,10 @@
 */
 .screen-menu {
     font-size: x-large;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.1rem 0.5rem;
 }
 .screen-menu-item {
     color: red;
@@ -148,6 +180,33 @@
     color: white;
 }
 .screen-menu-item:hover {
+    background-color: #ffff00;
+    color: #000080;
+}
+.screen-menu-group {
+    position: relative;
+    display: inline-block;
+}
+.screen-submenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1050;
+    background-color: var(--bs-body-bg, #ffffff);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding: 0.25rem 0;
+    min-width: max-content;
+}
+.screen-submenu-item {
+    color: red;
+}
+.screen-submenu-item.selected {
+    background-color: red;
+    color: white;
+}
+.screen-submenu-item:hover {
     background-color: #ffff00;
     color: #000080;
 }

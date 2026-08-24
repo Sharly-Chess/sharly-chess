@@ -57,7 +57,9 @@ v_pos = 10.0
 [white_info]
 text = """
 {% with player = pairing.white_player %}
-    {% if player.club %}
+    {% if player.team_name %}
+        {{ player.team_name }}
+    {% elif player.club %}
         {{ player.club }}
     {% endif %}<br/>
     {{ player.federation }}
@@ -73,16 +75,14 @@ v_pos = 6.0
 [white_color]
 text = """
 {% with player = pairing.white_player %}
-    {{ player.color }}
+<span style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background-color: {{ player.color_background }}; color: {{ player.color_text }};">{{ player.color }}</span>
 {% endwith %}
 """
 font_size = 16
 width = 7
 height = 7
 bold = true
-background_color = "#fff"
-color = "#000"
-css = "border: solid 2px #000; padding-top: 3px;"
+css = "border: solid 2px #000;"
 h_align = "left"
 v_align = "top"
 text_align = "center"
@@ -119,7 +119,9 @@ v_pos = 10.0
 [black_info]
 text = """
 {% with player = pairing.black_player %}
-    {% if player.club %}
+    {% if player.team_name %}
+        {{ player.team_name }}
+    {% elif player.club %}
         {{ player.club }}
     {% endif %}<br/>
     {{ player.federation }}
@@ -135,16 +137,14 @@ v_pos = 6.0
 [black_color]
 text = """
 {% with player = pairing.black_player %}
-    {{ player.color }}
+<span style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background-color: {{ player.color_background }}; color: {{ player.color_text }};">{{ player.color }}</span>
 {% endwith %}
 """
 font_size = 16
 width = 7
 height = 7
 bold = true
-background_color = "#000"
-color = "#fff"
-css = "border: solid 2px #000; padding-top: 3px;"
+css = "border: solid 2px #000;"
 h_align = "right"
 v_align = "top"
 text_align = "center"

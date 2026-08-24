@@ -5,7 +5,7 @@ from typing import Any, Annotated
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXRequest, HTMXTemplate
@@ -89,8 +89,8 @@ class FRASchoolsController(BaseEventAdminController):
     async def htmx_fra_schools_search(
         self,
         request: HTMXRequest,
-        fra_schools_search: str,
-        page: int = 0,
+        fra_schools_search: FromQuery[str],
+        page: FromPath[int] = 0,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         database = FRASchoolsDatabase()
@@ -155,7 +155,7 @@ class FRASchoolsController(BaseEventAdminController):
     async def fra_schools_add_school_form(
         self,
         request: HTMXRequest,
-        fra_school_id: str,
+        fra_school_id: FromQuery[str],
     ) -> Template:
         web_context = FraSchoolsWebContext(request)
         data = FRASchool().to_form_data() | {
@@ -173,7 +173,7 @@ class FRASchoolsController(BaseEventAdminController):
     async def fra_schools_update_schools_form(
         self,
         request: HTMXRequest,
-        fra_school_id: int,
+        fra_school_id: FromQuery[int],
     ) -> Template:
         web_context = FraSchoolsWebContext(request, fra_school_id)
         data = web_context.get_fra_school().to_form_data() | {
@@ -235,7 +235,7 @@ class FRASchoolsController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        fra_school_id: int,
+        fra_school_id: FromPath[int],
     ) -> Template:
         web_context = FraSchoolsWebContext(request, fra_school_id)
         current_school = web_context.get_fra_school()
@@ -268,7 +268,7 @@ class FRASchoolsController(BaseEventAdminController):
     async def fra_schools_delete_school(
         self,
         request: HTMXRequest,
-        fra_school_id: int,
+        fra_school_id: FromPath[int],
     ) -> Template:
         web_context = FraSchoolsWebContext(request, fra_school_id)
         event = web_context.get_admin_event()

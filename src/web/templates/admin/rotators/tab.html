@@ -1,5 +1,10 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('rotators') %}
+{% set collection_view_mode = get_admin_collection_view_mode('rotators') %}
+{% set collection_show_details = get_admin_collection_show_details('rotators') %}
+{% set collection_url = url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id) %}
+
 {% block top_left_nav %}
     {{ admin_macros.admin_title(
         _('Rotators'),
@@ -12,31 +17,14 @@
 
 {% block top_right_nav %}
     {% if client.can_manage_screens %}
-        {% with id='show-details-on-rotator-list', name='show_details', show=show_details %}
-            <div
-                class="form-check form-switch d-inline-block pe-2"
-                {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
-            >
-                <input
-                    hx-get="{{ url_for('admin-event-rotators-tab', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    class="form-check-input"
-                    type="checkbox"
-                    id="{{ id }}"
-                    {% if show %}checked{% endif %}
-                />
-                <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-            </div>
-        {% endwith %}
+        {% include '/admin/common/collection_controls.html' %}
         {% include '/admin/common/screens_config_button.html' %}
         <span
             {{ macros.tooltip_attributes(
                 'info',
                 _('Add a rotator to the event.')
                 if admin_event.screens_by_uniq_id else
-                _('You must create a screen or a family of screens before creating a rotator.'),
+                _('You must create a screen or a multi-screen before creating a rotator.'),
                 'top')
             }}
         >
@@ -61,44 +49,20 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row gy-2 gx-3">
-        {% if admin_rotators %}
-            {% for rotator in admin_rotators %}
-                {% with
-                    card_url=(
-                        '' if client.can_manage_screens or not rotator.rotating_screens_by_id
-                        else url_for(
-                            'user-rotator',
-                            event_uniq_id=admin_event.uniq_id,
-                            rotator_id=rotator.id,
-                            rotator_screen_index=0
-                        )
-                    ),
-                    card_class='border-danger' if rotator.private else ''
-                %}
-                    {% include 'rotator_card.html' %}
-                {% endwith %}
-            {% endfor %}
-        {% else %}
-            <div class="mx-auto" style="max-width: 500px;">
-                <h5 class="mt-2 my-5 text-center">
-                    {{ _('No rotators') }}
-                </h5>
-                {% if client.can_manage_screens %}
-                    <p>
-                        {{ _('Too much information to display on a single projector?') }}
-                    </p>
-                    <p>
-                        {{ _('Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event.') }}
-                    </p>
-                    <p>
-                        {{ _("Input screens can't be part of rotators.")  }}
-                    </p>
-                    <p>
-                        {{ _('Create a rotator now to get started.') }}
-                    </p>
-                {% endif %}
-            </div>
-        {% endif %}
-    </div>
+    {% with
+        items=admin_rotators,
+        empty_message=_('No rotators'),
+        sortable=false,
+        show_details=collection_show_details
+    %}
+        {% include '/admin/common/collection.html' %}
+    {% endwith %}
+    {% if not admin_rotators and client.can_manage_screens %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <p>{{ _('Too much information to display on a single projector?') }}</p>
+            <p>{{ _('Rotators allow you to rotate through multiple screens, or multi-screens, to display plenty of information at your event.') }}</p>
+            <p>{{ _("Input screens can't be part of rotators.") }}</p>
+            <p>{{ _('Create a rotator now to get started.') }}</p>
+        </div>
+    {% endif %}
 {% endblock %}

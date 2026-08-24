@@ -1,0 +1,532 @@
+{% import '/common/macros.j2' as macros with context %}
+<div
+    class="modal-dialog modal-dialog-scrollable admin-team-lineups-modal"
+    style="--bs-modal-width: min(95vw, 720px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Lineups — %(team)s', team=admin_team.name) }}
+            </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
+        </div>
+        <div class="modal-body">
+            {% if not rounds_data %}
+                <div class="text-muted">
+                    {{ _('This team has no rounds to show a line-up for.') }}
+                </div>
+            {% else %}
+                <div class="d-flex align-items-center flex-wrap gap-2 mb-3">
+                    <label class="form-label mb-0">{{ _('Round:') }}</label>
+                    {# One button group per run of rounds sharing a line-up,
+                       so which rounds follow which is read off the row
+                       instead of being hidden in a tooltip. #}
+                    {% for group in round_groups %}
+                        {% set group_index = loop.index0 %}
+                        {# The mark is a sibling of the button group, not a
+                           child of it: Bootstrap rounds the outer corners of
+                           the first and last .btn, and anything trailing
+                           inside would cost the last button its corners. #}
+                        <div class="lineup-round-group" data-group="{{ group_index }}">
+                            {% set first_round = group[0]['round'] %}
+                            {% set last_round = group[-1]['round'] %}
+                            <div class="btn-group btn-group-sm" role="group">
+                                {% for round_info in group %}
+                                    {% set round_num = round_info['round'] %}
+                                    <button
+                                        type="button"
+                                        class="lineup-round-button btn {{ 'btn-primary' if round_num == default_round else 'btn-outline-primary' }}"
+                                        data-round="{{ round_num }}"
+                                        data-group="{{ group_index }}"
+                                    >
+                                        {{ round_num }}
+                                    </button>
+                                {% endfor %}
+                            </div>
+                            {# One mark for the group: its rounds share a
+                               line-up, so they are in or out of roster order
+                               together. #}
+                            <i
+                                class="lineup-round-mark bi-recycle"
+                                {{ macros.tooltip_attributes(
+                                    '',
+                                    _(
+                                        'The line-up for round %(round)d is not in the same order as the team roster.',
+                                        round=first_round
+                                    ) if first_round == last_round else _(
+                                        'The line-up for rounds %(first_round)d-%(last_round)d is not in the same order as the team roster.',
+                                        first_round=first_round,
+                                        last_round=last_round
+                                    ),
+                                    'top',
+                                ) }}
+                                {% if not group | selectattr('out_of_order') | list %}
+                                    style="display:none"
+                                {% endif %}
+                            ></i>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% for round_info in rounds_data %}
+                    {% set round_num = round_info['round'] %}
+                    {% set slots = round_info['slots'] %}
+                    {% set bench = round_info['bench'] %}
+                    {% set editable = round_info['editable'] %}
+                    <div
+                        class="lineup-round-section"
+                        data-round="{{ round_num }}"
+                        data-editable="{{ '1' if editable else '0' }}"
+                        {% if round_num != default_round %}style="display:none"{% endif %}
+                    >
+                        {% if not editable %}
+                            <div class="alert alert-info py-1 px-2 small mb-2">
+                                {{ _(
+                                    'This round has been paired, so its line-up is what stands on its boards. If you really want to edit this line-up: go to the Pairings tab, select round #%(round)d and open this modal again.',
+                                    round=round_num
+                                ) }}
+                            </div>
+                        {% endif %}
+                        {# Shown for any round out of roster order, whether or
+                           not the tournament asks to be warned: the round's
+                           button is marked either way, and this is what says
+                           what the mark means. #}
+                        <div
+                            class="lineup-order-warning alert alert-warning py-1 px-2 small mb-2"
+                            {% if not round_info['out_of_order'] %}style="display:none"{% endif %}
+                        >
+                            <i class="bi-recycle"></i>
+                            <span class="flex-grow-1">
+                                {{ _(
+                                    'The line-up for round %(round)d is not in the same order as the team roster.',
+                                    round=round_num
+                                ) }}
+                            </span>
+                            {% if editable %}
+                                <button
+                                    type="button"
+                                    class="lineup-reset-order btn btn-sm py-0 text-nowrap"
+                                >
+                                    {{ _('Reset order') }}
+                                </button>
+                            {% endif %}
+                        </div>
+                        <form
+                            class="lineup-form"
+                            hx-patch="{{ url_for(
+                                'admin-team-lineup-save',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=admin_team.id,
+                                round_=round_num,
+                            ) }}"
+                            hx-target="body"
+                            hx-trigger="lineup-changed"
+                            hx-indicator="#please-wait"
+                        >
+                            {% set roster_ids = roster_players|map(attribute='id')|list %}
+                            {% if round_num > 1 and not round_info['is_paired'] %}
+                                {# The checkbox is UI only; the form submits the
+                                   intent through this hidden input, kept in sync
+                                   by JS — so the value sent is unambiguous (a
+                                   bare checkbox is omitted when unticked, which
+                                   made the save misread the intent). #}
+                                <input
+                                    type="hidden"
+                                    name="use_previous"
+                                    class="lineup-use-previous-value"
+                                    value="{{ '1' if round_info['lineup_source'] != 'explicit' else '0' }}"
+                                >
+                                <div class="form-check mb-2">
+                                    <input
+                                        class="form-check-input lineup-use-previous"
+                                        type="checkbox"
+                                        id="use-previous-r{{ round_num }}"
+                                        {% if round_info['lineup_source'] != 'explicit' %}checked{% endif %}
+                                    >
+                                    <label class="form-check-label" for="use-previous-r{{ round_num }}">
+                                        {{ _(
+                                            "Use the previous round's line-up "
+                                            "(untick to set this round)"
+                                        ) }}
+                                    </label>
+                                </div>
+                                <div class="lineup-previous-note text-muted small mb-2">
+                                    {{ _(
+                                        "This round will use round #%(round)d's "
+                                        "line-up when paired.",
+                                        round=round_num - 1
+                                    ) }}
+                                </div>
+                            {% endif %}
+                            <div class="lineup-editor">
+                            {% if editable %}
+                                <p class="text-muted small">
+                                    {{ _(
+                                        'Drag players between the board slots and the substitutes bench. '
+                                        'Empty slots become holes in the lineup.'
+                                    ) }}
+                                </p>
+                            {% endif %}
+                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
+                                {{ _('Boards') }}
+                            </h6>
+                            <div class="d-flex flex-column gap-1 mb-3">
+                                {% for slot_index in range(team_player_count) %}
+                                    {% set slot_player = slots[slot_index] if slot_index < slots|length else none %}
+                                    {% if slot_index < color_pattern|length %}
+                                        {% set chip_color = color_pattern[slot_index]|upper %}
+                                    {% else %}
+                                        {% set chip_color = 'W' if slot_index % 2 == 0 else 'B' %}
+                                    {% endif %}
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong class="text-muted" style="width:1.5rem;">
+                                            {{ slot_index + 1 }}
+                                        </strong>
+                                        <span class="color-chip color-chip-{{ chip_color|lower }}"></span>
+                                        <div
+                                            class="lineup-slot border border-secondary rounded flex-grow-1 d-flex align-items-center px-2"
+                                            data-slot-index="{{ slot_index }}"
+                                            data-round="{{ round_num }}"
+                                            style="min-height: 38px;"
+                                        >
+                                            {% if slot_player %}
+                                                <div
+                                                    class="lineup-card {{ 'cursor-grab' if editable }} d-flex align-items-center gap-2 py-1"
+                                                    data-player-id="{{ slot_player.id }}"
+                                                    data-roster-index="{{ roster_ids.index(slot_player.id) if slot_player.id in roster_ids else -1 }}"
+                                                >
+                                                    {% if editable %}<i class="bi-grip-horizontal text-muted"></i>{% endif %}
+                                                    {% if slot_player.id in roster_ids %}
+                                                        <span class="text-muted small">
+                                                            #{{ roster_ids.index(slot_player.id) + 1 }}
+                                                        </span>
+                                                    {% endif %}
+                                                    <span>
+                                                        {{ slot_player.full_name }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <input
+                                            type="hidden"
+                                            name="slot_{{ slot_index }}"
+                                            value="{{ slot_player.id if slot_player else '' }}"
+                                        >
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
+                                {{ _('Substitutes Bench') }}
+                            </h6>
+                            <div
+                                class="lineup-bench border border-secondary rounded p-2 d-flex flex-column gap-1"
+                                data-round="{{ round_num }}"
+                                style="min-height: 38px;"
+                            >
+                                {% for player in bench %}
+                                    <div
+                                        class="lineup-card {{ 'cursor-grab' if editable }} d-flex align-items-center gap-2 py-1 px-2"
+                                        data-player-id="{{ player.id }}"
+                                        data-roster-index="{{ roster_ids.index(player.id) if player.id in roster_ids else -1 }}"
+                                    >
+                                        {% if editable %}<i class="bi-grip-horizontal text-muted"></i>{% endif %}
+                                        {% if player.id in roster_ids %}
+                                            <span class="text-muted small">
+                                                #{{ roster_ids.index(player.id) + 1 }}
+                                            </span>
+                                        {% endif %}
+                                        <span>{{ player.full_name }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endfor %}
+                <script>
+                    (function () {
+                        $('.lineup-round-button').on('click', function () {
+                            const round = String($(this).data('round'));
+                            $('.lineup-round-section').each(function () {
+                                $(this).toggle($(this).data('round') == round);
+                            });
+                            $('.lineup-round-button').each(function () {
+                                const active = String($(this).data('round')) === round;
+                                $(this).toggleClass('btn-primary', active);
+                                $(this).toggleClass('btn-outline-primary', !active);
+                            });
+                        });
+                        function syncSlotInputs(form) {
+                            form.querySelectorAll('.lineup-slot').forEach(function (slot) {
+                                const idx = slot.dataset.slotIndex;
+                                const card = slot.querySelector('.lineup-card');
+                                const pid = card ? card.dataset.playerId : '';
+                                const input = form.querySelector(
+                                    'input[name="slot_' + idx + '"]'
+                                );
+                                if (input) input.value = pid;
+                            });
+                        }
+                        function enforceSlotMaxOne(slotEl, droppedCard) {
+                            // If the slot already has a card before the drop,
+                            // send the existing one to the bench. Sortable.js
+                            // drops the new card without removing the old
+                            // one, so we see ≥2 children right after onAdd.
+                            const cards = slotEl.querySelectorAll('.lineup-card');
+                            if (cards.length <= 1) return;
+                            const other = Array.from(cards).find(
+                                c => c !== droppedCard
+                            );
+                            if (!other) return;
+                            const bench = slotEl.closest('.lineup-round-section')
+                                .querySelector('.lineup-bench');
+                            if (bench) bench.appendChild(other);
+                        }
+                        const byRoster = function (c) {
+                            return parseInt(c.dataset.rosterIndex || '-1', 10);
+                        };
+                        // Show the warning when the board cards (top to
+                        // bottom, holes skipped) are not in ascending roster
+                        // order.
+                        function checkRosterOrder(section) {
+                            const slots = Array.from(
+                                section.querySelectorAll('.lineup-slot')
+                            ).sort(function (a, b) {
+                                return parseInt(a.dataset.slotIndex, 10)
+                                    - parseInt(b.dataset.slotIndex, 10);
+                            });
+                            let last = -1;
+                            let outOfOrder = false;
+                            slots.forEach(function (s) {
+                                const card = s.querySelector('.lineup-card');
+                                if (!card) return;
+                                const idx = byRoster(card);
+                                if (idx < 0) return;
+                                if (idx < last) outOfOrder = true;
+                                last = idx;
+                            });
+                            const warning = section.querySelector('.lineup-order-warning');
+                            if (warning) {
+                                warning.style.display = outOfOrder ? '' : 'none';
+                            }
+                            // The round's button states the same fact, so it
+                            // follows the drag too: left alone it would go on
+                            // marking a round just put back in order.
+                            // The mark belongs to the round's group, whose
+                            // other rounds inherit this very line-up — so
+                            // editing here settles it for all of them.
+                            const button = document.querySelector(
+                                '.lineup-round-button[data-round="'
+                                + section.dataset.round + '"]'
+                            );
+                            const group = button
+                                ? document.querySelector(
+                                    '.lineup-round-group[data-group="'
+                                    + button.dataset.group + '"]'
+                                )
+                                : null;
+                            const mark = group
+                                ? group.querySelector('.lineup-round-mark')
+                                : null;
+                            if (mark) {
+                                mark.style.display = outOfOrder ? '' : 'none';
+                            }
+                        }
+                        // Put the players already on boards back in roster
+                        // order. Only the order: a slot left empty stays
+                        // empty, since a hole is a player the captain has
+                        // stood down, not a mistake to tidy away.
+                        function resetRosterOrder(section, form) {
+                            const occupied = Array.from(
+                                section.querySelectorAll('.lineup-slot')
+                            ).sort(function (a, b) {
+                                return parseInt(a.dataset.slotIndex, 10)
+                                    - parseInt(b.dataset.slotIndex, 10);
+                            }).filter(function (s) {
+                                return s.querySelector('.lineup-card');
+                            });
+                            const cards = occupied.map(function (s) {
+                                return s.querySelector('.lineup-card');
+                            });
+                            cards.sort(function (a, b) {
+                                const first = byRoster(a);
+                                const second = byRoster(b);
+                                // Anyone off the roster keeps to the back
+                                // rather than heading the order.
+                                if (first < 0 || second < 0) {
+                                    return (first < 0) - (second < 0);
+                                }
+                                return first - second;
+                            });
+                            // Detach first: appending into a slot that still
+                            // holds its old card would leave two there.
+                            cards.forEach(function (card) { card.remove(); });
+                            occupied.forEach(function (slot, index) {
+                                slot.appendChild(cards[index]);
+                            });
+                            syncSlotInputs(form);
+                            checkRosterOrder(section);
+                            htmx.trigger(form, 'lineup-changed');
+                        }
+                        document.querySelectorAll('.lineup-round-section').forEach(function (section) {
+                            // A played round is on show, not up for editing:
+                            // no drag, no reset, nothing that would save.
+                            if (section.dataset.editable !== '1') return;
+                            const round = section.dataset.round;
+                            const group = 'lineup-r' + round;
+                            const form = section.querySelector('.lineup-form');
+                            const slots = section.querySelectorAll('.lineup-slot');
+                            const bench = section.querySelector('.lineup-bench');
+                            // "Use previous round's lineup" toggle: when ticked,
+                            // hide the editor (the round inherits) and show the
+                            // note; saving drops any stored lineup. Unticking
+                            // reveals the editor (prefilled with the inherited
+                            // lineup) and stores it as this round's own.
+                            const usePrev = section.querySelector('.lineup-use-previous');
+                            const usePrevValue = section.querySelector('.lineup-use-previous-value');
+                            const editor = section.querySelector('.lineup-editor');
+                            const prevNote = section.querySelector('.lineup-previous-note');
+                            function applyUsePrevious() {
+                                if (!usePrev) return;
+                                if (usePrevValue) usePrevValue.value = usePrev.checked ? '1' : '0';
+                                if (editor) editor.style.display = usePrev.checked ? 'none' : '';
+                                if (prevNote) prevNote.style.display = usePrev.checked ? '' : 'none';
+                            }
+                            const resetOrder = section.querySelector('.lineup-reset-order');
+                            if (resetOrder) {
+                                resetOrder.addEventListener('click', function () {
+                                    // On a round that takes the previous
+                                    // round's line-up, the reorder has to make
+                                    // the line-up this round's own. Left
+                                    // inheriting, the save would drop what was
+                                    // just reordered — and the reorder would
+                                    // in any case belong to the round the
+                                    // line-up came from, reaching back over
+                                    // rounds the captain did not touch.
+                                    if (usePrev && usePrev.checked) {
+                                        usePrev.checked = false;
+                                        applyUsePrevious();
+                                    }
+                                    resetRosterOrder(section, form);
+                                });
+                            }
+                            if (usePrev) {
+                                applyUsePrevious();
+                                usePrev.addEventListener('change', function () {
+                                    applyUsePrevious();
+                                    htmx.trigger(form, 'lineup-changed');
+                                });
+                            }
+                            // Stamp containers with a stable origin id so the
+                            // "max-1" swap rule can find where a card came
+                            // from.
+                            let counter = 0;
+                            section.querySelectorAll('.lineup-slot, .lineup-bench').forEach(function (c) {
+                                c.dataset.originId = 'orig-r' + round + '-' + (counter++);
+                            });
+                            function tagOrigin(evt) {
+                                if (evt && evt.item && evt.from) {
+                                    evt.item.dataset.originContainer = evt.from.dataset.originId || '';
+                                }
+                            }
+                            slots.forEach(function (slot) {
+                                new Sortable(slot, {
+                                    group: group,
+                                    animation: 0,
+                                    sort: false,
+                                    draggable: '.lineup-card',
+                                    forceFallback: true,
+                                    ghostClass: 'lineup-ghost',
+                                    chosenClass: 'lineup-chosen',
+                                    dragClass: 'lineup-drag',
+                                    onStart: tagOrigin,
+                                    onEnd: function () {
+                                        section.querySelectorAll('.lineup-slot').forEach(function (s) {
+                                            s.classList.remove('lineup-slot-hot');
+                                            s.querySelectorAll('.lineup-card').forEach(function (c) {
+                                                c.style.removeProperty('display');
+                                                c.style.removeProperty('opacity');
+                                            });
+                                        });
+                                    },
+                                    onMove: function (evt) {
+                                        section.querySelectorAll('.lineup-slot').forEach(function (s) {
+                                            const hot = s === evt.to;
+                                            s.classList.toggle('lineup-slot-hot', hot);
+                                            s.querySelectorAll('.lineup-card').forEach(function (c) {
+                                                if (hot && !c.classList.contains('lineup-ghost')) {
+                                                    c.style.setProperty('display', 'none', 'important');
+                                                } else {
+                                                    c.style.removeProperty('display');
+                                                    c.style.removeProperty('opacity');
+                                                }
+                                            });
+                                        });
+                                        return true;
+                                    },
+                                    onAdd: function (evt) {
+                                        enforceSlotMaxOne(slot, evt.item);
+                                        syncSlotInputs(form);
+                                        checkRosterOrder(section);
+                                        htmx.trigger(form, 'lineup-changed');
+                                    },
+                                    onUpdate: function () {
+                                        syncSlotInputs(form);
+                                        checkRosterOrder(section);
+                                        htmx.trigger(form, 'lineup-changed');
+                                    },
+                                });
+                            });
+                            new Sortable(bench, {
+                                group: group,
+                                animation: 0,
+                                sort: false,
+                                draggable: '.lineup-card',
+                                forceFallback: true,
+                                ghostClass: 'lineup-ghost',
+                                chosenClass: 'lineup-chosen',
+                                dragClass: 'lineup-drag',
+                                onStart: tagOrigin,
+                                onEnd: function () {
+                                    section.querySelectorAll('.lineup-slot').forEach(function (s) {
+                                        s.classList.remove('lineup-slot-hot');
+                                        s.querySelectorAll('.lineup-card').forEach(function (c) {
+                                            c.style.removeProperty('display');
+                                            c.style.removeProperty('opacity');
+                                        });
+                                    });
+                                },
+                                onMove: function (evt) {
+                                    section.querySelectorAll('.lineup-slot').forEach(function (s) {
+                                        const hot = s === evt.to;
+                                        s.classList.toggle('lineup-slot-hot', hot);
+                                        s.querySelectorAll('.lineup-card').forEach(function (c) {
+                                            if (hot && !c.classList.contains('lineup-ghost')) {
+                                                c.style.setProperty('display', 'none', 'important');
+                                            } else {
+                                                c.style.removeProperty('display');
+                                                c.style.removeProperty('opacity');
+                                            }
+                                        });
+                                    });
+                                    return true;
+                                },
+                                onAdd: function () {
+                                    syncSlotInputs(form);
+                                    checkRosterOrder(section);
+                                    htmx.trigger(form, 'lineup-changed');
+                                },
+                            });
+                        });
+                    })();
+                </script>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

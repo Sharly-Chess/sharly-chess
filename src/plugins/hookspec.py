@@ -1,6 +1,6 @@
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Any, TYPE_CHECKING, Optional
+from typing import Any, Hashable, TYPE_CHECKING, Optional
 
 import apluggy as pluggy  # type: ignore
 
@@ -11,6 +11,7 @@ from plugins.utils import (
     NavDataTransferItem,
     PluginData,
     AccountPluginData,
+    TournamentConnectionField,
 )
 from utils.enum import (
     Result,
@@ -24,18 +25,26 @@ if TYPE_CHECKING:
     from data.account import Account
     from data.columns.player_datasheet import DatasheetColumn
     from data.columns.board_table import BoardColumn
+    from data.columns.column import ColumnUsage, Column
     from data.columns.player_table import TournamentPlayerTableColumn
     from data.columns.players_tab import PlayersTabColumn
+    from data.criteria.player_filter_options import PlayerFilterOption
+    from data.criteria.player_filters import PlayerFilter
+    from data.criteria.tournament_criteria import TournamentCriterion
+    from data.event import Event
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.input_output.trf.trf_data import TrfNationalPlayer
-    from data.pairings.variations import SwissVariation
+    from data.pairings.systems import PairingSystem
+    from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import (
         Player,
+        PlayerProfileLink,
         TournamentPlayer,
         PlayerRatingAndType,
         PlayerRatingType,
         PlayerCategory,
     )
+    from plugins.migration import PluginMigrationManager
     from data.print_documents import (
         PrintDocument,
         PrintOption,
@@ -44,12 +53,16 @@ if TYPE_CHECKING:
         IndividualTeamType,
     )
     from data.print_documents.place_cards.data import PlaceCardPlayer
-    from data.criteria.player_filter_options import PlayerFilterOption
-    from data.criteria.player_filters import PlayerFilter
+    from data.prohibited_pairings import (
+        ProhibitedPairingDimension,
+        RoundProhibitedPairingGroup,
+    )
+    from data.rule_sets import RuleSet
+    from data.screens.screen_types import ScreenType
+    from data.teams.team_affiliation import TeamAffiliationSource
     from data.tie_breaks import TieBreak, TieBreakOption
     from data.tie_breaks.system_sets import SystemTieBreakSet
     from data.tournament import Tournament
-    from data.event import Event
     from database.sqlite.event.event_store import StoredPlayer
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import (
@@ -57,9 +70,8 @@ if TYPE_CHECKING:
         StoredTournament,
     )
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
-    from plugins.migration import PluginMigrationManager
+    from web.admin.collection import AdminCollectionSpec
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
-    from data.columns.column import ColumnUsage, Column
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
@@ -84,6 +96,15 @@ class AppHookSpecs:
     @hookspec
     def get_base_admin_template_context(self) -> dict[str, Any]:
         """Provide additional template context for AdminWebContext"""
+
+    @hookspec
+    def extend_admin_collection(
+        self,
+        collection_key: str,
+        collection_spec: 'AdminCollectionSpec',
+        event: Optional['Event'],
+    ):
+        """Extend a request-scoped admin card/list collection."""
 
     # ---------------------------------------------------------------------------------
     # Input-Output
@@ -147,10 +168,13 @@ class AppHookSpecs:
         """Validate the additional player form fields. Add the errors to the *errors* dict."""
 
     @hookspec
-    def are_players_duplicates(
-        self, stored_player: 'StoredPlayer', player: 'Player'
-    ) -> bool:
-        """Check if the stored player is a duplicate of the other."""
+    def get_player_duplicate_key(
+        self, stored_player: 'StoredPlayer'
+    ) -> tuple[str, Hashable] | None:
+        """Return a namespaced key used to detect plugin-specific duplicates.
+
+        The first item is the plugin ID. Return ``None`` when no key applies.
+        """
 
     @hookspec
     async def augment_player_after_search(
@@ -168,6 +192,14 @@ class AppHookSpecs:
         place_card_player: 'PlaceCardPlayer',
     ):
         """Add plugin specific data to a player before printing place cards."""
+
+    @hookspec
+    def insert_player_profile_links(
+        self,
+        player: 'Player',
+        links: list['PlayerProfileLink'],
+    ):
+        """Add federation identifiers to the identity line of a player's"""
 
     @hookspec(firstresult=True)
     def get_player_rating(
@@ -286,12 +318,13 @@ class AppHookSpecs:
         """Get the context used for the templates provided for the tournament page."""
 
     @hookspec
-    def get_tournament_card_connexion_template(
+    def get_tournament_connection_field(
         self, tournament: 'Tournament'
-    ) -> str | None:
-        """Add a template path for a connexion to display on the tournament cards.
-        These templates are displayed in priority in the card.
-        Return None if the connexion is undefined."""
+    ) -> TournamentConnectionField | None:
+        """Describe a tournament's connection to an external service.
+
+        These fields are grouped in the tournament card and list Transfer
+        section. Return None if the connection is undefined."""
 
     @hookspec
     def get_tournament_card_fields_template(self) -> str:
@@ -325,6 +358,42 @@ class AppHookSpecs:
     ) -> str | None:
         """Warning message for the pairing settings of a tournament."""
 
+    @hookspec(firstresult=True)
+    def leave_fixed_board_holes(self, tournament: 'Tournament') -> bool | None:
+        """Whether a fixed board number should leave the table it displaces
+        empty (and duplicate the number it lands on) instead of numbering the
+        round compactly, to stay compatible with the reference file format.
+        ``None`` when the plugin has no opinion."""
+
+    @hookspec
+    def get_prohibited_pairing_dimensions(
+        self,
+    ) -> list['ProhibitedPairingDimension']:
+        """Extra prohibited-pairing grouping dimensions a plugin
+        contributes (e.g. a federation "ligue", a school). Each buckets
+        a tournament's members so that members sharing a key must not be
+        paired. Core already ships club / federation / team-group."""
+
+    @hookspec
+    def get_team_affiliation_sources(self) -> list['TeamAffiliationSource']:
+        """Extra ways to derive a team's affiliation from its players (e.g. a
+        federation league, a school), offered by the teams tab's
+        "fill affiliations" action. Each resolves a team to an affiliation
+        name or ``None``. Core already ships the players' common club."""
+
+    @hookspec
+    def get_round_prohibited_pairing_groups(
+        self, tournament: 'Tournament', round_: int
+    ) -> list['RoundProhibitedPairingGroup']:
+        """Prohibited-pairing groups a plugin contributes *dynamically* for a
+        specific ``round_`` — typically computed from results so far (a static
+        affiliation dimension can't express them). Each is a
+        :class:`RoundProhibitedPairingGroup` (``name`` / ``is_hard`` /
+        ``member_ids`` — team ids in a team tournament, player ids otherwise);
+        groups of fewer than two members are ignored. The named groups appear
+        in the prohibited-pairings modal and are merged into the round's
+        snapshot alongside the dimension- and manual-derived groups."""
+
     @hookspec
     def signal_tournament_set(
         self, event: 'Event', stored_tournament: 'StoredTournament'
@@ -340,6 +409,12 @@ class AppHookSpecs:
     @hookspec
     def load_tournament_check_in_data(self, tournament: 'Tournament'):
         """Load the check-in data of a tournament."""
+
+    @hookspec
+    def insert_tournament_criteria_types(
+        self, criteria_types: list[type['TournamentCriterion']]
+    ):
+        """Provide additional tournament criteria types."""
 
     # ---------------------------------------------------------------------------------
     # Upload
@@ -370,6 +445,15 @@ class AppHookSpecs:
     @hookspec(firstresult=True)
     def get_default_players_screen_columns(self) -> int | None:
         """Return default number of columns of the Players Screens."""
+
+    @hookspec
+    def insert_screen_types(self, screen_types: list[type['ScreenType']]):
+        """Provide extra screen types."""
+
+    @hookspec
+    def get_screen_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin screen values.
+        Also provide the ID of the plugin."""
 
     # ---------------------------------------------------------------------------------
     # Printing
@@ -442,10 +526,32 @@ class AppHookSpecs:
         """Provide extra system tie-break sets for the swiss pairing system."""
 
     @hookspec
+    def insert_team_swiss_system_tie_break_sets(
+        self, system_sets: list['SystemTieBreakSet']
+    ):
+        """Provide extra system tie-break sets for the team swiss pairing system."""
+
+    @hookspec
+    def insert_team_round_robin_system_tie_break_sets(
+        self, system_sets: list['SystemTieBreakSet']
+    ):
+        """Provide extra system tie-break sets for the team round-robin pairing system."""
+
+    @hookspec
     def add_tie_breaks_to_trf_acronym_mapping(
         self, tie_break_by_acronym: dict[str, 'TieBreak']
     ):
         """AAdd tie-breaks whose base acronym does not necessarily match to a manual acronym mapping."""
+
+    # ---------------------------------------------------------------------------------
+    # Rule sets
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+        """Provide extra official rule sets (federation cups etc.) that
+        an arbiter can pick when creating a tournament. The picker in
+        the tournament modal filters by ``RuleSet.event_type``."""
 
     # ---------------------------------------------------------------------------------
     # Pairings
@@ -456,6 +562,17 @@ class AppHookSpecs:
         self, variation_types: list[type['SwissVariation']]
     ):
         """Provide extra swiss pairing variations."""
+
+    @hookspec
+    def insert_team_pairing_systems(self, pairing_systems: list[type['PairingSystem']]):
+        """Provide extra team-event pairing systems"""
+
+    @hookspec
+    def insert_team_pairing_variations(
+        self, variations: list[type['PairingVariation']]
+    ):
+        """Provide extra team-event pairing variations to expose alongside
+        the core Team Swiss / Team Round-Robin variations."""
 
     # ---------------------------------------------------------------------------------
     # Prizes

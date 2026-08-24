@@ -20,6 +20,11 @@ set -e
 # Parse command line arguments
 BUILD_ONLY=false
 SIGN_ONLY=false
+# --submit-only: build, sign, create+sign the DMG, then submit to the Apple
+# notary WITHOUT --wait, save the submission id, and exit. Apple's queue can take
+# hours; a later job awaits + staples so build minutes don't stack on the wait
+# and the 6h runner cap is spent on Apple alone.
+SUBMIT_ONLY=false
 while [[ $# -gt 0 ]]; do
     case $1 in
         --build-only)
@@ -28,9 +33,12 @@ while [[ $# -gt 0 ]]; do
         --sign-only)
             SIGN_ONLY=true
             ;;
+        --submit-only)
+            SUBMIT_ONLY=true
+            ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--build-only|--sign-only]"
+            echo "Usage: $0 [--build-only|--sign-only|--submit-only]"
             exit 1
             ;;
     esac
@@ -41,6 +49,8 @@ if [ "$BUILD_ONLY" = true ]; then
     echo "=== macOS Build Script (Build Only Mode - Sign but Skip Notarization) ==="
 elif [ "$SIGN_ONLY" = true ]; then
     echo "=== macOS Sign Script (Sign Only Mode) ==="
+elif [ "$SUBMIT_ONLY" = true ]; then
+    echo "=== macOS Sign & Async-Submit Script (submit to notary, don't wait) ==="
 else
     echo "=== macOS Sign & Notarize Script (using Environment Variables) ==="
 fi
@@ -150,7 +160,10 @@ if [ -f "$APP_BUNDLE/Contents/Info.plist" ]; then
     plutil -replace CFBundleName -string "SharlyChess" "$APP_BUNDLE/Contents/Info.plist"
     # Disable App Nap
     plutil -replace NSAppSleepDisabled -bool YES "$APP_BUNDLE/Contents/Info.plist"
-    echo "Updated Info.plist with custom icon and names"
+    # Set the version so Sparkle can compare the running app against the appcast.
+    plutil -replace CFBundleVersion -string "$VERSION" "$APP_BUNDLE/Contents/Info.plist"
+    plutil -replace CFBundleShortVersionString -string "$VERSION" "$APP_BUNDLE/Contents/Info.plist"
+    echo "Updated Info.plist with custom icon, names and version"
 else
     echo "Warning: Info.plist not found in app bundle"
 fi
@@ -194,7 +207,18 @@ fi
 echo "Certificate imported successfully."
 
 echo "--- Section 5: Signing Application Files ---"
-APP_SIGNING_IDENTITY="Developer ID Application"
+# Resolve the exact identity by its SHA-1 hash. The keychain may hold more than
+# one "Developer ID Application" cert (an expired/previous team, a renewal), and
+# signing by the generic name is ambiguous — codesign then refuses. Match the
+# team's org name to pick the right one, and sign by hash so it is unambiguous.
+SIGNING_MATCH="${MACOS_SIGNING_IDENTITY_MATCH:-Sharly Chess}"
+APP_SIGNING_IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" \
+    | grep "Developer ID Application" | grep "$SIGNING_MATCH" | head -1 | awk '{print $2}')
+if [ -z "$APP_SIGNING_IDENTITY" ]; then
+    echo "✗ No Developer ID Application identity matching '$SIGNING_MATCH' found in $KEYCHAIN_PATH"
+    security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+    exit 1
+fi
 echo "Using signing identity: $APP_SIGNING_IDENTITY"
 
 ENTITLEMENTS_FILE="scripts/export/macos/entitlements.plist"
@@ -223,6 +247,69 @@ find "$APP_BUNDLE" -type f -perm +111 ! -name "*.app" | while read -r file; do
     fi
 done
 
+# --- Embed and sign Sparkle.framework (macOS auto-update) ---
+# Vendored by scripts/export/macos/fetch_sparkle.sh into vendor/sparkle/.
+# Done after the generic find loops (so they don't touch Sparkle) and before
+# the outer app is signed (so the seal covers the embedded framework).
+SPARKLE_FRAMEWORK_SRC="vendor/sparkle/Sparkle.framework"
+if [ -d "$SPARKLE_FRAMEWORK_SRC" ]; then
+    echo "Embedding Sparkle.framework..."
+    FRAMEWORKS_DIR="$APP_BUNDLE/Contents/Frameworks"
+    mkdir -p "$FRAMEWORKS_DIR"
+    rm -rf "$FRAMEWORKS_DIR/Sparkle.framework"
+    ditto "$SPARKLE_FRAMEWORK_SRC" "$FRAMEWORKS_DIR/Sparkle.framework"
+    SPARKLE_FW="$FRAMEWORKS_DIR/Sparkle.framework"
+    SPARKLE_V="$SPARKLE_FW/Versions/Current"
+
+    # Configure Sparkle in Info.plist. No SUFeedURL: the app sets the feed at
+    # runtime (the per-release appcast chosen by our own version detection).
+    # SUEnableAutomaticChecks=NO so only our code ever triggers an update.
+    plutil -replace SUEnableAutomaticChecks -bool NO "$APP_BUNDLE/Contents/Info.plist"
+    # Local-test only: allow Sparkle to fetch the appcast/zip over http://localhost.
+    # Never enable for a release build.
+    if [ "${SPARKLE_LOCAL_TEST:-0}" = "1" ]; then
+        plutil -replace NSAppTransportSecurity -xml \
+            '<dict><key>NSAllowsLocalNetworking</key><true/></dict>' \
+            "$APP_BUNDLE/Contents/Info.plist"
+        echo "ATS: local networking allowed (SPARKLE_LOCAL_TEST=1)."
+    fi
+    if [ -n "$SPARKLE_ED_PUBLIC_KEY" ]; then
+        plutil -replace SUPublicEDKey -string "$SPARKLE_ED_PUBLIC_KEY" "$APP_BUNDLE/Contents/Info.plist"
+        echo "Set SUPublicEDKey in Info.plist."
+    else
+        echo "Warning: SPARKLE_ED_PUBLIC_KEY not set — Sparkle cannot verify"
+        echo "         updates at runtime (fine for build/sign testing only)."
+    fi
+
+    # Re-sign Sparkle inside-out with our identity (hardened runtime), so the
+    # whole bundle notarizes under one team. Order matters: XPC services, then
+    # Updater.app, then Autoupdate, then the framework bundle itself.
+    sparkle_sign() {
+        codesign --force --timestamp --options=runtime \
+            --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$1" --verbose=2
+    }
+    for xpc in "$SPARKLE_V/XPCServices/"*.xpc; do
+        if [ -e "$xpc" ]; then
+            echo "Signing Sparkle XPC: $(basename "$xpc")"
+            sparkle_sign "$xpc"
+        fi
+    done
+    if [ -d "$SPARKLE_V/Updater.app" ]; then
+        echo "Signing Sparkle Updater.app"
+        sparkle_sign "$SPARKLE_V/Updater.app"
+    fi
+    if [ -e "$SPARKLE_V/Autoupdate" ]; then
+        echo "Signing Sparkle Autoupdate"
+        sparkle_sign "$SPARKLE_V/Autoupdate"
+    fi
+    echo "Signing Sparkle.framework"
+    sparkle_sign "$SPARKLE_FW"
+    echo "Sparkle embedded and signed."
+else
+    echo "Sparkle.framework not vendored (run scripts/export/macos/fetch_sparkle.sh)"
+    echo "  — building without the in-app auto-update framework."
+fi
+
 # Finally, sign the app bundle itself
 echo "Signing the main app bundle: $APP_BUNDLE"
 codesign --force --timestamp --options=runtime --entitlements "$ENTITLEMENTS_FILE" --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$APP_BUNDLE" --verbose=2
@@ -235,40 +322,40 @@ echo "--- Section 6: Creating DMG Disk Image ---"
 
 VERSION_FOLDER=$(basename "$PROJECT_DIR")
 VERSION=$(echo "$VERSION_FOLDER" | sed 's/sharly-chess-//')
-DMG_NAME="sharly-chess-${VERSION}-macos.dmg"
+DMG_NAME="sharly-chess-${VERSION}-mac.dmg"
 DMG_PATH="dist/$DMG_NAME"
-STAGING_DIR=$(mktemp -d)
 VOLUME_NAME="Sharly Chess ${VERSION}"
 
-echo "Staging application content..."
-# Create the staging structure with versioned folder containing all contents
-mkdir -p "$STAGING_DIR/sharly-chess-${VERSION}"
-rsync -a "$APP_BUNDLE" "$STAGING_DIR/sharly-chess-${VERSION}/"
+echo "Preparing DMG contents..."
+WORK_DIR=$(mktemp -d)
 
-# Copy other files and folders except _internal, and the executable
+# Gather the licence/support files into a single "Licenses" folder so the
+# window stays clean — just the app, the arrow and the Applications link.
+LICENSES_DIR="$WORK_DIR/Licenses"
+mkdir -p "$LICENSES_DIR"
 for item in "$PROJECT_DIR"/*; do
     item_name=$(basename "$item")
-    if [[ "$item_name" != "_internal" && "$item_name" != "tools" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" ]]; then
-        rsync -a "$item" "$STAGING_DIR/sharly-chess-${VERSION}/"
+    if [[ "$item_name" != "_internal" && "$item_name" != "tools" && "$item_name" != "$EXECUTABLE_NAME" && "$item_name" != "SharlyChess.app" && "$item_name" != "custom" ]]; then
+        rsync -a "$item" "$LICENSES_DIR/"
     fi
 done
 
-# Calculate the size needed for the DMG. du -sk gives size in KB.
-SIZE_KB=$(du -sk "$STAGING_DIR" | awk '{print $1}')
-SIZE_MB=$((($SIZE_KB / 1024) + 20)) # Add 20MB buffer for filesystem overhead
+# Generate the "drag to Applications" arrow background.
+DMG_BG="$WORK_DIR/dmg-background.png"
+python scripts/export/macos/make_dmg_background.py "$DMG_BG"
 
-TEMP_DMG="dist/tmp.$DMG_NAME"
-echo "Creating temporary DMG of size ${SIZE_MB}MB..."
-hdiutil create -srcfolder "$STAGING_DIR" -volname "$VOLUME_NAME" -fs HFS+ \
-    -format UDRW -size ${SIZE_MB}m "$TEMP_DMG"
+# Build the styled DMG. dmgbuild writes the .DS_Store directly, so the layout
+# (background, icon positions, Applications symlink) works headless in CI.
+echo "Building styled DMG with dmgbuild..."
+rm -f "$DMG_PATH"
+dmgbuild -s scripts/export/macos/dmg_settings.py \
+    -D app="$APP_BUNDLE" \
+    -D licenses="$LICENSES_DIR" \
+    -D background="$DMG_BG" \
+    -D volicon="src/web/static/images/sharly-chess.icns" \
+    "$VOLUME_NAME" "$DMG_PATH"
 
-echo "Compressing and finalizing DMG..."
-rm -f "$DMG_PATH" # Remove old final DMG if it exists
-hdiutil convert "$TEMP_DMG" -format UDZO -imagekey zlib-level=9 -o "$DMG_PATH"
-
-echo "Cleaning up temporary files..."
-rm "$TEMP_DMG"
-rm -rf "$STAGING_DIR"
+rm -rf "$WORK_DIR"
 echo "DMG created successfully at: $DMG_PATH"
 echo
 
@@ -283,31 +370,49 @@ else
     echo "Signing the DMG..."
     codesign --force --timestamp --options=runtime --sign "$APP_SIGNING_IDENTITY" --keychain "$KEYCHAIN_PATH" "$DMG_PATH" --verbose=2
 
-    echo "Notarizing the DMG... (this may take a while)"
-    NOTARY_RESULT=$(xcrun notarytool submit "$DMG_PATH" \
-        --apple-id "$APPLE_ID" \
-        --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-        --team-id "$APPLE_TEAM_ID" \
-        --wait 2>&1)
-
-    echo "$NOTARY_RESULT"
-
-    if echo "$NOTARY_RESULT" | grep -q "status: Accepted"; then
-        echo "Notarization successful. Stapling ticket..."
-        xcrun stapler staple "$DMG_PATH"
-        echo "Stapling complete."
-    else
-        echo "Error: Notarization failed!"
-        # Extract submission ID to get detailed logs
-        SUBMISSION_ID=$(echo "$NOTARY_RESULT" | grep "id:" | head -1 | awk '{print $2}')
-        if [ -n "$SUBMISSION_ID" ]; then
-            echo "Getting detailed notarization logs..."
-            xcrun notarytool log "$SUBMISSION_ID" \
-                --apple-id "$APPLE_ID" \
-                --password "$APPLE_APP_SPECIFIC_PASSWORD" \
-                --team-id "$APPLE_TEAM_ID"
+    if [ "$SUBMIT_ONLY" = true ]; then
+        # Async: hand the DMG to Apple and leave. A later job awaits + staples.
+        echo "Submitting the DMG to the notary service (no wait)..."
+        SUBMIT_RESULT=$(xcrun notarytool submit "$DMG_PATH" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" 2>&1)
+        echo "$SUBMIT_RESULT"
+        SUBMISSION_ID=$(echo "$SUBMIT_RESULT" | grep "id:" | head -1 | awk '{print $2}')
+        if [ -z "$SUBMISSION_ID" ]; then
+            echo "Error: could not parse a submission id from notarytool output."
+            exit 1
         fi
-        exit 1
+        echo "$SUBMISSION_ID" > "dist/notary-submission-id.txt"
+        echo "Submitted. Submission id: $SUBMISSION_ID (saved to dist/notary-submission-id.txt)"
+        echo "A later job will await acceptance and staple the ticket."
+    else
+        echo "Notarizing the DMG... (this may take a while)"
+        NOTARY_RESULT=$(xcrun notarytool submit "$DMG_PATH" \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" \
+            --wait 2>&1)
+
+        echo "$NOTARY_RESULT"
+
+        if echo "$NOTARY_RESULT" | grep -q "status: Accepted"; then
+            echo "Notarization successful. Stapling ticket..."
+            xcrun stapler staple "$DMG_PATH"
+            echo "Stapling complete."
+        else
+            echo "Error: Notarization failed!"
+            # Extract submission ID to get detailed logs
+            SUBMISSION_ID=$(echo "$NOTARY_RESULT" | grep "id:" | head -1 | awk '{print $2}')
+            if [ -n "$SUBMISSION_ID" ]; then
+                echo "Getting detailed notarization logs..."
+                xcrun notarytool log "$SUBMISSION_ID" \
+                    --apple-id "$APPLE_ID" \
+                    --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+                    --team-id "$APPLE_TEAM_ID"
+            fi
+            exit 1
+        fi
     fi
 fi
 echo
@@ -328,7 +433,8 @@ echo "Cleanup complete."
 echo
 
 # --- 9. Final Verification ---
-if [ "$BUILD_ONLY" = false ]; then
+# Skip in submit-only mode: the ticket isn't stapled yet (a later job does that).
+if [ "$BUILD_ONLY" = false ] && [ "$SUBMIT_ONLY" = false ]; then
     echo "--- Section 9: Final Verification ---"
     echo "Verifying stapled ticket..."
     xcrun stapler validate "$DMG_PATH"
@@ -339,19 +445,20 @@ fi
 echo "=== Summary ==="
 if [ "$BUILD_ONLY" = true ]; then
     echo "Build process finished successfully (signed but not notarized)!"
+elif [ "$SUBMIT_ONLY" = true ]; then
+    echo "Build + submit finished successfully (submitted to notary, not yet stapled)!"
 else
     echo "Process finished successfully!"
 fi
 echo "Final distributable disk image is at: $DMG_PATH"
-echo "  - Contains versioned folder: sharly-chess-${VERSION}/"
-echo "    - SharlyChess.app (properly signed app bundle with all dependencies)"
-echo "    - License files and support folders"
-echo "  - The SharlyChess.app will launch the application in GUI mode"
+echo "  - Standard layout: SharlyChess.app, an arrow, and an Applications link"
+echo "    (plus a Licenses folder); drag the app onto Applications to install"
 if [ "$BUILD_ONLY" = true ]; then
     echo "  - Note: This app is signed but NOT notarized (build-only mode)"
+elif [ "$SUBMIT_ONLY" = true ]; then
+    echo "  - Note: This app is signed and submitted to the notary but NOT yet stapled"
 else
     echo "  - This app is fully signed and notarized for distribution"
 fi
-echo "  - To install, extract the DMG contents to any writable folder in your home directory"
-echo "  - Note: Do NOT place in /Applications - the app needs write access to its folder."
+echo "  - User data lives in ~/Library/Application Support, so /Applications is fine"
 echo

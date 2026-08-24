@@ -26,6 +26,7 @@ from data.print_documents.documents import (
 )
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks.system_sets import SystemTieBreakSet
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
@@ -80,7 +81,8 @@ from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
-    from database.sqlite.event.event_store import StoredTournament
+    from data.rule_sets import RuleSet
+    from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
 
 logger = get_logger()
@@ -176,6 +178,42 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl
     def get_player_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, FRASchoolsPlayerPluginData
+
+    @hookimpl
+    def get_prohibited_pairing_dimensions(self):
+        from data.prohibited_pairings import ProhibitedPairingDimension
+
+        def school_key(player):
+            school = FRASchoolsUtils.get_player_school(player)
+            return str(school.id) if school and school.id is not None else None
+
+        return [
+            ProhibitedPairingDimension(
+                id='fra-school',
+                label=_('School'),
+                is_team=False,
+                group_key=school_key,
+            )
+        ]
+
+    @hookimpl
+    def get_team_affiliation_sources(self):
+        from data.teams.team_affiliation import (
+            TeamAffiliationSource,
+            team_shared_player_value,
+        )
+
+        def school_name(player):
+            school = FRASchoolsUtils.get_player_school(player)
+            return school.name if school else None
+
+        return [
+            TeamAffiliationSource(
+                id='fra-school',
+                label=_('School'),
+                resolve=lambda team: team_shared_player_value(team, school_name),
+            )
+        ]
 
     @hookimpl
     def get_player_form_template_context(
@@ -357,6 +395,22 @@ class FRASchoolsPlugin(Plugin):
     # Tie-breaks
     # ---------------------------------------------------------------------------------
 
+    @hookimpl
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+        from plugins.fra_schools.fra_schools_rule_sets import (
+            ChampionnatScolaireRuleSet,
+        )
+
+        rule_sets.append(ChampionnatScolaireRuleSet)
+
+    @hookimpl
+    def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]):
+        from plugins.fra_schools.fra_schools_tie_breaks import (
+            BoardOrderWinsTieBreak,
+        )
+
+        tie_break_types.append(BoardOrderWinsTieBreak)
+
     @hookimpl(trylast=True)
     def insert_swiss_system_tie_break_sets(
         self, system_sets: list['SystemTieBreakSet']
@@ -523,6 +577,7 @@ class FRASchoolsPlugin(Plugin):
         event: Event,
         stored_player: StoredPlayer,
         sync_data: SCEPlayerSyncData,
+        database: EventDatabase | None,
     ):
         plugin_data = FRASchoolsPlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
@@ -539,7 +594,9 @@ class FRASchoolsPlugin(Plugin):
                 else:
                     school = FRASchool.from_label(sce_school.label)
                     school.code = sce_school.code
-                    school_id = FRASchoolsUtils.add_event_school(event, school)
+                    school_id = FRASchoolsUtils.add_event_school(
+                        event, school, database=database
+                    )
         plugin_data.fra_school_id = school_id
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 

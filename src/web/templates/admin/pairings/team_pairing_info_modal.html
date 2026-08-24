@@ -1,0 +1,147 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div id="team-pairing-info-modal" class="modal-dialog modal-dialog-scrollable admin-players-update-modal" style="max-width: 90%;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Team pairing information for round %(round)d', round=admin_round) }}
+            </h2>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="{{ _('Close') }}"
+            ></button>
+        </div>
+        <div class="modal-body">
+            <table
+                id="team-pairings-info-table"
+                class="table prominent table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+            >
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-start compact-col">{{ _('TPN *** TOURNAMENT PAIRING NUMBER') }}</th>
+                        <th scope="col" class="text-start">{{ _('Team') }}</th>
+                        {# The secondary score is only reported when the
+                           pairing consults it for colours (C.04.6 §4.2.2),
+                           and it is whichever score the primary is not. #}
+                        {% if show_secondary %}
+                            <th
+                                scope="col" class="text-end compact-col"
+                                {{ macros.tooltip_attributes('info', _(
+                                    'Secondary score, used to allocate colours.'
+                                ), 'top') }}
+                            >{{ _('MP *** MATCH POINTS') if primary_is_game_points else _('GP *** GAME POINTS') }}</th>
+                        {% endif %}
+                        <th scope="col" class="text-center compact-col">{{ _('Colour') }}</th>
+                        <th
+                            scope="col" class="text-center compact-col"
+                            {{ macros.tooltip_attributes('info', _(
+                                'C2: whether the team may take the pairing-allocated '
+                                'bye — a team can only ever receive one.'
+                            )) }}
+                        >{{ _('C2 *** BYE ELIGIBILITY CRITERION') }}</th>
+                        <th scope="col" class="text-start compact-col">{{ _('Pairing') }}</th>
+                        {% if history_columns %}
+                            <th colspan="{{ history_columns }}" scope="col" class="text-start compact-col">
+                                {{ _('Opponents') }}
+                            </th>
+                            <th scope="col" class="text-start compact-col">
+                                {{ _('Colour history') }}
+                            </th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mp, entries in team_info_groups %}
+                        <tr class="header">
+                            <td class="group-title fw-bold text-center" colspan="10000">
+                                {{ ngettext(
+                                    '%(num).1f %(unit)s group',
+                                    '%(num).1f %(unit)s group',
+                                    mp,
+                                    unit=_('GP *** GAME POINTS') if primary_is_game_points else _('MP *** MATCH POINTS'),
+                                ) }}
+                                -
+                                {{ ngettext(
+                                    '%(num)d team',
+                                    '%(num)d teams',
+                                    entries|length,
+                                ) }}
+                            </td>
+                        </tr>
+                        {% for row in entries %}
+                            <tr id="team-info-{{ row.team.id }}" class="{{ 'even' if loop.index is even else 'odd' }}">
+                                <td class="compact-col text-center">
+                                    {% if row.tpn %}#{{ row.tpn }}{% endif %}
+                                </td>
+                                <td>{{ row.team.name }}</td>
+                                {% if show_secondary %}
+                                    <td class="text-end compact-col">{% if row.gp is not none %}{{ '%g'|format(row.gp) }}{% endif %}</td>
+                                {% endif %}
+                                <td class="text-center compact-col">
+                                    {% if row.preference and row.preference.color %}
+                                        {% set pref = 'W' if row.preference.color.value == 'W' else 'B' %}
+                                        {% if row.preference.absolute %}
+                                            <b>{{ pref }}</b>
+                                        {% elif row.preference.strong %}
+                                            ({{ pref }})
+                                        {% else %}
+                                            <span class="text-secondary">{{ pref|lower }}</span>
+                                        {% endif %}
+                                    {% elif row.preference %}
+                                        <span class="text-secondary">·</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center compact-col">
+                                    {% if row.eligible_for_bye is not none %}
+                                        {% if row.eligible_for_bye %}
+                                            <i class="bi-check-lg text-success"></i>
+                                        {% else %}
+                                            <i class="bi-x-lg text-secondary"></i>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td class="text-start compact-col text-nowrap">
+                                    {% if row.has_bye %}
+                                        <span class="text-secondary">{{ _('Bye') }}</span>
+                                    {% elif row.current_opponent %}
+                                        <span {{ macros.tooltip_attributes('info', row.current_opponent.name) }}>
+                                            {{ row.current_opponent.pairing_number or row.current_opponent.id }}{% if row.current_color %} {{ 'W' if row.current_color.value == 'W' else 'B' }}{% endif %}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                {% for opp_id in row.opponents %}
+                                    <td class="text-center compact-col px-1">
+                                        {% if opp_id and opp_id in teams_by_id %}
+                                            {% set opp = teams_by_id[opp_id] %}
+                                            <span
+                                                {{ macros.tooltip_attributes('info', opp.name) }}
+                                            >
+                                                {{ opp.pairing_number or opp.id }}
+                                            </span>
+                                        {% else %}
+                                            <span>·</span>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                                {% for _ in range(history_columns - row.opponents|length) %}
+                                    <td></td>
+                                {% endfor %}
+                                {% if history_columns %}
+                                    <td class="text-end compact-col ps-4 pe-2">
+                                        <div class="character-grid">
+                                            {% for c in row.colors %}
+                                                <span>{{ c|lower if c else '' }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

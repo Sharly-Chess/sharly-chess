@@ -1,0 +1,337 @@
+{% extends '../../common/admin_cards_container.html' %}
+
+{% set collection = get_admin_collection_spec('teams') %}
+{% set collection_view_mode = get_admin_collection_view_mode('teams') %}
+{% set collection_show_details = get_admin_collection_show_details('teams') %}
+{% set collection_url = url_for('admin-event-teams-tab', event_uniq_id=admin_event.uniq_id) %}
+{% set collection_card_controls_template = '/admin/teams/team_collection_card_controls.html' %}
+{% import '/admin/common/collection_macros.j2' as collection_macros with context %}
+
+{% macro empty_team_drop_zone(tournament_id, message, closed=false, auto_sort=false) %}
+    {% if collection_view_mode.value == 'list' %}
+        <div class="admin-collection-list-scroll">
+            <div
+                class="admin-collection admin-collection-list"
+                style="--collection-list-columns: {{ collection_macros.list_grid_template(collection) }};"
+            >
+                <div
+                    class="collection-list-items team-sortable"
+                    data-tournament-id="{{ tournament_id }}"
+                    {% if closed %}data-closed="1"{% endif %}
+                    {% if auto_sort %}data-auto-sort="1"{% endif %}
+                >
+                    <div class="collection-list-empty-drop-zone non-sortable">
+                        <div
+                            class="text-center text-muted p-4 rounded"
+                            style="border: 2px dashed var(--bs-border-color);"
+                        >
+                            <i class="bi-box-arrow-in-down d-block fs-3 mb-2"></i>
+                            {{ message }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div
+            class="row gy-3 gx-3 team-sortable"
+            data-tournament-id="{{ tournament_id }}"
+            {% if closed %}data-closed="1"{% endif %}
+            {% if auto_sort %}data-auto-sort="1"{% endif %}
+        >
+            <div class="col-12 non-sortable">
+                <div
+                    class="text-center text-muted p-4 rounded"
+                    style="border: 2px dashed var(--bs-border-color);"
+                >
+                    <i class="bi-box-arrow-in-down d-block fs-3 mb-2"></i>
+                    {{ message }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% block top_left_nav %}
+    {{ admin_macros.admin_title(_('Teams'), '') }}
+{% endblock %}
+
+{% block top_right_nav %}
+    {% include '/admin/common/collection_controls.html' %}
+    <button
+        class="btn btn-outline-primary text-nowrap ms-1"
+        {% if not admin_event.teams %}
+            disabled
+        {% else %}
+            hx-get="{{ url_for('admin-team-check-in-modal', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        {% endif %}
+    >
+        <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
+        {{ _('Check-in') }}
+    </button>
+    {% if client.can_update_tournaments %}
+        <button
+            class="btn btn-outline-primary text-nowrap ms-1"
+            {% if not admin_event.teams %}
+                disabled
+            {% else %}
+                hx-get="{{ url_for('admin-team-affiliations-modal', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            {% endif %}
+        >
+            <i class="bi-collection-fill pe-1"></i>
+            {{ _('Set affiliations') }}
+        </button>
+    {% endif %}
+    {% if client.can_update_tournaments %}
+        <button
+            class="btn btn-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-team-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-plus-square pe-1"></i>
+            {{ _('Create a team') }}
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block cards_container_cards %}
+    {% if admin_event.teams %}
+        {% set draggable = client.can_update_tournaments %}
+        <form
+            id="teams-form"
+            {% if draggable %}
+                hx-patch="{{ url_for('admin-teams-reassign', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-trigger="teams-changed"
+                hx-indicator="#please-wait"
+            {% endif %}
+        >
+            {% for tournament in sorted_tournaments %}
+                {% set tournament_teams = teams_by_tournament_id.get(tournament.id, []) %}
+                {% set sortable = draggable %}
+                {% set sort_mode = tournament.team_sort_mode %}
+                {% set sort_locked = tournament.team_sort_mode_locked %}
+                <div class="mb-5">
+                    <h5 class="border-bottom pb-1 d-flex align-items-center">
+                        <i class="bi-diagram-3-fill me-1"></i>
+                        {{ tournament.name }}
+                        <span class="text-muted small ms-1">({{ tournament_teams|length }})</span>
+                        {% if client.can_update_tournaments %}
+                            <span
+                                class="text-muted small fw-normal ms-auto me-2"
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _('The team order sets each team\'s pairing '
+                                      'number, shown on each card.'),
+                                    'top'
+                                ) }}
+                            >{{ _('Pairing order:') }}</span>
+                            {# A disabled button swallows hover events, so the
+                               lock tooltip has to live on the wrapping span. #}
+                            <span
+                                class="dropdown"
+                                {% if sort_locked %}
+                                    {{ macros.tooltip_attributes(
+                                        'info',
+                                        _('The rule set fixes the team sort order.')
+                                        if tournament.rule_set_forced_team_sort_mode
+                                        else _('The team sort order is fixed once the first round is paired.'),
+                                        'top'
+                                    ) }}
+                                {% endif %}
+                            >
+                                <button
+                                    class="btn btn-sm btn-outline-primary dropdown-toggle text-nowrap mb-1"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    {% if sort_locked %}disabled{% endif %}
+                                >
+                                    <i class="bi-sort-down me-1"></i>
+                                    {{ sort_mode }}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    {% for mode in team_sort_modes %}
+                                        <li>
+                                            <button
+                                                type="button"
+                                                class="dropdown-item {% if mode == sort_mode %}active{% endif %}"
+                                                hx-patch="{{ url_for(
+                                                    'admin-team-sort-mode',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    tournament_id=tournament.id,
+                                                ) }}"
+                                                hx-vals='{"team_sort_mode": "{{ mode.value }}"}'
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                            >
+                                                {{ mode|string }}
+                                            </button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </span>
+                        {% endif %}
+                    </h5>
+                    {% if tournament_teams %}
+                        {% if sort_mode.value == 'TEAM_AVERAGE_RATING' %}
+                            {% set sort_key = 'team-avg' %}
+                        {% elif sort_mode.value == 'LINEUP_AVERAGE_RATING' %}
+                            {% set sort_key = 'lineup-avg' %}
+                        {% else %}
+                            {% set sort_key = '' %}
+                        {% endif %}
+                        {% with
+                            items=tournament_teams,
+                            empty_message=_('No teams'),
+                            sortable=false,
+                            show_details=collection_show_details,
+                            collection_items_class='team-sortable',
+                            collection_items_data={
+                                'tournament-id': tournament.id,
+                                'closed': '1' if not tournament.can_add_teams else '',
+                                'auto-sort': '1' if sort_mode.value != 'MANUAL' else '',
+                                'sort-key': sort_key,
+                            }
+                        %}
+                            {% include '/admin/common/collection.html' %}
+                        {% endwith %}
+                    {% else %}
+                        {{ empty_team_drop_zone(
+                            tournament.id,
+                            _('Drag teams here'),
+                            closed=not tournament.can_add_teams,
+                            auto_sort=sort_mode.value != 'MANUAL',
+                        ) }}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="mb-3">
+                <h5 class="border-bottom pb-1 text-muted">
+                    <i class="bi-question-circle me-1"></i>
+                    {{ _('Teams not assigned to a tournament') }}
+                    <span class="text-muted small">({{ unassigned_teams|length }})</span>
+                </h5>
+                {% if unassigned_teams %}
+                    {% with
+                        items=unassigned_teams,
+                        empty_message=_('No teams'),
+                        sortable=false,
+                        show_details=collection_show_details,
+                        collection_items_class='team-sortable',
+                        collection_items_data={'tournament-id': ''}
+                    %}
+                        {% include '/admin/common/collection.html' %}
+                    {% endwith %}
+                {% else %}
+                    {{ empty_team_drop_zone(
+                        '',
+                        _('All teams are assigned to a tournament.'),
+                    ) }}
+                {% endif %}
+            </div>
+        </form>
+        {% if draggable %}
+            <script>
+                (function () {
+                    function refreshAssignments() {
+                        document.querySelectorAll('.assignment-input').forEach(function (input) {
+                            const parent = input.closest('.team-sortable');
+                            if (!parent) return;
+                            const tid = parent.dataset.tournamentId || '';
+                            const teamId = (input.value || '').split(':')[0] || '';
+                            input.value = teamId + ':' + tid;
+                        });
+                    }
+                    // Read a card's sort metric (higher = stronger).
+                    function sortValue(itemEl, key) {
+                        const input = itemEl.querySelector('.assignment-input');
+                        const raw = input && input.dataset[
+                            key === 'team-avg' ? 'teamAvg' : 'lineupAvg'
+                        ];
+                        return parseFloat(raw || '0') || 0;
+                    }
+                    document.querySelectorAll('.team-sortable').forEach(function (container) {
+                        const sortKey = container.dataset.sortKey || '';
+                        const autoSort = !!container.dataset.autoSort;
+                        new Sortable(container, {
+                            // Tournaments that no longer accept teams
+                            // (fixed-table systems once paired) refuse
+                            // incoming drops; their own cards can still
+                            // be dragged out if unpaired.
+                            group: {
+                                name: 'teams',
+                                put: function (to) {
+                                    return !to.el.dataset.closed;
+                                },
+                            },
+                            animation: 150,
+                            ghostClass: 'sortable-ghost',
+                            filter: '.non-sortable',
+                            preventOnFilter: true,
+                            // Auto-sorted tournaments own their order:
+                            // disable in-list reordering (no sibling
+                            // shifting) but still accept teams dropped in
+                            // from other tournaments.
+                            sort: !autoSort,
+                            // Auto-sorted tournaments preview the drop at
+                            // the rating-correct slot during the drag:
+                            // only allow the move when it keeps the list
+                            // in descending order. (Server re-sorts on
+                            // drop regardless, so this is purely visual.)
+                            onMove: function (evt) {
+                                const toKey = evt.to.dataset.sortKey || '';
+                                if (!toKey) return true;
+                                if (evt.related.classList.contains('non-sortable')) {
+                                    return true;
+                                }
+                                const dragged = sortValue(evt.dragged, toKey);
+                                const related = sortValue(evt.related, toKey);
+                                // Descending order. Tell Sortable which
+                                // side of the related team to use instead
+                                // of rejecting its first proposal. A
+                                // rejected BEFORE proposal never gets a
+                                // chance to become AFTER, which made
+                                // equal/lower-rated teams impossible to
+                                // drop into a non-empty auto-sorted list.
+                                // Equal values settle after.
+                                return dragged > related ? -1 : 1;
+                            },
+                            onEnd: function () {
+                                refreshAssignments();
+                                htmx.trigger('#teams-form', 'teams-changed');
+                            },
+                        });
+                    });
+                    refreshAssignments();
+                })();
+            </script>
+        {% endif %}
+    {% else %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <h5 class="mt-2 my-5 text-center">{{ _('No teams') }}</h5>
+            {% if client.can_update_tournaments %}
+                <p>
+                    {{ _('Create teams and assign them to tournaments.') }}
+                </p>
+                <p>
+                    {{ _(
+                        'Teams can be created without a tournament assignment '
+                        'and assigned later.'
+                    ) }}
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

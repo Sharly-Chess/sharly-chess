@@ -1,5 +1,17 @@
 {% extends '../../common/admin_cards_container.html' %}
 
+{% set collection = get_admin_collection_spec('prize-categories') %}
+{% set collection_view_mode = get_admin_collection_view_mode('prize-categories') %}
+{% set collection_show_details = get_admin_collection_show_details('prize-categories') %}
+{% if admin_prize_group %}
+    {% set collection_url = url_for(
+        'admin-event-prizes-tab',
+        event_uniq_id=admin_event.uniq_id,
+        tournament_id=admin_tournament.id,
+        prize_group_id=admin_prize_group.id,
+    ) %}
+{% endif %}
+
 {% block top_left_nav %}
     {{ admin_macros.admin_title(_('Prizes'), 'prizes') }}
     <script>
@@ -11,28 +23,7 @@
 {% block top_right_nav %}
     <div class="d-flex align-items-center gap-2">
         {% if admin_prize_group %}
-            {% with id='admin-prizes-show-details', name='show_details', show=show_details %}
-                <div
-                    class="form-check form-switch d-inline-block pe-3"
-                    {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
-                >
-                    <input
-                        hx-get="{{ url_for(
-                            'admin-event-prizes-tab',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id
-                        ) }}"
-                        hx-vals='{"{{ name }}": "{% if show %}false{% else %}true{% endif %}"}'
-                        hx-target="body"
-                        hx-indicator="#please-wait"
-                        class="form-check-input"
-                        type="checkbox"
-                        id="{{ id }}"
-                        {% if show %}checked{% endif %}
-                    />
-                    <label for="{{ id }}" class="form-check-label"> {{ _('Details') }}</label>
-                </div>
-            {% endwith %}
+            {% include '/admin/common/collection_controls.html' %}
         {% endif %}
         <span {{ macros.tooltip_attributes('info', _('Prize settings'), 'bottom') }}
             <button
@@ -52,6 +43,7 @@
             </button>
         </span>
         <span
+            class="dropdown-end"
             {% if not client.can_manage_prizes %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
             {% elif not admin_prize_group %}
@@ -61,26 +53,76 @@
             {% endif %}
         >
             <button
-                class="btn btn-primary text-nowrap"
+                class="btn btn-primary text-nowrap dropdown-toggle"
+                type="button"
                 {% if not admin_prize_group or not client.can_manage_prizes %}
                     disabled
                 {% else %}
-                    hx-trigger="click, SC_Plus from:body"
-                    hx-get="{{ url_for(
-                        'admin-prize-category-create-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        prize_group_id=admin_prize_group.id
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-toggle="modal"
-                    data-bs-target="#modal-wrapper"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
                 {% endif %}
             >
                 <i class="bi-plus-square pe-1"></i>
                 {{ _('Create a category') }}
             </button>
+            {% if admin_prize_group and client.can_manage_prizes %}
+                <ul class="dropdown-menu">
+                    <li>
+                        <button
+                            class="dropdown-item text-start cursor-pointer"
+                            hx-get="{{ url_for(
+                                'admin-prize-category-create-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-plus-square pe-1"></i>
+                            {{ _('Create a category') }}
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            class="dropdown-item text-start cursor-pointer"
+                            hx-get="{{ url_for(
+                                'admin-prize-categories-generate-age-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-people-fill pe-1"></i>
+                            {{ _('Generate age categories') }}
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                            class="dropdown-item text-start cursor-pointer"
+                            hx-get="{{ url_for(
+                                'admin-prize-categories-generate-rating-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                prize_group_id=admin_prize_group.id
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-bar-chart-fill pe-1"></i>
+                            {{ _('Generate rating categories') }}
+                        </button>
+                    </li>
+                </ul>
+            {% endif %}
         </span>
     </div>
     {% if admin_prize_group and admin_tournament.prize_groups|length == 1 %}
@@ -234,75 +276,78 @@
 
 {% block cards_container_cards %}
     {% set sortable = admin_prize_group and admin_prize_group.categories|length > 1 %}
-    <form
-        {% if sortable %}
-            hx-patch="{{ url_for(
-                'admin-prizes-reorder-categories',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=admin_tournament.id,
-                prize_group_id=admin_prize_group.id,
-            ) }}"
-            hx-target="body"
-            hx-trigger="end"
-        {% endif %}
-    >
-        <div
-            class="row gy-2 gx-3 {% if sortable %}sortable{% endif %}"
-        >
-            {% if not admin_prize_group %}
-                <div class="mx-auto" style="max-width: 500px;">
-                    <h5 class="mt-2 my-5 text-center">
-                        {{ _('No Prize Bracket') }}
-                    </h5>
-                    <p>
-                        {{ _(
-                            'Sharly Chess offers a powerful and flexible '
-                            'prize management system to handle a wide '
-                            'variety of tournament prize structures.'
-                        ) }}
-                    </p>
-                    <p>
-                        {{ _(
-                            'Organize your prizes into brackets to manage how '
-                            'they’re awarded. A player can win only one prize '
-                            'per bracket, but can win prizes in multiple brackets.'
-                        ) }}
-                    </p>
-                    <p>
-                        {{ _('Create a Prize Bracket now to get started.') }}
-                    </p>
-                </div>
-            {% elif not admin_prize_group.categories %}
-                <div class="mx-auto" style="max-width: 500px;">
-                    <h5 class="mt-2 my-5 text-center">
-                        {{ _('No Prize Category') }}
-                    </h5>
-                    <p>
-                        {{ _(
-                            'Each bracket should contain one or more categories '
-                            '(e.g. U12, Best Woman) with criteria and places '
-                            '(1st, 2nd, etc.). Prizes are awarded based on value '
-                            '(and category order if values are equal).'
-                        ) }}
-                    </p>
-                    <p>
-                        {{ _(
-                            'One category can be marked as the main prize '
-                            'category for overall rankings, with tie options: '
-                            'no sharing, equal sharing, or Hort system.'
-                        ) }}
-                    </p>
-                    <p>
-                        {{ _('Create a Prize Category now to continue.') }}
-                    </p>
-                </div>
-            {% else %}
-                {% for prize_category in admin_prize_group.sorted_categories %}
-                    {% with grid_class="non-sortable" if prize_category.is_main else '' %}
-                        {% include 'prize_category_card.html' %}
-                    {% endwith %}
-                {% endfor %}
-            {% endif %}
+    {% if not admin_prize_group %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <h5 class="mt-2 my-5 text-center">{{ _('No Prize Bracket') }}</h5>
+            <p>
+                {{ _(
+                    'Sharly Chess offers a powerful and flexible '
+                    'prize management system to handle a wide '
+                    'variety of tournament prize structures.'
+                ) }}
+            </p>
+            <p>
+                {{ _(
+                    'Organize your prizes into brackets to manage how '
+                    'they’re awarded. A player can win only one prize '
+                    'per bracket, but can win prizes in multiple brackets.'
+                ) }}
+            </p>
+            <p>{{ _('Create a Prize Bracket now to get started.') }}</p>
         </div>
-    </form>
+    {% elif not admin_prize_group.categories %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <h5 class="mt-2 my-5 text-center">{{ _('No Prize Category') }}</h5>
+            <p>
+                {{ _(
+                    'Each bracket should contain one or more categories '
+                    '(e.g. U12, Best Woman) with criteria and places '
+                    '(1st, 2nd, etc.). Prizes are awarded based on value '
+                    '(and category order if values are equal).'
+                ) }}
+            </p>
+            <p>
+                {{ _(
+                    'One category can be marked as the main prize '
+                    'category for overall rankings, with tie options: '
+                    'no sharing, equal sharing, or Hort system.'
+                ) }}
+            </p>
+            <p>{{ _('Create a Prize Category now to continue.') }}</p>
+        </div>
+    {% else %}
+        <form
+            {% if sortable %}
+                hx-patch="{{ url_for(
+                    'admin-prizes-reorder-categories',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    prize_group_id=admin_prize_group.id,
+                ) }}"
+                hx-target="body"
+                hx-trigger="end"
+            {% endif %}
+        >
+            {% with
+                items=admin_prize_group.sorted_categories,
+                empty_message=_('No Prize Category'),
+                sortable=sortable,
+                show_details=collection_show_details
+            %}
+                {% include '/admin/common/collection.html' %}
+            {% endwith %}
+        </form>
+        {% if admin_prize_group.categories|length > 1
+            and (admin_prize_group.total_monetary_value
+                or admin_prize_group.total_non_monetary_value) %}
+            <div class="border-top pt-2 mt-2 text-end text-secondary">
+                {{ macros.prize_totals_line(
+                    admin_prize_group.format_total_monetary_value(prize_currency)
+                        if admin_prize_group.total_monetary_value else None,
+                    admin_prize_group.format_total_non_monetary_value(prize_currency)
+                        if admin_prize_group.total_non_monetary_value else None,
+                ) }}
+            </div>
+        {% endif %}
+    {% endif %}
 {% endblock %}

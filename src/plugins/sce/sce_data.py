@@ -9,6 +9,7 @@ from data.criteria.tournament_criteria import TournamentCriterion
 from data.event import Event
 from data.player import TournamentPlayer, Player, MIN_YOB
 from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.utils import PlayerFFELicence
@@ -395,7 +396,7 @@ class SCEPlayerSyncData:
             first_name=player.first_name,
             year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=player.fide_id,
-            title=player.title,
+            title=player.strongest_title,
             club=player.club.name,
             federation=player.federation.name,
             rating=player.rating,
@@ -510,6 +511,7 @@ class SCEPlayerSyncData:
         tournament: Tournament,
         current_rating: int | None = None,
         current_rating_type: PlayerRatingType | None = None,
+        database: EventDatabase | None = None,
     ) -> None:
         event = tournament.event
         stored_player.first_name = self.first_name
@@ -521,7 +523,8 @@ class SCEPlayerSyncData:
             stored_player.date_of_birth = None
             stored_player.year_of_birth = self.year_of_birth
         stored_player.fide_id = self.fide_id
-        stored_player.title = self.title.value
+        stored_player.title = self.title.open_value
+        stored_player.women_title = self.title.women_value
         stored_player.federation = self.federation or event.federation
         stored_player.club = self.club
         stored_player.phone = self.phone
@@ -539,7 +542,12 @@ class SCEPlayerSyncData:
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         plugin_manager.hook_for_event(
             event, 'augment_stored_player_from_sce_player_sync_data'
-        )(event=event, stored_player=stored_player, sync_data=self)
+        )(
+            event=event,
+            stored_player=stored_player,
+            sync_data=self,
+            database=database,
+        )
 
     @staticmethod
     def diff_fields_by_property_name(event: Event) -> dict[str, str]:
@@ -654,7 +662,7 @@ class SCEEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        if previous_object:
+        if previous_object and action != 'clone':
             return previous_object
         return cls()
 

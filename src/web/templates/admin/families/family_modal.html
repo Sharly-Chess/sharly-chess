@@ -11,7 +11,7 @@
             {% elif action in ['create', 'clone', ] %}
                 <div class="vstack">
                     <h2 class="modal-title">
-                        {{ _('Create screen family') }}
+                        {{ _('Create multi-screen') }}
                     </h2>
                     <div class="form-text pt-0 mt-0">
                         {{ _('%(string)s: %(value)s', string=_('Screen type'), value=family_type.name) }}
@@ -19,7 +19,7 @@
                 </div>
             {% elif action == 'delete' %}
                  <h2 class="modal-title">
-                   {{ _('Delete screen family') }}
+                   {{ _('Delete multi-screen') }}
                 </h2>
             {% endif %}
         </div>
@@ -43,7 +43,7 @@
             >
                 {% if action == 'delete' %}
                     <h4>
-                        {{ _('%(string)s: %(value)s', string=_('Family'), value=admin_family.uniq_id) }}
+                        {{ _('%(string)s: %(value)s', string=_('Multi-Screen'), value=admin_family.uniq_id) }}
                     </h4>
                     <h4 class="text-danger">
                         {{ _('Warning: the deletion is permanent!') }}
@@ -55,8 +55,8 @@
                             {{ admin_macros.switch_input(
                                 name='public',
                                 label=_('Visibility:'),
-                                placeholder=_('Public family'),
-                                tooltip_text=_('Only allowed users can see private screen families.'),
+                                placeholder=_('Public multi-screen'),
+                                tooltip_text=_('Only allowed users can see private multi-screens.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -64,8 +64,16 @@
                             {{ admin_macros.text_input(
                                 name='name',
                                 label=_('Name:'),
-                                placeholder=_('E.g.: My screen family'),
-                                help_text=_('The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players\' names):  %%f=first, %%l=last, %%t=tournament.'),
+                                placeholder=_('Automatic'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.text_input(
+                                name='menu_text',
+                                label=_('Menu label:'),
+                                placeholder=_('Automatic'),
+                                tooltip_text=_('The label used for this multi-screen in menus. Its range is appended automatically.'),
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -73,79 +81,91 @@
                             {{ admin_macros.select_input(
                                 name='tournament_id',
                                 label=_('Tournament:'),
-                                tooltip_text=_('The tournament of the screens of the family.'),
+                                tooltip_text=_('The tournament of the screens of the multi-screen.'),
                                 select_options=tournament_options,
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if family_type == 'ranking' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_crosstable.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_round.html' %}
-                            </div>
-                        {% endif %}
                     </div>
 
+                    {% if family_type and family_type.form_template %}
+                        {% include family_type.form_template %}
+                    {% endif %}
+
+                    {% set is_team = admin_event.is_team_event %}
+                    {# Match wording only for team-vs-team systems — flat
+                       fixed-table systems (e.g. Molter) keep board wording.
+                       Derived from the tournament currently selected in the
+                       form (the modal reloads when it changes). #}
+                    {% set _selected_tournament = admin_event.tournaments_by_id.get(data.get('tournament_id') | int) if data.get('tournament_id') else none %}
+                    {% if _selected_tournament %}
+                        {% set is_team_matches = _selected_tournament.is_team_tournament and _selected_tournament.pairing_system.paired_by_team %}
+                    {% else %}
+                        {% set is_team_matches = is_team %}
+                    {% endif %}
+                    {% set sel = family_type.selection_labels(is_team, is_team_matches) %}
+                    {% set show_board_selection = family_type.supports_fixed_boards and not is_team_matches %}
                     <h4 class="mt-4">
-                        {% if family_type in ['boards', 'input'] %}
-                            {{ _('Board selection (by number)') }}
-                        {% elif family_type in ('players', 'check-in') %}
-                            {{ _('Player selection (by alphabetical order)') }}
-                        {% else %} {# family_type == 'ranking' #}
-                            {{ _('Player selection (by rank)') }}
-                        {% endif %}
+                        {{ sel.header }}
                     </h4>
                     <div class="row gy-2 gx-3">
+                        {% if show_board_selection %}
+                            <div class="col-12">
+                                {{ admin_macros.select_input(
+                                    name='fixed_board_order',
+                                    label=_('Board selection:'),
+                                    select_options=family_type.board_selection_options(false),
+                                    tooltip_text=_('How the boards shown by these screens are chosen and ordered.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
                         <div class="col-12 col-md-6">
-                            {% if family_type in ['boards', 'input'] %}
-                                {% set tooltip_text=_('The number of the first board to select.') %}
-                            {% elif family_type in ('players', 'check-in') %}
-                                {% set tooltip_text=_('The number of the first player to select.') %}
-                            {% else %}
-                                {% set tooltip_text=_('The rank of the first player to select.') %}
-                            {% endif %}
                             {{ admin_macros.number_input(
                                 name='first',
-                                label=_('First board:') if family_type in ['boards', 'input'] else _('First player:'),
+                                label=sel.first_label,
                                 placeholder=1,
-                                tooltip_text=tooltip_text,
+                                tooltip_text=sel.first_tooltip,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
                         <div class="col-12 col-md-6">
-                            {% if family_type in ['boards', 'input'] %}
-                                {% set tooltip_text=_('The number of the last board to select.') %}
-                            {% elif family_type in ('players', 'check-in') %}
-                                {% set tooltip_text=_('The number of the last player to select.') %}
-                            {% else %}
-                                {% set tooltip_text=_('The rank of the last player to select.') %}
-                            {% endif %}
                             {{ admin_macros.number_input(
                                 name='last',
-                                label=_('Last board:') if family_type in ['boards', 'input'] else _('Last player:'),
+                                label=sel.last_label,
                                 placeholder=_('last'),
-                                tooltip_text=tooltip_text,
+                                tooltip_text=sel.last_tooltip,
                                 data=data, errors=errors,
                                 min=1
                             ) }}
                         </div>
-                        {% if family_type == 'ranking' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_min_points.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/ranking_max_points.html' %}
-                            </div>
-                        {% endif %}
-                        {% if family_type == 'players' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/players_show_unpaired.html' %}
-                            </div>
-                        {% endif %}
                     </div>
+                    {% if show_board_selection %}
+                        <script>
+                            (() => {
+                                const $modal = $('.modal');
+                                const $select = $modal.find('#fixed-board-order');
+                                const labels = {
+                                    pairing: {
+                                        first: "{{ _('First pairing:') }}",
+                                        last: "{{ _('Last pairing:') }}",
+                                    },
+                                    board: {
+                                        first: "{{ _('First board:') }}",
+                                        last: "{{ _('Last board:') }}",
+                                    },
+                                };
+                                function apply() {
+                                    const label = labels[$select.val()] || labels.board;
+                                    $modal.find('#first-label-text').text(label.first);
+                                    $modal.find('#last-label-text').text(label.last);
+                                }
+                                $select.on('change', apply);
+                                apply();
+                            })();
+                        </script>
+                    {% endif %}
 
                     <h4 class="mt-4">
                         {{ _('Layout') }}
@@ -155,29 +175,17 @@
                             {{ admin_macros.number_input(
                                 name='parts',
                                 label=_('Number of screens:'),
-                                placeholder=
-                                    _('E.g.: 4 (split boards over 4 screens)')
-                                    if family_type in ['boards', 'input'] else
-                                    _('E.g.: 4 (split players over 4 screens)'),
-                                tooltip_text=
-                                    _('The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards).')
-                                    if family_type in ['boards', 'input'] else
-                                    _('The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players.'),
+                                placeholder=sel.parts_placeholder,
+                                tooltip_text=sel.parts_tooltip,
                                 data=data, errors=errors
                             ) }}
                         </div>
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='number',
-                                label=_('Rows per screen:'),
-                                placeholder=
-                                    _('E.g.: 20 (boards per screen)')
-                                    if family_type in ['boards', 'input'] else
-                                    _('E.g.: 20 (players per screen)'),
-                                tooltip_text=
-                                    _('The number of boards per screen, optional (the number of screens adapts to the number of boards).')
-                                    if family_type in ['boards', 'input'] else
-                                    _('The number of players per screen, optional (the number of screens adapts to the number of players).'),
+                                label=sel.number_label,
+                                placeholder=sel.number_placeholder,
+                                tooltip_text=sel.number_tooltip,
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -186,21 +194,23 @@
                                 {{ admin_macros.select_input(
                                     name='timer_id',
                                     label=_('Timer:'),
-                                    tooltip_text=_('The timer displayed on the screens of the family.'),
+                                    tooltip_text=_('The timer displayed on the screens of the multi-screen.'),
                                     select_options=timer_options,
                                     data=data, errors=errors
                                 ) }}
                             </div>
                         {% endif %}
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.number_input(
-                                name='columns',
-                                label=_('Columns:'),
-                                placeholder=_('E.g.: %(num)d', num=2),
-                                tooltip_text=_('The number of columns used to display data.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
+                        {% if family_type.multi_column_allowed %}
+                            <div class="col-12 col-md-6">
+                                {{ admin_macros.number_input(
+                                    name='columns',
+                                    label=_('Columns:'),
+                                    placeholder=_('E.g.: %(num)d', num=2),
+                                    tooltip_text=_('The number of columns used to display data.'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        {% endif %}
                         <div class="col-12 col-md-6">
                             {{ admin_macros.number_input(
                                 name='font_size',
@@ -209,72 +219,31 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if family_type in ('input', 'check-in') %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/exit_button.html' %}
-                            </div>
-                        {% endif %}
-                        {% if family_type == 'players' %}
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/players_player_format.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/players_board_format.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/players_opponent_format.html' %}
-                            </div>
-                        {% endif %}
                         <div class="col-12">
                             {% include '../common/modal/alert_message.html' %}
                         </div>
                     </div>
-
-                    <h4 class="mt-4">
-                        {{ _('Menus') }}
-                    </h4>
-                    <div class="row gy-2 gx-3">
-                        <div class="col-12">
-                            {{ admin_macros.text_input(
-                                name='menu',
-                                label=_('Links displayed on the screen menu:'),
-                                placeholder=_('E.g.: @boards, @family, another-screen'),
-                                help_text=_('This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.switch_input(
-                                name='menu_link',
-                                label='',
-                                placeholder=_('Allow links to this screen'),
-                                tooltip_text=_('Check the box to allow other screens to display a link to the screen of this family.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <div class="col-12 col-md-6">
-                            {{ admin_macros.text_input(
-                                name='menu_text',
-                                label=_('Menu link label:'),
-                                placeholder=_('E.g.: Boards %%f-%%l') if family_type in ['input', 'boards', ] else _('E.g.: Players %%f-%%l'),
-                                tooltip_text=_('This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used.'),
-                                data=data, errors=errors
-                            ) }}
-                        </div>
-                        <script>
-                            $('#menu-text').prop('disabled', $('#menu-link').val() != 'on');
-                            $('#menu-link').click(function() {
-                                if ($(this).is(':checked')) {
-                                    $('#menu-text').prop('disabled', false);
-                                } else {
-                                    $('#menu-text').prop('disabled', true);
-                                }
-                            });
-                        </script>
-                    </div>
-
                 {% endif %}
             </form>
+            {% if action in ['create', 'clone', 'update'] and admin_event.is_team_event %}
+                {# The selection labels depend on the selected tournament's
+                   pairing system (matches vs boards) — reload the modal
+                   with the current form values when it changes. #}
+                {% if action == 'create' %}
+                    {% set _reload_url = url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type.value) %}
+                {% else %}
+                    {% set _reload_url = url_for('admin-family-modal', action=action, event_uniq_id=admin_event.uniq_id, family_id=admin_family.id) %}
+                {% endif %}
+                <script>
+                    $('#tournament-id').on('change', function () {
+                        htmx.ajax(
+                            'GET',
+                            '{{ _reload_url }}?live=1&' + $('#modal-form').serialize(),
+                            {target: 'body'}
+                        );
+                    });
+                </script>
+            {% endif %}
         </div>
         <div class="modal-footer">
             <button

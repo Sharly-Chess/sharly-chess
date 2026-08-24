@@ -1,0 +1,248 @@
+{% macro item_class(item, view) -%}
+    collection-status-{{ 'public' if item.public else 'private' }}
+{%- endmacro %}
+
+{% macro identity(item, view, placement) %}
+    <span class="d-inline-flex align-items-center gap-2 min-width-0">
+        {% if client.can_manage_screens %}
+            {{ macros.screen_visibility_icon(item, '') }}
+        {% endif %}
+        <span class="fw-bold text-truncate">{{ item.name }}</span>
+        {% if item.family %}
+            <span class="badge text-bg-secondary">{{ _('Multi-Screen') }}</span>
+        {% endif %}
+    </span>
+{% endmacro %}
+
+{% macro screen_type(item, view, placement) %}
+    <span class="d-inline-flex align-items-center gap-2 text-nowrap">
+        {{ macros.screen_type_icon(item.screen_type, true) }}
+        <span class="{% if view == 'list' %}text-truncate{% endif %}">{{ item.type_str }}</span>
+    </span>
+{% endmacro %}
+
+{% macro source(item, view, placement) %}
+    {% if item.family %}
+        {% set source_label = (
+            item.family.screen_type.family_screen_label(item.sorted_screen_sets[0])
+            if view == 'list'
+            else item.family.display_name
+        ) %}
+        <span class="text-truncate" title="{{ source_label }}">
+            <i class="bi-window-split pe-1"></i>{{ source_label }}
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro screen_sets(item, view, placement) %}
+    {% set screen_sets_content %}
+        {% if item.screen_type.has_screen_sets %}
+            <span class="text-nowrap">
+                <i class="bi-collection-fill pe-1 text-secondary"></i>
+                {{ ngettext(
+                    '%(num)d set',
+                    '%(num)d sets',
+                    item.sorted_screen_sets|length,
+                ) }}
+            </span>
+        {% endif %}
+    {% endset %}
+    {% if view == 'list' and not item.family and item.screen_type.has_screen_sets %}
+        {% call collection_macros.column_edit_button(
+            not client.can_manage_screens,
+            url_for(
+                'admin-screen-sets-modal',
+                event_uniq_id=admin_event.uniq_id,
+                screen_id=item.id,
+            ),
+            'info' if client.can_manage_screens else 'warning',
+            _('Edit the sets displayed on the screen.')
+            if client.can_manage_screens else
+            _('You are not allowed to manage screens.'),
+            'collection-inline-edit-label-group',
+        ) %}
+            {{ screen_sets_content }}
+        {% endcall %}
+    {% else %}
+        {{ screen_sets_content }}
+    {% endif %}
+{% endmacro %}
+
+{% macro summary(item, view, placement) %}
+    {% set screen = item %}
+    {% set screen_type = screen.screen_type %}
+    <div class="d-flex flex-column gap-2">
+        {% if screen_type.card_config_template %}
+            {% include screen_type.card_config_template %}
+        {% endif %}
+        {% if screen_type.card_template %}
+            {% include screen_type.card_template %}
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro details(item, view, placement) %}
+    {% set screen = item %}
+    {% set screen_type = screen.screen_type %}
+    <div class="collection-details-grid">
+        {% if view != 'card' %}
+            {% if screen_type.card_config_template %}
+                <section class="collection-detail-section">
+                    {% include screen_type.card_config_template %}
+                </section>
+            {% endif %}
+            {% if screen_type.card_template %}
+                <section class="collection-detail-section">
+                    <h6>{{ _('Content') }}</h6>
+                    {% include screen_type.card_template %}
+                </section>
+            {% endif %}
+        {% endif %}
+        {% if client.can_view_public_screens and screen_type.card_detail_template %}
+            <section class="collection-detail-section collection-detail-wide">
+                <h6>{{ _('Display options') }}</h6>
+                {% set data = screen_type.card_context(screen) %}
+                {% include screen_type.card_detail_template %}
+            </section>
+        {% endif %}
+        {% if client.can_manage_screens %}
+            <section class="collection-detail-section collection-detail-wide">
+                <h6>{{ _('Alert message') }}</h6>
+                {% if screen.message_text %}
+                    <div
+                        class="px-2 alert-message screen-alert-message"
+                        style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
+                    >
+                        {{ screen.message_text }}
+                        {% if screen.message_default %}
+                            <span class="fst-italic">{{ _('(by default)') }}</span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <span class="text-secondary fst-italic">
+                        {{ _('No alert message') }}
+                        {% if screen.message_default %}{{ _('(by default)') }}{% endif %}
+                    </span>
+                {% endif %}
+            </section>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro actions(item, view, placement) %}
+    {% set screen = item %}
+    {% set screen_type = screen.screen_type %}
+    <div class="collection-actions d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="d-flex align-items-center gap-2">
+            {% with eye_screen=screen %}
+                {% include '/admin/screens/screen_eye_link.html' %}
+            {% endwith %}
+            {% if client.can_manage_screens %}
+                {% if not screen.family and screen_type.card_action_button_template %}
+                    {% include screen_type.card_action_button_template %}
+                {% endif %}
+                {% if view == 'card' and not screen.family and screen_type.has_screen_sets %}
+                    {% call macros.action_tooltip(
+                        'info',
+                        (
+                            _('Edit the sets of matches displayed on the screen.')
+                            if screen_type.board_based else
+                            _('Edit the sets of teams displayed on the screen.')
+                        )
+                        if admin_event.is_team_event else (
+                            _('Edit the sets of boards displayed on the screen.')
+                            if screen_type.board_based else
+                            _('Edit the sets of players displayed on the screen.')
+                        ),
+                        'top',
+                    ) %}
+                        <button
+                            class="btn btn-sm btn-outline-primary"
+                            hx-get="{{ url_for(
+                                'admin-screen-sets-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                screen_id=screen.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            <i class="bi-collection-fill pe-1"></i>
+                            {% set _first_set = screen.sorted_screen_sets | first %}
+                            {% if screen_type.board_based %}
+                                {{ _('Matches') if _first_set and _first_set.shows_team_matches else _('Boards') }}
+                            {% elif admin_event.is_team_event %}
+                                {{ _('Teams') }}
+                            {% else %}
+                                {{ _('Players') }}
+                            {% endif %}
+                        </button>
+                    {% endcall %}
+                {% endif %}
+                {% if not screen.family %}
+                    {{ admin_macros.display_controller_assign_dropdown(
+                        admin_event.sorted_display_controllers,
+                        'screen',
+                        screen.uniq_id,
+                    ) }}
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if client.can_manage_screens and not screen.family %}
+            <div class="d-flex align-items-center gap-1">
+                {% call macros.action_tooltip('info', _('Edit the properties of the screen.'), 'top') %}
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        hx-get="{{ url_for(
+                            'admin-screen-modal',
+                            action='update',
+                            event_uniq_id=admin_event.uniq_id,
+                            screen_id=screen.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-pencil-fill"></i>
+                    </button>
+                {% endcall %}
+                {% call macros.action_tooltip('info', _('Duplicate the screen.'), 'top') %}
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        hx-get="{{ url_for(
+                            'admin-screen-modal',
+                            action='clone',
+                            event_uniq_id=admin_event.uniq_id,
+                            screen_id=screen.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-copy"></i>
+                    </button>
+                {% endcall %}
+                {% call macros.action_tooltip('info', _('Delete the screen.'), 'top') %}
+                    <button
+                        class="btn btn-sm btn-outline-danger"
+                        hx-get="{{ url_for(
+                            'admin-screen-modal',
+                            action='delete',
+                            event_uniq_id=admin_event.uniq_id,
+                            screen_id=screen.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-trash-fill"></i>
+                    </button>
+                {% endcall %}
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}

@@ -1,174 +1,64 @@
-<div class="admin-screen-sets-modal-screen-set-div {% if not admin_screen_set and admin_screen.sorted_screen_sets|length > 1 %}cursor-grab{% endif %}">
+<div class="admin-screen-sets-modal-screen-set-div {% if admin_screen.sorted_screen_sets|length > 1 %}cursor-grab{% endif %}">
     <input type='hidden' name='item' value='{{ screen_set.id }}'/>
-    {% if admin_screen_set.id == screen_set.id %}
-        <form>
-            <div class="admin-screen-set-div edit border border-secondary p-2 mb-1">
-                <h4>
-                    {{ _('Properties') }}
-                </h4>
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6 mb-2">
-                        {{ admin_macros.select_input(
-                            name='tournament_id',
-                            label=_('Tournament:'),
-                            select_options=tournament_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6 mb-2">
-                        {{ admin_macros.text_input(
-                            name='name',
-                            label=_('Name:'),
-                            placeholder=_('E.g.: Boards %%f to %%l') if admin_screen.type in ['boards', 'input'] else _('E.g.: Players %%f to %%l'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-                {% if admin_screen.type in ['boards', 'input', 'players', 'ranking', 'check-in'] %}
-                    <h4 class="mt-4">
-                        {% if admin_screen.type in ['boards', 'input'] %}
-                            {{ _('Board selection (by number)') }}
-                        {% elif admin_screen.type in ('players', 'check-in') %}
-                            {{ _('Player selection (by alphabetical order)') }}
+    <div class="admin-screen-set-div border border-secondary p-1 mb-1">
+        <div class="d-flex gap-3 px-2 align-items-center">
+            {% if admin_screen.sorted_screen_sets|length > 1 %}
+                <i class="bi-grip-horizontal"></i>
+            {% endif %}
+            <div class="flex-grow-1">
+                <div>
+                    <b>
+                        {% if screen_set.tournament %}
+                            {{ _('Tournament: %(tournament_name)s', tournament_name=screen_set.tournament.name) }}
                         {% else %}
-                            {{ _('Player selection (by rank)') }}
-                        {% endif %}
-                    </h4>
-                    <div class="row gy-2 gx-3">
-                        <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
-                            {% if admin_screen.type in ['boards', 'input'] %}
-                                {% set tooltip_text=_('The number of the first board to select.') %}
-                            {% elif admin_screen.type in ('players', 'check-in') %}
-                                {% set tooltip_text=_('The number of the first player to select.') %}
-                            {% else %}
-                                {% set tooltip_text=_('The rank of the first player to select.') %}
-                            {% endif %}
-                            {{ admin_macros.number_input(
-                                name='first',
-                                label=_('First board:') if admin_screen.type in ['boards', 'input'] else _('First player:'),
-                                placeholder=1,
-                                tooltip_text=tooltip_text,
-                                data=data, errors=errors,
-                                min=1
-                            ) }}
-                        </div>
-                        <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
-                            {% if admin_screen.type in ['boards', 'input'] %}
-                                {% set tooltip_text=_('The number of the last board to select.') %}
-                            {% elif admin_screen.type in ('players', 'check-in') %}
-                                {% set tooltip_text=_('The number of the last player to select.') %}
-                            {% else %}
-                                {% set tooltip_text=_('The rank of the last player to select.') %}
-                            {% endif %}
-                            {{ admin_macros.number_input(
-                                name='last',
-                                label=_('Last board:') if admin_screen.type in ['boards', 'input'] else _('Last player:'),
-                                placeholder=_('last'),
-                                tooltip_text=tooltip_text,
-                                data=data, errors=errors,
-                                min=1
-                            ) }}
-                        </div>
-                        {% if admin_screen.type in ['boards', 'input'] %}
-                            <div class="col-4">
-                                {{ admin_macros.text_input(
-                                    name='fixed_boards_str',
-                                    label=_('Fixed boards:'),
-                                    placeholder=_('E.g.: %(string)s', string='501, 502'),
-                                    tooltip_text=_('Comma-separated board numbers; if this field is set, other fields are omitted.'),
-                                    data=data, errors=errors
-                                ) }}
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endif %}
-
-                <div class="mt-4 col-12 text-end">
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-primary text-nowrap mb-1"
-                        hx-patch="{{ url_for('admin-screen-set-update', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=admin_screen_set.id) }}"
-                        hx-indicator="#please-wait"
-                    >
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Save') }}
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-secondary text-nowrap mb-1"
-                        hx-get="{{ url_for('admin-screen-sets-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
-                        hx-indicator="#please-wait"
-                        hx-trigger="click, keyup[key=='Escape'] from:body"
-                    >
-                        <i class="bi-x-circle-fill pe-1"></i>
-                        {{ _('Cancel') }}
-                    </button>
-                </div>
-            </div>
-        </form>
-    {% else %}
-        <div class="admin-screen-set-div border border-secondary p-1 mb-1">
-            <div class="d-flex gap-3 px-2 align-items-center">
-                {% if not admin_screen_set and admin_screen.sorted_screen_sets|length > 1 %}
-                    <i class="bi-grip-horizontal"></i>
-                {% endif %}
-                <div class="flex-grow-1">
-                    <div>
-                        <b>
-                            {% if screen_set.tournament %}
-                                {{ _('Tournament: %(tournament_name)s', tournament_name=screen_set.tournament.name) }}
-                            {% else %}
-                                <span class="text-danger">
-                                    {{ _('Tournament: not set') }}
-                                </span>
-                            {% endif %}
-                        </b>
-                    </div>
-                    <div>
-                        {{ _('Selection: %(selection)s', selection=screen_set.numbers_str) }}
-                    </div>
-                    <div>
-                        {% if screen_set.name %}
-                            {{ _('Name: %(screen_set_name)s', name=screen_set.name) }}
-                        {% else %}
-                            <span class="fst-italic">
-                                {{ _('Name: by default') }}
+                            <span class="text-danger">
+                                {{ _('Tournament: not set') }}
                             </span>
                         {% endif %}
-                    </div>
+                    </b>
                 </div>
-                <div class="d-flex gap-2">
-                    {% if not admin_screen_set %}
-                        <button
-                            class="btn btn-sm btn-outline-primary text-nowrap"
-                            hx-get="{{ url_for('admin-screen-sets-set-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            <i class="bi-pencil-fill"></i>
-                        </button>
-                        <button
-                            class="btn btn-sm btn-outline-primary text-nowrap"
-                            hx-post="{{ url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        >
-                            <i class="bi-copy"></i>
-                        </button>
-                        <button
-                            class="btn btn-sm btn-outline-danger text-nowrap"
-                            hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            {% if admin_screen.sorted_screen_sets|length <= 1 %}
-                                disabled
-                            {% endif %}
-                        >
-                            <i class="bi-trash-fill"></i>
-                        </button>
+                <div>
+                    {{ _('Selection: %(selection)s', selection=screen_set.numbers_str) }}
+                </div>
+                <div>
+                    {% if screen_set.name %}
+                        {{ _('Name: %(screen_set_name)s', name=screen_set.name) }}
+                    {% else %}
+                        <span class="fst-italic">
+                            {{ _('Name: by default') }}
+                        </span>
                     {% endif %}
                 </div>
             </div>
+            <div class="d-flex gap-2">
+                <button
+                    class="btn btn-sm btn-outline-primary text-nowrap"
+                    hx-get="{{ url_for('admin-screen-set-update-modal', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="bi-pencil-fill"></i>
+                </button>
+                <button
+                    class="btn btn-sm btn-outline-primary text-nowrap"
+                    hx-post="{{ url_for('admin-screen-set-clone', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="bi-copy"></i>
+                </button>
+                <button
+                    class="btn btn-sm btn-outline-danger text-nowrap"
+                    hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {% if admin_screen.sorted_screen_sets|length <= 1 %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi-trash-fill"></i>
+                </button>
+            </div>
         </div>
-    {% endif %}
+    </div>
 </div>

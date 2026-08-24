@@ -1,0 +1,2 @@
+{% set paths = custom_upload_utils.tournament_server_paths(tournament.event, tournament) %}
+<span class="text-nowrap">{{ paths | join(', ') }}</span>

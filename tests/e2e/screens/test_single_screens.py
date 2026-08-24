@@ -1,12 +1,13 @@
 import re
+from typing import Any
 
 from data.event import Event
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
-from tests.test_config import TestUtils
-from utils.enum import Result, ScreenType
+from tests.test_config import ScreenType, TestUtils
+from utils.enum import Result
 
 
 EVENT_ID = 'event-test-single-screen'
@@ -57,13 +58,66 @@ class TestSingleScreensFunctionality:
         modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
 
-        page.get_by_test_id('accordion-screen-type-input').click()
-        card = page.locator(f"div.card:has-text('{name}')")
-        expect(card).to_be_visible()
-        button = card.locator('button[hx-get*="delete"]')
+        screen_type_section = page.get_by_test_id('accordion-screen-type-input')
+        if screen_type_section.get_attribute('aria-expanded') == 'false':
+            screen_type_section.click()
+        item = page.get_by_test_id('screens-item').filter(has_text=name)
+        expect(item).to_be_visible()
+        button = item.locator('button[hx-get*="delete"]')
         button.click()
         TestUtils.button_by_text(modal, 'Delete').click()
-        expect(page.locator(f"div.card:has-text('{name}')")).not_to_be_attached()
+        expect(
+            page.get_by_test_id('screens-item').filter(has_text=name)
+        ).not_to_be_attached()
+
+    def test_eye_link_updates_after_uniq_id_change(
+        self,
+        page: Page,
+        api_request_context: APIRequestContext,
+        unpaired_tournament: StoredTournament,
+    ):
+        stored_screen = TestUtils.create_screen(
+            api_request_context,
+            EVENT_ID,
+            'Eye Link Screen',
+            ScreenType.INPUT,
+            {'init_set_tournament_id': unpaired_tournament.id},
+        )
+        old_uniq_id = stored_screen.uniq_id
+        new_uniq_id = old_uniq_id + '-renamed'
+        eye_selector = f'#screen-eye-{stored_screen.id}'
+        try:
+            page.goto(f'/event/{EVENT_ID}/screens')
+            accordion = page.get_by_test_id(
+                f'accordion-screen-type-{ScreenType.INPUT.value}'
+            )
+            if accordion.get_attribute('aria-expanded') == 'false':
+                accordion.click()
+
+            item = page.locator(f'#collection-screens-item-{stored_screen.id}')
+            expect(item).to_be_visible()
+
+            # The eye link initially points to the original uniq ID
+            expect(page.locator(eye_selector)).to_have_attribute(
+                'href', re.compile(rf'/view/screen/{EVENT_ID}/{old_uniq_id}$')
+            )
+
+            # Open the edit modal and rename the screen's uniq ID
+            item.locator('button[hx-get*="screen-modal/update"]').click()
+            modal = page.locator('.modal-dialog')
+            expect(modal).to_be_visible()
+            page.get_by_test_id('uniq-id-update-button').click()
+            update_input = page.get_by_test_id('uniq-id-update-input')
+            expect(update_input).to_be_visible()
+            update_input.fill(new_uniq_id)
+            page.get_by_test_id('uniq-id-update-submit-button').click()
+
+            # The eye link in the background card must now point to the new uniq ID
+            expect(page.locator(eye_selector)).to_have_attribute(
+                'href', re.compile(rf'/view/screen/{EVENT_ID}/{new_uniq_id}$')
+            )
+        finally:
+            TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
 
     def test_check_in_screen(
         self,
@@ -123,7 +177,7 @@ class TestSingleScreensFunctionality:
 
         # Test that the page is updated after a player checks in on another screen
         api_request_context.patch(
-            f'/view/toggle-check-in/{EVENT_ID}/{SCREEN_ID}/{unpaired_tournament.id}/{barbara.id}'
+            f'/view/toggle-check-in/1/{EVENT_ID}/{SCREEN_ID}/{unpaired_tournament.id}/{barbara.id}'
         )
 
         row = rows.filter(has_text='BARBARA')
@@ -156,6 +210,8 @@ class TestSingleScreensFunctionality:
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('div.board-row')
         expect(rows).to_have_count(8)
+        unchanged_row = rows.filter(has_text='IRINA')
+        unchanged_row.evaluate('element => window.__unchangedResultEntryRow = element')
 
         another_lan_page = lan_context.new_page()
         another_lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
@@ -163,7 +219,7 @@ class TestSingleScreensFunctionality:
 
         # Test the primary result button
 
-        players = [
+        players: list[dict[str, Any]] = [
             {'name': 'ALYX', 'result': Result.WIN, 'button_text': '1 - 0'},
             {'name': 'BRUNO', 'result': Result.DRAW, 'button_text': '½ - ½'},
             {'name': 'MARIA', 'result': Result.LOSS, 'button_text': '0 - 1'},
@@ -181,6 +237,9 @@ class TestSingleScreensFunctionality:
 
             # Test that the page is updated
             expect(row.locator('div.score')).to_contain_text(str(player['result']))
+            assert unchanged_row.evaluate(
+                'element => element === window.__unchangedResultEntryRow'
+            )
 
             # That the other page is refreshed
             another_lan_page.bring_to_front()
@@ -189,6 +248,7 @@ class TestSingleScreensFunctionality:
                 str(player['result'])
             )
 
+        another_lan_page.close()
         TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
 
     def test_boards_screen(

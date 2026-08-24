@@ -1,0 +1,29 @@
+@font-face {
+    font-family: "{{ font_family }}";
+    src: url("{{ font_url }}") format("truetype");
+    font-weight: 400 900;
+    font-style: normal;
+}
+* {
+    font-family: {{ font_family }}, sans-serif;
+}
+body {
+    margin: 2rem auto;
+}
+h1, h2 {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+.positions-wrapper {
+}
+.position-wrapper {
+    display: flex;
+    flex-direction: column;
+    float: left;
+    position: relative;
+    margin: 5px;
+}
+svg {
+    height: 200px;
+}

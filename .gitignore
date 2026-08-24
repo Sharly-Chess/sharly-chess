@@ -1,27 +1,32 @@
+# IDE
 /.idea/
-/papi/
-/events/
-/logs/
-/fees/
-/custom/
-/docs/images/src/
+__pycache__/
+*.egg-info/
+
+# App data
 /papi-web.ini
 papi-web.ini.*
-tmp/
+/papi/
 db/
-__pycache__/
+/events/
+/logs/
+/custom/
+tmp/
+/dev-data/
 
+# Scripts
 /build/
 /dist/
 /export/
+/vendor/
 /test/
 /tests/data/
 /export-test/
 /scripts/i18n/models
 /bin/
 /tools/*
-
-*.egg-info/
+/docs/images/src/
+/fees/
 
 # Vim scratch files
 *.swp
@@ -105,3 +110,12 @@ init-credentials-local.py
 /scripts/access_levels/*.md
 
 /TAG_MESSAGE*.txt
+
+# Excel lock/temp files
+~$*
+
+# Generated Molter workbooks (rebuild with build_xlsx*.py)
+/docs/technical-appendices/molter/*.xlsx
+
+# Claude Code settings
+/.claude/

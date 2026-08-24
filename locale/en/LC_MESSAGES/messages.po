@@ -1,12 +1,12 @@
-msgid " [{default_choice}: {default_value}]: "
-msgstr ""
-
+#, python-brace-format
 msgid " [{yes_answer}/{no_answer}]?"
 msgstr ""
 
+#, python-brace-format
 msgid "#{board_number}"
 msgstr ""
 
+#, python-brace-format
 msgid "#{board_number} with {color}"
 msgstr ""
 
@@ -19,20 +19,52 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
+msgid "%(a)s vs %(b)s"
+msgstr ""
+
+#, python-format
 msgid "%(bye)s at round %(round)d"
 msgstr ""
 
 #, python-format
-msgid "%(minutes)d minutes after"
+msgid "%(count)s automatic group"
+msgid_plural "%(count)s automatic groups"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(first)s - %(last)s"
 msgstr ""
 
 #, python-format
-msgid "%(minutes)d minutes before"
+msgid "%(minutes)d min after"
 msgstr ""
 
 #, python-format
-msgid "%(num).1f point group -"
-msgid_plural "%(num).1f points group -"
+msgid "%(minutes)d min before"
+msgstr ""
+
+#, python-format
+msgid "%(n)d players freed from their soft constraints"
+msgstr ""
+
+#, python-format
+msgid "%(n)d team(s) could not be determined and were left unchanged."
+msgstr ""
+
+#, python-format
+msgid "%(n)d teams freed from their soft constraints"
+msgstr ""
+
+#, python-format
+msgid "%(num).1f %(unit)s group"
+msgid_plural "%(num).1f %(unit)s group"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num).1f point group"
+msgid_plural "%(num).1f points group"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -55,20 +87,32 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d family"
-msgid_plural "%(num)d families"
+msgid "%(num)d empty table to pair"
+msgid_plural "%(num)d empty tables to pair"
 msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d informative *** COLUMNS"
-msgid_plural "%(num)d informative *** COLUMNS"
+msgid "%(num)d event"
+msgid_plural "%(num)d events"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d informative *** COLUMNS, SINGULAR"
+msgid_plural "%(num)d informative *** COLUMNS, PLURAL"
 msgstr[0] "%(num)d informative"
 msgstr[1] "%(num)d informative"
 
 #, python-format
-msgid "%(num)d optional *** COLUMNS"
-msgid_plural "%(num)d optional *** COLUMNS"
+msgid "%(num)d multi-screen"
+msgid_plural "%(num)d multi-screens"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d optional *** COLUMNS, SINGULAR"
+msgid_plural "%(num)d optional *** COLUMNS, PLURAL"
 msgstr[0] "%(num)d optional"
 msgstr[1] "%(num)d optional"
 
@@ -91,6 +135,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d player will be paired"
+msgid_plural "%(num)d players will be paired"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] ""
@@ -109,14 +159,38 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d required *** COLUMNS"
-msgid_plural "%(num)d required *** COLUMNS"
+msgid "%(num)d prohibited-pairing group is configured for this round."
+msgid_plural "%(num)d prohibited-pairing groups are configured for this round."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d required *** COLUMNS, SINGULAR"
+msgid_plural "%(num)d required *** COLUMNS, PLURAL"
 msgstr[0] "%(num)d required"
 msgstr[1] "%(num)d required"
 
 #, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d set"
+msgid_plural "%(num)d sets"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d team"
+msgid_plural "%(num)d teams"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d time"
+msgid_plural "%(num)d times"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -145,7 +219,7 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr ""
 
 #, python-format
-msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
+msgid "%(seconds)d sec."
 msgstr ""
 
 #, python-format
@@ -154,6 +228,10 @@ msgstr ""
 
 #, python-format
 msgid "%(set_name)s (registered players)"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (registered teams)"
 msgstr ""
 
 #, python-format
@@ -189,6 +267,9 @@ msgstr ""
 msgid "%t (by board)"
 msgstr ""
 
+msgid "%t (by match)"
+msgstr ""
+
 msgid "%t (by player)"
 msgstr ""
 
@@ -197,6 +278,10 @@ msgstr ""
 
 #, python-format
 msgid "%t [Boards %f-%l]"
+msgstr ""
+
+#, python-format
+msgid "%t [Matches %f-%l]"
 msgstr ""
 
 msgid "%t crosstable"
@@ -228,24 +313,19 @@ msgstr ""
 msgid "(by default)"
 msgstr ""
 
-msgid "(family)"
-msgstr ""
-
+#, python-brace-format
 msgid "(inheritance: {inheritance})"
 msgstr ""
 
 msgid "(inherited)"
 msgstr ""
 
-msgid "(no screens)"
+msgid "(multi-screen)"
 msgstr ""
 
 #, python-format
 msgid "(replace [%(object_uniq_id)s])"
 msgstr ""
-
-msgid "*** Doc Link"
-msgstr "https://sharly-chess.com/getting-started/"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
 msgstr "SC_C"
@@ -256,8 +336,8 @@ msgstr "SC_I"
 msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
 msgstr "SC_D"
 
-msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
-msgstr "SC_F"
+msgid "*** KEYBOARD SHORTCUT FOR THE MULTI-SCREENS TAB"
+msgstr "SC_M"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
 msgstr "SC_A"
@@ -274,9 +354,6 @@ msgstr "SC_R"
 msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
 msgstr "SC_S"
 
-msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
-msgstr "SC_M"
-
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
 
@@ -292,29 +369,20 @@ msgstr ""
 msgid "/move"
 msgstr ""
 
-msgid "0 - 0 (U)"
-msgstr ""
-
-msgid "0 - 1 (U)"
-msgstr ""
-
-msgid "0 - ½ (U)"
-msgstr ""
-
-msgid "1 - 0 (U)"
-msgstr ""
-
 msgid "1.4.1 — Games played"
 msgstr ""
 
 msgid "1.4.1c (default — forfeit excluded)"
 msgstr ""
 
-msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
-msgstr ""
-
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
+msgstr ""
+
+msgid "1.4.1e: game after the title result was reached, ignored by the subset search."
+msgstr ""
+
+msgid "1.4.1f: game against a defeated opponent, ignored by the subset search."
 msgstr ""
 
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
@@ -397,13 +465,19 @@ msgstr ""
 msgid "1/3 of %(n)s opponents, min 3"
 msgstr ""
 
-msgid "162 Point system"
+#, python-brace-format
+msgid "162 Point system results: {symbols}"
 msgstr ""
 
+#, python-brace-format
 msgid "172 Starting rank method {method}"
 msgstr ""
 
+#, python-brace-format
 msgid "192 Encoded type {type} (default: {default})"
+msgstr ""
+
+msgid "1st"
 msgstr ""
 
 msgid "1st day of the month"
@@ -416,13 +490,7 @@ msgstr ""
 msgid "202 and 212 tie-breaks (212 used)"
 msgstr ""
 
-msgid "212 Tie-breaks with PTS not used first"
-msgstr ""
-
 msgid "250 Accelerated rounds"
-msgstr ""
-
-msgid "260 Prohibited pairings"
 msgstr ""
 
 msgid "299 Abnormal assignment points"
@@ -463,6 +531,7 @@ msgstr ""
 msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
 msgstr ""
 
+#, python-brace-format
 msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
 msgstr ""
 
@@ -470,9 +539,11 @@ msgstr ""
 msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
 msgstr ""
 
+#, python-brace-format
 msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
 msgstr ""
 
+#, python-brace-format
 msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}."
 msgstr ""
 
@@ -510,12 +581,41 @@ msgstr ""
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
+msgid "A Scheveningen is a match between exactly two teams."
+msgstr ""
+
+#, python-brace-format
+msgid "A Scheveningen is played on {min} boards at least."
+msgstr ""
+
+#, python-brace-format
+msgid "A Scheveningen on {boards} boards is played over {expected} rounds, so that every player meets every opponent."
+msgstr ""
+
 msgid "A file is expected."
 msgstr ""
 
+msgid "A hard constraint is always enforced. A soft constraint is relaxed only as much as needed when pairing is otherwise impossible, starting with the weakest players."
+msgstr ""
+
+msgid "A minimum and a maximum rating are expected."
+msgstr ""
+
+msgid "A number is expected."
+msgstr ""
+
+#, python-brace-format
+msgid "A pairing number between 1 and {max} is expected."
+msgstr ""
+
+msgid "A player starts every round with these points added to those they have scored. They only are used for pairing, never for ranking, and are not part of the results submitted for rating."
+msgstr ""
+
+#, python-brace-format
 msgid "A player with {column}=[{value}] already exists in the event."
 msgstr ""
 
+#, python-brace-format
 msgid "A player with {column}=[{value}] already exists in tournament [{tournament}]."
 msgstr ""
 
@@ -528,13 +628,28 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
+msgid "A positive number of groups is expected."
+msgstr ""
+
+msgid "A positive rating step is expected."
+msgstr ""
+
 msgid "A positive value is expected."
 msgstr ""
 
+#, python-brace-format
+msgid "A round between 1 and {max} is expected."
+msgstr ""
+
+#, python-brace-format
 msgid "A set named [{name}] already exists. Tick the overwrite option to replace it."
 msgstr ""
 
 msgid "A set with this name already existe."
+msgstr ""
+
+#, python-brace-format
+msgid "A value between 0 and {max} is expected."
 msgstr ""
 
 msgid "A value is expected."
@@ -546,17 +661,36 @@ msgstr ""
 msgid "APPLIED"
 msgstr ""
 
+msgid "Absence:"
+msgstr ""
+
 msgid "Absent"
+msgstr ""
+
+msgid "Absent (hole in lineup)"
 msgstr ""
 
 #, python-format
 msgid "Absent players (%(count)d)"
 msgstr ""
 
+#, python-format
+msgid "Absent teams (%(count)d)"
+msgstr ""
+
+msgid "Absent — forfeit"
+msgstr ""
+
 msgid "Absents"
 msgstr ""
 
 msgid "Absolute"
+msgstr ""
+
+msgid "Accelerated rounds"
+msgstr ""
+
+msgid "Acceleration groups"
 msgstr ""
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
@@ -571,21 +705,28 @@ msgstr ""
 msgid "Access level already defined for the account."
 msgstr ""
 
+msgid "Access log files"
+msgstr ""
+
 msgid "Access unrated and penalty results."
 msgstr ""
 
 msgid "Account"
 msgstr ""
 
+#, python-brace-format
 msgid "Account [{account_name}] already exists."
 msgstr ""
 
+#, python-brace-format
 msgid "Account [{account_name}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Account [{account_name}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Account [{account_name}] has been updated."
 msgstr ""
 
@@ -604,6 +745,9 @@ msgstr ""
 msgid "Actions / Access levels"
 msgstr ""
 
+msgid "Active *** ACTIVE ACCOUNT"
+msgstr "Active"
+
 msgid "Actual"
 msgstr ""
 
@@ -619,7 +763,13 @@ msgstr ""
 msgid "Add a group to the list."
 msgstr ""
 
+msgid "Add a new affiliation to the options."
+msgstr ""
+
 msgid "Add a permission to the account."
+msgstr ""
+
+msgid "Add a player"
 msgstr ""
 
 msgid "Add a player to the event."
@@ -646,13 +796,16 @@ msgstr ""
 msgid "Add a tournament to the event."
 msgstr ""
 
+msgid "Add accelerated rounds"
+msgstr ""
+
 msgid "Add an account to the event."
 msgstr ""
 
 msgid "Add an hour to the timer."
 msgstr ""
 
-msgid "Add families"
+msgid "Add group"
 msgstr ""
 
 msgid "Add manual estimated ratings"
@@ -664,13 +817,25 @@ msgstr ""
 msgid "Add players"
 msgstr ""
 
-msgid "Add screens"
+msgid "Add screens, multi-screens or whole screen types to a menu, then reorder them as you like."
+msgstr ""
+
+msgid "Add the selected sets"
 msgstr ""
 
 msgid "Add tie-break"
 msgstr ""
 
+msgid "Add to the current values"
+msgstr ""
+
 msgid "Add tournaments"
+msgstr ""
+
+msgid "Added automatically, on top of any manual points below."
+msgstr ""
+
+msgid "Additional information"
 msgstr ""
 
 msgid "Administration"
@@ -685,7 +850,20 @@ msgstr ""
 msgid "Affects the rating that will be chosen for each player."
 msgstr ""
 
+msgid "Affiliation"
+msgstr ""
+
+msgid "Affiliation (club, league...)"
+msgstr ""
+
+msgid "Affiliation."
+msgstr ""
+
 msgid "Afghanistan"
+msgstr ""
+
+#, python-brace-format
+msgid "After round #{round}"
 msgstr ""
 
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
@@ -712,8 +890,19 @@ msgstr ""
 msgid "All"
 msgstr ""
 
+#, python-format
+msgid "All \"%(screen_type)s\" screens"
+msgstr ""
+
+#, python-format
+msgid "All \"%(screen_type)s\" screens already belong to a menu."
+msgstr ""
+
 msgid "All Events"
 msgstr ""
+
+msgid "All absent *** ALL TEAMS ABSENT"
+msgstr "All absent"
 
 msgid "All hours have been cleared."
 msgstr ""
@@ -724,10 +913,13 @@ msgstr ""
 msgid "All players marked as \"Present\"."
 msgstr ""
 
-msgid "All the boards"
+msgid "All present *** ALL TEAMS PRESENT"
+msgstr "All present"
+
+msgid "All teams are assigned to a tournament."
 msgstr ""
 
-msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
+msgid "All the boards"
 msgstr ""
 
 msgid "All the dependant objects will also be deleted:"
@@ -739,7 +931,11 @@ msgstr ""
 msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr ""
 
+#, python-brace-format
 msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
+msgstr ""
+
+msgid "All the tables"
 msgstr ""
 
 msgid "All the tournaments"
@@ -752,9 +948,6 @@ msgid "Allocate players to the first tournament for which the criteria are met."
 msgstr ""
 
 msgid "Allow a player to take part in multiple tournaments."
-msgstr ""
-
-msgid "Allow links to this screen"
 msgstr ""
 
 msgid "Allow multi-tournament players"
@@ -787,16 +980,25 @@ msgstr ""
 msgid "Allows pairing of the players, either using a pairing engine or manually"
 msgstr ""
 
+msgid "Alphabetical"
+msgstr ""
+
 msgid "An error occurred. Consult the logs for more details."
 msgstr ""
 
 msgid "An integer greater than 1 is expected."
 msgstr ""
 
+msgid "An integer is expected."
+msgstr ""
+
 msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
 msgstr ""
 
 msgid "An unexpected error occurred."
+msgstr ""
+
+msgid "An update of Sharly Chess is available, but the updater tool (Sparkle) failed."
 msgstr ""
 
 msgid "Andorra"
@@ -820,6 +1022,9 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
+msgid "Application startup..."
+msgstr ""
+
 msgid "Apply"
 msgstr ""
 
@@ -835,15 +1040,28 @@ msgstr ""
 msgid "Arbiter"
 msgstr ""
 
+msgid "Arbiter:"
+msgstr ""
+
+#, python-format
+msgid "Arbiter: %(name)s"
+msgstr ""
+
+msgid "Arbiters"
+msgstr ""
+
 msgid "Archive"
 msgstr ""
 
+#, python-brace-format
 msgid "Archive [{archive}] could not be restored, consult the logs for more details."
 msgstr ""
 
+#, python-brace-format
 msgid "Archive [{archive}] successfully deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr ""
 
@@ -853,6 +1071,7 @@ msgstr ""
 msgid "Archive the event."
 msgstr ""
 
+#, python-brace-format
 msgid "Archived ({num})"
 msgstr ""
 
@@ -874,7 +1093,13 @@ msgstr ""
 msgid "Assign a screen to the controller."
 msgstr ""
 
+msgid "Assign this team to a tournament now or leave unassigned."
+msgstr ""
+
 msgid "Assign to a display controller."
+msgstr ""
+
+msgid "Assigned display"
 msgstr ""
 
 msgid "At least a minimum or a maximum category must be defined."
@@ -889,6 +1114,7 @@ msgstr ""
 msgid "At least one value is expected."
 msgstr ""
 
+#, python-brace-format
 msgid "At least {min} games must be played."
 msgstr ""
 
@@ -897,6 +1123,9 @@ msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "At most one decimal is expected."
+msgstr ""
 
 msgid "Aug *** AUGUST"
 msgstr "Aug"
@@ -911,6 +1140,13 @@ msgid "Austria"
 msgstr ""
 
 msgid "Auto-update"
+msgstr ""
+
+msgid "Automatic"
+msgstr ""
+
+#, python-format
+msgid "Automatically build groups of %(members)s sharing the chosen attribute; members of the same group are kept from being paired together."
 msgstr ""
 
 msgid "Automatically create timer hours matching the round schedule of a specific tournament."
@@ -938,10 +1174,33 @@ msgstr ""
 msgid "Average performance rating of opponents"
 msgstr ""
 
+msgid "Average rating of entire team"
+msgstr ""
+
 msgid "Average rating of opponents"
 msgstr ""
 
+msgid "Average rating of round #1 lineup"
+msgstr ""
+
+msgid "Average rating of the roster."
+msgstr ""
+
+#, python-format
+msgid "Average rating: %(rating)d"
+msgstr ""
+
+#, python-brace-format
 msgid "Average rating: {rating}"
+msgstr ""
+
+msgid "Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER"
+msgstr "Avg. perf."
+
+msgid "Avoid pairing by"
+msgstr ""
+
+msgid "Awaiting opponent"
 msgstr ""
 
 msgid "Azerbaijan"
@@ -975,13 +1234,16 @@ msgstr ""
 msgid "Background colour: %(color)s"
 msgstr ""
 
-msgid "Background image:"
+msgid "Background image URL:"
 msgstr ""
 
 msgid "Bahamas"
 msgstr ""
 
 msgid "Bahrain"
+msgstr ""
+
+msgid "Baku acceleration system"
 msgstr ""
 
 msgid "Bangladesh"
@@ -993,10 +1255,22 @@ msgstr ""
 msgid "Base date"
 msgstr ""
 
+msgid "Base lineup"
+msgstr ""
+
+msgid "Base lineup:"
+msgstr ""
+
+msgid "Bd"
+msgstr ""
+
 msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Bd."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
+msgstr ""
+
+msgid "Before the first round"
 msgstr ""
 
 msgid "Belarus"
@@ -1051,9 +1325,11 @@ msgstr ""
 msgid "Board #%(board_number)d with %(color)s"
 msgstr ""
 
+#, python-brace-format
 msgid "Board #{board_number} with {color}"
 msgstr ""
 
+#, python-brace-format
 msgid "Board #{board_number} {color}"
 msgstr ""
 
@@ -1078,7 +1354,19 @@ msgstr ""
 msgid "Board and Color"
 msgstr ""
 
+msgid "Board count"
+msgstr ""
+
+msgid "Board count, then bottom board elimination"
+msgstr ""
+
+msgid "Board count, then top board results"
+msgstr ""
+
 msgid "Board is not the same as the opponent's."
+msgstr ""
+
+msgid "Board number"
 msgstr ""
 
 msgid "Board numbers:"
@@ -1087,8 +1375,11 @@ msgstr ""
 msgid "Board selection (by number)"
 msgstr ""
 
+msgid "Board selection:"
+msgstr ""
+
 #, python-format
-msgid "Board sets of screen [%(screen_uniq_id)s]"
+msgid "Board sets of screen %(screen_name)s"
 msgstr ""
 
 msgid "Board:"
@@ -1111,6 +1402,16 @@ msgstr ""
 msgid "Bolivia"
 msgstr ""
 
+msgid "Bonus / penalty points"
+msgstr ""
+
+#, python-brace-format
+msgid "Bonus / penalty points must be between {min} and {max}."
+msgstr ""
+
+msgid "Bonus / penalty points updated."
+msgstr ""
+
 msgid "Border"
 msgstr ""
 
@@ -1118,6 +1419,9 @@ msgid "Bosnia & Herzegovina"
 msgstr ""
 
 msgid "Botswana"
+msgstr ""
+
+msgid "Bottom board elimination"
 msgstr ""
 
 msgid "Brazil"
@@ -1144,12 +1448,19 @@ msgstr ""
 msgid "Burundi"
 msgstr ""
 
+msgid "By average performance"
+msgstr ""
+
+msgid "By best single-round performance"
+msgstr ""
+
 msgid "By board"
 msgstr ""
 
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr ""
 
+#, python-brace-format
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
 msgstr ""
 
@@ -1160,7 +1471,31 @@ msgstr ""
 msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
 msgstr ""
 
+msgid "By final standing"
+msgstr ""
+
+msgid "By first / last board number"
+msgstr ""
+
+msgid "By first / last pairing (fixed boards keep their pairing position)"
+msgstr ""
+
+msgid "By match"
+msgstr ""
+
+msgid "By number of groups (balanced player counts)"
+msgstr ""
+
 msgid "By player"
+msgstr ""
+
+msgid "By rating step"
+msgstr ""
+
+msgid "By specific board numbers"
+msgstr ""
+
+msgid "Bye"
 msgstr ""
 
 #, python-format
@@ -1170,12 +1505,25 @@ msgstr ""
 msgid "Byes *** ZPB, HPB or FPB"
 msgstr "Byes"
 
+#, python-brace-format
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Byes for past rounds can be edited from the pairings page for that round."
+msgstr ""
+
 msgid "Byes will not be impacted."
+msgstr ""
+
+msgid "C2 *** BYE ELIGIBILITY CRITERION"
+msgstr "C2"
+
+msgid "C2: whether the player may take the pairing-allocated bye — a player can only ever receive one."
+msgstr ""
+
+msgid "C2: whether the team may take the pairing-allocated bye — a team can only ever receive one."
 msgstr ""
 
 msgid "CA"
@@ -1240,10 +1588,33 @@ msgstr ""
 msgid "Candidate Master"
 msgstr ""
 
-msgid "Cannot be both chief and deputy on the same tournament."
+msgid "Cannot have multiple arbiter roles on the same tournament."
+msgstr ""
+
+#, python-brace-format
+msgid "Cannot tile {remaining} remaining players into a base table for {t} teams."
 msgstr ""
 
 msgid "Cape Verde"
+msgstr ""
+
+msgid "Captain"
+msgstr ""
+
+msgid "Captain name"
+msgstr ""
+
+msgid "Captain's name"
+msgstr ""
+
+msgid "Captain:"
+msgstr ""
+
+#, python-format
+msgid "Captain: %(name)s"
+msgstr ""
+
+msgid "Card view"
 msgstr ""
 
 msgid "Cash"
@@ -1286,13 +1657,10 @@ msgstr ""
 msgid "Change the player's tournament."
 msgstr ""
 
+msgid "Changelog"
+msgstr ""
+
 msgid "Check connection"
-msgstr ""
-
-msgid "Check the box to allow other screens to display a link to the screen of this family."
-msgstr ""
-
-msgid "Check the box to allow other screens to display a link to this screen."
 msgstr ""
 
 msgid "Check-in"
@@ -1328,6 +1696,9 @@ msgstr ""
 msgid "Chinese Taipei"
 msgstr ""
 
+msgid "Choose a captain from the team roster, or enter the name of a non-playing captain."
+msgstr ""
+
 msgid "Choose a random player"
 msgstr ""
 
@@ -1337,13 +1708,25 @@ msgstr ""
 msgid "Choose at least one value."
 msgstr ""
 
-msgid "Choose families to add"
+msgid "Choose between an individual or team event. Cannot be changed after the event has been created."
+msgstr ""
+
+msgid "Choose multi-screens to add"
+msgstr ""
+
+msgid "Choose one or more players."
 msgstr ""
 
 msgid "Choose one, many or no players."
 msgstr ""
 
 msgid "Choose one, many or no tournaments."
+msgstr ""
+
+msgid "Choose one, several or no teams (all if none)."
+msgstr ""
+
+msgid "Choose screen types to add"
 msgstr ""
 
 msgid "Choose screens to add"
@@ -1355,9 +1738,6 @@ msgstr ""
 msgid "Choose your language"
 msgstr ""
 
-msgid "Clear Log"
-msgstr ""
-
 msgid "Clear all"
 msgstr ""
 
@@ -1367,7 +1747,22 @@ msgstr ""
 msgid "Clear all the filters."
 msgstr ""
 
+msgid "Clear board results between players first before unpairing."
+msgstr ""
+
+msgid "Clear logs"
+msgstr ""
+
+msgid "Clear result"
+msgstr ""
+
+msgid "Clear the tag filter."
+msgstr ""
+
 msgid "Click and drag to select balanced groups."
+msgstr ""
+
+msgid "Click each board to toggle the colour of the first team. White = first team plays white on that board, black = first team plays black."
 msgstr ""
 
 msgid "Click here to support to the Sharly Chess project and get your supporter certificate!"
@@ -1392,6 +1787,9 @@ msgstr ""
 msgid "Click to mark as &quot;%(status)s&quot;"
 msgstr ""
 
+msgid "Click to toggle check-in."
+msgstr ""
+
 msgid "Close"
 msgstr ""
 
@@ -1404,6 +1802,9 @@ msgstr "Club"
 msgid "Club not specified"
 msgstr ""
 
+msgid "Club of the players"
+msgstr ""
+
 msgid "Club threshold"
 msgstr ""
 
@@ -1413,35 +1814,55 @@ msgstr ""
 msgid "Clubs"
 msgstr ""
 
+msgid "Coefficient"
+msgstr ""
+
 msgid "Colombia"
 msgstr ""
 
 msgid "Color"
 msgstr ""
 
+#, python-brace-format
 msgid "Color [{color}] can't be used with an opponent."
 msgstr ""
 
+#, python-brace-format
 msgid "Color [{color}] can't be used without an opponent."
 msgstr ""
 
 msgid "Colors and delays"
 msgstr ""
 
+msgid "Colour"
+msgstr ""
+
 #, python-format
 msgid "Colour #%(num)d:"
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
 msgstr ""
 
+#, python-brace-format
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
 msgstr ""
 
 msgid "Colour history"
+msgstr ""
+
+msgid "Colour pattern:"
+msgstr ""
+
+msgid "Colour rule:"
+msgstr ""
+
+msgid "Colour thresholds"
 msgstr ""
 
 msgid "Columns"
@@ -1450,7 +1871,7 @@ msgstr ""
 msgid "Columns:"
 msgstr ""
 
-msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
+msgid "Comma-separated board numbers to show."
 msgstr ""
 
 msgid "Comment"
@@ -1480,18 +1901,35 @@ msgstr ""
 msgid "Complementary prize"
 msgstr ""
 
+msgid "Complementary value"
+msgstr ""
+
 msgid "Complete Team"
+msgstr ""
+
+msgid "Configuration"
 msgstr ""
 
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
 
+msgid "Configure prohibited pairings for this round."
+msgstr ""
+
 msgid "Configure the category sets, which are available for all events."
+msgstr ""
+
+msgid "Configure the tags, which are available for all events."
 msgstr ""
 
 msgid "Configure the tie-breaks of the tournament."
 msgstr ""
 
+#, python-brace-format
+msgid "Confirm the new data folder \"{folder}\"?"
+msgstr ""
+
+#, python-brace-format
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr ""
 
@@ -1507,6 +1945,7 @@ msgstr ""
 msgid "Connection parameters"
 msgstr ""
 
+#, python-brace-format
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
 msgstr ""
 
@@ -1520,9 +1959,6 @@ msgid "Consider all paired games for the final round as draws."
 msgstr ""
 
 msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
-msgstr ""
-
-msgid "Console logging level: {console_log_level}"
 msgstr ""
 
 msgid "Consult the logs for more details."
@@ -1540,6 +1976,9 @@ msgstr ""
 msgid "Contact email:"
 msgstr ""
 
+msgid "Content"
+msgstr ""
+
 msgid "Continue"
 msgstr ""
 
@@ -1552,6 +1991,10 @@ msgstr ""
 msgid "Cote d’Ivoire"
 msgstr ""
 
+msgid "Could not add the pairing."
+msgstr ""
+
+#, python-brace-format
 msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
@@ -1585,7 +2028,16 @@ msgstr ""
 msgid "Create a display controller now to get started."
 msgstr ""
 
-msgid "Create a family now to get started."
+msgid "Create a menu"
+msgstr ""
+
+msgid "Create a menu now to get started."
+msgstr ""
+
+msgid "Create a multi-screen"
+msgstr ""
+
+msgid "Create a multi-screen now to get started."
 msgstr ""
 
 msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
@@ -1600,10 +2052,10 @@ msgstr ""
 msgid "Create a screen"
 msgstr ""
 
-msgid "Create a screen family"
+msgid "Create a screen now to get started."
 msgstr ""
 
-msgid "Create a screen now to get started."
+msgid "Create a team"
 msgstr ""
 
 msgid "Create a timer"
@@ -1642,10 +2094,19 @@ msgstr ""
 msgid "Create event"
 msgstr ""
 
+msgid "Create events"
+msgstr ""
+
 msgid "Create hour"
 msgstr ""
 
 msgid "Create hours from tournament"
+msgstr ""
+
+msgid "Create menu"
+msgstr ""
+
+msgid "Create multi-screen"
 msgstr ""
 
 msgid "Create permission"
@@ -1666,7 +2127,13 @@ msgstr ""
 msgid "Create screen"
 msgstr ""
 
-msgid "Create screen family"
+msgid "Create set"
+msgstr ""
+
+msgid "Create team"
+msgstr ""
+
+msgid "Create teams and assign them to tournaments."
 msgstr ""
 
 msgid "Create tie-break"
@@ -1681,6 +2148,7 @@ msgstr ""
 msgid "Create with default screens"
 msgstr ""
 
+#, python-brace-format
 msgid "Creator: {template_creator}"
 msgstr ""
 
@@ -1711,6 +2179,7 @@ msgstr ""
 msgid "Crosstable %f-%l"
 msgstr ""
 
+#, python-brace-format
 msgid "Crosstable after round #{round}"
 msgstr ""
 
@@ -1720,6 +2189,10 @@ msgstr ""
 msgid "Cuba"
 msgstr ""
 
+msgid "Curacao"
+msgstr ""
+
+#, python-brace-format
 msgid "Current ({num})"
 msgstr ""
 
@@ -1727,6 +2200,9 @@ msgid "Current events"
 msgstr ""
 
 msgid "Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments."
+msgstr ""
+
+msgid "Current roster"
 msgstr ""
 
 msgid "Current round"
@@ -1739,13 +2215,22 @@ msgstr ""
 msgid "Current title:"
 msgstr ""
 
+#, python-brace-format
+msgid "Current version: Sharly Chess {version}"
+msgstr ""
+
+#, python-brace-format
 msgid "Currently displaying rotator [{name}]"
 msgstr ""
 
+#, python-brace-format
 msgid "Currently displaying screen [{name}]"
 msgstr ""
 
 msgid "Custom"
+msgstr ""
+
+msgid "Custom accelerated system"
 msgstr ""
 
 msgid "Custom sets"
@@ -1757,6 +2242,7 @@ msgstr ""
 msgid "Cut values"
 msgstr ""
 
+#, python-brace-format
 msgid "Cut {value} *** CUT TIE BREAK NAME"
 msgstr "Cut {value}"
 
@@ -1766,13 +2252,13 @@ msgstr ""
 msgid "Czech Republic"
 msgstr ""
 
+msgid "D *** TEAM RANKING HEADER DRAW"
+msgstr "D"
+
 msgid "DCA"
 msgstr ""
 
 msgid "DD/MM/YYYY"
-msgstr ""
-
-msgid "DMG does not contain exactly one folder as expected."
 msgstr ""
 
 msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
@@ -1788,6 +2274,9 @@ msgid "Daily"
 msgstr ""
 
 msgid "Dashed border"
+msgstr ""
+
+msgid "Data folder"
 msgstr ""
 
 msgid "Data loss at tournaments, players and pairings level."
@@ -1809,6 +2298,7 @@ msgstr ""
 msgid "Database"
 msgstr ""
 
+#, python-brace-format
 msgid "Database [{database}] successfully updated."
 msgstr ""
 
@@ -1839,6 +2329,9 @@ msgstr ""
 msgid "Default alert messages"
 msgstr ""
 
+msgid "Default prizes"
+msgstr ""
+
 msgid "Default sets can't be deleted."
 msgstr ""
 
@@ -1846,6 +2339,10 @@ msgid "Default timer settings"
 msgstr ""
 
 msgid "Default timers"
+msgstr ""
+
+#, python-format
+msgid "Define a rating range and how to split it. One category is created per rating band, with a single rating criterion and the default prizes below (amounts in %(currency)s). You can fine-tune them afterwards."
 msgstr ""
 
 msgid "Define as main category"
@@ -1857,19 +2354,28 @@ msgstr ""
 msgid "Define balanced groups"
 msgstr ""
 
+msgid "Define the content of the menu."
+msgstr ""
+
 msgid "Define the criteria for players to belong to this category."
 msgstr ""
 
 msgid "Define the prizes of the category."
 msgstr ""
 
-msgid "Define the screens and screen families to display."
+msgid "Define the screens and multi-screens to display."
 msgstr ""
 
 msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
 msgstr ""
 
+msgid "Defines how team colour preferences are calculated. Type A uses simple White/Black preferences, while Type B distinguishes between strong and mild preferences based on colour history and colour difference."
+msgstr ""
+
 msgid "Definitive withdrawal"
+msgstr ""
+
+msgid "Delay"
 msgstr ""
 
 #, python-format
@@ -1882,6 +2388,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+#, python-brace-format
 msgid "Delete <b>{value}</b>"
 msgstr ""
 
@@ -1892,6 +2399,15 @@ msgid "Delete all hours for this timer and start fresh."
 msgstr ""
 
 msgid "Delete display controller"
+msgstr ""
+
+msgid "Delete every player of the event"
+msgstr ""
+
+msgid "Delete menu"
+msgstr ""
+
+msgid "Delete multi-screen"
 msgstr ""
 
 msgid "Delete player"
@@ -1912,7 +2428,7 @@ msgstr ""
 msgid "Delete screen"
 msgstr ""
 
-msgid "Delete screen family"
+msgid "Delete team"
 msgstr ""
 
 msgid "Delete the account."
@@ -1927,13 +2443,19 @@ msgstr ""
 msgid "Delete the existing players"
 msgstr ""
 
+msgid "Delete the menu."
+msgstr ""
+
+msgid "Delete the multi-screen."
+msgstr ""
+
 msgid "Delete the rotator."
 msgstr ""
 
-msgid "Delete the screen family."
+msgid "Delete the screen."
 msgstr ""
 
-msgid "Delete the screen."
+msgid "Delete the team."
 msgstr ""
 
 msgid "Delete the timer."
@@ -1957,6 +2479,9 @@ msgstr ""
 msgid "Deletes all the criteria of this category."
 msgstr ""
 
+msgid "Deleting a tag removes it from the events that use it."
+msgstr ""
+
 msgid "Deletion date"
 msgstr ""
 
@@ -1965,6 +2490,9 @@ msgstr ""
 
 msgid "Denmark"
 msgstr ""
+
+msgid "Department *** EVENT TAG NAME"
+msgstr "Department"
 
 msgid "Deputy Chief Arbitration"
 msgstr ""
@@ -1981,6 +2509,9 @@ msgstr ""
 msgid "Description"
 msgstr ""
 
+msgid "Detail the grid by player (one row per player, individual results)."
+msgstr ""
+
 msgid "Details"
 msgstr ""
 
@@ -1990,10 +2521,10 @@ msgstr ""
 msgid "Direct encounter"
 msgstr ""
 
-msgid "Director:"
+msgid "Direct-encounter ranking for tied teams using a separate crosstable, with secondary-score fallback and recursive sub-group resolution."
 msgstr ""
 
-msgid "Directory [{folder}] already exists."
+msgid "Director:"
 msgstr ""
 
 msgid "Disabled"
@@ -2005,21 +2536,29 @@ msgstr ""
 msgid "Display Controller"
 msgstr ""
 
+msgid "Display controller"
+msgstr ""
+
+#, python-brace-format
 msgid "Display controller [{display_controller}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{display_controller}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Display controller [{display_controller}] has been updated."
 msgstr ""
 
 msgid "Display controllers"
 msgstr ""
 
+#, python-brace-format
 msgid "Display controllers ({num})"
 msgstr ""
 
+#, python-brace-format
 msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "D<u>i</u>splay controllers ({num})"
 
@@ -2027,6 +2566,9 @@ msgid "Display controllers allow you to control screens at your event from your 
 msgstr ""
 
 msgid "Display history on hover"
+msgstr ""
+
+msgid "Display options"
 msgstr ""
 
 msgid "Display the exit button"
@@ -2067,6 +2609,7 @@ msgstr ""
 msgid "Djibouti"
 msgstr ""
 
+#, python-brace-format
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr ""
 
@@ -2078,25 +2621,33 @@ msgstr ""
 msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
 msgstr ""
 
-msgid "Do not recover"
+#, python-format
+msgid "Do not pair for round #%(round)d"
 msgstr ""
 
 msgid "Do not use this order as ranking."
 msgstr ""
 
-msgid "Do you want to install example event databases"
+msgid "Do you like Sharly Chess? Help us keep it free and improving!"
 msgstr ""
 
-msgid "Do you want to recover the data of release [{version}]"
+msgid "Do you want to add the new data folder to the Microsoft Defender exception list?"
 msgstr ""
 
-msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
+msgid "Do you want to install the update now?"
 msgstr ""
 
+msgid "Do you want to try again?"
+msgstr ""
+
+#, python-brace-format
 msgid "Document [{document}] has been generated in another tab."
 msgstr ""
 
 msgid "Document:"
+msgstr ""
+
+msgid "Documentation"
 msgstr ""
 
 msgid "Documents"
@@ -2117,6 +2668,9 @@ msgstr ""
 msgid "Double-round Berger"
 msgstr ""
 
+msgid "Double-round Scheveningen"
+msgstr ""
+
 msgid "Download"
 msgstr ""
 
@@ -2126,13 +2680,28 @@ msgstr ""
 msgid "Download tournament fees"
 msgstr ""
 
-msgid "Downloading failed with code [{code}]."
+msgid "Drag players between the board slots and the substitutes bench. Empty slots become holes in the lineup."
+msgstr ""
+
+msgid "Drag teams here"
 msgstr ""
 
 msgid "Drag the sets to order them."
 msgstr ""
 
+msgid "Drag to change the pairing order or tournament."
+msgstr ""
+
+msgid "Drag to reorder"
+msgstr ""
+
+msgid "Drag to reorder the category."
+msgstr ""
+
 msgid "Draw"
+msgstr ""
+
+msgid "Draw:"
 msgstr ""
 
 msgid "Duplicate"
@@ -2151,10 +2720,13 @@ msgstr ""
 msgid "Duplicate the event."
 msgstr ""
 
-msgid "Duplicate the rotator."
+msgid "Duplicate the menu."
 msgstr ""
 
-msgid "Duplicate the screen family."
+msgid "Duplicate the multi-screen."
+msgstr ""
+
+msgid "Duplicate the rotator."
 msgstr ""
 
 msgid "Duplicate the screen."
@@ -2196,21 +2768,23 @@ msgstr ""
 msgid "E.g.: 20 (players per screen)"
 msgstr ""
 
+msgid "E.g.: 4 (matches per column)"
+msgstr ""
+
 msgid "E.g.: 4 (split boards over 4 screens)"
+msgstr ""
+
+msgid "E.g.: 4 (split matches over 4 screens)"
 msgstr ""
 
 msgid "E.g.: 4 (split players over 4 screens)"
 msgstr ""
 
-msgid "E.g.: @boards, @family, another-screen"
+msgid "E.g.: 4 (split teams over 4 screens)"
 msgstr ""
 
 #, python-format
 msgid "E.g.: Boards %%f to %%l"
-msgstr ""
-
-#, python-format
-msgid "E.g.: Boards %%f-%%l"
 msgstr ""
 
 #, python-format
@@ -2223,22 +2797,20 @@ msgstr ""
 msgid "E.g.: John"
 msgstr ""
 
-msgid "E.g.: Link to my screen"
+msgid "E.g.: John Smith"
 msgstr ""
 
 msgid "E.g.: Main tournament"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Matches %%f to %%l"
 msgstr ""
 
 msgid "E.g.: My display controller"
 msgstr ""
 
 msgid "E.g.: My favourite club!"
-msgstr ""
-
-msgid "E.g.: My screen"
-msgstr ""
-
-msgid "E.g.: My screen family"
 msgstr ""
 
 msgid "E.g.: Paris"
@@ -2248,14 +2820,13 @@ msgstr ""
 msgid "E.g.: Players %%f to %%l"
 msgstr ""
 
-#, python-format
-msgid "E.g.: Players %%f-%%l"
-msgstr ""
-
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr ""
 
 msgid "E.g.: Sharly Chess Club"
+msgstr ""
+
+msgid "E.g.: Sharly Chess Club A"
 msgstr ""
 
 msgid "E.g.: Start of check-in"
@@ -2265,13 +2836,23 @@ msgstr ""
 msgid "E.g.: Start of check-in in %%s"
 msgstr ""
 
+#, python-format
+msgid "E.g.: Teams %%f to %%l"
+msgstr ""
+
 msgid "E.g.: World championship"
+msgstr ""
+
+msgid "E.g.: Youth"
 msgstr ""
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
 msgid "E.g.: john.doe@chess.com"
+msgstr ""
+
+msgid "ESB variant"
 msgstr ""
 
 msgid "EXEMPT"
@@ -2284,6 +2865,9 @@ msgstr ""
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr ""
 
+msgid "Each board number multiplied by the game points scored on that board, summed over the tournament. The lower the sum, the higher the ranking — it rewards points won on the top boards. Only meaningful between teams on equal game points."
+msgstr ""
+
 msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
@@ -2291,6 +2875,9 @@ msgid "Each player can only be awarded one prize per bracket."
 msgstr ""
 
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
+msgstr ""
+
+msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
 msgstr ""
 
 msgid "Ecuador"
@@ -2317,6 +2904,15 @@ msgstr ""
 msgid "Edit hour"
 msgstr ""
 
+msgid "Edit lineup"
+msgstr ""
+
+msgid "Edit menu"
+msgstr ""
+
+msgid "Edit multi-screen"
+msgstr ""
+
 msgid "Edit permission"
 msgstr ""
 
@@ -2335,7 +2931,10 @@ msgstr ""
 msgid "Edit screen"
 msgstr ""
 
-msgid "Edit screen family"
+msgid "Edit set"
+msgstr ""
+
+msgid "Edit team"
 msgstr ""
 
 msgid "Edit the hours of the timer"
@@ -2362,13 +2961,19 @@ msgstr ""
 msgid "Edit the properties of the event."
 msgstr ""
 
+msgid "Edit the properties of the menu."
+msgstr ""
+
+msgid "Edit the properties of the multi-screen."
+msgstr ""
+
 msgid "Edit the properties of the rotator."
 msgstr ""
 
-msgid "Edit the properties of the screen family."
+msgid "Edit the properties of the screen."
 msgstr ""
 
-msgid "Edit the properties of the screen."
+msgid "Edit the properties of the team."
 msgstr ""
 
 msgid "Edit the properties of the timer."
@@ -2377,10 +2982,22 @@ msgstr ""
 msgid "Edit the properties of the tournament."
 msgstr ""
 
+msgid "Edit the selected affiliation."
+msgstr ""
+
+msgid "Edit the sets displayed on the screen."
+msgstr ""
+
 msgid "Edit the sets of boards displayed on the screen."
 msgstr ""
 
+msgid "Edit the sets of matches displayed on the screen."
+msgstr ""
+
 msgid "Edit the sets of players displayed on the screen."
+msgstr ""
+
+msgid "Edit the sets of teams displayed on the screen."
 msgstr ""
 
 msgid "Edit the unique ID."
@@ -2413,13 +3030,16 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
+msgid "Empty"
+msgstr ""
+
+msgid "Empty (hole)"
+msgstr ""
+
 msgid "Enable player check-in from check-in screens."
 msgstr ""
 
 msgid "Enable this account"
-msgstr ""
-
-msgid "Enable/disable the details on the cards below."
 msgstr ""
 
 #, python-format
@@ -2444,6 +3064,10 @@ msgstr ""
 msgid "Eritrea"
 msgstr ""
 
+msgid "Error"
+msgstr ""
+
+#, python-brace-format
 msgid "Error when updating database [{database}]."
 msgstr ""
 
@@ -2462,16 +3086,23 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{event}] has been imported."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
 msgstr ""
 
+#, python-brace-format
 msgid "Event [{uniq_id}] has been updated."
+msgstr ""
+
+msgid "Event content"
 msgstr ""
 
 msgid "Event export"
@@ -2483,13 +3114,21 @@ msgstr ""
 msgid "Event tournaments"
 msgstr ""
 
+msgid "Event type:"
+msgstr ""
+
+#, python-brace-format
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr ""
 
 msgid "Events"
 msgstr ""
 
+#, python-brace-format
 msgid "Events ({num})"
+msgstr ""
+
+msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament."
 msgstr ""
 
 msgid "Exclude"
@@ -2498,6 +3137,7 @@ msgstr ""
 msgid "Exclude the players matching the criterion instead of including them."
 msgstr ""
 
+#, python-brace-format
 msgid "Exclude: {values}"
 msgstr ""
 
@@ -2511,6 +3151,12 @@ msgid "Existing players"
 msgstr ""
 
 msgid "Exit button:"
+msgstr ""
+
+msgid "Expand all"
+msgstr ""
+
+msgid "Expand or collapse the details of every item."
 msgstr ""
 
 msgid "Experimental features"
@@ -2545,6 +3191,12 @@ msgstr ""
 msgid "Export tournament"
 msgstr ""
 
+msgid "Extended Direct Encounter"
+msgstr ""
+
+msgid "Extended Sonneborn-Berger"
+msgstr ""
+
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
@@ -2557,6 +3209,10 @@ msgstr ""
 msgid "FIDE"
 msgstr ""
 
+#, python-format
+msgid "FIDE %(fide_id)s"
+msgstr ""
+
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
@@ -2565,6 +3221,9 @@ msgstr ""
 
 msgid "FIDE ID"
 msgstr ""
+
+msgid "FIDE ID *** FIDE ID COLUMN HEADER"
+msgstr "FIDE ID"
 
 msgid "FIDE ID:"
 msgstr ""
@@ -2587,6 +3246,10 @@ msgstr ""
 msgid "FIDE recommendation - Unrated (2019)"
 msgstr ""
 
+#, python-brace-format
+msgid "FIDE {id}"
+msgstr ""
+
 msgid "FIDE-rated present"
 msgstr ""
 
@@ -2594,33 +3257,6 @@ msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
 msgid "FORFEIT"
-msgstr ""
-
-msgid "Failed to process DMG file: [{ex}]."
-msgstr ""
-
-msgid "Failed to read [{download_url}]: [{ex}]."
-msgstr ""
-
-msgid "Families"
-msgstr ""
-
-msgid "Families ({num}) *** WITH_SHORTCUT_INDICATION"
-msgstr "<u>F</u>amilies ({num})"
-
-msgid "Families are used to split a large amount of information across multiple screens."
-msgstr ""
-
-msgid "Family"
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been created."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been deleted."
-msgstr ""
-
-msgid "Family [{family_uniq_id}] has been updated."
 msgstr ""
 
 msgid "Faroe Islands"
@@ -2656,6 +3292,7 @@ msgstr ""
 msgid "Fetch from a data source"
 msgstr ""
 
+#, python-brace-format
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
 
@@ -2668,7 +3305,14 @@ msgstr ""
 msgid "File"
 msgstr ""
 
+#, python-brace-format
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
+msgstr ""
+
+msgid "Fill"
+msgstr ""
+
+msgid "Fill from another tournament"
 msgstr ""
 
 msgid "Filter out players of higher categories."
@@ -2689,6 +3333,9 @@ msgstr ""
 msgid "First FIDE rating (based only on this tournament)"
 msgstr ""
 
+msgid "First board is always White for team 1."
+msgstr ""
+
 msgid "First board number:"
 msgstr ""
 
@@ -2699,10 +3346,16 @@ msgstr ""
 msgid "First board:"
 msgstr ""
 
+msgid "First match:"
+msgstr ""
+
 msgid "First name"
 msgstr ""
 
 msgid "First name:"
+msgstr ""
+
+msgid "First pairing:"
 msgstr ""
 
 msgid "First player:"
@@ -2711,13 +3364,19 @@ msgstr ""
 msgid "First round"
 msgstr ""
 
+msgid "First team:"
+msgstr ""
+
 msgid "Fixed board"
+msgstr ""
+
+msgid "Fixed board ordering:"
 msgstr ""
 
 msgid "Fixed board:"
 msgstr ""
 
-msgid "Fixed boards:"
+msgid "Fixed table"
 msgstr ""
 
 msgid "Floats"
@@ -2731,6 +3390,13 @@ msgstr ""
 
 #, python-format
 msgid "Font size adjustment (%%):"
+msgstr ""
+
+msgid "For each round, sum the opponent score multiplied by the team score obtained in that match across all rounds. The four variants (EMMSB / EMGSB / EGMSB / EGGSB) choose which score type — match points or game points — is used on each side; pick one in the variant option below (FIDE tie-break regulations, Art. 13.2)."
+msgstr ""
+
+#, python-brace-format
+msgid "For each round, the opponent total {opp} multiplied by the team {own} obtained in that match, summed across all rounds (FIDE tie-break regulations, Art. 13.2)."
 msgstr ""
 
 msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
@@ -2751,10 +3417,16 @@ msgstr ""
 msgid "Foreigners"
 msgstr ""
 
+msgid "Forfeit"
+msgstr ""
+
 msgid "Forfeit Loss"
 msgstr ""
 
 msgid "Forfeit Win"
+msgstr ""
+
+msgid "Forfeit Win (no opponent)"
 msgstr ""
 
 msgid "Forfeit win against a no-show — not counted as a played game."
@@ -2775,6 +3447,12 @@ msgstr "Fr"
 msgid "France"
 msgstr ""
 
+msgid "Free labels used to organise and filter the list of events. Tags are shared by all the events of this installation, and are removed when an event is exported or imported."
+msgstr ""
+
+msgid "From the rule set"
+msgstr ""
+
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr ""
 
@@ -2784,13 +3462,32 @@ msgstr ""
 msgid "Full-Point Bye (deprecated)"
 msgstr ""
 
+#, python-brace-format
+msgid "Full-Point Bye attributed to team [{team}]."
+msgstr ""
+
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
+
+msgid "GP *** GAME POINTS"
+msgstr "GP"
+
+msgid "GP *** TEAM RANKING HEADER GAME POINTS"
+msgstr "GP"
 
 msgid "Gabon"
 msgstr ""
 
 msgid "Gambia"
+msgstr ""
+
+msgid "Game points"
+msgstr ""
+
+msgid "Game points awarded to the team for a Pairing Allocated Bye. Defaults to a drawn match (boards × Draw value)."
+msgstr ""
+
+msgid "Game points must satisfy loss ≤ draw ≤ win."
 msgstr ""
 
 msgid "Games played with black"
@@ -2805,6 +3502,7 @@ msgstr "Gen."
 msgid "Gender"
 msgstr ""
 
+#, python-brace-format
 msgid "Gender ({gender})"
 msgstr ""
 
@@ -2814,7 +3512,16 @@ msgstr ""
 msgid "Genders"
 msgstr ""
 
+msgid "General"
+msgstr ""
+
+msgid "General configuration"
+msgstr ""
+
 msgid "Generate"
+msgstr ""
+
+msgid "Generate age categories"
 msgstr ""
 
 msgid "Generate documents"
@@ -2829,6 +3536,10 @@ msgstr ""
 msgid "Generate pairings for this round."
 msgstr ""
 
+msgid "Generate rating categories"
+msgstr ""
+
+#, python-brace-format
 msgid "Generated by script {script_name} on {date}"
 msgstr ""
 
@@ -2844,6 +3555,7 @@ msgstr ""
 msgid "Ghana"
 msgstr ""
 
+#, python-brace-format
 msgid "Give/take away access level {access_level_short_name}"
 msgstr ""
 
@@ -2880,6 +3592,21 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
+#, python-brace-format
+msgid "Group {group_id}"
+msgstr ""
+
+msgid "Groups can't be edited for this pairing system."
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr ""
+
+#, python-format
+msgid "Groups must be composed of at least 25%% of players."
+msgstr ""
+
 msgid "Guam"
 msgstr ""
 
@@ -2898,22 +3625,30 @@ msgstr ""
 msgid "Haiti"
 msgstr ""
 
+msgid "Haley system"
+msgstr ""
+
 msgid "Half-Point Bye"
 msgstr ""
 
+#, python-brace-format
 msgid "Half-Point Bye attributed to player [{player}]."
+msgstr ""
+
+#, python-brace-format
+msgid "Half-Point Bye attributed to team [{team}]."
+msgstr ""
+
+msgid "Hard"
+msgstr ""
+
+msgid "Hard constraint"
 msgstr ""
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr ""
 
 msgid "Hide"
-msgstr ""
-
-msgid "Hide Log"
-msgstr ""
-
-msgid "Hide Networks"
 msgstr ""
 
 msgid "Highlight"
@@ -2937,13 +3672,24 @@ msgstr ""
 msgid "Hort system"
 msgstr ""
 
+#, python-brace-format
 msgid "Hour [{hour}] already exists."
 msgstr ""
 
+#, python-brace-format
 msgid "Hour [{hour}] has been created."
 msgstr ""
 
 msgid "Hours"
+msgstr ""
+
+msgid "How the boards shown by these screens are chosen and ordered."
+msgstr ""
+
+msgid "How the boards shown by this set are chosen and ordered."
+msgstr ""
+
+msgid "How the players of this category are ranked before prizes are assigned: by their final standing, or by their performance."
 msgstr ""
 
 msgid "Hungary"
@@ -2974,6 +3720,9 @@ msgid "Identity"
 msgstr ""
 
 msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
+msgstr ""
+
+msgid "If left empty, a name is derived from the menu content."
 msgstr ""
 
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
@@ -3017,12 +3766,17 @@ msgid "Import players from a CSV file."
 msgstr ""
 
 #, python-format
+msgid "Import players to event [%(event)s]"
+msgstr ""
+
+#, python-format
 msgid "Import players to tournament [%(tournament)s]"
 msgstr ""
 
 msgid "Imported player"
 msgstr ""
 
+#, python-brace-format
 msgid "Impossible to add players to tournament [{tournament}]."
 msgstr ""
 
@@ -3030,16 +3784,30 @@ msgstr ""
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
 msgstr ""
 
+#, python-brace-format
 msgid "Impossible to set a round number lower than the last round with pairings #{round}."
 msgstr ""
 
 msgid "In play"
 msgstr ""
 
+#, python-brace-format
+msgid "In team events, the tie-break is calculated using {score} as the reference score."
+msgstr ""
+
 msgid "In-tournament"
 msgstr ""
 
+msgid "Inactive *** INACTIVE ACCOUNT"
+msgstr "Inactive"
+
 msgid "Include IDs and passwords for uploading results"
+msgstr ""
+
+msgid "Include beta versions in updates"
+msgstr ""
+
+msgid "Include federation column"
 msgstr ""
 
 msgid "Include incomplete teams"
@@ -3072,10 +3840,19 @@ msgstr ""
 msgid "India"
 msgstr ""
 
+msgid "Individual"
+msgstr ""
+
 msgid "Individual ranking"
 msgstr ""
 
 msgid "Individual team ranking"
+msgstr ""
+
+msgid "Individual tournament file cannot be imported into a team event."
+msgstr ""
+
+msgid "Individual tournament file in a team event — create an individual event first."
 msgstr ""
 
 msgid "Indonesia"
@@ -3084,7 +3861,17 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
+#, python-brace-format
 msgid "Inherited by permission [{permission}]."
+msgstr ""
+
+msgid "Initial pairing scores"
+msgstr ""
+
+msgid "Initial score"
+msgstr ""
+
+msgid "Initial score accelerated system"
 msgstr ""
 
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
@@ -3099,12 +3886,11 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
+#, python-brace-format
 msgid "Installation of [{lib}] failed."
 msgstr ""
 
-msgid "Installation of release [{version}] failed, exiting."
-msgstr ""
-
+#, python-brace-format
 msgid "Installed [{lib}]."
 msgstr ""
 
@@ -3117,57 +3903,71 @@ msgstr ""
 msgid "International Master"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr ""
 
 msgid "Invalid TRF25 string: unexpected characters."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid URL [{background_image}]."
 msgstr ""
 
 msgid "Invalid account."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid amount [{amount}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid board number [{fixed_board_str}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid date format (expected: {format})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr ""
 
 msgid "Invalid email format."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid expression [{expression}]"
 msgstr ""
 
-msgid "Invalid federation [{federation}]."
-msgstr ""
-
+#, python-brace-format
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr ""
 
+msgid "Invalid folder"
+msgstr ""
+
+#, python-brace-format
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid locale [{locale}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid mail [{mail}]."
 msgstr ""
 
@@ -3180,19 +3980,31 @@ msgstr ""
 msgid "Invalid rows"
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid time control format [{time_control}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_values}])."
 msgstr ""
 
+#, python-brace-format
 msgid "Invalid value [{value}]."
 msgstr ""
 
+msgid "Invalid value."
+msgstr ""
+
+#, python-brace-format
 msgid "Invalid year of birth (expected: {min} - {max})."
+msgstr ""
+
+#, python-brace-format
+msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
 msgstr ""
 
 msgid "Iran"
@@ -3279,10 +4091,16 @@ msgstr ""
 msgid "Kyrgyzstan"
 msgstr ""
 
+msgid "L *** TEAM RANKING HEADER LOSS"
+msgstr "L"
+
 msgid "Language:"
 msgstr ""
 
 msgid "Laos"
+msgstr ""
+
+msgid "Largest number of players a team may have on its roster. Leave blank for no limit."
 msgstr ""
 
 msgid "Last board:"
@@ -3291,7 +4109,13 @@ msgstr ""
 msgid "Last check"
 msgstr ""
 
+msgid "Last match:"
+msgstr ""
+
 msgid "Last name:"
+msgstr ""
+
+msgid "Last pairing:"
 msgstr ""
 
 msgid "Last player:"
@@ -3303,12 +4127,17 @@ msgstr ""
 msgid "Last results"
 msgstr ""
 
+msgid "Last team:"
+msgstr ""
+
 msgid "Last update"
 msgstr ""
 
+#, python-brace-format
 msgid "Last update: {updated_at}"
 msgstr ""
 
+#, python-brace-format
 msgid "Last update: {updated_at} (outdated)"
 msgstr ""
 
@@ -3321,7 +4150,16 @@ msgstr ""
 msgid "Layout"
 msgstr ""
 
+msgid "League *** EVENT TAG NAME"
+msgstr "League"
+
+msgid "Leave all unchecked to print every match."
+msgstr ""
+
 msgid "Lebanon"
+msgstr ""
+
+msgid "Left wins"
 msgstr ""
 
 msgid "Legacy"
@@ -3330,12 +4168,20 @@ msgstr ""
 msgid "Legacy tie-breaks can no longer be created or edited."
 msgstr ""
 
+#, python-brace-format
+msgid "Length ({len}) must match players per team match ({count})."
+msgstr ""
+
 msgid "Lesotho"
+msgstr ""
+
+msgid "Level specific colors"
 msgstr ""
 
 msgid "Liberia"
 msgstr ""
 
+#, python-brace-format
 msgid "Library [{lib}] is missing."
 msgstr ""
 
@@ -3348,21 +4194,37 @@ msgstr ""
 msgid "Limit adjustment"
 msgstr ""
 
+#, python-brace-format
 msgid "Limit {operator} {count} half-point"
 msgid_plural "Limit {operator} {count} half-points"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "Line not recognized: {line}"
+msgstr ""
+
+msgid "Lineup"
+msgstr ""
+
+#, python-format
+msgid "Lineup for round #%(round)d:"
+msgstr ""
+
+msgid "Lineups"
+msgstr ""
+
+#, python-format
+msgid "Lineups — %(team)s"
 msgstr ""
 
 msgid "Link to a board not involving the player."
 msgstr ""
 
-msgid "Links displayed on the screen menu:"
+msgid "List of players"
 msgstr ""
 
-msgid "List of players"
+msgid "List view"
 msgstr ""
 
 msgid "Lithuania"
@@ -3371,13 +4233,13 @@ msgstr ""
 msgid "Loading more results…"
 msgstr ""
 
-msgid "Local URL: {local_url}"
-msgstr ""
-
 msgid "Local databases"
 msgstr ""
 
 msgid "Location"
+msgstr ""
+
+msgid "Locked: team is already paired."
 msgstr ""
 
 msgid "Log in"
@@ -3386,14 +4248,20 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
-msgid "Log-level specific colors"
+msgid "Log settings"
 msgstr ""
 
 #, python-format
 msgid "Logged in as [%(account_name)s]"
 msgstr ""
 
+msgid "Logs"
+msgstr ""
+
 msgid "Loss"
+msgstr ""
+
+msgid "Loss:"
 msgstr ""
 
 msgid "Luxembourg"
@@ -3405,10 +4273,19 @@ msgstr "M"
 msgid "MM/DD/YYYY"
 msgstr ""
 
+msgid "MP *** MATCH POINTS"
+msgstr "MP"
+
+msgid "MP *** TEAM RANKING HEADER MATCH POINTS"
+msgstr "MP"
+
 msgid "Macau, China"
 msgstr ""
 
 msgid "Madagascar"
+msgstr ""
+
+msgid "Mail"
 msgstr ""
 
 msgid "Main category"
@@ -3450,6 +4327,9 @@ msgstr ""
 msgid "Manage events"
 msgstr ""
 
+msgid "Manage per-round lineups."
+msgstr ""
+
 msgid "Manage prizes"
 msgstr ""
 
@@ -3465,7 +4345,16 @@ msgstr ""
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr ""
 
+msgid "Manage the tags."
+msgstr ""
+
+msgid "Manage the team roster."
+msgstr ""
+
 msgid "Manual"
+msgstr ""
+
+msgid "Manual groups"
 msgstr ""
 
 msgid "Manually pair players"
@@ -3481,8 +4370,17 @@ msgstr ""
 msgid "Mark all players as \"%(status)s\" "
 msgstr ""
 
+msgid "Mark all teams as absent."
+msgstr ""
+
+msgid "Mark all teams as present."
+msgstr ""
+
 #, python-format
 msgid "Mark as \"%(status)s\" "
+msgstr ""
+
+msgid "Mark as \"Present\" (recommended)"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -3491,7 +4389,47 @@ msgstr ""
 msgid "Marshall Islands"
 msgstr ""
 
+msgid "Match points"
+msgstr ""
+
+msgid "Match points must satisfy loss ≤ draw ≤ win."
+msgstr ""
+
+msgid "Match points vs game points"
+msgstr ""
+
+msgid "Match selection (by table number)"
+msgstr ""
+
+#, python-format
+msgid "Match sets of screen %(screen_name)s"
+msgstr ""
+
+msgid "Match sheets"
+msgstr ""
+
+#, python-brace-format
+msgid "Match sheets for round #{round}"
+msgstr ""
+
+msgid "Matches"
+msgstr ""
+
+#, python-format
+msgid "Matches %f-%l"
+msgstr ""
+
 msgid "Matches criteria"
+msgstr ""
+
+#, python-format
+msgid "Matches from #%(first)d to #%(last)d"
+msgstr ""
+
+msgid "Matches per column:"
+msgstr ""
+
+msgid "Matches to print:"
 msgstr ""
 
 msgid "Mauritania"
@@ -3547,6 +4485,12 @@ msgstr ""
 msgid "Maximum rating"
 msgstr ""
 
+msgid "Maximum roster size:"
+msgstr ""
+
+msgid "Maximum value must be greater than the minimum value."
+msgstr ""
+
 msgid "May"
 msgstr ""
 
@@ -3559,27 +4503,43 @@ msgstr ""
 msgid "May be used for per-round prize giveaways etc."
 msgstr ""
 
+#, python-brace-format
 msgid "Median {value}"
 msgstr ""
 
-msgid "Menu link label:"
+msgid "Menu"
+msgstr ""
+
+#, python-brace-format
+msgid "Menu [{menu}] has been created."
+msgstr ""
+
+#, python-brace-format
+msgid "Menu [{menu}] has been deleted."
+msgstr ""
+
+#, python-brace-format
+msgid "Menu [{menu}] has been updated."
+msgstr ""
+
+msgid "Menu content"
+msgstr ""
+
+msgid "Menu label:"
 msgstr ""
 
 #, python-format
-msgid "Menu link label: %(menu_label)s"
-msgstr ""
-
-msgid "Menu link label: none"
-msgstr ""
-
-#, python-format
-msgid "Menu: %(menu)s"
-msgstr ""
-
-msgid "Menu: none"
+msgid "Menu label: %(menu_label)s"
 msgstr ""
 
 msgid "Menus"
+msgstr ""
+
+#, python-brace-format
+msgid "Menus ({num})"
+msgstr ""
+
+msgid "Menus group screens together so users can navigate between them."
 msgstr ""
 
 msgid "Mexico"
@@ -3597,6 +4557,9 @@ msgstr ""
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr ""
 
+msgid "Minimum level:"
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr ""
 
@@ -3609,12 +4572,18 @@ msgstr ""
 msgid "Minimum score to clear the Rp threshold"
 msgstr ""
 
+#, python-brace-format
+msgid "Missing base table for {t} teams, {p} players."
+msgstr ""
+
 msgid "Missing men"
 msgstr ""
 
+#, python-brace-format
 msgid "Missing required column [{column}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Missing required field [{field}]."
 msgstr ""
 
@@ -3625,6 +4594,12 @@ msgid "Mo *** MONDAY"
 msgstr "Mo"
 
 msgid "Moldova"
+msgstr ""
+
+msgid "Molter"
+msgstr ""
+
+msgid "Molter table"
 msgstr ""
 
 msgid "Monaco"
@@ -3640,6 +4615,9 @@ msgid "Montenegro"
 msgstr ""
 
 msgid "Morocco"
+msgstr ""
+
+msgid "Move"
 msgstr ""
 
 #, python-format
@@ -3662,6 +4640,50 @@ msgid "Moving on to round #%(round)d"
 msgstr ""
 
 msgid "Mozambique"
+msgstr ""
+
+msgid "Multi-Screen"
+msgstr ""
+
+#, python-brace-format
+msgid "Multi-Screen [{family_uniq_id}] has been created."
+msgstr ""
+
+#, python-brace-format
+msgid "Multi-Screen [{family_uniq_id}] has been deleted."
+msgstr ""
+
+#, python-brace-format
+msgid "Multi-Screen [{family_uniq_id}] has been updated."
+msgstr ""
+
+msgid "Multi-Screens"
+msgstr ""
+
+#, python-brace-format
+msgid "Multi-Screens ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>M</u>ulti-Screens ({num})"
+
+msgid "Multi-Screens are used to split a large amount of information across multiple screens."
+msgstr ""
+
+msgid "Multi-screen submenus"
+msgstr ""
+
+msgid "Multi-screens"
+msgstr ""
+
+msgid "Multi-screens always appear as dropdown submenus."
+msgstr ""
+
+msgid "Multi-screens appear as dropdowns when the menu holds more than one, otherwise they are expanded inline."
+msgstr ""
+
+msgid "Multi-screens are always expanded inline."
+msgstr ""
+
+#, python-format
+msgid "Multi-screens: %(num)d"
 msgstr ""
 
 msgid "My category"
@@ -3725,20 +4747,28 @@ msgstr ""
 msgid "National championship final (1.4.3a)"
 msgstr ""
 
+#, python-brace-format
 msgid "National rating support for other federations than the event federation {federation}"
 msgstr ""
 
+#, python-brace-format
 msgid "National rating support for unknown player [{player}]."
 msgstr ""
 
 msgid "National team championship (1.4.3b)"
 msgstr ""
 
+msgid "Natural (pairing order)"
+msgstr ""
+
 msgid "Nauru"
 msgstr ""
 
-msgid "Needs"
+msgid "Need help?"
 msgstr ""
+
+msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
+msgstr "Needs"
 
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
@@ -3758,6 +4788,9 @@ msgstr ""
 msgid "Network:"
 msgstr ""
 
+msgid "Networks"
+msgstr ""
+
 msgid "New Caledonia"
 msgstr ""
 
@@ -3770,6 +4803,9 @@ msgid "New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)"
 msgstr ""
 
 msgid "New Zealand"
+msgstr ""
+
+msgid "New affiliation"
 msgstr ""
 
 msgid "New category"
@@ -3791,6 +4827,9 @@ msgstr ""
 msgid "New group"
 msgstr ""
 
+msgid "New menu"
+msgstr ""
+
 msgid "New password. Leave blank for no change."
 msgstr ""
 
@@ -3798,6 +4837,9 @@ msgid "New results are in, refresh your browser"
 msgstr ""
 
 msgid "New rotator"
+msgstr ""
+
+msgid "New tag"
 msgstr ""
 
 msgid "New timer"
@@ -3821,16 +4863,31 @@ msgstr ""
 msgid "No"
 msgstr ""
 
+msgid "No Molter table is available for this tournament size."
+msgstr ""
+
 msgid "No Prize Bracket"
 msgstr ""
 
 msgid "No Prize Category"
 msgstr ""
 
+msgid "No Scheveningen table is available for this tournament size."
+msgstr ""
+
+msgid "No acceleration."
+msgstr ""
+
+msgid "No accounts"
+msgstr ""
+
 msgid "No alert message"
 msgstr ""
 
 msgid "No archived events."
+msgstr ""
+
+msgid "No available update"
 msgstr ""
 
 msgid "No criteria defined."
@@ -3842,6 +4899,9 @@ msgstr ""
 msgid "No criteria."
 msgstr ""
 
+msgid "No current event carries the selected tags."
+msgstr ""
+
 msgid "No current events."
 msgstr ""
 
@@ -3851,13 +4911,13 @@ msgstr ""
 msgid "No display controllers"
 msgstr ""
 
+msgid "No dropdowns"
+msgstr ""
+
 msgid "No email"
 msgstr ""
 
 msgid "No events."
-msgstr ""
-
-msgid "No families to add."
 msgstr ""
 
 msgid "No floor needed"
@@ -3866,10 +4926,19 @@ msgstr ""
 msgid "No games against FIDE rated opponents."
 msgstr ""
 
+msgid "No games in play — all results are in."
+msgstr ""
+
 msgid "No games played on the board for this player."
 msgstr ""
 
+msgid "No group of two or more members."
+msgstr ""
+
 msgid "No home page"
+msgstr ""
+
+msgid "No hours"
 msgstr ""
 
 msgid "No hours."
@@ -3881,12 +4950,28 @@ msgstr ""
 msgid "No marks"
 msgstr ""
 
+msgid "No matches in play — all results are in."
+msgstr ""
+
+msgid "No menus"
+msgstr ""
+
 msgid "No monetary prizes assigned to players for this tournament."
+msgstr ""
+
+msgid "No multi-screens"
+msgstr ""
+
+msgid "No multi-screens in this event yet."
+msgstr ""
+
+msgid "No multi-screens to add."
 msgstr ""
 
 msgid "No network detected, use the Refresh button when connected."
 msgstr ""
 
+#, python-brace-format
 msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
 msgstr ""
 
@@ -3899,10 +4984,25 @@ msgstr ""
 msgid "No organiser"
 msgstr ""
 
+msgid "No paired boards in this round."
+msgstr ""
+
+msgid "No paired team matches for this round."
+msgstr ""
+
+msgid "No paired team matches in this round."
+msgstr ""
+
 msgid "No pairing found for this player in the current round."
 msgstr ""
 
+msgid "No pairings for this round yet."
+msgstr ""
+
 msgid "No pairings."
+msgstr ""
+
+msgid "No passed event carries the selected tags."
 msgstr ""
 
 msgid "No passed events."
@@ -3917,13 +5017,20 @@ msgstr ""
 msgid "No permissions."
 msgstr ""
 
+#, python-brace-format
 msgid "No player is in contention for a title norm in round {round}."
+msgstr ""
+
+msgid "No player is rated within this range; use the rating step method instead."
 msgstr ""
 
 msgid "No players"
 msgstr ""
 
 msgid "No players imported."
+msgstr ""
+
+msgid "No players in this team yet."
 msgstr ""
 
 msgid "No players matching the criteria."
@@ -3959,28 +5066,31 @@ msgstr ""
 msgid "No public screens"
 msgstr ""
 
-msgid "No response from GitHub."
-msgstr ""
-
 msgid "No result"
 msgstr ""
 
 msgid "No results."
 msgstr ""
 
-msgid "No roles defined."
+msgid "No role required"
+msgstr ""
+
+msgid "No roles defined"
 msgstr ""
 
 msgid "No rotators"
 msgstr ""
 
+msgid "No rounds in this tournament."
+msgstr ""
+
 msgid "No saved sets."
 msgstr ""
 
-msgid "No screen families"
+msgid "No screens"
 msgstr ""
 
-msgid "No screens"
+msgid "No screens in this event yet."
 msgstr ""
 
 msgid "No screens to add."
@@ -3989,10 +5099,36 @@ msgstr ""
 msgid "No screens."
 msgstr ""
 
-msgid "No such screens."
+#, python-brace-format
+msgid "No table available for {n} teams."
 msgstr ""
 
-msgid "No tie-breaks."
+msgid "No tables available for this pairing system."
+msgstr ""
+
+#, python-brace-format
+msgid "No tables available for {t} teams."
+msgstr ""
+
+msgid "No tag"
+msgstr ""
+
+msgid "No tag has been created yet."
+msgstr ""
+
+msgid "No team pairings for this round yet."
+msgstr ""
+
+msgid "No team tournaments in this event."
+msgstr ""
+
+msgid "No teams"
+msgstr ""
+
+msgid "No teams in this tournament."
+msgstr ""
+
+msgid "No tie-breaks defined other than points."
 msgstr ""
 
 msgid "No timers"
@@ -4001,16 +5137,23 @@ msgstr ""
 msgid "No title norm has been achieved in this tournament."
 msgstr ""
 
-msgid "No tournaments"
+msgid "No tournaments."
 msgstr ""
 
-msgid "No tournaments."
+msgid "No unassigned players available. Remove a player from another team first."
+msgstr ""
+
+msgid "No upcoming event carries the selected tags."
 msgstr ""
 
 msgid "No upcoming events."
 msgstr ""
 
 msgid "No updates found."
+msgstr ""
+
+#, python-brace-format
+msgid "No usable table for {t} teams of {p} players."
 msgstr ""
 
 msgid "No. *** NB COLUMN HEADER"
@@ -4025,14 +5168,23 @@ msgstr ""
 msgid "Non-monetary prizes are not compatible with categories in which the prizes are shared."
 msgstr ""
 
+msgid "Non-playing captain…"
+msgstr ""
+
+msgid "Non-playing team captain."
+msgstr ""
+
 msgid "None"
+msgstr ""
+
+msgid "None (no colour preferences)"
 msgstr ""
 
 msgid "None *** FEDERATION"
 msgstr "None"
 
-msgid "Norm"
-msgstr ""
+msgid "Norm *** NORM COLUMN HEADER"
+msgstr "Norm"
 
 msgid "Norm Calculation Details"
 msgstr ""
@@ -4044,7 +5196,18 @@ msgstr ""
 msgid "Norm Report"
 msgstr ""
 
-msgid "Norm(s) Achieved"
+msgid "Norm(s) Achieved *** NORMS ACHIEVED COLUMN HEADER"
+msgstr "Norm(s) Achieved"
+
+msgid "Normalisation factor"
+msgstr ""
+
+#, python-brace-format
+msgid "Normalisation factor = {value}"
+msgstr ""
+
+#, python-brace-format
+msgid "Normalisation factor must be between 1 and {max}."
 msgstr ""
 
 msgid "North Macedonia"
@@ -4054,6 +5217,9 @@ msgid "Norway"
 msgstr ""
 
 msgid "Not assigned"
+msgstr ""
+
+msgid "Not counted as a federation (1.4.2a)"
 msgstr ""
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
@@ -4077,7 +5243,10 @@ msgstr ""
 msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr ""
 
-msgid "Notes"
+msgid "Notes *** NOTES COLUMN HEADER"
+msgstr "Notes"
+
+msgid "Nothing further — leave the teams tied"
 msgstr ""
 
 msgid "Notification"
@@ -4104,6 +5273,9 @@ msgstr ""
 msgid "Number of W/M per team:"
 msgstr ""
 
+msgid "Number of boards in each team match."
+msgstr ""
+
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr ""
@@ -4115,24 +5287,29 @@ msgstr ""
 msgid "Number of games won"
 msgstr ""
 
+msgid "Number of groups"
+msgstr ""
+
 #, python-format
 msgid "Number of half-points above or below the 50%% limit required for opponents to be taken into account."
+msgstr ""
+
+msgid "Number of multi-screens"
 msgstr ""
 
 msgid "Number of players"
 msgstr ""
 
+msgid "Number of players in the roster."
+msgstr ""
+
 msgid "Number of players per team:"
 msgstr ""
 
-#, python-format
-msgid "Number of players: %(num)d"
+msgid "Number of prize places"
 msgstr ""
 
 msgid "Number of prizes"
-msgstr ""
-
-msgid "Number of screen families"
 msgstr ""
 
 msgid "Number of screens"
@@ -4141,12 +5318,23 @@ msgstr ""
 msgid "Number of screens:"
 msgstr ""
 
+#, python-format
+msgid "Number of teams: %(num)d"
+msgstr ""
+
+msgid "Number of times"
+msgstr ""
+
 msgid "Number of wins"
 msgstr ""
 
 msgid "Numbers or ranges of numbers of the boards (example: 1-10 20 25)."
 msgstr ""
 
+msgid "Numbers or ranges of numbers of the match tables (example: 1-10 20 25). Each table produces one card per board of the match. For fixed-table systems, plain board numbers."
+msgstr ""
+
+#, python-brace-format
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr ""
 
@@ -4168,7 +5356,7 @@ msgstr ""
 msgid "Oman"
 msgstr ""
 
-msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
+msgid "Once created, you can select the timer to display in the settings of each screen, multi-screen or rotator."
 msgstr ""
 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
@@ -4186,7 +5374,7 @@ msgstr ""
 msgid "Only allowed users can see private events."
 msgstr ""
 
-msgid "Only allowed users can see private screen families."
+msgid "Only allowed users can see private multi-screens."
 msgstr ""
 
 msgid "Only allowed users can see private screens."
@@ -4207,31 +5395,51 @@ msgstr ""
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
 msgstr ""
 
-msgid "Open Admin Interface"
+#, python-brace-format
+msgid "Only {n} more player(s) can be added ({max} max for this rule set)."
 msgstr ""
+
+msgid "Open"
+msgstr ""
+
+msgid "Open *** EVENT TAG NAME"
+msgstr "Open"
 
 msgid "Open IT1 certificate for this norm"
 msgstr ""
 
-msgid "Open documentation"
+msgid "Open application (browser)"
+msgstr ""
+
+msgid "Open the profile in a new tab."
 msgstr ""
 
 msgid "Open/close check-in"
 msgstr ""
 
-msgid "Opening the welcome page [{url}] in a browser…"
-msgstr ""
-
 msgid "Opponent"
 msgstr ""
 
-msgid "Opponent (R{round})"
-msgstr ""
+#, python-brace-format
+msgid "Opponent (R{round}) *** OPPONENT COLUMN HEADER"
+msgstr "Opponent (R{round})"
 
 msgid "Opponent Elo"
 msgstr ""
 
 msgid "Opponent Elo [Pts]"
+msgstr ""
+
+msgid "Opponent game points × game points obtained"
+msgstr ""
+
+msgid "Opponent game points × match points obtained"
+msgstr ""
+
+msgid "Opponent match points × game points obtained"
+msgstr ""
+
+msgid "Opponent match points × match points obtained"
 msgstr ""
 
 msgid "Opponent ratings (1.4.6 + 1.4.7)"
@@ -4246,6 +5454,18 @@ msgstr ""
 msgid "Opponents' records"
 msgstr ""
 
+msgid "Optional monetary value of the complementary non-monetary prize (e.g. value of the trophy)."
+msgstr ""
+
+msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
+msgstr ""
+
+msgid "Or upload an image (stored with the event, max 2 MB):"
+msgstr ""
+
+msgid "Organisation"
+msgstr ""
+
 msgid "Organiser"
 msgstr ""
 
@@ -4258,9 +5478,14 @@ msgstr ""
 msgid "Organize your prizes into brackets to manage how they’re awarded. A player can win only one prize per bracket, but can win prizes in multiple brackets."
 msgstr ""
 
+#, python-brace-format
 msgid "Origin: {template_origin}"
 msgstr ""
 
+msgid "Other"
+msgstr ""
+
+#, python-brace-format
 msgid "Other missing players: {count}"
 msgstr ""
 
@@ -4271,6 +5496,13 @@ msgid "Others"
 msgstr ""
 
 msgid "Overall ranking"
+msgstr ""
+
+msgid "Override the auto-computed F_N factor. Leave at 0 to use the default (FIDE MTB26 formula based on rounds and team size). Integer 1-99."
+msgstr ""
+
+#, python-brace-format
+msgid "Override the auto-computed normalisation factor with {value}."
 msgstr ""
 
 msgid "Overwrite"
@@ -4285,7 +5517,13 @@ msgstr "Owed"
 msgid "Owed:"
 msgstr ""
 
+msgid "PAB (Team):"
+msgstr ""
+
 msgid "PAB is already assigned"
+msgstr ""
+
+msgid "PAB:"
 msgstr ""
 
 msgid "PAI"
@@ -4294,16 +5532,13 @@ msgstr ""
 msgid "PASS"
 msgstr ""
 
-msgid "PENALTY"
-msgstr ""
-
-msgid "PERMUTE WHITE/BLACK"
-msgstr ""
-
 msgid "PGN"
 msgstr ""
 
 msgid "PLAYER'S NAME"
+msgstr ""
+
+msgid "Page break between matches (one match per page)."
 msgstr ""
 
 msgid "Paid *** PAID COLUMN HEADER"
@@ -4328,6 +5563,9 @@ msgstr ""
 msgid "Pair the unpaired players with each other."
 msgstr ""
 
+msgid "Pair the unpaired teams with each other."
+msgstr ""
+
 msgid "Pair tournament"
 msgstr ""
 
@@ -4344,6 +5582,15 @@ msgstr ""
 msgid "Pairing Cards"
 msgstr ""
 
+msgid "Pairing added."
+msgstr ""
+
+msgid "Pairing allocated bye. Defaults to the Draw value."
+msgstr ""
+
+msgid "Pairing allocated bye. Defaults to the Win value."
+msgstr ""
+
 #, python-format
 msgid "Pairing information for round %(round)d"
 msgstr ""
@@ -4357,7 +5604,23 @@ msgstr ""
 msgid "Pairing number"
 msgstr ""
 
+msgid "Pairing number range of players in the group."
+msgstr ""
+
+#, python-format
+msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
+msgstr ""
+
+msgid "Pairing number — set by the team order."
+msgstr ""
+
+msgid "Pairing numbers"
+msgstr ""
+
 msgid "Pairing numbers selection"
+msgstr ""
+
+msgid "Pairing order:"
 msgstr ""
 
 msgid "Pairing settings"
@@ -4372,10 +5635,19 @@ msgstr ""
 msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
 msgstr ""
 
+#, python-brace-format
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
 msgstr ""
 
+#, python-brace-format
+msgid "Pairing-Allocated Bye assigned to team [{team}]."
+msgstr ""
+
 msgid "Pairings"
+msgstr ""
+
+#, python-format
+msgid "Pairings %f-%l"
 msgstr ""
 
 msgid "Pairings *** WITH_SHORTCUT_INDICATION"
@@ -4387,9 +5659,15 @@ msgstr ""
 msgid "Pairings by player"
 msgstr ""
 
+#, python-brace-format
 msgid "Pairings for round #{round}"
 msgstr ""
 
+#, python-format
+msgid "Pairings from #%(first)d to #%(last)d"
+msgstr ""
+
+#, python-brace-format
 msgid "Pairings generated for all rounds of tournament [{tournament}]."
 msgstr ""
 
@@ -4399,17 +5677,22 @@ msgstr ""
 msgid "Pairings generation not allowed if previous rounds have missing results, players to pair or absent players."
 msgstr ""
 
+msgid "Pairings generation not allowed if previous rounds have missing results."
+msgstr ""
+
 msgid "Pairings generation not allowed if there are fewer players than rounds."
+msgstr ""
+
+msgid "Pairings generation not allowed if there are fewer teams than rounds."
 msgstr ""
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr ""
 
-msgid "Pairings successfully generated."
+msgid "Pairings started"
 msgstr ""
 
-#, python-format
-msgid "Pairings: %(pairing_variation)s"
+msgid "Pairings successfully generated."
 msgstr ""
 
 msgid "Pakistan"
@@ -4430,9 +5713,13 @@ msgstr ""
 msgid "Paraguay"
 msgstr ""
 
+msgid "Participants"
+msgstr ""
+
 msgid "Participation Statistics"
 msgstr ""
 
+#, python-brace-format
 msgid "Passed ({num})"
 msgstr ""
 
@@ -4443,6 +5730,12 @@ msgid "Password:"
 msgstr ""
 
 msgid "Payment"
+msgstr ""
+
+msgid "Peak perf. *** PEAK PERFORMANCE COLUMN HEADER"
+msgstr "Peak perf."
+
+msgid "Penalty"
 msgstr ""
 
 msgid "Pending"
@@ -4460,6 +5753,7 @@ msgstr ""
 msgid "Performance bonus (dp), from 1.4.9 table"
 msgstr ""
 
+#, python-brace-format
 msgid "Performance indicators for round #{round}"
 msgstr ""
 
@@ -4476,6 +5770,9 @@ msgid "Permissions"
 msgstr ""
 
 msgid "Permissions list"
+msgstr ""
+
+msgid "Permute White/Black"
 msgstr ""
 
 msgid "Permute boards"
@@ -4499,6 +5796,9 @@ msgstr ""
 msgid "Phone number:"
 msgstr ""
 
+msgid "Pick at least one player — two empty tables cannot pair."
+msgstr ""
+
 msgid "Place Cards"
 msgstr ""
 
@@ -4507,6 +5807,12 @@ msgstr ""
 
 msgid "Played"
 msgstr ""
+
+msgid "Played *** GAMES PLAYED COLUMN HEADER"
+msgstr "Played"
+
+msgid "Played *** TEAM RANKING HEADER PLAYED"
+msgstr "Played"
 
 msgid "Played games"
 msgstr ""
@@ -4530,45 +5836,63 @@ msgstr ""
 msgid "Player [%(player)s] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player_id}] - round {round}: "
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] already exists in the event."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] already exists in tournament [{tournament}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr ""
 
+#, python-brace-format
+msgid "Player [{player}] has been created, but team [{team}] is full ({max} players max)."
+msgstr ""
+
+#, python-brace-format
 msgid "Player [{player}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has been paired against [{opponent}] at board #{board}."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has returned for this round."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] has returned to the tournament."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] is duplicated."
 msgstr ""
 
+#, python-brace-format
 msgid "Player [{player}] marked as \"{status}\"."
 msgstr ""
 
+#, python-brace-format
 msgid "Player does not match tournament criteria: {names}"
 msgstr ""
 
@@ -4591,9 +5915,10 @@ msgid "Player selection (by rank)"
 msgstr ""
 
 #, python-format
-msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgid "Player sets of screen %(screen_name)s"
 msgstr ""
 
+#, python-brace-format
 msgid "Player with FIDE ID [{fide_id}] is duplicated."
 msgstr ""
 
@@ -4612,13 +5937,21 @@ msgstr ""
 msgid "Players (none now)"
 msgstr ""
 
+#, python-brace-format
 msgid "Players ({num})"
 msgstr ""
 
+#, python-brace-format
 msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>P</u>layers ({num})"
 
+msgid "Players can't be overwritten once a tournament has started."
+msgstr ""
+
 msgid "Players can't be overwritten once the tournament has started."
+msgstr ""
+
+msgid "Players cannot be distributed in a team event."
 msgstr ""
 
 msgid "Players check-in list"
@@ -4635,11 +5968,22 @@ msgstr ""
 msgid "Players import"
 msgstr ""
 
+#, python-brace-format
+msgid "Players in this group at round #1: {0} (odd number)."
+msgstr ""
+
+#, python-brace-format
+msgid "Players in this group at round #1: {0}."
+msgstr ""
+
 msgid "Players may have default estimated ratings depending on the activated plugins."
 msgstr ""
 
 #, python-format
 msgid "Players of category [%(category)s]"
+msgstr ""
+
+msgid "Players per team match:"
 msgstr ""
 
 msgid "Players per tournament"
@@ -4685,10 +6029,6 @@ msgstr ""
 msgid "Players:"
 msgstr ""
 
-#, python-format
-msgid "Players: %(num)d"
-msgstr ""
-
 msgid "Playing"
 msgstr ""
 
@@ -4711,10 +6051,10 @@ msgstr ""
 msgid "Please choose a player."
 msgstr ""
 
-msgid "Please choose the document."
+msgid "Please choose a valid colour."
 msgstr ""
 
-msgid "Please choose the release to recover: "
+msgid "Please choose the document."
 msgstr ""
 
 msgid "Please choose the template."
@@ -4723,19 +6063,25 @@ msgstr ""
 msgid "Please choose the tournament."
 msgstr ""
 
-msgid "Please enter the image URL."
+msgid "Please consider contacting support, or installing the new version manually."
+msgstr ""
+
+msgid "Please enter an image URL or upload a file."
 msgstr ""
 
 msgid "Please enter the name of the event."
 msgstr ""
 
-msgid "Please launch the new version."
-msgstr ""
-
 msgid "Please select a type of criterion."
 msgstr ""
 
+msgid "Please select at least one age category."
+msgstr ""
+
 msgid "Please select at least one player."
+msgstr ""
+
+msgid "Please select at least one team."
 msgstr ""
 
 msgid "Please select the account."
@@ -4745,6 +6091,9 @@ msgid "Please supply a valid URL (e.g. https://my.domain.com)."
 msgstr ""
 
 msgid "Please supply a valid email address."
+msgstr ""
+
+msgid "Please validate the affiliation to continue."
 msgstr ""
 
 msgid "Please validate the global configuration of the application."
@@ -4759,10 +6108,17 @@ msgstr ""
 msgid "Please wait…"
 msgstr ""
 
+#, python-brace-format
 msgid "Plugin [{plugin}] was enabled."
 msgstr ""
 
 msgid "Plugins"
+msgstr ""
+
+msgid "Point attribution"
+msgstr ""
+
+msgid "Points"
 msgstr ""
 
 #, python-format
@@ -4780,15 +6136,6 @@ msgstr ""
 msgid "Poland"
 msgstr ""
 
-msgid "Port [{port}] already in use, can not start Sharly Chess server."
-msgstr ""
-
-msgid "Port [{port}] already in use."
-msgstr ""
-
-msgid "Port: {port}"
-msgstr ""
-
 msgid "Portugal"
 msgstr ""
 
@@ -4796,6 +6143,9 @@ msgid "Positive values are expected."
 msgstr ""
 
 msgid "Pref."
+msgstr ""
+
+msgid "Prepare the settings of the pairing system."
 msgstr ""
 
 msgid "Present"
@@ -4807,6 +6157,12 @@ msgstr ""
 msgid "Previous round"
 msgstr ""
 
+msgid "Primary score:"
+msgstr ""
+
+msgid "Private"
+msgstr ""
+
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prize"
 
@@ -4816,15 +6172,19 @@ msgstr ""
 msgid "Prize assignment"
 msgstr ""
 
+#, python-brace-format
 msgid "Prize category [{prize_category}] has been duplicated."
 msgstr ""
 
+#, python-brace-format
 msgid "Prize category [{prize_category}] successfully created."
 msgstr ""
 
+#, python-brace-format
 msgid "Prize category [{prize_category}] successfully deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Prize category [{prize_category}] successfully updated."
 msgstr ""
 
@@ -4834,6 +6194,7 @@ msgstr ""
 msgid "Prize defaults have been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Prize group [{prize_group}] successfully created."
 msgstr ""
 
@@ -4873,7 +6234,16 @@ msgstr ""
 msgid "Profile"
 msgstr ""
 
+msgid "Progressive accelerated system"
+msgstr ""
+
 msgid "Progressive scores"
+msgstr ""
+
+msgid "Prohibited"
+msgstr ""
+
+msgid "Prohibited pairings"
 msgstr ""
 
 msgid "Properties"
@@ -4888,10 +6258,13 @@ msgstr ""
 msgid "Pts *** POINTS COLUMN HEADER"
 msgstr "Pts"
 
+msgid "Public"
+msgstr ""
+
 msgid "Public event"
 msgstr ""
 
-msgid "Public family"
+msgid "Public multi-screen"
 msgstr ""
 
 msgid "Public screen"
@@ -4906,9 +6279,6 @@ msgstr ""
 msgid "Puerto Rico"
 msgstr ""
 
-msgid "Q *** THE LETTER TO ANSWER QUIT"
-msgstr "Q"
-
 msgid "QR Code"
 msgstr ""
 
@@ -4918,7 +6288,7 @@ msgstr ""
 msgid "Qatar"
 msgstr ""
 
-msgid "Quick-apply a tie-break set"
+msgid "Quick-apply a tie-break set (replace actual tie-breaks)"
 msgstr ""
 
 msgid "R"
@@ -4928,6 +6298,7 @@ msgstr ""
 msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
 
+#, python-brace-format
 msgid "R {round} *** ROUND COLUMN HEADER"
 msgstr "R {round}"
 
@@ -4936,6 +6307,9 @@ msgstr ""
 
 msgid "Ra"
 msgstr ""
+
+msgid "Ra *** AVERAGE OPPONENT RATING COLUMN HEADER"
+msgstr "Ra"
 
 msgid "Random"
 msgstr ""
@@ -4964,15 +6338,21 @@ msgstr ""
 msgid "Ranking after round #%(round)d"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking after round #{round}"
+msgstr ""
+
+msgid "Ranking basis"
 msgstr ""
 
 msgid "Ranking before the first round"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking by club after round #{round}"
 msgstr ""
 
+#, python-brace-format
 msgid "Ranking by federation after round #{round}"
 msgstr ""
 
@@ -5003,6 +6383,9 @@ msgstr ""
 msgid "Rating ranges"
 msgstr ""
 
+msgid "Rating step"
+msgstr ""
+
 msgid "Rating to use:"
 msgstr ""
 
@@ -5019,6 +6402,9 @@ msgid "Ratings"
 msgstr ""
 
 msgid "Ratings update"
+msgstr ""
+
+msgid "Ready"
 msgstr ""
 
 msgid "Reason"
@@ -5039,22 +6425,24 @@ msgstr ""
 msgid "Record"
 msgstr ""
 
+#, python-brace-format
 msgid "Reference to unknown board [{board_id}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Reference to unknown player [{player_id}]."
 msgstr ""
 
 msgid "Refresh"
 msgstr ""
 
+msgid "Refresh networks"
+msgstr ""
+
 msgid "Refresh this page."
 msgstr ""
 
 msgid "Regular event"
-msgstr ""
-
-msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
 msgid "Reload the page"
@@ -5064,6 +6452,9 @@ msgid "Reminder: the tournament is played on multiple FIDE periods, you might ha
 msgstr ""
 
 msgid "Reminder: you might have to update the players' ratings before pairing."
+msgstr ""
+
+msgid "Remove from team"
 msgstr ""
 
 msgid "Remove the player from the event."
@@ -5078,11 +6469,15 @@ msgstr ""
 msgid "Replace"
 msgstr ""
 
+#, python-brace-format
 msgid "Replace <b>{old}</b> by <b>{new}</b>"
 msgstr ""
 
 #, python-format
 msgid "Replace player [%(player)s]"
+msgstr ""
+
+msgid "Replace the current values"
 msgstr ""
 
 msgid "Replace the player to update this field."
@@ -5124,24 +6519,38 @@ msgstr ""
 msgid "Reset manual tie-break"
 msgstr ""
 
+msgid "Reset order"
+msgstr ""
+
+msgid "Restart to complete the move"
+msgstr ""
+
+msgid "Restarting will be required to complete the move."
+msgstr ""
+
 msgid "Restore"
 msgstr ""
 
 msgid "Result"
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] can't be used with a board."
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] can't be used with an opponent."
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] can't be used without a board."
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] can't be used without an opponent."
 msgstr ""
 
+#, python-brace-format
 msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
 msgstr ""
 
@@ -5154,10 +6563,14 @@ msgstr ""
 msgid "Results entry via public screens"
 msgstr ""
 
+#, python-brace-format
 msgid "Results for round #{round}"
 msgstr ""
 
 msgid "Results screens show the last results (most recent first)."
+msgstr ""
+
+msgid "Results: 1 = win, X = draw, 0 = loss, F = forfeit"
 msgstr ""
 
 msgid "Retry"
@@ -5179,34 +6592,64 @@ msgstr ""
 msgid "Reversed"
 msgstr ""
 
+msgid "Right wins"
+msgstr ""
+
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Rk."
 
 msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
 msgstr "Rk. O."
 
-msgid "Rnd.Boa"
+msgid "Rnd.Brd"
+msgstr ""
+
+msgid "Roles"
 msgstr ""
 
 msgid "Romania"
 msgstr ""
 
+msgid "Roster"
+msgstr ""
+
+#, python-brace-format
+msgid "Roster is full ({max} players max for this rule set)."
+msgstr ""
+
+#, python-brace-format
+msgid "Roster is full ({max} players max for this rule set). Remove a player to add another."
+msgstr ""
+
+msgid "Roster issue"
+msgstr ""
+
 #, python-format
-msgid "Rotation delay: %(seconds)d sec."
+msgid "Roster — %(team)s"
+msgstr ""
+
+msgid "Rosters"
+msgstr ""
+
+msgid "Rotation delay"
 msgstr ""
 
 msgid "Rotator"
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Rotator [{rotator}] has been updated."
 msgstr ""
 
@@ -5216,13 +6659,15 @@ msgstr ""
 msgid "Rotators"
 msgstr ""
 
+#, python-brace-format
 msgid "Rotators ({num})"
 msgstr ""
 
+#, python-brace-format
 msgid "Rotators ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>R</u>otators ({num})"
 
-msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
+msgid "Rotators allow you to rotate through multiple screens, or multi-screens, to display plenty of information at your event."
 msgstr ""
 
 #, python-format
@@ -5255,7 +6700,12 @@ msgstr ""
 msgid "Round #0 is forbidden."
 msgstr ""
 
+#, python-brace-format
 msgid "Round #{round}"
+msgstr ""
+
+#, python-format
+msgid "Round %(current)d of %(total)d"
 msgstr ""
 
 #, python-format
@@ -5271,11 +6721,26 @@ msgstr ""
 msgid "Round performance indicators"
 msgstr ""
 
-#, python-format
+#, python-brace-format
+msgid "Round {round}"
+msgstr ""
+
+#, python-brace-format
+msgid "Round {round} is already paired. Unpair it before pairing it again."
+msgstr ""
+
+#, python-brace-format
+msgid "Round {round} of pairing number {number} is already accelerated."
+msgstr ""
+
+#, python-brace-format, python-format
 msgid "Round {} started for %%s"
 msgstr ""
 
 msgid "Round-Robin"
+msgstr ""
+
+msgid "Round-robin schedule"
 msgstr ""
 
 msgid "Round:"
@@ -5294,11 +6759,18 @@ msgstr ""
 msgid "Rounds one Elected to Play"
 msgstr ""
 
+#, python-brace-format
+msgid "Rounds {min_round}-{max_round}"
+msgstr ""
+
 msgid "Rows per screen:"
 msgstr ""
 
 msgid "Rp"
 msgstr ""
+
+msgid "Rp *** PERFORMANCE RATING COLUMN HEADER"
+msgstr "Rp"
 
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
@@ -5308,6 +6780,12 @@ msgstr ""
 
 #, python-format
 msgid "Rule 1.4.6: the lowest-rated opponent is raised to the norm floor (%(r)s) before computing the average."
+msgstr ""
+
+msgid "Rule set"
+msgstr ""
+
+msgid "Rule set applied"
 msgstr ""
 
 msgid "Rules used were only effective until march 2026 (legacy)."
@@ -5355,10 +6833,22 @@ msgstr ""
 msgid "Save current tie-breaks as custom set"
 msgstr ""
 
-msgid "Save the set or cancel."
+msgid "Save group"
+msgstr ""
+
+msgid "Save points"
 msgstr ""
 
 msgid "Schedule"
+msgstr ""
+
+msgid "Scheduled hours"
+msgstr ""
+
+msgid "Scheveningen"
+msgstr ""
+
+msgid "Scheveningen table"
 msgstr ""
 
 msgid "Scope"
@@ -5370,7 +6860,13 @@ msgstr ""
 msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
 msgstr "Score"
 
+msgid "Score *** SCORE COLUMN HEADER"
+msgstr "Score"
+
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
+msgstr ""
+
+msgid "Scores + Schedule Strength (SSSC)"
 msgstr ""
 
 msgid "Scotland"
@@ -5382,26 +6878,23 @@ msgstr ""
 msgid "Screen Management"
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Screen [{screen_uniq_id}] has been updated."
 msgstr ""
 
 msgid "Screen configuration has been updated."
-msgstr ""
-
-msgid "Screen families:"
-msgstr ""
-
-#, python-format
-msgid "Screen families: %(num)d"
 msgstr ""
 
 msgid "Screen settings"
@@ -5410,16 +6903,19 @@ msgstr ""
 msgid "Screen type"
 msgstr ""
 
+msgid "Screen types"
+msgstr ""
+
 msgid "Screens"
+msgstr ""
+
+msgid "Screens / Multi-Screens"
 msgstr ""
 
 msgid "Screens list"
 msgstr ""
 
 msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
-msgstr ""
-
-msgid "Screens:"
 msgstr ""
 
 #, python-format
@@ -5432,6 +6928,12 @@ msgstr ""
 msgid "Search *** SECTION TITLE"
 msgstr "Search"
 
+msgid "Search an event"
+msgstr ""
+
+msgid "Search by name"
+msgstr ""
+
 #, python-format
 msgid "Search by: %(fields)s"
 msgstr ""
@@ -5439,13 +6941,25 @@ msgstr ""
 msgid "Search for player"
 msgstr ""
 
+msgid "Search for updates"
+msgstr ""
+
+msgid "Search players…"
+msgstr ""
+
+msgid "Searching for updates..."
+msgstr ""
+
 msgid "Searching…"
 msgstr ""
 
-msgid "Sector arbitration"
+msgid "Secondary score plus the team Buchholz on the primary score divided by a normalisation factor (FIDE Handbook Art. 13.4)."
 msgstr ""
 
-msgid "See Networks"
+msgid "Secondary score, used to allocate colours."
+msgstr ""
+
+msgid "Sector arbitration"
 msgstr ""
 
 msgid "See the pairings information for the start of this round."
@@ -5457,19 +6971,51 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
+msgid "Select a tournament"
+msgstr ""
+
+msgid "Select all"
+msgstr ""
+
 msgid "Select an account"
 msgstr ""
 
 msgid "Select an action for absent players:"
 msgstr ""
 
+msgid "Select an action for absent teams:"
+msgstr ""
+
+#, python-format
+msgid "Select an action for the %(count)d absent players:"
+msgstr ""
+
+msgid "Select an event"
+msgstr ""
+
+msgid "Select at least two members."
+msgstr ""
+
+msgid "Select members"
+msgstr ""
+
 msgid "Select player"
+msgstr ""
+
+#, python-format
+msgid "Select the age categories to create and enter the default prizes for each (amounts in %(currency)s). One category is created per selected age, with a single age criterion. You can fine-tune the prizes and criteria afterwards."
 msgstr ""
 
 msgid "Select the players and the data to update:"
 msgstr ""
 
 msgid "Select the tournaments to add players to."
+msgstr ""
+
+msgid "Select this empty table (forfeit for the paired player)"
+msgstr ""
+
+msgid "Select to pair (White, then pick the opponent)"
 msgstr ""
 
 msgid "Selection"
@@ -5494,10 +7040,10 @@ msgstr ""
 msgid "Serbia"
 msgstr ""
 
-msgid "Server Setup"
+msgid "Server is already running!"
 msgstr ""
 
-msgid "Server is already running!"
+msgid "Set"
 msgstr ""
 
 msgid "Set Full-Points Byes"
@@ -5509,10 +7055,26 @@ msgstr ""
 msgid "Set Zero-Points Byes"
 msgstr ""
 
+#, python-brace-format
 msgid "Set [{name}] has been saved."
 msgstr ""
 
+#, python-brace-format
 msgid "Set [{name}] has been updated."
+msgstr ""
+
+msgid "Set affiliations"
+msgstr ""
+
+#, python-brace-format
+msgid "Set by rule set \"{name}\"."
+msgstr ""
+
+#, python-format
+msgid "Set by the rule set [%(name)s]."
+msgstr ""
+
+msgid "Set each team's affiliation from its players. A team is filled only when all its players share the chosen value; teams where it cannot be determined are left unchanged."
 msgstr ""
 
 msgid "Set illegal moves"
@@ -5524,9 +7086,14 @@ msgstr ""
 msgid "Set special results"
 msgstr ""
 
+#, python-format
+msgid "Set the affiliation of %(filled)d team(s) from “%(source)s”."
+msgstr ""
+
 msgid "Set the current round"
 msgstr ""
 
+#, python-brace-format
 msgid "Set to <b>{value}</b>"
 msgstr ""
 
@@ -5545,9 +7112,6 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
-msgid "Sharly Chess Server"
-msgstr ""
-
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
@@ -5563,6 +7127,12 @@ msgstr ""
 msgid "Sharly Chess recommendation"
 msgstr ""
 
+msgid "Sharly Chess recommendation (GP as primary score)"
+msgstr ""
+
+msgid "Sharly Chess recommendation (MP as primary score)"
+msgstr ""
+
 msgid "Sharly Chess server"
 msgstr ""
 
@@ -5575,13 +7145,14 @@ msgstr ""
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
 
+#, python-brace-format
+msgid "Sharly Chess {latest} is available, you have {current}."
+msgstr ""
+
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
 
-msgid "Show Log"
-msgstr ""
-
-msgid "Show logging level"
+msgid "Show level"
 msgstr ""
 
 msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
@@ -5593,7 +7164,16 @@ msgstr ""
 msgid "Show warnings"
 msgstr ""
 
-msgid "Show/hide the screens created from screen families."
+msgid "Show/hide all individual games."
+msgstr ""
+
+msgid "Show/hide the round lineups on the cards."
+msgstr ""
+
+msgid "Show/hide the screens created from multi-screens."
+msgstr ""
+
+msgid "Show/hide the team rosters on the cards."
 msgstr ""
 
 msgid "Sierra Leone"
@@ -5614,9 +7194,11 @@ msgstr ""
 msgid "Single Screens"
 msgstr ""
 
+#, python-brace-format
 msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>S</u>ingle Screens ({num})"
 
+#, python-brace-format
 msgid "Size ({unit}): {width}x{height}"
 msgstr ""
 
@@ -5624,6 +7206,15 @@ msgid "Slovakia"
 msgstr ""
 
 msgid "Slovenia"
+msgstr ""
+
+msgid "Soft"
+msgstr ""
+
+msgid "Soft Haley system"
+msgstr ""
+
+msgid "Soft constraint"
 msgstr ""
 
 msgid "Solomon Islands"
@@ -5635,11 +7226,11 @@ msgstr ""
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr ""
 
-msgid "Some files are missing."
-msgstr ""
-
 #, python-format
 msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
+msgstr ""
+
+msgid "Some screens of this type already belong to a menu."
 msgstr ""
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
@@ -5658,6 +7249,12 @@ msgid "Sorry, the page you are looking for does not exist."
 msgstr ""
 
 msgid "Sorry, you are not allowed to access this page."
+msgstr ""
+
+msgid "Sort by board number"
+msgstr ""
+
+msgid "Sort by pairing order"
 msgstr ""
 
 msgid "Sort by:"
@@ -5711,12 +7308,16 @@ msgstr ""
 msgid "Split by:"
 msgstr ""
 
+msgid "Split method"
+msgstr ""
+
 msgid "Sri Lanka"
 msgstr ""
 
 msgid "Staff"
 msgstr ""
 
+#, python-brace-format
 msgid "Staff ({num})"
 msgstr ""
 
@@ -5735,6 +7336,9 @@ msgstr ""
 msgid "Standard (no flag)"
 msgstr ""
 
+msgid "Standard Molter"
+msgstr ""
+
 msgid "Standard points"
 msgstr ""
 
@@ -5747,20 +7351,23 @@ msgstr ""
 msgid "Standard swiss system"
 msgstr ""
 
+msgid "Standard team Swiss"
+msgstr ""
+
 msgid "Standard:"
 msgstr ""
 
 msgid "Start date"
 msgstr ""
 
-#, python-format
+msgid "Start from one of these sets, or add your own tags."
+msgstr ""
+
+#, python-brace-format, python-format
 msgid "Start of round {} in %%s"
 msgstr ""
 
 msgid "Start of the sporting season"
-msgstr ""
-
-msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
 msgid "Starting rank"
@@ -5781,6 +7388,10 @@ msgstr ""
 msgid "Su *** SUNDAY"
 msgstr "Su"
 
+msgid "Substitutes Bench"
+msgstr ""
+
+#, python-brace-format
 msgid "Successfully logged in as [{account}]."
 msgstr ""
 
@@ -5791,6 +7402,15 @@ msgid "Sudan"
 msgstr ""
 
 msgid "Sum of Buchholz"
+msgstr ""
+
+msgid "Sum the opponents (or own) game-point totals instead of match points."
+msgstr ""
+
+msgid "Sum the opponents (or own) match-point totals instead of game points."
+msgstr ""
+
+msgid "Support the Sharly Chess project"
 msgstr ""
 
 msgid "Suriname"
@@ -5811,10 +7431,29 @@ msgstr ""
 msgid "System"
 msgstr ""
 
+msgid "TEAM'S NAME"
+msgstr ""
+
+msgid "TPN *** TOURNAMENT PAIRING NUMBER"
+msgstr "TPN"
+
 msgid "TRF file"
 msgstr ""
 
 msgid "TRF26"
+msgstr ""
+
+#, python-format
+msgid "Table %(table)d"
+msgstr ""
+
+msgid "Table number"
+msgstr ""
+
+msgid "Table numbers:"
+msgstr ""
+
+msgid "Tags"
 msgstr ""
 
 msgid "Tajikistan"
@@ -5823,13 +7462,143 @@ msgstr ""
 msgid "Tanzania"
 msgstr ""
 
+msgid "Team"
+msgstr ""
+
+msgid "Team Cards"
+msgstr ""
+
+msgid "Team Round-Robin"
+msgstr ""
+
+msgid "Team Swiss"
+msgstr ""
+
+#, python-format
+msgid "Team [%(team)s] successfully created!"
+msgstr ""
+
+#, python-brace-format
+msgid "Team [{team}] has been created."
+msgstr ""
+
+#, python-brace-format
+msgid "Team [{team}] has been deleted."
+msgstr ""
+
+#, python-brace-format
+msgid "Team [{team}] has been paired against [{opponent}] at board #{board}."
+msgstr ""
+
+#, python-brace-format
+msgid "Team [{team}] has been updated."
+msgstr ""
+
+#, python-brace-format
+msgid "Team [{team}] has returned for this round."
+msgstr ""
+
+#, python-brace-format
+msgid "Team [{team}] is full ({max} players max)."
+msgstr ""
+
+msgid "Team captain."
+msgstr ""
+
+msgid "Team check-in"
+msgstr ""
+
+msgid "Team competition"
+msgstr ""
+
+msgid "Team opponents' records"
+msgstr ""
+
+#, python-format
+msgid "Team pairing information for round %(round)d"
+msgstr ""
+
+msgid "Team ranking"
+msgstr ""
+
+#, python-brace-format
+msgid "Team ranking after round #{round}"
+msgstr ""
+
+msgid "Team ranking before the first round"
+msgstr ""
+
+msgid "Team score basis"
+msgstr ""
+
+msgid "Team selection (by alphabetical order)"
+msgstr ""
+
+msgid "Team selection (by rank)"
+msgstr ""
+
+#, python-format
+msgid "Team sets of screen %(screen_name)s"
+msgstr ""
+
+msgid "Team tournament file cannot be imported into an individual event."
+msgstr ""
+
+msgid "Team tournament file in an individual event — create a team event first."
+msgstr ""
+
+msgid "Team's score"
+msgstr ""
+
+msgid "Team:"
+msgstr ""
+
 msgid "Teams"
+msgstr ""
+
+msgid "Teams (none now)"
+msgstr ""
+
+#, python-brace-format
+msgid "Teams ({num})"
+msgstr ""
+
+msgid "Teams can be created without a tournament assignment and assigned later."
+msgstr ""
+
+#, python-format
+msgid "Teams from #%(first)d to #%(last)d"
+msgstr ""
+
+#, python-format
+msgid "Teams from %(first)s to %(last)s"
+msgstr ""
+
+msgid "Teams not assigned to a tournament"
+msgstr ""
+
+msgid "Teams still tied"
+msgstr ""
+
+#, python-format
+msgid "Teams will be paired at round %(pairing_round)d and marked as present for the following rounds."
+msgstr ""
+
+#, python-format
+msgid "Teams will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds."
 msgstr ""
 
 msgid "Teams with fewer players are considered &quot;incomplete&quot;."
 msgstr ""
 
 msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
+msgstr ""
+
+msgid "Teams:"
+msgstr ""
+
+#, python-format
+msgid "Teams: %(num)d"
 msgstr ""
 
 msgid "Template:"
@@ -5865,12 +7634,15 @@ msgstr ""
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr ""
 
+#, python-brace-format
 msgid "The FIDE will use the opponent's standard rating for this game ({rating})."
 msgstr ""
 
+#, python-brace-format
 msgid "The FIDE will use the player's standard rating for this game ({rating})."
 msgstr ""
 
+#, python-brace-format
 msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
 msgstr ""
 
@@ -5889,6 +7661,7 @@ msgstr ""
 msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
 msgstr ""
 
+#, python-brace-format
 msgid "The average of the [{tie_break}] scores of the opponents played over the board."
 msgstr ""
 
@@ -5898,16 +7671,25 @@ msgstr ""
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr ""
 
+msgid "The captain must belong to the team roster."
+msgstr ""
+
 msgid "The category contains non-monetary prizes which can not be shared."
 msgstr ""
 
 msgid "The color attributed to the highest ranked player at the first round."
 msgstr ""
 
-msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying ranking only."
 msgstr ""
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
+msgstr ""
+
+msgid "The data folder could not be added to the Microsoft Defender exception list."
+msgstr ""
+
+msgid "The data folder has been successfully added to the Microsoft Defender exception list."
 msgstr ""
 
 msgid "The default federation for your events."
@@ -5916,9 +7698,16 @@ msgstr ""
 msgid "The director is the person in charge of the event."
 msgstr ""
 
+msgid "The end of the range must not precede its start."
+msgstr ""
+
 msgid "The event already has multi-tournament players."
 msgstr ""
 
+msgid "The event type cannot be changed after creation."
+msgstr ""
+
+#, python-brace-format
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] ""
@@ -5936,17 +7725,43 @@ msgstr ""
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr ""
 
+msgid "The game points scored on board 1 over the tournament; if that leaves the teams level, the next board down decides, and so on."
+msgstr ""
+
+msgid "The game points scored on every board but the bottom one; if that leaves the teams level, the bottom-most board left is excluded in turn until one team is ahead."
+msgstr ""
+
+msgid "The image is too large (max 2 MB)."
+msgstr ""
+
+msgid "The label used for this multi-screen in menus. Its range is appended automatically."
+msgstr ""
+
+msgid "The label used for this screen in menus. If left empty, the tournament name is used."
+msgstr ""
+
+#, python-brace-format
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "The least significant value is removed."
 msgid_plural "The {count} least significant values are removed."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "The limit can only be adjusted by {count} half-points."
+msgstr ""
+
+#, python-format
+msgid "The line-up for round %(round)d is not in the same order as the team roster."
+msgstr ""
+
+#, python-format
+msgid "The line-up for rounds %(first_round)d-%(last_round)d is not in the same order as the team roster."
 msgstr ""
 
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
@@ -5963,6 +7778,9 @@ msgid "The maximum category must be at most equal to the minimum category."
 msgstr ""
 
 msgid "The maximum number of byes a player can pretend to."
+msgstr ""
+
+msgid "The maximum number of byes a team can pretend to."
 msgstr ""
 
 msgid "The maximum number of illegal moves that can be recorded per round for a player."
@@ -5989,11 +7807,10 @@ msgstr ""
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr ""
 
-#, python-format
-msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
+msgid "The network on which the devices are connected."
 msgstr ""
 
-msgid "The network on which the devices are connected."
+msgid "The new folder can't be a sub folder of the current folder."
 msgstr ""
 
 msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
@@ -6017,10 +7834,17 @@ msgstr ""
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr ""
 
+#, python-brace-format
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
 msgstr ""
 
 msgid "The number of points in the standard 1/0.5/0 point system."
+msgstr ""
+
+msgid "The number of rounds follows from the pairing system and is worked out when the pairings are generated."
+msgstr ""
+
+msgid "The number of rounds follows from the pairing system."
 msgstr ""
 
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
@@ -6032,7 +7856,16 @@ msgstr ""
 msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
 msgstr ""
 
+msgid "The number of screens on which the matches will be distributed, optional (the number of screens is always the same and the number of matches per screen adapts to the number of matches)."
+msgstr ""
+
 msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
+msgstr ""
+
+msgid "The number of screens on which the teams will be distributed, optional (the number of screens is always the same and the number of teams per screen adapts to the number of teams)."
+msgstr ""
+
+msgid "The number of team matches per column, optional (the number of screens adapts to the number of matches; a match spans one row per board)."
 msgstr ""
 
 msgid "The number of the first board to select."
@@ -6041,10 +7874,19 @@ msgstr ""
 msgid "The number of the first player to select."
 msgstr ""
 
+msgid "The number of the first team to select."
+msgstr ""
+
 msgid "The number of the last board to select."
 msgstr ""
 
 msgid "The number of the last player to select."
+msgstr ""
+
+msgid "The number of the last team to select."
+msgstr ""
+
+msgid "The organisation to which the team belongs (for example a club, league, or school). Affiliations may be used by pairing rules to avoid pairing related teams."
 msgstr ""
 
 msgid "The pairing number can't be greater than the player count."
@@ -6071,10 +7913,25 @@ msgstr ""
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr ""
 
+msgid "The points are not among the ranking criteria."
+msgstr ""
+
+msgid "The points scored in the tournament (the primary score for teams). Placed first it ranks the standings as usual; placed lower, the criteria above it outrank the score."
+msgstr ""
+
+msgid "The prohibited pairings cannot be satisfied for this round."
+msgstr ""
+
 msgid "The rank of the first player to select."
 msgstr ""
 
+msgid "The rank of the first team to select."
+msgstr ""
+
 msgid "The rank of the last player to select."
+msgstr ""
+
+msgid "The rank of the last team to select."
 msgstr ""
 
 msgid "The rating used when the time control is at least 60 minutes."
@@ -6098,18 +7955,40 @@ msgstr ""
 msgid "The related objects will also be deleted:"
 msgstr ""
 
+msgid "The roster cap cannot be smaller than the team-match size."
+msgstr ""
+
+#, python-format
+msgid "The roster has %(count)d players, more than the maximum of %(max)d."
+msgstr ""
+
 msgid "The rotating delay between two screens."
 msgstr ""
 
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
 msgstr ""
 
+#, python-brace-format
 msgid "The round count is incompatible with the number of players (expected: {expected})."
+msgstr ""
+
+#, python-brace-format
+msgid "The round count is incompatible with the number of teams (expected: {expected})."
+msgstr ""
+
+msgid "The round must be paired first."
+msgstr ""
+
+msgid "The rule set fixes the team sort order."
 msgstr ""
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr ""
 
+msgid "The settings are set and can no longer be changed."
+msgstr ""
+
+#, python-brace-format
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
 msgstr ""
 
@@ -6119,13 +7998,29 @@ msgstr ""
 msgid "The sum of the scores of each of the opponents of the player."
 msgstr ""
 
+msgid "The table number of the first match to select."
+msgstr ""
+
+msgid "The table number of the last match to select."
+msgstr ""
+
+msgid "The team order sets each team's pairing number, shown on each card."
+msgstr ""
+
+msgid "The team score that is not used as the primary score (match points if the primary is game points and vice versa)."
+msgstr ""
+
+msgid "The team sort order is fixed once the first round is paired."
+msgstr ""
+
+#, python-brace-format
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
 msgstr ""
 
 msgid "The timer displayed on the screen."
 msgstr ""
 
-msgid "The timer displayed on the screens of the family."
+msgid "The timer displayed on the screens of the multi-screen."
 msgstr ""
 
 msgid "The tournament has invalid tie-breaks; please fix them before saving as a set."
@@ -6140,10 +8035,16 @@ msgstr ""
 msgid "The tournament is finished."
 msgstr ""
 
-msgid "The tournament of the screens of the family."
+msgid "The tournament must keep at least one ranking criterion."
+msgstr ""
+
+msgid "The tournament of the screens of the multi-screen."
 msgstr ""
 
 msgid "The tournaments for which the staff member is a deputy arbiter."
+msgstr ""
+
+msgid "The tournaments for which the staff member is an arbiter."
 msgstr ""
 
 msgid "The tournaments for which the staff member is the chief arbiter."
@@ -6155,9 +8056,17 @@ msgstr ""
 msgid "The type of criterion used to filter the players."
 msgstr ""
 
+msgid "The update could not be downloaded. Consult the logs for more details."
+msgstr ""
+
+msgid "The uploaded image is too large (max 2 MB)."
+msgstr ""
+
+#, python-brace-format
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
+#, python-brace-format
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
 msgstr ""
 
@@ -6173,9 +8082,11 @@ msgstr ""
 msgid "There already is an hour defined at this time."
 msgstr ""
 
+#, python-brace-format
 msgid "There already is an hour for round #{round}."
 msgstr ""
 
+#, python-brace-format
 msgid "There are no pairings for this round (last round with pairings: #{round})."
 msgstr ""
 
@@ -6185,13 +8096,31 @@ msgstr ""
 msgid "There can only be one main category."
 msgstr ""
 
-msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
+msgid "There needs to be at least one screen or multi-screen defined for the rotator to be accessible."
+msgstr ""
+
+msgid "These lower-ranked players were released so the round could be paired."
+msgstr ""
+
+msgid "These lower-ranked teams were released so the round could be paired."
 msgstr ""
 
 msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
+msgid "These points count towards the tournament standings and are used for the pairings. They do not change the results of the games, which are reported to FIDE as they were played."
+msgstr ""
+
 msgid "These sets are saved per pairing system and shared across events."
+msgstr ""
+
+msgid "These sets are shared by every event of this installation."
+msgstr ""
+
+msgid "These settings are part of the pairings already made and can no longer be changed."
+msgstr ""
+
+msgid "These tags are shared by every event of this installation."
 msgstr ""
 
 msgid "These tournaments are already included for this account by a higher access level."
@@ -6212,6 +8141,12 @@ msgstr ""
 msgid "This account is not active, anonymous users can not log in to it."
 msgstr ""
 
+msgid "This action is not possible for this round."
+msgstr ""
+
+msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
+msgstr ""
+
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr ""
 
@@ -6227,7 +8162,16 @@ msgstr ""
 msgid "This document is not available for unpaired tournaments."
 msgstr ""
 
+msgid "This document is only available for Molter tournaments."
+msgstr ""
+
 msgid "This document is only available for Round-Robin tournaments."
+msgstr ""
+
+msgid "This document is only available for Scheveningen tournaments."
+msgstr ""
+
+msgid "This document is only available for round-robin tournaments."
 msgstr ""
 
 msgid "This document is only available for standard time control tournaments."
@@ -6240,12 +8184,6 @@ msgid "This event is private (by default, screens are not visible by the spectat
 msgstr ""
 
 msgid "This event is public (by default, screens are visible by the spectators)."
-msgstr ""
-
-msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
-msgstr ""
-
-msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
 msgstr ""
 
 msgid "This field can't be modified once the tournament has started."
@@ -6263,19 +8201,55 @@ msgstr ""
 msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr ""
 
-msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
+#, python-brace-format
+msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import, because its pairings cannot be reproduced exactly."
 msgstr ""
 
-msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgid "This folder is not empty."
+msgstr ""
+
+msgid "This menu is empty."
+msgstr ""
+
+msgid "This multi-screen already belongs to a menu."
+msgstr ""
+
+msgid "This multi-screen is private (not visible by the spectators)."
+msgstr ""
+
+msgid "This multi-screen is public (visible by the spectators)."
 msgstr ""
 
 msgid "This name is already used."
 msgstr ""
 
+#, python-brace-format
+msgid "This pairing system requires at least {n} teams."
+msgstr ""
+
+#, python-brace-format
+msgid "This pairing system supports up to {n} teams."
+msgstr ""
+
+#, python-brace-format
+msgid "This pairing table covers up to {max_rounds} rounds for {t} teams of {p} players. Reduce the round count."
+msgstr ""
+
+#, python-brace-format
+msgid "This pairing table covers up to {max_rounds} rounds for {t} teams. Reduce the round count."
+msgstr ""
+
 msgid "This player already exists in the event."
 msgstr ""
 
+#, python-brace-format
 msgid "This player already exists in tournament [{tournament}]."
+msgstr ""
+
+msgid "This player has already been paired; their team cannot be changed."
+msgstr ""
+
+msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first)."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -6284,22 +8258,36 @@ msgstr ""
 msgid "This rotator is public (visible by the spectators)."
 msgstr ""
 
+msgid "This round cannot be edited."
+msgstr ""
+
+#, python-format
+msgid "This round has been paired, so its line-up is what stands on its boards. If you really want to edit this line-up: go to the Pairings tab, select round #%(round)d and open this modal again."
+msgstr ""
+
+#, python-brace-format
 msgid "This round hasn't started (current round: #{round})."
 msgstr ""
 
+#, python-brace-format
 msgid "This round is not finished (last finished: #{round})."
 msgstr ""
 
+#, python-brace-format
 msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr ""
+
+msgid "This round is paired; the prohibited pairings used are frozen."
+msgstr ""
+
+#, python-format
+msgid "This round will use round #%(round)d's line-up when paired."
 msgstr ""
 
 msgid "This row contains errors that prevent it from being imported."
 msgstr ""
 
-msgid "This screen family is private (not visible by the spectators)."
-msgstr ""
-
-msgid "This screen family is public (visible by the spectators)."
+msgid "This screen already belongs to a menu."
 msgstr ""
 
 msgid "This screen is private (not visible by the spectators)."
@@ -6308,7 +8296,17 @@ msgstr ""
 msgid "This screen is public (visible by the spectators)."
 msgstr ""
 
+msgid "This screen type already belongs to a menu."
+msgstr ""
+
+#, python-brace-format
 msgid "This set contains [{name}] twice in a row."
+msgstr ""
+
+msgid "This team has already been paired; its tournament cannot be changed."
+msgstr ""
+
+msgid "This team has no rounds to show a line-up for."
 msgstr ""
 
 msgid "This tie-break can be used multiple times."
@@ -6326,19 +8324,25 @@ msgstr ""
 msgid "This tie-break is already used."
 msgstr ""
 
+#, python-brace-format
 msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament)."
 msgstr ""
 
+#, python-brace-format
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
 msgstr ""
 
 msgid "This tie-break is not recommended on tournaments lasting over multiple FIDE periods."
 msgstr ""
 
+#, python-brace-format
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr ""
 
 msgid "This tie-break uses a legacy way to compute values."
+msgstr ""
+
+msgid "This tournament has already been paired; teams can no longer be added."
 msgstr ""
 
 msgid "This tournament has no norm-eligible titled players."
@@ -6347,7 +8351,7 @@ msgstr ""
 msgid "This unique ID is already used."
 msgstr ""
 
-msgid "Three points for a win"
+msgid "This will improve performances. You must have administrator rights."
 msgstr ""
 
 msgid "Threshold"
@@ -6357,6 +8361,7 @@ msgstr ""
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
 
+#, python-brace-format
 msgid "Tie-break [{name}] is not available in this event."
 msgstr ""
 
@@ -6372,7 +8377,14 @@ msgstr ""
 msgid "Tie-breaks"
 msgstr ""
 
+#, python-brace-format
+msgid "Tie-breaks are managed by rule set \"{name}\". Change the rule set on the tournament to edit them."
+msgstr ""
+
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
+msgstr ""
+
+msgid "Time"
 msgstr ""
 
 msgid "Time control"
@@ -6381,24 +8393,30 @@ msgstr ""
 msgid "Time control:"
 msgstr ""
 
+#, python-brace-format
 msgid "Time outside of event time range ({range})."
 msgstr ""
 
+#, python-brace-format
 msgid "Time outside of tournament time range ({range})."
 msgstr ""
 
 msgid "Timer"
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer_id}] not found."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Timer [{timer}] has been updated."
 msgstr ""
 
@@ -6418,10 +8436,11 @@ msgstr ""
 msgid "Timers"
 msgstr ""
 
-msgid "Timers ({num}) *** WITH_SHORTCUT_INDICATION"
-msgstr "Ti<u>m</u>ers ({num})"
+#, python-brace-format
+msgid "Timers ({num})"
+msgstr "Timers ({num})"
 
-msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
+msgid "Timers can be placed on any screen, multi-screen or rotator to display a count down to the next round or other important event."
 msgstr ""
 
 #, python-format
@@ -6434,12 +8453,16 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
+msgid "Title *** TITLE COLUMN HEADER"
+msgstr "Title"
+
 msgid "Title Norms"
 msgstr ""
 
 msgid "Title Norms Achieved"
 msgstr ""
 
+#, python-brace-format
 msgid "Title Norms Forecast — Round {round}"
 msgstr ""
 
@@ -6462,19 +8485,31 @@ msgstr ""
 msgid "Today"
 msgstr ""
 
+msgid "Toggle details"
+msgstr ""
+
 msgid "Togo"
 msgstr ""
 
 msgid "Tonga"
 msgstr ""
 
+#, python-brace-format
 msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr ""
 
+#, python-brace-format
+msgid "Too few teams to generate the pairings (minimum: {min})."
+msgstr ""
+
+#, python-brace-format
 msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
 msgid "Too much information to display on a single projector?"
+msgstr ""
+
+msgid "Top board results"
 msgstr ""
 
 msgid "Top-40 average"
@@ -6486,6 +8521,9 @@ msgstr ""
 msgid "Total prize value"
 msgstr ""
 
+msgid "Total value"
+msgstr ""
+
 msgid "Tournament"
 msgstr ""
 
@@ -6495,25 +8533,34 @@ msgstr "Tournament"
 msgid "Tournament Norms Summary"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] has been created and default screens have been added."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] has been created."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] has been deleted."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] has been updated."
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
 msgid "Tournament export"
+msgstr ""
+
+msgid "Tournament has no team-player count configured."
 msgstr ""
 
 msgid "Tournament name"
@@ -6535,6 +8582,7 @@ msgstr ""
 msgid "Tournament record"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournament {tournament} ({numbers_str})"
 msgstr ""
 
@@ -6551,6 +8599,7 @@ msgstr ""
 msgid "Tournaments"
 msgstr ""
 
+#, python-brace-format
 msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>T</u>ournaments ({num})"
 
@@ -6561,10 +8610,6 @@ msgid "Tournaments displayed:"
 msgstr ""
 
 msgid "Tournaments:"
-msgstr ""
-
-#, python-format
-msgid "Tournaments: %(num)d"
 msgstr ""
 
 msgid "Transfer"
@@ -6591,14 +8636,16 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
+msgid "Type A (simple preferences)"
+msgstr ""
+
+msgid "Type B (strong + mild preferences)"
+msgstr ""
+
 msgid "Type of teams:"
 msgstr ""
 
 msgid "Type:"
-msgstr ""
-
-#, python-format
-msgid "Type: %(family_type)s"
 msgstr ""
 
 #, python-format
@@ -6611,24 +8658,11 @@ msgstr ""
 msgid "U8-U20 / 50+ / 65+"
 msgstr ""
 
-msgid "UNPAIR"
-msgstr ""
-
-msgid "UNRATED BLACK VICTORY"
-msgstr ""
-
-msgid "UNRATED DRAW"
-msgstr ""
-
-msgid "UNRATED PENALTY"
-msgstr ""
-
-msgid "UNRATED WHITE VICTORY"
-msgstr ""
-
+#, python-brace-format
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
+#, python-brace-format
 msgid "URL [{url}] responded code [{code}]."
 msgstr ""
 
@@ -6640,6 +8674,12 @@ msgstr ""
 
 msgid "Ukraine"
 msgstr ""
+
+msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Unassigned"
+
+msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+msgstr "Unassigned"
 
 msgid "Unavailable before the tournament start."
 msgstr ""
@@ -6656,14 +8696,15 @@ msgstr "Undefined"
 msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
 
-msgid "Unexpected error during installation: [{ex}]."
+#, python-brace-format
+msgid "Unexpected value [{value}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr ""
 
-#, python-format
-msgid "Unique ID: %(uniq_id)s"
+msgid "Unique ID"
 msgstr ""
 
 #, python-format
@@ -6679,28 +8720,47 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown color [{color}]."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown federation [{federation}]."
 msgstr ""
 
 msgid "Unknown federation."
 msgstr ""
 
+#, python-brace-format
 msgid "Unknown gender [{gender}]."
 msgstr ""
 
+msgid "Unknown group."
+msgstr ""
+
+#, python-brace-format
 msgid "Unknown result [{result}]."
 msgstr ""
 
+#, python-brace-format
+msgid "Unknown rule set [{id}]."
+msgstr ""
+
+msgid "Unknown team."
+msgstr ""
+
+#, python-brace-format
 msgid "Unknown title [{title}]."
 msgstr ""
 
+msgid "Unknown tournament."
+msgstr ""
+
+#, python-brace-format
 msgid "Unknown value (expected: {expected})."
 msgstr ""
 
-msgid "Unlike single Screens, families can only be used to display information about a single tournament."
+msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
 msgstr ""
 
 msgid "Unmet requirements are highlighted in red and should be verified. They will appear in black when printed."
@@ -6719,6 +8779,9 @@ msgid "Unpair all the rounds of the tournament."
 msgstr ""
 
 msgid "Unpair one board"
+msgstr ""
+
+msgid "Unpair the tournament before changing its pairing system."
 msgstr ""
 
 msgid "Unpair tournament"
@@ -6742,10 +8805,13 @@ msgstr ""
 msgid "Unplayed (no result recorded)."
 msgstr ""
 
-msgid "Unrated *** PLURAL"
+msgid "Unrated *** FOR GAMES"
 msgstr "Unrated"
 
-msgid "Unrated *** SINGULAR"
+msgid "Unrated *** PLURAL FOR UNRATED PLAYERS"
+msgstr "Unrated"
+
+msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
 msgstr "Unrated"
 
 msgid "Unrated Draw"
@@ -6760,9 +8826,13 @@ msgstr ""
 msgid "Unrated opponent."
 msgstr ""
 
+msgid "Unrated penalty"
+msgstr ""
+
 msgid "Unrated players"
 msgstr ""
 
+#, python-brace-format
 msgid "Upcoming ({num})"
 msgstr ""
 
@@ -6770,6 +8840,10 @@ msgid "Upcoming events"
 msgstr ""
 
 msgid "Update"
+msgstr ""
+
+#, python-format
+msgid "Update affiliation [%(name)s]"
 msgstr ""
 
 msgid "Update event"
@@ -6784,16 +8858,31 @@ msgstr ""
 msgid "Update results"
 msgstr ""
 
+msgid "Update search failed (no internet)"
+msgstr ""
+
+msgid "Update tag"
+msgstr ""
+
 msgid "Update the players' information from an external data source."
 msgstr ""
 
 msgid "Update tournaments"
 msgstr ""
 
+msgid "Updates"
+msgstr ""
+
+msgid "Updates are available!"
+msgstr ""
+
 msgid "Updating"
 msgstr ""
 
 msgid "Uruguay"
+msgstr ""
+
+msgid "Use Flatpak to handle updates."
 msgstr ""
 
 msgid "Use Fore Buchholz"
@@ -6805,19 +8894,33 @@ msgstr ""
 msgid "Use default"
 msgstr ""
 
+#, python-brace-format
 msgid "Use default - {option}"
 msgstr ""
 
-msgid "Use pairing engines"
+msgid "Use dropdowns"
 msgstr ""
 
-msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
+msgid "Use game points for colour allocation"
+msgstr ""
+
+msgid "Use match points for colour allocation"
+msgstr ""
+
+#, python-brace-format
+msgid "Use only \"{w}\" and \"{b}\" characters (or leave blank for default)."
+msgstr ""
+
+msgid "Use pairing engines"
 msgstr ""
 
 msgid "Use the Staff tab to declare arbiters."
 msgstr ""
 
 msgid "Use the alert message defined on each screen."
+msgstr ""
+
+msgid "Use the previous round's line-up (untick to set this round)"
 msgstr ""
 
 msgid "Use the standard FIDE rating for unrated players"
@@ -6841,6 +8944,7 @@ msgstr[1] ""
 msgid "Uzbekistan"
 msgstr ""
 
+#, python-brace-format
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
 
@@ -6862,9 +8966,6 @@ msgstr ""
 msgid "Value not found in the data source."
 msgstr ""
 
-msgid "Value of the pairing allocated bye:"
-msgstr ""
-
 msgid "Values"
 msgstr ""
 
@@ -6881,9 +8982,6 @@ msgid "Verdict"
 msgstr ""
 
 msgid "Verdict:"
-msgstr ""
-
-msgid "Version: {version}"
 msgstr ""
 
 msgid "Vietnam"
@@ -6908,6 +9006,9 @@ msgstr ""
 msgid "View event configuration"
 msgstr ""
 
+msgid "View mode"
+msgstr ""
+
 msgid "View passed events"
 msgstr ""
 
@@ -6926,10 +9027,22 @@ msgstr ""
 msgid "View the Tournaments tab"
 msgstr ""
 
+msgid "View the menu."
+msgstr ""
+
+msgid "Virtual points"
+msgstr ""
+
+msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
+msgstr ""
+
 msgid "Visibility:"
 msgstr ""
 
 msgid "W *** SHORT NAME FOR GENDER WOMAN"
+msgstr "W"
+
+msgid "W *** TEAM RANKING HEADER WIN"
 msgstr "W"
 
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
@@ -6959,6 +9072,9 @@ msgstr "WIM"
 msgid "Wales"
 msgstr ""
 
+msgid "Warn on line-up out of roster order"
+msgstr ""
+
 msgid "Warning: all hours for this timer will be permanently deleted!"
 msgstr ""
 
@@ -6966,6 +9082,9 @@ msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
 msgid "Warning: experimental features are enabled!"
+msgstr ""
+
+msgid "Warning: over half of the players are absent!"
 msgstr ""
 
 msgid "Warning: potential data loss"
@@ -7000,19 +9119,23 @@ msgstr "We"
 msgid "Weak"
 msgstr ""
 
-msgid "Web server not started yet ({ex}), waiting…"
-msgstr ""
-
 msgid "Weekly"
 msgstr ""
 
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
-msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
+msgid "What separates the last teams when they are level on both match points and game points, judged on the boards of their own encounter."
+msgstr ""
+
+#, python-brace-format
+msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."
 msgstr ""
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
+msgstr ""
+
+msgid "When enabled, a warning is shown if a per-round line-up places players in a different order than the team roster. The line-up can still be reordered freely."
 msgstr ""
 
 msgid "When hovering a player's name with the mouse, display its history."
@@ -7027,7 +9150,19 @@ msgstr ""
 msgid "When two or more players with the same points are eligible for prizes, share their prizes."
 msgstr ""
 
+msgid "When two teams have the same score, the one with the better secondary score has its colour preference applied first."
+msgstr ""
+
 msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
+msgstr ""
+
+msgid "Which combination of opponent score × own score is used. Match points (MP) reward winning the match; game points (GP) reward the margin of victory."
+msgstr ""
+
+msgid "Which score is the ranking based on. "
+msgstr ""
+
+msgid "Which team score the tie-break uses for its calculation. Match points are the FIDE default; game points apply for tournaments where the primary score is GP (e.g. FFE Molter)."
 msgstr ""
 
 msgid "White"
@@ -7043,6 +9178,9 @@ msgid "Will participate in upcoming rounds"
 msgstr ""
 
 msgid "Win"
+msgstr ""
+
+msgid "Win:"
 msgstr ""
 
 msgid "With less players than prizes, some prizes will not be attributed."
@@ -7069,6 +9207,12 @@ msgstr ""
 msgid "Woman International Master"
 msgstr ""
 
+msgid "Women *** EVENT TAG NAME"
+msgstr "Women"
+
+msgid "Women's Title:"
+msgstr ""
+
 msgid "XLSX format"
 msgstr ""
 
@@ -7081,6 +9225,7 @@ msgstr "Y"
 msgid "YY/MM/DD"
 msgstr ""
 
+#, python-brace-format
 msgid "YYYY or {date_format}"
 msgstr ""
 
@@ -7111,6 +9256,9 @@ msgstr ""
 msgid "You are not allowed to cancel byes."
 msgstr ""
 
+msgid "You are not allowed to change the lineup."
+msgstr ""
+
 msgid "You are not allowed to create tournaments."
 msgstr ""
 
@@ -7138,6 +9286,9 @@ msgstr ""
 msgid "You are not allowed to manage prizes."
 msgstr ""
 
+msgid "You are not allowed to manage screens."
+msgstr ""
+
 msgid "You are not allowed to modify Full-Point Byes."
 msgstr ""
 
@@ -7148,6 +9299,9 @@ msgid "You are not allowed to open or close this check-in."
 msgstr ""
 
 msgid "You are not allowed to pair players."
+msgstr ""
+
+msgid "You are not allowed to pair teams."
 msgstr ""
 
 msgid "You are not allowed to return players."
@@ -7177,6 +9331,9 @@ msgstr ""
 msgid "You are not allowed to update the players' information from an external data source."
 msgstr ""
 
+msgid "You are not allowed to update the team."
+msgstr ""
+
 msgid "You are not allowed to update the tournament."
 msgstr ""
 
@@ -7204,6 +9361,9 @@ msgstr ""
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr ""
 
+msgid "You do not have write permission on this folder."
+msgstr ""
+
 msgid "You have no permissions"
 msgstr ""
 
@@ -7216,17 +9376,20 @@ msgstr ""
 msgid "You must create a prize bracket before creating a prize category."
 msgstr ""
 
-msgid "You must create a screen or a family of screens before creating a rotator."
+msgid "You must create a screen or a multi-screen before creating a rotator."
+msgstr ""
+
+msgid "You must create a tournament before creating a multi-screen."
 msgstr ""
 
 msgid "You must create a tournament before creating a prize bracket."
 msgstr ""
 
-msgid "You must create a tournament before creating a screen family."
-msgstr ""
-
 msgid "You must create a tournament before creating these screens."
 msgstr ""
+
+msgid "Youth *** EVENT TAG NAME"
+msgstr "Youth"
 
 msgid "Zambia"
 msgstr ""
@@ -7234,7 +9397,12 @@ msgstr ""
 msgid "Zero-Point Bye"
 msgstr ""
 
+#, python-brace-format
 msgid "Zero-Point Bye attributed to player [{player}]."
+msgstr ""
+
+#, python-brace-format
+msgid "Zero-Point Bye attributed to team [{team}]."
 msgstr ""
 
 msgid "Zimbabwe"
@@ -7243,16 +9411,27 @@ msgstr ""
 msgid "Zonal or sub-zonal (1.4.3c)"
 msgstr ""
 
+#, python-brace-format
 msgid "[{value}] is not a positive value."
 msgstr ""
 
+#, python-brace-format
 msgid "[{value}] is not a valid value format."
 msgstr ""
 
 msgid "all the boards"
 msgstr ""
 
+msgid "all the matches"
+msgstr ""
+
+msgid "all the pairings"
+msgstr ""
+
 msgid "all the players"
+msgstr ""
+
+msgid "all the teams"
 msgstr ""
 
 msgid "all the tournaments"
@@ -7261,27 +9440,35 @@ msgstr ""
 msgid "any OTB result"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from #{first} to end, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "boards from start to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "boards {board_numbers}"
 msgstr ""
 
@@ -7321,22 +9508,78 @@ msgstr ""
 msgid "from move 1"
 msgstr ""
 
+msgid "game points"
+msgstr ""
+
+msgid "https://sharly-chess.com/changelog/"
+msgstr ""
+
+msgid "https://sharly-chess.com/getting-started/"
+msgstr ""
+
 msgid "incomplete *** INCOMPLETE TEAM"
 msgstr "incomplete"
 
 msgid "last"
 msgstr ""
 
+#, python-brace-format
+msgid "last search a minute ago"
+msgid_plural "last search {count} minutes ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
+msgid "last search an hour ago"
+msgid_plural "last search {count} hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "last search just now"
+msgstr ""
+
+msgid "match points"
+msgstr ""
+
+#, python-brace-format
+msgid "matches from #{first} to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "matches from #{first} to #{last}, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "matches from #{first} to end"
+msgstr ""
+
+#, python-brace-format
+msgid "matches from #{first} to end, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "matches from start to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "matches from start to #{last}, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "matches on {parts} screens"
+msgstr ""
+
 msgid "min *** MINUTES"
 msgstr "min"
 
+#, python-brace-format
 msgid "minimum: {value}"
 msgstr ""
 
 msgid "my-event"
 msgstr ""
 
-msgid "my-family"
+msgid "my-multi-screen"
 msgstr ""
 
 msgid "my-screen"
@@ -7345,7 +9588,7 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-msgid "norm secured — round optional"
+msgid "norm already achieved"
 msgstr ""
 
 #, python-format
@@ -7356,68 +9599,169 @@ msgstr ""
 msgid "of %(n)s played games"
 msgstr ""
 
+#, python-brace-format
+msgid "pairings from #{first} to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from #{first} to #{last}, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from #{first} to end"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from #{first} to end, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from start to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings from start to #{last}, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "pairings on {parts} screens"
+msgstr ""
+
 msgid "player already received a PAB in a previous round"
 msgstr ""
 
+msgid "players"
+msgstr ""
+
+#, python-brace-format
 msgid "players from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "players from #{first} to end, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
+#, python-brace-format
 msgid "players on {parts} screens"
+msgstr ""
+
+msgid "points"
 msgstr ""
 
 #, python-format
 msgid "raised to %(r)s"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "ranking from start to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "round_{round}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} boards from start to #{last}"
 msgstr ""
 
+#, python-brace-format
+msgid "screens of {number} matches per column"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} matches per column from #{first} to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} matches per column from #{first} to end"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} matches per column from start to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} pairings"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} pairings from #{first} to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} pairings from #{first} to end"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} pairings from start to #{last}"
+msgstr ""
+
+#, python-brace-format
 msgid "screens of {number} players"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from #{first} to #{last}"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from #{first} to end"
 msgstr ""
 
+#, python-brace-format
 msgid "screens of {number} players from start to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} teams"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} teams from #{first} to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} teams from #{first} to end"
+msgstr ""
+
+#, python-brace-format
+msgid "screens of {number} teams from start to #{last}"
 msgstr ""
 
 msgid "sec *** SECONDS"
@@ -7429,7 +9773,35 @@ msgstr ""
 msgid "standard ratings"
 msgstr ""
 
-msgid "the address of this server on your available networks:"
+msgid "teams"
+msgstr ""
+
+#, python-brace-format
+msgid "teams from #{first} to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "teams from #{first} to #{last}, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "teams from #{first} to end"
+msgstr ""
+
+#, python-brace-format
+msgid "teams from #{first} to end, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "teams from start to #{last}"
+msgstr ""
+
+#, python-brace-format
+msgid "teams from start to #{last}, on {parts} screens"
+msgstr ""
+
+#, python-brace-format
+msgid "teams on {parts} screens"
 msgstr ""
 
 msgid "the number of moves is required for a non-final period."
@@ -7439,6 +9811,9 @@ msgid "the number of moves must be a positive integer."
 msgstr ""
 
 msgid "the number of moves must not be specified for the final period."
+msgstr ""
+
+msgid "the server address on the networks to which it is connected:"
 msgstr ""
 
 msgid "the whole ranking"
@@ -7451,11 +9826,12 @@ msgstr ""
 msgid "total: %(total)s"
 msgstr ""
 
-msgid "value: {value}"
+#, python-format
+msgid "vs %(player)s"
 msgstr ""
 
 #, python-format
-msgid "vs %(player)s"
+msgid "vs %(team)s"
 msgstr ""
 
 #, python-format
@@ -7468,112 +9844,151 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
+#, python-brace-format
 msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
 
+#, python-brace-format
 msgid "{board_number} {color}"
 msgstr ""
 
+#, python-brace-format
 msgid "{code} Unknown tie-breaks: {tie_breaks}"
 msgstr ""
 
+#, python-brace-format
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} federation represented"
 msgid_plural "{count} federations represented"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} half-point"
 msgid_plural "{count} half-points"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} hour created."
 msgid_plural "{count} hours created."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} player deleted."
 msgid_plural "{count} players deleted."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} player successfully imported."
 msgid_plural "{count} players successfully imported."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
+msgid "{count} prize category successfully generated."
+msgid_plural "{count} prize categories successfully generated."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-brace-format
 msgid "{date_format} HH:MM"
 msgstr ""
 
+#, python-brace-format
 msgid "{days} days"
 msgstr ""
 
+#, python-brace-format
 msgid "{days} days ago"
 msgstr ""
 
+#, python-brace-format
 msgid "{family_type}-screen"
 msgstr ""
 
+#, python-brace-format
 msgid "{first_name} {last_name}"
 msgstr ""
 
+#, python-brace-format
+msgid "{matched} players filled, {missing} not found in that tournament"
+msgstr ""
+
+#, python-brace-format
+msgid "{n} players per team is not supported (FFE tables cover {sizes}; rosters larger than the maximum can be tiled in blocks)."
+msgstr ""
+
+#, python-brace-format
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr ""
 
+#, python-brace-format
 msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-brace-format
 msgid "{plugin} (disabled)"
 msgstr ""
 
+#, python-brace-format
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr ""
 
+#, python-brace-format
 msgid "{screen_type}-screen"
 msgstr ""
 
+#, python-brace-format
 msgid "{start} → {end}"
 msgstr ""
 
+#, python-brace-format
 msgid "{status_code} - Unknown error"
 msgstr ""
 
+#, python-brace-format
 msgid "{string}: {value}"
 msgstr ""
 
+#, python-brace-format
 msgid "{title} {full_name}"
 msgstr ""
 
+#, python-brace-format
 msgid "{title} {full_name} {rating}"
 msgstr ""
 
+#, python-brace-format
 msgid "{title} {full_name} {rating}{rating_type}"
 msgstr ""
 
+#, python-brace-format
 msgid "{title} {full_name} {rating}{rating_type} [{points}]"
 msgstr ""
 
-msgid "½ - 0 (U)"
-msgstr ""
-
-msgid "½ - ½ (U)"
+msgid "—"
 msgstr ""
 
 msgid "← Back to IT1 certificate"

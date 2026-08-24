@@ -1,0 +1,97 @@
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+{% import '/common/macros.j2' as macros with context %}
+
+<div class="auth-fields row gy-2 gx-3">
+    <div class="col-12">
+        {{ admin_macros.text_input(
+            name='ftp_host',
+            label=_('Host:'),
+            placeholder=_('E.g.: ftp.example.com (mandatory)'),
+            valid=custom_upload_auth_valid,
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.select_input(
+            name='transfer_protocol',
+            label=_('Protocol:'),
+            select_options=transfer_protocol_options,
+            data=data, errors=errors
+        ) }}
+    </div>
+        <div class="col-12 col-md-6">
+        {{ admin_macros.number_input(
+            name='transfer_port',
+            label=_('Port:'),
+            placeholder=_('22 by default for SFTP, 21 for FTP/FTPS (optional)'),
+            min=1, max=10000, step=1,
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.text_input(
+            name='ftp_username',
+            label=_('FTP username:'),
+            placeholder=_('E.g.: my_username (mandatory)'),
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.password_input(
+            name='ftp_password',
+            label=_('FTP password:'),
+            autocomplete='new-password',
+            placeholder=_('E.g.: my_p@ssw0rd (empty by default)'),
+            password_visible=ftp_password_visible,
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-12">
+        {{ admin_macros.text_input(
+            name='default_server_path',
+            label=_('Default server path:'),
+            placeholder=_('Empty by default (login folder)'),
+            valid=custom_upload_path_valid,
+            hx_indicator="unset",
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="text-center mt-4 mb-1">
+        <span id="test-connection" {{ macros.tooltip_attributes('', _('Host and FTP username are required.')) }}>
+            <button
+                type="button"
+                class="btn btn-outline-primary text-nowrap"
+                hx-post="{{ url_for('custom-upload-test-auth', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="closest .auth-fields"
+                hx-swap="morphdom"
+                hx-vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}'
+                hx-indicator="#please-wait"
+            >
+                <i class="bi bi-wifi pe-1"></i>
+                {{ _('Connection test') }}
+            </button>
+        </span>
+        <script>
+            function isThereEmptyRequiredField() {
+                let emptyField = false;
+                $('[name="ftp_host"], [name="ftp_username"]').each(function() {
+                    if ($(this).val().length == 0) {
+                        emptyField = true;
+                    }
+                });
+                return emptyField;
+            }
+
+            function updateTestConnectionButtonState() {
+                const emptyRequiredField = isThereEmptyRequiredField();
+                $('#test-connection > button').prop('disabled', emptyRequiredField)
+                $('#test-connection').tooltip(emptyRequiredField ? 'enable' : 'disable')
+            }
+
+            updateTestConnectionButtonState()
+            $('[name="ftp_host"], [name="ftp_username"]').keyup(function() {
+                updateTestConnectionButtonState()
+            })
+        </script>
+    </div>
+</div>

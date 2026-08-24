@@ -1,0 +1,28 @@
+{% if option.applies %}
+    <div class="col-12">
+        {{ admin_macros.select_input(
+            name=option.id,
+            label=_('Fixed board ordering:'),
+            select_options=option.order_options,
+            data=data, errors=errors
+        ) }}
+    </div>
+    <script>
+        (() => {
+            const $modal = $('.modal');
+            function toggleFixedBoardOrder() {
+                const doc = $modal.find('#document').val();
+                const style = $modal.find('#pairing-style').val();
+                const visible = doc === '{{ option.pairing_document_id }}'
+                    && style === '{{ option.boards_pairing_style_id }}';
+                // Delay so this runs after the modal's own document-change handler.
+                setTimeout(() => {
+                    $('#{{ option.container_id }}').css('display', visible ? 'block' : 'none');
+                }, 0);
+            }
+            $modal.find('#document').on('change', toggleFixedBoardOrder);
+            $modal.find('#pairing-style').on('change', toggleFixedBoardOrder);
+            toggleFixedBoardOrder();
+        })();
+    </script>
+{% endif %}

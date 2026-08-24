@@ -5,7 +5,7 @@ from argon2 import PasswordHasher
 from litestar import post, get, delete, patch
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
-from litestar.params import Body
+from litestar.params import Body, FromPath, FromQuery
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
@@ -106,7 +106,7 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_event_accounts_tab(
         self,
         request: HTMXRequest,
-        show_details: bool | None,
+        show_details: FromQuery[bool | None],
     ) -> Template:
         if show_details is not None:
             SessionAccountsShowDetails(request).set(show_details)
@@ -148,6 +148,7 @@ class AccountAdminController(BaseEventAdminController):
                 'tournament_ids': [],
                 'chief_tournament_ids': [],
                 'deputy_tournament_ids': [],
+                'arbiter_tournament_ids': [],
             }
         )
         fide_arbiter_title_options = {'': '-'} | {
@@ -180,6 +181,7 @@ class AccountAdminController(BaseEventAdminController):
 
         chief_role = account.get_role(RoleType.CHIEF_ARBITER)
         deputy_role = account.get_role(RoleType.DEPUTY_ARBITER)
+        arbiter_role = account.get_role(RoleType.ARBITER)
 
         return WebContext.values_dict_to_form_data(
             {
@@ -192,15 +194,13 @@ class AccountAdminController(BaseEventAdminController):
                 'phone': stored_account.phone,
                 'chief_tournament_ids': chief_role.tournament_ids or [],
                 'deputy_tournament_ids': deputy_role.tournament_ids or [],
+                'arbiter_tournament_ids': arbiter_role.tournament_ids or [],
             }
             | plugin_form_data
         )
 
     @post(
-        path=[
-            '/account-modal/from-search/{event_uniq_id:str}/'
-            '{data_source_id:str}/{player_source_id:str}',
-        ],
+        path='/account-modal/from-search/{event_uniq_id:str}/{data_source_id:str}/{player_source_id:str}',
         name='account-modal-from-search',
     )
     async def htmx_account_modal_from_search(
@@ -210,8 +210,8 @@ class AccountAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-        data_source_id: str,
-        player_source_id: str,
+        data_source_id: FromPath[str],
+        player_source_id: FromPath[str],
     ) -> Template:
         web_context = AccountAdminWebContext(request)
         try:
@@ -370,13 +370,23 @@ class AccountAdminController(BaseEventAdminController):
             flat_data, 'chief_tournament_ids'
         )
         deputy_tournament_ids = WebContext.form_data_to_list_int(
-            flat_data, field := 'deputy_tournament_ids'
+            flat_data, 'deputy_tournament_ids'
         )
-        for tournament_id in deputy_tournament_ids:
-            if tournament_id in chief_tournament_ids:
+        arbiter_tournament_ids = WebContext.form_data_to_list_int(
+            flat_data, 'arbiter_tournament_ids'
+        )
+        tournament_ids_by_field = {
+            'chief_tournament_ids': chief_tournament_ids,
+            'deputy_tournament_ids': deputy_tournament_ids,
+            'arbiter_tournament_ids': arbiter_tournament_ids,
+        }
+        seen_tournament_ids: set[int] = set()
+        for field, tournament_ids in tournament_ids_by_field.items():
+            if seen_tournament_ids.intersection(tournament_ids):
                 errors[field] = _(
-                    'Cannot be both chief and deputy on the same tournament.'
+                    'Cannot have multiple arbiter roles on the same tournament.'
                 )
+            seen_tournament_ids.update(tournament_ids)
         stored_roles: list[StoredRole] = []
         if chief_tournament_ids:
             stored_roles.append(
@@ -392,6 +402,14 @@ class AccountAdminController(BaseEventAdminController):
                     account_id=None,
                     role=RoleType.DEPUTY_ARBITER.value,
                     tournament_ids=deputy_tournament_ids,
+                )
+            )
+        if arbiter_tournament_ids:
+            stored_roles.append(
+                StoredRole(
+                    account_id=None,
+                    role=RoleType.ARBITER.value,
+                    tournament_ids=arbiter_tournament_ids,
                 )
             )
 

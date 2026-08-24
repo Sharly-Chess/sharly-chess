@@ -1,0 +1,8 @@
+{% if prize_category.ranks_by_average_performance %}
+    {{ _('Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER') }}
+{% elif prize_category.ranks_by_best_round_performance %}
+    {{ _('Peak perf. *** PEAK PERFORMANCE COLUMN HEADER') }}
+{% else %}
+    {# Ranked by final standing, which is decided on the leading criterion. #}
+    {{ tournament.leading_tie_break.acronym }}
+{% endif %}

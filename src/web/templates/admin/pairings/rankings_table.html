@@ -44,9 +44,6 @@
                 <th class="category text-center">{{ _('Cat. *** CATEGORY COLUMN HEADER') }}</th>
                 <th class="category text-center">{{ _('Gen. *** GENDER COLUMN HEADER') }}</th>
                 <th class="federation text-center">{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
-                <th class="points text-center">
-                    <strong>{{ _('Pts *** POINTS COLUMN HEADER') }}</strong>
-                </th>
                 {% for tie_break in admin_tournament.tie_breaks %}
                     <th
                         class="tie-break text-nowrap text-center"
@@ -74,7 +71,13 @@
         {% set same_as_prev = loop.previtem and loop.previtem.before_manual_rank_key == group_key %}
         {% set same_as_next = loop.nextitem and loop.nextitem.before_manual_rank_key == group_key %}
         {% set sortable = same_as_prev or same_as_next %}
-        {% set new_point_group = loop.previtem and loop.previtem.points != tournament_player.points %}
+        {# A score group is a run sharing the leading criterion: the points
+           in the usual layout, whatever ranks first otherwise. #}
+        {% set score_group_key = tournament_player.rank_sort_key_before_tie_break(1) %}
+        {% set new_point_group = (
+            loop.previtem
+            and loop.previtem.rank_sort_key_before_tie_break(1) != score_group_key
+        ) %}
 
         <tr
                 id="player-{{ tournament_player.id }}"
@@ -84,7 +87,7 @@
                 {% endif %}
         >
             <td class="rank text-end {{ no_played_games_class }}">{{ tournament_player.rank }}</td>
-            <td class="title text-end {{ no_played_games_class }}">{{ tournament_player.title.short_name }}</td>
+            <td class="title text-end {{ no_played_games_class }}">{{ tournament_player.display_title }}</td>
             <td class="name text-start {{ no_played_games_class }}">
                 {% include '/admin/player_link.html' %}
                 <button
@@ -104,7 +107,6 @@
             <td class="category text-center {{ no_played_games_class }}">{{ tournament_player.category.name }}</td>
             <td class="category text-center {{ no_played_games_class }}">{{ tournament_player.gender.short_name }}</td>
             <td class="federation text-center {{ no_played_games_class }}">{{ tournament_player.federation }}</td>
-            <td class="points text-center fw-bold {{ no_played_games_class }}">{{ tournament_player.points_str }}</td>
 
             {% for tie_break_value in tournament_player.tie_break_values %}
                 <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %} {{ no_played_games_class }}">

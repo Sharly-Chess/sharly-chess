@@ -16,7 +16,7 @@ from typing import override
 from packaging.version import Version
 from requests import Response, get
 
-from common import TMP_DIR, SharlyChessException, DEVEL_ENV, TEMPFILE_DIR
+from common import SharlyChessException, DEVEL_ENV, TEMPFILE_DIR, DATA_SOURCES_DIR
 from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -35,6 +35,7 @@ from database.sqlite.local_source_database.delays import (
 )
 from database.sqlite.sqlite_database import SQLiteDatabase
 from utils.entity import IdentifiableEntity
+from utils.enum import Extension
 from web.channels import channels_plugin
 
 logger = get_logger()
@@ -128,44 +129,77 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     is_updating: bool = False
     update_status: bool | None = None
     max_update_time: datetime | None = None
+    _stored_source_database: StoredLocalSourceDatabase | None = None
 
     def __init__(self, write: bool = False):
         super().__init__(self.file_path(), write)
         self.stop_event = threading.Event()
         self.outdated_warning: bool = False
-        self.stored_source_database: StoredLocalSourceDatabase
-
-        with ConfigDatabase() as database:
-            stored_source_database = database.load_stored_local_source_database(self.id)
-        if stored_source_database:
-            self.stored_source_database = stored_source_database
-        else:
-            self.file.unlink(missing_ok=True)
-            with ConfigDatabase(write=True) as database:
-                self.stored_source_database = self.default_stored_database
-                database.insert_stored_local_source_database(
-                    self.stored_source_database
-                )
         if self.max_update_time and datetime.now() > self.max_update_time:
             logger.error(self.log_prefix + 'Update failed (timeout).')
             self.stop_update(False)
 
-    @staticmethod
-    def _dir() -> Path:
-        """Path to the SQlite file."""
-        return TMP_DIR
+    @property
+    def stored_source_database(self) -> StoredLocalSourceDatabase:
+        cls = self.__class__
+        if cls._stored_source_database is None:
+            self._load_stored_source_database()
+        assert cls._stored_source_database is not None
+        return cls._stored_source_database
+
+    def _load_stored_source_database(self):
+        cls = self.__class__
+        with ConfigDatabase() as database:
+            cls._stored_source_database = database.load_stored_local_source_database(
+                self.id
+            )
+        if not cls._stored_source_database:
+            self.file.unlink(missing_ok=True)
+            self.update_stored_source_database(
+                self.default_stored_database, exists=False
+            )
 
     @classmethod
-    def file_path(cls) -> Path:
-        return (
-            cls._dir()
-            / f'{cls.static_id()}.{SharlyChessConfig.federation_database_ext}'
-        )
+    def update_stored_source_database(
+        cls,
+        stored_source_database: StoredLocalSourceDatabase,
+        exists: bool = True,
+    ):
+        with ConfigDatabase(write=True) as database:
+            if exists:
+                database.update_stored_local_source_database(stored_source_database)
+            else:
+                database.insert_stored_local_source_database(stored_source_database)
+        cls._stored_source_database = stored_source_database
+
+    @staticmethod
+    @abstractmethod
+    def version() -> Version:
+        """The version of the database. Change to force an update."""
+        # TODO (Molrn) Add matching GH releases versioning
+        # to allow source structure changes (if ever required)
+
+    @classmethod
+    def file_path(cls):
+        id_ = cls.static_id()
+        return DATA_SOURCES_DIR / id_ / f'{id_}-{cls.version()}.{Extension.SOURCE_DB}'
+
+    @staticmethod
+    def _legacy_dir() -> Path:
+        """LEGACY: Dir of the SQlite file in versions < 5."""
+        return Path('tmp')
+
+    @classmethod
+    def legacy_file_path(cls) -> Path:
+        """LEGACY: Path to the SQlite file in versions < 5."""
+        return cls._legacy_dir() / f'{cls.static_id()}.db'
 
     @property
-    @abstractmethod
-    def min_recovery_version(self) -> Version:
-        """The minimal app version for which the database can be recovered."""
+    def legacy_min_recovery_version(self) -> Version | None:
+        """LEGACY: Only used to recover < 5 versions.
+        Increase the `version` property instead.
+        If < version 5 databases can't be recovered, set to None."""
+        return None
 
     @property
     def _schema_file_path(self) -> Path:
@@ -318,9 +352,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     @override
     def delete(self):
         super().delete()
-        self.stored_source_database = self.default_stored_database
-        with ConfigDatabase(write=True) as database:
-            database.update_stored_local_source_database(self.default_stored_database)
+        self.update_stored_source_database(self.default_stored_database)
         self.publish_database_status_updated()
 
     def check(self) -> bool:
@@ -440,6 +472,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             try:
                 # Copy the new database to its proper location
                 self.file.unlink(missing_ok=True)
+                self.file.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(tmp_file, self.file)
                 logger.debug(self.log_prefix + f'file copied to [{self.file}].')
             except OSError as e:
@@ -452,8 +485,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 return self.stop_update(False)
 
         self.stored_source_database.updated_at = time()
-        with ConfigDatabase(write=True) as database:
-            database.update_stored_local_source_database(self.stored_source_database)
+        self.update_stored_source_database(self.stored_source_database)
         logger.info(self.log_prefix + 'Database successfully updated.')
         return self.stop_update(True)
 

@@ -78,12 +78,14 @@ msgstr "Exemple : Tournoi A"
 msgid "E.g.: my_password"
 msgstr "Exemple : mon_mot_de_passe"
 
+#, python-brace-format
 msgid "Event [{event_id}] does not exist."
 msgstr "L'évènement [{event_id}] n'existe pas."
 
 msgid "Event not found"
 msgstr "Évènement introuvable"
 
+#, python-brace-format
 msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
 msgstr "La fédération [{federation}] du·de la joueur·euse [{player}] est inconnue. Recréez le·la dans ChessEvent puis réessayez."
 
@@ -105,6 +107,9 @@ msgstr "Non configuré"
 msgid "Please enter a password for the ChessEvent connection."
 msgstr "Veuillez entrer un mot de passe pour la connexion à ChessEvent."
 
+msgid "Public page of the tournament."
+msgstr "Page publique du tournoi."
+
 msgid "Settings error"
 msgstr "Erreur de configuration"
 
@@ -120,9 +125,11 @@ msgstr "Succès"
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr "Support pour la plateforme ChessEvent utilisée pour l'organisation de tournois en France."
 
+#, python-brace-format
 msgid "Synchronisation failed for tournament [{tournament}]."
 msgstr "La synchronisation a échouée pour le tournoi [{tournament}]."
 
+#, python-brace-format
 msgid "Synchronisation failed for {count} tournament"
 msgid_plural "Synchronisation failed for {count} tournaments"
 msgstr[0] "Synchronisation échouée pour {count} tournoi"
@@ -137,6 +144,7 @@ msgstr "Synchroniser ce tournoi à partir de son tournoi ChessEvent."
 msgid "Synchronize tournaments with ChessEvent"
 msgstr "Synchroniser les tournois avec ChessEvent"
 
+#, python-brace-format
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
 msgstr "L'évènement [{event_id}] n'est pas accessible via l'identifiant [{user_id}]."
 
@@ -146,9 +154,11 @@ msgstr "L'identifiant et le mot de passe fournis ne permettent pas d'accéder à
 msgid "Tournament"
 msgstr "Tournoi"
 
+#, python-brace-format
 msgid "Tournament [{tournament_name}] does not exist in event [{event_id}]."
 msgstr "Le tournoi [{tournament_name}] n'existe pas dans l'évènement [{event_id}]."
 
+#, python-brace-format
 msgid "Tournament [{tournament}] successfully synchronized."
 msgstr "Le tournoi [{tournament}] a été synchronisé avec succès."
 
@@ -157,6 +167,9 @@ msgstr "Le tournoi n'a pas été configuré pour être utilisé avec ChessEvent.
 
 msgid "Tournament not found"
 msgstr "Tournoi introuvable"
+
+msgid "Transfer"
+msgstr "Transfert"
 
 msgid "Unauthorized access"
 msgstr "Accès non-autorisé"
@@ -179,11 +192,13 @@ msgstr "défini dans l'évènement"
 msgid "my_password"
 msgstr "mon_mot_de_passe"
 
+#, python-brace-format
 msgid "{count} tournament ignored"
 msgid_plural "{count} tournaments ignored"
 msgstr[0] "{count} tournoi ignoré"
 msgstr[1] "{count} tournois ignorés"
 
+#, python-brace-format
 msgid "{count} tournament successfully synchronized"
 msgid_plural "{count} tournament successfully synchronized"
 msgstr[0] "{count} tournoi synchronisé avec succès"

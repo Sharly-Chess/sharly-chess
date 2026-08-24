@@ -4,6 +4,9 @@ from functools import cached_property
 from dataclasses import dataclass, field
 
 
+TRF_DATE_FORMAT = '%Y/%m/%d'
+
+
 @dataclass
 class TrfGame:
     opponent_id: int | None
@@ -110,7 +113,7 @@ class TrfOOdOTeamPairing:
 @dataclass
 class TrfAbnormalPointsAssignment:
     type: str
-    match_points: float
+    match_points: float | None
     game_points: float | None
     round: int | None
     pairing_numbers: list[int | None]
@@ -138,6 +141,8 @@ class TrfTournament:
     individuals_point_system: dict[str, float] = field(default_factory=dict)
     teams_point_system: dict[str, float] = field(default_factory=dict)
     starting_rank_method: str = ''
+    #: Federation the 172 method and the NRS records belong to.
+    starting_rank_federation: str = ''
     pairing_controller_id: str = ''
     tie_breaks: list[str] = field(default_factory=list)
     standings_tie_breaks: list[str] = field(default_factory=list)

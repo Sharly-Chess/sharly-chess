@@ -29,15 +29,15 @@
                         <div class="text-start flex-grow-1">
                             {% if screen %}
                                 <span class="pe-1">
-                                    {{ macros.screen_type_icon(screen.type, true) }}
+                                    {{ macros.screen_type_icon(screen.screen_type, true) }}
                                 </span>
                                 {{ screen.name }}
                             {% elif family %}
                                 <span class="pe-1">
-                                    {{ macros.screen_type_icon(family.type, true) }}
+                                    {{ macros.screen_type_icon(family.screen_type, true) }}
                                 </span>
-                                {{ family.name }}
-                                <i class="ps-1">{{ _('(family)') }}</i>
+                                {{ family.display_name }}
+                                <i class="ps-1">{{ _('(multi-screen)') }}</i>
                             {% endif %}
                         </div>
                         <div class="flex-shrink-0 d-flex gap-2 align-items-center">

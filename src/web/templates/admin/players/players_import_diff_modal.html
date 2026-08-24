@@ -4,12 +4,16 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Import players to tournament [%(tournament)s]', tournament=admin_tournament.name) }}
+                {% if admin_tournament %}
+                    {{ _('Import players to tournament [%(tournament)s]', tournament=admin_tournament.name) }}
+                {% else %}
+                    {{ _('Import players to event [%(event)s]', event=admin_event.name) }}
+                {% endif %}
             </h2>
         </div>
         <div class="modal-body">
             {% set selected_rows = row_count - import_errors_by_index|length %}
-            {% if overwrite_players and admin_tournament.tournament_players %}
+            {% if overwrite_players and admin_tournament and admin_tournament.tournament_players %}
                 <h4 class="text-danger">
                     {{ _(
                         'Warning: the %(player_count)d players in the tournament will be deleted.',
@@ -53,7 +57,7 @@
                     />
                     <label class="form-check-label"> {{ _('Invalid rows') }}</label>
                 </div>
-                {% if not overwrite_players and admin_tournament.tournament_players %}
+                {% if not overwrite_players and admin_tournament and admin_tournament.tournament_players %}
                     <div class="form-check form-switch d-inline-block pe-3">
                         <input
                             id="duplicated-switch"
@@ -81,6 +85,9 @@
                     'import-players',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=admin_tournament.id,
+                ) if admin_tournament else url_for(
+                    'import-players',
+                    event_uniq_id=admin_event.uniq_id,
                 ) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"

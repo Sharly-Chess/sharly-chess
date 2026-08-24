@@ -142,6 +142,11 @@ class PairingTestCase(TestCase):
         """
         self.assertEqual(BergerPairingEngine.get_berger_table(player_count), fide_table)
 
+    def test_berger_2_players_table(self):
+        # A two-competitor round-robin is a single round (used by 2-team
+        # team round-robins).
+        self.assert_generated_berger_table_equals_fide_table(2, {1: [(1, 2)]})
+
     def test_berger_4_players_table(self):
         self.assert_generated_berger_table_equals_fide_table(
             4,

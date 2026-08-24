@@ -50,14 +50,9 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     def static_name() -> str:
         return _('FFE')
 
-    @property
-    def min_recovery_version(self) -> Version:
-        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/1739
-        return Version('3.6.0')
-
     @staticmethod
-    def _dir() -> Path:
-        return ffe.TMP_DIR
+    def version() -> Version:
+        return Version('1')
 
     @property
     def _source_file_name(self) -> str:
@@ -85,13 +80,15 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
     @staticmethod
     def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+        fide_title = PlayerTitle(row['fide_title'])
         return StoredPlayer(
             id=0,
             first_name=row['first_name'].title() if row['first_name'] else '',
             last_name=row['last_name'].upper(),
             date_of_birth=datetime.strptime(row['date_of_birth'], '%Y-%m-%d').date(),
             gender=PlayerGender(row['gender']),
-            title=PlayerTitle(row['fide_title']),
+            title=fide_title.open_value,
+            women_title=fide_title.women_value,
             ratings={
                 TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['standard_rating'],
@@ -255,3 +252,16 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             tuple(params),
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
+
+    # ---------------------------------------------------------------------------------
+    # Legacy
+    # ---------------------------------------------------------------------------------
+
+    @property
+    def legacy_min_recovery_version(self) -> Version:
+        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/1739
+        return Version('3.6.0')
+
+    @staticmethod
+    def _legacy_dir() -> Path:
+        return Path('tmp') / PLUGIN_NAME

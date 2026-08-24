@@ -126,17 +126,50 @@ class RoundDatesEntry(SingleLineEntry):
     def get_header(self, tournament: TrfTournament) -> str | None:
         if not [date_ for date_ in tournament.round_dates if date_]:
             return None
-        header = ' ' * 86
+        header = ' ' * 85
         num_columns = len(tournament.round_dates)
         for column in range(1, num_columns + 1):
             header += f'  {str(column).rjust(8, "R")}'
         return header
 
     def format(self, value: Any) -> str:
-        return ' ' * 88 + '  '.join(date_.rjust(8) for date_ in value)
+        return ' ' * 87 + '  '.join(date_.rjust(8) for date_ in value)
 
     def parse(self, data: str) -> Any:
         return [s for s in data.strip().split(' ') if s]
+
+
+class StartingRankMethodEntry(TrfEntry):
+    """Record 172. The federation whose National Rating Support records
+    the method refers to sits at 5-7, the method itself at 9-13. The
+    record only means anything alongside NRS records, so it is written
+    only when there are any."""
+
+    FEDERATION_POSITION = 5
+    METHOD_POSITION = 9
+
+    def __init__(self):
+        super().__init__('172')
+
+    def dump(self, fp, tournament: TrfTournament):
+        if not tournament.starting_rank_method:
+            return
+        fp.write(
+            f'{self.din} {tournament.starting_rank_federation[:3]:<3} '
+            f'{tournament.starting_rank_method}\n'
+        )
+
+    def load(self, tournament: TrfTournament, data: str):
+        # Read as tokens rather than by column: files written before the
+        # federation was added (ours included) carry the bare method.
+        parts = data.split()
+        if len(parts) >= 2:
+            tournament.starting_rank_federation, tournament.starting_rank_method = (
+                parts[0],
+                parts[1],
+            )
+        elif parts:
+            tournament.starting_rank_method = parts[0]
 
 
 class PointSystemEntry(SingleLineEntry):
@@ -194,6 +227,14 @@ class PlayerEntry(MultipleLinesEntry):
         return line
 
     def parse(self, data: str) -> Any:
+        # Some exporters / editors trim trailing whitespace on each
+        # line, which truncates the last game's color/result padding
+        # (a NO_RESULT game ends with two spaces). Pad the games
+        # region up to the next 10-char block boundary so the strict
+        # regex still accepts the line.
+        games_part = data[80:] if len(data) > 80 else ''
+        if games_part and len(games_part) % 10 != 0:
+            data = data + ' ' * (10 - len(games_part) % 10)
         match = self.LINE_PATTERN.fullmatch(data)
         if match is None:
             raise self.line_exception(data)
@@ -209,7 +250,13 @@ class PlayerEntry(MultipleLinesEntry):
             birth_date=match.group('birth_date').strip(),
             points=float(match.group('points')),
             rank=int_or_default(match.group('rank')),
-            games=self.parse_games(match.group('games')[2:].rstrip()),
+            # The regex captures each game including its leading
+            # two whitespace separators; the parse loop expects games
+            # to start at offset 0 so we strip the very first pair.
+            # Do NOT ``rstrip`` here — a trailing space is a valid
+            # result character (NO_RESULT), and dropping it would
+            # silently lose the last round's pairing.
+            games=self.parse_games(match.group('games')[2:]),
         )
 
     def parse_games(self, string) -> list[TrfGame]:
@@ -292,16 +339,19 @@ class DeprecatedTeamEntry(MultipleLinesEntry):
         super().__init__('013', 'deprecated_teams')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
-        header = 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN'
+        # The name fills 5-36 and the first player starts at 37: unlike
+        # every other record here, there is no separator between them.
+        header = 'N' * 32
         num_columns = max(len(team.player_ids) for team in tournament.deprecated_teams)
-        for column in range(1, num_columns + 1):
-            header += f' {str(column).rjust(4, "P")}'
+        header += ' '.join(
+            str(column).rjust(4, 'P') for column in range(1, num_columns + 1)
+        )
         return header
 
     def format(self, value: Any) -> str:
         team: TrfDeprecatedTeam = value
         player_ids = ' '.join(f'{s:>4}' for s in team.player_ids)
-        return f'{team.name[:32]:32} {player_ids}'
+        return f'{team.name[:32]:32}{player_ids}'
 
     def parse(self, data: str) -> Any:
         return TrfDeprecatedTeam(name=data[:32], player_ids=split_ints(data[32:], 5))
@@ -309,7 +359,7 @@ class DeprecatedTeamEntry(MultipleLinesEntry):
 
 class TeamEntry(MultipleLinesEntry):
     LINE_PATTERN = re.compile(
-        r'^(?P<id>[ \d]{3}) (?P<name>.{32}) (?P<nickname>[ \w]{5}) '
+        r'^(?P<id>[ \d]{3}) (?P<name>.{32}) (?P<nickname>.{5}) '
         r'(?P<strength_factor>[ \d]{6}) (?P<match_points>[ \d.]{6}) '
         r'(?P<game_points>[ \d.]{6}) (?P<rank>[ \d]{3}) (?P<player_ids>( [ \d]{4})*)\s*$',
         re.IGNORECASE,
@@ -327,6 +377,7 @@ class TeamEntry(MultipleLinesEntry):
 
     def format(self, value: Any) -> str:
         team: TrfTeam = value
+        rank = '' if team.rank is None else f'{team.rank:>3}'
         line = (
             f'{team.id:>3}'
             f' {team.name[:32]:<32}'
@@ -334,7 +385,7 @@ class TeamEntry(MultipleLinesEntry):
             f' {team.strength_factor:>6}'
             f' {float_display(team.match_points, 6)}'
             f' {float_display(team.game_points, 6)}'
-            f' {team.rank:>3} '
+            f' {rank:>3} '
         )
         for player_id in team.player_ids:
             line += f' {player_id:>4}'
@@ -491,7 +542,8 @@ class TeamPABsEntry(SingleLineEntry):
             f'{float_display(team_pabs.match_points, 4)} '
             f'{float_display(team_pabs.game_points, 4)}'
         )
-        for round_ in range(1, max(team_pabs.team_id_by_round) + 1):
+        last_round = max(team_pabs.team_id_by_round, default=0)
+        for round_ in range(1, last_round + 1):
             team_id = team_pabs.team_id_by_round.get(round_, None)
             line += f' {team_id or "":>3}'
         return line
@@ -585,17 +637,27 @@ class OOdOTeamPairingEntry(MultipleLinesEntry):
 
 
 class AbnormalPointsAssignmentEntry(MultipleLinesEntry):
-    LINE_PATTERN = re.compile(
-        r'^(?P<type>[dwlfhz+\- ]) (?P<match_points>[ \-\d.]{4}) '
-        r'(?P<game_points>[ \-\d.]{4})(?P<round>(\s[ \d]{3})?)(?P<pairing_numbers>( [ \d]{4})*)\s*$',
-        re.IGNORECASE,
-    )
+    """Record 299. ``[-]11.5`` is four columns wide, as everywhere else in
+    the format, holding either a sign or a second integer digit but not
+    both. Match points are for teams only and game points stand for the
+    points of an individual, so either may be missing."""
+
+    TYPES = 'WDLFHZ+- '
+    # 1-based line positions; the payload handed to ``parse`` starts at 5.
+    TYPE_POSITION = 5
+    MATCH_POINTS_POSITION = 8
+    GAME_POINTS_POSITION = 14
+    ROUND_POSITION = 20
+    FIRST_ID_POSITION = 24
+    POINTS_WIDTH = 4
+    ID_WIDTH = 4
+    ID_STRIDE = 5
 
     def __init__(self):
         super().__init__('299', 'abnormal_points_assignments')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
-        header = 'T MMMM GGGG RRR'
+        header = 'T  MMMM  GGGG  RRR'
         num_columns = max(
             len(assignment.pairing_numbers)
             for assignment in tournament.abnormal_points_assignments
@@ -608,24 +670,42 @@ class AbnormalPointsAssignmentEntry(MultipleLinesEntry):
         assignment: TrfAbnormalPointsAssignment = value
         line = (
             f'{assignment.type:1}'
-            f' {float_display(assignment.match_points, 4)}'
-            f' {float_display(assignment.game_points, 4)}'
-            f' {assignment.round or "000":3}'
+            f'  {float_display(assignment.match_points, self.POINTS_WIDTH)}'
+            f'  {float_display(assignment.game_points, self.POINTS_WIDTH)}'
+            f'  {assignment.round or "000":>3}'
         )
         for pairing_number in assignment.pairing_numbers:
             line += f' {pairing_number or "0000":>4}'
         return line
 
     def parse(self, data: str) -> Any:
-        match = self.LINE_PATTERN.fullmatch(data)
-        if match is None:
+        # Read by position rather than by pattern: the trailing fields are
+        # optional and exporters trim the padding that would otherwise
+        # hold them.
+        def field(position: int, width: int) -> str:
+            start = position - self.TYPE_POSITION
+            return data[start : start + width].strip()
+
+        type_ = (data[:1] or ' ').upper()
+        if type_ not in self.TYPES:
             raise self.line_exception(data)
+        pairing_numbers: list[int | None] = []
+        position = self.FIRST_ID_POSITION
+        while field(position, self.ID_WIDTH):
+            pairing_numbers.append(
+                int_or_default(field(position, self.ID_WIDTH)) or None
+            )
+            position += self.ID_STRIDE
         return TrfAbnormalPointsAssignment(
-            type=match.group('type'),
-            match_points=float_or_default(match.group('match_points')),
-            game_points=float_or_default(match.group('game_points')),
-            round=int_or_default(match.group('round')),
-            pairing_numbers=split_optional_ints(match.group('pairing_numbers'), 5),
+            type=type_,
+            match_points=float_or_default(
+                field(self.MATCH_POINTS_POSITION, self.POINTS_WIDTH)
+            ),
+            game_points=float_or_default(
+                field(self.GAME_POINTS_POSITION, self.POINTS_WIDTH)
+            ),
+            round=int_or_default(field(self.ROUND_POSITION, 3)),
+            pairing_numbers=pairing_numbers,
         )
 
 
@@ -666,7 +746,7 @@ ENTRIES = [
     SingleLineIntEntry('142', 'num_rounds'),
     SingleLineEntry('152', 'initial_color'),
     PointSystemEntry('162', 'individuals_point_system'),
-    SingleLineEntry('172', 'starting_rank_method'),
+    StartingRankMethodEntry(),
     SingleLineEntry('182', 'pairing_controller_id'),
     SingleLineEntry('192', 'encoded_type'),
     SingleLineListEntry('202', 'tie_breaks'),

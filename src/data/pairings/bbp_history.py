@@ -58,6 +58,31 @@ class TournamentHistory:
     players: List[TournamentHistoryPlayer] = field(default_factory=list)
 
 
+@dataclass
+class TournamentHistoryTeam:
+    """A row of the team checklist. The team system's criteria differ from
+    the individual ones, so it carries the secondary score colour
+    allocation reads (C.04.6 §4.2.2) where a player carries its float
+    history."""
+
+    id: int  # team pairing number
+    points: float = 0.0
+    secondary_points: float | None = None
+    color_history: List[BoardColor | None] = field(default_factory=list)
+    color_preference: ColorPreferenceData | None = None
+    eligible_for_bye: bool = False
+    current_opponent: int | None = None
+    current_color: BoardColor | None = None
+    has_bye: bool = False
+    previous_opponents: List[int | None] = field(default_factory=list)
+
+
+@dataclass
+class TeamTournamentHistory:
+    rounds: int
+    teams: List[TournamentHistoryTeam] = field(default_factory=list)
+
+
 def parse_color_preference(pref_str: str) -> ColorPreferenceData | None:
     pref_str = pref_str.strip()
 
@@ -237,3 +262,97 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
     players_list.sort(key=lambda p: p.id)
 
     return TournamentHistory(rounds=num_rounds, players=players_list)
+
+
+def parse_bbp_team_checklist_text(text_content: str) -> TeamTournamentHistory:
+    """Parse the team checklist bbpPairings writes for ``--team``.
+
+    Its columns are ``ID, Pts, <colours>, Pref, 2nd, Bye, Cur, '', R1…`` —
+    the team criteria in place of the individual float history — so the
+    fixed offsets of :func:`parse_bbp_checklist_text` do not apply. The
+    header is read for the column positions rather than assuming them,
+    so adding a criterion on the engine side won't silently shift the
+    values here.
+    """
+    teams_list: List[TournamentHistoryTeam] = []
+    num_rounds = 0
+    index_by_name: dict[str, int] = {}
+
+    for line in text_content.split('\n'):
+        if line.strip().startswith('ID\t'):
+            headers = [part.strip() for part in line.split('\t')]
+            index_by_name = {name: index for index, name in enumerate(headers) if name}
+            # The colour-history column is a run of dashes, one per played
+            # round plus the round being paired.
+            for header in headers:
+                if header and set(header) == {'-'}:
+                    num_rounds = len(header) - 1
+                    break
+            continue
+
+        if not index_by_name or not line or line.startswith('BBP Pairings'):
+            continue
+
+        parts = line.split('\t')
+
+        def column(name: str) -> str:
+            index = index_by_name.get(name)
+            if index is None or index >= len(parts):
+                return ''
+            return parts[index].strip()
+
+        if not column('ID').isdigit():
+            continue
+
+        try:
+            points = float(column('Pts'))
+        except ValueError:
+            continue
+
+        secondary_raw = column('2nd')
+        try:
+            secondary_points = float(secondary_raw) if secondary_raw != '-' else None
+        except ValueError:
+            secondary_points = None
+
+        colors_index = index_by_name.get('-' * (num_rounds + 1), 2)
+        color_history = parse_color_history(
+            parts[colors_index] if colors_index < len(parts) else ''
+        )
+
+        current = column('Cur')
+        current_opponent: int | None = None
+        current_color: BoardColor | None = None
+        current_match = re.search(r'\((\d+)([WB])\)', current)
+        if current_match:
+            current_opponent = int(current_match.group(1))
+            current_color = (
+                BoardColor.WHITE if current_match.group(2) == 'W' else BoardColor.BLACK
+            )
+
+        # The opponent columns follow the blank separator after ``Cur``.
+        previous_opponents: List[int | None] = []
+        first_round_index = index_by_name.get('R1')
+        if first_round_index is not None:
+            for offset in range(num_rounds):
+                index = first_round_index + offset
+                value = parts[index].strip() if index < len(parts) else ''
+                previous_opponents.append(int(value) if value.isdigit() else None)
+
+        teams_list.append(
+            TournamentHistoryTeam(
+                id=int(column('ID')),
+                points=points,
+                secondary_points=secondary_points,
+                color_history=color_history,
+                color_preference=parse_color_preference(column('Pref')),
+                eligible_for_bye=column('Bye') == 'Y',
+                current_opponent=current_opponent,
+                current_color=current_color,
+                has_bye='(bye)' in current,
+                previous_opponents=previous_opponents,
+            )
+        )
+
+    teams_list.sort(key=lambda team: team.id)
+    return TeamTournamentHistory(rounds=num_rounds, teams=teams_list)

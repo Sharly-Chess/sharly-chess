@@ -1,19 +1,19 @@
 from typing import Annotated, Any
 
 from litestar import post, get, patch, delete
-from litestar.exceptions import NotFoundException
-from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
-from litestar.params import Body
+from litestar.exceptions import NotFoundException
+from litestar.params import Body, FromPath
+from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
-from data.display_controller import DisplayController
-from data.rotator import Rotator
-from data.screen import Screen
+from data.screens.display_controller import DisplayController
+from data.screens.rotator import Rotator
+from data.screens.screen import Screen
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredDisplayController
 from web.controllers.admin.base_event_admin_controller import (
@@ -230,8 +230,8 @@ class DisplayControllerAdminController(BaseEventAdminController):
     async def htmx_admin_display_controller_modal(
         self,
         request: HTMXRequest,
-        action: str,
-        display_controller_id: int | None,
+        action: FromPath[str],
+        display_controller_id: FromPath[int | None],
     ) -> Template:
         return self._admin_event_display_controllers_render(
             request,
@@ -338,7 +338,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
     async def htmx_admin_display_controller_update(
         self,
         request: HTMXRequest,
-        display_controller_id: int | None,
+        display_controller_id: FromPath[int | None],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -359,7 +359,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
     async def htmx_admin_display_controller_delete(
         self,
         request: HTMXRequest,
-        display_controller_id: int | None,
+        display_controller_id: FromPath[int | None],
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
@@ -379,9 +379,9 @@ class DisplayControllerAdminController(BaseEventAdminController):
     async def htmx_admin_display_controller_assign(
         self,
         request: HTMXRequest,
-        display_controller_id: int | None,
-        type: str,
-        object_uniq_id: str,
+        display_controller_id: FromPath[int | None],
+        type: FromPath[str],
+        object_uniq_id: FromPath[str],
     ) -> Template:
         web_context = DisplayControllerAdminWebContext(request, display_controller_id)
         if web_context.admin_event is None:
@@ -437,7 +437,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
     async def htmx_admin_display_controller_clear(
         self,
         request: HTMXRequest,
-        display_controller_id: int | None,
+        display_controller_id: FromPath[int | None],
     ) -> Template:
         web_context = DisplayControllerAdminWebContext(request, display_controller_id)
         if web_context.admin_event is None:

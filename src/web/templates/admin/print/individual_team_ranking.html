@@ -9,16 +9,13 @@
         <div class="section-title">{{ _('Overall ranking') }}</div>
         <div
             class="teams-overall centered"
-            style="grid-template-columns: repeat({{ tournament.team_ranking_tie_breaks|length + 3 }}, max-content);"
+            style="grid-template-columns: repeat({{ tournament.team_ranking_tie_breaks|length + 2 }}, max-content);"
         >
             <div class="overall-header text-end fw-bold">
                 {{ _('Rk. *** RANK COLUMN HEADER') }}
             </div>
             <div class="overall-header">
                 {{ document.overall_table_header }}
-            </div>
-            <div class="overall-header text-center fw-bold">
-                {{ _('Pts *** POINTS COLUMN HEADER') }}
             </div>
             {% for tie_break in tournament.team_ranking_tie_breaks %}
                 <div class="overall-header text-center">
@@ -38,9 +35,6 @@
                     {% if not team.is_complete %}
                         <i>({{ _('incomplete *** INCOMPLETE TEAM') }})</i>
                     {% endif %}
-                </div>
-                <div class="overall-cell text-center fw-bold">
-                   {{ points_str(team.total_points) }}
                 </div>
                 {% for tb_sum in team.tie_break_sums %}
                      <div class="overall-cell text-center">
@@ -103,11 +97,8 @@
                         </div>
                     {% endfor %}
                 {% endfor %}
-                <div class="total text-start" style="grid-column: 1 / {{ player_columns|length - team.tie_break_sums|length }};">
+                <div class="total text-start" style="grid-column: 1 / {{ player_columns|length - team.tie_break_sums|length + 1 }};">
                     {{ _('Total') }}
-                </div>
-                <div class="total">
-                   {{ points_str(team.total_points) }}
                 </div>
                 {% for tie_break_sum in team.tie_break_sums %}
                      <div class="total">

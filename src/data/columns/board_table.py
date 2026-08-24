@@ -1,9 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from markupsafe import escape
+
 from common.i18n import _
 from data.board import Board
 from .column import Column, ColumnUsage
+
+
+def _color_chip(color: str) -> str:
+    return f'<span class="board-color-chip {color}"></span>'
 
 
 class BoardColumn(Column[Board], ABC):
@@ -30,6 +36,11 @@ class NumberColumn(BoardColumn):
     def get_cell_content(self, board: Board) -> Any:
         return board.number_str
 
+    def get_cell_classes(self, board: Board) -> str:
+        if board.fixed_number:
+            return f'{self.shared_classes} text-decoration-underline'
+        return self.shared_classes
+
     @property
     def shared_classes(self) -> str:
         return 'text-end'
@@ -41,7 +52,8 @@ class WhitePointsColumn(BoardColumn):
         return _('Pts *** POINTS COLUMN HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_tournament_player.vpoints_str
+        wtp = board.optional_white_tournament_player
+        return wtp.vpoints_str if wtp else ''
 
     @property
     def shared_classes(self) -> str:
@@ -54,7 +66,8 @@ class WhiteRealPointsColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return f'[{board.white_tournament_player.points_str}]'
+        wtp = board.optional_white_tournament_player
+        return f'[{wtp.points_str}]' if wtp else ''
 
     @property
     def shared_classes(self) -> str:
@@ -92,7 +105,8 @@ class WhiteTitleColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_tournament_player.title.short_name
+        wtp = board.optional_white_tournament_player
+        return wtp.display_title if wtp else ''
 
 
 class WhiteNameColumn(BoardColumn):
@@ -104,8 +118,18 @@ class WhiteNameColumn(BoardColumn):
     def header_content(self) -> str:
         return _('White')
 
+    @property
+    def is_cell_content_safe(self) -> bool:
+        return True
+
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_tournament_player.full_name
+        wtp = board.optional_white_tournament_player
+        name = escape(wtp.full_name) if wtp else ''
+        # Inside a team match a colour chip marks each side (the team
+        # screens group rows by match, where colours alternate by board).
+        if board.team_board is not None:
+            return f'{_color_chip("white")}{name}'
+        return name
 
     @property
     def shared_classes(self) -> str:
@@ -121,11 +145,26 @@ class WhiteRatingColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_tournament_player.rating_str
+        wtp = board.optional_white_tournament_player
+        return wtp.rating_str if wtp else ''
 
     @property
     def shared_classes(self) -> str:
         return 'text-end'
+
+
+class WhiteFederationColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        wtp = board.optional_white_tournament_player
+        return wtp.federation.name if wtp else ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
 
 
 class ResultColumn(BoardColumn):
@@ -180,7 +219,7 @@ class BlackTitleColumn(BoardColumn):
         tournament_player = board.black_tournament_player
         if not tournament_player:
             return ''
-        return tournament_player.title.short_name
+        return tournament_player.display_title
 
 
 class BlackNameColumn(BoardColumn):
@@ -196,12 +235,19 @@ class BlackNameColumn(BoardColumn):
     def header_classes(self) -> str:
         return 'text-start'
 
+    @property
+    def is_cell_content_safe(self) -> bool:
+        return True
+
     def get_cell_content(self, board: Board) -> Any:
-        return getattr(
-            board.black_tournament_player,
-            'full_name',
-            board.white_tournament_player.exempt_str.upper(),
-        )
+        black = board.black_tournament_player
+        if black is not None:
+            name = escape(black.full_name)
+            if board.team_board is not None:
+                return f'{_color_chip("black")}{name}'
+            return name
+        white = board.optional_white_tournament_player
+        return escape(white.exempt_str.upper()) if white else ''
 
     def get_cell_classes(self, board: Board) -> str:
         return 'text-start text-nowrap overflow-hidden text-ellipsis' + (
@@ -220,6 +266,20 @@ class BlackRatingColumn(BoardColumn):
     @property
     def shared_classes(self) -> str:
         return 'text-end'
+
+
+class BlackFederationColumn(BoardColumn):
+    @property
+    def header_content(self) -> str:
+        return ''
+
+    def get_cell_content(self, board: Board) -> Any:
+        black = board.black_tournament_player
+        return black.federation.name if black else ''
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
 
 
 class BlackRealPointsColumn(BoardColumn):
