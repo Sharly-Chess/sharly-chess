@@ -167,11 +167,14 @@
     })();
 
     // Stage list shown in a popover with a table (mirrors the pairings ranking
-    // view). Deferred to document-ready because the Bootstrap bundle is loaded
-    // at the end of the page. The data is already computed server-side, so it
-    // is rendered inline rather than fetched on hover.
+    // view). The popover for a row is only constructed the first time its button
+    // is hovered/focused, so a large field does not pay to build one instance
+    // per row at load. The content is read inline from the hidden div on show.
     $(document).ready(() => {
-        document.querySelectorAll('.championship-stage-info').forEach((button) => {
+        const table = document.getElementById('championship-competitors-table');
+        const ensurePopover = (button) => {
+            if (button.dataset.popoverReady) return;
+            button.dataset.popoverReady = '1';
             new bootstrap.Popover(button, {
                 html: true,
                 trigger: 'hover focus',
@@ -183,7 +186,15 @@
                     const content = document.getElementById(button.getAttribute('data-content-id'));
                     return content ? content.innerHTML : '';
                 },
-            });
+            }).show();
+        };
+        table.addEventListener('mouseover', (event) => {
+            const button = event.target.closest('.championship-stage-info');
+            if (button) ensurePopover(button);
+        });
+        table.addEventListener('focusin', (event) => {
+            const button = event.target.closest('.championship-stage-info');
+            if (button) ensurePopover(button);
         });
     });
 </script>
