@@ -1755,8 +1755,14 @@ class ChampionshipAdminController(BaseAdminController):
                 for source in championship.sources
                 if source.stored_source.id == stored_source.id
             )
+            # Keep the just-used event selected when it still has stages left to
+            # add, so successive stages of one event can be added quickly. If none
+            # remain, the event drops out of the picker and the field falls empty.
             return self._render_source_modal(
-                request, championship, previous_source=previous_source
+                request,
+                championship,
+                data={'event_uniq_id': event_uniq_id, 'tournament_id': ''},
+                previous_source=previous_source,
             )
         Message.success(request, _('The tournament has been added.'))
         return self._render(request, championship_uniq_id, 'sources')
