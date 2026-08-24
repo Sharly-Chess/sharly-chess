@@ -10047,7 +10047,7 @@ msgstr "tout résultat sur l'échiquier"
 
 #, python-brace-format
 msgid "best {num} stages"
-msgstr "meilleures {num} étapes"
+msgstr "{num} meilleures étapes"
 
 #, python-brace-format
 msgid "boards from #{first} to #{last}"
@@ -10562,7 +10562,7 @@ msgstr "{last_name} {first_name}"
 
 #, python-brace-format
 msgid "{label} (best {num} stages)"
-msgstr "{label} (meilleures {num} étapes)"
+msgstr "{label} ({num} meilleures étapes)"
 
 #, python-brace-format
 msgid "{matched} players filled, {missing} not found in that tournament"
