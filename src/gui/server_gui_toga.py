@@ -488,7 +488,11 @@ class SharlyChessServerToga(toga.App):
         doc_btn = toga.Button(_('Documentation'), on_press=self._open_documentation)
         discord_btn = toga.Button('Discord', on_press=self._open_discord)
         mail_btn = toga.Button(_('Mail'), on_press=self._open_mail)
-        donate_btn = toga.Button(_('Support the project'), on_press=self._open_donate)
+        donate_btn = toga.Button(
+            f'❤️ {_("Support the Sharly Chess project")}',
+            style=Pack(font_weight='bold'),
+            on_press=self._open_donate,
+        )
         self.home_view.add(
             self.home_main_label,
             self.server_state_container,
@@ -1246,7 +1250,7 @@ class SharlyChessServerToga(toga.App):
 
     @staticmethod
     def _open_donate(widget: Any = None, **kwargs) -> None:
-        webbrowser.open(_('https://donations.sharly-chess.com/en'))
+        webbrowser.open(SharlyChessConfig().donate_url)
 
     def _clear_log(self, widget: Any = None, **kwargs) -> None:
         try:
