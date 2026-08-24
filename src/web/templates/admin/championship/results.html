@@ -74,13 +74,13 @@
                         </thead>
                         <tbody>
                             {% for stage in row.stages %}
-                                <tr class="{% if not stage.counted %}text-body-secondary{% endif %}">
-                                    <td class="text-start text-nowrap">
+                                <tr>
+                                    <td class="text-start text-nowrap {% if not stage.counted %}text-body-secondary{% endif %}">
                                         {{ stage.name }}
                                         {% if not stage.counted %}<span class="fst-italic small">({{ _('not counted') }})</span>{% endif %}
                                     </td>
                                     {% for value in stage.rule_values %}
-                                        <td class="text-end">{{ value }}</td>
+                                        <td class="text-end {% if not stage.counted %}text-body-secondary{% endif %}">{{ value }}</td>
                                     {% endfor %}
                                 </tr>
                             {% endfor %}
