@@ -490,7 +490,6 @@ class SharlyChessServerToga(toga.App):
         mail_btn = toga.Button(_('Mail'), on_press=self._open_mail)
         donate_btn = toga.Button(
             f'❤️ {_("Support the Sharly Chess project")}',
-            style=Pack(font_weight='bold'),
             on_press=self._open_donate,
         )
         self.home_view.add(
