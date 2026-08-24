@@ -509,11 +509,17 @@ class ChampionshipAdminController(BaseAdminController):
         filtered to the championship's competitor type. Any tie-break can be
         COMPUTED from each stage's games, so the picker offers the full set
         available across the sources — not only the ones the sources happen to
-        have been configured with."""
+        have been configured with.
+
+        Rating-based tie-breaks (performance, average opponent rating, …) are
+        excluded: a rating is per-event and not carried at the championship level,
+        so aggregating them across stages is not meaningful."""
         is_team = championship.competitor_type == ChampionshipCompetitorType.TEAM
         tie_breaks = []
         for tie_break_class in aggregatable_tie_break_types(championship.sources):
             tie_break = tie_break_class()
+            if not tie_break.allow_unrated_players:
+                continue
             if is_team:
                 if not tie_break.supports_team_mode:
                     continue
