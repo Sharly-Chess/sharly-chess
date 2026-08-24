@@ -443,45 +443,50 @@
 
     {% set arbiters_section %}
         <section class="collection-detail-section {% if view == 'card' %}collection-detail-wide{% endif %}">
+            {% set arbiter_tooltip = _('Use the Staff tab to declare arbiters.') %}
             <h6>{{ _('Arbiters') }}</h6>
             <div>
-                {{ _('%(string)s:', string=_('Arbiter')) }}
+                {{ _('%(string)s:', string=_('Chief arbiter')) }}
                 {% if tournament.chief_arbiter %}
                     {{ tournament.chief_arbiter.full_name }}
                 {% else %}
                     <span
-                        class="text-secondary"
-                        {{ macros.tooltip_attributes('info', _('Use the Staff tab to declare arbiters.'), 'right') }}
+                        class="text-secondary pe-1"
+                        {{ macros.tooltip_attributes('info', arbiter_tooltip, 'right') }}
                     ><i>{{ _('Undefined *** SINGULAR') }}</i></span>
                 {% endif %}
             </div>
+            {% set deputy_label = _('%(string)s:', string=_('Deputy arbiters')) %}
             <div>
-                <div>{{ _('%(string)s:', string=_('Deputy arbiters')) }}</div>
                 {% if tournament.deputy_arbiters %}
+                    <div>{{ deputy_label }}</div>
                     <ul class="mb-0">
                         {% for arbiter in tournament.deputy_arbiters %}
                             <li>{{ arbiter.full_name }}</li>
                         {% endfor %}
                     </ul>
                 {% else %}
+                    {{ deputy_label }}
                     <span
-                        class="text-secondary"
-                        {{ macros.tooltip_attributes('info', _('Use the Staff tab to declare arbiters.'), 'right') }}
+                        class="text-secondary pe-1"
+                        {{ macros.tooltip_attributes('info', arbiter_tooltip, 'right') }}
                     ><i>{{ _('None') }}</i></span>
                 {% endif %}
             </div>
+            {% set arbiters_label = _('%(string)s:', string=_('Arbiters')) %}
             <div>
-                <div>{{ _('%(string)s:', string=_('Arbiters')) }}</div>
                 {% if tournament.arbiters %}
+                    <div>{{ arbiters_label }}</div>
                     <ul class="mb-0">
                         {% for arbiter in tournament.arbiters %}
                             <li>{{ arbiter.full_name }}</li>
                         {% endfor %}
                     </ul>
                 {% else %}
+                    {{ arbiters_label }}
                     <span
-                        class="text-secondary"
-                        {{ macros.tooltip_attributes('info', _('Use the Staff tab to declare arbiters.'), 'right') }}
+                        class="text-secondary pe-1"
+                        {{ macros.tooltip_attributes('info', arbiter_tooltip, 'right') }}
                     ><i>{{ _('None') }}</i></span>
                 {% endif %}
             </div>
