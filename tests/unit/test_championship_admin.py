@@ -13,7 +13,10 @@ from web.controllers.admin.championship_admin_controller import (
 
 class FakeParticipation:
     def __init__(self, name: str, points: float, wins: int, index: int):
-        self.source = SimpleNamespace(tournament_name=name, tournament=None)
+        self.source = SimpleNamespace(
+            tournament_name=name,
+            tournament=SimpleNamespace(player_count=1, team_count=1),
+        )
         self.event_uniq_id = f'stage-{index}'
         self.tournament_id = index
         self.source_competitor_id = 1
