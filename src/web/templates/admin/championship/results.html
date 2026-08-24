@@ -67,6 +67,7 @@
                         <thead>
                             <tr>
                                 <th scope="col" class="text-start">{{ _('Stage') }}</th>
+                                <th scope="col" class="text-start">{{ _('Ranking') }}</th>
                                 {% for header in stage_value_headers %}
                                     <th scope="col" class="text-end text-nowrap" {{ macros.tooltip_attributes('', header.title, 'top') }}>{{ header.acronym }}</th>
                                 {% endfor %}
@@ -78,6 +79,9 @@
                                     <td class="text-start text-nowrap {% if not stage.counted %}text-body-secondary{% endif %}">
                                         {{ stage.name }}
                                         {% if not stage.counted %}<span class="fst-italic small">({{ _('not counted') }})</span>{% endif %}
+                                    </td>
+                                    <td class="text-end text-nowrap {% if not stage.counted %}text-body-secondary{% endif %}">
+                                        {{ stage.competitor_ranking }} / {{ stage.competitor_count }}
                                     </td>
                                     {% for value in stage.rule_values %}
                                         <td class="text-end {% if not stage.counted %}text-body-secondary{% endif %}">{{ value }}</td>

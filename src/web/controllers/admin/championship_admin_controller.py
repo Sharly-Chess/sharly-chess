@@ -352,9 +352,17 @@ class ChampionshipAdminController(BaseAdminController):
             )
             stages = []
             for participation in ordered_participations:
+                if championship.competitor_type == ChampionshipCompetitorType.TEAM:
+                    competitor_count = participation.source.tournament.team_count
+                    competitor_ranking = 1
+                else:
+                    competitor_count = participation.source.tournament.player_count
+                    competitor_ranking = 1
                 stages.append(
                     {
                         'name': participation.source.tournament_name,
+                        'competitor_count': competitor_count,
+                        'competitor_ranking': competitor_ranking,
                         'rule_values': [
                             rule.stage_display(participation, selection_context) or '—'
                             for rule in stage_rules
