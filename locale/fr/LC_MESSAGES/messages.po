@@ -483,7 +483,7 @@ msgstr "1/3 de %(n)s adversaires, min 3"
 
 #, python-brace-format
 msgid "162 Point system results: {symbols}"
-msgstr "162 résultats du système de points : {symbols}"
+msgstr "162 résultats du système de points : {symbols}"
 
 #, python-brace-format
 msgid "172 Starting rank method {method}"
@@ -1079,7 +1079,7 @@ msgid "Apply to all"
 msgstr "Appliquer à tout·es"
 
 msgid "Apply tournament’s coefficient"
-msgstr "Appliquer le coefficient du tournoi"
+msgstr "Appliquer le coefficient des tournois"
 
 msgid "Apr *** APRIL"
 msgstr "Avr"
@@ -1595,10 +1595,10 @@ msgid "C2 *** BYE ELIGIBILITY CRITERION"
 msgstr "C2"
 
 msgid "C2: whether the player may take the pairing-allocated bye — a player can only ever receive one."
-msgstr "C2 : si le·la joueur·euse peut être exempt·e — un·e joueur·euse ne peut l'être qu'une fois."
+msgstr "C2 : si le·la joueur·euse peut être exempt·e — un·e joueur·euse ne peut l'être qu'une fois."
 
 msgid "C2: whether the team may take the pairing-allocated bye — a team can only ever receive one."
-msgstr "C2 : si l'équipe peut être exempte — une équipe ne peut l'être qu'une seule fois."
+msgstr "C2 : si l'équipe peut être exempte — une équipe ne peut l'être qu'une seule fois."
 
 msgid "CA"
 msgstr "ARB"
@@ -1762,7 +1762,7 @@ msgid "Championships"
 msgstr "Grands Prix"
 
 msgid "Change the player's tournament."
-msgstr "Changer le joueur de tournoi."
+msgstr "Changer le·la joueureuse de tournoi."
 
 msgid "Changelog"
 msgstr "ChangeLog"
@@ -2003,10 +2003,10 @@ msgid "Competitor type mismatch"
 msgstr "Type de compétiteur incompatible"
 
 msgid "Competitors"
-msgstr "Compétiteurs"
+msgstr "Compétiteur·ices"
 
 msgid "Competitors:"
-msgstr "Compétiteurs :"
+msgstr "Compétiteur·ices :"
 
 msgid "Complementary pairings"
 msgstr "Appariements complémentaires"
@@ -3026,7 +3026,7 @@ msgid "E.g.: World championship"
 msgstr "Ex.: Championnat du monde"
 
 msgid "E.g.: Youth"
-msgstr "Ex. : Jeunes"
+msgstr "Ex. : Jeunes"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Ex. : https://mon.club.fr/affiche.jpg"
@@ -3051,7 +3051,7 @@ msgid "EXEMPT (already received at round #%(round)d)"
 msgstr "EXEMPT·E (déjà reçu à la ronde n°%(round)d)"
 
 msgid "Each board number multiplied by the game points scored on that board, summed over the tournament. The lower the sum, the higher the ranking — it rewards points won on the top boards. Only meaningful between teams on equal game points."
-msgstr "Le numéro de chaque échiquier multiplié par les points de parties marqués sur cet échiquier, additionnés sur l'ensemble du tournoi. Plus la somme est faible, meilleur est le classement : cela récompense les points gagnés sur les premiers échiquiers. N'a de sens qu'entre équipes à égalité de points de parties."
+msgstr "Le numéro de chaque échiquier multiplié par les points de parties marqués sur cet échiquier, additionnés sur l'ensemble du tournoi. Plus la somme est faible, meilleur est le classement : cela récompense les points gagnés sur les premiers échiquiers. N'a de sens qu'entre équipes à égalité de points de parties."
 
 msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
@@ -3060,7 +3060,7 @@ msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
 msgid "Each player keeps the category they have on this date for the whole Championship. The default is January 1st of the year of the earliest source tournament."
-msgstr "Chaque joueur conserve la catégorie qu'il a à cette date pour tout le Grand Prix. Par défaut, il s'agit du 1er janvier de l'année du tournoi source le plus ancien."
+msgstr "Chaque joueurŸeuse conserve la catégorie qu'il a à cette date pour tout le Grand Prix. Par défaut, il s'agit du 1er janvier de l'année du tournoi source le plus ancien."
 
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
 msgstr "Chaque ligne représente une norme réalisée par un·e joueur·euse. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur·euse."
@@ -3332,7 +3332,7 @@ msgid "Events ({num})"
 msgstr "Évènements ({num})"
 
 msgid "Every player of the event will be deleted before importing the ones from the file — a team event places its players by team, not by tournament, so the deletion cannot be limited to one tournament."
-msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi."
+msgstr "Tou·tes les joueur·euses de l'évènement seront supprimé·es avant l'import de celles et ceux du fichier : dans un évènement par équipes, les joueur·euses sont rattaché·es à une équipe et non à un tournoi, la suppression ne peut donc pas se limiter à un seul tournoi."
 
 msgid "Exclude"
 msgstr "Exclure"
@@ -3599,7 +3599,7 @@ msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
 msgid "For each round, sum the opponent score multiplied by the team score obtained in that match across all rounds. The four variants (EMMSB / EMGSB / EGMSB / EGGSB) choose which score type — match points or game points — is used on each side; pick one in the variant option below (FIDE tie-break regulations, Art. 13.2)."
-msgstr "Pour chaque ronde, faire la somme du score de l'adversaire multiplié par le score obtenu par l'équipe lors de ce match, pour toutes les rondes. Les quatre variantes (EMMSB / EMGSB / EGMSB / EGGSB) déterminent le type de score utilisé pour chaque équipe : points de match ou points de parties ; choisissez-en une ci-dessous (règlement FIDE sur les départages, art. 13.2)."
+msgstr "Pour chaque ronde, faire la somme du score de l'adversaire multiplié par le score obtenu par l'équipe lors de ce match, pour toutes les rondes. Les quatre variantes (EMMSB / EMGSB / EGMSB / EGGSB) déterminent le type de score utilisé pour chaque équipe : points de match ou points de parties ; choisissez-en une ci-dessous (règlement FIDE sur les départages, art. 13.2)."
 
 #, python-brace-format
 msgid "For each round, the opponent total {opp} multiplied by the team {own} obtained in that match, summed across all rounds (FIDE tie-break regulations, Art. 13.2)."
@@ -3906,7 +3906,7 @@ msgid "How the boards shown by this set are chosen and ordered."
 msgstr "Comment les échiquiers affichés par cet ensemble sont choisis et ordonnés."
 
 msgid "How the players of this category are ranked before prizes are assigned: by their final standing, or by their performance."
-msgstr "La manière dont les joueur·euses de cette catégorie sont classé·es avant l'attribution des prix : selon leur classement final ou selon leur performance."
+msgstr "La manière dont les joueur·euses de cette catégorie sont classé·es avant l'attribution des prix : selon leur classement final ou selon leur performance."
 
 msgid "Hungary"
 msgstr "Hongrie"
@@ -4732,7 +4732,7 @@ msgid "May be used for per-round prize giveaways etc."
 msgstr "Peut être utilisé pour des tirages au sort de prix par ronde, etc."
 
 msgid "Mean finishing position over the counted stages; lower is better. A position, so the stage coefficient is not applied."
-msgstr "Place moyenne à l'arrivée sur les étapes comptées ; plus la valeur est basse, mieux c'est. Une place, donc le coefficient d'étape n'est pas appliqué."
+msgstr "Place moyenne à l'arrivée sur les étapes comptées ; plus la valeur est basse, mieux c'est. Une place, donc le coefficient d'étape n'est pas appliqué."
 
 msgid "Mean of the points scored over the counted stages."
 msgstr "Moyenne des points marqués sur les étapes comptées."
@@ -4783,7 +4783,7 @@ msgid "Menus group screens together so users can navigate between them."
 msgstr "Les menus regroupent des écrans pour permettre aux utilisateur·ices de naviguer entre eux."
 
 msgid "Merge selected players"
-msgstr "Fusionner les joueurs sélectionnés"
+msgstr "Fusionner les joueur·euses sélectionné·es"
 
 msgid "Merge selected teams"
 msgstr "Fusionner les équipes sélectionnées"
@@ -5283,7 +5283,7 @@ msgid "No player is in contention for a title norm in round {round}."
 msgstr "Aucun·e joueur·euse ne peut prétendre à une norme à la ronde {round}."
 
 msgid "No player is rated within this range; use the rating step method instead."
-msgstr "Aucun joueur n'a d'Elo dans cette plage ; utilisez plutôt la méthode par pas d'Elo."
+msgstr "Aucun·e joueur·euse n'a d'Elo dans cette plage ; utilisez plutôt la méthode par pas d'Elo."
 
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
@@ -5745,7 +5745,7 @@ msgid "Opponents' records"
 msgstr "Historique des adversaires"
 
 msgid "Optional monetary value of the complementary non-monetary prize (e.g. value of the trophy)."
-msgstr "Valeur monétaire optionnelle du prix non-monétaire complémentaire (ex. : valeur du trophée)."
+msgstr "Valeur monétaire optionnelle du prix non-monétaire complémentaire (ex. : valeur du trophée)."
 
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officielles (coupe de la fédération...)."
@@ -6296,7 +6296,7 @@ msgstr "Joueur·euses par tournoi"
 
 #, python-format
 msgid "Players rewarded (%%):"
-msgstr "Joueur·euses récompensé·es (%%) :"
+msgstr "Joueur·euses récompensé·es (%%) :"
 
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
@@ -8132,7 +8132,7 @@ msgid "The FIDE will use the standard ratings of both players for this game ({ra
 msgstr "La FIDE utilisera les classements standards des deux joueur·euses pour cette partie ({rating_opponent} et {rating_player})."
 
 msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
-msgstr "Le classement général inclut tous les joueurs et est toujours disponible. Créez des catégories pour ajouter des classements filtrés ; les joueurs doivent satisfaire tous les critères d'une catégorie."
+msgstr "Le classement général inclut tou·tes les joueur·euses et est toujours disponible. Créez des catégories pour ajouter des classements filtrés ; les joueur·euses doivent satisfaire tous les critères d'une catégorie."
 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
@@ -8244,10 +8244,10 @@ msgid "The forecast becomes available once the last round is paired. Once the to
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
 
 msgid "The game points scored on board 1 over the tournament; if that leaves the teams level, the next board down decides, and so on."
-msgstr "Les points de parties marqués au 1er échiquier sur l'ensemble du tournoi ; si les équipes restent à égalité, l'échiquier suivant départage, et ainsi de suite."
+msgstr "Les points de parties marqués au 1er échiquier sur l'ensemble du tournoi ; si les équipes restent à égalité, l'échiquier suivant départage, et ainsi de suite."
 
 msgid "The game points scored on every board but the bottom one; if that leaves the teams level, the bottom-most board left is excluded in turn until one team is ahead."
-msgstr "Les points de parties marqués sur tous les échiquiers sauf le dernier ; si les équipes restent à égalité, le dernier échiquier restant est exclu à son tour jusqu'à ce qu'une équipe prenne l'avantage."
+msgstr "Les points de parties marqués sur tous les échiquiers sauf le dernier ; si les équipes restent à égalité, le dernier échiquier restant est exclu à son tour jusqu'à ce qu'une équipe prenne l'avantage."
 
 msgid "The image is too large (max 2 MB)."
 msgstr "L'image est trop volumineuse (max. 2 Mo)."
@@ -8323,7 +8323,7 @@ msgid "The message displayed on the scrolling banner at the bottom of the screen
 msgstr "Le message affiché sur le bandeau déroulant en bas de l'écran."
 
 msgid "The minimum number of players needed for a club to be displayed."
-msgstr "Nombre minimum de joueurs requis pour qu’un club soit affiché."
+msgstr "Nombre minimum de joueur·euses requis pour qu’un club soit affiché."
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
@@ -8444,7 +8444,7 @@ msgid "The points are not among the ranking criteria."
 msgstr "Les points ne font pas partie des critères de classement."
 
 msgid "The points scored in the tournament (the primary score for teams). Placed first it ranks the standings as usual; placed lower, the criteria above it outrank the score."
-msgstr "Les points marqués dans le tournoi (le score principal pour les équipes). Placé en premier, ce critère classe comme à l'accoutumée ; placé plus bas, les critères au-dessus priment sur le score."
+msgstr "Les points marqués dans le tournoi (le score principal pour les équipes). Placé en premier, ce critère classe comme à l'accoutumée ; placé plus bas, les critères au-dessus priment sur le score."
 
 msgid "The prohibited pairings cannot be satisfied for this round."
 msgstr "Les protections d'appariement ne peuvent pas être satisfaites pour cette ronde."
@@ -8635,7 +8635,7 @@ msgid "The way to form teams."
 msgstr "La manière de constituer les équipes."
 
 msgid "The way to share the prizes between players with the same points."
-msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
+msgstr "La manière de partages les prix entre les joueur·euses ayant le même nombre de points."
 
 msgid "There already is an hour defined at this time."
 msgstr "Il y a déjà un horaire défini à cette heure-ci."
@@ -8706,7 +8706,7 @@ msgid "This action is not possible for this round."
 msgstr "Cette action est impossible pour cette ronde."
 
 msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
-msgstr "Cet échiquier est marqué comme absent (forfait) dans la composition. Utilisez la liste déroulante de composition pour remettre un joueur à cette place."
+msgstr "Cet échiquier est marqué comme absent (forfait) dans la composition. Utilisez la liste déroulante de composition pour remettre unÏe joueur·euse à cette place."
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
@@ -8910,7 +8910,7 @@ msgid "This tournament has already been paired; teams can no longer be added."
 msgstr "Ce tournoi a déjà été apparié, il n'est plus possible d'y ajouter des équipes."
 
 msgid "This tournament has no norm-eligible titled players."
-msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de normes."
+msgstr "Ce tournoi ne comporte aucun·e joueur·euse titré·euse éligible pour les calculs de normes."
 
 msgid "This type of criterion is already defined."
 msgstr "Ce type de critère est déjà défini."
@@ -9074,7 +9074,7 @@ msgstr "Trop peu d'équipes pour générer les appariements (minimum : {min})."
 
 #, python-brace-format
 msgid "Too many byes for player [{player_name}]."
-msgstr "Trop de byes pour le joueur [{player_name}]."
+msgstr "Trop de byes pour le·la joueurÏeuse [{player_name}]."
 
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
@@ -9084,7 +9084,7 @@ msgstr "Résultats des premiers échiquiers"
 
 #, python-format
 msgid "Top bonus (%%):"
-msgstr "Bonus maximum (%%) :"
+msgstr "Bonus maximum (%%) :"
 
 msgid "Top-40 average"
 msgstr "Moyenne des 40 meilleur·es"
