@@ -15,7 +15,9 @@ from data.championship.scoring import (
     DirectEncounterRule,
     F1PointsRule,
     ManualRule,
+    RankingPointsWithBonusRule,
     ScaledPointsRule,
+    ScoringContext,
     SumTieBreakRule,
     TotalPointsRule,
     best_participations,
@@ -102,6 +104,27 @@ def test_f1_points_awards_table_positions():
     rule = F1PointsRule(table=[20.0, 15.0, 12.0])
     # rank 1 -> 20, rank 2 -> 15, rank 9 -> 0 (beyond the table).
     assert order(rank_players([c, b, a], [rule])) == ['A', 'B', 'C']
+
+
+def test_ranking_points_with_bonus_matches_worked_example():
+    # 200 players, top 5% (10 players) get a bonus, winner bonus 50% of ranking
+    # points (100). Ranking points: winner = field size, last = 1.
+    stage = FakeSource('ev', 1, field_size=200)
+    players = {
+        rank: competitor(
+            f'R{rank}',
+            [(stage, FakeTournamentPlayer(rank, 0, rank=rank, last_name=f'R{rank}'))],
+        )
+        for rank in (1, 2, 10, 11, 200)
+    }
+    group = list(players.values())
+    rule = RankingPointsWithBonusRule(winner_bonus=50, bonus_share=5)
+    scores = rule.scores(group, ScoringContext(group))
+    assert scores[id(players[1])] == 300  # 200 RP + 100 BP
+    assert scores[id(players[2])] == 289  # 199 RP +  90 BP
+    assert scores[id(players[10])] == 201  # 191 RP + 10 BP
+    assert scores[id(players[11])] == 190  # 190 RP +  0 BP (outside the top 5%)
+    assert scores[id(players[200])] == 1  # last place, 1 RP
 
 
 def test_average_rank_prefers_lower_positions():
@@ -462,6 +485,7 @@ def test_registry_lists_every_rule_and_round_trips_ids():
         'TOTAL_POINTS',
         'SCALED_POINTS',
         'F1_POINTS',
+        'RANKING_POINTS_BONUS',
         'AVERAGE_POINTS',
         'AVERAGE_RANK',
         'COUNT_PLACES',

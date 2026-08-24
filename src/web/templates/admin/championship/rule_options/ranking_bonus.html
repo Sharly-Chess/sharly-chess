@@ -1,0 +1,28 @@
+<div class="row gy-2 gx-3 mt-0">
+    <div class="col-12">
+        {{ admin_macros.number_input(
+            name='winner_bonus',
+            label=_('Top bonus (%%):'),
+            min='0',
+            max='100',
+            placeholder='0',
+            tooltip_text=_('The winner’s bonus, as a percentage of their ranking points. Lower places in the rewarded group get proportionally less.'),
+            data=data,
+            errors=errors,
+        ) }}
+    </div>
+</div>
+<div class="row gy-2 gx-3 mt-0">
+    <div class="col-12">
+        {{ admin_macros.number_input(
+            name='bonus_share',
+            label=_('Players rewarded (%%):'),
+            min='0',
+            max='100',
+            placeholder='0',
+            tooltip_text=_('The percentage of top-ranked players that receive a bonus.'),
+            data=data,
+            errors=errors,
+        ) }}
+    </div>
+</div>

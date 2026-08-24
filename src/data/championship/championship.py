@@ -168,8 +168,10 @@ class Championship:
                 participation.source.start_date or date.max,
             ),
         )
+        event = reference.source.event
+        assert event is not None  # filtered above
         return PlayerCategory.from_year_of_birth_at_date(
-            reference.source.event,
+            event,
             player.year_of_birth,
             reference_date,
         ).name

@@ -47,64 +47,13 @@
                         ) }}
                     </div>
                 </div>
-                <div class="row gy-2 gx-3 mt-0" id="rule-f1-points" {% if 'rule-f1-points' not in current_containers %}style="display:none"{% endif %}>
-                    <div class="col-12">
-                        {{ admin_macros.text_input(
-                            name='f1_points',
-                            label=_('Points per place:'),
-                            placeholder=f1_default_points,
-                            tooltip_text=_('Space-separated points awarded for each finishing position, best first. Leave empty for a default points scale.'),
-                            data=data,
-                            errors=errors,
-                        ) }}
+                {# Each rule provides its own options fragment; the modal just
+                   shows the one for the selected rule type. #}
+                {% for rule_config in rule_config_templates %}
+                    <div id="{{ rule_config.container_id }}" {% if rule_config.container_id not in current_containers %}style="display:none"{% endif %}>
+                        {% include rule_config.template %}
                     </div>
-                </div>
-                <div class="row gy-2 gx-3 mt-0" id="rule-place" {% if 'rule-place' not in current_containers %}style="display:none"{% endif %}>
-                    <div class="col-12">
-                        {{ admin_macros.number_input(
-                            name='place',
-                            label=_('Place:'),
-                            min='1',
-                            tooltip_text=_('The finishing position counted (e.g. 1 counts first places).'),
-                            data=data,
-                            errors=errors,
-                        ) }}
-                    </div>
-                </div>
-                <div id="rule-tie-break" {% if 'rule-tie-break' not in current_containers %}style="display:none"{% endif %}>
-                    <div class="row gy-2 gx-3 mt-0">
-                        <div class="col-12">
-                            {{ admin_macros.select_input(
-                                name='tie_break_type',
-                                label=_('Tie-break:'),
-                                tooltip_text=_('The tie-break computed from each stage’s games and aggregated across the counted stages.'),
-                                select_options=tie_break_type_options,
-                                tooltip_select=true,
-                                data=data,
-                                errors=errors,
-                            ) }}
-                        </div>
-                    </div>
-                    {% for option in tie_break_options %}
-                        {% if option.template_name %}
-                            <div
-                                class="row gy-2 gx-3 mt-0"
-                                id="{{ option.container_id }}"
-                                {% if option.container_id not in tie_break_containers_by_type.get(data['tie_break_type'], []) %}style="display:none"{% endif %}
-                            >
-                                {% include option.template_name %}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                    <script>
-                        $('#tie-break-type').change(function() {
-                            const containers = {{ tie_break_containers_by_type|tojson }}[$(this).val()] || [];
-                            {% for option in tie_break_options %}{% if option.template_name %}
-                                $('#{{ option.container_id }}').css('display', containers.includes('{{ option.container_id }}') ? '' : 'none');
-                            {% endif %}{% endfor %}
-                        });
-                    </script>
-                </div>
+                {% endfor %}
                 <div class="row gy-2 gx-3 mt-0" id="rule-coefficient" {% if 'rule-coefficient' not in current_containers %}style="display:none"{% endif %}>
                     <div class="col-12">
                         {{ admin_macros.switch_input(
@@ -119,7 +68,7 @@
                 <script>
                     $('#type').change(function() {
                         const containers = {{ rule_containers_by_type|tojson }}[$(this).val()] || [];
-                        ['rule-best-n', 'rule-f1-points', 'rule-place', 'rule-tie-break', 'rule-coefficient'].forEach(function(id) {
+                        {{ all_rule_container_ids|tojson }}.forEach(function(id) {
                             $('#' + id).css('display', containers.includes(id) ? '' : 'none');
                         });
                     });

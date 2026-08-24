@@ -1,5 +1,6 @@
 import copy
 import urllib.parse
+from pathlib import PurePosixPath
 from collections import defaultdict
 from datetime import date
 from typing import Annotated, Any, Literal, cast
@@ -601,19 +602,41 @@ class ChampionshipAdminController(BaseAdminController):
         }
 
     @staticmethod
-    def _rule_containers_by_type() -> dict[str, list[str]]:
-        """Which option fields each rule type shows in the modal."""
+    def _config_container_id(config_template: str) -> str:
+        """The modal container id for a rule's options fragment, derived from the
+        fragment name so rules sharing a fragment (the two tie-break rules) share
+        one container rather than rendering it — and its element ids — twice."""
+        return 'rule-config-' + PurePosixPath(config_template).stem
+
+    @classmethod
+    def _rule_config_templates(cls) -> list[dict[str, str]]:
+        """The distinct rule-option fragments to render in the modal, each with
+        the container id that shows/hides it."""
+        templates: list[dict[str, str]] = []
+        seen: set[str] = set()
+        for rule_class in championship_rules():
+            if not rule_class.config_template:
+                continue
+            container_id = cls._config_container_id(rule_class.config_template)
+            if container_id in seen:
+                continue
+            seen.add(container_id)
+            templates.append(
+                {'container_id': container_id, 'template': rule_class.config_template}
+            )
+        return templates
+
+    @classmethod
+    def _rule_containers_by_type(cls) -> dict[str, list[str]]:
+        """Which field containers each rule type shows in the modal: the generic
+        best-N and coefficient fields plus the rule's own options fragment."""
         containers: dict[str, list[str]] = {}
         for rule_class in championship_rules():
             fields: list[str] = []
             if rule_class.supports_best_n:
                 fields.append('rule-best-n')
-            if rule_class.static_id() == 'F1_POINTS':
-                fields.append('rule-f1-points')
-            if rule_class.static_id() == 'COUNT_PLACES':
-                fields.append('rule-place')
-            if rule_class.static_id() in ('SUM_TIE_BREAK', 'AVERAGE_TIE_BREAK'):
-                fields.append('rule-tie-break')
+            if rule_class.config_template:
+                fields.append(cls._config_container_id(rule_class.config_template))
             if rule_class.uses_coefficient:
                 fields.append('rule-coefficient')
             containers[rule_class.static_id()] = fields
@@ -621,29 +644,15 @@ class ChampionshipAdminController(BaseAdminController):
 
     @classmethod
     def _rule_display(cls, stored_rule: StoredChampionshipRule) -> dict[str, Any]:
-        """Read-only summary of a stored rule for the configuration row."""
+        """Read-only summary of a stored rule for the configuration row. The
+        rule-specific details come from the rule class; best-N and the
+        coefficient toggle are common to every rule."""
         rule = build_rule(stored_rule.type, stored_rule.best_n, stored_rule.options)
         options = stored_rule.options or {}
         details: list[str] = []
         if stored_rule.best_n:
             details.append(_('best {num} stages').format(num=stored_rule.best_n))
-        if stored_rule.type == 'F1_POINTS':
-            points = options.get('points') or []
-            if points:
-                details.append(
-                    _('points: {table}').format(
-                        table=' '.join(f'{point:g}' for point in points)
-                    )
-                )
-        elif stored_rule.type == 'COUNT_PLACES':
-            details.append(_('place {place}').format(place=options.get('place', 1)))
-        elif stored_rule.type in ('SUM_TIE_BREAK', 'AVERAGE_TIE_BREAK'):
-            acronym = (options.get('tie_break') or {}).get('acronym')
-            details.append(
-                _('tie-break: {acronym}').format(acronym=acronym)
-                if acronym
-                else _('no tie-break selected')
-            )
+        details.extend(type(rule).display_details(options))
         if type(rule).uses_coefficient and not options.get('use_coefficient', True):
             details.append(_('coefficient off'))
         return {
@@ -655,23 +664,18 @@ class ChampionshipAdminController(BaseAdminController):
 
     @staticmethod
     def _rule_form_data(stored_rule: StoredChampionshipRule | None) -> dict[str, str]:
-        """Initial modal form values for a rule (defaults when creating)."""
+        """Initial modal form values for a rule (defaults when creating). The
+        rule-specific fields come from the rule class."""
         if stored_rule is None:
             return {'type': TotalPointsRule.static_id(), 'use_coefficient': 'on'}
         options = stored_rule.options or {}
         data = {
             'type': stored_rule.type,
             'best_n': str(stored_rule.best_n) if stored_rule.best_n else '',
-            'place': str(options.get('place', 1)),
             'use_coefficient': 'on' if options.get('use_coefficient', True) else '',
         }
-        if options.get('points'):
-            data['f1_points'] = ' '.join(f'{point:g}' for point in options['points'])
-        tie_break = options.get('tie_break')
-        if tie_break:
-            data['tie_break_type'] = tie_break.get('type', '')
-            for option_id, value in (tie_break.get('options') or {}).items():
-                data[option_id] = WebContext.value_to_form_data(value)
+        rule_class = championship_rule_class(stored_rule.type)
+        data |= rule_class.config_form_data(options)
         return data
 
     @classmethod
@@ -698,30 +702,9 @@ class ChampionshipAdminController(BaseAdminController):
                 except ValueError:
                     errors['best_n'] = _('Please enter a whole number of 1 or more.')
         options: dict[str, Any] = {}
-        if rule_class.static_id() == 'F1_POINTS':
-            raw = WebContext.form_data_to_str(data, 'f1_points') or ''
-            points: list[float] = []
-            # Space-separated so a comma can be used as the decimal separator.
-            for piece in raw.split():
-                try:
-                    points.append(float(piece.replace(',', '.')))
-                except ValueError:
-                    errors['f1_points'] = _(
-                        'Please enter a space-separated list of numbers.'
-                    )
-                    break
-            options['points'] = points
-        elif rule_class.static_id() == 'COUNT_PLACES':
-            place_text = (WebContext.form_data_to_str(data, 'place') or '').strip()
-            try:
-                place = int(place_text) if place_text else 1
-                if place < 1:
-                    raise ValueError
-            except ValueError:
-                errors['place'] = _('Please enter a whole number of 1 or more.')
-            else:
-                options['place'] = place
-        elif rule_class.static_id() in ('SUM_TIE_BREAK', 'AVERAGE_TIE_BREAK'):
+        if rule_class.static_id() in ('SUM_TIE_BREAK', 'AVERAGE_TIE_BREAK'):
+            # A tie-break rule's options depend on the championship's available
+            # tie-breaks, so it is resolved here rather than by the rule class.
             tie_break = cls._tie_break_from_data(championship, data)
             if tie_break is None:
                 errors['tie_break_type'] = _('Please choose a tie-break.')
@@ -737,6 +720,10 @@ class ChampionshipAdminController(BaseAdminController):
                         'options': stored.options,
                         'acronym': tie_break.acronym,
                     }
+        else:
+            rule_options, rule_errors = rule_class.parse_config(data)
+            options.update(rule_options)
+            errors.update(rule_errors)
         if rule_class.uses_coefficient:
             options['use_coefficient'] = WebContext.form_data_to_bool(
                 data, 'use_coefficient'
@@ -806,13 +793,18 @@ class ChampionshipAdminController(BaseAdminController):
         representative = next(
             (source for source in championship.sources if not source.broken), None
         )
+        rule_containers_by_type = cls._rule_containers_by_type()
         context = AdminWebContext(request).template_context | {
             'championship': championship,
             'rule': rule,
             'data': default_data | form_data,
             'errors': errors or {},
             'rule_select_options': cls._rule_select_options(),
-            'rule_containers_by_type': cls._rule_containers_by_type(),
+            'rule_containers_by_type': rule_containers_by_type,
+            'rule_config_templates': cls._rule_config_templates(),
+            'all_rule_container_ids': sorted(
+                {cid for ids in rule_containers_by_type.values() for cid in ids}
+            ),
             'tie_break_type_options': tie_break_type_options,
             'tie_break_options': option_objects,
             'tie_break_containers_by_type': {

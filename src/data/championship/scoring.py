@@ -287,6 +287,11 @@ class ChampionshipRule(ABC):
     #: value-type rules (points and tie-break values); False for ordinal or
     #: count rules (a finishing position or a count of wins is not weighted).
     uses_coefficient: bool = False
+    #: Path to this rule's own configuration form fragment, shown in the rule
+    #: modal (``None`` when the rule has no options of its own). The generic
+    #: ``best_n`` and ``coefficient`` fields are added by the modal from
+    #: ``supports_best_n`` / ``uses_coefficient``.
+    config_template: str | None = None
 
     best_n: int | None = None
 
@@ -365,6 +370,29 @@ class ChampionshipRule(ABC):
         rules with no per-stage contribution (direct encounter, manual), which
         get no column in the per-stage breakdown."""
         return None
+
+    @classmethod
+    def display_details(cls, options: dict) -> list[str]:
+        """Human-readable summary parts for this rule's own options, shown on the
+        configuration row. The generic best-N and coefficient details are added
+        by the caller, so this only covers rule-specific options."""
+        return []
+
+    @classmethod
+    def config_form_data(cls, options: dict) -> dict[str, str]:
+        """This rule's own modal field values for an editing round-trip, keyed by
+        form field name. The generic type / best-N / coefficient fields are added
+        by the caller."""
+        return {}
+
+    @classmethod
+    def parse_config(cls, data: dict[str, str]) -> tuple[dict, dict[str, str]]:
+        """Parse this rule's own options from the posted form fields, returning
+        ``(options, errors)`` with errors keyed by form field. The generic best-N
+        and coefficient fields are handled by the caller. (Rules whose options
+        depend on the championship — the aggregated tie-breaks — are the
+        exception and are resolved by the caller.)"""
+        return {}, {}
 
     def split(
         self, group: list['ReconciledCompetitor'], context: ScoringContext
@@ -469,6 +497,7 @@ DEFAULT_F1_POINTS: list[float] = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
 
 class F1PointsRule(ChampionshipRule):
     uses_coefficient = True
+    config_template = '/admin/championship/rule_options/f1_points.html'
 
     def __init__(
         self,
@@ -530,6 +559,153 @@ class F1PointsRule(ChampionshipRule):
 
     def stage_display(self, participation, context):
         return f'{self._f1(participation):g}'
+
+    @classmethod
+    def display_details(cls, options):
+        points = options.get('points') or []
+        if points:
+            table = ' '.join(f'{point:g}' for point in points)
+            return [_('points: {table}').format(table=table)]
+        return []
+
+    @classmethod
+    def config_form_data(cls, options):
+        points = options.get('points') or []
+        if points:
+            return {'f1_points': ' '.join(f'{point:g}' for point in points)}
+        return {}
+
+    @classmethod
+    def parse_config(cls, data):
+        raw = (data.get('f1_points') or '').strip()
+        points: list[float] = []
+        # Space-separated so a comma can be used as the decimal separator.
+        for piece in raw.split():
+            try:
+                points.append(float(piece.replace(',', '.')))
+            except ValueError:
+                return {}, {
+                    'f1_points': _('Please enter a space-separated list of numbers.')
+                }
+        return {'points': points}, {}
+
+
+class RankingPointsWithBonusRule(ChampionshipRule):
+    """Points from finishing position, scaled to each tournament's size, plus a
+    bonus that rewards the top finishers."""
+
+    uses_coefficient = True
+    config_template = '/admin/championship/rule_options/ranking_bonus.html'
+
+    def __init__(
+        self,
+        best_n: int | None = None,
+        winner_bonus: float = 0.0,
+        bonus_share: float = 0.0,
+        use_coefficient: bool = True,
+    ):
+        super().__init__(best_n, use_coefficient)
+        # Both are percentages in [0, 100].
+        self.winner_bonus = winner_bonus
+        self.bonus_share = bonus_share
+
+    @classmethod
+    def from_options(cls, best_n, options):
+        return cls(
+            best_n,
+            float(options.get('winner_bonus', 0.0) or 0.0),
+            float(options.get('bonus_share', 0.0) or 0.0),
+            options.get('use_coefficient', True),
+        )
+
+    @staticmethod
+    def static_id() -> str:
+        return 'RANKING_POINTS_BONUS'
+
+    @staticmethod
+    def base_acronym() -> str:
+        return 'RPB'
+
+    @staticmethod
+    def label() -> str:
+        return _('Ranking points with bonus')
+
+    @staticmethod
+    def description() -> str:
+        return _(
+            'Points by finishing position — the winner scores the field size, '
+            'down to 1 for last. The top finishers also get a percentage of their '
+            'ranking points as a bonus. Scaling with field size, it combines '
+            'tournaments of very different sizes fairly.'
+        )
+
+    def _points(self, participation) -> float:
+        field_size = participation.field_size
+        rank = participation.rank
+        if not rank or field_size <= 0:
+            return 0.0
+        ranking_points = field_size - rank + 1
+        bonus = 0.0
+        recipients = round(field_size * self.bonus_share / 100)
+        if recipients > 0 and rank <= recipients and self.winner_bonus > 0:
+            winner_bonus = field_size * self.winner_bonus / 100
+            # Bonus points are rounded to a whole number.
+            bonus = round(winner_bonus * (recipients - rank + 1) / recipients)
+        return (ranking_points + bonus) * self.coefficient_for(participation)
+
+    def scores(self, group, context):
+        return {
+            id(player): sum(
+                self._points(p)
+                for p in best_participations(
+                    player,
+                    self.best_n,
+                    context.team_score_basis,
+                    context,
+                )
+            )
+            for player in group
+        }
+
+    def stage_value(self, participation, context):
+        return self._points(participation)
+
+    def stage_display(self, participation, context):
+        return f'{self._points(participation):g}'
+
+    @classmethod
+    def display_details(cls, options):
+        return [
+            _('+{winner:g}% bonus for the top {share:g}% of competitors').format(
+                winner=options.get('winner_bonus', 0),
+                share=options.get('bonus_share', 0),
+            )
+        ]
+
+    @classmethod
+    def config_form_data(cls, options):
+        return {
+            'winner_bonus': f'{options.get("winner_bonus", 0):g}',
+            'bonus_share': f'{options.get("bonus_share", 0):g}',
+        }
+
+    @classmethod
+    def parse_config(cls, data):
+        options: dict = {}
+        errors: dict[str, str] = {}
+        for field in ('winner_bonus', 'bonus_share'):
+            text = (data.get(field) or '').strip()
+            value = 0.0
+            if text:
+                try:
+                    value = float(text.replace(',', '.'))
+                    if not 0 <= value <= 100:
+                        raise ValueError
+                except ValueError:
+                    errors[field] = _('Please enter a percentage between 0 and 100.')
+                    continue
+            options[field] = value
+        return options, errors
 
 
 class AveragePointsRule(ChampionshipRule):
@@ -618,6 +794,8 @@ class AverageRankRule(ChampionshipRule):
 
 
 class CountPlacesRule(ChampionshipRule):
+    config_template = '/admin/championship/rule_options/count_places.html'
+
     def __init__(self, best_n: int | None = None, place: int = 1):
         super().__init__(best_n)
         self.place = place
@@ -675,6 +853,25 @@ class CountPlacesRule(ChampionshipRule):
     def stage_display(self, participation, context):
         return '✓' if participation.rank == self.place else '—'
 
+    @classmethod
+    def display_details(cls, options):
+        return [_('place {place}').format(place=options.get('place', 1))]
+
+    @classmethod
+    def config_form_data(cls, options):
+        return {'place': str(options.get('place', 1))}
+
+    @classmethod
+    def parse_config(cls, data):
+        text = (data.get('place') or '').strip()
+        try:
+            place = int(text) if text else 1
+            if place < 1:
+                raise ValueError
+        except ValueError:
+            return {}, {'place': _('Please enter a whole number of 1 or more.')}
+        return {'place': place}, {}
+
 
 class CountWinsRule(ChampionshipRule):
     @staticmethod
@@ -725,6 +922,7 @@ class _SourceTieBreakRule(ChampionshipRule):
     is skipped, so a competitor is not penalised for events that never had it."""
 
     uses_coefficient = True
+    config_template = '/admin/championship/rule_options/tie_break.html'
 
     def __init__(
         self,
@@ -793,6 +991,32 @@ class _SourceTieBreakRule(ChampionshipRule):
         if value is None:
             return '—'
         return f'{value * self.coefficient_for(participation):g}'
+
+    @classmethod
+    def display_details(cls, options):
+        acronym = (options.get('tie_break') or {}).get('acronym')
+        return [
+            _('tie-break: {acronym}').format(acronym=acronym)
+            if acronym
+            else _('no tie-break selected')
+        ]
+
+    @classmethod
+    def config_form_data(cls, options):
+        tie_break = options.get('tie_break') or {}
+        if not tie_break:
+            return {}
+        data = {'tie_break_type': tie_break.get('type', '')}
+        for key, value in (tie_break.get('options') or {}).items():
+            # Tie-break option values round-trip as their form representation;
+            # they are simple scalars (a switch, a select value, a number).
+            if value is True:
+                data[key] = 'on'
+            elif value is False:
+                data[key] = 'off'
+            else:
+                data[key] = str(value)
+        return data
 
 
 class SumTieBreakRule(_SourceTieBreakRule):
