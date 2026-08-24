@@ -1,0 +1,257 @@
+{% macro ranking_row(row, table_id, index, manual=false) %}
+    <tr class="player-row {{ 'even' if index is even else 'odd' }}">
+        <td class="rank text-end fw-bold compact-col">
+            {% if manual %}<input type="hidden" name="competitor" value="{{ row.competitor_key }}">{% endif %}
+            {{ row.rank }}{% if row.tied %}<span class="small text-body-secondary">=</span>{% endif %}
+        </td>
+        <td class="name text-start">
+            <span class="fw-semibold">{{ row.name }}</span>
+            {% if row.secondary %}<span class="small text-body-secondary ms-2">{{ row.secondary }}</span>{% endif %}
+        </td>
+        {% if championship.competitor_type == competitor_type_individual %}
+            <td class="text-center compact-col text-nowrap">{% if row.category %}{{ row.category }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+            <td class="text-center compact-col text-nowrap">{% if row.gender %}{{ row.gender }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+        {% endif %}
+        <td class="text-center compact-col text-nowrap">{% if row.federation %}{{ row.federation }}{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+        <td class="p-0"></td>
+        {% for cell in row.rule_cells %}
+            {% if cell.manual %}
+                <td class="tie-break text-center compact-col {% if manual and row.manual_draggable %}cursor-grab{% endif %} {% if row.manual_pinned %}text-warning fw-semibold{% endif %}">
+                    {% if manual and row.manual_draggable %}
+                        <i class="bi-grip-horizontal handle {% if row.manual_pinned %}text-warning{% else %}text-secondary{% endif %}" {{ macros.tooltip_attributes('', _('Drag to set the manual order.'), 'top') }}></i>
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+            {% else %}
+            {% set cell_tooltip = (
+                ngettext(
+                    'Moved up %(num)d place',
+                    'Moved up %(num)d places',
+                    cell.rank_progress,
+                )
+                if cell.rank_progress is not none and cell.rank_progress > 0 else
+                ngettext(
+                    'Moved down %(num)d place',
+                    'Moved down %(num)d places',
+                    -cell.rank_progress,
+                )
+                if cell.rank_progress is not none and cell.rank_progress < 0 else
+                _('Not used because an earlier rule resolved the tie')
+                if not cell.used else
+                none
+            ) %}
+            <td
+                class="tie-break text-center compact-col {% if cell.used %}fw-semibold{% else %}text-body-secondary{% endif %}"
+                {% if cell_tooltip %}{{ macros.tooltip_attributes('', cell_tooltip, 'top') }}{% endif %}
+            >{% if cell.rank_progress is not none and cell.rank_progress > 0 %}▲&nbsp;{{ cell.rank_progress }}{% elif cell.rank_progress is not none and cell.rank_progress < 0 %}▼&nbsp;{{ -cell.rank_progress }}{% elif cell.value is none %}—{% else %}{{ score(cell.value) }}{% endif %}</td>
+            {% endif %}
+        {% endfor %}
+        <td class="text-center compact-col text-nowrap">
+            <span data-testid="championship-stage-count">{{ row.used_stage_count }}/{{ row.stage_count }}</span>
+            {% if row.stages %}
+                <button
+                    type="button"
+                    class="btn championship-stage-info p-1"
+                    data-content-id="championship-ranking-stage-content-{{ table_id }}-{{ index }}"
+                    aria-label="{{ _('Show the stages of %(competitor)s', competitor=row.name) }}"
+                >
+                    <i class="bi-info-circle"></i>
+                </button>
+                <div
+                    id="championship-ranking-stage-content-{{ table_id }}-{{ index }}"
+                    class="d-none"
+                    data-testid="championship-ranking-stage-popover-content"
+                >
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-start">{{ _('Stage') }}</th>
+                                <th scope="col" class="text-start">{{ _('Ranking') }}</th>
+                                {% for header in stage_value_headers %}
+                                    <th scope="col" class="text-end text-nowrap" {{ macros.tooltip_attributes('', header.title, 'top') }}>{{ header.acronym }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stage in row.stages %}
+                                <tr>
+                                    <td class="text-start text-nowrap {% if not stage.counted %}text-body-secondary{% endif %}">
+                                        {{ stage.name }}
+                                        {% if not stage.counted %}<span class="fst-italic small">({{ _('not counted') }})</span>{% endif %}
+                                    </td>
+                                    <td class="text-end text-nowrap {% if not stage.counted %}text-body-secondary{% endif %}">
+                                        {{ stage.competitor_ranking }} / {{ stage.competitor_count }}
+                                    </td>
+                                    {% for value in stage.rule_values %}
+                                        <td class="text-end {% if not stage.counted %}text-body-secondary{% endif %}">{{ value }}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </td>
+    </tr>
+{% endmacro %}
+
+{% macro ranking_table(rows, table_id, manual=false) %}
+    {% if manual %}
+        <form
+            hx-patch="{{ url_for('admin-championship-manual-tiebreak-update', championship_uniq_id=championship.uniq_id) }}"
+            hx-target="body"
+            hx-trigger="end"
+            hx-indicator="#please-wait"
+        >
+    {% endif %}
+    <table
+        id="{{ table_id }}"
+        class="rankings-table table prominent table-sm table-hover w-100 bg-light"
+        aria-label="{{ _('Championship standings') }}"
+    >
+        <thead class="position-sticky z-2" style="top: var(--header-height);">
+            <tr class="player-header">
+                <th class="rank text-end compact-col">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+                <th class="name text-start">{{ _('Competitor') }}</th>
+                {% if championship.competitor_type == competitor_type_individual %}
+                    <th class="text-center compact-col">{{ _('Cat. *** CATEGORY COLUMN HEADER') }}</th>
+                    <th class="text-center compact-col">{{ _('Gen. *** GENDER COLUMN HEADER') }}</th>
+                {% endif %}
+                <th class="text-center compact-col">{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                <th class="p-0" style="width: 0.75rem"></th>
+                {% for header in ranking_rule_labels %}
+                    <th
+                        class="tie-break text-nowrap text-center"
+                        {{ macros.tooltip_attributes('', header.title ~ ' — ' ~ header.description, 'top') }}
+                    >
+                        {{ header.acronym }}
+                    </th>
+                {% endfor %}
+                <th class="text-center compact-col">{{ _('Stages') }}</th>
+            </tr>
+        </thead>
+        {% if rows %}
+            {% if manual %}
+                {# One sortable tbody per pre-manual tie group, so rows can only
+                   be dragged among the competitors they are tied with. #}
+                {% set ns = namespace(group=None) %}
+                {% for row in rows %}
+                    {% if ns.group != row.manual_group %}
+                        {% if not loop.first %}</tbody>{% endif %}
+                        {% set ns.group = row.manual_group %}
+                        <tbody class="sortable with-handles">
+                    {% endif %}
+                    {{ ranking_row(row, table_id, loop.index, manual=true) }}
+                    {% if loop.last %}</tbody>{% endif %}
+                {% endfor %}
+            {% else %}
+                <tbody>
+                    {% for row in rows %}
+                        {{ ranking_row(row, table_id, loop.index, manual=false) }}
+                    {% endfor %}
+                </tbody>
+            {% endif %}
+        {% else %}
+            <tbody>
+                <tr>
+                    <td colspan="99" class="text-center text-muted p-3">
+                        {{ _('No ranking is available yet.') }}
+                    </td>
+                </tr>
+            </tbody>
+        {% endif %}
+    </table>
+    {% if manual %}</form>{% endif %}
+{% endmacro %}
+
+<div id="top-nav-wrapper">
+    <div id="top-nav-content">
+        {{ admin_macros.admin_title(_('Rankings')) }}
+        {% if not championship.rules %}<span class="badge text-bg-warning fs-6"><i class="bi-exclamation-triangle-fill pe-1"></i>{{ _('No ranking rules configured') }}</span>{% endif %}
+        <div class="flex-grow-1"></div>
+        <select
+            id="championship-ranking-selector"
+            class="form-select"
+            style="width: fit-content;"
+            aria-label="{{ _('Ranking category') }}"
+        >
+            <option value="overall">{{ _('General') }}</option>
+            {% for category_ranking in category_rankings %}
+                <option value="category-{{ category_ranking.category.id }}">{{ category_ranking.category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="container-fluid p-4" id="championship-rankings-wrapper">
+    <section data-championship-ranking="overall">
+        <div class="d-flex align-items-center mb-3">
+            <h3 class="h4 mb-0">{{ _('General ranking') }}</h3>
+            <div class="flex-grow-1"></div>
+            {% if has_manual_rule and has_manual_values %}
+                <button
+                    class="btn btn-outline-primary text-nowrap"
+                    hx-post="{{ url_for('admin-championship-manual-tiebreak-reset', championship_uniq_id=championship.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <i class="bi bi-arrow-clockwise pe-1"></i>{{ _('Reset manual tie-break') }}
+                </button>
+            {% endif %}
+        </div>
+        {{ ranking_table(ranking_rows, 'championship-ranking-table-overall', manual=has_manual_rule) }}
+    </section>
+    {% for category_ranking in category_rankings %}
+        <section class="d-none" data-championship-ranking="category-{{ category_ranking.category.id }}">
+            <h3 class="h4 mb-3">{{ category_ranking.category.name }}</h3>
+            {{ ranking_table(category_ranking.rows, 'championship-ranking-table-' ~ category_ranking.category.id) }}
+        </section>
+    {% endfor %}
+</div>
+
+<script>
+    (() => {
+        const selector = document.getElementById('championship-ranking-selector');
+        const rankings = document.querySelectorAll('[data-championship-ranking]');
+        const update = () => rankings.forEach(
+            ranking => ranking.classList.toggle(
+                'd-none', ranking.dataset.championshipRanking !== selector.value
+            )
+        );
+        selector.addEventListener('change', update);
+        update();
+    })();
+
+    // Stage list shown in a popover with a table (mirrors the pairings ranking
+    // view). The popover for a row is only constructed the first time its button
+    // is hovered/focused, so a large field does not pay to build one instance
+    // per row at load. The content is read inline from the hidden div on show.
+    $(document).ready(() => {
+        const ensurePopover = (button) => {
+            if (button.dataset.popoverReady) return;
+            button.dataset.popoverReady = '1';
+            new bootstrap.Popover(button, {
+                html: true,
+                trigger: 'hover focus',
+                container: 'body',
+                placement: 'auto',
+                sanitize: false,
+                customClass: 'player-popover',
+                content: () => {
+                    const content = document.getElementById(button.getAttribute('data-content-id'));
+                    return content ? content.innerHTML : '';
+                },
+            }).show();
+        };
+        const wrapper = document.getElementById('championship-rankings-wrapper');
+        wrapper.addEventListener('mouseover', (event) => {
+            const button = event.target.closest('.championship-stage-info');
+            if (button) ensurePopover(button);
+        });
+        wrapper.addEventListener('focusin', (event) => {
+            const button = event.target.closest('.championship-stage-info');
+            if (button) ensurePopover(button);
+        });
+    });
+</script>

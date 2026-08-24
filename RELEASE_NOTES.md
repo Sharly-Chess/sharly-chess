@@ -25,6 +25,10 @@
 
 - _Sharly Chess_ now supports **Teams** events (Swiss, Round-Robin, Scheveningen and Molter pairings)! (5.0.0)
 
+## Championships
+
+- _Sharly Chess_ now supports **Championships** which allow you generate a ranking from a set of independent tournaments (5.0.0)
+
 ## Pairings
 
 - A new **Custom accelerated system** lets the arbiter define the acceleration round by round — a number of virtual points granted to a range of pairing numbers over a range of rounds — instead of choosing a published system (5.0.0)

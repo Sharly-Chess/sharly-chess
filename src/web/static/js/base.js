@@ -211,6 +211,24 @@ window.addEventListener("do_print", function(event) {
     document.body.removeChild(form);
 })
 
+window.addEventListener("do_print_championship", function(event) {
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = window.location.origin +
+        '/championship-document-view/' +
+        event.detail.championship_uniq_id + '/' +
+        event.detail.document;
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'options';
+    input.value = Object.keys(event.detail.options).map(k => k + '=' + event.detail.options[k]).join('|');
+    form.appendChild(input);
+    form.target = '_blank';
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+})
+
 window.addEventListener("download_ready", function () {
     // Workaround for htmx not automatically doing this when redirecting
     // https://github.com/bigskysoftware/htmx/issues/3189

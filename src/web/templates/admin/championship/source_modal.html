@@ -1,0 +1,79 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(92vw, 640px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Add a tournament') }}</h2>
+        </div>
+        <div class="modal-body">
+            {% if previous_source %}
+                {% with type='success', message=_(
+                    'Tournament [%(tournament)s] added.',
+                    tournament=previous_source.tournament_name,
+                ) %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            {% if source_events %}
+                <form
+                    id="modal-form"
+                    hx-trigger="submit, enterKeypressFromModal"
+                    hx-post="{{ url_for('admin-championship-source-add', championship_uniq_id=championship.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                >
+                    <div class="row gy-3">
+                        <div class="col-12">
+                            {{ admin_macros.select_input(
+                                name='event_uniq_id',
+                                label=_('Event:'),
+                                select_options=event_options,
+                                data=data,
+                                errors=errors,
+                            ) }}
+                        </div>
+                        <div class="col-12">
+                            {{ admin_macros.select_input(
+                                name='tournament_id',
+                                label=_('Tournament:'),
+                                select_options=tournament_options,
+                                disabled=tournament_disabled,
+                                data=data,
+                                errors=errors,
+                            ) }}
+                        </div>
+                    </div>
+                </form>
+                <script>
+                    // Re-render the modal (server-side) with the chosen event's
+                    // stages. jQuery's change fires on the select2 selection.
+                    $('#event-uniq-id').on('change', function () {
+                        htmx.ajax('GET', '{{ url_for('admin-championship-source-modal', championship_uniq_id=championship.uniq_id) }}?event_uniq_id=' + encodeURIComponent(this.value), {
+                            target: '#modal-wrapper',
+                            swap: 'innerHTML',
+                        });
+                    });
+                </script>
+            {% else %}
+                <p class="text-body-secondary mb-0">{{ _('There are no other compatible tournaments available.') }}</p>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>{{ _('Close') if not source_events else _('Cancel') }}
+            </button>
+            {% if source_events %}
+                {{ admin_macros.split_submit_buttons(
+                    options={
+                        'create': _('Select'),
+                        'add_other': _('Select and add another'),
+                    },
+                    active_option='add_other' if add_other_active else 'create',
+                ) }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

@@ -1,0 +1,9 @@
+<div class="col-12">
+    {{ admin_macros.switch_input(
+        name=option.id,
+        placeholder=_('Show the stage details on hover'),
+        tooltip_text=_('Each competitor row carries a popover with the per-stage breakdown.'),
+        data=data,
+        errors=errors,
+    ) }}
+</div>

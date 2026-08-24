@@ -26,7 +26,9 @@ class TestEventFunctionality:
 
     def test_create_and_delete_event(self, page: Page):
         page.goto('/')
-        TestUtils.button_by_text(page, 'Create an event').click()
+        # The home page shows the main button plus a sidebar quick-create "+"
+        # (same accessible name); either opens the create-event modal.
+        TestUtils.button_by_text(page, 'Create an event').first.click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         modal.get_by_test_id('federation').select_option('FRA', force=True)

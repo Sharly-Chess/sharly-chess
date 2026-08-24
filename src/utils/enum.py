@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class Extension(StrEnum):
     EVENT_DB = 'sce'
+    CHAMPIONSHIP_DB = 'scch'
     LEGACY_EVENT_DB = 'db'
     ARCHIVE = 'sca'
     BACKUP = 'backup'

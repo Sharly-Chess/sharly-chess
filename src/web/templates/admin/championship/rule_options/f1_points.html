@@ -1,0 +1,12 @@
+<div class="row gy-2 gx-3 mt-0">
+    <div class="col-12">
+        {{ admin_macros.text_input(
+            name='f1_points',
+            label=_('Points per place:'),
+            placeholder=f1_default_points,
+            tooltip_text=_('Space-separated points awarded for each finishing position, best first. Leave empty for a default points scale.'),
+            data=data,
+            errors=errors,
+        ) }}
+    </div>
+</div>
