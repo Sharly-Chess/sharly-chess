@@ -8159,6 +8159,9 @@ msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
 
+msgid "The bonus for the top finisher, as a percentage of their ranking points. Lower places in the rewarded group get proportionally less."
+msgstr "Le bonus du premier, en pourcentage de ses points de classement. Les places inférieures du groupe récompensé en reçoivent proportionnellement moins."
+
 msgid "The captain must belong to the team roster."
 msgstr "Le ou la capitaine doit faire partie de l'effectif de l'équipe."
 
@@ -8633,9 +8636,6 @@ msgstr "La manière de constituer les équipes."
 
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
-
-msgid "The winner’s bonus, as a percentage of their ranking points. Lower places in the rewarded group get proportionally less."
-msgstr "Le bonus du vainqueur, en pourcentage de ses points de classement. Les places inférieures du groupe récompensé en reçoivent proportionnellement moins."
 
 msgid "There already is an hour defined at this time."
 msgstr "Il y a déjà un horaire défini à cette heure-ci."

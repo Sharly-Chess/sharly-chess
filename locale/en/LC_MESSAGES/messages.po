@@ -8157,6 +8157,9 @@ msgstr ""
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr ""
 
+msgid "The bonus for the top finisher, as a percentage of their ranking points. Lower places in the rewarded group get proportionally less."
+msgstr ""
+
 msgid "The captain must belong to the team roster."
 msgstr ""
 
@@ -8630,9 +8633,6 @@ msgid "The way to form teams."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
-msgstr ""
-
-msgid "The winner’s bonus, as a percentage of their ranking points. Lower places in the rewarded group get proportionally less."
 msgstr ""
 
 msgid "There already is an hour defined at this time."

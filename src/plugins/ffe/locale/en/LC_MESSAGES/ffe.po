@@ -774,21 +774,3 @@ msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
 
-#~ msgid "Could not download [{url}], error code {code}."
-#~ msgstr ""
-
-#~ msgid "Could not download [{url}]: {error}."
-#~ msgstr ""
-
-#~ msgid "FFE tournament ID:"
-#~ msgstr ""
-
-#~ msgid "Import online FFE tournament"
-#~ msgstr ""
-
-#~ msgid "Online FFE tournament"
-#~ msgstr ""
-
-#~ msgid "Tournament [{tournament_id}] not found."
-#~ msgstr ""
-
