@@ -2003,10 +2003,10 @@ msgid "Competitor type mismatch"
 msgstr "Type de compétiteur incompatible"
 
 msgid "Competitors"
-msgstr "Compétiteur·ices"
+msgstr "Compétiteurs"
 
 msgid "Competitors:"
-msgstr "Compétiteur·ices :"
+msgstr "Compétiteurs :"
 
 msgid "Complementary pairings"
 msgstr "Appariements complémentaires"
