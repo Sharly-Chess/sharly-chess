@@ -20,6 +20,7 @@ from data.loader import EventLoader
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME, SCE_BASE_URL, SCE_SYNC_DELAY, SCE_UPLOAD_DELAY
 from plugins.sce.sce_background_synchronizer import (
     schedule_sync,
@@ -366,6 +367,15 @@ class SCEAdminController(BaseAdminController):
                 case 'import-event':
                     try:
                         event = self._import_event(sce_event_id, tokens)
+                        for plugin in plugin_manager.enable_missing_plugins(
+                            event.stored_event.enabled_plugins
+                        ):
+                            Message.warning(
+                                request,
+                                _('Plugin [{plugin}] was enabled.').format(
+                                    plugin=plugin.name
+                                ),
+                            )
                         Message.success(
                             request,
                             _('Event [{event}] successfully imported!').format(

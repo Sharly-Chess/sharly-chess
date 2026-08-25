@@ -1600,28 +1600,13 @@ class IndexAdminController(BaseAdminController):
     def _enable_missing_plugins(cls, request: HTMXRequest, event_uniq_id: str):
         with EventDatabase(event_uniq_id) as database:
             stored_event = database.load_stored_event_metadata()
-        disabled_plugins: list[Plugin] = []
-        for plugin_id in stored_event.enabled_plugins:
-            plugin = plugin_manager.plugins_by_id[plugin_id]
-            if not plugin.is_enabled:
-                disabled_plugins.append(plugin)
-        plugins_to_enable = [
-            plugin
-            for plugin in plugin_manager.get_plugins_with_dependencies(disabled_plugins)
-            if not plugin.is_enabled
-        ]
-        if not plugins_to_enable:
-            return
-        with ConfigDatabase(True) as database:
-            for plugin in plugins_to_enable:
-                stored_plugin = copy(plugin.context.stored_plugin)
-                stored_plugin.is_enabled = True
-                database.update_stored_plugin(stored_plugin)
-                Message.warning(
-                    request,
-                    _('Plugin [{plugin}] was enabled.').format(plugin=plugin.name),
-                )
-        plugin_manager.reload_register()
+        for plugin in plugin_manager.enable_missing_plugins(
+            stored_event.enabled_plugins
+        ):
+            Message.warning(
+                request,
+                _('Plugin [{plugin}] was enabled.').format(plugin=plugin.name),
+            )
 
     @post(
         path='/event-import/{admin_tab:str}',
