@@ -1,8 +1,8 @@
 {% extends '../../common/admin_cards_container.html' %}
 
-{% set collection = get_admin_collection_spec('championship') %}
-{% set collection_view_mode = get_admin_collection_view_mode('championship') %}
-{% set collection_show_details = get_admin_collection_show_details('championship') %}
+{% set collection = get_admin_collection_spec('championships') %}
+{% set collection_view_mode = get_admin_collection_view_mode('championships') %}
+{% set collection_show_details = get_admin_collection_show_details('championships') %}
 {% set collection_url = url_for('admin-tab', admin_tab=admin_tab) %}
 
 {% block top_left_nav %}
@@ -25,7 +25,7 @@
 
 {% block cards_container_cards %}
     {% with
-        items=nav_tab.championship,
+        items=nav_tab.championships,
         empty_message=nav_tab.empty_str,
         sortable=false,
         show_details=false

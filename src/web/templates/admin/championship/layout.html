@@ -3,11 +3,11 @@
 {% block wrapper_class %}championship admin{% endblock wrapper_class %}
 
 {% block admin_header_back_button %}
-    {% set target_tab = 'championship' %}
+    {% set target_tab = 'championships' %}
     {% if championship.coming %}
-        {% set target_tab = 'coming_championship' %}
+        {% set target_tab = 'coming_championships' %}
     {% elif championship.passed %}
-        {% set target_tab = 'passed_championship' %}
+        {% set target_tab = 'passed_championships' %}
     {% endif %}
     <div class="d-flex px-3 pb-2 w-100 justify-content-between align-items-center border-bottom">
         <button

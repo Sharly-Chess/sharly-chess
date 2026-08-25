@@ -7,7 +7,7 @@ from logging import Logger
 from pathlib import Path
 from urllib.parse import quote
 
-from common import ARCHIVES_DIR, CHAMPIONSHIP_DIR
+from common import ARCHIVES_DIR, CHAMPIONSHIPS_DIR
 from common.logger import get_logger
 from data.championship.championship import Championship
 from data.championship.options import (
@@ -118,7 +118,7 @@ class ChampionshipLoader:
     @classmethod
     def all_championship_ids(cls) -> list[str]:
         ids: list[str] = []
-        for file in CHAMPIONSHIP_DIR.glob(f'*.{Extension.CHAMPIONSHIP_DB}'):
+        for file in CHAMPIONSHIPS_DIR.glob(f'*.{Extension.CHAMPIONSHIP_DB}'):
             uniq_id = cls.format_uniq_id(file.stem)
             if uniq_id != file.stem:
                 index = 1

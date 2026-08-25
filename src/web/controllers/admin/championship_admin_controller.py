@@ -957,7 +957,7 @@ class ChampionshipAdminController(BaseAdminController):
         errors: dict[str, str] | None = None,
     ) -> Template:
         context = AdminWebContext(
-            request, admin_tab='championship'
+            request, admin_tab='championships'
         ).template_context | {
             'data': data
             or {
@@ -1282,7 +1282,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @get(
-        path='/championships/{championship_uniq_id:str}/{championship_tab:str}',
+        path='/championship/{championship_uniq_id:str}/{championship_tab:str}',
         name='admin-championship-tab',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -1411,7 +1411,7 @@ class ChampionshipAdminController(BaseAdminController):
         return IndexAdminController._admin_render(
             AdminWebContext(
                 request,
-                admin_tab='championship'
+                admin_tab='championships'
                 if uniq_id is not None
                 else 'championship_archives',
             )
@@ -1442,7 +1442,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @get(
-        path='/championships/{championship_uniq_id:str}/source-modal',
+        path='/championship/{championship_uniq_id:str}/source-modal',
         name='admin-championship-source-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -1489,7 +1489,7 @@ class ChampionshipAdminController(BaseAdminController):
         return cls._render_modal('admin/championship/config_modal.html', context)
 
     @get(
-        path='/championships/{championship_uniq_id:str}/config-modal',
+        path='/championship/{championship_uniq_id:str}/config-modal',
         name='admin-championship-config-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -1501,7 +1501,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @patch(
-        path='/championships/{championship_uniq_id:str}/uniq-id',
+        path='/championship/{championship_uniq_id:str}/uniq-id',
         name='admin-championship-uniq-id-update',
         guards=[ActionGuard(AuthAction.RENAME_EVENT)],
     )
@@ -1553,7 +1553,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @post(
-        path='/championships/{championship_uniq_id:str}/config',
+        path='/championship/{championship_uniq_id:str}/config',
         name='admin-championship-config-update',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -1654,7 +1654,7 @@ class ChampionshipAdminController(BaseAdminController):
         return cls._render_modal('admin/championship/documents_modal.html', context)
 
     @get(
-        path='/championships/{championship_uniq_id:str}/documents-modal',
+        path='/championship/{championship_uniq_id:str}/documents-modal',
         name='admin-championship-documents-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -1666,7 +1666,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @post(
-        path='/championships/{championship_uniq_id:str}/generate-document',
+        path='/championship/{championship_uniq_id:str}/generate-document',
         name='admin-championship-generate-document',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -1833,7 +1833,7 @@ class ChampionshipAdminController(BaseAdminController):
         }
 
     @post(
-        path='/championships/{championship_uniq_id:str}/source',
+        path='/championship/{championship_uniq_id:str}/source',
         name='admin-championship-source-add',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -1888,7 +1888,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @get(
         path=(
-            '/championships/{championship_uniq_id:str}/source/{source_id:int}/delete-modal'
+            '/championship/{championship_uniq_id:str}/source/{source_id:int}/delete-modal'
         ),
         name='admin-championship-source-delete-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
@@ -1914,7 +1914,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @delete(
-        path='/championships/{championship_uniq_id:str}/source/{source_id:int}',
+        path='/championship/{championship_uniq_id:str}/source/{source_id:int}',
         name='admin-championship-source-delete',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
         status_code=HTTP_200_OK,
@@ -1932,7 +1932,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @get(
         path=(
-            '/championships/{championship_uniq_id:str}/source/'
+            '/championship/{championship_uniq_id:str}/source/'
             '{source_id:int}/coefficient-modal'
         ),
         name='admin-championship-source-coefficient-modal',
@@ -1954,7 +1954,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @post(
-        path='/championships/{championship_uniq_id:str}/source/{source_id:int}/coefficient',
+        path='/championship/{championship_uniq_id:str}/source/{source_id:int}/coefficient',
         name='admin-championship-source-coefficient',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -1989,7 +1989,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'sources')
 
     @post(
-        path='/championships/{championship_uniq_id:str}/merge',
+        path='/championship/{championship_uniq_id:str}/merge',
         name='admin-championship-merge',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2043,7 +2043,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @delete(
         path=(
-            '/championships/{championship_uniq_id:str}/override/'
+            '/championship/{championship_uniq_id:str}/override/'
             '{event_uniq_id:str}/{tournament_id:int}/{competitor_id:int}'
         ),
         name='admin-championship-override-delete',
@@ -2072,7 +2072,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @delete(
         path=(
-            '/championships/{championship_uniq_id:str}/override-group/{group_key:str}'
+            '/championship/{championship_uniq_id:str}/override-group/{group_key:str}'
         ),
         name='admin-championship-override-group-delete',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
@@ -2097,7 +2097,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'competitors')
 
     @get(
-        path='/championships/{championship_uniq_id:str}/competitor-page/{page:int}',
+        path='/championship/{championship_uniq_id:str}/competitor-page/{page:int}',
         name='admin-championship-competitors-page',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2123,7 +2123,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @get(
-        path='/championships/{championship_uniq_id:str}/rule-modal',
+        path='/championship/{championship_uniq_id:str}/rule-modal',
         name='admin-championship-rule-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2135,7 +2135,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @get(
-        path='/championships/{championship_uniq_id:str}/rule/{rule_id:int}/modal',
+        path='/championship/{championship_uniq_id:str}/rule/{rule_id:int}/modal',
         name='admin-championship-rule-edit-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2151,7 +2151,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @post(
-        path='/championships/{championship_uniq_id:str}/rule',
+        path='/championship/{championship_uniq_id:str}/rule',
         name='admin-championship-rule-add',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2177,7 +2177,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'configuration')
 
     @patch(
-        path='/championships/{championship_uniq_id:str}/rule/{rule_id:int}',
+        path='/championship/{championship_uniq_id:str}/rule/{rule_id:int}',
         name='admin-championship-rule-update',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2203,7 +2203,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'configuration')
 
     @get(
-        path='/championships/{championship_uniq_id:str}/rule/{rule_id:int}/delete-modal',
+        path='/championship/{championship_uniq_id:str}/rule/{rule_id:int}/delete-modal',
         name='admin-championship-rule-delete-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2221,7 +2221,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render_modal('admin/championship/rule_delete_modal.html', context)
 
     @delete(
-        path='/championships/{championship_uniq_id:str}/rule/{rule_id:int}',
+        path='/championship/{championship_uniq_id:str}/rule/{rule_id:int}',
         name='admin-championship-rule-delete',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
         status_code=HTTP_200_OK,
@@ -2239,7 +2239,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'configuration')
 
     @patch(
-        path='/championships/{championship_uniq_id:str}/rules/reorder',
+        path='/championship/{championship_uniq_id:str}/rules/reorder',
         name='admin-championship-rules-reorder',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2257,7 +2257,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'configuration')
 
     @patch(
-        path='/championships/{championship_uniq_id:str}/manual-tiebreak',
+        path='/championship/{championship_uniq_id:str}/manual-tiebreak',
         name='admin-championship-manual-tiebreak-update',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2297,7 +2297,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'results')
 
     @post(
-        path='/championships/{championship_uniq_id:str}/manual-tiebreak/reset',
+        path='/championship/{championship_uniq_id:str}/manual-tiebreak/reset',
         name='admin-championship-manual-tiebreak-reset',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2310,7 +2310,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'results')
 
     @post(
-        path='/championships/{championship_uniq_id:str}/team-score-basis',
+        path='/championship/{championship_uniq_id:str}/team-score-basis',
         name='admin-championship-team-score-basis-update',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2334,7 +2334,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'configuration')
 
     @post(
-        path='/championships/{championship_uniq_id:str}/age-category-base-date',
+        path='/championship/{championship_uniq_id:str}/age-category-base-date',
         name='admin-championship-category-reference-update',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2357,7 +2357,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'configuration')
 
     @get(
-        path='/championships/{championship_uniq_id:str}/category-modal',
+        path='/championship/{championship_uniq_id:str}/category-modal',
         name='admin-championship-category-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2371,7 +2371,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @post(
-        path='/championships/{championship_uniq_id:str}/category',
+        path='/championship/{championship_uniq_id:str}/category',
         name='admin-championship-category-add',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2417,7 +2417,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'configuration')
 
     @post(
-        path='/championships/{championship_uniq_id:str}/category/{category_id:int}/duplicate',
+        path='/championship/{championship_uniq_id:str}/category/{category_id:int}/duplicate',
         name='admin-championship-category-duplicate',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2456,7 +2456,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @get(
         path=(
-            '/championships/{championship_uniq_id:str}/category/'
+            '/championship/{championship_uniq_id:str}/category/'
             '{category_id:int}/rename-modal'
         ),
         name='admin-championship-category-rename-modal',
@@ -2475,7 +2475,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @post(
-        path='/championships/{championship_uniq_id:str}/category/{category_id:int}/rename',
+        path='/championship/{championship_uniq_id:str}/category/{category_id:int}/rename',
         name='admin-championship-category-rename',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2510,7 +2510,7 @@ class ChampionshipAdminController(BaseAdminController):
         return self._render(request, championship_uniq_id, 'configuration')
 
     @patch(
-        path='/championships/{championship_uniq_id:str}/categories/reorder',
+        path='/championship/{championship_uniq_id:str}/categories/reorder',
         name='admin-championship-categories-reorder',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
@@ -2529,7 +2529,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @get(
         path=(
-            '/championships/{championship_uniq_id:str}/category/'
+            '/championship/{championship_uniq_id:str}/category/'
             '{category_id:int}/delete-modal'
         ),
         name='admin-championship-category-delete-modal',
@@ -2551,7 +2551,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @delete(
-        path='/championships/{championship_uniq_id:str}/category/{category_id:int}',
+        path='/championship/{championship_uniq_id:str}/category/{category_id:int}',
         name='admin-championship-category-delete',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
         status_code=HTTP_200_OK,
@@ -2572,7 +2572,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @get(
         path=(
-            '/championships/{championship_uniq_id:str}/category/'
+            '/championship/{championship_uniq_id:str}/category/'
             '{category_id:int}/criteria-modal'
         ),
         name='admin-championship-criteria-modal',
@@ -2591,7 +2591,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @get(
         path=(
-            '/championships/{championship_uniq_id:str}/category/'
+            '/championship/{championship_uniq_id:str}/category/'
             '{category_id:int}/criterion-modal'
         ),
         name='admin-championship-criterion-create-modal',
@@ -2610,7 +2610,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @post(
         path=(
-            '/championships/{championship_uniq_id:str}/category/{category_id:int}/criterion'
+            '/championship/{championship_uniq_id:str}/category/{category_id:int}/criterion'
         ),
         name='admin-championship-criterion-add',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
@@ -2654,7 +2654,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @get(
         path=(
-            '/championships/{championship_uniq_id:str}/category/{category_id:int}/'
+            '/championship/{championship_uniq_id:str}/category/{category_id:int}/'
             'criterion/{criterion_id:int}/modal'
         ),
         name='admin-championship-criterion-update-modal',
@@ -2678,7 +2678,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @patch(
         path=(
-            '/championships/{championship_uniq_id:str}/category/{category_id:int}/'
+            '/championship/{championship_uniq_id:str}/category/{category_id:int}/'
             'criterion/{criterion_id:int}'
         ),
         name='admin-championship-criterion-update',
@@ -2727,7 +2727,7 @@ class ChampionshipAdminController(BaseAdminController):
 
     @delete(
         path=(
-            '/championships/{championship_uniq_id:str}/category/{category_id:int}/'
+            '/championship/{championship_uniq_id:str}/category/{category_id:int}/'
             'criterion/{criterion_id:int}'
         ),
         name='admin-championship-criterion-delete',
