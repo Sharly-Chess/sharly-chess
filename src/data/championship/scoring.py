@@ -1077,8 +1077,14 @@ class DirectEncounterRule(ChampionshipRule):
     An incomplete mini-table must not treat an unplayed encounter as a loss.
     Each competitor therefore gets a minimum/maximum possible score range;
     only non-overlapping ranges separate the group. Repeated encounters with
-    the same opponent are averaged, matching the application's tournament
-    direct-encounter tie-break.
+    the same opponent are averaged, and forfeits are excluded, matching the
+    application's tournament direct-encounter tie-break.
+
+    For teams this is the *extended* direct encounter (Art. 13.3): the rule is
+    applied first with the primary score (match or game points) and, for any
+    set it leaves tied, reapplied with the secondary score. A subgroup that a
+    score splits stays on that score for its own resolution (Art. 13.3, the
+    TEC-2023 exercises endnote [6]), rather than restarting from the primary.
     """
 
     supports_best_n = False
@@ -1102,7 +1108,7 @@ class DirectEncounterRule(ChampionshipRule):
             'other. Skipped when they never met.'
         )
 
-    def score_ranges(self, group, context):
+    def score_ranges(self, group, context, *, secondary=False):
         if len(group) < 2:
             return None
         members = set(map(id, group))
@@ -1113,7 +1119,7 @@ class DirectEncounterRule(ChampionshipRule):
         for player in group:
             for participation in player.participations:
                 for opponent_id, points in participation.encounters(
-                    context.team_score_basis
+                    context.team_score_basis, secondary=secondary
                 ):
                     opponent = context.competitor_for_opponent(
                         participation, opponent_id
@@ -1164,32 +1170,51 @@ class DirectEncounterRule(ChampionshipRule):
         return {player_id: minimum for player_id, (minimum, _) in ranges.items()}
 
     def split(self, group, context):
-        ranges = self.score_ranges(group, context)
-        if ranges is None:
-            return [group]
+        return self._resolve(group, context, secondary=False)
 
-        ordered = sorted(group, key=lambda player: ranges[id(player)][0])
+    def _resolve(self, group, context, secondary):
+        ranges = self.score_ranges(group, context, secondary=secondary)
+        if ranges is None:
+            return self._fall_back(group, context, secondary)
+
+        ordered = sorted(group, key=lambda competitor: ranges[id(competitor)][0])
         subgroups: list[list] = []
         current = [ordered[0]]
         current_maximum = ranges[id(ordered[0])][1]
-        for player in ordered[1:]:
-            minimum, maximum = ranges[id(player)]
+        for competitor in ordered[1:]:
+            minimum, maximum = ranges[id(competitor)]
             if round(minimum, 6) <= round(current_maximum, 6):
-                current.append(player)
+                current.append(competitor)
                 current_maximum = max(current_maximum, maximum)
             else:
                 subgroups.append(current)
-                current = [player]
+                current = [competitor]
                 current_maximum = maximum
         subgroups.append(current)
 
         if len(subgroups) == 1:
-            return [group]
+            return self._fall_back(group, context, secondary)
 
         refined: list[list] = []
         for subgroup in reversed(subgroups):
-            refined.extend(self.split(subgroup, context))
+            refined.extend(self._resolve(subgroup, context, secondary))
         return refined
+
+    def _fall_back(self, group, context, secondary):
+        """A score that separates no one hands the set to the secondary score
+        (Art. 13.3.1, teams). Individuals have only one score, so the set stays
+        tied for the next rule."""
+        if not secondary and self._has_secondary(group):
+            return self._resolve(group, context, secondary=True)
+        return [group]
+
+    @staticmethod
+    def _has_secondary(group) -> bool:
+        return bool(group) and all(
+            participation.has_secondary_score
+            for competitor in group
+            for participation in competitor.participations
+        )
 
 
 class ManualRule(ChampionshipRule):
