@@ -130,6 +130,12 @@ class Championship:
         return self.stored_championship.age_category_base_date
 
     @property
+    def min_participation(self) -> int:
+        """The minimum number of source tournaments a competitor must have
+        played in to appear in the rankings (0 = no minimum)."""
+        return self.stored_championship.min_participation
+
+    @property
     def default_age_category_base_date(self) -> date | None:
         """The automatic reference date: 1 January of the first source
         tournament's year."""
@@ -391,8 +397,18 @@ class Championship:
     def build_ranking(
         self, competitors: list['ReconciledPlayer | ReconciledTeam']
     ) -> list[RankingEntry]:
-        """Rank an arbitrary eligible player set with this GP's rules."""
+        """Rank an arbitrary eligible player set with this GP's rules.
+
+        Competitors who have played in fewer than ``min_participation`` source
+        tournaments are excluded from the ranking."""
         from data.championship.scoring import rank_competitors
+
+        if self.min_participation > 1:
+            competitors = [
+                competitor
+                for competitor in competitors
+                if len(competitor.participations) >= self.min_participation
+            ]
 
         entries: list[RankingEntry] = []
         rank = 1
