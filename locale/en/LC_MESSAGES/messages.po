@@ -189,6 +189,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d stage"
+msgid_plural "%(num)d stages"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d team"
 msgid_plural "%(num)d teams"
 msgstr[0] ""
@@ -612,6 +618,9 @@ msgid "A category with this name already exists."
 msgstr ""
 
 msgid "A championship combines tournaments from several independent events into a single cross-event ranking — such as a season-long circuit or grand prix."
+msgstr ""
+
+msgid "A competitor who has played in fewer than this many stages is left out of the rankings. Leave empty for no minimum."
 msgstr ""
 
 msgid "A file is expected."
@@ -4818,6 +4827,9 @@ msgstr ""
 msgid "Minimum number of points (included):"
 msgstr ""
 
+msgid "Minimum participation:"
+msgstr ""
+
 msgid "Minimum rating"
 msgstr ""
 
@@ -5227,6 +5239,9 @@ msgid "No matches in play — all results are in."
 msgstr ""
 
 msgid "No menus"
+msgstr ""
+
+msgid "No minimum"
 msgstr ""
 
 msgid "No monetary prizes assigned to players for this tournament."
@@ -6412,6 +6427,9 @@ msgstr ""
 msgid "Please enter a percentage between 0 and 100."
 msgstr ""
 
+msgid "Please enter a positive whole number."
+msgstr ""
+
 msgid "Please enter a space-separated list of numbers."
 msgstr ""
 
@@ -6806,10 +6824,6 @@ msgid "Rating types"
 msgstr ""
 
 msgid "Rating:"
-msgstr ""
-
-#, python-brace-format
-msgid "Rating: {minimum} – {maximum}"
 msgstr ""
 
 msgid "Ratings"
@@ -10669,4 +10683,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Rating: {minimum} – {maximum}"
+#~ msgstr ""
 
