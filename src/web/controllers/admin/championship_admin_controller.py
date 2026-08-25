@@ -23,7 +23,6 @@ from data.criteria.player_filters import (
     AgePlayerFilter,
     GenderPlayerFilter,
     PlayerFilter,
-    RatingPlayerFilter,
 )
 from data.championship.documents import (
     ChampionshipCompetitorListPrintDocument,
@@ -91,7 +90,6 @@ ChampionshipTab = Literal['sources', 'competitors', 'configuration', 'results']
 CHAMPIONSHIP_PLAYER_FILTER_TYPES: tuple[type[PlayerFilter], ...] = (
     AgePlayerFilter,
     GenderPlayerFilter,
-    RatingPlayerFilter,
 )
 
 
@@ -1074,15 +1072,6 @@ class ChampionshipAdminController(BaseAdminController):
                     if criterion.options.get('GENDER_VALUE') == PlayerGender.WOMAN.value
                     else _('Men')
                 )
-            )
-        if criterion.type == 'RATING':
-            return _('Rating: {minimum} – {maximum}').format(
-                minimum=criterion.options.get('MIN_RATING')
-                if criterion.options.get('MIN_RATING') is not None
-                else '…',
-                maximum=criterion.options.get('MAX_RATING')
-                if criterion.options.get('MAX_RATING') is not None
-                else '…',
             )
         return criterion.type
 

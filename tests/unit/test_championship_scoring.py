@@ -6,6 +6,7 @@ best-N-by-points selection, win counting on the points-selected stages, direct
 encounter across stages, and a mixed ordered rule chain (the Circuit's Art. 6).
 """
 
+from types import SimpleNamespace
 from typing import Any, cast
 
 from data.championship.reconciliation import (
@@ -19,6 +20,7 @@ from data.championship.scoring import (
     DirectEncounterRule,
     ScoringContext,
     TotalPointsRule,
+    rank_competitors,
     rank_players,
 )
 
@@ -29,10 +31,11 @@ def _rp(source, tp):
 
 
 class FakePairing:
-    def __init__(self, win=False, opponent_id=None, points=0.0):
+    def __init__(self, win=False, opponent_id=None, points=0.0, played=True):
         self.win = win
         self.opponent_id = opponent_id
         self.points = points
+        self.played = played
 
 
 class FakeTournamentPlayer:
@@ -183,6 +186,103 @@ def test_direct_encounter_breaks_a_points_tie():
 
     rules = [TotalPointsRule(), direct_encounter]
     assert order(rank_players([f, e], rules)) == ['E', 'F']
+
+
+def test_direct_encounter_excludes_forfeit_games():
+    # E "beat" F only by forfeit. A forfeit is not a game played over the
+    # board, so it does not count for the direct encounter and the tie stands.
+    shared_source = FakeSource('shared-ev', 1)
+    e_tp = FakeTournamentPlayer(
+        10,
+        3,
+        pairings=[FakePairing(win=True, opponent_id=20, points=1.0, played=False)],
+        last_name='E',
+    )
+    f_tp = FakeTournamentPlayer(
+        20,
+        3,
+        pairings=[FakePairing(win=False, opponent_id=10, points=0.0, played=False)],
+        last_name='F',
+    )
+    e = ReconciledPlayer([_rp(shared_source, e_tp)])
+    f = ReconciledPlayer([_rp(shared_source, f_tp)])
+
+    direct_encounter = DirectEncounterRule()
+    context = ScoringContext([f, e])
+    # No game counts -> the rule cannot separate them.
+    assert direct_encounter.scores([f, e], context) is None
+
+    ranked = rank_players([f, e], [TotalPointsRule(), direct_encounter])
+    assert len(ranked) == 1
+    assert sorted(p.last_name for p in ranked[0]) == ['E', 'F']
+
+
+class FakeTeamParticipation:
+    """A team's encounters in one source, with distinct primary/secondary
+    scores so the extended direct encounter can be exercised."""
+
+    has_secondary_score = True
+
+    def __init__(self, competitor_id, primary, secondary, event='ev', tournament_id=1):
+        self.event_uniq_id = event
+        self.tournament_id = tournament_id
+        self.source_competitor_id = competitor_id
+        # A team participation is not tied to a source tournament here (no
+        # tie-break computation is needed for the direct encounter).
+        self.source = SimpleNamespace(tournament=None)
+        self._primary = primary
+        self._secondary = secondary
+
+    def encounters(self, _team_score_basis, secondary=False):
+        yield from (self._secondary if secondary else self._primary)
+
+
+class FakeTeam:
+    def __init__(self, name, participation):
+        self.name = name
+        self.participations = [participation]
+
+
+def test_extended_direct_encounter_falls_back_to_secondary_score_for_teams():
+    # Alpha and Bravo drew their match on match points (the primary score) but
+    # Alpha won it on game points: EDE (Art. 13.3.1) reapplies the rule with
+    # the secondary score and ranks Alpha first.
+    alpha: Any = FakeTeam(
+        'Alpha',
+        FakeTeamParticipation(1, primary=[(2, 1.0)], secondary=[(2, 2.5)]),
+    )
+    bravo: Any = FakeTeam(
+        'Bravo',
+        FakeTeamParticipation(2, primary=[(1, 1.0)], secondary=[(1, 1.5)]),
+    )
+
+    de = DirectEncounterRule()
+    context = ScoringContext([alpha, bravo])
+    # The primary score leaves them tied (1 match point each).
+    assert de.score_ranges([alpha, bravo], context) == {
+        id(alpha): (1.0, 1.0),
+        id(bravo): (1.0, 1.0),
+    }
+
+    ranked = cast(list[list[Any]], rank_competitors([bravo, alpha], [de]))
+    assert [group[0].name for group in ranked] == ['Alpha', 'Bravo']
+
+
+def test_extended_direct_encounter_leaves_teams_tied_when_both_scores_level():
+    # Match drawn on both match points and game points -> EDE cannot separate.
+    alpha: Any = FakeTeam(
+        'Alpha',
+        FakeTeamParticipation(1, primary=[(2, 1.0)], secondary=[(2, 2.0)]),
+    )
+    bravo: Any = FakeTeam(
+        'Bravo',
+        FakeTeamParticipation(2, primary=[(1, 1.0)], secondary=[(1, 2.0)]),
+    )
+    ranked = cast(
+        list[list[Any]], rank_competitors([alpha, bravo], [DirectEncounterRule()])
+    )
+    assert len(ranked) == 1
+    assert sorted(team.name for team in ranked[0]) == ['Alpha', 'Bravo']
 
 
 def test_direct_encounter_uses_games_from_stages_dropped_by_best_n():

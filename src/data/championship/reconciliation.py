@@ -72,9 +72,16 @@ class ReconciledParticipation:
             if pairing.win
         )
 
-    def encounters(self, _team_score_basis: TeamScoreBasis):
+    #: An individual game has a single score, so there is no secondary score
+    #: to fall back on (the extended direct encounter is a team-only rule).
+    has_secondary_score = False
+
+    def encounters(self, _team_score_basis: TeamScoreBasis, secondary: bool = False):
+        # Only games actually played over the board count for the direct
+        # encounter: forfeit wins/losses (and games with no result yet) are
+        # excluded, so a walkover does not decide a shared ranking.
         for pairing in self.tournament_player.pairings_by_round.values():
-            if pairing.opponent_id is not None:
+            if pairing.opponent_id is not None and pairing.played:
                 yield pairing.opponent_id, pairing.points
 
 
@@ -214,10 +221,20 @@ class ReconciledTeamParticipation:
     def wins(self) -> int:
         return int(self.standings_row['wins'])
 
-    def encounters(self, team_score_basis: TeamScoreBasis):
+    #: A team match carries both a match-point and a game-point score, so the
+    #: extended direct encounter (Art. 13.3) can fall back from the primary
+    #: score to the secondary one.
+    has_secondary_score = True
+
+    def encounters(self, team_score_basis: TeamScoreBasis, secondary: bool = False):
         tournament = self.source.tournament
         assert tournament is not None
         team_id = self.team.id
+        # The extended direct encounter reapplies the rule with the secondary
+        # score, which is simply the other team score (Art. 13.1).
+        uses_match_points = self._uses_match_points(team_score_basis)
+        if secondary:
+            uses_match_points = not uses_match_points
         for team_board in tournament.team_boards_by_id.values():
             stored = team_board.stored_team_board
             if stored.team_b_id is None or team_id not in (
@@ -234,7 +251,7 @@ class ReconciledTeamParticipation:
             own_gp, opponent_gp = (
                 (a_gp, b_gp) if team_id == stored.team_a_id else (b_gp, a_gp)
             )
-            if self._uses_match_points(team_score_basis):
+            if uses_match_points:
                 match_points = tournament.match_points
                 if own_gp > opponent_gp:
                     points = match_points.get(Result.WIN, 2.0)

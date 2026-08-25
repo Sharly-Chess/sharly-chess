@@ -66,7 +66,7 @@ class StoredChampionshipCriterion:
 
     ``type`` and ``options`` use the same identifiers and option payloads as
     prize-category player filters, so the Championship UI can reuse that
-    vocabulary (AGE, GENDER, RATING, and plugin-provided custom filters).
+    vocabulary (AGE, GENDER, and plugin-provided custom filters).
     """
 
     id: int | None
