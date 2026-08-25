@@ -3037,6 +3037,14 @@ class Tournament:
         return any(player.pairings[round_].played for player in self.tournament_players)
 
     def round_has_pairings(self, round_: int) -> bool:
+        # Team matches are stored as team-board envelopes; the per-player
+        # pairings are derived from the lineups. A round with team
+        # matches but empty/partial rosters may have no seated players at
+        # all, so the envelope is the source of truth for team modes —
+        # otherwise the round wrongly reads as unpaired (pair button
+        # stays, no unpair button).
+        if self.get_round_team_boards(round_):
+            return True
         return any(
             player.pairings[round_].opponent_id is not None
             or player.pairings[round_].exempt
