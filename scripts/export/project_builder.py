@@ -33,6 +33,7 @@ from common.installation_checker import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from database.sqlite.championship import migrations as championship_migrations
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
 from plugins.manager import plugin_manager
@@ -599,6 +600,7 @@ class ProjectBuilder(ABC):
         migration_base_modules: list[ModuleType] = [
             config_migrations,
             event_migrations,
+            championship_migrations,
         ] + [
             plugin.base_migration_module
             for plugin in plugin_manager.all_plugins
