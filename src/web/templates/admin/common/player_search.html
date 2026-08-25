@@ -60,10 +60,10 @@
             searchInput[0].dispatchEvent(
                 new CustomEvent('data_source_change', {bubbles: true, cancelable: true})
             );
+            filterInit();
         });
         $('#data-source-select').trigger('change');
 
         {% include 'js/searchPlayerNavigation.js' %}
-        {% include 'js/searchFilter.js' %}
     </script>
 </div>

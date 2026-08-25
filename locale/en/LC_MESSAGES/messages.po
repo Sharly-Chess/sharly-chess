@@ -9973,3 +9973,6 @@ msgstr ""
 
 msgid "Search filters"
 msgstr ""
+
+msgid "This filter is disabled for the selected data source."
+msgstr ""

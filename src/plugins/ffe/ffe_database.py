@@ -145,7 +145,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                 ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
-            map(lambda condition: f'({condition})', token_conditions.values())
+            self._processFilters(filters)
+            + list(map(lambda condition: f'({condition})', token_conditions.values()))
         )
 
         # We build one CASE block that sorts best → worst
@@ -253,6 +254,25 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             tuple(params),
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
+
+    def _processFilters(self, filters):
+        conditions = []
+        if 'ffe_licence_filter' in filters:
+            if filters['ffe_licence_filter'] == 'B':
+                conditions.append("(ffe_licence IN ('B', 'A') OR federation !='fra')")
+            elif filters['ffe_licence_filter'] == 'A':
+                conditions.append("(ffe_licence='A' OR federation !='fra')")
+        if 'federation_filter' in filters:
+            conditions.append(f"federation='{filters['federation_filter']}'")
+        if 'gender_filter' in filters:
+            conditions.append(f"gender='{filters['gender_filter']}'")
+        if 'ffe_league_filter' in filters:
+            conditions.append(f"league='{filters['ffe_league_filter']}'")
+        if 'club_filter' in filters:
+            conditions.append(f"LOWER(club) LIKE LOWER('%%{filters['club_filter']}%%')")
+        if 'category_filter' in filters and filters['category_filter']:
+            pass
+        return conditions
 
     # ---------------------------------------------------------------------------------
     # Legacy

@@ -9975,3 +9975,6 @@ msgstr "← Retour au certificat IT1"
 
 msgid "Search filters"
 msgstr "Filtres de recherche"
+
+msgid "This filter is disabled for the selected data source."
+msgstr "Ce filtre est désactivé pour la source de donnée sélectionnée"

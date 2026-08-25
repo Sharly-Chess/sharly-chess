@@ -135,7 +135,8 @@ class FideDatabase(LocalSourcePlayerDatabase):
                 ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
-            map(lambda condition: f'({condition})', token_conditions.values())
+            self._processFilters(filters)
+            + list(map(lambda condition: f'({condition})', token_conditions.values()))
         )
 
         # We build one CASE block that sorts best → worst
@@ -212,6 +213,16 @@ class FideDatabase(LocalSourcePlayerDatabase):
             tuple(player_fide_ids),
         )
         return [self._get_player_from_row(row) for row in self.fetchall()]
+
+    def _processFilters(self, filters):
+        conditions = []
+        if 'federation_filter' in filters:
+            conditions.append(f"federation='{filters['federation_filter']}'")
+        if 'gender_filter' in filters:
+            conditions.append(f"gender='{filters['gender_filter']}'")
+        if 'category_filter' in filters and filters['category_filter']:
+            pass
+        return conditions
 
     # ---------------------------------------------------------------------------------
     # Legacy
