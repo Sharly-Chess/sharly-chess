@@ -1,0 +1,258 @@
+<div class="container-fluid p-4">
+    <h2 class="mb-1">{{ _('Configuration') }}</h2>
+    <p class="text-body-secondary mb-4">{{ _('Configure the ordered scoring rules. Later rules only break ties left by earlier rules.') }}</p>
+
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-4 p-3 border rounded bg-body-tertiary">
+        <div class="min-width-0">
+            <div class="fs-5 fw-semibold text-truncate">{{ championship.name }}</div>
+            {% if championship.competitor_type == competitor_type_individual %}
+                <div class="text-body-secondary small">
+                    {{ _('Age category reference date:') }}
+                    {% if championship.age_category_base_date %}
+                        {{ format_date(championship.age_category_base_date) }}
+                    {% elif championship.default_age_category_base_date %}
+                        <span class="fst-italic">{{ format_date(championship.default_age_category_base_date) }} ({{ _('default') }})</span>
+                    {% else %}
+                        <span class="fst-italic">{{ _('Default') }}</span>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        <button
+            class="btn btn-outline-primary text-nowrap"
+            hx-get="{{ url_for('admin-championship-config-modal', championship_uniq_id=championship.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-pencil-fill pe-1"></i>{{ _('Edit') }}
+        </button>
+    </div>
+
+    {% if championship.competitor_type == competitor_type_team %}
+        <div class="mb-4">
+            <div class="fs-5 d-inline-flex align-items-center gap-4 mb-2">
+                <button type="button" class="collapse-button" data-bs-toggle="collapse" data-bs-target="#gp-config-team-score" aria-expanded="true">
+                    <span class="d-inline-flex align-items-center gap-2"><i class="bi bi-chevron-down"></i>{{ _('Team score basis') }}</span>
+                </button>
+            </div>
+            <div class="collapse show" id="gp-config-team-score">
+                <form class="d-flex flex-column flex-lg-row gap-2" hx-post="{{ url_for('admin-championship-team-score-basis-update', championship_uniq_id=championship.uniq_id) }}" hx-target="body" hx-indicator="#please-wait">
+                    <select class="form-select" name="team_score_basis">
+                        <option value="SOURCE_PRIMARY" {% if championship.team_score_basis.value == 'SOURCE_PRIMARY' %}selected{% endif %}>{{ _('Use each source tournament’s primary score') }}</option>
+                        <option value="MATCH_POINTS" {% if championship.team_score_basis.value == 'MATCH_POINTS' %}selected{% endif %}>{{ _('Match points') }}</option>
+                        <option value="GAME_POINTS" {% if championship.team_score_basis.value == 'GAME_POINTS' %}selected{% endif %}>{{ _('Game points') }}</option>
+                    </select>
+                    <button class="btn btn-primary text-nowrap" type="submit">{{ _('Save') }}</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mb-4">
+        <div class="fs-5 d-inline-flex align-items-center gap-4 mb-2">
+            <button type="button" class="collapse-button" data-bs-toggle="collapse" data-bs-target="#gp-config-rules" aria-expanded="true">
+                <span class="d-inline-flex align-items-center gap-2"><i class="bi bi-chevron-down"></i>{{ _('Scoring and tie-break rules') }}</span>
+            </button>
+        </div>
+        <div class="collapse show" id="gp-config-rules">
+            <div class="d-flex justify-content-end mb-3">
+                <button
+                    class="btn btn-primary text-nowrap"
+                    data-testid="championship-add-rule"
+                    hx-get="{{ url_for('admin-championship-rule-modal', championship_uniq_id=championship.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    <i class="bi-plus-square-fill pe-1"></i>{{ _('Add rule') }}
+                </button>
+            </div>
+            <p class="text-body-secondary">
+                {{ _('Rules are applied in order: each rule only breaks the ties left by the earlier ones.') }}
+            </p>
+            {% if rule_displays %}
+                <form
+                    {% if rule_displays|length > 1 %}
+                        hx-patch="{{ url_for('admin-championship-rules-reorder', championship_uniq_id=championship.uniq_id) }}"
+                        hx-target="body"
+                        hx-trigger="end"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                >
+                    <div
+                        id="championship-rule-rows"
+                        class="d-flex flex-column gap-2 {% if rule_displays|length > 1 %}sortable with-handles{% endif %}"
+                    >
+                        {% for rule in rule_displays %}
+                            <div
+                                class="championship-rule-row border border-secondary bg-body-tertiary"
+                                data-testid="championship-rule-row"
+                            >
+                                <input type="hidden" name="item" value="{{ rule.id }}">
+                                <div class="p-2 championship-rule-grid">
+                                    <span class="championship-rule-handle-cell">
+                                        {% if rule_displays|length > 1 %}
+                                            <i class="bi-grip-vertical handle" {{ macros.tooltip_attributes('', _('Drag to reorder the rule.'), 'top') }}></i>
+                                        {% endif %}
+                                    </span>
+                                    <span class="championship-rule-order fw-semibold text-end">{{ loop.index }}</span>
+                                    <span class="text-nowrap"><span class="badge text-bg-secondary">{{ rule.acronym }}</span></span>
+                                    <span class="fw-semibold min-width-0 text-truncate">
+                                        {{ rule.name }}
+                                    </span>
+                                    <span class="min-width-0 text-body-secondary text-truncate">
+                                        {{ rule.details }}
+                                    </span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <button
+                                            class="btn btn-sm btn-outline-primary"
+                                            type="button"
+                                            hx-get="{{ url_for('admin-championship-rule-edit-modal', championship_uniq_id=championship.uniq_id, rule_id=rule.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-wrapper"
+                                            aria-label="{{ _('Edit rule') }}"
+                                            {{ macros.tooltip_attributes('', _('Edit this rule.'), 'top') }}
+                                        ><i class="bi-pencil-fill"></i></button>
+                                        <button
+                                            class="btn btn-sm btn-outline-danger"
+                                            type="button"
+                                            hx-get="{{ url_for('admin-championship-rule-delete-modal', championship_uniq_id=championship.uniq_id, rule_id=rule.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-wrapper"
+                                            aria-label="{{ _('Delete rule') }}"
+                                            {{ macros.tooltip_attributes('warning', _('Delete this rule.'), 'top') }}
+                                        ><i class="bi-trash-fill"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            {% else %}
+                <p class="text-body-secondary mb-0">{{ _('No scoring rule has been created yet.') }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if championship.competitor_type == competitor_type_individual %}
+        <div class="mb-4">
+            <div class="fs-5 d-inline-flex align-items-center gap-4 mb-2">
+                <button type="button" class="collapse-button" data-bs-toggle="collapse" data-bs-target="#gp-config-categories" aria-expanded="true">
+                    <span class="d-inline-flex align-items-center gap-2"><i class="bi bi-chevron-down"></i>{{ _('Ranking categories') }}</span>
+                </button>
+            </div>
+            <div class="collapse show" id="gp-config-categories">
+                <div class="d-flex justify-content-end mb-3">
+                    <button
+                        class="btn btn-primary text-nowrap"
+                        hx-get="{{ url_for('admin-championship-category-modal', championship_uniq_id=championship.uniq_id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                    >
+                        <i class="bi-plus-square-fill pe-1"></i>{{ _('Create a category') }}
+                    </button>
+                </div>
+                <p class="text-body-secondary">
+                    {{ _('The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category.') }}
+                </p>
+                {% if championship.categories %}
+                    <form
+                        {% if championship.categories|length > 1 %}
+                            hx-patch="{{ url_for('admin-championship-categories-reorder', championship_uniq_id=championship.uniq_id) }}"
+                            hx-target="body"
+                            hx-trigger="end"
+                            hx-indicator="#please-wait"
+                        {% endif %}
+                    >
+                        <div
+                            id="championship-category-rows"
+                            class="d-flex flex-column gap-2 {% if championship.categories|length > 1 %}sortable with-handles{% endif %}"
+                        >
+                            {% for category in championship.categories %}
+                                <div
+                                    class="championship-category-row border border-secondary bg-body-tertiary"
+                                    data-testid="championship-category-row"
+                                >
+                                    <input type="hidden" name="item" value="{{ category.id }}">
+                                    <div class="p-2 championship-category-grid">
+                                        <span class="championship-category-handle-cell">
+                                            {% if championship.categories|length > 1 %}
+                                                <i class="bi-grip-vertical handle" {{ macros.tooltip_attributes('', _('Drag to reorder the category.'), 'top') }}></i>
+                                            {% endif %}
+                                        </span>
+                                        <span class="championship-category-order fw-semibold text-end">{{ loop.index }}</span>
+                                        <span class="fw-semibold min-width-0 text-truncate">
+                                            {{ category.name }}
+                                        </span>
+                                        <span class="min-width-0 text-truncate">
+                                            {% if category_criteria_labels[category.id] %}
+                                                {{ category_criteria_labels[category.id]|join(', ') }}
+                                            {% else %}
+                                                <span class="text-secondary fst-italic">{{ _('Undefined *** PLURAL') }}</span>
+                                            {% endif %}
+                                        </span>
+                                        <div class="d-flex align-items-center gap-1">
+                                        <button
+                                            class="btn btn-sm btn-outline-primary"
+                                            type="button"
+                                            hx-get="{{ url_for('admin-championship-category-rename-modal', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-wrapper"
+                                            aria-label="{{ _('Rename') }}"
+                                            {{ macros.tooltip_attributes('', _('Rename this category.'), 'top') }}
+                                        ><i class="bi-pencil-fill"></i></button>
+                                        <button
+                                            class="btn btn-sm btn-outline-primary text-nowrap"
+                                            type="button"
+                                            hx-get="{{ url_for('admin-championship-criteria-modal', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-filter pe-1"></i>{{ _('Criteria') }} ({{ category.criteria|length }})
+                                        </button>
+                                        <button
+                                            class="btn btn-sm btn-outline-primary"
+                                            type="button"
+                                            hx-post="{{ url_for('admin-championship-category-duplicate', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            aria-label="{{ _('Duplicate') }}"
+                                            {{ macros.tooltip_attributes('', _('Duplicate this category.'), 'top') }}
+                                        ><i class="bi-files"></i></button>
+                                        <button
+                                            class="btn btn-sm btn-outline-danger"
+                                            type="button"
+                                            hx-get="{{ url_for('admin-championship-category-delete-modal', championship_uniq_id=championship.uniq_id, category_id=category.id) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-wrapper"
+                                            aria-label="{{ _('Delete') }}"
+                                            {{ macros.tooltip_attributes('warning', _('Delete this category.'), 'top') }}
+                                        ><i class="bi-trash-fill"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </form>
+                {% else %}
+                    <p class="text-body-secondary mb-0">{{ _('No filtered ranking has been created yet.') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>

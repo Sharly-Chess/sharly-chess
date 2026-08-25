@@ -214,6 +214,10 @@ from web.admin.display_controllers.collection import (  # noqa: E402
 )
 from web.admin.events.collection import COLLECTION_SPEC as _events_spec  # noqa: E402
 from web.admin.families.collection import COLLECTION_SPEC as _families_spec  # noqa: E402
+from web.admin.championship.collection import (  # noqa: E402
+    COLLECTION_SPEC as _championship_spec,
+    SOURCE_COLLECTION_SPEC as _championship_sources_spec,
+)
 from web.admin.menus.collection import COLLECTION_SPEC as _menus_spec  # noqa: E402
 from web.admin.prizes.collection import COLLECTION_SPEC as _prizes_spec  # noqa: E402
 from web.admin.rotators.collection import COLLECTION_SPEC as _rotators_spec  # noqa: E402
@@ -227,6 +231,8 @@ _SPECS: dict[str, AdminCollectionSpec] = {
     'display-controllers': _display_controllers_spec,
     'events': _events_spec,
     'families': _families_spec,
+    'championship': _championship_spec,
+    'championship-sources': _championship_sources_spec,
     'menus': _menus_spec,
     'prize-categories': _prizes_spec,
     'rotators': _rotators_spec,

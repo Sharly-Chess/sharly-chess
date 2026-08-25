@@ -9,6 +9,17 @@
 {% endblock %}
 
 {% block form_content %}
+    {% if referencing_championship %}
+        <div class="alert alert-warning mt-3" role="alert">
+            <i class="bi-exclamation-triangle-fill pe-1"></i>
+            {{ _('Deleting this tournament will break its source in the following championships:') }}
+            <ul class="mb-0 mt-2">
+                {% for championship in referencing_championship %}
+                    <li>{{ championship.name }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
     {% if (
         admin_tournament.dependent_screens
         or admin_tournament.dependent_families

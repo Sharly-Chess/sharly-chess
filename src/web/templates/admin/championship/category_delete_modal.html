@@ -1,0 +1,10 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}{{ _('Delete category') }}{% endblock %}
+{% block object_name %}{{ category.name }}{% endblock %}
+{% block delete_warning %}{{ _('Delete this championship category?') }}{% endblock %}
+{% block delete_url %}{{ url_for(
+    'admin-championship-category-delete',
+    championship_uniq_id=championship.uniq_id,
+    category_id=category.id,
+) }}{% endblock %}

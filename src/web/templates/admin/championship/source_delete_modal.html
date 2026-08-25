@@ -1,0 +1,16 @@
+{% extends '/admin/common/modal/delete_modal.html' %}
+
+{% block modal_title %}{{ _('Remove tournament') }}{% endblock %}
+{% block object_name %}{{ source.tournament_name }}{% endblock %}
+{% block delete_warning %}{{ _('Remove this tournament from the championship?') }}{% endblock %}
+{% block form_content %}
+    <p class="mb-0">{{ _('The source event and tournament will not be deleted.') }}</p>
+{% endblock %}
+{% block delete_url %}{{ url_for(
+    'admin-championship-source-delete',
+    championship_uniq_id=championship.uniq_id,
+    source_id=source.id,
+) }}{% endblock %}
+{% block delete_button_content %}
+    <i class="bi-trash pe-1"></i>{{ _('Remove') }}
+{% endblock %}

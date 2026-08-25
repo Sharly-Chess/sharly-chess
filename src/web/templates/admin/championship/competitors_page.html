@@ -1,0 +1,97 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<tbody
+    {% if competitor_page < competitor_pages %}
+        hx-get="{{ url_for(
+            'admin-championship-competitors-page',
+            championship_uniq_id=championship.uniq_id,
+            page=competitor_page + 1,
+        ) }}"
+        {# Pin the target to this tbody; the wrapping merge form sets
+           hx-target="body", which htmx would otherwise inherit and append the
+           next page at the end of the document. #}
+        hx-target="this"
+        hx-swap="afterend"
+        hx-trigger="revealed"
+    {% endif %}
+>
+    {% if (competitor_page_start + 1) is even %}
+        {# Keep the striped colouring aligned across page boundaries. #}
+        <tr></tr>
+    {% endif %}
+    {% for row in competitor_rows %}
+        {% set row_index = competitor_page_start + loop.index %}
+        <tr>
+            <td class="text-center compact-col">
+                <input
+                    class="form-check-input championship-competitor-selection"
+                    type="checkbox"
+                    name="groups"
+                    value="{{ row.refs }}"
+                    aria-label="{{ _('Select %(competitor)s', competitor=row.name) }}"
+                >
+            </td>
+            <td class="text-nowrap text-end compact-col index">{{ row_index }}</td>
+            <td class="text-nowrap fw-semibold">{{ row.name }}</td>
+            <td class="text-nowrap text-center compact-col">
+                {% if row.secondary %}{{ row.secondary }}{% else %}<span class="text-muted">—</span>{% endif %}
+            </td>
+            {% if championship.competitor_type == competitor_type_individual %}
+                <td class="text-nowrap text-center compact-col">
+                    {% if row.category %}{{ row.category }}{% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td class="text-nowrap text-center compact-col">
+                    {% if row.gender %}{{ row.gender }}{% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+            {% endif %}
+            <td class="text-center compact-col text-nowrap">
+                <span data-testid="championship-tournament-count">{{ row.participations|length }}</span>
+                <button
+                    type="button"
+                    class="btn championship-stage-info p-1"
+                    data-content-id="championship-stage-content-{{ row_index }}"
+                    aria-label="{{ _('Show the stages of %(competitor)s', competitor=row.name) }}"
+                >
+                    <i class="bi-info-circle"></i>
+                </button>
+                <div
+                    id="championship-stage-content-{{ row_index }}"
+                    class="d-none"
+                    data-testid="championship-stage-popover-content"
+                >
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            {% for participation in row.participations %}
+                                <tr>
+                                    <td class="text-start text-nowrap">{{ participation.source_name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+            <td class="text-nowrap text-center compact-col">
+                {% if row.override_group_keys %}
+                    {% for group_key in row.override_group_keys %}
+                        <button
+                            class="btn btn-sm btn-outline-warning"
+                            type="button"
+                            hx-delete="{{ url_for(
+                                'admin-championship-override-group-delete',
+                                championship_uniq_id=championship.uniq_id,
+                                group_key=group_key,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >
+                            <i class="bi-link-45deg pe-1"></i>{{ _('Unmerge') }}
+                        </button>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-body-secondary">{{ _('Automatic') }}</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>

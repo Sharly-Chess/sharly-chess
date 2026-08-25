@@ -127,6 +127,29 @@ class AppPluginManager(PluginManager):
                 database.update_stored_plugin(stored_plugin)
         self.reload_register()
 
+    def enable_missing_plugins(self, enabled_plugin_ids: list[str]) -> list['Plugin']:
+        from database.sqlite.config.config_database import ConfigDatabase
+
+        requested_plugins = [
+            self.plugins_by_id[plugin_id]
+            for plugin_id in enabled_plugin_ids
+            if not self.plugins_by_id[plugin_id].is_enabled
+        ]
+        plugins_to_enable = [
+            plugin
+            for plugin in self.get_plugins_with_dependencies(requested_plugins)
+            if not plugin.is_enabled
+        ]
+        if not plugins_to_enable:
+            return []
+        with ConfigDatabase(True) as database:
+            for plugin in plugins_to_enable:
+                stored_plugin = copy.copy(plugin.context.stored_plugin)
+                stored_plugin.is_enabled = True
+                database.update_stored_plugin(stored_plugin)
+        self.reload_register()
+        return plugins_to_enable
+
     def hook_for_event(self, event: Optional['Event'], hook_name: str):
         remove_plugins = []
         if event:

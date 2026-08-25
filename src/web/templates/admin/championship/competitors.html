@@ -1,0 +1,137 @@
+<form
+    id="championship-competitor-merge-form"
+    hx-post="{{ url_for('admin-championship-merge', championship_uniq_id=championship.uniq_id) }}"
+    hx-target="body"
+    hx-indicator="#please-wait"
+>
+    <div id="top-nav-wrapper">
+        <div id="top-nav-content">
+            {% if championship.competitor_type == competitor_type_team %}
+                {{ admin_macros.admin_title(_('Teams')) }}
+            {% else %}
+                {{ admin_macros.admin_title(_('Players')) }}
+            {% endif %}
+            <div class="flex-grow-1"></div>
+            <div class="d-flex gap-2 ms-auto align-items-center">
+                <button
+                    id="championship-merge-competitors"
+                    class="btn btn-primary text-nowrap"
+                    type="submit"
+                    disabled
+                >
+                    <i class="bi-link-45deg pe-1"></i>
+                    {% if championship.competitor_type == competitor_type_team %}
+                        {{ _('Merge selected teams') }}
+                    {% else %}
+                        {{ _('Merge selected players') }}
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <section class="px-3 pb-1">
+        <table
+            id="championship-competitors-table"
+            class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+        >
+            <thead
+                class="position-sticky z-2"
+                style="top: var(--header-height);"
+            >
+                <tr>
+                    <th class="text-center compact-col" scope="col">
+                        <span class="visually-hidden">{{ _('Select') }}</span>
+                    </th>
+                    <th class="text-end compact-col" scope="col">#</th>
+                    <th class="text-start" scope="col">
+                        {% if championship.competitor_type == competitor_type_team %}
+                            {{ _('Team') }}
+                        {% else %}
+                            {{ _('Player') }}
+                        {% endif %}
+                    </th>
+                    <th class="text-center compact-col" scope="col">
+                        {% if championship.competitor_type == competitor_type_team %}
+                            {{ _('Fed. *** FEDERATION COLUMN HEADER') }}
+                        {% else %}
+                            {{ _('FIDE ID') }}
+                        {% endif %}
+                    </th>
+                    {% if championship.competitor_type == competitor_type_individual %}
+                        <th class="text-center compact-col" scope="col">
+                            {{ _('Cat. *** CATEGORY COLUMN HEADER') }}
+                        </th>
+                        <th class="text-center compact-col" scope="col">
+                            {{ _('Gen. *** GENDER COLUMN HEADER') }}
+                        </th>
+                    {% endif %}
+                    <th class="text-center compact-col" scope="col">{{ _('Tournaments') }}</th>
+                    <th class="text-center compact-col" scope="col">{{ _('Matching') }}</th>
+                </tr>
+            </thead>
+            {# First page rendered inline; further pages are fetched by the
+               tbody's revealed trigger as the list is scrolled. #}
+            {% include '/admin/championship/competitors_page.html' %}
+            <tbody>
+                <tr id="championship-competitors-empty-row">
+                    {% if not competitor_rows %}
+                        <td colspan="100%" class="px-3 text-center">
+                            {{ _('No competitors are available. Add a valid source tournament first.') }}
+                        </td>
+                    {% endif %}
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</form>
+
+<script>
+    (() => {
+        // Delegated so checkboxes on later (infinite-scroll) pages count too.
+        const form = document.getElementById('championship-competitor-merge-form');
+        const mergeButton = document.getElementById('championship-merge-competitors');
+        const updateMergeButton = () => {
+            const selections = form.querySelectorAll('.championship-competitor-selection');
+            mergeButton.disabled = Array.from(selections).filter(input => input.checked).length < 2;
+        };
+        form.addEventListener('change', (event) => {
+            if (event.target.classList.contains('championship-competitor-selection')) {
+                updateMergeButton();
+            }
+        });
+        updateMergeButton();
+    })();
+
+    // Stage list shown in a popover with a table (mirrors the pairings ranking
+    // view). The popover for a row is only constructed the first time its button
+    // is hovered/focused, so a large field does not pay to build one instance
+    // per row at load. The content is read inline from the hidden div on show.
+    $(document).ready(() => {
+        const table = document.getElementById('championship-competitors-table');
+        const ensurePopover = (button) => {
+            if (button.dataset.popoverReady) return;
+            button.dataset.popoverReady = '1';
+            new bootstrap.Popover(button, {
+                html: true,
+                trigger: 'hover focus',
+                container: 'body',
+                placement: 'auto',
+                sanitize: false,
+                customClass: 'player-popover',
+                content: () => {
+                    const content = document.getElementById(button.getAttribute('data-content-id'));
+                    return content ? content.innerHTML : '';
+                },
+            }).show();
+        };
+        table.addEventListener('mouseover', (event) => {
+            const button = event.target.closest('.championship-stage-info');
+            if (button) ensurePopover(button);
+        });
+        table.addEventListener('focusin', (event) => {
+            const button = event.target.closest('.championship-stage-info');
+            if (button) ensurePopover(button);
+        });
+    });
+</script>

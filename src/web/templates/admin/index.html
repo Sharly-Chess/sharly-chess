@@ -14,7 +14,22 @@
             <div class="sidebar-divider my-3"></div>
         {% endif %}
         {% if nav_tab.section_title %}
-            <h4 class="ps-3 mb-2 fs-5 mt-3">{{ nav_tab.section_title }}</h4>
+            <div class="d-flex w-100 align-items-center pe-3 mt-3 mb-2">
+                <h4 class="ps-3 mb-0 fs-5 min-width-0">{{ nav_tab.section_title }}</h4>
+                {% if nav_tab.section_create_modal_url %}
+                    <button
+                        class="btn btn-sm btn-outline-primary d-inline-flex align-items-center justify-content-center ms-auto flex-shrink-0 p-0"
+                        style="width: 2rem; height: 2rem;"
+                        hx-get="{{ nav_tab.section_create_modal_url }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        aria-label="{{ nav_tab.section_create_label }}"
+                        {{ macros.tooltip_attributes('', nav_tab.section_create_label, 'right') }}
+                    ><i class="bi-plus-lg" style="margin-right: 0;"></i></button>
+                {% endif %}
+            </div>
         {% endif %}
         {% with active=(admin_tab == nav_id) %}
             <div class="d-flex w-100 justify-content-between align-items-center">

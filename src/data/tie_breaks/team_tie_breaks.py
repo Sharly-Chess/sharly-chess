@@ -822,6 +822,8 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
     machinery can break the parent tie by sorting on the delta.
     """
 
+    is_aggregatable = False
+
     @staticmethod
     def static_id() -> str:
         return 'TEAM_EDE'

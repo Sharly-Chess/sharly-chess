@@ -1098,6 +1098,10 @@ class Tournament:
         return self.teams_by_id.values()
 
     @cached_property
+    def team_count(self) -> int:
+        return len(self.teams_by_id)
+
+    @cached_property
     def sorted_teams(self) -> list['Team']:
         return sorted(self.teams, key=attrgetter('name'))
 

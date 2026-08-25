@@ -651,7 +651,7 @@ msgstr "Tournoi"
 
 #, python-brace-format
 msgid "Tournament [{tournament_id}] not found."
-msgstr "Tournoi [{tournament_id}] not trouvé."
+msgstr "Tournoi [{tournament_id}] non trouvé."
 
 msgid "Tournament exempt from registration fees."
 msgstr "Tournoi exempt de droits d'homologation."

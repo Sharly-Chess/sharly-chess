@@ -1,0 +1,89 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% set current_containers = rule_containers_by_type.get(data['type'], []) %}
+
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 520px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Edit rule') if rule else _('Add a rule') }}</h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                {% if rule %}
+                    hx-patch="{{ url_for('admin-championship-rule-update', championship_uniq_id=championship.uniq_id, rule_id=rule.id) }}"
+                {% else %}
+                    hx-post="{{ url_for('admin-championship-rule-add', championship_uniq_id=championship.uniq_id) }}"
+                {% endif %}
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='type',
+                            label=_('Rule:'),
+                            tooltip_text=_('The scoring criterion applied to rank the competitors.'),
+                            select_options=rule_select_options,
+                            tooltip_select=true,
+                            search_disabled=true,
+                            data=data,
+                            errors=errors,
+                        ) }}
+                    </div>
+                </div>
+                <div class="row gy-2 gx-3 mt-0" id="rule-best-n" {% if 'rule-best-n' not in current_containers %}style="display:none"{% endif %}>
+                    <div class="col-12">
+                        {{ admin_macros.number_input(
+                            name='best_n',
+                            label=_('Best stages:'),
+                            min='1',
+                            placeholder=_('All'),
+                            tooltip_text=_('Only count each competitor’s best N stages (leave empty to count them all).'),
+                            data=data,
+                            errors=errors,
+                        ) }}
+                    </div>
+                </div>
+                {# Each rule provides its own options fragment; the modal just
+                   shows the one for the selected rule type. #}
+                {% for rule_config in rule_config_templates %}
+                    <div id="{{ rule_config.container_id }}" {% if rule_config.container_id not in current_containers %}style="display:none"{% endif %}>
+                        {% include rule_config.template %}
+                    </div>
+                {% endfor %}
+                <div class="row gy-2 gx-3 mt-0" id="rule-coefficient" {% if 'rule-coefficient' not in current_containers %}style="display:none"{% endif %}>
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='use_coefficient',
+                            placeholder=_('Apply tournament’s coefficient'),
+                            tooltip_text=_('Weight each counted stage’s value by the tournament’s coefficient.'),
+                            data=data,
+                            errors=errors,
+                        ) }}
+                    </div>
+                </div>
+                <script>
+                    $('#type').change(function() {
+                        const containers = {{ rule_containers_by_type|tojson }}[$(this).val()] || [];
+                        {{ all_rule_container_ids|tojson }}.forEach(function(id) {
+                            $('#' + id).css('display', containers.includes(id) ? '' : 'none');
+                        });
+                    });
+                </script>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>{{ _('Cancel') }}
+            </button>
+            <button type="submit" form="modal-form" class="btn btn-primary text-nowrap">
+                <i class="bi-check-circle-fill pe-1"></i>{{ _('Save') if rule else _('Add') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

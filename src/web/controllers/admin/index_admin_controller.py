@@ -35,6 +35,10 @@ from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.event_metadata import EventMetadata
+from data.championship.championship_loader import (
+    ChampionshipArchiveLoader,
+    ChampionshipLoader,
+)
 from data.loader import ArchiveLoader, EventLoader
 from data.player_categories import (
     SELECTABLE_JUNIOR_CATEGORIES,
@@ -222,6 +226,14 @@ class IndexAdminController(BaseAdminController):
             nav_tabs |= {
                 'current_events': {
                     'section_title': _('Events'),
+                    'section_create_modal_url': (
+                        web_context.request.app.route_reverse(
+                            'admin-event-modal', admin_tab='home', action='create'
+                        )
+                        if web_context.client.can_create_events
+                        else None
+                    ),
+                    'section_create_label': _('Create an event'),
                     'title': _('Current ({num})').format(
                         num=len(current_events) or '-'
                     ),
@@ -287,19 +299,125 @@ class IndexAdminController(BaseAdminController):
                     'divider': True,
                 },
             }
+        if web_context.client.can_manage_events:
+            championship = []
+            championship_loader = ChampionshipLoader()
+            championship_archives = ChampionshipArchiveLoader.get_sorted_archives()
+            for championship_id in championship_loader.all_championship_ids():
+                try:
+                    championship.append(
+                        championship_loader.load_championship(championship_id)
+                    )
+                except Exception as error:
+                    logger.warning(
+                        'Could not load championship [%s]: %s',
+                        championship_id,
+                        error,
+                    )
+            today = date.today()
+            coming_championship = [
+                item
+                for item in championship
+                if item.start_date is not None and today < item.start_date
+            ]
+            passed_championship = [
+                item
+                for item in championship
+                if item.stop_date is not None and item.stop_date < today
+            ]
+            dated_championship_ids = {
+                id(item) for item in coming_championship + passed_championship
+            }
+            current_championship = [
+                item for item in championship if id(item) not in dated_championship_ids
+            ]
+
+            def championship_sort_key(item):
+                return (
+                    item.stop_date or date.max,
+                    item.start_date or date.min,
+                    item.name.casefold(),
+                )
+
+            current_championship.sort(key=championship_sort_key)
+            coming_championship.sort(key=championship_sort_key)
+            passed_championship.sort(
+                key=lambda item: (
+                    -(item.stop_date or date.min).toordinal(),
+                    -(item.start_date or date.min).toordinal(),
+                    item.name.casefold(),
+                )
+            )
+            nav_tabs |= {
+                'championship': {
+                    'section_title': _('Championships'),
+                    'section_create_modal_url': (
+                        web_context.request.app.route_reverse(
+                            'admin-championship-create-modal'
+                        )
+                    ),
+                    'section_create_label': _('Create a championship'),
+                    'title': _('Current ({num})').format(
+                        num=len(current_championship) or '-'
+                    ),
+                    'template': 'index/championship_tab.html',
+                    'championship': current_championship,
+                    'disabled': not current_championship,
+                    'empty_str': _('No current championships.'),
+                    'icon_class': 'bi-calendar indented',
+                    'page_title': _('Current championships'),
+                    'divider': True,
+                },
+                'coming_championship': {
+                    'title': _('Upcoming ({num})').format(
+                        num=len(coming_championship) or '-'
+                    ),
+                    'template': 'index/championship_tab.html',
+                    'championship': coming_championship,
+                    'disabled': not coming_championship,
+                    'empty_str': _('No upcoming championships.'),
+                    'icon_class': 'bi-calendar-check indented',
+                    'page_title': _('Upcoming championships'),
+                },
+                'passed_championship': {
+                    'title': _('Passed ({num})').format(
+                        num=len(passed_championship) or '-'
+                    ),
+                    'template': 'index/championship_tab.html',
+                    'championship': passed_championship,
+                    'disabled': not passed_championship,
+                    'empty_str': _('No passed championships.'),
+                    'icon_class': 'bi-calendar-minus indented',
+                    'page_title': _('Passed championships'),
+                },
+                'championship_archives': {
+                    'title': _('Archived ({num})').format(
+                        num=len(championship_archives) or '-'
+                    ),
+                    'template': 'index/championship_archives_tab.html',
+                    'championship_archives': championship_archives,
+                    'disabled': not championship_archives,
+                    'empty_str': _('No archived championships.'),
+                    'icon_class': 'bi-archive indented',
+                    'page_title': _('Archived championships'),
+                },
+            }
         admin_tab = web_context.admin_tab
         if (not template_context or 'modal' not in template_context) and (
-            not admin_tab or nav_tabs[admin_tab]['disabled']
+            admin_tab not in nav_tabs or nav_tabs[admin_tab]['disabled']
         ):
-            web_context.admin_tab = list(nav_tabs.keys())[0]
-        for nav_index in range(len(nav_tabs)):
-            if (
-                admin_tab == list(nav_tabs.keys())[nav_index]
-                and nav_tabs[admin_tab]['disabled']
-            ):
-                web_context.admin_tab = list(nav_tabs.keys())[
-                    (nav_index + 1) % len(nav_tabs)
-                ]
+            nav_ids = list(nav_tabs)
+            start_index = nav_ids.index(admin_tab) if admin_tab in nav_tabs else -1
+            web_context.admin_tab = next(
+                (
+                    nav_ids[(start_index + offset) % len(nav_ids)]
+                    for offset in range(1, len(nav_ids) + 1)
+                    if not nav_tabs[nav_ids[(start_index + offset) % len(nav_ids)]][
+                        'disabled'
+                    ]
+                ),
+                nav_ids[0],
+            )
 
         svg_logo = (BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg').read_text(
             encoding='utf-8'
@@ -829,7 +947,19 @@ class IndexAdminController(BaseAdminController):
         self, request: HTMXRequest, admin_tab: FromPath[str]
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
-        return self._admin_render(web_context, {'modal': 'event-delete'})
+        referencing_championship = [
+            ChampionshipLoader().load_championship(championship_id)
+            for championship_id in ChampionshipLoader.championship_ids_referencing(
+                web_context.get_admin_event().uniq_id
+            )
+        ]
+        return self._admin_render(
+            web_context,
+            {
+                'modal': 'event-delete',
+                'referencing_championship': referencing_championship,
+            },
+        )
 
     @delete(
         path='/{admin_tab:str}/event-delete/{event_uniq_id:str}',
@@ -1010,6 +1140,7 @@ class IndexAdminController(BaseAdminController):
                 EventDatabase(event.uniq_id).rename(new_uniq_id)
             except PermissionError as ex:
                 raise ClientException(f'Renaming the database failed: {ex}.')
+            ChampionshipLoader.rename_event_references(event.uniq_id, new_uniq_id)
             Message.success(
                 request,
                 _(
@@ -1469,28 +1600,13 @@ class IndexAdminController(BaseAdminController):
     def _enable_missing_plugins(cls, request: HTMXRequest, event_uniq_id: str):
         with EventDatabase(event_uniq_id) as database:
             stored_event = database.load_stored_event_metadata()
-        disabled_plugins: list[Plugin] = []
-        for plugin_id in stored_event.enabled_plugins:
-            plugin = plugin_manager.plugins_by_id[plugin_id]
-            if not plugin.is_enabled:
-                disabled_plugins.append(plugin)
-        plugins_to_enable = [
-            plugin
-            for plugin in plugin_manager.get_plugins_with_dependencies(disabled_plugins)
-            if not plugin.is_enabled
-        ]
-        if not plugins_to_enable:
-            return
-        with ConfigDatabase(True) as database:
-            for plugin in plugins_to_enable:
-                stored_plugin = copy(plugin.context.stored_plugin)
-                stored_plugin.is_enabled = True
-                database.update_stored_plugin(stored_plugin)
-                Message.warning(
-                    request,
-                    _('Plugin [{plugin}] was enabled.').format(plugin=plugin.name),
-                )
-        plugin_manager.reload_register()
+        for plugin in plugin_manager.enable_missing_plugins(
+            stored_event.enabled_plugins
+        ):
+            Message.warning(
+                request,
+                _('Plugin [{plugin}] was enabled.').format(plugin=plugin.name),
+            )
 
     @post(
         path='/event-import/{admin_tab:str}',

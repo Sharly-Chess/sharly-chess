@@ -1,0 +1,83 @@
+{% macro item_class(item, view) -%}
+    {%- if item.broken_sources -%}collection-status-warning{%- endif -%}
+{%- endmacro %}
+
+{% macro row_href(item, view, placement) %}
+    {{ url_for(
+        'admin-championship-tab',
+        championship_uniq_id=item.uniq_id,
+        championship_tab='configuration',
+    ) }}
+{% endmacro %}
+
+{% macro identity(item, view, placement) %}
+    <span class="d-inline-flex align-items-center gap-2 min-width-0">
+        <i class="bi-trophy-fill text-primary flex-shrink-0"></i>
+        <span class="fw-bold {% if view == 'list' %}text-truncate{% else %}collection-card-title{% endif %}">
+            {{ item.name }}
+        </span>
+    </span>
+{% endmacro %}
+
+{% macro competitor_type(item, view, placement) %}
+    <span class="text-nowrap">
+        {% if item.competitor_type.value == 'TEAM' %}
+            <i class="bi-flag-fill text-secondary pe-1"></i>{{ _('Teams') }}
+        {% else %}
+            <i class="bi-person-fill text-secondary pe-1"></i>{{ _('Players') }}
+        {% endif %}
+    </span>
+{% endmacro %}
+
+{% macro date_range(item, view, placement) %}
+    {% set is_range = view == 'list' and item.start_date and item.stop_date and item.start_date != item.stop_date %}
+    <span class="d-inline-flex align-items-center gap-2 text-nowrap {% if is_range %}collection-date-stacked{% endif %} {% if not item.start_date %}text-secondary{% endif %}">
+        <i class="bi-calendar-range text-secondary"></i>
+        {% if is_range %}
+            <span class="d-flex flex-column">
+                <span>{{ format_date(item.start_date) }}</span>
+                <span>{{ format_date(item.stop_date) }}</span>
+            </span>
+        {% elif item.start_date %}
+            <span>{{ format_date_range(item.start_date, item.stop_date) }}</span>
+        {% else %}
+            <span>—</span>
+        {% endif %}
+    </span>
+{% endmacro %}
+
+{% macro sources_count(item, view, placement) %}
+    <span class="text-nowrap {% if not item.sources %}text-secondary{% endif %}">
+        <i class="bi-diagram-3-fill pe-1"></i>{{ item.sources|length }}
+    </span>
+{% endmacro %}
+
+{% macro issues(item, view, placement) %}
+    {% if item.broken_sources %}
+        <span class="text-warning text-nowrap">
+            <i class="bi-exclamation-triangle-fill pe-1"></i>
+            {{ ngettext(
+                '%(num)d missing tournament',
+                '%(num)d missing tournaments',
+                item.broken_sources|length,
+            ) }}
+        </span>
+    {% elif view == 'list' %}
+        <span class="text-secondary">—</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro actions(item, view, placement) %}
+    <div class="collection-actions d-flex justify-content-end">
+        <button
+            class="btn btn-sm btn-outline-danger"
+            hx-get="{{ url_for('admin-championship-delete-modal', championship_uniq_id=item.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+            aria-label="{{ _('Delete') }}"
+            {{ macros.tooltip_attributes('warning', _('Delete this championship.'), 'top') }}
+        ><i class="bi-trash-fill"></i></button>
+    </div>
+{% endmacro %}

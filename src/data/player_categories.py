@@ -101,6 +101,48 @@ class PlayerCategory(ABC):
         if not senior_categories:
             senior_categories = event.senior_categories
         ref_year = cls._reference_year(event, tournament_start, tournament_stop)
+        return cls._from_year_of_birth_and_reference_year(
+            event,
+            year_of_birth,
+            ref_year,
+            junior_categories,
+            senior_categories,
+        )
+
+    @classmethod
+    def from_year_of_birth_at_date(
+        cls,
+        event: 'Event',
+        year_of_birth: int | None,
+        reference_date: date,
+        junior_categories: list['JuniorCategory'] | None = None,
+        senior_categories: list['SeniorCategory'] | None = None,
+    ) -> 'PlayerCategory':
+        """Classify a player on an explicit date, independently of the event's
+        sporting-season settings."""
+        return cls._from_year_of_birth_and_reference_year(
+            event,
+            year_of_birth,
+            reference_date.year,
+            junior_categories,
+            senior_categories,
+        )
+
+    @classmethod
+    def _from_year_of_birth_and_reference_year(
+        cls,
+        event: 'Event',
+        year_of_birth: int | None,
+        ref_year: int,
+        junior_categories: list['JuniorCategory'] | None = None,
+        senior_categories: list['SeniorCategory'] | None = None,
+    ) -> 'PlayerCategory':
+        if not year_of_birth:
+            return NoCategory()
+        if not junior_categories:
+            junior_categories = event.junior_categories
+        if not senior_categories:
+            senior_categories = event.senior_categories
         age = ref_year - year_of_birth
         junior_category = next(
             (category for category in junior_categories if age <= category.age_limit),
