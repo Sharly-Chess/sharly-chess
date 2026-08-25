@@ -61,6 +61,21 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div class="col-12">
+                        {{ admin_macros.number_input(
+                            name='min_participation',
+                            label=_('Minimum participation:'),
+                            placeholder=_('No minimum'),
+                            min='0',
+                            step='1',
+                            tooltip_text=_(
+                                'A competitor who has played in fewer than this '
+                                'many stages is left out of the rankings. Leave '
+                                'empty for no minimum.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                     {% if championship.competitor_type == competitor_type_individual %}
                         <div class="col-12">
                             {{ admin_macros.date_input(

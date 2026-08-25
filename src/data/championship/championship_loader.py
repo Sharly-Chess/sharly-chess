@@ -410,6 +410,12 @@ class ChampionshipLoader:
             stored_championship.age_category_base_date = base_date
             database.update_stored_championship(stored_championship)
 
+    def set_min_participation(self, championship_uniq_id: str, min_participation: int):
+        with ChampionshipDatabase(championship_uniq_id, write=True) as database:
+            stored_championship = database.load_stored_championship()
+            stored_championship.min_participation = min_participation
+            database.update_stored_championship(stored_championship)
+
     def set_team_score_basis(self, championship_uniq_id: str, score_basis: str):
         score_basis = TeamScoreBasis(score_basis).value
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:

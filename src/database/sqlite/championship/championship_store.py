@@ -99,6 +99,9 @@ class StoredChampionship:
     competitor_type: str = 'INDIVIDUAL'
     team_score_basis: str = 'SOURCE_PRIMARY'
     age_category_base_date: date | None = None
+    # Minimum number of source tournaments a competitor must have played in to
+    # appear in the rankings (0 = no minimum).
+    min_participation: int = 0
     stored_sources: list[StoredChampionshipSource] = field(
         default_factory=list[StoredChampionshipSource]
     )

@@ -1475,6 +1475,9 @@ class ChampionshipAdminController(BaseAdminController):
         if data is None:
             data = {
                 'name': championship.name,
+                'min_participation': str(championship.min_participation)
+                if championship.min_participation
+                else '',
             } | WebContext.values_dict_to_form_data(
                 {'age_category_base_date': championship.age_category_base_date}
             )
@@ -1579,12 +1582,23 @@ class ChampionshipAdminController(BaseAdminController):
                 base_date = WebContext.form_data_to_date(data, 'age_category_base_date')
             except FormError as error:
                 errors['age_category_base_date'] = str(error)
+        min_participation = 0
+        try:
+            min_participation = (
+                WebContext.form_data_to_int(
+                    data, 'min_participation', empty_value=0, minimum=0
+                )
+                or 0
+            )
+        except ValueError:
+            errors['min_participation'] = _('Please enter a positive whole number.')
         if errors:
             return self._render_config_modal(
                 request, championship, data=data, errors=errors
             )
         loader = ChampionshipLoader()
         loader.set_name(championship_uniq_id, name)
+        loader.set_min_participation(championship_uniq_id, min_participation)
         if is_individual:
             loader.set_age_category_base_date(championship_uniq_id, base_date)
         Message.success(request, _('The configuration has been saved.'))

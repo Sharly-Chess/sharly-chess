@@ -455,3 +455,48 @@ def test_ranking_assigns_shared_positions_for_true_ties():
     groups = rank_players([g, h, top], [TotalPointsRule()])
     # Winner alone, then G and H tied together.
     assert order(groups) == ['T', ['G', 'H']]
+
+
+def _points_championship(min_participation):
+    from database.sqlite.championship.championship_store import (
+        StoredChampionship,
+        StoredChampionshipRule,
+    )
+    from data.championship.championship import Championship
+
+    stored = StoredChampionship(
+        min_participation=min_participation,
+        stored_championship_rules=[
+            StoredChampionshipRule(id=1, index=0, type='TOTAL_POINTS')
+        ],
+    )
+    return Championship(stored, 'min-participation-test')
+
+
+def test_build_ranking_excludes_competitors_below_min_participation():
+    one_stage = player('One', [FakeTournamentPlayer(1, 9, last_name='One')])
+    two_stages = player(
+        'Two',
+        [
+            FakeTournamentPlayer(1, 3, last_name='Two'),
+            FakeTournamentPlayer(2, 3, last_name='Two'),
+        ],
+    )
+    championship = _points_championship(min_participation=2)
+    ranking = championship.build_ranking([one_stage, two_stages])
+    # Despite fewer points, only the 2-stage player survives the filter.
+    assert [entry.competitor.last_name for entry in ranking] == ['Two']
+
+
+def test_build_ranking_keeps_everyone_when_min_participation_not_set():
+    one_stage = player('One', [FakeTournamentPlayer(1, 9, last_name='One')])
+    two_stages = player(
+        'Two',
+        [
+            FakeTournamentPlayer(1, 3, last_name='Two'),
+            FakeTournamentPlayer(2, 3, last_name='Two'),
+        ],
+    )
+    championship = _points_championship(min_participation=0)
+    ranking = championship.build_ranking([one_stage, two_stages])
+    assert [entry.competitor.last_name for entry in ranking] == ['One', 'Two']
