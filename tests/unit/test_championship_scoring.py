@@ -247,11 +247,11 @@ def test_extended_direct_encounter_falls_back_to_secondary_score_for_teams():
     # Alpha and Bravo drew their match on match points (the primary score) but
     # Alpha won it on game points: EDE (Art. 13.3.1) reapplies the rule with
     # the secondary score and ranks Alpha first.
-    alpha = FakeTeam(
+    alpha: Any = FakeTeam(
         'Alpha',
         FakeTeamParticipation(1, primary=[(2, 1.0)], secondary=[(2, 2.5)]),
     )
-    bravo = FakeTeam(
+    bravo: Any = FakeTeam(
         'Bravo',
         FakeTeamParticipation(2, primary=[(1, 1.0)], secondary=[(1, 1.5)]),
     )
@@ -264,21 +264,23 @@ def test_extended_direct_encounter_falls_back_to_secondary_score_for_teams():
         id(bravo): (1.0, 1.0),
     }
 
-    ranked = rank_competitors([bravo, alpha], [de])
+    ranked = cast(list[list[Any]], rank_competitors([bravo, alpha], [de]))
     assert [group[0].name for group in ranked] == ['Alpha', 'Bravo']
 
 
 def test_extended_direct_encounter_leaves_teams_tied_when_both_scores_level():
     # Match drawn on both match points and game points -> EDE cannot separate.
-    alpha = FakeTeam(
+    alpha: Any = FakeTeam(
         'Alpha',
         FakeTeamParticipation(1, primary=[(2, 1.0)], secondary=[(2, 2.0)]),
     )
-    bravo = FakeTeam(
+    bravo: Any = FakeTeam(
         'Bravo',
         FakeTeamParticipation(2, primary=[(1, 1.0)], secondary=[(1, 2.0)]),
     )
-    ranked = rank_competitors([alpha, bravo], [DirectEncounterRule()])
+    ranked = cast(
+        list[list[Any]], rank_competitors([alpha, bravo], [DirectEncounterRule()])
+    )
     assert len(ranked) == 1
     assert sorted(team.name for team in ranked[0]) == ['Alpha', 'Bravo']
 
