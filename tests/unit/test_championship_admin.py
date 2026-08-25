@@ -12,6 +12,8 @@ from web.controllers.admin.championship_admin_controller import (
 
 
 class FakeParticipation:
+    has_secondary_score = False
+
     def __init__(self, name: str, points: float, wins: int, index: int):
         self.source = SimpleNamespace(
             tournament_name=name,
@@ -104,7 +106,7 @@ def test_direct_encounter_is_displayed_as_rank_progress():
             self.source_competitor_id = competitor_id
             self._encounters = [(opponent_id, encounter_points)]
 
-        def encounters(self, _team_score_basis):
+        def encounters(self, _team_score_basis, secondary=False):
             return self._encounters
 
     loser = SimpleNamespace(
