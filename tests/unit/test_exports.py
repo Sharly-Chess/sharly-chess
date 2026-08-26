@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 from sqlite3 import IntegrityError
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import PropertyMock, patch
 
 import pytest
 
@@ -104,6 +104,50 @@ class TournamentExporterTestCase(TestCase):
                     RoleType.DEPUTY_ARBITER.value,
                     [self.tournament.id],
                 )
+
+    def test_chess_results_getkey_escapes_tournament_name(self):
+        """A tournament name with XML metacharacters (e.g. ``R&B``) must be
+        escaped in the GETKEY payload, otherwise Chess-Results rejects the
+        request with an XML parse error."""
+
+        class FakeResponse:
+            text = (
+                '<?xml version="1.0"?><chessresults>'
+                '<result status="OK" key="new-key" /></chessresults>'
+            )
+
+            def raise_for_status(self):
+                pass
+
+        captured: dict = {}
+
+        def fake_post(url, params=None, data=None, headers=None):
+            captured['data'] = data
+            return FakeResponse()
+
+        with (
+            patch.object(
+                type(self.tournament),
+                'full_name',
+                new_callable=PropertyMock,
+                return_value='Internationaux R&B - <Blitz>',
+            ),
+            patch.object(CRUtils, 'encrypt', return_value='enc'),
+            patch(
+                'plugins.chess_results.chess_results_session.requests.post',
+                side_effect=fake_post,
+            ),
+        ):
+            key = ChessResultsSession(self.tournament).get_new_tournament_key(
+                13, 'sid', 'creator', self.tournament
+            )
+
+        assert key == 'new-key'
+        # The payload must be well-formed XML with the name preserved.
+        root = ET.fromstring(captured['data'])
+        getkey = root.find('getkey')
+        assert getkey is not None
+        assert getkey.attrib['tournament'] == 'Internationaux R&B - <Blitz>'
 
     # -------------------------------------------------------------------------
     # Papi
