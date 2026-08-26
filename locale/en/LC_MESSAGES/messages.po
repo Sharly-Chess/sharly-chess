@@ -375,8 +375,8 @@ msgstr "SC_S"
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
 
-#, python-brace-format, python-format
-msgid "+{winner:g}% bonus for the top {share:g}% of competitors"
+#, python-brace-format
+msgid "+{winner:g}% bonus for competitors in the top {share:g}%"
 msgstr ""
 
 msgid "- *** NAME FOR GENDER NONE"
@@ -956,6 +956,9 @@ msgstr ""
 
 msgid "All absent *** ALL TEAMS ABSENT"
 msgstr "All absent"
+
+msgid "All groups"
+msgstr ""
 
 msgid "All hours have been cleared."
 msgstr ""
@@ -8811,6 +8814,9 @@ msgstr ""
 msgid "This folder is not empty."
 msgstr ""
 
+msgid "This group"
+msgstr ""
+
 msgid "This menu is empty."
 msgstr ""
 
@@ -10683,7 +10689,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Rating: {minimum} – {maximum}"
-#~ msgstr ""
-

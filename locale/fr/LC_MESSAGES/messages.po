@@ -375,9 +375,9 @@ msgstr "SC_S"
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
 
-#, python-brace-format, python-format
-msgid "+{winner:g}% bonus for the top {share:g}% of competitors"
-msgstr "+{winner:g}% de bonus pour les {share:g}% meilleurs compétiteurs"
+#, python-brace-format
+msgid "+{winner:g}% bonus for competitors in the top {share:g}%"
+msgstr "+{winner:g}% de bonus pour les compétiteurs dans le top {share:g}%"
 
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
@@ -956,6 +956,9 @@ msgstr "Évènements"
 
 msgid "All absent *** ALL TEAMS ABSENT"
 msgstr "Toutes présentes"
+
+msgid "All groups"
+msgstr "Tous les groupes"
 
 msgid "All hours have been cleared."
 msgstr "Tous les horaires ont été supprimés."
@@ -8813,6 +8816,9 @@ msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly 
 msgid "This folder is not empty."
 msgstr "Ce dossier n'est pas vide."
 
+msgid "This group"
+msgstr "Ce groupe"
+
 msgid "This menu is empty."
 msgstr "Ce menu est vide."
 
@@ -10685,7 +10691,3 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Rating: {minimum} – {maximum}"
-#~ msgstr "Élo : {minimum} – {maximum}"
-
