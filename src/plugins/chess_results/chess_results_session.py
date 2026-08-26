@@ -100,15 +100,21 @@ class ChessResultsSession(Session):
         self, source: int, sid: str, creator_id: str, tournament: Tournament
     ) -> str:
         url = 'https://chess-results.com/Uploadxml.aspx'
-        xml_payload = f"""<?xml version="1.0" encoding="UTF-8"?>
-            <chessresults>
-                <getkey
-                    source="{source}"
-                    sid="{CRUtils.encrypt(sid)}"
-                    creatorID="{creator_id}"
-                    federation="{_upload_federation(tournament.event)}"
-                    tournament="{tournament.full_name}" />
-            </chessresults>"""
+        root = ET.Element('chessresults')
+        ET.SubElement(
+            root,
+            'getkey',
+            {
+                'source': str(source),
+                'sid': CRUtils.encrypt(sid),
+                'creatorID': str(creator_id),
+                'federation': _upload_federation(tournament.event),
+                'tournament': tournament.full_name,
+            },
+        )
+        xml_payload = ET.tostring(root, encoding='utf-8', xml_declaration=True).decode(
+            'utf-8'
+        )
 
         headers = {'Content-Type': 'application/xml'}
         resp = requests.post(
