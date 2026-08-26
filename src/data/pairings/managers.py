@@ -1,6 +1,7 @@
 from typing import cast, override
 
 from data.pairings import systems, PairingVariation
+from data.pairings.keizer import KeizerPairingSystem, KeizerVariationManager
 from data.pairings.molter import MolterPairingSystem, MolterVariationManager
 from data.pairings.scheveningen import (
     ScheveningenPairingSystem,
@@ -41,6 +42,7 @@ class PairingSystemManager(EventBoundEntityManager[PairingSystem]):
         return [
             systems.SwissPairingSystem,
             systems.RoundRobinPairingSystem,
+            KeizerPairingSystem,
         ]
 
 
@@ -107,10 +109,17 @@ class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
                 variations=result
             )
             return result
-        return cast(
-            list[type[PairingVariation]],
-            SwissVariationManager(self.event).entity_types(),
-        ) + cast(
-            list[type[PairingVariation]],
-            RoundRobinVariationManager(self.event).entity_types(),
+        return (
+            cast(
+                list[type[PairingVariation]],
+                SwissVariationManager(self.event).entity_types(),
+            )
+            + cast(
+                list[type[PairingVariation]],
+                RoundRobinVariationManager(self.event).entity_types(),
+            )
+            + cast(
+                list[type[PairingVariation]],
+                KeizerVariationManager(self.event).entity_types(),
+            )
         )

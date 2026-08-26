@@ -161,6 +161,29 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def lock_settings_after_first_pairing(self) -> bool:
+        """Whether the pairing settings become read-only once the first
+        round is paired. True for systems where the settings are baked
+        into the pairings already made (acceleration groups, seed colour,
+        table numbers) and changing them would desync those rounds. A
+        system that recomputes the whole field from scratch on every
+        render carries no such frozen state and can stay editable.
+        """
+        return True
+
+    @property
+    def uses_result_points(self) -> bool:
+        """Whether the standing is a sum of per-game result points (win /
+        draw / loss values — and, in team play, the match points that
+        derive from them). True for the usual systems, whose score can
+        therefore be reported to a rating body and configured through the
+        point-attribution fields. False where the score is worked out some
+        other way (a ranking-value system), so those fields and the
+        rating-report exports have no meaning.
+        """
+        return True
+
+    @property
     def supports_match_points(self) -> bool:
         """Whether the system exposes a match-point score alongside
         game points. Tie-breaks (or tie-break options) that need MP

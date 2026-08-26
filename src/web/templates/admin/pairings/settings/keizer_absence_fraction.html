@@ -1,0 +1,15 @@
+<div class="row gy-2 gx-3">
+    {{ admin_macros.number_input(
+        name=setting.id,
+        label=_('%(string)s:', string=setting.name),
+        tooltip_text=_(
+            'The percentage of a player\'s own current Keizer value awarded '
+            'for an excused absence or a requested bye (0 = nothing, '
+            '100 = the full value).'
+        ),
+        min=0,
+        max=100,
+        step=1,
+        data=data, errors=errors
+    ) }}
+</div>
