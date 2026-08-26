@@ -177,7 +177,7 @@ class FFESqlServer(SqlServer):
         federation: str,
         page: int = 0,
         limit: int | None = None,
-        filters: dict = {},
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
@@ -197,7 +197,7 @@ class FFESqlServer(SqlServer):
         )
         conditions: list[str] = [
             self.RATING_TYPE_CONDITION,
-            *self._processFilters(filters),
+            *self._process_filters(filters or {}),
         ]
         params: list[Any] = []
         for token in tokens:
@@ -400,8 +400,9 @@ class FFESqlServer(SqlServer):
             params,
         )
 
-    def _processFilters(self, filters):
-        conditions = []
+    @staticmethod
+    def _process_filters(filters: dict):
+        conditions: list[str] = []
         if 'ffe_licence_filter' in filters:
             if filters['ffe_licence_filter'] == 'B':
                 conditions.append(
@@ -419,19 +420,19 @@ class FFESqlServer(SqlServer):
             conditions.append(
                 f"LOWER(club.Nom) LIKE LOWER('%%{filters['club_filter']}%%')"
             )
-        if 'birthyear_filter' in filters and filters['birthyear_filter']:
-            ageFilters = []
-            for minYear, maxYear in filters['birthyear_filter']:
-                match minYear, maxYear:
+        if filters.get('year_of_birth_filter', None):
+            age_conditions = []
+            for min_year, max_year in filters['year_of_birth_filter']:
+                match min_year, max_year:
                     case None, None:
                         continue
                     case None, _:
-                        ageFilters.append(f'YEAR(joueur.NeLe) <= {maxYear}')
+                        age_conditions.append(f'YEAR(joueur.NeLe) <= {max_year}')
                     case _, None:
-                        ageFilters.append(f'YEAR(joueur.NeLe) >= {minYear}')
+                        age_conditions.append(f'YEAR(joueur.NeLe) >= {min_year}')
                     case _, _:
-                        ageFilters.append(
-                            f'YEAR(joueur.NeLe) BETWEEN {minYear} AND {maxYear}'
+                        age_conditions.append(
+                            f'YEAR(joueur.NeLe) BETWEEN {min_year} AND {max_year}'
                         )
-            conditions.append(f'({" OR ".join(ageFilters)})')
+            conditions.append(f'({" OR ".join(age_conditions)})')
         return conditions
