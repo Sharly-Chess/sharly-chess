@@ -5,7 +5,7 @@ from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
-from common import CHAMPIONSHIP_DIR
+from common import CHAMPIONSHIPS_DIR
 from common.logger import get_logger
 from database.sqlite.championship import migrations
 from database.sqlite.championship.championship_store import (
@@ -75,7 +75,7 @@ class ChampionshipDatabase(MigrationDatabase):
 
     @staticmethod
     def championship_database_path(uniq_id: str) -> Path:
-        return CHAMPIONSHIP_DIR / f'{uniq_id}.{Extension.CHAMPIONSHIP_DB}'
+        return CHAMPIONSHIPS_DIR / f'{uniq_id}.{Extension.CHAMPIONSHIP_DB}'
 
     def rename(self, new_uniq_id: str):
         """Move the championship file to the one for ``new_uniq_id``."""

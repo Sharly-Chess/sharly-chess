@@ -48,9 +48,9 @@ class AdminWebContext(WebContext):
             'current_events',
             'coming_events',
             'archives',
-            'championship',
-            'coming_championship',
-            'passed_championship',
+            'championships',
+            'coming_championships',
+            'passed_championships',
             'championship_archives',
         ]:
             raise NotFoundException(

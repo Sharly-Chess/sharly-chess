@@ -300,12 +300,12 @@ class IndexAdminController(BaseAdminController):
                 },
             }
         if web_context.client.can_manage_events:
-            championship = []
+            championships = []
             championship_loader = ChampionshipLoader()
             championship_archives = ChampionshipArchiveLoader.get_sorted_archives()
             for championship_id in championship_loader.all_championship_ids():
                 try:
-                    championship.append(
+                    championships.append(
                         championship_loader.load_championship(championship_id)
                     )
                 except Exception as error:
@@ -315,21 +315,21 @@ class IndexAdminController(BaseAdminController):
                         error,
                     )
             today = date.today()
-            coming_championship = [
+            coming_championships = [
                 item
-                for item in championship
+                for item in championships
                 if item.start_date is not None and today < item.start_date
             ]
-            passed_championship = [
+            passed_championships = [
                 item
-                for item in championship
+                for item in championships
                 if item.stop_date is not None and item.stop_date < today
             ]
             dated_championship_ids = {
-                id(item) for item in coming_championship + passed_championship
+                id(item) for item in coming_championships + passed_championships
             }
-            current_championship = [
-                item for item in championship if id(item) not in dated_championship_ids
+            current_championships = [
+                item for item in championships if id(item) not in dated_championship_ids
             ]
 
             def championship_sort_key(item):
@@ -339,9 +339,9 @@ class IndexAdminController(BaseAdminController):
                     item.name.casefold(),
                 )
 
-            current_championship.sort(key=championship_sort_key)
-            coming_championship.sort(key=championship_sort_key)
-            passed_championship.sort(
+            current_championships.sort(key=championship_sort_key)
+            coming_championships.sort(key=championship_sort_key)
+            passed_championships.sort(
                 key=lambda item: (
                     -(item.stop_date or date.min).toordinal(),
                     -(item.start_date or date.min).toordinal(),
@@ -349,7 +349,7 @@ class IndexAdminController(BaseAdminController):
                 )
             )
             nav_tabs |= {
-                'championship': {
+                'championships': {
                     'section_title': _('Championships'),
                     'section_create_modal_url': (
                         web_context.request.app.route_reverse(
@@ -358,34 +358,34 @@ class IndexAdminController(BaseAdminController):
                     ),
                     'section_create_label': _('Create a championship'),
                     'title': _('Current ({num})').format(
-                        num=len(current_championship) or '-'
+                        num=len(current_championships) or '-'
                     ),
-                    'template': 'index/championship_tab.html',
-                    'championship': current_championship,
-                    'disabled': not current_championship,
+                    'template': 'index/championships_tab.html',
+                    'championships': current_championships,
+                    'disabled': not current_championships,
                     'empty_str': _('No current championships.'),
                     'icon_class': 'bi-calendar indented',
                     'page_title': _('Current championships'),
                     'divider': True,
                 },
-                'coming_championship': {
+                'coming_championships': {
                     'title': _('Upcoming ({num})').format(
-                        num=len(coming_championship) or '-'
+                        num=len(coming_championships) or '-'
                     ),
-                    'template': 'index/championship_tab.html',
-                    'championship': coming_championship,
-                    'disabled': not coming_championship,
+                    'template': 'index/championships_tab.html',
+                    'championships': coming_championships,
+                    'disabled': not coming_championships,
                     'empty_str': _('No upcoming championships.'),
                     'icon_class': 'bi-calendar-check indented',
                     'page_title': _('Upcoming championships'),
                 },
-                'passed_championship': {
+                'passed_championships': {
                     'title': _('Passed ({num})').format(
-                        num=len(passed_championship) or '-'
+                        num=len(passed_championships) or '-'
                     ),
-                    'template': 'index/championship_tab.html',
-                    'championship': passed_championship,
-                    'disabled': not passed_championship,
+                    'template': 'index/championships_tab.html',
+                    'championships': passed_championships,
+                    'disabled': not passed_championships,
                     'empty_str': _('No passed championships.'),
                     'icon_class': 'bi-calendar-minus indented',
                     'page_title': _('Passed championships'),
@@ -947,7 +947,7 @@ class IndexAdminController(BaseAdminController):
         self, request: HTMXRequest, admin_tab: FromPath[str]
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
-        referencing_championship = [
+        referencing_championships = [
             ChampionshipLoader().load_championship(championship_id)
             for championship_id in ChampionshipLoader.championship_ids_referencing(
                 web_context.get_admin_event().uniq_id
@@ -957,7 +957,7 @@ class IndexAdminController(BaseAdminController):
             web_context,
             {
                 'modal': 'event-delete',
-                'referencing_championship': referencing_championship,
+                'referencing_championships': referencing_championships,
             },
         )
 
