@@ -383,17 +383,19 @@ class KeizerPairingEngine(PairingEngine):
         if n == 0:
             return []
         position = {player.id: index for index, player in enumerate(players)}
-        best: dict[str, object] = {'cost': float('inf'), 'pairs': None}
+        best_cost = float('inf')
+        best_pairs: list[tuple[TournamentPlayer, TournamentPlayer]] | None = None
         used = [False] * n
         current: list[tuple[TournamentPlayer, TournamentPlayer]] = []
 
         def backtrack(accumulated: float) -> None:
-            if accumulated >= best['cost']:
+            nonlocal best_cost, best_pairs
+            if accumulated >= best_cost:
                 return
             first = next((k for k in range(n) if not used[k]), None)
             if first is None:
-                best['cost'] = accumulated
-                best['pairs'] = list(current)
+                best_cost = accumulated
+                best_pairs = list(current)
                 return
             used[first] = True
             candidates = sorted(
@@ -414,8 +416,8 @@ class KeizerPairingEngine(PairingEngine):
             used[first] = False
 
         backtrack(0.0)
-        assert best['pairs'] is not None
-        return best['pairs']
+        assert best_pairs is not None
+        return best_pairs
 
     def _pair_cost(
         self,

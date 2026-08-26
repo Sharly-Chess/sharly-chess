@@ -6,9 +6,12 @@ worked examples, using lightweight fakes rather than a full tournament so
 the arithmetic is checked directly.
 """
 
+from typing import cast
 from unittest import TestCase
 
 from data.pairings.keizer import KeizerPairingEngine, KeizerScorer
+from data.player import TournamentPlayer
+from data.tournament import Tournament
 from utils.enum import BoardColor, Result
 
 
@@ -66,14 +69,15 @@ class KeizerScorerTest(TestCase):
         # Four players A, B, C, D in rating order (ids 1..4).
         self.a, self.b, self.c, self.d = (FakePlayer(i) for i in range(1, 5))
         self.tournament = FakeTournament([self.a, self.b, self.c, self.d])
-        self.scorer = KeizerScorer(self.tournament)
+        self.scorer = KeizerScorer(cast(Tournament, self.tournament))
 
     def test_start_values_run_from_the_top_down_by_rank(self):
         # N = 4: lowest = (4-1)//2 = 1, top = 1 + 3 = 4, then -1 per rank.
-        self.assertEqual(self.scorer.total(self.a, after_round=0), 4)
-        self.assertEqual(self.scorer.total(self.b, after_round=0), 3)
-        self.assertEqual(self.scorer.total(self.c, after_round=0), 2)
-        self.assertEqual(self.scorer.total(self.d, after_round=0), 1)
+        starts = self.scorer.totals_after(0)
+        self.assertEqual(starts[self.a.id], 4)
+        self.assertEqual(starts[self.b.id], 3)
+        self.assertEqual(starts[self.c.id], 2)
+        self.assertEqual(starts[self.d.id], 1)
 
     def test_win_earns_opponent_value_draw_earns_half(self):
         _play(self.a, self.b, 1, Result.WIN, Result.LOSS)
@@ -135,7 +139,9 @@ class KeizerMatcherTest(TestCase):
 
     def test_adjacent_players_are_paired_first(self):
         players = [FakePlayer(i) for i in range(1, 5)]
-        pairs = self.engine._match(players, round_=1, gap=99)
+        pairs = self.engine._match(
+            cast(list[TournamentPlayer], players), round_=1, gap=99
+        )
         self.assertEqual(self._ids(pairs), {frozenset((1, 2)), frozenset((3, 4))})
 
     def test_a_rematch_inside_the_gap_is_avoided(self):
@@ -144,6 +150,8 @@ class KeizerMatcherTest(TestCase):
         # p0 and p1 met in round 1; gap is large, so they must not repeat.
         p0.pairings[1] = FakePairing(Result.WIN, p1.id)
         p1.pairings[1] = FakePairing(Result.LOSS, p0.id)
-        pairs = self.engine._match(players, round_=2, gap=99)
+        pairs = self.engine._match(
+            cast(list[TournamentPlayer], players), round_=2, gap=99
+        )
         # Cheapest rematch-free matching pairs neighbours-once-removed.
         self.assertEqual(self._ids(pairs), {frozenset((1, 3)), frozenset((2, 4))})
