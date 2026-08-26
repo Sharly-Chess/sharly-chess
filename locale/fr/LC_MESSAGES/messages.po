@@ -1354,7 +1354,7 @@ msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Éch."
 
 msgid "Before any games, players are ranked (by rating or manually) and given an initial value (the top player about three times the lowest, one less per rank). When on, that value stays part of the score all tournament, so the initial ranking keeps a lasting influence: a strong player who loses their first game does not collapse below much weaker players after a single result. When off, the initial ranking only seeds the first round and every score is earned entirely from results."
-msgstr "Avant toute partie, les joueur·euses sont classé·es (par Élo ou manuellement) et reçoivent une valeur initiale (le premier joueur environ le triple du dernier, un point de moins par rang). Si activé, cette valeur reste intégrée au score durant tout le tournoi, de sorte que le classement initial conserve une influence durable : un·e joueur·euse fort·e qui perd sa première partie ne chute pas sous des joueur·euses bien plus faibles après un seul résultat. Si désactivé, le classement initial ne sert qu'à établir le premier appariement et chaque score est entièrement acquis par les résultats."
+msgstr "Avant toute partie, les joueur·euses sont classé·es (par Elo ou manuellement) et reçoivent une valeur initiale (le premier joueur environ le triple du dernier, un point de moins par rang). Si activé, cette valeur reste intégrée au score durant tout le tournoi, de sorte que le classement initial conserve une influence durable : un·e joueur·euse fort·e qui perd sa première partie ne chute pas sous des joueur·euses bien plus faibles après un seul résultat. Si désactivé, le classement initial ne sert qu'à établir le premier appariement et chaque score est entièrement acquis par les résultats."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"
@@ -8212,7 +8212,7 @@ msgid "The General ranking includes all players and is always available. Create 
 msgstr "Le classement général inclut tou·tes les joueur·euses et est toujours disponible. Créez des catégories pour ajouter des classements filtrés ; les joueur·euses doivent satisfaire tous les critères d'une catégorie."
 
 msgid "The TRF export is not available for this pairing system: its score is not a count of game points."
-msgstr "L'export TRF n'est pas disponible pour ce système d'appariement : son score n'est pas un décompte de points de partie."
+msgstr "L'export TRF n'est pas disponible pour ce système d'appariement : son score n'est pas un décompte de points de partie."
 
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
