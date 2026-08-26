@@ -2752,55 +2752,55 @@ class PlayerAdminController(BaseEventAdminController):
             },
         )
 
-    def _convert_filters(self, event: Event, filters: str) -> dict:
+    def _convert_filters(self, event: Event, json_filters: str) -> dict:
         def _get_year_for(category: PlayerCategory) -> int:
             return category.representative_year(
                 event, date.today(), date.today()
             )  # TODO: find a good way to select dates
 
         try:
-            filters = json.loads(filters)
+            filters = json.loads(json_filters)
         except json.decoder.JSONDecodeError:
             return {}
         if 'category_filter' in filters and filters['category_filter']:
             player_categories = event.player_categories
             junior_categories = event.junior_categories
             senior_categories = event.senior_categories
-            categoriesIntervals = []
-            categoryFilters = [
+            categories_intervals = []
+            category_filters = [
                 PlayerCategory.from_id(cat) for cat in filters['category_filter']
             ]
 
-            while len(categoryFilters):
+            while len(category_filters):
                 # merges adjacent categories and finds the birth year interval that matches each one
-                start = categoryFilters.pop(0)
+                start = category_filters.pop(0)
                 stop = start
-                while len(categoryFilters) and player_categories.index(
+                while len(category_filters) and player_categories.index(
                     stop
-                ) + 1 == player_categories.index(categoryFilters[0]):
-                    stop = categoryFilters.pop(0)
+                ) + 1 == player_categories.index(category_filters[0]):
+                    stop = category_filters.pop(0)
 
                 if start in junior_categories:
                     if (index := junior_categories.index(start)) == 0:
-                        maxYear = None
+                        max_year = None
                     else:
-                        maxYear = _get_year_for(junior_categories[index - 1]) - 1
+                        max_year = _get_year_for(junior_categories[index - 1]) - 1
                 elif start in senior_categories:
-                    maxYear = _get_year_for(start)
+                    max_year = _get_year_for(start)
 
                 if stop in junior_categories:
-                    minYear = _get_year_for(stop)
+                    min_year = _get_year_for(stop)
                 elif stop in senior_categories:
                     if (index := senior_categories.index(stop)) == len(
                         senior_categories
                     ) - 1:
-                        minYear = None
+                        min_year = None
                     else:
-                        minYear = _get_year_for(senior_categories[index + 1]) + 1
+                        min_year = _get_year_for(senior_categories[index + 1]) + 1
 
-                categoriesIntervals.append((minYear, maxYear))
+                categories_intervals.append((min_year, max_year))
 
-            filters['birthyear_filter'] = categoriesIntervals
+            filters['year_of_birth_filter'] = categories_intervals
         return filters
 
     @staticmethod

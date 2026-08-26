@@ -121,7 +121,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         federation: str,
         page: int = 0,
         limit: int | None = None,
-        filters: dict = {},
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         tokens: list[str] = [
             unicode_normalize(token) for token in re.split(r'\s+', string)
@@ -145,7 +145,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                 ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
-            self._processFilters(filters)
+            self._process_filters(filters or {})
             + list(map(lambda condition: f'({condition})', token_conditions.values()))
         )
 
@@ -255,8 +255,9 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
-    def _processFilters(self, filters):
-        conditions = []
+    @classmethod
+    def _process_filters(cls, filters: dict):
+        conditions: list[str] = []
         if 'ffe_licence_filter' in filters:
             if filters['ffe_licence_filter'] == 'B':
                 conditions.append("(ffe_licence IN ('B', 'A') OR federation !='FRA')")
@@ -270,25 +271,21 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             conditions.append(f"league='{filters['ffe_league_filter']}'")
         if 'club_filter' in filters:
             conditions.append(f"LOWER(club) LIKE LOWER('%%{filters['club_filter']}%%')")
-        if 'birthyear_filter' in filters and filters['birthyear_filter']:
-            ageFilters = []
-            for minYear, maxYear in filters['birthyear_filter']:
-                match minYear, maxYear:
+        if filters.get('year_of_birth_filter', None):
+            age_conditions: list[str] = []
+            for min_year, max_year in filters['year_of_birth_filter']:
+                match min_year, max_year:
                     case None, None:
                         continue
                     case None, _:
-                        ageFilters.append(
-                            f"strftime('%Y', date_of_birth) <= '{maxYear}'"
-                        )
+                        age_conditions.append(f"year_of_birth <= '{max_year}'")
                     case _, None:
-                        ageFilters.append(
-                            f"strftime('%Y', date_of_birth) >= '{minYear}'"
-                        )
+                        age_conditions.append(f"year_of_birth >= '{min_year}'")
                     case _, _:
-                        ageFilters.append(
-                            f"strftime('%Y', date_of_birth) BETWEEN '{minYear}' AND '{maxYear}'"
+                        age_conditions.append(
+                            f"year_of_birth BETWEEN '{min_year}' AND '{max_year}'"
                         )
-            conditions.append(f'({" OR ".join(ageFilters)})')
+            conditions.append(f'({" OR ".join(age_conditions)})')
         return conditions
 
     # ---------------------------------------------------------------------------------
