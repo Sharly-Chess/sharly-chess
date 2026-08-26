@@ -1558,7 +1558,7 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        referencing_championship = [
+        referencing_championships = [
             ChampionshipLoader().load_championship(championship_id)
             for championship_id in ChampionshipLoader.championship_ids_referencing(
                 web_context.get_admin_event().uniq_id, tournament.id
@@ -1568,7 +1568,7 @@ class TournamentAdminController(BaseEventAdminController):
             web_context.template_context
             | {
                 'modal': 'tournament-delete',
-                'referencing_championship': referencing_championship,
+                'referencing_championships': referencing_championships,
             }
         )
 

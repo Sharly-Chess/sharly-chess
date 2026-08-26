@@ -6,7 +6,7 @@ from packaging.version import Version, InvalidVersion
 
 from common import (
     EVENTS_DIR,
-    CHAMPIONSHIP_DIR,
+    CHAMPIONSHIPS_DIR,
     CONFIG_FILE,
     ARCHIVES_DIR,
     CUSTOM_DIR,
@@ -191,13 +191,13 @@ class DataRecovery:
                 continue
             shutil.copy(file, EVENTS_DIR / file.name)
             logger.debug('- Event [%s] recovered', file.stem)
-        old_championship_dir = version_dir / CHAMPIONSHIP_DIR.name
+        old_championship_dir = version_dir / CHAMPIONSHIPS_DIR.name
         if old_championship_dir.is_dir():
-            CHAMPIONSHIP_DIR.mkdir(parents=True, exist_ok=True)
+            CHAMPIONSHIPS_DIR.mkdir(parents=True, exist_ok=True)
             for file in old_championship_dir.glob('*'):
                 if not file.is_file():
                     continue
-                shutil.copy(file, CHAMPIONSHIP_DIR / file.name)
+                shutil.copy(file, CHAMPIONSHIPS_DIR / file.name)
                 logger.debug('- Championship [%s] recovered', file.stem)
         return True
 

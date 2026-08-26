@@ -12,7 +12,7 @@ from web.admin.label import _
 
 
 COLLECTION_SPEC: AdminCollectionSpec = AdminCollectionSpec(
-    key='championship',
+    key='championships',
     components_template='/admin/championship/championship_components.j2',
     item_id_attribute='uniq_id',
     card_href_component='row_href',
