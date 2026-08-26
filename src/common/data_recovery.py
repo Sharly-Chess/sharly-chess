@@ -191,18 +191,14 @@ class DataRecovery:
                 continue
             shutil.copy(file, EVENTS_DIR / file.name)
             logger.debug('- Event [%s] recovered', file.stem)
-        for old_championships_dir in (
-            version_dir / CHAMPIONSHIPS_DIR.name,
-            # TODO The next line allow beta-testers to recover the championships they created during beta-testing, remove it for version 5.1
-            version_dir / 'championship',
-        ):
-            if old_championships_dir.is_dir():
-                CHAMPIONSHIPS_DIR.mkdir(parents=True, exist_ok=True)
-                for file in old_championships_dir.glob('*'):
-                    if not file.is_file():
-                        continue
-                    shutil.copy(file, CHAMPIONSHIPS_DIR / file.name)
-                    logger.debug('- Championship [%s] recovered', file.stem)
+        old_championship_dir = version_dir / CHAMPIONSHIPS_DIR.name
+        if old_championship_dir.is_dir():
+            CHAMPIONSHIPS_DIR.mkdir(parents=True, exist_ok=True)
+            for file in old_championship_dir.glob('*'):
+                if not file.is_file():
+                    continue
+                shutil.copy(file, CHAMPIONSHIPS_DIR / file.name)
+                logger.debug('- Championship [%s] recovered', file.stem)
         return True
 
     @classmethod
