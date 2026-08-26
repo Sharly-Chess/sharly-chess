@@ -54,6 +54,12 @@ if TYPE_CHECKING:
 class TieBreak(OptionHandler[TieBreakOption], ABC):
     """Abstract class representing a tie-break"""
 
+    #: Whether this tie-break yields a numeric value that is meaningful to
+    #: aggregate across tournaments (summed / averaged by a Championship rule).
+    #: False for tie-breaks that only order players locally (direct encounter,
+    #: manual play-off order).
+    is_aggregatable: bool = True
+
     @property
     def full_name(self) -> str:
         """the full representation of the tie-break including the modifiers."""
@@ -752,6 +758,10 @@ class PointsTieBreak(PlayerRecordTieBreak):
     tie-break table; it exists so that the points can take their place in
     the ordered list like anything else.
     """
+
+    # Aggregating points as a tie-break just duplicates the Total-points /
+    # Average-points Championship rules, so it is not offered there.
+    is_aggregatable = False
 
     @staticmethod
     def static_id() -> str:
@@ -2370,6 +2380,8 @@ class DirectEncounterTieBreak(TieBreak):
     will be excluded from consideration.
     See FIDE Handbook C.07.6."""
 
+    is_aggregatable = False
+
     @staticmethod
     def static_id() -> str:
         return 'DIRECT_ENCOUNTER'
@@ -2565,6 +2577,8 @@ class DirectEncounterTieBreak(TieBreak):
 
 class ManualTieBreak(TieBreak):
     """Used for play-off's, etc"""
+
+    is_aggregatable = False
 
     @staticmethod
     def static_id() -> str:

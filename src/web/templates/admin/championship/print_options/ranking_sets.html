@@ -1,0 +1,11 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Rankings to print:'),
+        select_options=ranking_set_options,
+        multiple_select=true,
+        placeholder=_('All rankings'),
+        data=data,
+        errors=errors,
+    ) }}
+</div>

@@ -1,0 +1,32 @@
+<div class="row gy-2 gx-3 mt-0">
+    <div class="col-12">
+        {{ admin_macros.select_input(
+            name='tie_break_type',
+            label=_('Tie-break:'),
+            tooltip_text=_('The tie-break computed from each stage’s games and aggregated across the counted stages.'),
+            select_options=tie_break_type_options,
+            tooltip_select=true,
+            data=data,
+            errors=errors,
+        ) }}
+    </div>
+</div>
+{% for option in tie_break_options %}
+    {% if option.template_name %}
+        <div
+            class="row gy-2 gx-3 mt-0"
+            id="{{ option.container_id }}"
+            {% if option.container_id not in tie_break_containers_by_type.get(data['tie_break_type'], []) %}style="display:none"{% endif %}
+        >
+            {% include option.template_name %}
+        </div>
+    {% endif %}
+{% endfor %}
+<script>
+    $('#tie-break-type').change(function() {
+        const containers = {{ tie_break_containers_by_type|tojson }}[$(this).val()] || [];
+        {% for option in tie_break_options %}{% if option.template_name %}
+            $('#{{ option.container_id }}').css('display', containers.includes('{{ option.container_id }}') ? '' : 'none');
+        {% endif %}{% endfor %}
+    });
+</script>

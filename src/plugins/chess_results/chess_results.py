@@ -200,8 +200,9 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
                 icon_path='/images/chess-results.png',
                 modal_route_name='chess-results-upload-modal',
                 has_upload_error=any(
-                    CRUtils.get_tournament_plugin_data(tournament).upload_failure_id
+                    plugin_data.tnr and plugin_data.upload_failure_id
                     for tournament in event.tournaments
+                    if (plugin_data := CRUtils.get_tournament_plugin_data(tournament))
                 ),
             )
         ]

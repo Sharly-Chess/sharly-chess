@@ -97,6 +97,7 @@ from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
     PapiTournamentImporter,
+    OnlineTournamentImporter,
 )
 from plugins.ffe.ffe_upload_controller import (
     FfeUploadController,
@@ -299,6 +300,7 @@ class FfePlugin(Plugin):
         importers.append(PapiTournamentImporter)
         if TEST_ENV or DEVEL_ENV:
             importers.append(PapiJsonTournamentImporter)
+            importers.append(OnlineTournamentImporter)
 
     # ---------------------------------------------------------------------------------
     # Players

@@ -1,0 +1,12 @@
+<div class="row gy-2 gx-3 mt-0">
+    <div class="col-12">
+        {{ admin_macros.number_input(
+            name='place',
+            label=_('Place:'),
+            min='1',
+            tooltip_text=_('The finishing position counted (e.g. 1 counts first places).'),
+            data=data,
+            errors=errors,
+        ) }}
+    </div>
+</div>

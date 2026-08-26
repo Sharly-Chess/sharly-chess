@@ -52,6 +52,38 @@
                 {% include 'create_event_button.html' %}
             {% endwith %}
         {% endif %}
+        {% if client.can_manage_events %}
+            <div class="d-flex flex-column gap-3 mx-auto" style="width: 350px">
+                <hr class="my-2 w-100">
+                <button
+                    class="btn btn-primary text-nowrap btn-lg"
+                    hx-get="{{ url_for('admin-championship-create-modal') }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                >
+                    {{ _('Create a championship') }}
+                </button>
+                <p class="text-body-secondary small text-center mb-0">
+                    {{ _('A championship combines tournaments from several independent events into a single cross-event ranking — such as a season-long circuit or grand prix.') }}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+    <div class="mx-auto text-center mt-4" style="max-width: 600px;">
+        <p class="mb-2">
+            {{ _('Do you like Sharly Chess? Help us keep it free and improving!') }}
+        </p>
+        <a
+            class="btn btn-outline-primary"
+            href="{{ sharly_chess_config.donate_url }}"
+            target="_blank"
+            rel="noopener"
+        >
+            <i class="bi-heart-fill pe-1"></i>
+            {{ _('Support the Sharly Chess project') }}
+        </a>
     </div>
 </div>
 

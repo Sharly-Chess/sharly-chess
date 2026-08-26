@@ -1,3 +1,5 @@
+{% import '/common/macros.j2' as macros with context %}
+
 {% macro health_warning(prize_category) -%}
     {%- set player_count = prize_category.tournament_players|length -%}
     {%- set prize_count = prize_category.prizes|length -%}
@@ -241,15 +243,29 @@
 {% endmacro %}
 
 {% macro total_value(prize_category, view, placement) %}
+    {% set has_totals = prize_category.total_monetary_value
+        or prize_category.total_non_monetary_value %}
+    {% set totals_value = macros.prize_totals_value(
+        prize_category.format_total_monetary_value(prize_currency)
+            if prize_category.total_monetary_value else None,
+        prize_category.format_total_non_monetary_value(prize_currency)
+            if prize_category.total_non_monetary_value else None,
+    ) %}
     {% if view == 'card' %}
         <div class="collection-fact">
             <span class="collection-fact-label">
                 <i class="bi-cash-stack"></i>{{ _('Total prize value') }}
             </span>
-            <span>{{ prize_category.format_total_prize_value(prize_currency) }}</span>
+            <span>
+                {%- if has_totals -%}
+                    {{ totals_value }}
+                {%- else -%}
+                    <span class="text-secondary">{{ _('No prizes defined') }}</span>
+                {%- endif -%}
+            </span>
         </div>
     {% else %}
-        {{ prize_category.format_total_prize_value(prize_currency) }}
+        {% if has_totals %}{{ totals_value }}{% else %}<span class="text-secondary">—</span>{% endif %}
     {% endif %}
 {% endmacro %}
 
@@ -260,7 +276,7 @@
             {% if prize_category.sorted_prizes %}
                 <ol class="mb-0 ps-3">
                     {% for prize in prize_category.sorted_prizes %}
-                        <li>{{ prize.name }}</li>
+                        <li>{{ prize.full_name }}</li>
                     {% endfor %}
                 </ol>
             {% else %}

@@ -134,18 +134,9 @@
     {% set screen_type = screen.screen_type %}
     <div class="collection-actions d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div class="d-flex align-items-center gap-2">
-            <a
-                class="btn btn-sm btn-outline-primary"
-                href="{{ url_for(
-                    'user-screen',
-                    event_uniq_id=admin_event.uniq_id,
-                    screen_uniq_id=screen.uniq_id,
-                ) }}"
-                target="_blank"
-                {{ macros.tooltip_attributes('info', _('Go to the screen.'), 'top') }}
-            >
-                <i class="bi-eye"></i>
-            </a>
+            {% with eye_screen=screen %}
+                {% include '/admin/screens/screen_eye_link.html' %}
+            {% endwith %}
             {% if client.can_manage_screens %}
                 {% if not screen.family and screen_type.card_action_button_template %}
                     {% include screen_type.card_action_button_template %}

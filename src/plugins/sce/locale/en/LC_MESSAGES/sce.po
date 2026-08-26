@@ -258,6 +258,10 @@ msgstr ""
 msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
 msgstr ""
 
+#, python-brace-format
+msgid "Plugin [{plugin}] was enabled."
+msgstr ""
+
 msgid "Public page of the event."
 msgstr ""
 

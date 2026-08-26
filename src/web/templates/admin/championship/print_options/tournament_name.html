@@ -1,0 +1,14 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Naming:'),
+        select_options={
+            'event': _('Event name'),
+            'tournament': _('Tournament name'),
+            'both': _('Event and tournament'),
+        },
+        tooltip_text=_('How each source tournament is named in the list.'),
+        data=data,
+        errors=errors,
+    ) }}
+</div>

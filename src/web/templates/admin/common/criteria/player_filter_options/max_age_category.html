@@ -1,9 +1,14 @@
 <div class="col-12">
+    {% if player_filter_option_select_options is defined %}
+        {% set select_options = player_filter_option_select_options[option.id] %}
+    {% else %}
+        {% set select_options = option.age_select_options(admin_tournament) %}
+    {% endif %}
     {{ admin_macros.select_input(
         name=option.id,
         label=_('%(string)s:', string=_('Max. age category')),
         tooltip_text=_('Filter out players of higher categories.'),
-        select_options=option.age_select_options(admin_tournament),
+        select_options=select_options,
         search_disabled=true,
         data=data, errors=errors
     ) }}

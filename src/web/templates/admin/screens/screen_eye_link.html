@@ -1,0 +1,15 @@
+{% import '/common/macros.j2' as macros with context %}
+<a
+    id="screen-eye-{{ eye_screen.id }}"
+    class="btn btn-sm btn-outline-primary"
+    href="{{ url_for(
+        'user-screen',
+        event_uniq_id=admin_event.uniq_id,
+        screen_uniq_id=eye_screen.uniq_id,
+    ) }}"
+    target="_blank"
+    {% if swap_oob %}hx-swap-oob="true"{% endif %}
+    {{ macros.tooltip_attributes('info', _('Go to the screen.'), 'top') }}
+>
+    <i class="bi-eye"></i>
+</a>

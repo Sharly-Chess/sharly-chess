@@ -1098,6 +1098,10 @@ class Tournament:
         return self.teams_by_id.values()
 
     @cached_property
+    def team_count(self) -> int:
+        return len(self.teams_by_id)
+
+    @cached_property
     def sorted_teams(self) -> list['Team']:
         return sorted(self.teams, key=attrgetter('name'))
 
@@ -2216,6 +2220,20 @@ class Tournament:
             (group.name for group in self.prize_groups),
         )
 
+    @property
+    def total_monetary_prize_value(self) -> float:
+        return sum(group.total_monetary_value for group in self.prize_groups)
+
+    @property
+    def total_non_monetary_prize_value(self) -> float:
+        return sum(group.total_non_monetary_value for group in self.prize_groups)
+
+    def format_total_monetary_prize_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_monetary_prize_value, currency)
+
+    def format_total_non_monetary_prize_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_non_monetary_prize_value, currency)
+
     # -------------------------------------------------------------------------
     # Players
     # -------------------------------------------------------------------------
@@ -3019,6 +3037,14 @@ class Tournament:
         return any(player.pairings[round_].played for player in self.tournament_players)
 
     def round_has_pairings(self, round_: int) -> bool:
+        # Team matches are stored as team-board envelopes; the per-player
+        # pairings are derived from the lineups. A round with team
+        # matches but empty/partial rosters may have no seated players at
+        # all, so the envelope is the source of truth for team modes —
+        # otherwise the round wrongly reads as unpaired (pair button
+        # stays, no unpair button).
+        if self.get_round_team_boards(round_):
+            return True
         return any(
             player.pairings[round_].opponent_id is not None
             or player.pairings[round_].exempt

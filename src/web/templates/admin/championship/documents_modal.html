@@ -1,0 +1,70 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable print-modal"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ _('Documents') }}</h2>
+        </div>
+        <div class="modal-body">
+            <div id="document-success-message"></div>
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-post="{{ url_for('admin-championship-generate-document', championship_uniq_id=championship.uniq_id) }}"
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='document',
+                            label=_('Document:'),
+                            select_options=document_options,
+                            data=data,
+                            errors=errors,
+                        ) }}
+                    </div>
+                </div>
+                {# Every option is rendered once; the picker shows only the
+                   containers of the selected document. #}
+                {% for option in print_options %}
+                    <div
+                        class="row gy-2 gx-3 mt-0"
+                        id="{{ option.container_id }}"
+                        {% if option.container_id not in current_document_container_ids %}style="display:none"{% endif %}
+                    >
+                        {% include option.template_name %}
+                    </div>
+                {% endfor %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>{{ _('Cancel') }}
+            </button>
+            <button type="submit" form="modal-form" class="text-nowrap white btn btn-primary">
+                <i class="bi bi-file-earmark-arrow-down-fill pe-1"></i>{{ _('Generate') }}
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    (() => {
+        const containersByDocument = {{ containers_by_document|tojson }};
+        const allContainers = {{ print_options|map(attribute='container_id')|list|tojson }};
+        const $select = $('#document');
+        if (!$select.length) return;
+        const toggle = () => {
+            const shown = containersByDocument[$select.val()] || [];
+            allContainers.forEach(function(id) {
+                const el = document.getElementById(id);
+                if (el) el.style.display = shown.includes(id) ? '' : 'none';
+            });
+        };
+        $select.on('change', toggle);
+        toggle();
+    })();
+</script>

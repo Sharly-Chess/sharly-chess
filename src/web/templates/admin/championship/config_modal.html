@@ -1,0 +1,111 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 500px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="vstack">
+                <h2 class="modal-title">{{ _('Base configuration') }}</h2>
+                {% if client.can_rename_event %}
+                    <div id="uniq-id-field" class="form-text pt-0 mt-0">
+                        {{ _('Unique ID: [%(uniq_id)s]', uniq_id=championship.uniq_id) }}
+                        <span {{ macros.tooltip_attributes('info', _('Edit the unique ID.'), 'right') }}>
+                            <button
+                                id="uniq-id-update-button"
+                                data-testid="uniq-id-update-button"
+                                type="button"
+                                class="btn btn-sm text-primary text-nowrap"
+                            ><i class="bi-pencil"></i></button>
+                        </span>
+                    </div>
+                    <div
+                        id="uniq-id-update-form-container"
+                        class="mt-1 mb-1 col-12 col-md-6"
+                        style="display: none"
+                    >
+                        {{ admin_macros.uniq_id_form(
+                            current_uniq_id=championship.uniq_id,
+                            existing_uniq_ids=championship_uniq_ids,
+                            placeholder=_('E.g.: junior-circuit'),
+                            patch_url=url_for(
+                                'admin-championship-uniq-id-update',
+                                championship_uniq_id=championship.uniq_id,
+                            ),
+                        ) }}
+                    </div>
+                    <script>
+                        $('#uniq-id-update-button').click(() => {
+                            $('#uniq-id-update-form-container').css('display', '');
+                            $('#uniq-id-field').css('display', 'none');
+                        });
+                        $('#uniq-id-update-cancel-button').click(() => {
+                            $('#uniq-id-update-form-container').css('display', 'none');
+                            $('#uniq-id-field').css('display', '');
+                        });
+                    </script>
+                {% endif %}
+            </div>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-post="{{ url_for('admin-championship-config-update', championship_uniq_id=championship.uniq_id) }}"
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('Name:'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.number_input(
+                            name='min_participation',
+                            label=_('Minimum participation:'),
+                            placeholder=_('No minimum'),
+                            min='0',
+                            step='1',
+                            tooltip_text=_(
+                                'A competitor who has played in fewer than this '
+                                'many stages is left out of the rankings. Leave '
+                                'empty for no minimum.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    {% if championship.competitor_type == competitor_type_individual %}
+                        <div class="col-12">
+                            {{ admin_macros.date_input(
+                                name='age_category_base_date',
+                                label=_('Age category reference date:'),
+                                placeholder=(
+                                    format_date(championship.default_age_category_base_date)
+                                    if championship.default_age_category_base_date
+                                    else sharly_chess_config.date_formatter.name
+                                ),
+                                tooltip_text=_(
+                                    'Each player keeps the category they have on this '
+                                    'date for the whole Championship. The default is '
+                                    'January 1st of the year of the earliest source '
+                                    'tournament.'
+                                ),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">
+                <i class="bi-x-circle-fill pe-1"></i>{{ _('Cancel') }}
+            </button>
+            <button type="submit" form="modal-form" class="text-nowrap white btn btn-primary">
+                <i class="bi-check-circle-fill pe-1"></i>{{ _('Save') }}
+            </button>
+        </div>
+    </div>
+</div>

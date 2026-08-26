@@ -1,0 +1,41 @@
+{% set collection = get_admin_collection_spec('championship-sources') %}
+{% set collection_view_mode = get_admin_collection_view_mode('championship-sources') %}
+{% set collection_show_details = get_admin_collection_show_details('championship-sources') %}
+{% set collection_url = url_for(
+    'admin-championship-tab',
+    championship_uniq_id=championship.uniq_id,
+    championship_tab='sources',
+) %}
+
+<div id="top-nav-wrapper">
+    <div id="top-nav-content">
+        {{ admin_macros.admin_title(_('Sources')) }}
+        <div class="flex-grow-1"></div>
+        <div class="d-flex gap-2 ms-auto align-items-center">
+            {% include '/admin/common/collection_controls.html' %}
+            <button
+                class="btn btn-primary text-nowrap"
+                hx-get="{{ url_for('admin-championship-source-modal', championship_uniq_id=championship.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-plus-circle-fill pe-1"></i>{{ _('Add a tournament') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<section class="p-3">
+    <div class="container-fluid" style="--bs-gutter-x: 0;">
+        {% with
+            items=championship.sources,
+            empty_message=_('Add the first tournament to start building the standings.'),
+            sortable=false,
+            show_details=false
+        %}
+            {% include '/admin/common/collection.html' %}
+        {% endwith %}
+    </div>
+</section>

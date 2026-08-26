@@ -21,6 +21,11 @@ class PrizeType(IdentifiableEntity, ABC):
         """Defines if the prize has a description."""
 
     @property
+    @abstractmethod
+    def has_complementary_value(self) -> bool:
+        """Defines if the prize has an optional complementary monetary value."""
+
+    @property
     def description_label(self) -> str:
         return _('Description')
 
@@ -35,7 +40,13 @@ class PrizeType(IdentifiableEntity, ABC):
         """Build the name of the prize according to its type."""
 
     @classmethod
-    def get_prize_full_name(cls, value: float, description: str, currency: str) -> str:
+    def get_prize_full_name(
+        cls,
+        value: float,
+        description: str,
+        currency: str,
+        complementary_value: float | None = None,
+    ) -> str:
         """Full name of the prize, used on the prize list modal."""
         return cls.get_prize_name(value, description, currency)
 
@@ -55,6 +66,10 @@ class MonetaryPrizeType(PrizeType):
 
     @property
     def has_description(self) -> bool:
+        return False
+
+    @property
+    def has_complementary_value(self) -> bool:
         return False
 
     @property
@@ -84,6 +99,10 @@ class NonMonetaryPrizeType(PrizeType):
         return True
 
     @property
+    def has_complementary_value(self) -> bool:
+        return False
+
+    @property
     def tooltip_message(self) -> str:
         return _(
             'Prizes defined as a free text field. The value is used '
@@ -95,11 +114,16 @@ class NonMonetaryPrizeType(PrizeType):
         return description
 
     @classmethod
-    def get_prize_full_name(cls, value: float, description: str, currency: str) -> str:
+    def get_prize_full_name(
+        cls,
+        value: float,
+        description: str,
+        currency: str,
+        complementary_value: float | None = None,
+    ) -> str:
         if not value:
             return description
-        value_str = _('value: {value}').format(value=Utils.localized_number(value))
-        return f'{description} ({value_str})'
+        return f'{description} ({Utils.currency_value_str(value, currency)})'
 
 
 class HybridPrizeType(PrizeType):
@@ -120,6 +144,10 @@ class HybridPrizeType(PrizeType):
         return True
 
     @property
+    def has_complementary_value(self) -> bool:
+        return True
+
+    @property
     def description_label(self) -> str:
         return _('Complementary prize')
 
@@ -133,3 +161,16 @@ class HybridPrizeType(PrizeType):
     @classmethod
     def get_prize_name(cls, value: float, description: str, currency: str) -> str:
         return f'{Utils.currency_value_str(value, currency)} + {description}'
+
+    @classmethod
+    def get_prize_full_name(
+        cls,
+        value: float,
+        description: str,
+        currency: str,
+        complementary_value: float | None = None,
+    ) -> str:
+        base = cls.get_prize_name(value, description, currency)
+        if not complementary_value:
+            return base
+        return f'{base} ({Utils.currency_value_str(complementary_value, currency)})'

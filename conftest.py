@@ -98,6 +98,14 @@ class BackendServer:
         # Keep reference to log file handle so we can close it later
         self.log_file_handle = open(log_file, 'w')
 
+        # Its own process group, so stop() can signal the server and
+        # everything it forked in one go. Unix and Windows spell this
+        # differently: POSIX has a session, Windows a process group.
+        if sys.platform == 'win32':
+            group_kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
+        else:
+            group_kwargs = {'start_new_session': True}
+
         self.process = subprocess.Popen(
             cmd,
             stdout=self.log_file_handle,  # Log to file instead of pipe
@@ -105,9 +113,7 @@ class BackendServer:
             text=True,
             env=env,
             cwd=Path(__file__).parent,  # Ensure we're in the right directory
-            # Its own process group, so stop() can signal the server and
-            # everything it forked in one go.
-            start_new_session=True,
+            **group_kwargs,
         )
 
         # Wait for server to be ready
@@ -125,7 +131,7 @@ class BackendServer:
     def stop(self):
         """Stop the backend server and everything it forked."""
         if self.process:
-            self._signal_group(signal.SIGTERM)
+            self._signal_group(force=False)
             try:
                 self.process.wait(timeout=self.STOP_TIMEOUT)
             except subprocess.TimeoutExpired:
@@ -134,7 +140,7 @@ class BackendServer:
             # welcome: the parent exiting says nothing about the child it
             # forked, which is left holding open handles on a data
             # directory the next run deletes underneath it.
-            self._signal_group(signal.SIGKILL)
+            self._signal_group(force=True)
             self.process.wait()
             self._wait_for_port_release()
 
@@ -142,20 +148,42 @@ class BackendServer:
         if self.log_file_handle:
             self.log_file_handle.close()
 
-    def _signal_group(self, signal_number: int):
-        """Signal the server's whole process group.
+    def _signal_group(self, force: bool):
+        """Stop the server's whole process group.
 
         The server forks, and it is the child that holds the listening
         socket: signalling the parent alone leaves the child bound to the
         port, and the next run cannot start at all ('All the candidate
-        ports are already in use').
+        ports are already in use'). ``force`` picks a graceful stop
+        (SIGTERM) or a hard kill (SIGKILL).
         """
         assert self.process is not None
+        if sys.platform == 'win32':
+            self._signal_group_windows(force)
+            return
+        signal_number = signal.SIGKILL if force else signal.SIGTERM
         try:
             os.killpg(os.getpgid(self.process.pid), signal_number)
         except (ProcessLookupError, PermissionError):
             # Already gone, or not ours to signal as a group.
             self.process.send_signal(signal_number)
+
+    def _signal_group_windows(self, force: bool):
+        """Stop the server's process tree on Windows.
+
+        Windows has no process-group signalling and no SIGKILL: a hard
+        stop of the whole forked tree needs taskkill /T, and the graceful
+        stop is a best-effort terminate() the SIGKILL pass mops up after.
+        """
+        assert self.process is not None
+        if force:
+            # Force-kill the parent and everything it forked.
+            subprocess.run(
+                ['taskkill', '/F', '/T', '/PID', str(self.process.pid)],
+                capture_output=True,
+            )
+        else:
+            self.process.terminate()
 
     def _wait_for_port_release(self):
         """Block until the port can be bound again.

@@ -815,7 +815,17 @@ class TeamPairingEngine(PairingEngine, ABC):
                 # larger keys come first) puts the lower TPN first.
                 return 1, stronger, weaker, -stronger_tpn
 
-            sorted_pairs = sorted(team_pairs, key=_pair_sort_key, reverse=True)
+            if self.reorder_boards:
+                # Swiss: table order follows match strength (strongest
+                # match on table 1, PAB last).
+                sorted_pairs = sorted(team_pairs, key=_pair_sort_key, reverse=True)
+            else:
+                # Round-robin: the Berger table already fixes the table
+                # (échiquier) order for every round, so keep it verbatim
+                # — only demote the PAB envelope to the last table.
+                sorted_pairs = [p for p in team_pairs if p[1] is not None] + [
+                    p for p in team_pairs if p[1] is None
+                ]
             paired_team_ids = {
                 team_id
                 for pair in sorted_pairs
@@ -952,6 +962,12 @@ class TeamSwissEngine(TeamPairingEngine):
 
     @property
     def honors_prohibited_pairings(self) -> bool:
+        return True
+
+    @property
+    def reorder_boards(self) -> bool:
+        # Team Swiss orders tables by match strength (strongest match on
+        # table 1); round-robins keep their fixed Berger table order.
         return True
 
     @property

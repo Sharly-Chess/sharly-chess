@@ -336,6 +336,24 @@ class SessionTagsAddOtherActive(BoolSessionVariable):
         return 'tags_add_other_active'
 
 
+class SessionChampionshipSourcesAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'championship_sources_add_other_active'
+
+
+class SessionChampionshipCategoriesAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'championship_categories_add_other_active'
+
+
+class SessionChampionshipCriteriaAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'championship_criteria_add_other_active'
+
+
 class SessionPairingsShowWithoutResults(BoolSessionVariable):
     @property
     def key(self) -> str:

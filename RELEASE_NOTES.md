@@ -25,6 +25,10 @@
 
 - _Sharly Chess_ now supports **Teams** events (Swiss, Round-Robin, Scheveningen and Molter pairings)! (5.0.0)
 
+## Championships
+
+- _Sharly Chess_ now supports **Championships** which allow you generate a ranking from a set of independent tournaments (5.0.0)
+
 ## Pairings
 
 - A new **Custom accelerated system** lets the arbiter define the acceleration round by round — a number of virtual points granted to a range of pairing numbers over a range of rounds — instead of choosing a published system (5.0.0)
@@ -61,6 +65,7 @@ In order to maintain compatibility with the display of table numbers on the _FFE
 - Added a quick way to generate prize categories for age categories and rating ranges (5.0.0)
 - Duplication prize categories are now added immediately after the original (5.0.0)
 - Duplicate prizes when duplicating a tournament (5.0.0)
+- A monetary value can now be attached to the non-monetary part of a hybrid prize (e.g. the worth of a trophy) (5.0.0)
 
 ## Screens
 
