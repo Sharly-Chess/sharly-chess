@@ -189,6 +189,12 @@ msgstr[0] "%(num)d ensemble"
 msgstr[1] "%(num)d ensembles"
 
 #, python-format
+msgid "%(num)d stage"
+msgid_plural "%(num)d stages"
+msgstr[0] "%(num)d étape"
+msgstr[1] "%(num)d étapes"
+
+#, python-format
 msgid "%(num)d team"
 msgid_plural "%(num)d teams"
 msgstr[0] "%(num)d équipe"
@@ -369,9 +375,9 @@ msgstr "SC_S"
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
 
-#, python-brace-format, python-format
-msgid "+{winner:g}% bonus for the top {share:g}% of competitors"
-msgstr "+{winner:g}% de bonus pour les {share:g}% meilleurs compétiteurs"
+#, python-brace-format
+msgid "+{winner:g}% bonus for competitors in the top {share:g}%"
+msgstr "+{winner:g}% de bonus pour les compétiteurs dans le top {share:g}%"
 
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
@@ -613,6 +619,9 @@ msgstr "Une catégorie portant ce nom existe déjà."
 
 msgid "A championship combines tournaments from several independent events into a single cross-event ranking — such as a season-long circuit or grand prix."
 msgstr "Un Grand Prix regroupe des tournois de plusieurs événements indépendants en un classement unique inter-événements — par exemple un circuit sur une saison."
+
+msgid "A competitor who has played in fewer than this many stages is left out of the rankings. Leave empty for no minimum."
+msgstr "Un compétiteur ayant joué moins d'étapes que ce nombre est exclu des classements. Laisser vide pour aucun minimum."
 
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
@@ -950,6 +959,9 @@ msgstr "Évènements"
 
 msgid "All absent *** ALL TEAMS ABSENT"
 msgstr "Toutes présentes"
+
+msgid "All groups"
+msgstr "Tous les groupes"
 
 msgid "All hours have been cleared."
 msgstr "Tous les horaires ont été supprimés."
@@ -4836,6 +4848,9 @@ msgstr "Niveau minimum :"
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
+msgid "Minimum participation:"
+msgstr "Participation minimale :"
+
 msgid "Minimum rating"
 msgstr "Elo minimum"
 
@@ -5246,6 +5261,9 @@ msgstr "Aucune rencontre en cours — tous les résultats sont saisis."
 
 msgid "No menus"
 msgstr "Aucun menu"
+
+msgid "No minimum"
+msgstr "Aucun minimum"
 
 msgid "No monetary prizes assigned to players for this tournament."
 msgstr "Aucun prix monétaire assigné à une·e joueur·euse pour ce tournoi."
@@ -6431,6 +6449,9 @@ msgstr "Veuillez saisir un nom."
 
 msgid "Please enter a percentage between 0 and 100."
 msgstr "Veuillez saisir un pourcentage entre 0 et 100."
+
+msgid "Please enter a positive whole number."
+msgstr "Veuillez saisir un nombre entier positif."
 
 msgid "Please enter a space-separated list of numbers."
 msgstr "Veuillez saisir une liste de nombres séparés par des espaces."
@@ -8837,6 +8858,9 @@ msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly 
 msgid "This folder is not empty."
 msgstr "Ce dossier n'est pas vide."
 
+msgid "This group"
+msgstr "Ce groupe"
+
 msgid "This menu is empty."
 msgstr "Ce menu est vide."
 
@@ -10709,7 +10733,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-
-#~ msgid "Rating: {minimum} – {maximum}"
-#~ msgstr "Élo : {minimum} – {maximum}"
 

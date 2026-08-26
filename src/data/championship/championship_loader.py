@@ -7,7 +7,7 @@ from logging import Logger
 from pathlib import Path
 from urllib.parse import quote
 
-from common import ARCHIVES_DIR, CHAMPIONSHIP_DIR
+from common import ARCHIVES_DIR, CHAMPIONSHIPS_DIR
 from common.logger import get_logger
 from data.championship.championship import Championship
 from data.championship.options import (
@@ -118,7 +118,7 @@ class ChampionshipLoader:
     @classmethod
     def all_championship_ids(cls) -> list[str]:
         ids: list[str] = []
-        for file in CHAMPIONSHIP_DIR.glob(f'*.{Extension.CHAMPIONSHIP_DB}'):
+        for file in CHAMPIONSHIPS_DIR.glob(f'*.{Extension.CHAMPIONSHIP_DB}'):
             uniq_id = cls.format_uniq_id(file.stem)
             if uniq_id != file.stem:
                 index = 1
@@ -408,6 +408,12 @@ class ChampionshipLoader:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             stored_championship = database.load_stored_championship()
             stored_championship.age_category_base_date = base_date
+            database.update_stored_championship(stored_championship)
+
+    def set_min_participation(self, championship_uniq_id: str, min_participation: int):
+        with ChampionshipDatabase(championship_uniq_id, write=True) as database:
+            stored_championship = database.load_stored_championship()
+            stored_championship.min_participation = min_participation
             database.update_stored_championship(stored_championship)
 
     def set_team_score_basis(self, championship_uniq_id: str, score_basis: str):

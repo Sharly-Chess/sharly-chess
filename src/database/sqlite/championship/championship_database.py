@@ -5,7 +5,7 @@ from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
 
-from common import CHAMPIONSHIP_DIR
+from common import CHAMPIONSHIPS_DIR
 from common.logger import get_logger
 from database.sqlite.championship import migrations
 from database.sqlite.championship.championship_store import (
@@ -75,7 +75,7 @@ class ChampionshipDatabase(MigrationDatabase):
 
     @staticmethod
     def championship_database_path(uniq_id: str) -> Path:
-        return CHAMPIONSHIP_DIR / f'{uniq_id}.{Extension.CHAMPIONSHIP_DB}'
+        return CHAMPIONSHIPS_DIR / f'{uniq_id}.{Extension.CHAMPIONSHIP_DB}'
 
     def rename(self, new_uniq_id: str):
         """Move the championship file to the one for ``new_uniq_id``."""
@@ -93,6 +93,7 @@ class ChampionshipDatabase(MigrationDatabase):
             age_category_base_date=self.load_optional_date_from_database_field(
                 row['age_category_base_date']
             ),
+            min_participation=row['min_participation'],
         )
 
     def load_stored_championship(self) -> StoredChampionship:
@@ -119,7 +120,8 @@ class ChampionshipDatabase(MigrationDatabase):
     ) -> StoredChampionship:
         self.execute(
             'UPDATE `info` SET `name` = ?, `competitor_type` = ?, '
-            '`team_score_basis` = ?, `age_category_base_date` = ?',
+            '`team_score_basis` = ?, `age_category_base_date` = ?, '
+            '`min_participation` = ?',
             (
                 stored_championship.name,
                 stored_championship.competitor_type,
@@ -127,6 +129,7 @@ class ChampionshipDatabase(MigrationDatabase):
                 self.dump_date_to_database_field(
                     stored_championship.age_category_base_date
                 ),
+                stored_championship.min_participation,
             ),
         )
         return self.load_stored_championship()

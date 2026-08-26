@@ -81,12 +81,12 @@ def setup(api_request_context: APIRequestContext):
 
 @pytest.mark.e2e
 def test_championship_admin_workflow(page: Page):
-    page.goto('/championship')
-    expect(page.locator('#nav-championship-tab')).to_contain_text('Current')
-    expect(page.locator('#nav-coming_championship-tab')).to_contain_text('Upcoming')
-    expect(page.locator('#nav-passed_championship-tab')).to_contain_text('Passed')
+    page.goto('/championships')
+    expect(page.locator('#nav-championships-tab')).to_contain_text('Current')
+    expect(page.locator('#nav-coming_championships-tab')).to_contain_text('Upcoming')
+    expect(page.locator('#nav-passed_championships-tab')).to_contain_text('Passed')
     expect(page.locator('#nav-championship_archives-tab')).to_contain_text('Archived')
-    expect(page.locator('#nav-championship-tab')).to_be_disabled()
+    expect(page.locator('#nav-championships-tab')).to_be_disabled()
     expect(page.locator('#nav-championship_archives-tab')).to_be_disabled()
     page.get_by_role('button', name='Create a championship', exact=True).first.click()
     modal = page.locator('.modal-dialog')
@@ -94,11 +94,11 @@ def test_championship_admin_workflow(page: Page):
     modal.locator('input[name="name"]').fill(CHAMPIONSHIP_NAME)
     modal.get_by_test_id('championship-create-submit').click()
 
-    expect(page).to_have_url(re.compile(r'/championships/.+/configuration$'))
+    expect(page).to_have_url(re.compile(r'/championship/.+/configuration$'))
     expect(page.get_by_role('heading', name=CHAMPIONSHIP_NAME)).to_be_visible()
 
-    page.goto('/championship')
-    expect(page.locator('#nav-championship-tab')).to_be_enabled()
+    page.goto('/championships')
+    expect(page.locator('#nav-championships-tab')).to_be_enabled()
     page.get_by_role('button', name='Card view').click()
     expect(page.get_by_role('button', name='Card view')).to_have_attribute(
         'aria-pressed', 'true'
@@ -107,7 +107,7 @@ def test_championship_admin_workflow(page: Page):
     expect(page.get_by_role('button', name='List view')).to_have_attribute(
         'aria-pressed', 'true'
     )
-    page.get_by_test_id('championship-item').filter(has_text=CHAMPIONSHIP_NAME).click()
+    page.get_by_test_id('championships-item').filter(has_text=CHAMPIONSHIP_NAME).click()
     expect(page.get_by_role('heading', name=CHAMPIONSHIP_NAME)).to_be_visible()
 
     page.get_by_test_id('nav-sources-tab').click()
@@ -200,7 +200,8 @@ def test_championship_admin_workflow(page: Page):
 
     page.get_by_test_id('nav-configuration-tab').click()
     expect(page.get_by_role('heading', name='Configuration')).to_be_visible()
-    page.locator('button[hx-get^="/championships"][hx-get$="/config-modal"]').click()
+    TestUtils.take_screenshot(page, 'bug')
+    page.locator('button[hx-get^="/championship"][hx-get$="/config-modal"]').click()
     modal = page.locator('.modal-dialog')
     expect(modal.get_by_role('heading', name='Base configuration')).to_be_visible()
     expect(modal.locator('#modal-form input[name="uniq_id"]')).to_have_count(0)
@@ -215,7 +216,7 @@ def test_championship_admin_workflow(page: Page):
     uniq_id_input.fill(RENAMED_CHAMPIONSHIP_ID)
     modal.get_by_test_id('uniq-id-update-submit-button').click()
     expect(page).to_have_url(
-        re.compile(rf'/championships/{RENAMED_CHAMPIONSHIP_ID}/configuration$')
+        re.compile(rf'/championship/{RENAMED_CHAMPIONSHIP_ID}/configuration$')
     )
     expect(
         page.get_by_role('button', name='Scoring and tie-break rules')
@@ -258,7 +259,7 @@ def test_championship_admin_workflow(page: Page):
     changed_reference_date = date_placeholder.replace(
         str(date.today().year), str(date.today().year - 1)
     )
-    page.locator('button[hx-get^="/championships"][hx-get$="/config-modal"]').click()
+    page.locator('button[hx-get^="/championship"][hx-get$="/config-modal"]').click()
     modal = page.locator('.modal-dialog')
     reference_date = modal.locator('input[name="age_category_base_date"]')
     # Type the date (rather than fill) so the air-datepicker keyup handler commits
@@ -269,7 +270,7 @@ def test_championship_admin_workflow(page: Page):
     expect(reference_date).to_have_value(changed_reference_date)
     modal.get_by_role('button', name='Save').click()
     expect(page).to_have_url(
-        re.compile(rf'/championships/{RENAMED_CHAMPIONSHIP_ID}/configuration$')
+        re.compile(rf'/championship/{RENAMED_CHAMPIONSHIP_ID}/configuration$')
     )
     expect(page.get_by_text(changed_reference_date, exact=False).first).to_be_visible()
     expect(rule_rows).to_have_count(1)
@@ -377,8 +378,8 @@ def test_championship_admin_workflow(page: Page):
     ranking_selector.select_option(label='Under 12')
     expect(page.get_by_role('heading', name='Under 12')).to_be_visible()
 
-    page.goto('/championship')
-    item = page.get_by_test_id('championship-item').filter(has_text=CHAMPIONSHIP_NAME)
+    page.goto('/championships')
+    item = page.get_by_test_id('championships-item').filter(has_text=CHAMPIONSHIP_NAME)
     expect(item).to_be_visible()
     delete_button = item.get_by_role('button', name='Delete')
     expect(delete_button).to_be_visible()
@@ -388,21 +389,21 @@ def test_championship_admin_workflow(page: Page):
     modal.get_by_role('checkbox').check()
     modal.locator('#delete-button').click()
     expect(
-        page.get_by_test_id('championship-item').filter(has_text=CHAMPIONSHIP_NAME)
+        page.get_by_test_id('championships-item').filter(has_text=CHAMPIONSHIP_NAME)
     ).to_have_count(0)
     expect(page.locator('#nav-championship_archives-tab')).to_be_enabled()
     archive_row = page.get_by_role('row').filter(has_text=CHAMPIONSHIP_NAME)
     expect(archive_row).to_be_visible()
     archive_row.get_by_role('button', name='Restore').click()
-    expect(page.locator('#nav-championship-tab')).to_be_enabled()
+    expect(page.locator('#nav-championships-tab')).to_be_enabled()
     expect(
-        page.get_by_test_id('championship-item').filter(has_text=CHAMPIONSHIP_NAME)
+        page.get_by_test_id('championships-item').filter(has_text=CHAMPIONSHIP_NAME)
     ).to_be_visible()
 
 
 @pytest.mark.e2e
 def test_team_championship_uses_team_ranking_controls(page: Page):
-    page.goto('/championship')
+    page.goto('/championships')
     page.get_by_role('button', name='Create a championship', exact=True).first.click()
     modal = page.locator('.modal-dialog')
     modal.locator('input[name="name"]').fill(TEAM_CHAMPIONSHIP_NAME)

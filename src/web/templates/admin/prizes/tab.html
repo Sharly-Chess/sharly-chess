@@ -337,16 +337,35 @@
                 {% include '/admin/common/collection.html' %}
             {% endwith %}
         </form>
-        {% if admin_prize_group.categories|length > 1
-            and (admin_prize_group.total_monetary_value
-                or admin_prize_group.total_non_monetary_value) %}
-            <div class="border-top pt-2 mt-2 text-end text-secondary">
-                {{ macros.prize_totals_line(
-                    admin_prize_group.format_total_monetary_value(prize_currency)
-                        if admin_prize_group.total_monetary_value else None,
-                    admin_prize_group.format_total_non_monetary_value(prize_currency)
-                        if admin_prize_group.total_non_monetary_value else None,
-                ) }}
+        {% set show_group_total = admin_prize_group.total_monetary_value
+            or admin_prize_group.total_non_monetary_value %}
+        {% set show_combined_total = admin_tournament.prize_groups|length > 1
+            and (admin_tournament.total_monetary_prize_value
+                or admin_tournament.total_non_monetary_prize_value) %}
+        {% if show_group_total or show_combined_total %}
+            <div class="border-top pt-2 mt-2 text-end">
+                {% if show_group_total %}
+                    <div>
+                        {{ _('%(string)s:', string=_('This group')) }}
+                        {{ macros.prize_totals_value(
+                            admin_prize_group.format_total_monetary_value(prize_currency)
+                                if admin_prize_group.total_monetary_value else None,
+                            admin_prize_group.format_total_non_monetary_value(prize_currency)
+                                if admin_prize_group.total_non_monetary_value else None,
+                        ) }}
+                    </div>
+                {% endif %}
+                {% if show_combined_total %}
+                    <div>
+                        {{ _('%(string)s:', string=_('All groups')) }}
+                        {{ macros.prize_totals_value(
+                            admin_tournament.format_total_monetary_prize_value(prize_currency)
+                                if admin_tournament.total_monetary_prize_value else None,
+                            admin_tournament.format_total_non_monetary_prize_value(prize_currency)
+                                if admin_tournament.total_non_monetary_prize_value else None,
+                        ) }}
+                    </div>
+                {% endif %}
             </div>
         {% endif %}
     {% endif %}
