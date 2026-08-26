@@ -103,6 +103,16 @@ def test_create_and_round_trip(championship_id):
         assert database.load_stored_championship().name == 'Circuit Jeunes'
 
 
+def test_min_participation_defaults_to_zero_and_round_trips(championship_id):
+    with ChampionshipDatabase(championship_id, write=True) as database:
+        assert database.load_stored_championship().min_participation == 0
+        database.update_stored_championship(
+            StoredChampionship(name='Circuit', min_participation=3)
+        )
+    with ChampionshipDatabase(championship_id) as database:
+        assert database.load_stored_championship().min_participation == 3
+
+
 def test_freshly_created_database_is_up_to_date(championship_id):
     assert ChampionshipDatabase(championship_id).check_status() is True
 

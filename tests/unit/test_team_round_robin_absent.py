@@ -29,7 +29,7 @@ class TeamRoundRobinAbsentTestCase(TestCase):
     def tearDown(self) -> None:
         TestUtils.delete_event(EVENT_ID)
 
-    def _create(self) -> None:
+    def _create(self, with_players: bool = True, single_player: bool = False) -> None:
         TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
         TestUtils.create_tournament(
             EVENT_ID,
@@ -60,7 +60,14 @@ class TeamRoundRobinAbsentTestCase(TestCase):
                     )
                 )
                 self.team_ids.append(team_id)
-                for p_index in range(N):
+                if not with_players:
+                    continue
+                # single_player: give exactly one player to the first
+                # team, the rest empty (4 teams, 1 player total).
+                team_player_count = (
+                    1 if single_player and seed == 1 else 0 if single_player else N
+                )
+                for p_index in range(team_player_count):
                     pid = db.add_stored_player(
                         StoredPlayer(
                             id=None,
@@ -108,3 +115,32 @@ class TeamRoundRobinAbsentTestCase(TestCase):
             )
         }
         assert absent_team_id in on_board
+
+    def test_empty_rosters_still_read_as_paired(self):
+        # Teams exist but none have any players. Pairing persists team
+        # match envelopes of pure holes and there are no player pairings,
+        # yet the round must still read as paired from the envelopes
+        # (unpair button shown, not the pair button).
+        self._create(with_players=False)
+        tournament = self._load()
+        assert tournament.player_count == 0
+        assert (
+            tournament.pairing_variation.engine.generate_pairings(tournament, 1) == ''
+        )
+        assert tournament.round_has_pairings(1)
+        assert tournament.has_pairings
+
+    def test_partial_rosters_read_as_paired(self):
+        # 4 teams, a single player across them all. Pairing is allowed
+        # (partial rosters leave holes). The round has team matches but
+        # the lone player may sit on a board whose opponent is a hole, so
+        # no player pairing exists — the round must still read as paired
+        # (unpair button shown, not the pair button).
+        self._create(single_player=True)
+        tournament = self._load()
+        assert tournament.player_count == 1
+        assert (
+            tournament.pairing_variation.engine.generate_pairings(tournament, 1) == ''
+        )
+        assert tournament.round_has_pairings(1)
+        assert tournament.has_pairings
