@@ -623,7 +623,7 @@ msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 
 msgid "The Papi export is not available for this pairing system: its score is not a count of game points."
-msgstr "L'export Papi n'est pas disponible pour ce système d'appariement : son score n'est pas un décompte de points de partie."
+msgstr "L'export Papi n'est pas disponible pour ce système d'appariement : son score n'est pas un décompte de points de partie."
 
 #, python-brace-format
 msgid "The Papi format does not support result [{result}]."
