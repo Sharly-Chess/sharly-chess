@@ -258,6 +258,10 @@ class AppHookSpecs:
     def insert_search_filter_types(self, filters: dict):
         """Add plugin-specific filters for the player search."""
 
+    @hookspec
+    def insert_search_filter_for_datasource(self, datasource_mapping: dict):
+        """Map filters with datasources."""
+
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------

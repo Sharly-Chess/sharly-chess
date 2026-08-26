@@ -918,6 +918,11 @@ class PlayerAdminController(BaseEventAdminController):
             'search_filters': SearchFilterManager(
                 web_context.get_admin_event()
             ).get_filters(),
+            'enabled_filters_by_datasource': json.dumps(
+                SearchFilterManager(
+                    web_context.get_admin_event()
+                ).get_filters_by_datasource()
+            ),
             'selected_data_source': SessionPlayersActiveDataSource(request).get(),
             'plugin_templates_by_section': plugin_templates_by_section,
             'previous_player': (

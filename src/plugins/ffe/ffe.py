@@ -704,6 +704,25 @@ class FfePlugin(Plugin):
             'options': leagues,
         }
 
+    @hookimpl
+    def insert_search_filter_for_datasource(self, datasource_mapping):
+        datasource_mapping['ffe-online'] = [
+            'federation_filter',
+            'gender_filter',
+            'category_filter',
+            'club_filter',
+            'ffe_licence_filter',
+            'ffe_league_filter',
+        ]
+        datasource_mapping['ffe-local'] = [
+            'federation_filter',
+            'gender_filter',
+            'category_filter',
+            'club_filter',
+            'ffe_licence_filter',
+            'ffe_league_filter',
+        ]
+
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------

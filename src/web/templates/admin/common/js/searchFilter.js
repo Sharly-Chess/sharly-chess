@@ -1,11 +1,7 @@
 var filtersInitialized = false;
 var filters = {};
 var filterRefreshTimer;
-var ENABLED_FILTERS_BY_DATASOURCE = {
-    "ffe-online": ["federation_filter", "gender_filter", "category_filter", "club_filter", "ffe_licence_filter", "ffe_league_filter"],
-    "ffe-local": ["federation_filter", "gender_filter", "category_filter", "club_filter", "ffe_licence_filter", "ffe_league_filter"],
-    "fide": ["federation_filter", "gender_filter", "category_filter"]
-};
+var ENABLED_FILTERS_BY_DATASOURCE = JSON.parse('{{enabled_filters_by_datasource|safe}}');
 
 function filterInit() {
     filtersInitialized = false;
@@ -21,6 +17,7 @@ function filterInit() {
     updateFilterCount();
 
     let dataSource = $("#data-source-select").val();
+    if (!Object.keys(ENABLED_FILTERS_BY_DATASOURCE).includes(dataSource)) {return;}
     let enabledFilters = ENABLED_FILTERS_BY_DATASOURCE[dataSource];
     $("#filter-form select, #filter-form input[type='text']").closest("div[id*=filter-wrapper]").parent().hide();
 

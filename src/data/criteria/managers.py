@@ -108,3 +108,13 @@ class SearchFilterManager:
         )
 
         return filters
+
+    def get_filters_by_datasource(self) -> dict:
+        datasource_mapping = {
+            'fide': ['federation_filter', 'gender_filter', 'category_filter']
+        }
+
+        plugin_manager.hook_for_event(
+            self.event, 'insert_search_filter_for_datasource'
+        )(datasource_mapping=datasource_mapping)
+        return datasource_mapping
