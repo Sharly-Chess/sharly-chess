@@ -17,6 +17,18 @@
                     {% endif %}
                 </div>
             {% endif %}
+            <div class="text-body-secondary small">
+                {{ _('Minimum participation:') }}
+                {% if championship.min_participation > 1 %}
+                    {{ ngettext(
+                        '%(num)d stage',
+                        '%(num)d stages',
+                        championship.min_participation,
+                    ) }}
+                {% else %}
+                    <span class="fst-italic">{{ _('No minimum') }}</span>
+                {% endif %}
+            </div>
         </div>
         <button
             class="btn btn-outline-primary text-nowrap"

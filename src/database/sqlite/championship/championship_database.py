@@ -93,6 +93,7 @@ class ChampionshipDatabase(MigrationDatabase):
             age_category_base_date=self.load_optional_date_from_database_field(
                 row['age_category_base_date']
             ),
+            min_participation=row['min_participation'],
         )
 
     def load_stored_championship(self) -> StoredChampionship:
@@ -119,7 +120,8 @@ class ChampionshipDatabase(MigrationDatabase):
     ) -> StoredChampionship:
         self.execute(
             'UPDATE `info` SET `name` = ?, `competitor_type` = ?, '
-            '`team_score_basis` = ?, `age_category_base_date` = ?',
+            '`team_score_basis` = ?, `age_category_base_date` = ?, '
+            '`min_participation` = ?',
             (
                 stored_championship.name,
                 stored_championship.competitor_type,
@@ -127,6 +129,7 @@ class ChampionshipDatabase(MigrationDatabase):
                 self.dump_date_to_database_field(
                     stored_championship.age_category_base_date
                 ),
+                stored_championship.min_participation,
             ),
         )
         return self.load_stored_championship()
