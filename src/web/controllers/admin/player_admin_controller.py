@@ -2758,10 +2758,11 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     def _convert_filters(self, event: Event, json_filters: str) -> dict:
+        min_date = min([tournament.start_date for tournament in event.tournaments])
+        max_date = max([tournament.stop_date for tournament in event.tournaments])
+
         def _get_year_for(category: PlayerCategory) -> int:
-            return category.representative_year(
-                event, date.today(), date.today()
-            )  # TODO: find a good way to select dates
+            return category.representative_year(event, min_date, max_date)
 
         try:
             filters = json.loads(json_filters)
