@@ -278,12 +278,16 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                     case None, None:
                         continue
                     case None, _:
-                        age_conditions.append(f"year_of_birth <= '{max_year}'")
+                        age_conditions.append(
+                            f"strftime('%Y', date_of_birth) <= '{max_year}'"
+                        )
                     case _, None:
-                        age_conditions.append(f"year_of_birth >= '{min_year}'")
+                        age_conditions.append(
+                            f"strftime('%Y', date_of_birth) >= '{min_year}'"
+                        )
                     case _, _:
                         age_conditions.append(
-                            f"year_of_birth BETWEEN '{min_year}' AND '{max_year}'"
+                            f"strftime('%Y', date_of_birth) BETWEEN '{min_year}' AND '{max_year}'"
                         )
             conditions.append(f'({" OR ".join(age_conditions)})')
         return conditions
