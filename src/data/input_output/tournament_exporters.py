@@ -83,6 +83,14 @@ class Trf26TournamentExporter(TournamentExporter):
     def file_encoding(self) -> str:
         return 'ascii'
 
+    def is_unavailable_message(self, tournament: Tournament) -> str | None:
+        if not tournament.pairing_system.uses_result_points:
+            return _(
+                'The TRF export is not available for this pairing system: '
+                'its score is not a count of game points.'
+            )
+        return None
+
     def dump_to_file(self, file: IO, tournament: Tournament):
         trf_tournament = TrfSerializer.dumps(tournament.to_trf())
         file.write(unicode_normalize(trf_tournament))

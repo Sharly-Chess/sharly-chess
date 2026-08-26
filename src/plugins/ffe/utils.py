@@ -71,11 +71,14 @@ class FFEUtils:
     @staticmethod
     def supports_ffe_transfer(tournament: Tournament) -> bool:
         """Whether the FFE-site transfer (Papi upload and its fields) is
-        offered for this tournament. The transfer is Papi-based, so every
-        individual tournament qualifies; among the team systems only the
-        Scheveningen, which is uploaded as an individual Swiss."""
+        offered for this tournament. The transfer is Papi-based, so it
+        needs a game-point score; every such individual tournament
+        qualifies; among the team systems only the Scheveningen, which is
+        uploaded as an individual Swiss."""
         from data.pairings.scheveningen import ScheveningenPairingSystem
 
+        if not tournament.pairing_system.uses_result_points:
+            return False
         if not tournament.event.is_team_event:
             return True
         return isinstance(tournament.pairing_system, ScheveningenPairingSystem)

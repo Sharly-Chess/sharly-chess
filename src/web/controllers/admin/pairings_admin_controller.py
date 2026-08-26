@@ -14,7 +14,7 @@ from data.pairings.bbp_history import TeamTournamentHistory
 from data.pairings.engines import BbpPairings, TeamSwissEngine
 from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
-from litestar.plugins.htmx import HTMXRequest
+from litestar.plugins.htmx import ClientRefresh, HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body, FromPath, FromQuery
 from litestar.response import Template
@@ -2395,7 +2395,11 @@ class PairingsAdminController(BaseEventAdminController):
             'data': data,
             'errors': errors or {},
             'settings_for_pairing': for_pairing,
-            'settings_read_only': not for_pairing and tournament.has_pairings,
+            'settings_read_only': (
+                not for_pairing
+                and tournament.has_pairings
+                and tournament.pairing_system.lock_settings_after_first_pairing
+            ),
         }
         return cls._admin_event_pairings_render(web_context, template_context)
 
@@ -2432,7 +2436,7 @@ class PairingsAdminController(BaseEventAdminController):
         ],
         tournament_id: FromPath[int],
         round: FromPath[int],
-    ) -> Template:
+    ) -> Template | ClientRefresh:
         """Store the settings without pairing, so they can be prepared
         ahead of the first round."""
         web_context = PairingsAdminWebContext(
@@ -2444,6 +2448,12 @@ class PairingsAdminController(BaseEventAdminController):
                 web_context, data, errors, for_pairing=False
             )
         self._save_pairing_settings_data(tournament, data)
+        if tournament.has_pairings:
+            # Once rounds are paired the settings feed the standings (a
+            # Keizer re-derives every score from them), so a full refresh
+            # is needed for the new figures to reach every view, not just
+            # the pairings tab.
+            return ClientRefresh()
         return self._admin_event_pairings_render(web_context, {})
 
     @post(
