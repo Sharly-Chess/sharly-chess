@@ -1,8 +1,5 @@
 <div>
     <div id="search-criteria-collapse" class="collapse filter-collapsable-container my-2 p-2">
-        <h4 class="form-check-label d-inline-flex align-items-center gap-2">
-            {{ _('Search filters') }}
-        </h4>
         <form id="filter-form" class="row gy-2 gx-3">
             {% for search_filter in search_filters %}
                 {% with filter = search_filters[search_filter] %}

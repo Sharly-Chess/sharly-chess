@@ -6,7 +6,6 @@ var ENABLED_FILTERS_BY_DATASOURCE = {
     "ffe-local": ["federation_filter", "gender_filter", "club_filter", "ffe_licence_filter", "ffe_league_filter"],
     "fide": ["federation_filter", "gender_filter"]
 };
-var DISABLED_TITLE = "{{ _('This filter is disabled for the selected data source.') }}";
 
 function filterInit() {
     filtersInitialized = false;
@@ -23,12 +22,10 @@ function filterInit() {
 
     let dataSource = $("#data-source-select").val();
     let enabledFilters = ENABLED_FILTERS_BY_DATASOURCE[dataSource];
-    $("#filter-form select, #filter-form input[type='text']").prop('disabled', true);
-    $("div[id*=filter-wrapper]").attr("title", DISABLED_TITLE);
+    $("#filter-form select, #filter-form input[type='text']").closest("div[id*=filter-wrapper]").parent().hide();
 
     for (let filter of enabledFilters) {
-        $(`#filter-form [name="${filter}"]`).prop('disabled', false);
-        $(`#filter-form [name="${filter}"]`).closest("div[id*=filter-wrapper]").removeAttr("title");
+        $(`#filter-form [name="${filter}"]`).closest("div[id*=filter-wrapper]").parent().show();
     }
 
     filtersInitialized = true;
@@ -53,7 +50,7 @@ function updateFilterCount() { // update the badge
 
     let filterCount = Object.keys(filters).reduce(function (c, x) {
         let filterElem = $(`#filter-form [name='${x}']`);
-        let isFilterActive = Boolean(filterElem.val().length) * !filterElem.prop("disabled");
+        let isFilterActive = Boolean(filterElem.val().length) * filterElem.closest("div[id*=filter-wrapper]").is(":visible");
         return c + isFilterActive;
     }, 0);
 

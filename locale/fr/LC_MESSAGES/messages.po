@@ -9972,9 +9972,3 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
 #~ msgstr "250 Rondes accélérées (activez le plugin [{plugin}] pour les importer)"
-
-msgid "Search filters"
-msgstr "Filtres de recherche"
-
-msgid "This filter is disabled for the selected data source."
-msgstr "Ce filtre est désactivé pour la source de donnée sélectionnée"

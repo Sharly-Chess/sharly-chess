@@ -9970,9 +9970,3 @@ msgstr ""
 
 #~ msgid "250 Accelerated rounds (enable the [{plugin}] plugin to import them)"
 #~ msgstr ""
-
-msgid "Search filters"
-msgstr ""
-
-msgid "This filter is disabled for the selected data source."
-msgstr ""
