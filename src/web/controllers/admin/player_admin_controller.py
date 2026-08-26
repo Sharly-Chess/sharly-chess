@@ -38,6 +38,7 @@ from data.access_levels.client import Client
 from data.input_output.data_source import DataSource
 from data.input_output.managers import DataSourceManager, PlayerExporterManager
 from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
+from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,
 )
@@ -2729,7 +2730,7 @@ class PlayerAdminController(BaseEventAdminController):
                     web_context.get_admin_event().federation,
                     page,
                     DataSource.SEARCH_LIMIT,
-                    json.loads(filters),
+                    self._convert_filters(web_context.get_admin_event(), filters),
                 )
                 for stored_player in stored_players:
                     stored_player.id = 0
@@ -2750,6 +2751,57 @@ class PlayerAdminController(BaseEventAdminController):
                 'connection_error': connection_error,
             },
         )
+
+    def _convert_filters(self, event: Event, filters: str) -> dict:
+        def _get_year_for(category: PlayerCategory) -> int:
+            return category.representative_year(
+                event, date.today(), date.today()
+            )  # TODO: find a good way to select dates
+
+        try:
+            filters = json.loads(filters)
+        except json.decoder.JSONDecodeError:
+            return {}
+        if 'category_filter' in filters and filters['category_filter']:
+            player_categories = event.player_categories
+            junior_categories = event.junior_categories
+            senior_categories = event.senior_categories
+            categoriesIntervals = []
+            categoryFilters = [
+                PlayerCategory.from_id(cat) for cat in filters['category_filter']
+            ]
+
+            while len(categoryFilters):
+                # merges adjacent categories and finds the birth year interval that matches each one
+                start = categoryFilters.pop(0)
+                stop = start
+                while len(categoryFilters) and player_categories.index(
+                    stop
+                ) + 1 == player_categories.index(categoryFilters[0]):
+                    stop = categoryFilters.pop(0)
+
+                if start in junior_categories:
+                    if (index := junior_categories.index(start)) == 0:
+                        maxYear = None
+                    else:
+                        maxYear = _get_year_for(junior_categories[index - 1]) - 1
+                elif start in senior_categories:
+                    maxYear = _get_year_for(start)
+
+                if stop in junior_categories:
+                    minYear = _get_year_for(stop)
+                elif stop in senior_categories:
+                    if (index := senior_categories.index(stop)) == len(
+                        senior_categories
+                    ) - 1:
+                        minYear = None
+                    else:
+                        minYear = _get_year_for(senior_categories[index + 1]) + 1
+
+                categoriesIntervals.append((minYear, maxYear))
+
+            filters['birthyear_filter'] = categoriesIntervals
+        return filters
 
     @staticmethod
     def _players_export_sort_key(player: Player) -> Any:

@@ -4,7 +4,6 @@ from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter
 from data.criteria import tournament_criteria as crit
 from data.criteria.tournament_criteria import TournamentCriterion
-from data.player_categories import PlayerCategory
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager
 from utils.enum import PlayerGender
@@ -84,9 +83,8 @@ class SearchFilterManager:
         if 'NON' in federations:
             del federations['NON']
 
-        categories = PlayerCategory.get_categories(
-            [8, 10, 12, 14, 16, 18, 20], [20, 50, 65]
-        )
+        categories = self.event.player_categories
+        del categories[0]
 
         filters = {
             'federation': {

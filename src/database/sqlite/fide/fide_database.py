@@ -220,8 +220,21 @@ class FideDatabase(LocalSourcePlayerDatabase):
             conditions.append(f"federation='{filters['federation_filter']}'")
         if 'gender_filter' in filters:
             conditions.append(f"gender='{filters['gender_filter']}'")
-        if 'category_filter' in filters and filters['category_filter']:
-            pass
+        if 'birthyear_filter' in filters and filters['birthyear_filter']:
+            ageFilters = []
+            for minYear, maxYear in filters['birthyear_filter']:
+                match minYear, maxYear:
+                    case None, None:
+                        continue
+                    case None, _:
+                        ageFilters.append(f"year_of_birth <= '{maxYear}'")
+                    case _, None:
+                        ageFilters.append(f"year_of_birth >= '{minYear}'")
+                    case _, _:
+                        ageFilters.append(
+                            f"year_of_birth BETWEEN '{minYear}' AND '{maxYear}'"
+                        )
+            conditions.append(f'({" OR ".join(ageFilters)})')
         return conditions
 
     # ---------------------------------------------------------------------------------

@@ -3,8 +3,8 @@ var filters = {};
 var filterRefreshTimer;
 var ENABLED_FILTERS_BY_DATASOURCE = {
     "ffe-online": ["federation_filter", "gender_filter", "category_filter", "club_filter", "ffe_licence_filter", "ffe_league_filter"],
-    "ffe-local": ["federation_filter", "gender_filter", "club_filter", "ffe_licence_filter", "ffe_league_filter"],
-    "fide": ["federation_filter", "gender_filter"]
+    "ffe-local": ["federation_filter", "gender_filter", "category_filter", "club_filter", "ffe_licence_filter", "ffe_league_filter"],
+    "fide": ["federation_filter", "gender_filter", "category_filter"]
 };
 
 function filterInit() {

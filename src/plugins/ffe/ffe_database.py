@@ -259,9 +259,9 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         conditions = []
         if 'ffe_licence_filter' in filters:
             if filters['ffe_licence_filter'] == 'B':
-                conditions.append("(ffe_licence IN ('B', 'A') OR federation !='fra')")
+                conditions.append("(ffe_licence IN ('B', 'A') OR federation !='FRA')")
             elif filters['ffe_licence_filter'] == 'A':
-                conditions.append("(ffe_licence='A' OR federation !='fra')")
+                conditions.append("(ffe_licence='A' OR federation !='FRA')")
         if 'federation_filter' in filters:
             conditions.append(f"federation='{filters['federation_filter']}'")
         if 'gender_filter' in filters:
@@ -270,8 +270,25 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             conditions.append(f"league='{filters['ffe_league_filter']}'")
         if 'club_filter' in filters:
             conditions.append(f"LOWER(club) LIKE LOWER('%%{filters['club_filter']}%%')")
-        if 'category_filter' in filters and filters['category_filter']:
-            pass
+        if 'birthyear_filter' in filters and filters['birthyear_filter']:
+            ageFilters = []
+            for minYear, maxYear in filters['birthyear_filter']:
+                match minYear, maxYear:
+                    case None, None:
+                        continue
+                    case None, _:
+                        ageFilters.append(
+                            f"strftime('%Y', date_of_birth) <= '{maxYear}'"
+                        )
+                    case _, None:
+                        ageFilters.append(
+                            f"strftime('%Y', date_of_birth) >= '{minYear}'"
+                        )
+                    case _, _:
+                        ageFilters.append(
+                            f"strftime('%Y', date_of_birth) BETWEEN '{minYear}' AND '{maxYear}'"
+                        )
+            conditions.append(f'({" OR ".join(ageFilters)})')
         return conditions
 
     # ---------------------------------------------------------------------------------

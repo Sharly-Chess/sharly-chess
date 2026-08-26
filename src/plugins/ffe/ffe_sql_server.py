@@ -419,20 +419,19 @@ class FFESqlServer(SqlServer):
             conditions.append(
                 f"LOWER(club.Nom) LIKE LOWER('%%{filters['club_filter']}%%')"
             )
-        if 'category_filter' in filters and filters['category_filter']:
-            mapping = {
-                'U8': 'Ppo',
-                'U10': 'Pou',
-                'U12': 'Pup',
-                'U14': 'Ben',
-                'U16': 'Min',
-                'U18': 'Cad',
-                'U20': 'Jun',
-                'O20': 'Sen',
-                'O50': 'Sep',
-                'O65': 'Vet',
-            }
-            conditions.append(
-                f'SUBSTRING(Joueur.Cat, 1, 3) IN ({", ".join(f"'{mapping[category]}'" for category in filters["category_filter"])})'
-            )
+        if 'birthyear_filter' in filters and filters['birthyear_filter']:
+            ageFilters = []
+            for minYear, maxYear in filters['birthyear_filter']:
+                match minYear, maxYear:
+                    case None, None:
+                        continue
+                    case None, _:
+                        ageFilters.append(f'YEAR(joueur.NeLe) <= {maxYear}')
+                    case _, None:
+                        ageFilters.append(f'YEAR(joueur.NeLe) >= {minYear}')
+                    case _, _:
+                        ageFilters.append(
+                            f'YEAR(joueur.NeLe) BETWEEN {minYear} AND {maxYear}'
+                        )
+            conditions.append(f'({" OR ".join(ageFilters)})')
         return conditions
