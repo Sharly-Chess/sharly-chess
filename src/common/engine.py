@@ -272,7 +272,7 @@ class Engine:
             return
         instruction = _('The installation and update processes have been reworked.')
         instruction += '\n\n'
-        if sys.platform != 'win32':
+        if sys.platform == 'win32':
             instruction += _(
                 'An installer program will start after closing this message.'
             )
