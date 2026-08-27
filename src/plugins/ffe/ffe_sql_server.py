@@ -434,5 +434,6 @@ class FFESqlServer(SqlServer):
                         age_conditions.append(
                             f'YEAR(joueur.NeLe) BETWEEN {min_year} AND {max_year}'
                         )
-            conditions.append(f'({" OR ".join(age_conditions)})')
+            if age_conditions:
+                conditions.append(f'({" OR ".join(age_conditions)})')
         return conditions

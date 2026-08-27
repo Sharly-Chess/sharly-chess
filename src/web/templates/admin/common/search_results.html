@@ -68,8 +68,16 @@
         $('#{{ data_source.id }}-search-results').show();
     </script>
     <style>
-        #search-results>li.selected-result {
-            background-color: #d7c9aa8a;
+        #search-results > li {
+            &.selected-result {
+                background-color: #d7c9aa8a;
+                & .license-expired{
+                    color: #000;
+                }
+            }
+            & .license-expired {
+                color: #999;
+            }
         }
     </style>
 {% endif %}
