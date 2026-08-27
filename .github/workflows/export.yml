@@ -158,7 +158,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
+          # The full history is only needed for the annotated tag objects read
+          # by sync_appdata_releases.py. tree:0 fetches the commits and those
+          # tag objects without the historical trees and blobs, which a full
+          # clone of this repository downloads by the gigabyte.
           fetch-depth: 0
+          filter: tree:0
       - name: Install system dependencies
         shell: bash
         run: |
