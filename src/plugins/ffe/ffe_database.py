@@ -289,7 +289,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                         age_conditions.append(
                             f"strftime('%Y', date_of_birth) BETWEEN '{min_year}' AND '{max_year}'"
                         )
-            conditions.append(f'({" OR ".join(age_conditions)})')
+            if age_conditions:
+                conditions.append(f'({" OR ".join(age_conditions)})')
         return conditions
 
     # ---------------------------------------------------------------------------------
