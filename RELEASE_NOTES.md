@@ -7,6 +7,7 @@
 - Fixed double form submission using the `Enter` key (4.2.4)
 - Fix previous version recovery freeze (4.2.5)
 - Added update instructions for version 5 (4.2.6, 4.2.7)
+- Fix update message (4.2.9)
 
 ## Tournaments
 
