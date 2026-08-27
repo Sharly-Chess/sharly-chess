@@ -25,6 +25,11 @@ class PapiTournamentExporter(TournamentExporter):
         return _('PAPI')
 
     def is_unavailable_message(self, tournament: Tournament) -> str | None:
+        if not tournament.pairing_system.uses_result_points:
+            return _(
+                'The Papi export is not available for this pairing system: '
+                'its score is not a count of game points.'
+            )
         return PapiConverter.papi_export_unavailable_message(tournament)
 
     def warning_message(self, tournament: Tournament) -> str | None:

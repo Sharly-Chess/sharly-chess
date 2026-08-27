@@ -375,8 +375,8 @@ msgstr "SC_S"
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
 
-#, python-brace-format, python-format
-msgid "+{winner:g}% bonus for the top {share:g}% of competitors"
+#, python-brace-format
+msgid "+{winner:g}% bonus for competitors in the top {share:g}%"
 msgstr ""
 
 msgid "- *** NAME FOR GENDER NONE"
@@ -686,6 +686,9 @@ msgstr ""
 msgid "A value is expected."
 msgstr ""
 
+msgid "A whole percentage between 0 and 100 is expected."
+msgstr ""
+
 msgid "ADM"
 msgstr ""
 
@@ -956,6 +959,9 @@ msgstr ""
 
 msgid "All absent *** ALL TEAMS ABSENT"
 msgstr "All absent"
+
+msgid "All groups"
+msgstr ""
 
 msgid "All hours have been cleared."
 msgstr ""
@@ -1346,6 +1352,9 @@ msgstr ""
 
 msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Bd."
+
+msgid "Before any games, players are ranked (by rating or manually) and given an initial value (the top player about three times the lowest, one less per rank). When on, that value stays part of the score all tournament, so the initial ranking keeps a lasting influence: a strong player who loses their first game does not collapse below much weaker players after a single result. When off, the initial ranking only seeds the first round and every score is earned entirely from results."
+msgstr ""
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr ""
@@ -3911,6 +3920,9 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
+msgid "How a player's Keizer total is rounded for the ranking and the pairings table."
+msgstr ""
+
 msgid "How each source tournament is named in the list."
 msgstr ""
 
@@ -4048,6 +4060,9 @@ msgid "Include federation column"
 msgstr ""
 
 msgid "Include incomplete teams"
+msgstr ""
+
+msgid "Include initial ranking value in score"
 msgstr ""
 
 msgid "Include non-monetary prizes"
@@ -4308,6 +4323,12 @@ msgid "Kashdan"
 msgstr ""
 
 msgid "Kazakhstan"
+msgstr ""
+
+msgid "Keep fractions"
+msgstr ""
+
+msgid "Keizer"
 msgstr ""
 
 msgid "Kenya"
@@ -7176,6 +7197,12 @@ msgstr ""
 msgid "Round performance indicators"
 msgstr ""
 
+msgid "Round to a full point"
+msgstr ""
+
+msgid "Round to a half point"
+msgstr ""
+
 #, python-brace-format
 msgid "Round {round}"
 msgstr ""
@@ -7208,7 +7235,13 @@ msgstr ""
 msgid "Round: the last finished round"
 msgstr ""
 
+msgid "Rounding of the Keizer points"
+msgstr ""
+
 msgid "Rounds"
+msgstr ""
+
+msgid "Rounds before a rematch"
 msgstr ""
 
 msgid "Rounds one Elected to Play"
@@ -7805,6 +7838,9 @@ msgstr ""
 msgid "Spain"
 msgstr ""
 
+msgid "Special points for an absence"
+msgstr ""
+
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
@@ -8173,6 +8209,9 @@ msgstr ""
 msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
 msgstr ""
 
+msgid "The TRF export is not available for this pairing system: its score is not a count of game points."
+msgstr ""
+
 msgid "The URL of the image to display."
 msgstr ""
 
@@ -8413,6 +8452,9 @@ msgstr ""
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr ""
 
+msgid "The number of rounds that must pass before two players may be paired again. Set it as high as possible to avoid repeated pairings."
+msgstr ""
+
 msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
 msgstr ""
 
@@ -8465,6 +8507,9 @@ msgid "The pairing numbers of the tournament in ascending order."
 msgstr ""
 
 msgid "The pairing numbers of the tournament in descending order."
+msgstr ""
+
+msgid "The percentage of a player's own current Keizer value awarded for an excused absence or a requested bye (0 = nothing, 100 = the full value)."
 msgstr ""
 
 msgid "The percentage of top-ranked players that receive a bonus."
@@ -8809,6 +8854,9 @@ msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import
 msgstr ""
 
 msgid "This folder is not empty."
+msgstr ""
+
+msgid "This group"
 msgstr ""
 
 msgid "This menu is empty."

@@ -1,7 +1,9 @@
-<h4>
-    {{ _('Connection French Chess Federation') }}
-</h4>
-{% include 'ffe_tournament_ffe_auth_fields.html' %}
+<div id="ffe-connection-section">
+    <h4>
+        {{ _('Connection French Chess Federation') }}
+    </h4>
+    {% include 'ffe_tournament_ffe_auth_fields.html' %}
+</div>
 <input id="player-rating-type-hidden" type="hidden" name="player_rating_type" value="3">
 <script>
     $(document).ready(function() {
@@ -14,4 +16,25 @@
             placement: 'top',
         });
     });
+
+    (function () {
+        // The FFE transfer is Papi-based (a count of game points), so it
+        // does not apply to a system whose score is computed some other
+        // way (a Keizer). Hide the connection fields for those systems.
+        {% if pairing_systems is defined %}
+            const NO_FFE_TRANSFER = {{
+                pairing_systems
+                | rejectattr('uses_result_points')
+                | map(attribute='id')
+                | list
+                | tojson
+            }};
+            function syncFfeConnection() {
+                const id = $('#pairing-system').val() || '';
+                $('#ffe-connection-section').toggle(!NO_FFE_TRANSFER.includes(id));
+            }
+            $('#pairing-system').on('change', syncFfeConnection);
+            syncFfeConnection();
+        {% endif %}
+    })();
 </script>

@@ -1,0 +1,12 @@
+<div class="row gy-2 gx-3">
+    {{ admin_macros.select_input(
+        name=setting.id,
+        label=_('%(string)s:', string=setting.name),
+        tooltip_text=_(
+            'How a player\'s Keizer total is rounded for the ranking and the '
+            'pairings table.'
+        ),
+        select_options=setting.options,
+        data=data, errors=errors
+    ) }}
+</div>

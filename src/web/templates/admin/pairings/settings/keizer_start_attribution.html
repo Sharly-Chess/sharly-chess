@@ -1,0 +1,17 @@
+<div class="row gy-2 gx-3">
+    {{ admin_macros.switch_input(
+        name=setting.id,
+        placeholder=setting.name,
+        tooltip_text=_(
+            'Before any games, players are ranked (by rating or manually) '
+            'and given an initial value (the top player about three times '
+            'the lowest, one less per rank). When on, that value stays part of '
+            'the score all tournament, so the initial ranking keeps a '
+            'lasting influence: a strong player who loses their first game '
+            'does not collapse below much weaker players after a single '
+            'result. When off, the initial ranking only seeds the first '
+            'round and every score is earned entirely from results.'
+        ),
+        data=data, errors=errors
+    ) }}
+</div>

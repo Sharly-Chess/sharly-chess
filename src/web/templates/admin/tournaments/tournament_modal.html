@@ -587,7 +587,7 @@
                     </script>
                 {% endif %}
 
-                <div>
+                <div id="points-attribution-section">
                     <button
                         type="button"
                         class="collapse-button {% if not force_points_open %}collapsed{% endif %} mt-3"
@@ -791,6 +791,28 @@
                         {% endif %}
                     </div>
                 </div>
+
+                <script>
+                    (function () {
+                        // Systems whose score is not a count of game points
+                        // (a Keizer) have no use for the game-point values.
+                        const NO_GAME_POINTS = {{
+                            pairing_systems
+                            | rejectattr('uses_result_points')
+                            | map(attribute='id')
+                            | list
+                            | tojson
+                        }};
+                        function syncPointAttribution() {
+                            const id = $('#pairing-system').val() || '';
+                            $('#points-attribution-section').toggle(
+                                !NO_GAME_POINTS.includes(id)
+                            );
+                        }
+                        $('#pairing-system').on('change', syncPointAttribution);
+                        syncPointAttribution();
+                    })();
+                </script>
 
                 {% for form_fields_template in plugin_form_fields_templates %}
                     {% include form_fields_template %}

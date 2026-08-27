@@ -306,3 +306,200 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         return [
             field for field in data.keys() if field.startswith(self.player_field_base)
         ]
+
+
+class KeizerRounding(StrEnum):
+    NONE = 'NONE'
+    HALF = 'HALF'
+    FULL = 'FULL'
+
+
+class KeizerStartAttributionSetting(PairingSetting[bool]):
+    """Whether the start-ranking Keizer value is added to a player's total.
+
+    Whether the value a player earns for their position in the start
+    ranking list counts towards their Keizer total."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'KEIZER_START_ATTRIBUTION'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Include initial ranking value in score')
+
+    @property
+    def template_path(self) -> str:
+        return '/admin/pairings/settings/keizer_start_attribution.html'
+
+    def tooltip_representation(self, value: bool) -> str | None:
+        return _('yes') if value else _('no')
+
+    def from_form_data(self, data: dict[str, str]) -> bool:
+        return data.get(self.id) == 'on'
+
+    def to_form_data(self, object_: bool) -> dict[str, str]:
+        return {self.id: 'on' if object_ else ''}
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        return {}
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> bool:
+        return True
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> bool:
+        return bool(value)
+
+
+class KeizerRoundingSetting(PairingSetting[KeizerRounding]):
+    """How a player's Keizer total is rounded for ranking and display.
+
+    Draws and absence shares produce fractional totals; this decides
+    whether they are kept or rounded to a half or a full point."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'KEIZER_ROUNDING'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Rounding of the Keizer points')
+
+    @property
+    def template_path(self) -> str:
+        return '/admin/pairings/settings/keizer_rounding.html'
+
+    def tooltip_representation(self, value: KeizerRounding) -> str | None:
+        return self.options.get(value.value)
+
+    def from_form_data(self, data: dict[str, str]) -> KeizerRounding:
+        return KeizerRounding(data[self.id])
+
+    def to_form_data(self, object_: KeizerRounding) -> dict[str, str]:
+        return {self.id: object_.value}
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        return {}
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> KeizerRounding:
+        return KeizerRounding.NONE
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> KeizerRounding:
+        return KeizerRounding(value)
+
+    @classmethod
+    def to_stored_value(cls, object_: KeizerRounding) -> Any:
+        return object_.value
+
+    @property
+    def options(self) -> dict[str, str]:
+        return {
+            KeizerRounding.NONE.value: _('Keep fractions'),
+            KeizerRounding.HALF.value: _('Round to a half point'),
+            KeizerRounding.FULL.value: _('Round to a full point'),
+        }
+
+
+class KeizerRematchGapSetting(PairingSetting[int]):
+    """Minimum number of rounds before two players may be paired again.
+
+    Best set as high as possible so pairings do not repeat until the
+    field is small enough to force it."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'KEIZER_REMATCH_GAP'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Rounds before a rematch')
+
+    @property
+    def template_path(self) -> str:
+        return '/admin/pairings/settings/keizer_rematch_gap.html'
+
+    def tooltip_representation(self, value: int) -> str | None:
+        return str(value)
+
+    def from_form_data(self, data: dict[str, str]) -> int:
+        return int(data[self.id])
+
+    def to_form_data(self, object_: int) -> dict[str, str]:
+        return {self.id: str(object_)}
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        value = data.get(self.id, '')
+        if not value or int(value) < 0:
+            return {self.id: _('A positive integer is expected.')}
+        return {}
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> int:
+        # As high as possible: never repeat a pairing until forced.
+        return tournament.rounds
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> int:
+        return int(value)
+
+
+class KeizerAbsenceFractionSetting(PairingSetting[float]):
+    """Fraction of a player's own current Keizer value awarded for an
+    excused absence or requested bye.
+
+    There is no single agreed rule for this; a third of the value is a
+    common choice and the default here."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'KEIZER_ABSENCE_FRACTION'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Special points for an absence')
+
+    @property
+    def template_path(self) -> str:
+        return '/admin/pairings/settings/keizer_absence_fraction.html'
+
+    # The value is stored and used as a fraction (0-1), but shown and
+    # entered as a whole percentage (0-100) — a third of the value reads
+    # as "33", not "0.333333".
+    def tooltip_representation(self, value: float) -> str | None:
+        return f'{round(value * 100)}%'
+
+    def from_form_data(self, data: dict[str, str]) -> float:
+        return int(data[self.id]) / 100
+
+    def to_form_data(self, object_: float) -> dict[str, str]:
+        return {self.id: str(round(object_ * 100))}
+
+    def get_data_errors(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> dict[str, str]:
+        value = data.get(self.id, '')
+        try:
+            percent = int(value)
+        except ValueError:
+            return {self.id: _('A whole percentage between 0 and 100 is expected.')}
+        if not 0 <= percent <= 100:
+            return {self.id: _('A whole percentage between 0 and 100 is expected.')}
+        return {}
+
+    @classmethod
+    def default_value(cls, tournament: 'Tournament') -> float:
+        return 1 / 3
+
+    @classmethod
+    def from_stored_value(cls, value: Any) -> float:
+        return float(value)
