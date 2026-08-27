@@ -262,6 +262,10 @@ class AppHookSpecs:
     def insert_search_filter_for_datasource(self, datasource_mapping: dict):
         """Map filters with datasources."""
 
+    @hookspec
+    def map_filter_to_tournament_criteria(self, filter_list: list, criterion: Any):
+        """Map filters to TournamentCriteria."""
+
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------

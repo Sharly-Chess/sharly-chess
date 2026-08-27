@@ -2,6 +2,8 @@ var filtersInitialized = false;
 var filters = {};
 var filterRefreshTimer;
 var ENABLED_FILTERS_BY_DATASOURCE = JSON.parse('{{enabled_filters_by_datasource|safe}}');
+var FILTERS_BY_TOURNAMENT = JSON.parse('{{filters_by_tournament|safe}}');
+
 
 function filterInit() {
     filtersInitialized = false;
@@ -10,9 +12,7 @@ function filterInit() {
 
     for (let filterName of filterNames) {
         filters[filterName] = storedFilters[filterName];
-        if (filters[filterName]) {
-            $(`#filter-form [name=${filterName}]`).val(filters[filterName]).trigger("change");
-        }
+        $(`#filter-form [name=${filterName}]`).val(filters[filterName]).trigger("change");
     }
     updateFilterCount();
 
@@ -58,6 +58,22 @@ function updateFilterCount() { // update the badge
         $("#filter-count").html("");
         $("#filter-count").removeClass("button_badge");
     }
+}
+
+function loadFiltersFromTournament(tournamentId) {
+    filters = {};
+    for (let filter of FILTERS_BY_TOURNAMENT[tournamentId]) {
+        filters[filter[0]] = filter[1];
+    }
+
+    localStorage.setItem("searchFilters", JSON.stringify(filters));
+    filterInit()
+
+}
+
+function clearFilters() {
+    localStorage.setItem("searchFilters", "{}");
+    filterInit();
 }
 
 function getFilters() { // return only filters with a value

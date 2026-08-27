@@ -723,6 +723,14 @@ class FfePlugin(Plugin):
             'ffe_league_filter',
         ]
 
+    @hookimpl
+    def map_filter_to_tournament_criteria(self, filter_list: list, criterion: Any):
+        if isinstance(criterion, FfeLicenceTournamentCriterion):
+            filter_list.append(('ffe_licence_filter', criterion.value))
+
+        elif isinstance(criterion, FfeLeagueTournamentCriterion):
+            filter_list.append(('ffe_league_filter', criterion.value))
+
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------

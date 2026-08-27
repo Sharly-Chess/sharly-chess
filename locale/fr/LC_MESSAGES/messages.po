@@ -10686,3 +10686,6 @@ msgstr "—"
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
 
+msgid "Load tournament criteria"
+msgstr "Récupérer les critères d'un tournoi"
+

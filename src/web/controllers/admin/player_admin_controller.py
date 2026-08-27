@@ -871,6 +871,7 @@ class PlayerAdminController(BaseEventAdminController):
         plugin_manager.hook_for_event(event, 'insert_player_form_fields_template')(
             templates_by_section=plugin_templates_by_section
         )
+        search_filter_manager = SearchFilterManager(web_context.get_admin_event())
         template_context |= {
             'gender_options': cls._get_gender_options(),
             'tournament_ratings_strings': {
@@ -915,13 +916,12 @@ class PlayerAdminController(BaseEventAdminController):
             'team_options': team_options,
             'team_locked': team_locked,
             'is_team_event': event.is_team_event,
-            'search_filters': SearchFilterManager(
-                web_context.get_admin_event()
-            ).get_filters(),
+            'search_filters': search_filter_manager.get_filters(),
+            'filters_by_tournament': json.dumps(
+                search_filter_manager.get_filters_by_tournament()
+            ),
             'enabled_filters_by_datasource': json.dumps(
-                SearchFilterManager(
-                    web_context.get_admin_event()
-                ).get_filters_by_datasource()
+                search_filter_manager.get_filters_by_datasource()
             ),
             'selected_data_source': SessionPlayersActiveDataSource(request).get(),
             'plugin_templates_by_section': plugin_templates_by_section,
