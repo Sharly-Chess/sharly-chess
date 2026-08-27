@@ -17,6 +17,8 @@ from common import (
     EXAMPLE_EVENTS_DIR,
     DEFAULT_DATA_DIR,
     FLATPAK_ID,
+    SETUP_MARKER,
+    SETUP_DONE,
 )
 from common.logger import get_logger, input_interactive_yn
 from common.sharly_chess_config import SharlyChessConfig
@@ -107,6 +109,7 @@ class DataRecovery:
 
         cls._recover_legacy_event_db()
         cls._clean_unsupported_version()
+        SETUP_MARKER.write_text(SETUP_DONE)
 
     @staticmethod
     def _get_version_dir(version: Version) -> Path:

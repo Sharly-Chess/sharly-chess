@@ -161,6 +161,9 @@ CHAMPIONSHIPS_DIR = VERSION_DATA_DIR / 'championships'
 LOG_DIR = VERSION_DATA_DIR / 'logs'
 TMP_DIR = VERSION_DATA_DIR / 'tmp'
 CONFIG_FILE = VERSION_DATA_DIR / '.scc'
+SETUP_MARKER = VERSION_DATA_DIR / '.setup'
+SETUP_PENDING = 'pending'
+SETUP_DONE = 'done'
 # Add a log prefix in testing env to avoid concurrency
 _LOG_PREFIX = f'-{time.time()}' if TEST_ENV else ''
 LOG_FILE = LOG_DIR / f'{APP_NAME}{_LOG_PREFIX}.log'
@@ -224,7 +227,7 @@ if previous_dir and not MANUAL_PATH_USED:
                 f'The move has been canceled.\n\nError: {e}',
             )
 
-IS_NEW_INSTALL = not VERSION_DATA_DIR.exists()
+_VERSION_DATA_DIR_CREATED = not VERSION_DATA_DIR.exists()
 
 for directory in (
     ARCHIVES_DIR,
@@ -236,6 +239,16 @@ for directory in (
     TMP_DIR,
 ):
     directory.mkdir(parents=True, exist_ok=True)
+
+# The directories above are created on import, before the setup has done
+# anything, so their presence tells nothing about the setup having gone through:
+# a first run canceled, crashed or stopped by a failed installation check leaves
+# them behind with no data. A version directory created here is marked pending
+# and marked done by the setup, so an interrupted run is resumed on the next
+# start. A directory left by a version predating the marker is taken as done.
+if _VERSION_DATA_DIR_CREATED:
+    SETUP_MARKER.write_text(SETUP_PENDING)
+IS_NEW_INSTALL = SETUP_MARKER.is_file() and SETUP_MARKER.read_text() == SETUP_PENDING
 
 try:
     with open(LOG_FILE, 'a'):
