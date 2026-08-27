@@ -7,6 +7,7 @@
 - Card-based administration pages now offer a compact list view with key information in columns and expandable details (5.0.0)
 - Added federation CUR (5.0.0)
 - Fix data recovery from previous 4.2.8 version (5.0.1)
+- Fix place cards documents (5.0.1)
 
 ## Events
 

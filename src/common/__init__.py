@@ -166,7 +166,7 @@ _LOG_PREFIX = f'-{time.time()}' if TEST_ENV else ''
 LOG_FILE = LOG_DIR / f'{APP_NAME}{_LOG_PREFIX}.log'
 
 # Embedded paths
-WEB_TEMPLATES_DIR = BASE_DIR / 'src' / 'web'
+WEB_TEMPLATES_DIR = BASE_DIR / 'src' / 'web' / 'templates'
 EMBEDDED_PLACE_CARDS_DIR = WEB_TEMPLATES_DIR / 'admin' / 'print' / 'place_cards'
 DEFAULT_FILES_DIR = BASE_DIR / 'default-files'
 DEFAULT_PROGRAM_DIR = DEFAULT_FILES_DIR / 'program'
