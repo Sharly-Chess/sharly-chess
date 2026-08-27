@@ -48,7 +48,7 @@ class DataRecovery:
                 recovered = cls._recover_version(stored_version)
 
             if not recovered:
-                legacy_version_val = ProgramVar.VERSION.read_value()
+                legacy_version_val = ProgramVar.LEGACY_VERSION.read_value()
                 legacy_dir_val = ProgramVar.LEGACY_VERSION_DIR.read_value()
                 if legacy_dir_val and legacy_version_val:
                     stored_dir = Path(legacy_dir_val)
@@ -58,7 +58,7 @@ class DataRecovery:
                             Version(legacy_version_val), legacy_dir
                         )
                         recovered = True
-                        ProgramVar.VERSION.clear_value()
+                        ProgramVar.LEGACY_VERSION.clear_value()
                         ProgramVar.LEGACY_VERSION_DIR.clear_value()
                     else:
                         logger.warning(
