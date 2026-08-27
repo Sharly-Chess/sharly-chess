@@ -47,7 +47,14 @@ class DataRecovery:
                 # Version has been updated from a previous version --> recover
                 recovered = cls._recover_version(stored_version)
 
-            if not recovered:
+            # The legacy variables are only cleared once the data they point to
+            # has been recovered, so a version still holding them together with
+            # an empty events directory has nothing to lose and a version to
+            # recover, whatever the version recovered just above brought.
+            legacy_pending = bool(
+                ProgramVar.LEGACY_VERSION_DIR.read_value()
+            ) and not any(EVENTS_DIR.iterdir())
+            if not recovered or legacy_pending:
                 legacy_version_val = ProgramVar.LEGACY_VERSION.read_value()
                 legacy_dir_val = ProgramVar.LEGACY_VERSION_DIR.read_value()
                 if legacy_dir_val and legacy_version_val:
