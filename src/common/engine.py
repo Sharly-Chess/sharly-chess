@@ -12,7 +12,6 @@ from functools import partial
 from json import JSONDecodeError
 from pathlib import Path
 from threading import Thread
-from time import time
 from typing import Any
 
 from packaging.version import Version
@@ -26,7 +25,6 @@ from common import (
     EVENTS_FOLDER,
     DEVEL_ENV,
     EVENTS_DIR,
-    TMP_DIR,
     BASE_DIR,
 )
 from common.i18n import _
@@ -467,12 +465,13 @@ class Engine:
         otherwise the most recent unstable release can be returned.
         If an error occurred or no release matches on the repository, returns None.
         Otherwise, the most recent version and its download URL are returned."""
-        marker: Path = TMP_DIR / '.github-updates-search'
-        if marker.exists() and time() - marker.lstat().st_mtime < 3600:
-            logger.debug(
-                'Already looked for a more recent version less than one hour ago, skipping.'
-            )
-            return None, None
+        # Search for new releases at any time from 4.2.9
+        # marker: Path = TMP_DIR / '.github-updates-search'
+        # if marker.exists() and time() - marker.lstat().st_mtime < 3600:
+        #    logger.debug(
+        #        'Already looked for a more recent version less than one hour ago, skipping.'
+        #    )
+        #    return None, None
         if dev_latest := os.getenv('DEV_LATEST_VERSION'):
             logger.warning('Using fake latest version [%s]', dev_latest)
             return Version(dev_latest), None
@@ -499,7 +498,8 @@ class Engine:
             except JSONDecodeError as ex:
                 logger.warning('Invalid response from GitHub: [%s].', ex)
                 return None, None
-            marker.touch()
+            # No need now
+            # marker.touch()
             version_download_urls: dict[Version, str] = {}
             for entry in entries:
                 tag_name: str = entry['tag_name']
