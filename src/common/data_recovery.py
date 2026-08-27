@@ -51,19 +51,20 @@ class DataRecovery:
                 legacy_version_val = ProgramVar.VERSION.read_value()
                 legacy_dir_val = ProgramVar.LEGACY_VERSION_DIR.read_value()
                 if legacy_dir_val and legacy_version_val:
-                    legacy_dir = Path(legacy_dir_val)
-                    if legacy_dir.exists():
+                    stored_dir = Path(legacy_dir_val)
+                    legacy_dir = cls._find_legacy_data_dir(stored_dir)
+                    if legacy_dir:
                         cls._recover_legacy_version(
                             Version(legacy_version_val), legacy_dir
                         )
                         recovered = True
+                        ProgramVar.VERSION.clear_value()
+                        ProgramVar.LEGACY_VERSION_DIR.clear_value()
                     else:
                         logger.warning(
-                            'Directory [%s] to recover is not found (canceled)',
-                            legacy_dir.absolute(),
+                            'No data to recover found from directory [%s] (canceled)',
+                            stored_dir.absolute(),
                         )
-                    ProgramVar.VERSION.clear_value()
-                    ProgramVar.LEGACY_VERSION_DIR.clear_value()
                 elif FLATPAK_ID:
                     # Flatpak can update directly to version 5 without
                     # passing by versions setting the legacy variables.
@@ -221,6 +222,32 @@ class DataRecovery:
     # -------------------------------------------------------------------------
     # Legacy
     # -------------------------------------------------------------------------
+
+    @staticmethod
+    def _find_legacy_data_dir(stored_dir: Path) -> Path | None:
+        """Resolve the data directory of a legacy version from the stored path.
+
+        Versions up to 4.2.8 stored the directory holding the bundled resources
+        instead of the working directory holding the data. Under PyInstaller 6
+        the former is `_internal` on Windows and `<name>.app/Contents/Frameworks`
+        on macOS, while the data respectively sits one level up and beside the
+        application bundle. Return None when no candidate holds any data.
+        """
+        candidates = [stored_dir, stored_dir.parent]
+        for parent in stored_dir.parents:
+            if parent.suffix == '.app':
+                candidates.append(parent.parent)
+                break
+        for candidate in candidates:
+            if (candidate / EVENTS_DIR.name).is_dir():
+                if candidate != stored_dir:
+                    logger.info(
+                        'Data of the version to recover found at [%s] instead of [%s]',
+                        candidate.absolute(),
+                        stored_dir.absolute(),
+                    )
+                return candidate
+        return None
 
     @staticmethod
     def _get_legacy_event_files(version_dir: Path) -> list[Path]:
