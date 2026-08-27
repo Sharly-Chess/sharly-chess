@@ -3,14 +3,14 @@
         name=setting.id,
         placeholder=setting.name,
         tooltip_text=_(
-            'Before any games, players are ranked (by rating or manually) '
-            'and given an initial value (the top player about three times '
-            'the lowest, one less per rank). When on, that value stays part of '
-            'the score all tournament, so the initial ranking keeps a '
-            'lasting influence: a strong player who loses their first game '
-            'does not collapse below much weaker players after a single '
-            'result. When off, the initial ranking only seeds the first '
-            'round and every score is earned entirely from results.'
+            'This keeps players facing opponents of similar strength. '
+            'When on (standard Keizer), each player\'s score includes their '
+            'own current ranking value, so the standings stay stable and each '
+            'round pairs players of near-equal strength: one bad result does '
+            'not drop a strong player far down the field, and pairings do not '
+            'swing wildly. When off, the score comes purely from results, '
+            'which can make the early standings, and so the pairings, more '
+            'volatile.'
         ),
         data=data, errors=errors
     ) }}

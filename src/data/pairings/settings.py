@@ -315,10 +315,13 @@ class KeizerRounding(StrEnum):
 
 
 class KeizerStartAttributionSetting(PairingSetting[bool]):
-    """Whether the start-ranking Keizer value is added to a player's total.
+    """Whether the own-value bonus is added to a player's total.
 
-    Whether the value a player earns for their position in the start
-    ranking list counts towards their Keizer total."""
+    Standard Keizer adds one instance of a player's *current* ranking
+    value to their score. It follows the standings — a player who slips
+    carries a smaller bonus — so it steadies the ranking (and the pairings
+    drawn from it) without freezing the start order in. Off scores purely
+    from results. The setting id is historical (``START_ATTRIBUTION``)."""
 
     @staticmethod
     def static_id() -> str:
@@ -326,7 +329,7 @@ class KeizerStartAttributionSetting(PairingSetting[bool]):
 
     @staticmethod
     def static_name() -> str:
-        return _('Include initial ranking value in score')
+        return _('Include own ranking value in score')
 
     @property
     def template_path(self) -> str:
