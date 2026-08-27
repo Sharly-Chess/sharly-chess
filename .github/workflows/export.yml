@@ -266,13 +266,14 @@ jobs:
 
   publish-linux-flatpak:
     name: Publish Linux Flatpak to GitHub Pages
-    needs: [export-sharly-chess-linux]
+    needs: [tests, export-sharly-chess-linux]
     runs-on: ubuntu-latest
     concurrency:
       group: gh-pages-publish
       cancel-in-progress: false
     steps:
-      # Decide first, before any expensive work, so pre-releases exit in seconds.
+      # Decide first, before any expensive work, so the runs that must not
+      # publish exit in seconds.
       - name: Set version
         shell: bash
         run: |
@@ -282,40 +283,45 @@ jobs:
             VERSION="${{ github.ref_name }}"
           fi
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-          # Only final X.Y.Z releases are published to the stable Flatpak repo;
-          # pre-releases (dev/a/b/rc) build but must not reach master.
-          if [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "IS_STABLE=true" >> $GITHUB_ENV
+          # Publishing to the stable Flatpak repo hits every Flatpak user on
+          # their next update, so it is reserved to the final X.Y.Z releases
+          # pushed as a tag. Pre-releases (dev/a/b/rc) and manual runs build and
+          # produce their bundle, but must not reach master.
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "SHOULD_PUBLISH=false" >> $GITHUB_ENV
+            echo "::notice::Manual run; skipping gh-pages Flatpak publish."
+          elif [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "SHOULD_PUBLISH=true" >> $GITHUB_ENV
           else
-            echo "IS_STABLE=false" >> $GITHUB_ENV
+            echo "SHOULD_PUBLISH=false" >> $GITHUB_ENV
             echo "::notice::$VERSION is a pre-release; skipping gh-pages Flatpak publish."
           fi
       - name: Checkout gh-pages
-        if: env.IS_STABLE == 'true'
+        if: env.SHOULD_PUBLISH == 'true'
         uses: actions/checkout@v5
         with:
           ref: gh-pages
           path: flatpak-repo-publish
       - name: Download x86_64 OSTree
-        if: env.IS_STABLE == 'true'
+        if: env.SHOULD_PUBLISH == 'true'
         uses: actions/download-artifact@v7
         with:
           name: ostree-x86_64
       - name: Download arm64 OSTree
-        if: env.IS_STABLE == 'true'
+        if: env.SHOULD_PUBLISH == 'true'
         uses: actions/download-artifact@v7
         with:
           name: ostree-arm64
       - name: Install OSTree tools
-        if: env.IS_STABLE == 'true'
+        if: env.SHOULD_PUBLISH == 'true'
         run: sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder ostree
       - name: Import GPG key
-        if: env.IS_STABLE == 'true'
+        if: env.SHOULD_PUBLISH == 'true'
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: gpg --batch --import <(echo "$GPG_PRIVATE_KEY")
       - name: Merge OSTree repositories and sign
-        if: env.IS_STABLE == 'true'
+        if: env.SHOULD_PUBLISH == 'true'
         shell: bash
         run: |
           # Initialize the target repo if it doesn't exist
@@ -378,7 +384,7 @@ jobs:
             --gpg-homedir="$HOME/.gnupg" \
             flatpak-repo-publish/repo
       - name: Generate .flatpakrepo files
-        if: env.IS_STABLE == 'true'
+        if: env.SHOULD_PUBLISH == 'true'
         shell: bash
         run: |
           touch flatpak-repo-publish/.nojekyll
@@ -398,7 +404,7 @@ jobs:
           EOF
 
       - name: Push to GitHub Pages
-        if: env.IS_STABLE == 'true'
+        if: env.SHOULD_PUBLISH == 'true'
         working-directory: flatpak-repo-publish
         shell: bash
         run: |
