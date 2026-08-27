@@ -60,6 +60,12 @@ class WindowsInstaller:
     def run(cls, version: Version):
         exe = str(cls.exe_path(version))
         # Type error when not running on windows
+        logger.info(
+            f"WindowsInstaller.run(): Calling ctypes.windll.shell32.ShellExecuteW(None, 'runas', {exe}, None, None, 1)..."
+        )
         ctypes.windll.shell32.ShellExecuteW(  # type: ignore[attr-defined]
             None, 'runas', exe, None, None, 1
+        )
+        logger.info(
+            f"WindowsInstaller.run(): ctypes.windll.shell32.ShellExecuteW(None, 'runas', {exe}, None, None, 1) terminated."
         )

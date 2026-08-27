@@ -297,7 +297,19 @@ def print_interactive_message(title: str, message: str) -> bool:
 
 def quit_app(post_exit_task: Callable | None = None) -> None:
     if GUILogHandler.instance:
-        return GUILogHandler.instance.gui.quit_app(post_exit_task)
+        get_logger().info(
+            f'quit_app(): GUILogHandler.instance found, executing [GUILogHandler.instance.gui.quit_app({post_exit_task})]...'
+        )
+        GUILogHandler.instance.gui.quit_app(post_exit_task)
+        get_logger().info(
+            f'quit_app(): GUILogHandler.instance.gui.quit_app({post_exit_task}) terminated.'
+        )
+        return
     if post_exit_task:
+        get_logger().info(
+            f'quit_app(): GUILogHandler.instance not found, executing [{post_exit_task}]...'
+        )
         post_exit_task()
+        get_logger().info(f'quit_app(): [{post_exit_task}] terminated.')
+    get_logger().info('quit_app(): Exiting...')
     sys.exit(0)

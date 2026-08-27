@@ -293,18 +293,31 @@ class Engine:
         if sys.platform == 'darwin':
             quit_app()
         else:
+            logger.info(
+                f'Engine._prepare_for_version_5(): Calling [cls._install_windows_v5({latest_version}, {download_url})]...'
+            )
             cls._install_windows_v5(latest_version, download_url)
+            logger.info(
+                f'Engine._prepare_for_version_5(): [cls._install_windows_v5({latest_version}, {download_url})] terminated.'
+            )
 
     @classmethod
     def _install_windows_v5(cls, version, download_url: str | None):
         if WindowsInstaller.download(version, download_url):
+            logger.info(
+                f'Engine._install_windows_v5(): Calling [quit_app(partial(WindowsInstaller.run, version={version}))]...'
+            )
             quit_app(partial(WindowsInstaller.run, version=version))
+            logger.info(
+                f'Engine._install_windows_v5(): [quit_app(partial(WindowsInstaller.run, version={version}))] terminated.'
+            )
             return
         message = _(
             'The installer program could not be downloaded. '
             'Consult the logs for more details.'
         )
         message += '\n\n' + _('Do you want to try again')
+        logger.info(message)
         if input_interactive_yn(_('Sharly Chess - Error'), message):
             cls._install_windows_v5(version, download_url)
 
