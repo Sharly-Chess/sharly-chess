@@ -1353,9 +1353,6 @@ msgstr ""
 msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Bd."
 
-msgid "Before any games, players are ranked (by rating or manually) and given an initial value (the top player about three times the lowest, one less per rank). When on, that value stays part of the score all tournament, so the initial ranking keeps a lasting influence: a strong player who loses their first game does not collapse below much weaker players after a single result. When off, the initial ranking only seeds the first round and every score is earned entirely from results."
-msgstr ""
-
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr ""
 
@@ -4062,10 +4059,10 @@ msgstr ""
 msgid "Include incomplete teams"
 msgstr ""
 
-msgid "Include initial ranking value in score"
+msgid "Include non-monetary prizes"
 msgstr ""
 
-msgid "Include non-monetary prizes"
+msgid "Include own ranking value in score"
 msgstr ""
 
 msgid "Include pairings"
@@ -8857,6 +8854,9 @@ msgid "This folder is not empty."
 msgstr ""
 
 msgid "This group"
+msgstr ""
+
+msgid "This keeps players facing opponents of similar strength. When on (standard Keizer), each player's score includes their own current ranking value, so the standings stay stable and each round pairs players of near-equal strength: one bad result does not drop a strong player far down the field, and pairings do not swing wildly. When off, the score comes purely from results, which can make the early standings, and so the pairings, more volatile."
 msgstr ""
 
 msgid "This menu is empty."
