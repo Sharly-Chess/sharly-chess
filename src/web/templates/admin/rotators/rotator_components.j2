@@ -172,21 +172,21 @@
     {% set rotator = item %}
     <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
         <div class="d-flex align-items-center gap-1">
-            {% if client.can_manage_screens %}
-                {% if view == 'card' %}{{ screens_button(rotator, true) }}{% endif %}
-                {% if rotator.rotating_screens_by_id %}
-                    <a
-                        class="btn btn-sm btn-outline-primary"
-                        href="{{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
-                        target="_blank"
-                        {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}
-                    ><i class="bi-eye"></i></a>
-                    {{ admin_macros.display_controller_assign_dropdown(
-                        admin_event.sorted_display_controllers,
-                        'rotator',
-                        rotator.name,
-                    ) }}
-                {% endif %}
+            {% if client.can_manage_screens and view == 'card' %}{{ screens_button(rotator, true) }}{% endif %}
+            {% if rotator.rotating_screens_by_id %}
+                <a
+                    class="btn btn-sm btn-outline-primary"
+                    href="{{ url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id) }}"
+                    target="_blank"
+                    {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}
+                ><i class="bi-eye"></i></a>
+            {% endif %}
+            {% if client.can_manage_screens and rotator.rotating_screens_by_id %}
+                {{ admin_macros.display_controller_assign_dropdown(
+                    admin_event.sorted_display_controllers,
+                    'rotator',
+                    rotator.name,
+                ) }}
             {% endif %}
         </div>
         {% if client.can_manage_screens %}
