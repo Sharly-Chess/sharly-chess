@@ -106,11 +106,14 @@ class KeizerScorerTest(TestCase):
             {self.a.id: 5, self.b.id: 3, self.c.id: 5, self.d.id: 1},
         )
         totals = self.scorer.totals_after(2)
-        # C's round-1 win over B is now worth B's *current* value (2), not
-        # B's start value (3) — the Keizer recorrection.
+        # Each total is the player's *current* own value (the own-value
+        # bonus, from the round-2 values A 4, C 3, B 2, D 1) plus results
+        # scored with those same current values. Two recorrections show:
+        # B's own-value bonus is now 2, not its start value 3 (it slipped to
+        # rank 3); and C's round-1 win over B is now worth B's current 2.
         self.assertEqual(totals[self.a.id], 4 + 1 + 3)  # 8
-        self.assertEqual(totals[self.c.id], 2 + 2 + 0)  # 4
-        self.assertEqual(totals[self.b.id], 3 + 0 + 1)  # 4
+        self.assertEqual(totals[self.c.id], 3 + 2 + 0)  # 5
+        self.assertEqual(totals[self.b.id], 2 + 0 + 1)  # 3
         self.assertEqual(totals[self.d.id], 1)
 
     def test_excused_absence_earns_a_fraction_of_own_value(self):

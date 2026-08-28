@@ -40,6 +40,7 @@
 - The **Keizer** pairing system has been added - perfect for club tournaments where players don't have to be available for each round (5.0.0)
 - Pairing settings can be prepared before pairing round #1 and always reviewed (5.0.0)
 - Warn when top acceleration groups have an odd number of players at round #1 (5.0.0)
+- Fixed a bug concerning the hanling of the player's own keizer score (5.0.2)
 
 ## Rankings
 

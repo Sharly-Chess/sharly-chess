@@ -3,12 +3,14 @@
 Unlike a Swiss or round-robin, a Keizer score is not a running count of
 game points: each player carries a *ranking value* derived from their
 current standing, and a game is worth the opponent's ranking value (a
-draw, half of it). Because the values follow the standings, every past
-round is re-scored with the opponents' current values after each round —
-a win over a player who later collapses is worth less than a win over one
-who climbs. That whole-table, iterative recomputation is what
-:class:`KeizerScorer` implements; the system, variation and engine below
-wire it into the pairing framework.
+draw, half of it). A player's score is their own current ranking value
+(the "own-value bonus") plus the value of their results. Because every
+value follows the standings, both the bonus and every past round are
+re-scored after each round — a win over a player who later collapses is
+worth less than a win over one who climbs, and a player who slips carries
+a smaller own-value bonus. That whole-table, iterative recomputation is
+what :class:`KeizerScorer` implements; the system, variation and engine
+below wire it into the pairing framework.
 """
 
 from functools import cached_property
@@ -61,9 +63,13 @@ class KeizerScorer:
       (see :meth:`_top_value`).
     - ``values_after(k)`` ranks the totals computed with
       ``values_after(k-1)`` and reassigns values by position.
-    - a total after round ``R`` sums every played round ``r <= R`` using
-      the opponents' values from ``values_after(R-1)`` — so past rounds
-      are re-scored as the standings move.
+    - a total after round ``R`` is the player's own current ranking value
+      (the Keizer own-value bonus, from ``values_after(R-1)``) plus every
+      played round ``r <= R`` scored with the opponents' values from
+      ``values_after(R-1)`` — so both the bonus and the past rounds are
+      re-scored as the standings move. Both self-correct: a player who
+      slips carries a smaller own-value bonus, and a win over someone who
+      later collapses is worth less.
 
     A player only contributes rounds they actually have a pairing for, so
     late entries and withdrawals need no special handling.
@@ -144,7 +150,13 @@ class KeizerScorer:
     ) -> dict[int, float]:
         totals: dict[int, float] = {}
         for player in self.tournament.tournament_players:
-            total = self._start_values()[player.id] if self._start_attribution else 0.0
+            # The Keizer own-value bonus: one instance of the player's *current*
+            # ranking value (``values`` is the standings before this round, or
+            # the start values for round 0). Because it follows the player's
+            # position it is self-correcting — a player who slips carries a
+            # smaller bonus — so it steadies the ranking without freezing the
+            # start order in. Off means the score is earned purely from results.
+            total = values.get(player.id, 0.0) if self._start_attribution else 0.0
             for round_, pairing in player.pairings.items():
                 if round_ > up_to_round:
                     continue
