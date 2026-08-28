@@ -23,6 +23,8 @@
 - When the _FIDE_ database is installed locally, players looked up from it (including via an _FFE_ search) have their women title filled in automatically (5.0.0)
 - A player's record now shows their federation identifiers — the _FIDE_ ID, and the _FFE_ licence number for French events — each linking to the corresponding federation profile page (5.0.0)
 - Omit empty lines when importing players (5.0.0)
+- The player search results now close when clicking outside them (5.0.2)
+- When creating several players in a row, only the tournament and team are carried over to the next player; the other fields start empty (5.0.2)
 
 ## Teams
 
