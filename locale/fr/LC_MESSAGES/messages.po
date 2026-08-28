@@ -1353,9 +1353,6 @@ msgstr "Éch"
 msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Éch."
 
-msgid "Before any games, players are ranked (by rating or manually) and given an initial value (the top player about three times the lowest, one less per rank). When on, that value stays part of the score all tournament, so the initial ranking keeps a lasting influence: a strong player who loses their first game does not collapse below much weaker players after a single result. When off, the initial ranking only seeds the first round and every score is earned entirely from results."
-msgstr "Avant toute partie, les joueur·euses sont classé·es (par Elo ou manuellement) et reçoivent une valeur initiale (le premier joueur environ le triple du dernier, un point de moins par rang). Si activé, cette valeur reste intégrée au score durant tout le tournoi, de sorte que le classement initial conserve une influence durable : un·e joueur·euse fort·e qui perd sa première partie ne chute pas sous des joueur·euses bien plus faibles après un seul résultat. Si désactivé, le classement initial ne sert qu'à établir le premier appariement et chaque score est entièrement acquis par les résultats."
-
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"
 
@@ -4062,11 +4059,11 @@ msgstr "Inclure la colonne de la fédération"
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
 
-msgid "Include initial ranking value in score"
-msgstr "Inclure la valeur du classement initial dans le score"
-
 msgid "Include non-monetary prizes"
 msgstr "Inclure les prix non-monétaires"
+
+msgid "Include own ranking value in score"
+msgstr "Inclure la valeur de classement du joueur dans le score"
 
 msgid "Include pairings"
 msgstr "Inclure les appariements"
@@ -8860,6 +8857,9 @@ msgstr "Ce dossier n'est pas vide."
 
 msgid "This group"
 msgstr "Ce groupe"
+
+msgid "This keeps players facing opponents of similar strength. When on (standard Keizer), each player's score includes their own current ranking value, so the standings stay stable and each round pairs players of near-equal strength: one bad result does not drop a strong player far down the field, and pairings do not swing wildly. When off, the score comes purely from results, which can make the early standings, and so the pairings, more volatile."
+msgstr "Cela permet aux joueurs d'affronter des adversaires de force similaire. Lorsque l'option est activée (Keizer standard), le score de chaque joueur inclut sa propre valeur de classement actuelle : le classement reste stable et chaque ronde apparie des joueurs de force proche. Un mauvais résultat ne fait pas chuter un joueur fort loin dans le classement, et les appariements ne varient pas brutalement. Lorsque l'option est désactivée, le score provient uniquement des résultats, ce qui peut rendre le classement initial, et donc les appariements, plus instables."
 
 msgid "This menu is empty."
 msgstr "Ce menu est vide."
