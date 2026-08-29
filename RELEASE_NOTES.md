@@ -25,6 +25,7 @@
 - Omit empty lines when importing players (5.0.0)
 - The player search results now close when clicking outside them (5.0.2)
 - When creating several players in a row, only the tournament and team are carried over to the next player; the other fields start empty (5.0.2)
+- Fix : searching or importing players no longer crashes when the local _FIDE_ database has not yet been updated to the version 5 format (5.0.3)
 
 ## Teams
 
