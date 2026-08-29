@@ -154,4 +154,10 @@ class MigrationDatabase(SQLiteDatabase, ABC):
                 'Database could not be opened because file '
                 f'[{self.file.resolve()}] does not exist.'
             )
-        return super().__enter__()
+        try:
+            return super().__enter__()
+        except OperationalError as e:
+            raise SharlyChessException(
+                'Database could not be opened, the file '
+                f'[{self.file.resolve()}] exists but is not accessible: {e}'
+            ) from e

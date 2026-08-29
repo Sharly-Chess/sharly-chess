@@ -66,7 +66,7 @@ class EventLoader:
                 metadata_by_event_id[event_id] = cls.check_event_database(event_id)
                 cls._valid_event_ids.add(event_id)
             except SharlyChessException as e:
-                logger.exception(e)
+                logger.debug('Event [%s] could not be loaded: %s', event_id, e)
                 cls._invalid_uniq_ids.add(event_id)
         return metadata_by_event_id
 
@@ -141,15 +141,17 @@ class EventLoader:
         for file in EVENTS_DIR.glob(f'*.{Extension.EVENT_DB}'):
             uniq_id = cls.format_uniq_id(file.stem)
             if uniq_id != file.stem:
+                target_id: str = uniq_id
                 index: int = 1
-                new_file = cls.event_file_path(uniq_id)
-                while new_file.exists():
+                while cls.event_file_path(target_id).exists():
                     index += 1
-                    new_file = cls.event_file_path(f'{uniq_id}-{index}')
+                    target_id = f'{uniq_id}-{index}'
+                new_file = cls.event_file_path(target_id)
                 shutil.move(file, new_file)
                 logger.warning(
                     'File [%s] has been renamed [%s]', file.name, new_file.name
                 )
+                uniq_id = target_id
             ids.append(uniq_id)
         return ids
 
