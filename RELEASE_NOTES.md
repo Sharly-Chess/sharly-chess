@@ -6,12 +6,15 @@
 - Reorganize the desktop application into tabs (5.0.0)
 - Card-based administration pages now offer a compact list view with key information in columns and expandable details (5.0.0)
 - Added federation CUR (5.0.0)
+- Fix data recovery from previous 4.2.8 version (5.0.1)
+- Fix place cards documents (5.0.1)
 
 ## Events
 
 - Custom tags can be created and added to events for easier filtering (5.0.0)
 - Event creation allowed for access level "Organization" (5.0.0)
 - Staff members can now be assigned as arbiters, separately from chief and deputy arbiter roles, and are included in tournament documents and _Chess-Results_ exports (5.0.0)
+- Events whose name contains special characters (such as `&`) now upload to _Chess-Results_ correctly (5.0.0)
 
 ## Players
 
@@ -34,6 +37,7 @@
 - A new **Custom accelerated system** lets the arbiter define the acceleration round by round — a number of virtual points granted to a range of pairing numbers over a range of rounds — instead of choosing a published system (5.0.0)
 - Tournaments using it export their rules as TRF26 250 records, and a TRF file carrying 250 records is now imported as a custom accelerated tournament (the **Accelerated pairings** plugin must be enabled) (5.0.0)
 - A new **Initial score accelerated system** gives each player an initial virtual score — useful when a tournament continues an earlier one (a blitz, for instance). The scores can be filled in one go from any other tournament, in this event or another one, with a coefficient. (5.0.0)
+- The **Keizer** pairing system has been added - perfect for club tournaments where players don't have to be available for each round (5.0.0)
 - Pairing settings can be prepared before pairing round #1 and always reviewed (5.0.0)
 - Warn when top acceleration groups have an odd number of players at round #1 (5.0.0)
 

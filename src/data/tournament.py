@@ -93,6 +93,7 @@ if TYPE_CHECKING:
         RoundProhibitedPairingGroup,
     )
     from data.pairings import PairingVariation, PairingSystem
+    from data.pairings.keizer import KeizerScorer
     from data.teams.team import Team
     from data.tie_breaks.team_records import TeamRecord
     from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
@@ -139,6 +140,9 @@ class Tournament:
         # Per-player caches are valid only while pairings are stable.
         self._compute_caching_enabled: bool = False
         self._round_board_numbers_cache: dict[tuple[int, int], dict[int, int]] = {}
+        # Whole-table Keizer scorer, rebuilt whenever the per-player caches
+        # are cleared (see ``set_for_round`` / ``_compute_tournament_player_ranks``).
+        self._keizer_scorer: 'KeizerScorer | None' = None
 
     # -------------------------------------------------------------------------
     # Plugin
@@ -2898,6 +2902,7 @@ class Tournament:
             round_ = self.current_round
         self._compute_caching_enabled = True
         try:
+            self._keizer_scorer = None
             for player in self.tournament_players:
                 player.clear_compute_caches()
             players_to_compute = (
@@ -4108,12 +4113,32 @@ class Tournament:
         self, tournament_player: TournamentPlayer, *, before_round: int
     ):
         """Sets the points of a player before round *before_round*."""
+        if self.pairing_system.id == 'KEIZER':
+            # A Keizer total is not a game-point count; it comes from the
+            # whole-table scorer. Points and board-ordering points are the
+            # same figure — board 1 is the leader.
+            total = self.keizer_scorer.total(
+                tournament_player, after_round=before_round - 1
+            )
+            tournament_player.points = total
+            tournament_player.vpoints = total
+            return
         vpoints = self._calculate_player_virtual_points(
             tournament_player, at_round=before_round
         )
         tournament_player.compute_points(before_round=before_round)
         assert tournament_player.points is not None
         tournament_player.vpoints = tournament_player.points + vpoints
+
+    @property
+    def keizer_scorer(self) -> 'KeizerScorer':
+        """The whole-table Keizer scorer, rebuilt after the per-player
+        compute caches are cleared so it always reflects current results."""
+        if self._keizer_scorer is None:
+            from data.pairings.keizer import KeizerScorer
+
+            self._keizer_scorer = KeizerScorer(self)
+        return self._keizer_scorer
 
     def _calculate_player_virtual_points(
         self, tournament_player: TournamentPlayer, *, at_round: int
@@ -4161,6 +4186,7 @@ class Tournament:
         return self._tournament_players_by_rank
 
     def _compute_tournament_player_ranks(self, after_round: int) -> None:
+        self._keizer_scorer = None
         for player in self.tournament_players:
             player.clear_compute_caches()
         self.set_tournament_players_pairing_numbers()
@@ -4171,8 +4197,13 @@ class Tournament:
             ).items():
                 player = self.tournament_players_by_id[player_id]
                 player.tie_break_variables[tie_break.id] = variable
+        keizer = self.pairing_system.id == 'KEIZER'
         for player in self.tournament_players:
-            player.points = player.points_after(after_round)
+            player.points = (
+                self.keizer_scorer.total(player, after_round=after_round)
+                if keizer
+                else player.points_after(after_round)
+            )
             player.compute_tie_break_values(
                 after_round=after_round, tie_breaks=tie_breaks
             )

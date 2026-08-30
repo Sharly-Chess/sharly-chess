@@ -375,9 +375,9 @@ msgstr "SC_S"
 msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
 
-#, python-brace-format, python-format
-msgid "+{winner:g}% bonus for the top {share:g}% of competitors"
-msgstr "+{winner:g}% de bonus pour les {share:g}% meilleurs compétiteurs"
+#, python-brace-format
+msgid "+{winner:g}% bonus for competitors in the top {share:g}%"
+msgstr "+{winner:g}% de bonus pour les compétiteurs dans le top {share:g}%"
 
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
@@ -686,6 +686,9 @@ msgstr "Une valeur comprise entre 0 et {max} est attendue."
 msgid "A value is expected."
 msgstr "Une valeur est attendue."
 
+msgid "A whole percentage between 0 and 100 is expected."
+msgstr "Un pourcentage entier entre 0 et 100 est attendu."
+
 msgid "ADM"
 msgstr "ADM"
 
@@ -956,6 +959,9 @@ msgstr "Évènements"
 
 msgid "All absent *** ALL TEAMS ABSENT"
 msgstr "Toutes présentes"
+
+msgid "All groups"
+msgstr "Tous les groupes"
 
 msgid "All hours have been cleared."
 msgstr "Tous les horaires ont été supprimés."
@@ -1346,6 +1352,9 @@ msgstr "Éch"
 
 msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Éch."
+
+msgid "Before any games, players are ranked (by rating or manually) and given an initial value (the top player about three times the lowest, one less per rank). When on, that value stays part of the score all tournament, so the initial ranking keeps a lasting influence: a strong player who loses their first game does not collapse below much weaker players after a single result. When off, the initial ranking only seeds the first round and every score is earned entirely from results."
+msgstr "Avant toute partie, les joueur·euses sont classé·es (par Elo ou manuellement) et reçoivent une valeur initiale (le premier joueur environ le triple du dernier, un point de moins par rang). Si activé, cette valeur reste intégrée au score durant tout le tournoi, de sorte que le classement initial conserve une influence durable : un·e joueur·euse fort·e qui perd sa première partie ne chute pas sous des joueur·euses bien plus faibles après un seul résultat. Si désactivé, le classement initial ne sert qu'à établir le premier appariement et chaque score est entièrement acquis par les résultats."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"
@@ -3911,6 +3920,9 @@ msgstr "L'horaire [{hour}] a été créé."
 msgid "Hours"
 msgstr "Horaires"
 
+msgid "How a player's Keizer total is rounded for the ranking and the pairings table."
+msgstr "La manière dont le total Keizer d'un·e joueur·euse est arrondi pour le classement et la table des appariements."
+
 msgid "How each source tournament is named in the list."
 msgstr "Comment chaque tournoi source est nommé dans la liste."
 
@@ -4049,6 +4061,9 @@ msgstr "Inclure la colonne de la fédération"
 
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
+
+msgid "Include initial ranking value in score"
+msgstr "Inclure la valeur du classement initial dans le score"
 
 msgid "Include non-monetary prizes"
 msgstr "Inclure les prix non-monétaires"
@@ -4309,6 +4324,12 @@ msgstr "Kashdan"
 
 msgid "Kazakhstan"
 msgstr "Kazakhstan"
+
+msgid "Keep fractions"
+msgstr "Conserver les fractions"
+
+msgid "Keizer"
+msgstr "Keizer"
 
 msgid "Kenya"
 msgstr "Kenya"
@@ -7178,6 +7199,12 @@ msgstr "Numéro de ronde ou texte"
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
 
+msgid "Round to a full point"
+msgstr "Arrondir au point entier"
+
+msgid "Round to a half point"
+msgstr "Arrondir au demi-point"
+
 #, python-brace-format
 msgid "Round {round}"
 msgstr "Ronde {round}"
@@ -7210,8 +7237,14 @@ msgstr "Ronde : %(round)d"
 msgid "Round: the last finished round"
 msgstr "Ronde : la dernière ronde terminée"
 
+msgid "Rounding of the Keizer points"
+msgstr "Arrondi des points Keizer"
+
 msgid "Rounds"
 msgstr "Rondes"
+
+msgid "Rounds before a rematch"
+msgstr "Rondes avant de rejouer un adversaire"
 
 msgid "Rounds one Elected to Play"
 msgstr "Rondes désigné comme jouant"
@@ -7807,6 +7840,9 @@ msgstr "Points attribués pour chaque place à l'arrivée, séparés par des esp
 msgid "Spain"
 msgstr "Espagne"
 
+msgid "Special points for an absence"
+msgstr "Points spéciaux pour une absence"
+
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
 
@@ -8175,6 +8211,9 @@ msgstr "La FIDE utilisera les classements standards des deux joueur·euses pour 
 msgid "The General ranking includes all players and is always available. Create categories to add filtered rankings; players must match every criterion in a category."
 msgstr "Le classement général inclut tou·tes les joueur·euses et est toujours disponible. Créez des catégories pour ajouter des classements filtrés ; les joueur·euses doivent satisfaire tous les critères d'une catégorie."
 
+msgid "The TRF export is not available for this pairing system: its score is not a count of game points."
+msgstr "L'export TRF n'est pas disponible pour ce système d'appariement : son score n'est pas un décompte de points de partie."
+
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
@@ -8415,6 +8454,9 @@ msgstr "Le nombre de rondes découle du système d'appariement."
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de bye ou une défaite par forfait."
 
+msgid "The number of rounds that must pass before two players may be paired again. Set it as high as possible to avoid repeated pairings."
+msgstr "Le nombre de rondes qui doivent s'écouler avant que deux joueur·euses puissent être réapparié·es. À définir aussi élevé que possible pour éviter les appariements répétés."
+
 msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
 msgstr "Le nombre de rondes lors desquelles un·e joueur·euse obtient, en jouant ou non, autant de points que lors d'une victoire."
 
@@ -8468,6 +8510,9 @@ msgstr "Les numéros d'appariement du tournoi par ordre croissant."
 
 msgid "The pairing numbers of the tournament in descending order."
 msgstr "Les numéros d'appariement du tournoi par ordre décroissant."
+
+msgid "The percentage of a player's own current Keizer value awarded for an excused absence or a requested bye (0 = nothing, 100 = the full value)."
+msgstr "Le pourcentage de la valeur Keizer actuelle d'un·e joueur·euse attribué pour une absence excusée ou un bye demandé (0 = rien, 100 = la valeur entière)."
 
 msgid "The percentage of top-ranked players that receive a bonus."
 msgstr "Le pourcentage des joueur·euses les mieux classé·es qui reçoivent un bonus."
@@ -8812,6 +8857,9 @@ msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly 
 
 msgid "This folder is not empty."
 msgstr "Ce dossier n'est pas vide."
+
+msgid "This group"
+msgstr "Ce groupe"
 
 msgid "This menu is empty."
 msgstr "Ce menu est vide."

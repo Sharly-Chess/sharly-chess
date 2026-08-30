@@ -676,7 +676,7 @@ class RankingPointsWithBonusRule(ChampionshipRule):
     @classmethod
     def display_details(cls, options):
         return [
-            _('+{winner:g}% bonus for the top {share:g}% of competitors').format(
+            _('+{winner:g}% bonus for competitors in the top {share:g}%').format(
                 winner=options.get('winner_bonus', 0),
                 share=options.get('bonus_share', 0),
             )

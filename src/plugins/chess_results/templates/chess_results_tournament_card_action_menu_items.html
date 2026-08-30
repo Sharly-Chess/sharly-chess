@@ -1,3 +1,6 @@
+{# The Chess-Results upload reports a game-point score, so it is not
+   offered for a pairing system whose score is not game points. #}
+{% if tournament.pairing_system.uses_result_points %}
 <li class="dropdown-submenu">
     <button class="dropdown-item d-flex justify-content-between">
         <span>
@@ -39,3 +42,4 @@
         </li>
     </ul>
 </li>
+{% endif %}

@@ -1,0 +1,14 @@
+<div class="row gy-2 gx-3">
+    {{ admin_macros.number_input(
+        name=setting.id,
+        label=_('%(string)s:', string=setting.name),
+        tooltip_text=_(
+            'The number of rounds that must pass before two players may be '
+            'paired again. Set it as high as possible to avoid repeated '
+            'pairings.'
+        ),
+        min=0,
+        step=1,
+        data=data, errors=errors
+    ) }}
+</div>

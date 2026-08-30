@@ -230,12 +230,26 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         :meth:`is_compatible_with` aggregates both."""
         return []
 
+    @property
+    def usable_without_result_points(self) -> bool:
+        """Whether this tie-break still means something when the pairing
+        system's score is not a count of game points (a Keizer). Most
+        tie-breaks sum opponents' game points and do not, so they are
+        withheld from such systems; the few that read only results,
+        counts or the primary score itself override this to ``True``."""
+        return False
+
     def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
         """Whether this tie-break (with its current options) can run on
         the given pairing system. Combines the static
         ``forbidden_pairing_systems`` list with each option's
         ``is_compatible_with`` check."""
         if pairing_system in self.forbidden_pairing_systems:
+            return False
+        if (
+            not pairing_system.uses_result_points
+            and not self.usable_without_result_points
+        ):
             return False
         for option_type in self.available_options():
             if not self._get_option(option_type).is_compatible_with(pairing_system):
@@ -408,6 +422,10 @@ class WinsTieBreak(PlayerRecordTieBreak):
     def static_id() -> str:
         return 'WINS'
 
+    @property
+    def usable_without_result_points(self) -> bool:
+        return True
+
     @staticmethod
     def static_name() -> str:
         return _('Number of wins')
@@ -469,6 +487,10 @@ class GamesWonTieBreak(PlayerRecordTieBreak):
     def static_id() -> str:
         return 'GAMES_WON'
 
+    @property
+    def usable_without_result_points(self) -> bool:
+        return True
+
     @staticmethod
     def static_name() -> str:
         return _('Number of games won')
@@ -527,6 +549,10 @@ class GamesPlayedWithBlackTieBreak(PlayerRecordTieBreak):
     def static_id() -> str:
         return 'GAMES_PLAYED_WITH_BLACK'
 
+    @property
+    def usable_without_result_points(self) -> bool:
+        return True
+
     @staticmethod
     def static_name() -> str:
         return _('Games played with black')
@@ -556,6 +582,10 @@ class GamesWonWithBlackTieBreak(PlayerRecordTieBreak):
     @staticmethod
     def static_id() -> str:
         return 'GAMES_WON_WITH_BLACK'
+
+    @property
+    def usable_without_result_points(self) -> bool:
+        return True
 
     @staticmethod
     def static_name() -> str:
@@ -674,6 +704,10 @@ class RoundsElectedToPlayTieBreak(PlayerRecordTieBreak):
     def static_id() -> str:
         return 'ROUNDS_ELECTED_TO_PLAY'
 
+    @property
+    def usable_without_result_points(self) -> bool:
+        return True
+
     @staticmethod
     def static_name() -> str:
         return _('Rounds one Elected to Play')
@@ -767,6 +801,12 @@ class PointsTieBreak(PlayerRecordTieBreak):
     def static_id() -> str:
         return 'POINTS'
 
+    @property
+    def usable_without_result_points(self) -> bool:
+        # On a Keizer this returns the Keizer total (see
+        # ``compute_player_value``), which is exactly the primary score.
+        return True
+
     @staticmethod
     def static_name() -> str:
         return _('Points')
@@ -795,6 +835,11 @@ class PointsTieBreak(PlayerRecordTieBreak):
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
     ) -> float:
+        tournament = player.tournament
+        if tournament.pairing_system.id == 'KEIZER':
+            # A Keizer's primary score is its running Keizer total, not a
+            # count of game points; it is what the standings rank on.
+            return tournament.keizer_scorer.total(player, after_round=after_round)
         return player.points_after(after_round)
 
     @property
@@ -820,6 +865,10 @@ class PairingNumberTieBreak(PlayerRecordTieBreak):
     @staticmethod
     def static_id() -> str:
         return 'PAIRING_NUMBER'
+
+    @property
+    def usable_without_result_points(self) -> bool:
+        return True
 
     @staticmethod
     def static_name() -> str:
@@ -2320,6 +2369,12 @@ class PlayerRatingTieBreak(OpponentRatingTieBreak):
     def static_id() -> str:
         return 'RATING'
 
+    @property
+    def usable_without_result_points(self) -> bool:
+        # The player's own rating — no game points involved, and the
+        # customary tie-break after a Keizer score.
+        return True
+
     @staticmethod
     def static_name() -> str:
         return _('Rating')
@@ -2385,6 +2440,10 @@ class DirectEncounterTieBreak(TieBreak):
     @staticmethod
     def static_id() -> str:
         return 'DIRECT_ENCOUNTER'
+
+    @property
+    def usable_without_result_points(self) -> bool:
+        return True
 
     @classmethod
     def static_name(cls) -> str:
@@ -2583,6 +2642,10 @@ class ManualTieBreak(TieBreak):
     @staticmethod
     def static_id() -> str:
         return 'MANUAL'
+
+    @property
+    def usable_without_result_points(self) -> bool:
+        return True
 
     @classmethod
     def static_name(cls) -> str:
