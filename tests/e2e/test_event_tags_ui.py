@@ -16,6 +16,9 @@ class TestEventTags:
         page.get_by_test_id('nav-admin-event-config-tab-tab').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
+        # .modal-dialog is a Bootstrap placeholder until htmx swaps the real
+        # form in; wait for the stored location so a fill can't be overwritten.
+        expect(modal.get_by_test_id('location')).to_have_value('Paris')
         return modal
 
     def _open_tags_modal(self, page: Page, event_uniq_id: str):
