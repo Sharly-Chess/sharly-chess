@@ -29,7 +29,7 @@ class TestEventAgeCategorySets:
     ):
         TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
         modal = self._open_event_config_modal(page, EVENT_ID)
-        modal.get_by_test_id('location').fill('Unsaved Location')
+        TestUtils.fill_and_confirm(modal.get_by_test_id('location'), 'Unsaved Location')
         self._open_sets_modal(page, modal)
 
         page.get_by_role('button', name='Add').click()
