@@ -25,6 +25,7 @@ from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import (
     HTTP_404_NOT_FOUND,
+    HTTP_423_LOCKED,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_403_FORBIDDEN,
     HTTP_400_BAD_REQUEST,
@@ -128,6 +129,7 @@ exception_handlers = {
     HTTP_400_BAD_REQUEST: IndexController.handle_exception,
     HTTP_403_FORBIDDEN: IndexController.handle_exception,
     HTTP_404_NOT_FOUND: IndexController.handle_exception,
+    HTTP_423_LOCKED: IndexController.handle_exception,
     HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_exception,
 }
 

@@ -9,6 +9,11 @@ class SharlyChessException(Exception):
         super().__init__(string)
 
 
+class DatabaseInaccessibleException(SharlyChessException):
+    """Error raised when a database file exists but cannot be opened
+    (locked by another program, file sync such as OneDrive, permissions…)."""
+
+
 class DictReaderException(SharlyChessException):
     """Error raised when validating the content of a dict."""
 

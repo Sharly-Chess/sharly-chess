@@ -8300,6 +8300,12 @@ msgstr "La fin de la plage ne doit pas précéder son début."
 msgid "The event already has multi-tournament players."
 msgstr "Cet évènement a déjà des joueur·euses multi-tournois."
 
+msgid "The event could not be opened"
+msgstr "L'événement n'a pas pu être ouvert"
+
+msgid "The event exists but its file could not be opened. It may be temporarily locked by another program, by file synchronisation (such as OneDrive) or by antivirus software. Wait a moment and try again. If it keeps happening, move the data folder out of any synchronised location in the settings. The event has not been deleted."
+msgstr "L'événement existe mais son fichier n'a pas pu être ouvert. Il est peut-être temporairement verrouillé par un autre programme, par une synchronisation de fichiers (telle que OneDrive) ou par un antivirus. Patientez un instant et réessayez. Si le problème persiste, déplacez le dossier de données hors de tout emplacement synchronisé dans les paramètres. L'événement n'a pas été supprimé."
+
 msgid "The event no longer exists, so it cannot be opened."
 msgstr "L'événement n'existe plus, il ne peut donc pas être ouvert."
 
@@ -8833,6 +8839,9 @@ msgstr "Cet évènement ne peut pas être utilisé par la version actuelle de Sh
 
 msgid "This event cannot be opened: one or more required plugins are disabled. You can enable plugins in the application settings."
 msgstr "Cet événement ne peut pas être ouvert : un ou plusieurs plugins requis sont désactivés. Vous pouvez activer les plugins dans les paramètres de l'application."
+
+msgid "This event exists but its file could not be opened. It may be locked by another program, by file synchronisation (such as OneDrive) or by antivirus software. It has not been deleted."
+msgstr "Cet événement existe mais son fichier n'a pas pu être ouvert. Il est peut-être verrouillé par un autre programme, par une synchronisation de fichiers (telle que OneDrive) ou par un antivirus. Il n'a pas été supprimé."
 
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des spectateur·ices)."

@@ -17,6 +17,7 @@
 - Event creation allowed for access level "Organization" (5.0.0)
 - Staff members can now be assigned as arbiters, separately from chief and deputy arbiter roles, and are included in tournament documents and _Chess-Results_ exports (5.0.0)
 - Events whose name contains special characters (such as `&`) now upload to _Chess-Results_ correctly (5.0.0)
+- A clear indication is now given in the case that an event file becomes locked by another application (anti-virus, synchronization, etc.) (5.0.3)
 
 ## Players
 

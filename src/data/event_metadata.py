@@ -27,6 +27,10 @@ class EventMetadata(BaseStoredEvent):
     screen_count: int = 0
     family_count: int = 0
     rotator_count: int = 0
+    # False for a placeholder standing in for an event whose file exists but
+    # could not be opened (locked, file sync, permissions…). Such an event is
+    # listed but not accessible, similarly to an event with a disabled plugin.
+    accessible: bool = True
 
     @property
     def is_team_event(self) -> bool:

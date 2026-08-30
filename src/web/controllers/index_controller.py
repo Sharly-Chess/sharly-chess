@@ -120,6 +120,17 @@ class IndexController(BaseController):
                 title = _('404 - Page Not Found')
                 error_message = _('Sorry, the page you are looking for does not exist.')
                 reload_message = None
+            case status_codes.HTTP_423_LOCKED:
+                title = _('The event could not be opened')
+                error_message = _(
+                    'The event exists but its file could not be opened. It may be '
+                    'temporarily locked by another program, by file synchronisation '
+                    '(such as OneDrive) or by antivirus software. Wait a moment and '
+                    'try again. If it keeps happening, move the data folder out of '
+                    'any synchronised location in the settings. The event has not '
+                    'been deleted.'
+                )
+                reload_message = reload_message or _('Retry')
             case status_codes.HTTP_500_INTERNAL_SERVER_ERROR:
                 title = _('500 - Internal Server Error')
                 error_message = _('Sorry, an unexpected error has occurred.')
@@ -149,7 +160,10 @@ class IndexController(BaseController):
         if request.url.path.startswith('/error/'):
             return cls._error_template(request, status_code)
 
-        if request.htmx:
+        # A locked event may become accessible again once the lock is released,
+        # so the error is rendered on the original URL (rather than redirecting to
+        # /error/423) to let the "Retry" link re-request that same URL.
+        if request.htmx or status_code == status_codes.HTTP_423_LOCKED:
             return cls._error_template(request, status_code)
         return Redirect(
             path=request.app.route_reverse('http-error', status_code=status_code)
