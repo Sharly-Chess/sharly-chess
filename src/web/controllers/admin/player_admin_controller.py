@@ -2764,8 +2764,8 @@ class PlayerAdminController(BaseEventAdminController):
             return {}
         if 'category_filter' in filters and filters['category_filter']:
             player_categories = event.player_categories
-            junior_categories = event.junior_categories
-            senior_categories = event.senior_categories
+            junior_categories: list[Any] = event.junior_categories
+            senior_categories: list[Any] = event.senior_categories
             categories_intervals = []
             category_filters = [
                 PlayerCategory.from_id(cat) for cat in filters['category_filter']

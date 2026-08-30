@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, override
+from typing import TYPE_CHECKING, Any, override
 from common.sharly_chess_config import SharlyChessConfig
 from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter
@@ -79,10 +79,10 @@ class TournamentCriterionManager(EventBoundEntityManager[TournamentCriterion]):
 
 
 class SearchFilterManager:
-    def __init__(self, event: Optional['Event']):
+    def __init__(self, event: 'Event'):
         self.event = event
 
-    def get_filters(self) -> list[dict]:
+    def get_filters(self) -> dict[str, Any]:
         federations = {'': '-'} | {
             federation_id: f'{federation_id} - {federation_name}'
             for federation_id, federation_name in SharlyChessConfig().federations.items()
@@ -130,7 +130,7 @@ class SearchFilterManager:
         mapping = {}
 
         for tournament in self.event.tournaments:
-            filter_list = []
+            filter_list: list[tuple] = []
             for criterion in tournament.criteria:
                 if isinstance(criterion, AgeCategoryTournamentCriterion):
                     categories = [
