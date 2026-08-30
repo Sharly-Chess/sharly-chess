@@ -98,7 +98,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
-            women_title=row.get('fide_women_title'),
+            women_title=row.get('fide_women_title') or '',
             transient_arbiter_titles={'fide': row['fide_arbiter_title']},
             ratings=ratings,
             fide_id=row['fide_id'],
