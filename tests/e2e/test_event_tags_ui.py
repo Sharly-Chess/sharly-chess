@@ -81,7 +81,14 @@ class TestEventTags:
         # Back restores the event modal with the tag selected.
         page.get_by_role('button', name='Back').click()
         expect(page.locator('#tags-main-container')).to_be_visible()
-        expect(page.locator('#tags option[selected]')).to_have_count(1)
+        # Wait for the tag to be the select's live value — that, not a rendered
+        # [selected] attribute, is what the form submits, so guard on it before
+        # saving or the tag can be dropped from the save.
+        page.wait_for_function(
+            '(name) => [...document.querySelector("#tags").selectedOptions]'
+            '.some((option) => option.textContent.trim() === name)',
+            arg=TAG_NAME,
+        )
 
         page.get_by_test_id('event-form-submit-button').click()
         expect(page).to_have_url(f'/event/{EVENT_ID}/tournaments')
@@ -112,7 +119,7 @@ class TestEventTags:
         """The tag manager is a separate modal, so the event form it was
         opened from is carried through and restored by Back."""
         modal = self._open_event_config_modal(page, EVENT_ID)
-        modal.get_by_test_id('location').fill('Unsaved Location')
+        TestUtils.fill_and_confirm(modal.get_by_test_id('location'), 'Unsaved Location')
         modal.locator('#tags-configure-button').click()
         expect(page.locator('#event-tags-modal')).to_be_visible()
         page.get_by_role('button', name='Back').click()

@@ -140,6 +140,23 @@ class TestUtils:
         )
 
     @staticmethod
+    def fill_and_confirm(locator: Locator, value: str, attempts: int = 10):
+        """Fill a field and make sure the value holds.
+
+        A field in a freshly-swapped modal can silently drop the first fill
+        while the form is still initialising (the modal runs its init a beat
+        after the swap), so re-fill until the value sticks.
+        """
+        for attempt in range(attempts):
+            locator.fill(value)
+            try:
+                expect(locator).to_have_value(value, timeout=250)
+                return
+            except AssertionError:
+                if attempt == attempts - 1:
+                    raise
+
+    @staticmethod
     def poll_expect_with_reload(
         page,
         assertion: Callable[[], None],
