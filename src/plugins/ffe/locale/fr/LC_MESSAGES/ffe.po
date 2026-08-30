@@ -21,6 +21,12 @@ msgstr "A - Compétition"
 msgid "A non-empty string is expected"
 msgstr "Une chaîne de caractères non vide est attendue"
 
+msgid "A only"
+msgstr "A uniquement"
+
+msgid "A or B"
+msgstr "A ou B"
+
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
@@ -798,8 +804,3 @@ msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] "{n} partie perdue par forfait, comptée -1."
 msgstr[1] "{n} parties perdues par forfait, comptées -1."
 
-msgid "A only"
-msgstr "A uniquement"
-
-msgid "A or B"
-msgstr "A ou B"

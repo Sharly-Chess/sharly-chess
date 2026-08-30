@@ -4491,6 +4491,9 @@ msgstr ""
 msgid "Lithuania"
 msgstr ""
 
+msgid "Load tournament criteria"
+msgstr ""
+
 msgid "Loading more results…"
 msgstr ""
 
@@ -10732,5 +10735,3 @@ msgstr ""
 msgid "← Back to IT1 certificate"
 msgstr ""
 
-msgid "Load tournament criteria"
-msgstr ""
