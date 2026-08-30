@@ -198,12 +198,6 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         fields = [
             'tournament_id',
             'team_id',
-            'mail',
-            'phone',
-            'comment',
-            'owed',
-            'paid',
-            'fixed',
         ]
         plugin_manager.hook_for_event(
             self.get_admin_event(), 'insert_player_form_carry_over_field'

@@ -10,8 +10,10 @@
 {% endmacro %}
 
 {% macro assignment(item, view, placement) %}
-    <span class="{% if not item.assigned_object %}text-secondary{% endif %} text-truncate">
-        {{ item.assigned_description or _('Neither screen nor rotator currently assigned') }}
+    <span class="d-flex min-width-0">
+        <span class="{% if not item.assigned_object %}text-secondary{% endif %} text-truncate">
+            {{ item.assigned_description or _('Neither screen nor rotator currently assigned') }}
+        </span>
     </span>
 {% endmacro %}
 
@@ -27,19 +29,19 @@
     {% set display_controller = item %}
     <div class="collection-actions d-flex align-items-center justify-content-between gap-2">
         <div class="d-flex align-items-center gap-1">
+            {% if display_controller.assigned_object %}
+                <a
+                    class="btn btn-sm btn-outline-primary"
+                    href="{{ url_for(
+                        'user-display-controller',
+                        event_uniq_id=admin_event.uniq_id,
+                        display_controller_id=display_controller.id,
+                    ) }}"
+                    target="_blank"
+                    {{ macros.tooltip_attributes('info', _('Go to the display controller.'), 'top') }}
+                ><i class="bi-eye"></i></a>
+            {% endif %}
             {% if client.can_manage_screens %}
-                {% if display_controller.assigned_object %}
-                    <a
-                        class="btn btn-sm btn-outline-primary"
-                        href="{{ url_for(
-                            'user-display-controller',
-                            event_uniq_id=admin_event.uniq_id,
-                            display_controller_id=display_controller.id,
-                        ) }}"
-                        target="_blank"
-                        {{ macros.tooltip_attributes('info', _('Go to the display controller.'), 'top') }}
-                    ><i class="bi-eye"></i></a>
-                {% endif %}
                 <div
                     class="dropdown d-inline"
                     {{ macros.tooltip_attributes('info', _('Assign a screen to the controller.'), 'top') }}

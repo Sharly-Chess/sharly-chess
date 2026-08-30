@@ -16,8 +16,8 @@
 {% endblock %}
 
 {% block top_right_nav %}
+    {% include '/admin/common/collection_controls.html' %}
     {% if client.can_manage_screens %}
-        {% include '/admin/common/collection_controls.html' %}
         {% include '/admin/common/screens_config_button.html' %}
         <span
             {{ macros.tooltip_attributes(
