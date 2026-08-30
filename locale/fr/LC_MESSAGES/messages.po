@@ -5941,6 +5941,10 @@ msgstr "BYE d'appariement. Par défaut, valeur de la nulle."
 msgid "Pairing allocated bye. Defaults to the Win value."
 msgstr "BYE d'appariement. Par défaut, valeur de la victoire."
 
+#, python-brace-format
+msgid "Pairing generation failed: {details}"
+msgstr "Échec de la génération des appariements : {details}"
+
 #, python-format
 msgid "Pairing information for round %(round)d"
 msgstr "Informations d’appariement pour la ronde %(round)d"
@@ -6035,6 +6039,9 @@ msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de jo
 
 msgid "Pairings generation not allowed if there are fewer teams than rounds."
 msgstr "Génération des appariements impossible s'il y a moins d'équipes que de rondes."
+
+msgid "Pairings generation not allowed while an acceleration rule extends past the last round. Adjust the acceleration settings or the number of rounds."
+msgstr "La génération d'appariements n'est pas autorisée tant qu'une règle d'accélération dépasse la dernière ronde. Ajustez les paramètres d'accélération ou le nombre de rondes."
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
