@@ -8298,6 +8298,12 @@ msgstr ""
 msgid "The event already has multi-tournament players."
 msgstr ""
 
+msgid "The event could not be opened"
+msgstr ""
+
+msgid "The event is present on the server but could not be opened. It may be temporarily locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software. Wait a moment and try again. If it keeps happening, move the data folder out of any synchronised location (Console > Parameters > Data folder < Move)."
+msgstr ""
+
 msgid "The event no longer exists, so it cannot be opened."
 msgstr ""
 
@@ -8830,6 +8836,9 @@ msgid "This event can't be used by the current version of Sharly Chess."
 msgstr ""
 
 msgid "This event cannot be opened: one or more required plugins are disabled. You can enable plugins in the application settings."
+msgstr ""
+
+msgid "This event exists on the server but could not be opened. It may be locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software."
 msgstr ""
 
 msgid "This event is private (by default, screens are not visible by the spectators)."

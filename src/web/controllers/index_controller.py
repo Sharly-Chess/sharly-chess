@@ -120,6 +120,16 @@ class IndexController(BaseController):
                 title = _('404 - Page Not Found')
                 error_message = _('Sorry, the page you are looking for does not exist.')
                 reload_message = None
+            case status_codes.HTTP_423_LOCKED:
+                title = _('The event could not be opened')
+                error_message = _(
+                    'The event is present on the server but could not be opened. It may be '
+                    'temporarily locked by another program, by file synchronisation '
+                    '(OneDrive, Google Drive, DropBox, etc.) or by antivirus software. Wait '
+                    'a moment and try again. If it keeps happening, move the data folder '
+                    'out of any synchronised location (Console > Parameters > Data folder < Move).'
+                )
+                reload_message = reload_message or _('Retry')
             case status_codes.HTTP_500_INTERNAL_SERVER_ERROR:
                 title = _('500 - Internal Server Error')
                 error_message = _('Sorry, an unexpected error has occurred.')
@@ -143,13 +153,31 @@ class IndexController(BaseController):
     def handle_exception(
         cls, request: HTMXRequest, exception: HTTPException
     ) -> Redirect | HTMXTemplate:
-        status_code = getattr(exception, 'status_code', 500)
+        return cls._render_error(request, getattr(exception, 'status_code', 500))
 
+    @classmethod
+    def handle_database_inaccessible(
+        cls, request: HTMXRequest, exception: Exception
+    ) -> Redirect | HTMXTemplate:
+        # An event file that opened fine at page load can become locked (another
+        # program, file sync, antivirus…) before a later action reaches it. Such
+        # actions open the database directly, without going through get_event, so
+        # the raised DatabaseInaccessibleException is mapped to the 423 page here
+        # rather than surfacing as a generic 500 error.
+        return cls._render_error(request, status_codes.HTTP_423_LOCKED)
+
+    @classmethod
+    def _render_error(
+        cls, request: HTMXRequest, status_code: int
+    ) -> Redirect | HTMXTemplate:
         # Prevent infinite redirect loops if the error handler itself fails
         if request.url.path.startswith('/error/'):
             return cls._error_template(request, status_code)
 
-        if request.htmx:
+        # A locked event may become accessible again once the lock is released,
+        # so the error is rendered on the original URL (rather than redirecting to
+        # /error/423) to let the "Retry" link re-request that same URL.
+        if request.htmx or status_code == status_codes.HTTP_423_LOCKED:
             return cls._error_template(request, status_code)
         return Redirect(
             path=request.app.route_reverse('http-error', status_code=status_code)

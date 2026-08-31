@@ -169,6 +169,12 @@ class IndexAdminController(BaseAdminController):
         sorted_archives = ArchiveLoader.get_sorted_archives()
         public_only: bool = not web_context.client.can_view_private_events
         events_metadata = EventLoader.get_events_metadata(public_only=public_only)
+        if not public_only:
+            # Events whose file exists but could not be opened (locked, file sync…)
+            # are listed as not accessible rather than silently disappearing.
+            events_metadata = (
+                events_metadata + EventLoader.inaccessible_events_metadata()
+            )
         passed_events = EventLoader.select_events_metadata(events_metadata, 'passed')
         current_events = EventLoader.select_events_metadata(events_metadata, 'current')
         coming_events = EventLoader.select_events_metadata(events_metadata, 'coming')

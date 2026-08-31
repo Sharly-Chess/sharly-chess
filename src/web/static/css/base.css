@@ -1696,6 +1696,12 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     justify-content: center;
     align-items: center;
     height: calc(100vh - 60px);
+    padding: 0 1.5rem;
+    text-align: center;
+}
+
+.error-page-container p {
+    max-width: 42rem;
 }
 
 .error-page-container .error-page-logo {

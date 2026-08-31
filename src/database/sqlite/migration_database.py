@@ -6,7 +6,7 @@ from typing import Self, TYPE_CHECKING, Any
 from packaging.version import Version
 
 from common import SHARLY_CHESS_VERSION
-from common.exception import SharlyChessException
+from common.exception import SharlyChessException, DatabaseInaccessibleException
 from database.sqlite.sqlite_database import SQLiteDatabase
 
 if TYPE_CHECKING:
@@ -157,7 +157,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         try:
             return super().__enter__()
         except OperationalError as e:
-            raise SharlyChessException(
+            raise DatabaseInaccessibleException(
                 'Database could not be opened, the file '
                 f'[{self.file.resolve()}] exists but is not accessible: {e}'
             ) from e
