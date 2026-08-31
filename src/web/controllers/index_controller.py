@@ -123,12 +123,11 @@ class IndexController(BaseController):
             case status_codes.HTTP_423_LOCKED:
                 title = _('The event could not be opened')
                 error_message = _(
-                    'The event exists but its file could not be opened. It may be '
+                    'The event is present on the server but could not be opened. It may be '
                     'temporarily locked by another program, by file synchronisation '
-                    '(such as OneDrive) or by antivirus software. Wait a moment and '
-                    'try again. If it keeps happening, move the data folder out of '
-                    'any synchronised location in the settings. The event has not '
-                    'been deleted.'
+                    '(OneDrive, Google Drive, DropBox, etc.) or by antivirus software. Wait '
+                    'a moment and try again. If it keeps happening, move the data folder '
+                    'out of any synchronised location (Console > Parameters > Data folder < Move).'
                 )
                 reload_message = reload_message or _('Retry')
             case status_codes.HTTP_500_INTERNAL_SERVER_ERROR:
