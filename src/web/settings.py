@@ -37,6 +37,7 @@ from litestar.types import ControllerRouterHandler, Middleware
 from litestar.middleware.base import DefineMiddleware
 
 from common import BASE_DIR, TMP_DIR, DEVEL_ENV
+from common.exception import DatabaseInaccessibleException
 from common.i18n import gettext, ngettext
 from data.input_output import OnlineDataSourceManager
 
@@ -131,6 +132,10 @@ exception_handlers = {
     HTTP_404_NOT_FOUND: IndexController.handle_exception,
     HTTP_423_LOCKED: IndexController.handle_exception,
     HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_exception,
+    # A write action (event update, pairing…) reaching an event whose file has
+    # become locked opens the database directly, so it raises this exception
+    # instead of an HTTP 423. Map it to the same locked-event error page.
+    DatabaseInaccessibleException: IndexController.handle_database_inaccessible,
 }
 
 

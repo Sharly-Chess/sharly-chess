@@ -154,8 +154,23 @@ class IndexController(BaseController):
     def handle_exception(
         cls, request: HTMXRequest, exception: HTTPException
     ) -> Redirect | HTMXTemplate:
-        status_code = getattr(exception, 'status_code', 500)
+        return cls._render_error(request, getattr(exception, 'status_code', 500))
 
+    @classmethod
+    def handle_database_inaccessible(
+        cls, request: HTMXRequest, exception: Exception
+    ) -> Redirect | HTMXTemplate:
+        # An event file that opened fine at page load can become locked (another
+        # program, file sync, antivirus…) before a later action reaches it. Such
+        # actions open the database directly, without going through get_event, so
+        # the raised DatabaseInaccessibleException is mapped to the 423 page here
+        # rather than surfacing as a generic 500 error.
+        return cls._render_error(request, status_codes.HTTP_423_LOCKED)
+
+    @classmethod
+    def _render_error(
+        cls, request: HTMXRequest, status_code: int
+    ) -> Redirect | HTMXTemplate:
         # Prevent infinite redirect loops if the error handler itself fails
         if request.url.path.startswith('/error/'):
             return cls._error_template(request, status_code)
