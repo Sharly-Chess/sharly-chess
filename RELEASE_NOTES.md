@@ -8,6 +8,7 @@
 - Added federation CUR (5.0.0)
 - Fix data recovery from previous 4.2.8 version (5.0.1)
 - Fix place cards documents (5.0.1)
+- The edit pencil on editable table columns is now always visible instead of only appearing on hover (5.0.3)
 - Fix Error status not cleared after reauthentication with Sharly-Chess.com (5.0.3)
 
 ## Events
@@ -46,6 +47,7 @@
 - Warn when top acceleration groups have an odd number of players at round #1 (5.0.0)
 - Fixed a bug concerning the hanling of the player's own keizer score (5.0.2)
 - Fix : the pairing-system warning icon in the tournament list view now shows its explanation on hover (5.0.3)
+- Display a clearer error message when the pairing engine fails to produce pairings (5.0.3)
 
 ## Rankings
 
