@@ -25,6 +25,7 @@ from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import (
     HTTP_404_NOT_FOUND,
+    HTTP_423_LOCKED,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_403_FORBIDDEN,
     HTTP_400_BAD_REQUEST,
@@ -36,6 +37,7 @@ from litestar.types import ControllerRouterHandler, Middleware
 from litestar.middleware.base import DefineMiddleware
 
 from common import BASE_DIR, TMP_DIR, DEVEL_ENV
+from common.exception import DatabaseInaccessibleException
 from common.i18n import gettext, ngettext
 from data.input_output import OnlineDataSourceManager
 
@@ -128,7 +130,12 @@ exception_handlers = {
     HTTP_400_BAD_REQUEST: IndexController.handle_exception,
     HTTP_403_FORBIDDEN: IndexController.handle_exception,
     HTTP_404_NOT_FOUND: IndexController.handle_exception,
+    HTTP_423_LOCKED: IndexController.handle_exception,
     HTTP_500_INTERNAL_SERVER_ERROR: IndexController.handle_exception,
+    # A write action (event update, pairing…) reaching an event whose file has
+    # become locked opens the database directly, so it raises this exception
+    # instead of an HTTP 423. Map it to the same locked-event error page.
+    DatabaseInaccessibleException: IndexController.handle_database_inaccessible,
 }
 
 

@@ -362,7 +362,7 @@ msgstr ""
 msgid "Leagues (FFE)"
 msgstr ""
 
-msgid "Leave empty tables for fixed boards:"
+msgid "Leave empty tables for fixed boards"
 msgstr ""
 
 msgid "Lic. *** LICENCE COLUMN HEADER"
