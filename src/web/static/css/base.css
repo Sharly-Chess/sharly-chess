@@ -895,7 +895,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
     flex: 0 0 auto;
     margin-left: .35rem;
     font-size: .7em;
-    visibility: hidden;
+    opacity: .45;
 }
 
 .collection-inline-edit:not(.collection-inline-edit-preserve-colour):not(:disabled):hover,
@@ -930,7 +930,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
 
 .collection-inline-edit:not(:disabled):hover .collection-inline-edit-icon,
 .collection-inline-edit:not(:disabled):focus-visible .collection-inline-edit-icon {
-    visibility: visible;
+    opacity: 1;
 }
 
 .collection-inline-edit:disabled {

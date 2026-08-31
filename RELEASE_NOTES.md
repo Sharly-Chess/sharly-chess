@@ -8,6 +8,7 @@
 - Added federation CUR (5.0.0)
 - Fix data recovery from previous 4.2.8 version (5.0.1)
 - Fix place cards documents (5.0.1)
+- The edit pencil on editable table columns is now always visible instead of only appearing on hover (5.0.3)
 
 ## Events
 
