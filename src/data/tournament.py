@@ -4109,6 +4109,19 @@ class Tournament:
                     )
         return accelerated_rounds
 
+    def has_acceleration_beyond_last_round(self) -> bool:
+        """Whether an acceleration entry would reach past the final round.
+
+        bbpPairings stores one acceleration entry per round up to the entry's
+        last round and rejects a player holding more entries than the
+        tournament has rounds. This happens when a rule's last round outlives
+        a later reduction of the round count (the settings form only validates
+        the range at save time)."""
+        return any(
+            accelerated_round.last_round > self.rounds
+            for accelerated_round in self._trf_accelerated_rounds()
+        )
+
     def set_tournament_player_points(
         self, tournament_player: TournamentPlayer, *, before_round: int
     ):

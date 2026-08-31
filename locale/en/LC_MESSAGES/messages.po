@@ -5939,6 +5939,10 @@ msgstr ""
 msgid "Pairing allocated bye. Defaults to the Win value."
 msgstr ""
 
+#, python-brace-format
+msgid "Pairing generation failed: {details}"
+msgstr ""
+
 #, python-format
 msgid "Pairing information for round %(round)d"
 msgstr ""
@@ -6032,6 +6036,9 @@ msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr ""
 
 msgid "Pairings generation not allowed if there are fewer teams than rounds."
+msgstr ""
+
+msgid "Pairings generation not allowed while an acceleration rule extends past the last round. Adjust the acceleration settings or the number of rounds."
 msgstr ""
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."

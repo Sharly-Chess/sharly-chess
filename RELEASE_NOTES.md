@@ -46,6 +46,7 @@
 - Warn when top acceleration groups have an odd number of players at round #1 (5.0.0)
 - Fixed a bug concerning the hanling of the player's own keizer score (5.0.2)
 - Fix : the pairing-system warning icon in the tournament list view now shows its explanation on hover (5.0.3)
+- Display a clearer error message when the pairing engine fails to produce pairings (5.0.3)
 
 ## Rankings
 
