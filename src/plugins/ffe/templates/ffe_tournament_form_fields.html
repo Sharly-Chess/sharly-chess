@@ -1,4 +1,4 @@
-<div id="ffe-connection-section">
+<div id="ffe-connection-section" class="mt-3">
     <h4>
         {{ _('Connection French Chess Federation') }}
     </h4>
@@ -20,12 +20,17 @@
     (function () {
         // The FFE transfer is Papi-based (a count of game points), so it
         // does not apply to a system whose score is computed some other
-        // way (a Keizer). Hide the connection fields for those systems.
+        // way (a Keizer) or which has no Papi form at all (a knock-out,
+        // ranked by the round reached). Hide the connection for those.
         {% if pairing_systems is defined %}
             const NO_FFE_TRANSFER = {{
-                pairing_systems
-                | rejectattr('uses_result_points')
-                | map(attribute='id')
+                (
+                    (pairing_systems | rejectattr('uses_result_points')
+                        | map(attribute='id') | list)
+                    + (pairing_systems | selectattr('eliminates_participants')
+                        | map(attribute='id') | list)
+                )
+                | unique
                 | list
                 | tojson
             }};

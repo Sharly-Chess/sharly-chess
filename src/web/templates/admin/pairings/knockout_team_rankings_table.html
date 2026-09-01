@@ -1,0 +1,38 @@
+{# Knock-out team ranking. Like the individual knock-out ranking, a team
+   knock-out ranks by the round reached, not by match/game points: just the
+   placement and a plain-language result. See team_rankings_table.html for
+   the scored team systems. #}
+{% set knockout_standings = admin_tournament.knockout.team_standing_labels() %}
+<div class="d-flex">
+    <h4>{{ _('Team ranking') }}</h4>
+</div>
+<table
+    id="team-rankings-table"
+    class="rankings-table table prominent table-sm table-striped table-hover w-100 bg-light"
+>
+    <thead class="position-sticky z-2" style="top: var(--header-height);">
+        <tr class="player-header">
+            <th class="rank text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+            <th class="name text-start">{{ _('Team') }}</th>
+            <th class="result text-end">{{ _('Result *** KNOCK-OUT RESULT COLUMN') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in admin_tournament.team_standings() %}
+            <tr class="player-row">
+                <td class="rank text-end">{{ row.rank }}</td>
+                <td class="name text-start"><strong>{{ row.team.name }}</strong></td>
+                <td class="result text-end fw-bold">
+                    {{ knockout_standings[row.team.id] }}
+                </td>
+            </tr>
+        {% endfor %}
+        {% if not admin_tournament.team_standings() %}
+            <tr>
+                <td colspan="99" class="text-center text-muted p-3">
+                    {{ _('No teams in this tournament.') }}
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
