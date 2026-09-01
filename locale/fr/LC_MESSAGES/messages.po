@@ -3738,7 +3738,7 @@ msgstr "Genre :"
 
 #, python-brace-format
 msgid "Gender: {gender}"
-msgstr "Sexe : {gender}"
+msgstr "Genre : {gender}"
 
 msgid "Genders"
 msgstr "Genres"
