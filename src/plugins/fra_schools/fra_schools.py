@@ -83,7 +83,7 @@ from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from data.rule_sets import RuleSet
-    from data.prohibited_pairings import ProhibitedPairingDimension
+    from data.pairing_dimensions import PairingDimension
     from data.teams.team_affiliation import TeamAffiliationSource
     from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
@@ -209,15 +209,15 @@ class FRASchoolsPlugin(Plugin):
         return self.id, FRASchoolsPlayerPluginData
 
     @hookimpl
-    def get_prohibited_pairing_dimensions(self) -> list['ProhibitedPairingDimension']:
-        from data.prohibited_pairings import ProhibitedPairingDimension
+    def get_prohibited_pairing_dimensions(self) -> list['PairingDimension']:
+        from data.pairing_dimensions import PairingDimension
 
         def school_key(player: 'TournamentPlayer') -> str | None:
             school = FRASchoolsUtils.get_player_school(player)
             return str(school.id) if school and school.id is not None else None
 
         return [
-            ProhibitedPairingDimension(
+            PairingDimension(
                 id='fra-school',
                 label=_('School'),
                 is_team=False,

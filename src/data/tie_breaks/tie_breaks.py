@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from bisect import bisect_right
 from collections import namedtuple, defaultdict
 from collections.abc import Callable, Iterable
+from enum import StrEnum
 from contextlib import suppress
 from dataclasses import dataclass
 from decimal import Decimal
@@ -50,6 +51,16 @@ if TYPE_CHECKING:
     from data.tie_breaks.team_records import TeamMatchRecord
     from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
     from data.tournament import Tournament
+
+
+class TieBreakPurpose(StrEnum):
+    """What a stored tie-break list is for. ``STANDINGS`` are the ranking
+    criteria; ``ADVANCEMENT`` are a knock-out's Art. 12 tie-breaks for
+    deciding which team goes through a level match — a separate list so the
+    two never mix."""
+
+    STANDINGS = 'STANDINGS'
+    ADVANCEMENT = 'ADVANCEMENT'
 
 
 class TieBreak(OptionHandler[TieBreakOption], ABC):
@@ -240,12 +251,32 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         counts or the primary score itself override this to ``True``."""
         return False
 
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        """Whether this tie-break may be chosen to decide which
+        participant advances from a level knock-out match. Asked against
+        the separate advancement list, not :meth:`is_compatible_with` (a
+        knock-out's standings are the round reached, never a tie-break).
+
+        Any tie-break that can separate two participants who reached the
+        same bracket depth qualifies — team board tie-breaks (Art. 12),
+        the team score/strength families (Art. 13), and on the individual
+        side wins, ratings, opponent-strength, and so on. The cumulative
+        score itself cannot (same-depth participants share it), and legacy
+        tie-breaks are not offered."""
+        return not self.is_legacy
+
     def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
-        """Whether this tie-break (with its current options) can run on
-        the given pairing system. Combines the static
-        ``forbidden_pairing_systems`` list with each option's
+        """Whether this tie-break (with its current options) can run as a
+        *standings* criterion on the given pairing system. Combines the
+        static ``forbidden_pairing_systems`` list with each option's
         ``is_compatible_with`` check."""
         if pairing_system in self.forbidden_pairing_systems:
+            return False
+        if pairing_system.eliminates_participants:
+            # A knock-out ranks by the round reached, not by comparing
+            # scores, so no standings tie-break is configurable on one.
+            # Its Art. 12 tie-breaks live on the separate advancement list.
             return False
         if (
             not pairing_system.uses_result_points
@@ -762,6 +793,12 @@ class StandardPointsTieBreak(PlayerRecordTieBreak):
     def base_help_text(self) -> str:
         return _('The number of points in the standard 1/0.5/0 point system.')
 
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Same-depth participants share the same points count, so it can
+        # never break a level match.
+        return False
+
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
     ) -> float:
@@ -810,6 +847,12 @@ class PointsTieBreak(PlayerRecordTieBreak):
         # ``compute_player_value``), which is exactly the primary score.
         return True
 
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Every participant at the same bracket depth shares the same
+        # cumulative score, so the points can never break a level match.
+        return False
+
     @staticmethod
     def static_name() -> str:
         return _('Points')
@@ -843,6 +886,9 @@ class PointsTieBreak(PlayerRecordTieBreak):
             # A Keizer's primary score is its running Keizer total, not a
             # count of game points; it is what the standings rank on.
             return tournament.keizer_scorer.total(player, after_round=after_round)
+        if tournament.pairing_system.eliminates_participants:
+            # A knock-out ranks by the round reached, not by game points.
+            return tournament.knockout.ranking_value(player, after_round=after_round)
         return player.standings_points(after_round)
 
     @property

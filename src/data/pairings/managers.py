@@ -2,6 +2,12 @@ from typing import override
 
 from data.pairings import systems, PairingVariation
 from data.pairings.keizer import KeizerPairingSystem, KeizerVariationManager
+from data.pairings.knockout import (
+    KnockoutPairingSystem,
+    KnockoutVariationManager,
+    TeamKnockoutPairingSystem,
+    TeamKnockoutVariationManager,
+)
 from data.pairings.molter import MolterPairingSystem, MolterVariationManager
 from data.pairings.scheveningen import (
     ScheveningenPairingSystem,
@@ -34,6 +40,7 @@ class PairingSystemManager(EventBoundEntityManager[PairingSystem]):
                 systems.TeamRoundRobinPairingSystem,
                 ScheveningenPairingSystem,
                 MolterPairingSystem,
+                TeamKnockoutPairingSystem,
             ]
             plugin_manager.hook_for_event(self.event, 'insert_team_pairing_systems')(
                 pairing_systems=base
@@ -42,6 +49,7 @@ class PairingSystemManager(EventBoundEntityManager[PairingSystem]):
         return [
             systems.SwissPairingSystem,
             systems.RoundRobinPairingSystem,
+            KnockoutPairingSystem,
             KeizerPairingSystem,
         ]
 
@@ -92,6 +100,7 @@ class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
                 *TeamRoundRobinVariationManager(self.event).entity_types(),
                 *ScheveningenVariationManager(self.event).entity_types(),
                 *MolterVariationManager(self.event).entity_types(),
+                *TeamKnockoutVariationManager(self.event).entity_types(),
             ]
             plugin_manager.hook_for_event(self.event, 'insert_team_pairing_variations')(
                 variations=result
@@ -100,5 +109,6 @@ class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
         return [
             *SwissVariationManager(self.event).entity_types(),
             *RoundRobinVariationManager(self.event).entity_types(),
+            *KnockoutVariationManager(self.event).entity_types(),
             *KeizerVariationManager(self.event).entity_types(),
         ]

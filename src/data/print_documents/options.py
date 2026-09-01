@@ -628,6 +628,23 @@ class ShowWarningsPrintOption(PrintOption[bool]):
         return True
 
 
+class KnockoutSchedulePrintOption(PrintOption[bool]):
+    """On the knock-out bracket document: show the chronological schedule
+    (matches round by round) instead of the bracket diagram."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'knockout-schedule'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
 class NonMonetaryPrintOption(PrintOption[bool]):
     @staticmethod
     def static_id() -> str:
