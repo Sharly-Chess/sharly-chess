@@ -608,6 +608,12 @@ class SessionDistributeUseBalanceGroups(BoolSessionVariable):
         return 'distribute_use_balance_groups'
 
 
+class SessionDistributeSplitClubs(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'distribute_split_clubs'
+
+
 class SessionDistributeUnselectedTournaments(EventSessionVariable[list[int]]):
     @property
     def key(self) -> str:

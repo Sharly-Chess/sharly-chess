@@ -38,6 +38,17 @@
                         data=data, errors=errors
                     ) }}
                 </div>
+                <div id="split-clubs-container" class="row gy-2">
+                    {{ admin_macros.switch_input(
+                        name='split_clubs',
+                        placeholder=_('Separate players from the same club'),
+                        tooltip_text=_(
+                            'split the players belonging to the same club between the balanced '
+                            'tournaments, as much as possible.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
                 <h4 class="mt-3 mb-2">{{ _('Players per tournament') }}</h4>
                 <h5 id="over-warning" class="warning-message text-danger mt-1" style="display:none">
                     {{ _('Warning: too many players selected.') }}
