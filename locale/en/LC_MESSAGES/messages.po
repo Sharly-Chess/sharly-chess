@@ -573,9 +573,6 @@ msgstr ""
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr ""
 
-msgid "<first> and <second>"
-msgstr ""
-
 msgid "<first> then <second>"
 msgstr ""
 
@@ -585,22 +582,7 @@ msgstr ""
 msgid "<side>: <text>"
 msgstr ""
 
-msgid "<smart_count> day |||| <smart_count> days"
-msgstr ""
-
-msgid "<smart_count> hour |||| <smart_count> hours"
-msgstr ""
-
-msgid "<smart_count> minute |||| <smart_count> minutes"
-msgstr ""
-
 msgid "<smart_count> move |||| <smart_count> moves"
-msgstr ""
-
-msgid "<smart_count> second |||| <smart_count> seconds"
-msgstr ""
-
-msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
 msgid "A Scheveningen is a match between exactly two teams."
@@ -10199,6 +10181,9 @@ msgstr ""
 msgid "coefficient off"
 msgstr ""
 
+msgid "d"
+msgstr ""
+
 msgid "default"
 msgstr ""
 
@@ -10747,4 +10732,25 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "<first> and <second>"
+#~ msgstr ""
+
+#~ msgid "<smart_count> day |||| <smart_count> days"
+#~ msgstr ""
+
+#~ msgid "<smart_count> hour |||| <smart_count> hours"
+#~ msgstr ""
+
+#~ msgid "<smart_count> minute |||| <smart_count> minutes"
+#~ msgstr ""
+
+#~ msgid "<smart_count> second |||| <smart_count> seconds"
+#~ msgstr ""
+
+#~ msgid "<smart_count> week |||| <smart_count> weeks"
+#~ msgstr ""
+
+#~ msgid "%sd"
+#~ msgstr "%sd"
 
