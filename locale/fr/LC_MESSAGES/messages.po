@@ -499,9 +499,6 @@ msgstr "172 méthode de classement initial {method}"
 msgid "192 Encoded type {type} (default: {default})"
 msgstr "192 Type {type} (défaut : {default})"
 
-msgid "1st"
-msgstr "1ère"
-
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
