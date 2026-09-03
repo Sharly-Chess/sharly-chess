@@ -570,8 +570,8 @@ msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requis
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
 
-msgid "<first> and <second>"
-msgstr "<first> et <second>"
+msgid "<first> <second>"
+msgstr "<first> <second>"
 
 msgid "<first> then <second>"
 msgstr "<first> puis <second>"
