@@ -65,6 +65,7 @@ The handling of fixed tables has been improved in several ways:
 - In the admin pairings view you can choose to sort by pairing order or board number (5.0.0)
 - In the associated document view you can choose if fixed tables are ordered by pairing order or board number (5.0.0)
 - Pairing screens now have option to order by pairing order or board number (5.0.0)
+- Improved the display of fixed table numbers (5.0.3)
 
 ### Special considerations when using the _FFE_ (French federation) plugin
 
