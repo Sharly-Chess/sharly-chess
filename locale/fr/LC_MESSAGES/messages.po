@@ -499,9 +499,6 @@ msgstr "172 méthode de classement initial {method}"
 msgid "192 Encoded type {type} (default: {default})"
 msgstr "192 Type {type} (défaut : {default})"
 
-msgid "1st"
-msgstr "1ère"
-
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
@@ -2052,9 +2049,6 @@ msgstr "Configurer les protections d'appariement pour cette ronde."
 
 msgid "Configure the category sets, which are available for all events."
 msgstr "Configurer les ensembles de catégories, qui sont disponibles pour tous les évènements."
-
-msgid "Configure the ordered scoring rules. Later rules only break ties left by earlier rules."
-msgstr "Configurez les règles de score ordonnées. Les règles suivantes ne départagent que les égalités laissées par les précédentes."
 
 msgid "Configure the tags, which are available for all events."
 msgstr "Configurer les étiquettes, qui sont disponibles pour tous les évènements."
@@ -3738,7 +3732,7 @@ msgstr "Genre :"
 
 #, python-brace-format
 msgid "Gender: {gender}"
-msgstr "Sexe : {gender}"
+msgstr "Genre : {gender}"
 
 msgid "Genders"
 msgstr "Genres"

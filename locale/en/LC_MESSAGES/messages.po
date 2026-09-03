@@ -499,9 +499,6 @@ msgstr ""
 msgid "192 Encoded type {type} (default: {default})"
 msgstr ""
 
-msgid "1st"
-msgstr ""
-
 msgid "1st day of the month"
 msgstr ""
 
@@ -2051,9 +2048,6 @@ msgid "Configure prohibited pairings for this round."
 msgstr ""
 
 msgid "Configure the category sets, which are available for all events."
-msgstr ""
-
-msgid "Configure the ordered scoring rules. Later rules only break ties left by earlier rules."
 msgstr ""
 
 msgid "Configure the tags, which are available for all events."
