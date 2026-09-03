@@ -89,6 +89,7 @@ In order to maintain compatibility with the display of table numbers on the _FFE
 - A new **Chess 960** plugin allows you to display start positions for each round (5.0.0)
 - Fixed access to rotators and display controllers from the network (5.0.2)
 - Base clients on the server date to display the timers (5.0.3)
+- Improved timer display (5.0.3)
 
 ## Documents
 

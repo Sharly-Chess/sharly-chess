@@ -53,9 +53,10 @@ function duration_string(dur) {
         second = minutes > 0 ? polyglot.t('minutes', minutes) : undefined;
     } else if (minutes > 0) {
         first = polyglot.t('minutes', minutes);
-        second = seconds > 0 ? polyglot.t('seconds', seconds) : undefined;
+        second = undefined;
     } else {
         first = polyglot.t('seconds', seconds);
+        second = undefined;
     }
 
     if (second) {
@@ -72,7 +73,7 @@ function update_timer(local_delay) {
 	local_time = Math.floor(local_date.getTime() / 1000);
 	server_time = Math.floor(local_date.getTime() / 1000) + local_delay;
     server_date = new Date(server_time * 1000)
-	clock_html = two_digits(server_date.getHours())+':'+two_digits(server_date.getMinutes())+':'+two_digits(server_date.getSeconds());
+	clock_html = two_digits(server_date.getHours())+':'+two_digits(server_date.getMinutes());
 {% for timer_hour in timer.timer_hours %}
 	if (server_time < {{ timer_hour.timestamp_1 }}) {
 		color = 'rgb({{ color_1_r }}, {{ color_1_g }}, {{ color_1_b }})';
