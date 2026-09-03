@@ -499,9 +499,6 @@ msgstr ""
 msgid "192 Encoded type {type} (default: {default})"
 msgstr ""
 
-msgid "1st"
-msgstr ""
-
 msgid "1st day of the month"
 msgstr ""
 
