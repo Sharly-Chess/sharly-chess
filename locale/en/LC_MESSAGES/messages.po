@@ -573,7 +573,7 @@ msgstr ""
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr ""
 
-msgid "<first> and <second>"
+msgid "<first> <second>"
 msgstr ""
 
 msgid "<first> then <second>"

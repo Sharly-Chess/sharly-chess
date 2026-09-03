@@ -13,7 +13,7 @@ var polyglot = new Polyglot({
         'hours': '{{ _('<smart_count> hour |||| <smart_count> hours') }}',
         'days': '{{ _('<smart_count> day |||| <smart_count> days') }}',
         'weeks': '{{ _('<smart_count> week |||| <smart_count> weeks') }}',
-        'countdown': '{{ _('<first> and <second>') }}',
+        'countdown': '{{ _('<first> <second>') }}',
     },
     interpolation: {
         prefix: '<',
