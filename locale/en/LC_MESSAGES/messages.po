@@ -499,9 +499,6 @@ msgstr ""
 msgid "192 Encoded type {type} (default: {default})"
 msgstr ""
 
-msgid "1st"
-msgstr ""
-
 msgid "1st day of the month"
 msgstr ""
 
@@ -573,7 +570,7 @@ msgstr ""
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr ""
 
-msgid "<first> and <second>"
+msgid "<first> <second>"
 msgstr ""
 
 msgid "<first> then <second>"
@@ -2051,9 +2048,6 @@ msgid "Configure prohibited pairings for this round."
 msgstr ""
 
 msgid "Configure the category sets, which are available for all events."
-msgstr ""
-
-msgid "Configure the ordered scoring rules. Later rules only break ties left by earlier rules."
 msgstr ""
 
 msgid "Configure the tags, which are available for all events."
@@ -5061,9 +5055,6 @@ msgstr ""
 msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
 msgstr "Needs"
 
-msgid "Neither screen nor rotator currently assigned"
-msgstr ""
-
 msgid "Nepal"
 msgstr ""
 
@@ -5447,6 +5438,9 @@ msgid "No teams in this tournament."
 msgstr ""
 
 msgid "No tie-breaks defined other than points."
+msgstr ""
+
+msgid "No timer"
 msgstr ""
 
 msgid "No timers"
@@ -5939,6 +5933,10 @@ msgstr ""
 msgid "Pairing allocated bye. Defaults to the Win value."
 msgstr ""
 
+#, python-brace-format
+msgid "Pairing generation failed: {details}"
+msgstr ""
+
 #, python-format
 msgid "Pairing information for round %(round)d"
 msgstr ""
@@ -6032,6 +6030,9 @@ msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr ""
 
 msgid "Pairings generation not allowed if there are fewer teams than rounds."
+msgstr ""
+
+msgid "Pairings generation not allowed while an acceleration rule extends past the last round. Adjust the acceleration settings or the number of rounds."
 msgstr ""
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
@@ -7403,9 +7404,6 @@ msgstr ""
 msgid "Screens"
 msgstr ""
 
-msgid "Screens / Multi-Screens"
-msgstr ""
-
 msgid "Screens list"
 msgstr ""
 
@@ -8291,6 +8289,12 @@ msgstr ""
 msgid "The event already has multi-tournament players."
 msgstr ""
 
+msgid "The event could not be opened"
+msgstr ""
+
+msgid "The event is present on the server but could not be opened. It may be temporarily locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software. Wait a moment and try again. If it keeps happening, move the data folder out of any synchronised location (Console > Parameters > Data folder < Move)."
+msgstr ""
+
 msgid "The event no longer exists, so it cannot be opened."
 msgstr ""
 
@@ -8825,6 +8829,9 @@ msgstr ""
 msgid "This event cannot be opened: one or more required plugins are disabled. You can enable plugins in the application settings."
 msgstr ""
 
+msgid "This event exists on the server but could not be opened. It may be locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software."
+msgstr ""
+
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr ""
 
@@ -8851,9 +8858,6 @@ msgid "This file uses a tournament type ({type}) that Sharly Chess cannot import
 msgstr ""
 
 msgid "This folder is not empty."
-msgstr ""
-
-msgid "This group"
 msgstr ""
 
 msgid "This keeps players facing opponents of similar strength. When on (standard Keizer), each player's score includes their own current ranking value, so the standings stay stable and each round pairs players of near-equal strength: one bad result does not drop a strong player far down the field, and pairings do not swing wildly. When off, the score comes purely from results, which can make the early standings, and so the pairings, more volatile."
@@ -8901,6 +8905,9 @@ msgid "This player has already been paired; their team cannot be changed."
 msgstr ""
 
 msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first)."
+msgstr ""
+
+msgid "This prize bracket"
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -10731,4 +10738,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Choose a captain from the team roster, or enter the name of a non playing captain."
+#~ msgstr ""
 

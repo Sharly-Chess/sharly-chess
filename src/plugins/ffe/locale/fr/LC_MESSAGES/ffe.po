@@ -362,8 +362,8 @@ msgstr "Ligues"
 msgid "Leagues (FFE)"
 msgstr "Ligues (FFE)"
 
-msgid "Leave empty tables for fixed boards:"
-msgstr "Laisser des tables vides pour les échiquiers fixes :"
+msgid "Leave empty tables for fixed boards"
+msgstr "Laisser des tables vides pour les échiquiers fixes"
 
 msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."

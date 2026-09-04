@@ -340,10 +340,13 @@
 .screens-collection-list-section,
 .screens-collection-list-section > .collapse.show,
 .screens-collection-list-section > .collapsing,
-.screens-collection-section-content,
-.screens-collection-list-sections .admin-collection-list {
+.screens-collection-section-content {
     display: grid;
     grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+}
+
+.screens-collection-list-sections .admin-collection-list {
     grid-column: 1 / -1;
 }
 
