@@ -56,6 +56,7 @@ from database.sqlite.config.config_store import (
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
 from database.sqlite.local_source_database import (
+    GitHubLocalSourceDatabase,
     LocalSourceDatabase,
     LocalSourceDatabaseManager,
     OutdatedActionManager,
@@ -98,6 +99,17 @@ logger: Logger = get_logger()
 
 
 class IndexAdminController(BaseAdminController):
+    # The keys `_admin_render` can put in `nav_tabs`, regardless of the
+    # requesting client's permissions (which only decide which of these are
+    # enabled, not which exist). `path='/{admin_tab:str}'` below otherwise
+    # matches any single path segment, including stray browser requests such
+    # as /sw.js, and building a web context for those would touch the
+    # session on a path excluded from SessionMiddleware (see web/settings.py
+    # ServerSideSessionConfig.exclude), raising instead of a clean 404.
+    ADMIN_TAB_KEYS = frozenset(
+        {'home', 'current_events', 'coming_events', 'passed_events', 'archives'}
+    )
+
     @classmethod
     def _admin_validate_config_update_data(
         cls,
@@ -464,6 +476,8 @@ class IndexAdminController(BaseAdminController):
         show_details: FromQuery[bool | None] = None,
         filter_tags: FromQuery[str | None] = None,
     ) -> Template:
+        if admin_tab not in self.ADMIN_TAB_KEYS:
+            raise NotFoundException(f'Unknown admin tab [{admin_tab}].')
         web_context = AdminWebContext(request, admin_tab=admin_tab)
 
         if show_details is not None:
@@ -2022,6 +2036,34 @@ class IndexAdminController(BaseAdminController):
         stored_database.outdate_action = action.id
         database.update_stored_source_database(stored_database)
         database.check()
+        return HTMXTemplate(
+            template_name='admin/common/database/database_row.html',
+            context=self._database_modal_context() | {'database': database},
+        )
+
+    @patch(
+        path='/database-credentials-update/{database_id:str}',
+        name='admin-database-credentials-update',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+    )
+    async def _database_credentials_update(
+        self,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        database_id: FromPath[str],
+    ) -> Template:
+        try:
+            database = LocalSourceDatabaseManager().get_object(database_id)
+        except KeyError:
+            raise NotFoundException(f'Unknown database [{database_id}].')
+        if not isinstance(database, GitHubLocalSourceDatabase):
+            raise NotFoundException(f'Unknown database [{database_id}].')
+        password = WebContext.form_data_to_str(data, 'credentials_password')
+        if not password:
+            raise ClientException('A password is required.')
+        database.dump_credentials(password)
         return HTMXTemplate(
             template_name='admin/common/database/database_row.html',
             context=self._database_modal_context() | {'database': database},

@@ -2286,6 +2286,15 @@ msgstr ""
 msgid "Creator: {template_creator}"
 msgstr ""
 
+msgid "Credentials"
+msgstr ""
+
+msgid "Credentials configured"
+msgstr ""
+
+msgid "Credentials missing"
+msgstr ""
+
 msgid "Criteria"
 msgstr ""
 
@@ -6076,6 +6085,9 @@ msgid "Passed championships"
 msgstr ""
 
 msgid "Passed events"
+msgstr ""
+
+msgid "Password"
 msgstr ""
 
 msgid "Password:"

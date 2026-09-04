@@ -1,5 +1,9 @@
 from .actions import OutdatedAction
-from .databases import LocalSourceDatabase, LocalSourcePlayerDatabase
+from .databases import (
+    GitHubLocalSourceDatabase,
+    LocalSourceDatabase,
+    LocalSourcePlayerDatabase,
+)
 from .delays import OutdatedDelay
 from .managers import (
     LocalSourceDatabaseManager,
@@ -9,6 +13,7 @@ from .managers import (
 
 __all__ = (
     'OutdatedAction',
+    'GitHubLocalSourceDatabase',
     'LocalSourceDatabase',
     'LocalSourcePlayerDatabase',
     'OutdatedDelay',

@@ -1,0 +1,6 @@
+services:
+  sharly-chess:
+    volumes:
+      - ./src:/app/src
+      - ./default-files:/app/default-files
+      - ./locale:/app/locale

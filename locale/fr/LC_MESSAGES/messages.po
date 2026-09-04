@@ -2286,6 +2286,15 @@ msgstr "Créer avec les écrans par défaut"
 msgid "Creator: {template_creator}"
 msgstr "Création : {template_creator}"
 
+msgid "Credentials"
+msgstr "Identifiants"
+
+msgid "Credentials configured"
+msgstr "Identifiants configurés"
+
+msgid "Credentials missing"
+msgstr "Identifiants manquants"
+
 msgid "Criteria"
 msgstr "Critères"
 
@@ -6079,6 +6088,9 @@ msgstr "Grands Prix passés"
 
 msgid "Passed events"
 msgstr "Évènements passés"
+
+msgid "Password"
+msgstr "Mot de passe"
 
 msgid "Password:"
 msgstr "Mot de passe :"

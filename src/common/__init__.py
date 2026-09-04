@@ -28,6 +28,13 @@ SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 # We also consider Flatpak as a non-development environment.
 FLATPAK_ID = os.environ.get('FLATPAK_ID')
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False) and not FLATPAK_ID
+
+# True when running in the project's own Docker image (see Dockerfile). Behind
+# Docker's bridge networking, a request from the host machine no longer
+# reaches the container as 127.0.0.1: it's NAT'd to the container's default
+# gateway. Client._get_account() uses this to also trust that gateway address
+# as the local/administrator machine (see common.network.docker_gateway_ip).
+IN_DOCKER: bool = os.environ.get('SHARLY_CHESS_DOCKER') == '1'
 # ``PYTEST_VERSION`` is set by pytest itself for the whole run, so this
 # holds however the suite was started — ``pytest`` puts its own name in
 # argv[0], but ``python -m pytest`` puts pytest's __main__.py there, and

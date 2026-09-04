@@ -39,6 +39,46 @@
             ) }}
         </span>
     </td>
+    <td class="text-center">
+        {% if database.has_credentials is not none %}
+            <form
+                class="d-flex gap-1 align-items-center justify-content-center"
+                hx-patch="{{ url_for('admin-database-credentials-update', database_id=database.id) }}"
+                hx-target="#database-{{ database.id }}-row"
+                hx-swap="outerHTML"
+                hx-indicator="#please-wait"
+            >
+                <input type="password" style="display:none" autocomplete="current-password">
+                <input
+                    type="password"
+                    name="credentials_password"
+                    class="form-control form-control-sm"
+                    style="max-width: 10em"
+                    placeholder="{{ _('Password') }}"
+                    autocomplete="new-password"
+                    required
+                />
+                <button
+                    type="submit"
+                    class="btn btn-outline-primary btn-sm d-inline-flex align-items-center"
+                    title="{{ _('Save') }}"
+                >
+                    <i class="bi-check-lg"></i>
+                </button>
+                {% if database.has_credentials %}
+                    <i
+                        class="bi-check-circle-fill text-success"
+                        title="{{ _('Credentials configured') }}"
+                    ></i>
+                {% else %}
+                    <i
+                        class="bi-exclamation-triangle-fill text-danger"
+                        title="{{ _('Credentials missing') }}"
+                    ></i>
+                {% endif %}
+            </form>
+        {% endif %}
+    </td>
     <td id="{{ database.id }}-updated-at" class="text-center"></td>
     <td class="text-end">
         <div
