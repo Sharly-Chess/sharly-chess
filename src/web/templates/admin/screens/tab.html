@@ -117,6 +117,7 @@
                 {% endif %}
                 {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
                     {% if screen_type_data.screens %}
+                        {% set hidden_list_columns = [] if screen_type.has_screen_sets else ['screen_sets'] %}
                         {% set expanded = screen_type.value in admin_screens_screen_types %}
                         <div class="screens-collection-list-section">
                             <div class="row gy-2 gx-3 screens-collection-section-heading">
@@ -152,7 +153,8 @@
                                         items=screen_type_data.screens,
                                         empty_message='',
                                         sortable=false,
-                                        show_details=collection_show_details
+                                        show_details=collection_show_details,
+                                        hidden_list_columns=hidden_list_columns
                                     %}
                                         {% include '/admin/common/collection.html' %}
                                     {% endwith %}

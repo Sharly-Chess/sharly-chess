@@ -160,6 +160,7 @@ class TestAnonymousAccessLevel(BaseAccessLevelTest):
         expect(lan_page.locator('.collection-list-header')).not_to_contain_text(
             'Multi-Screen'
         )
+        expect(lan_page.locator('.collection-list-header')).to_contain_text('Content')
         expect(lan_page.locator('.collection-list-header')).to_contain_text('Timer')
         expect(item.locator('.collection-list-cell-actions')).to_have_count(0)
         expect(item.locator('.collection-list-row')).to_have_class(
@@ -214,7 +215,11 @@ class TestAnonymousAccessLevel(BaseAccessLevelTest):
         expect(lan_page.locator('.collection-list-header')).not_to_contain_text(
             'Multi-Screen'
         )
+        expect(lan_page.locator('.collection-list-header')).not_to_contain_text(
+            'Content'
+        )
         expect(item.locator('.collection-list-cell-source')).to_have_count(0)
+        expect(item.locator('.collection-list-cell-screen_sets')).to_have_count(0)
 
     def test_anonymous_rotator_items_are_clickable_without_actions(
         self,

@@ -394,10 +394,16 @@ class TestAdminCollections:
                 expect(section.locator('.collection-list-header')).not_to_contain_text(
                     'Multi-Screen'
                 )
+                expect(section.locator('.collection-list-header')).not_to_contain_text(
+                    'Content'
+                )
                 expect(section.locator('.collection-list-header')).to_contain_text(
                     'Timer'
                 )
                 expect(item.locator('.collection-list-cell-source')).to_have_count(0)
+                expect(item.locator('.collection-list-cell-screen_sets')).to_have_count(
+                    0
+                )
                 expect(item.locator('.collection-list-cell-timer')).to_contain_text(
                     'No timer'
                 )
@@ -417,6 +423,9 @@ class TestAdminCollections:
             expect(input_section.locator('.collection-list-header')).to_contain_text(
                 'Timer'
             )
+            expect(input_section.locator('.collection-list-header')).to_contain_text(
+                'Content'
+            )
             family_item = (
                 input_section.get_by_test_id('screens-item')
                 .filter(has_text=FAMILY_TOURNAMENT_NAME)
@@ -430,6 +439,9 @@ class TestAdminCollections:
             expect(identity.locator('.badge')).to_contain_text('Multi-Screen')
             expect(identity.locator('.bi-window-split')).to_have_count(0)
             expect(family_item.locator('.collection-list-cell-source')).to_have_count(0)
+            expect(
+                family_item.locator('.collection-list-cell-screen_sets')
+            ).to_contain_text('1 set')
             expect(family_item.locator('.collection-list-cell-timer')).to_contain_text(
                 'No timer'
             )
