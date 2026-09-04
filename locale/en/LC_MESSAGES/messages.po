@@ -8863,9 +8863,6 @@ msgstr ""
 msgid "This folder is not empty."
 msgstr ""
 
-msgid "This group"
-msgstr ""
-
 msgid "This keeps players facing opponents of similar strength. When on (standard Keizer), each player's score includes their own current ranking value, so the standings stay stable and each round pairs players of near-equal strength: one bad result does not drop a strong player far down the field, and pairings do not swing wildly. When off, the score comes purely from results, which can make the early standings, and so the pairings, more volatile."
 msgstr ""
 
@@ -8911,6 +8908,9 @@ msgid "This player has already been paired; their team cannot be changed."
 msgstr ""
 
 msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first)."
+msgstr ""
+
+msgid "This prize bracket"
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."
@@ -10741,4 +10741,7 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Choose a captain from the team roster, or enter the name of a non playing captain."
+#~ msgstr ""
 
