@@ -171,9 +171,7 @@ class TestAnonymousAccessLevel(BaseAccessLevelTest):
         expect(set_cell.locator('.bi-pencil-fill')).to_have_count(0)
         expect(set_cell.locator('[data-bs-toggle="tooltip"]')).to_have_count(0)
         expect(item.locator('.collection-list-cell-source')).to_have_count(0)
-        expect(item.locator('.collection-list-cell-timer')).to_contain_text(
-            'Default timers'
-        )
+        expect(item.locator('.collection-list-cell-timer')).to_contain_text('No timer')
 
         family_item = (
             lan_page.get_by_test_id('screens-item')
@@ -191,7 +189,7 @@ class TestAnonymousAccessLevel(BaseAccessLevelTest):
         expect(family_identity.locator('.bi-window-split')).to_have_count(0)
         expect(family_item.locator('.collection-list-cell-source')).to_have_count(0)
         expect(family_item.locator('.collection-list-cell-timer')).to_contain_text(
-            'Default timers'
+            'No timer'
         )
 
         lan_page.get_by_role('button', name='Card view').click()

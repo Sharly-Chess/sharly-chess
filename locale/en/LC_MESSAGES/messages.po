@@ -5440,6 +5440,9 @@ msgstr ""
 msgid "No tie-breaks defined other than points."
 msgstr ""
 
+msgid "No timer"
+msgstr ""
+
 msgid "No timers"
 msgstr ""
 
@@ -10735,3 +10738,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+

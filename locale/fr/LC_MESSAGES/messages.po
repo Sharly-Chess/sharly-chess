@@ -5440,6 +5440,9 @@ msgstr "Aucune équipe dans ce tournoi."
 msgid "No tie-breaks defined other than points."
 msgstr "Aucun départage défini en dehors des points."
 
+msgid "No timer"
+msgstr "Aucun chronomètre"
+
 msgid "No timers"
 msgstr "Aucun chronomètre"
 
@@ -10737,3 +10740,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

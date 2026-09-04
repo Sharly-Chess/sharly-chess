@@ -399,7 +399,7 @@ class TestAdminCollections:
                 )
                 expect(item.locator('.collection-list-cell-source')).to_have_count(0)
                 expect(item.locator('.collection-list-cell-timer')).to_contain_text(
-                    'Default timers'
+                    'No timer'
                 )
 
             input_section = page.locator(
@@ -431,7 +431,7 @@ class TestAdminCollections:
             expect(identity.locator('.bi-window-split')).to_have_count(0)
             expect(family_item.locator('.collection-list-cell-source')).to_have_count(0)
             expect(family_item.locator('.collection-list-cell-timer')).to_contain_text(
-                'Default timers'
+                'No timer'
             )
 
             page.goto(f'/event/{PRIZE_EVENT_ID}/families?collection_view=list')
@@ -444,7 +444,7 @@ class TestAdminCollections:
             expect(page.locator('.collection-list-header')).to_contain_text('Timer')
             expect(
                 family_list_item.locator('.collection-list-cell-timer')
-            ).to_contain_text('Default timers')
+            ).to_contain_text('No timer')
         finally:
             assert family.id is not None
             TestUtils.delete_family(api_request_context, PRIZE_EVENT_ID, family.id)
