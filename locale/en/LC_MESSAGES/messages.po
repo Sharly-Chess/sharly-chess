@@ -5055,9 +5055,6 @@ msgstr ""
 msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
 msgstr "Needs"
 
-msgid "Neither screen nor rotator currently assigned"
-msgstr ""
-
 msgid "Nepal"
 msgstr ""
 
@@ -7402,9 +7399,6 @@ msgid "Screen types"
 msgstr ""
 
 msgid "Screens"
-msgstr ""
-
-msgid "Screens / Multi-Screens"
 msgstr ""
 
 msgid "Screens list"
@@ -10741,4 +10735,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
