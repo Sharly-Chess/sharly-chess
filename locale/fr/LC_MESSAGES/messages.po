@@ -5055,9 +5055,6 @@ msgstr "Besoin d'aide ?"
 msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
 msgstr "Requis"
 
-msgid "Neither screen nor rotator currently assigned"
-msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
-
 msgid "Nepal"
 msgstr "Népal"
 
@@ -5442,6 +5439,9 @@ msgstr "Aucune équipe dans ce tournoi."
 
 msgid "No tie-breaks defined other than points."
 msgstr "Aucun départage défini en dehors des points."
+
+msgid "No timer"
+msgstr "Aucun chronomètre"
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
@@ -7405,9 +7405,6 @@ msgstr "Types d'écran"
 
 msgid "Screens"
 msgstr "Écrans"
-
-msgid "Screens / Multi-Screens"
-msgstr "Écrans / Multi-écrans"
 
 msgid "Screens list"
 msgstr "Liste d'écrans"

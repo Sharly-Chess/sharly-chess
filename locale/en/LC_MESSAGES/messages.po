@@ -5055,9 +5055,6 @@ msgstr ""
 msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
 msgstr "Needs"
 
-msgid "Neither screen nor rotator currently assigned"
-msgstr ""
-
 msgid "Nepal"
 msgstr ""
 
@@ -5441,6 +5438,9 @@ msgid "No teams in this tournament."
 msgstr ""
 
 msgid "No tie-breaks defined other than points."
+msgstr ""
+
+msgid "No timer"
 msgstr ""
 
 msgid "No timers"
@@ -7402,9 +7402,6 @@ msgid "Screen types"
 msgstr ""
 
 msgid "Screens"
-msgstr ""
-
-msgid "Screens / Multi-Screens"
 msgstr ""
 
 msgid "Screens list"

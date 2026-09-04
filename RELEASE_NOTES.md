@@ -92,6 +92,7 @@ In order to maintain compatibility with the display of table numbers on the _FFE
 - Fixed access to rotators and display controllers from the network (5.0.2)
 - Base clients on the server date to display the timers (5.0.3)
 - Improved timer display (5.0.3)
+- Network clients can now open screens, rotators, and display controllers by clicking anywhere on their card or list row (5.0.3)
 
 ## Documents
 
