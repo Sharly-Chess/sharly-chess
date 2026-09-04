@@ -499,9 +499,6 @@ msgstr "172 méthode de classement initial {method}"
 msgid "192 Encoded type {type} (default: {default})"
 msgstr "192 Type {type} (défaut : {default})"
 
-msgid "1st"
-msgstr "1ère"
-
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
@@ -529,7 +526,7 @@ msgid "401 - Authentication failed"
 msgstr "401 - Authentification non valide"
 
 msgid "403 - Access Forbidden"
-msgstr "403 - Accès non-autorisé"
+msgstr "403 - Accès non autorisé"
 
 msgid "404 - Page Not Found"
 msgstr "404 - Page non trouvée"
@@ -573,8 +570,8 @@ msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requis
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
 
-msgid "<first> and <second>"
-msgstr "<first> et <second>"
+msgid "<first> <second>"
+msgstr "<first> <second>"
 
 msgid "<first> then <second>"
 msgstr "<first> puis <second>"
@@ -810,7 +807,7 @@ msgid "Add a player to the event."
 msgstr "Ajouter un·e joueur·euse à l'évènement."
 
 msgid "Add a prize category to the prize bracket."
-msgstr "Ajouter une catégorie au groupe non-cumulable."
+msgstr "Ajouter une catégorie au groupe non cumulable."
 
 msgid "Add a prize to the list."
 msgstr "Ajouter un prix à la liste."
@@ -1551,14 +1548,14 @@ msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écra
 
 #, python-brace-format
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
-msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es ({count} dans le tournoi). Vous devez spécifier que l'estimation des joueur·euses est expliquée dans le règlement."
+msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non classé·es ({count} dans le tournoi). Vous devez spécifier que l'estimation des joueur·euses est expliquée dans le règlement."
 
 #, python-format
 msgid "By default: %(minutes)d minutes"
 msgstr "Par défaut : %(minutes)d (minutes)"
 
 msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
-msgstr "En effectuant cette opération, vous activez un mode non-sécurisé pour cette ronde, autorisant ainsi d'autres opérations non-sécurisées."
+msgstr "En effectuant cette opération, vous activez un mode non sécurisé pour cette ronde, autorisant ainsi d'autres opérations non sécurisées."
 
 msgid "By final standing"
 msgstr "Par classement final"
@@ -1819,7 +1816,7 @@ msgid "Chinese Taipei"
 msgstr "Taipei chinois"
 
 msgid "Choose a captain from the team roster, or enter the name of a non-playing captain."
-msgstr "Choisissez un·e capitaine parmi l'effectif de l'équipe, ou saisissez le nom d'un·e capitaine non-joueur·euse."
+msgstr "Choisissez un·e capitaine parmi l'effectif de l'équipe, ou saisissez le nom d'un·e capitaine non joueur·euse."
 
 msgid "Choose a random player"
 msgstr "Choisir un·e joueur·euse au hasard"
@@ -2053,9 +2050,6 @@ msgstr "Configurer les protections d'appariement pour cette ronde."
 msgid "Configure the category sets, which are available for all events."
 msgstr "Configurer les ensembles de catégories, qui sont disponibles pour tous les évènements."
 
-msgid "Configure the ordered scoring rules. Later rules only break ties left by earlier rules."
-msgstr "Configurez les règles de score ordonnées. Les règles suivantes ne départagent que les égalités laissées par les précédentes."
-
 msgid "Configure the tags, which are available for all events."
 msgstr "Configurer les étiquettes, qui sont disponibles pour tous les évènements."
 
@@ -2148,10 +2142,10 @@ msgid "Create"
 msgstr "Créer"
 
 msgid "Create a Prize Bracket"
-msgstr "Créer un groupe non-cumulable"
+msgstr "Créer un groupe non cumulable"
 
 msgid "Create a Prize Bracket now to get started."
-msgstr "Créer un groupe non-cumulable pour commencer."
+msgstr "Créer un groupe non cumulable pour commencer."
 
 msgid "Create a Prize Category now to continue."
 msgstr "Créez une catégorie de prix pour continuer."
@@ -2181,7 +2175,7 @@ msgid "Create a multi-screen now to get started."
 msgstr "Créez un écran multiple pour commencer."
 
 msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
-msgstr "Créer un Groupe de prix non-cumulables dans lequel vous pourrez ensuite créer des catégories, puis des prix."
+msgstr "Créer un Groupe de prix non cumulables dans lequel vous pourrez ensuite créer des catégories, puis des prix."
 
 msgid "Create a rotator"
 msgstr "Créer un écran rotatif"
@@ -2650,7 +2644,7 @@ msgid "Delete tournaments"
 msgstr "Supprimer des tournois"
 
 msgid "Delete unpaired players"
-msgstr "Supprimer les joueur·euses non-apparié·es"
+msgstr "Supprimer les joueur·euses non apparié·es"
 
 msgid "Deletes all the criteria of this category."
 msgstr "Supprime tous les critères de cette catégorie."
@@ -2754,7 +2748,7 @@ msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
 
 msgid "Display the unpaired players"
-msgstr "Afficher les joueur·euses non-apparié·es"
+msgstr "Afficher les joueur·euses non apparié·es"
 
 msgid "Display:"
 msgstr "Affichage :"
@@ -2836,7 +2830,7 @@ msgid "Documents *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>D</u>ocuments"
 
 msgid "Does not match criteria"
-msgstr "Non-conforme aux critères"
+msgstr "Non conforme aux critères"
 
 msgid "Dominica"
 msgstr "Dominique"
@@ -3738,7 +3732,7 @@ msgstr "Genre :"
 
 #, python-brace-format
 msgid "Gender: {gender}"
-msgstr "Sexe : {gender}"
+msgstr "Genre : {gender}"
 
 msgid "Genders"
 msgstr "Genres"
@@ -4060,7 +4054,7 @@ msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
 
 msgid "Include non-monetary prizes"
-msgstr "Inclure les prix non-monétaires"
+msgstr "Inclure les prix non monétaires"
 
 msgid "Include own ranking value in score"
 msgstr "Inclure la valeur de classement du joueur dans le score"
@@ -4598,10 +4592,10 @@ msgid "Manage source databases"
 msgstr "Gestion des bases de données sources"
 
 msgid "Manage the prize brackets"
-msgstr "Gérer les groupes non-cumulables"
+msgstr "Gérer les groupes non cumulables"
 
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
-msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
+msgstr "Gérer les groupes de prix non cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
 
 msgid "Manage the tags."
 msgstr "Gérer les étiquettes."
@@ -5061,9 +5055,6 @@ msgstr "Besoin d'aide ?"
 msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
 msgstr "Requis"
 
-msgid "Neither screen nor rotator currently assigned"
-msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
-
 msgid "Nepal"
 msgstr "Népal"
 
@@ -5158,7 +5149,7 @@ msgid "No Molter table is available for this tournament size."
 msgstr "Aucune table molter n'est disponible pour une tournoi de cette taille."
 
 msgid "No Prize Bracket"
-msgstr "Aucun Groupe de Prix Non-Cumulables"
+msgstr "Aucun groupe de prix non cumulables"
 
 msgid "No Prize Category"
 msgstr "Aucune catégorie de prix"
@@ -5355,7 +5346,7 @@ msgid "No players."
 msgstr "Aucun·e joueur·euse."
 
 msgid "No prize brackets."
-msgstr "Aucun groupe non-cumulable."
+msgstr "Aucun groupe non cumulable."
 
 msgid "No prizes assigned to players for this tournament."
 msgstr "Aucun prix assigné à une·e joueur·euse pour ce tournoi."
@@ -5449,6 +5440,9 @@ msgstr "Aucune équipe dans ce tournoi."
 msgid "No tie-breaks defined other than points."
 msgstr "Aucun départage défini en dehors des points."
 
+msgid "No timer"
+msgstr "Aucun chronomètre"
+
 msgid "No timers"
 msgstr "Aucun chronomètre"
 
@@ -5490,16 +5484,16 @@ msgid "No. final rounds without byes:"
 msgstr "Dernières rondes sans bye :"
 
 msgid "Non-monetary"
-msgstr "Non-monétaire"
+msgstr "Non monétaire"
 
 msgid "Non-monetary prizes are not compatible with categories in which the prizes are shared."
-msgstr "Les prix non-monétaires ne sont pas compatibles avec les catégories pour lesquelles les prix sont partagés."
+msgstr "Les prix non onétaires ne sont pas compatibles avec les catégories pour lesquelles les prix sont partagés."
 
 msgid "Non-playing captain…"
-msgstr "Capitaine non-joueur·euse…"
+msgstr "Capitaine non joueur·euse…"
 
 msgid "Non-playing team captain."
-msgstr "Capitaine non-joueur·euse."
+msgstr "Capitaine non joueur·euse."
 
 msgid "None"
 msgstr "Aucun"
@@ -5544,7 +5538,7 @@ msgid "Norway"
 msgstr "Norvège"
 
 msgid "Not assigned"
-msgstr "Non-attribué"
+msgstr "Non attribué"
 
 msgid "Not counted as a federation (1.4.2a)"
 msgstr "Non comptée comme une fédération (1.4.2a)"
@@ -5559,10 +5553,10 @@ msgid "Not logged in"
 msgstr "Non connecté"
 
 msgid "Not paired for this round"
-msgstr "Non-apparié·e pour cette ronde"
+msgstr "Non apparié·e pour cette ronde"
 
 msgid "Not specified"
-msgstr "Non-spécifié"
+msgstr "Non spécifié"
 
 msgid "Not used because an earlier rule resolved the tie"
 msgstr "Non utilisé car une règle précédente a départagé l'égalité"
@@ -5799,7 +5793,7 @@ msgid "Opponents' records"
 msgstr "Historique des adversaires"
 
 msgid "Optional monetary value of the complementary non-monetary prize (e.g. value of the trophy)."
-msgstr "Valeur monétaire optionnelle du prix non-monétaire complémentaire (ex. : valeur du trophée)."
+msgstr "Valeur monétaire optionnelle du prix non monétaire complémentaire (ex. : valeur du trophée)."
 
 msgid "Optional: pre-configure the tournament for an official rule set (federation cup, etc.)."
 msgstr "Facultatif : pré-configurer le tournois pour un jeu de règles officielles (coupe de la fédération...)."
@@ -5911,10 +5905,10 @@ msgid "Pair at round %(pairing_round)d"
 msgstr "Apparier à la ronde %(pairing_round)d"
 
 msgid "Pair the unpaired players with each other."
-msgstr "Apparier les joueur·euses non-apparié·es ensemble."
+msgstr "Apparier les joueur·euses non apparié·es ensemble."
 
 msgid "Pair the unpaired teams with each other."
-msgstr "Apparier les équipes non-appariées ensemble."
+msgstr "Apparier les équipes non appariées ensemble."
 
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"
@@ -5941,6 +5935,10 @@ msgstr "BYE d'appariement. Par défaut, valeur de la nulle."
 msgid "Pairing allocated bye. Defaults to the Win value."
 msgstr "BYE d'appariement. Par défaut, valeur de la victoire."
 
+#, python-brace-format
+msgid "Pairing generation failed: {details}"
+msgstr "Échec de la génération des appariements : {details}"
+
 #, python-format
 msgid "Pairing information for round %(round)d"
 msgstr "Informations d’appariement pour la ronde %(round)d"
@@ -5949,7 +5947,7 @@ msgid "Pairing is not possible."
 msgstr "L'appariement est impossible."
 
 msgid "Pairing not found."
-msgstr "Appariement non-trouvé."
+msgstr "Appariement non trouvé."
 
 msgid "Pairing number"
 msgstr "Numéro d'appariement"
@@ -6035,6 +6033,9 @@ msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de jo
 
 msgid "Pairings generation not allowed if there are fewer teams than rounds."
 msgstr "Génération des appariements impossible s'il y a moins d'équipes que de rondes."
+
+msgid "Pairings generation not allowed while an acceleration rule extends past the last round. Adjust the acceleration settings or the number of rounds."
+msgstr "La génération d'appariements n'est pas autorisée tant qu'une règle d'accélération dépasse la dernière ronde. Ajustez les paramètres d'accélération ou le nombre de rondes."
 
 msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
 msgstr "Les appariements devraient strictement respecter les règles du tournoi, et non pas être dirigés par l'arbitre. Pour cette raison, apparier manuellement est fortement déconseillé."
@@ -6594,7 +6595,7 @@ msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prix"
 
 msgid "Prize Brackets"
-msgstr "Groupes Non-Cumulables"
+msgstr "Groupes non cumulables"
 
 msgid "Prize assignment"
 msgstr "Attribution des prix"
@@ -6650,7 +6651,7 @@ msgid "Prizes defined as a free text field. The value is used to determine the p
 msgstr "Prix définis par un champ texte libre. La valeur est utilisée pour déterminer la place du prix dans la liste."
 
 msgid "Prizes defined as both a monetary value and a complementary non-monetary prize (example: 100 € + Trophy)."
-msgstr "Prix définis par une valeur monétaire et un prix non-monétaire complémentaire (exemple : 100 € + Trophée)."
+msgstr "Prix définis par une valeur monétaire et un prix non monétaire complémentaire (exemple : 100 € + Trophée)."
 
 msgid "Prizes only defined as a monetary value."
 msgstr "Prix définis seulement par une valeur monétaire."
@@ -7405,9 +7406,6 @@ msgstr "Types d'écran"
 msgid "Screens"
 msgstr "Écrans"
 
-msgid "Screens / Multi-Screens"
-msgstr "Écrans / Multi-écrans"
-
 msgid "Screens list"
 msgstr "Liste d'écrans"
 
@@ -7718,7 +7716,7 @@ msgid "Simple criteria"
 msgstr "Critères simples"
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
-msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non-classé·es."
+msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non classé·es."
 
 msgid "Singapore"
 msgstr "Singapour"
@@ -7756,7 +7754,7 @@ msgid "Somalia"
 msgstr "Somalie"
 
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
-msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
+msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non informées ou malveillantes."
 
 #, python-format
 msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
@@ -8218,7 +8216,7 @@ msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
 msgid "The account matching all the users not logged in to any account."
-msgstr "Le compte correspondant aux utilisateur·ices non-connecté·es."
+msgstr "Le compte correspondant aux utilisateur·ices non connecté·es."
 
 msgid "The account of the user accessing Sharly Chess directly from the server."
 msgstr "Le compte de l'utilisateur·ice accédant à Sharly Chess directement depuis le serveur."
@@ -8295,6 +8293,12 @@ msgstr "La fin de la plage ne doit pas précéder son début."
 
 msgid "The event already has multi-tournament players."
 msgstr "Cet évènement a déjà des joueur·euses multi-tournois."
+
+msgid "The event could not be opened"
+msgstr "L'événement n'a pas pu être ouvert"
+
+msgid "The event is present on the server but could not be opened. It may be temporarily locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software. Wait a moment and try again. If it keeps happening, move the data folder out of any synchronised location (Console > Parameters > Data folder < Move)."
+msgstr "L'événement existe sur le serveur mais n'a pas pu être ouvert. Il est peut-être temporairement verrouillé par un autre programme, par une synchronisation de fichiers (OneDrive, Google Drive, DropBox...) ou par un antivirus. Patientez un instant et réessayez. Si le problème persiste, déplacez le dossier de données hors de tout emplacement synchronisé (Console > Paramètres > Dossier des données < Déplacer)."
 
 msgid "The event no longer exists, so it cannot be opened."
 msgstr "L'événement n'existe plus, il ne peut donc pas être ouvert."
@@ -8830,6 +8834,9 @@ msgstr "Cet évènement ne peut pas être utilisé par la version actuelle de Sh
 msgid "This event cannot be opened: one or more required plugins are disabled. You can enable plugins in the application settings."
 msgstr "Cet événement ne peut pas être ouvert : un ou plusieurs plugins requis sont désactivés. Vous pouvez activer les plugins dans les paramètres de l'application."
 
+msgid "This event exists on the server but could not be opened. It may be locked by another program, by file synchronisation (OneDrive, Google Drive, DropBox, etc.) or by antivirus software."
+msgstr "Cet événement existe sur le serveur mais n'a pas pu être ouvert. Il est peut-être verrouillé par un autre programme, par une synchronisation de fichiers (OneDrive, Google Drive, DropBox, etc.) ou par un antivirus."
+
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des spectateur·ices)."
 
@@ -8857,9 +8864,6 @@ msgstr "Ce fichier utilise un type de tournoi ({type}) non supporté par Sharly 
 
 msgid "This folder is not empty."
 msgstr "Ce dossier n'est pas vide."
-
-msgid "This group"
-msgstr "Ce groupe"
 
 msgid "This keeps players facing opponents of similar strength. When on (standard Keizer), each player's score includes their own current ranking value, so the standings stay stable and each round pairs players of near-equal strength: one bad result does not drop a strong player far down the field, and pairings do not swing wildly. When off, the score comes purely from results, which can make the early standings, and so the pairings, more volatile."
 msgstr "Cela permet aux joueurs d'affronter des adversaires de force similaire. Lorsque l'option est activée (Keizer standard), le score de chaque joueur inclut sa propre valeur de classement actuelle : le classement reste stable et chaque ronde apparie des joueurs de force proche. Un mauvais résultat ne fait pas chuter un joueur fort loin dans le classement, et les appariements ne varient pas brutalement. Lorsque l'option est désactivée, le score provient uniquement des résultats, ce qui peut rendre le classement initial, et donc les appariements, plus instables."
@@ -8907,6 +8911,9 @@ msgstr "Ce·tte joueur·euse a déjà été apparié·e, son équipe ne peut êt
 
 msgid "This player is paired in at least one round and cannot be removed from the roster (must be removed from the line-up first)."
 msgstr "Ce·tte joueur·euse est apparié·e pour au moins une ronde et ne peut être supprimé·e de l'effectif (doit d'abord être supprimé·e de la composition de la ronde)."
+
+msgid "This prize bracket"
+msgstr "Ce groupe non cumulable"
 
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
