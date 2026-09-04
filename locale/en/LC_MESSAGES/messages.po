@@ -4482,6 +4482,9 @@ msgstr ""
 msgid "Lithuania"
 msgstr ""
 
+msgid "Load tournament criteria"
+msgstr ""
+
 msgid "Loading more results…"
 msgstr ""
 

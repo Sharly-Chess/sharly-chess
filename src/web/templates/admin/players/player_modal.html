@@ -51,6 +51,7 @@
                         {{ _('Search *** SECTION TITLE') }}
                     </h4>
                     {% with usage = 'player' %}
+                        {% include '/admin/common/search_filter_form.html' %}
                         {% include '/admin/common/player_search.html' %}
                     {% endwith %}
                 {% endif %}

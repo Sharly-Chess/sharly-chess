@@ -17,12 +17,13 @@
                 name="search"
                 class="dropdown form-control"
                 type="search"
-                hx-trigger="keyup changed delay:400ms, data_source_change"
+                hx-trigger="keyup changed delay:400ms, data_source_change, filter_change"
                 hx-target="#search-results"
                 hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='js:{
                     data_source_id: $("#data-source-select").val(),
                     usage: "{{ usage }}",
+                    filters: getFilters(),
                     {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
                 }'
                 hx-on::before-request="$('#search-results').show();"
@@ -31,6 +32,7 @@
                 hx-indicator="#player-search-indicator"
                 autocomplete="off"
             />
+            {% include 'search_filter.html' %}
         </div>
         <ul
             id="search-results"
@@ -58,6 +60,7 @@
             searchInput[0].dispatchEvent(
                 new CustomEvent('data_source_change', {bubbles: true, cancelable: true})
             );
+            filterInit();
         });
         $('#data-source-select').trigger('change');
 

@@ -4482,6 +4482,9 @@ msgstr "Affichage en liste"
 msgid "Lithuania"
 msgstr "Lituanie"
 
+msgid "Load tournament criteria"
+msgstr "Récupérer les critères d'un tournoi"
+
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
 

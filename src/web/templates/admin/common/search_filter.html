@@ -1,0 +1,23 @@
+<button type="button" class="btn btn-lg" data-bs-toggle="collapse" data-bs-target="#search-criteria-collapse">
+    <i class="bi bi-funnel"></i>
+    <span id="filter-count"></span>
+</button>
+
+
+<style>
+.button_badge {
+    background-color: #fa3e3e;
+    border-radius: 12px;
+    color: white;
+
+    padding: 1px 3px;
+    font-size: 10px;
+
+    position: absolute;
+    top: 0;
+    right: 10px;
+}
+</style>
+<script>
+{% include 'js/searchFilter.js' %}
+</script>

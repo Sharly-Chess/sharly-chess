@@ -172,7 +172,12 @@ class FFESqlServer(SqlServer):
         return f"'{fide_id}'"
 
     async def search_player(
-        self, string: str, federation: str, page: int = 0, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         """Searches the SQL server for the given tokens, raises SharlyChessException on error."""
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
@@ -192,6 +197,7 @@ class FFESqlServer(SqlServer):
         )
         conditions: list[str] = [
             self.RATING_TYPE_CONDITION,
+            *self._process_filters(filters or {}),
         ]
         params: list[Any] = []
         for token in tokens:
@@ -393,3 +399,41 @@ class FFESqlServer(SqlServer):
             f'joueur.FideCode IN ({", ".join(["%s"] * 2 * len(player_fide_ids))})',
             params,
         )
+
+    @staticmethod
+    def _process_filters(filters: dict):
+        conditions: list[str] = []
+        if 'ffe_licence_filter' in filters:
+            if filters['ffe_licence_filter'] == 'B':
+                conditions.append(
+                    "(joueur.AffType IN ('B', 'A') OR joueur.Federation !='fra')"
+                )
+            elif filters['ffe_licence_filter'] == 'A':
+                conditions.append("(joueur.AffType='A' OR joueur.Federation !='fra')")
+        if 'federation_filter' in filters:
+            conditions.append(f"joueur.Federation='{filters['federation_filter']}'")
+        if 'gender_filter' in filters:
+            conditions.append(f"joueur.Sexe='{filters['gender_filter']}'")
+        if 'ffe_league_filter' in filters:
+            conditions.append(f"club.Ligue='{filters['ffe_league_filter']}'")
+        if 'club_filter' in filters:
+            conditions.append(
+                f"LOWER(club.Nom) LIKE LOWER('%%{filters['club_filter']}%%')"
+            )
+        if filters.get('year_of_birth_filter', None):
+            age_conditions = []
+            for min_year, max_year in filters['year_of_birth_filter']:
+                match min_year, max_year:
+                    case None, None:
+                        continue
+                    case None, _:
+                        age_conditions.append(f'YEAR(joueur.NeLe) <= {max_year}')
+                    case _, None:
+                        age_conditions.append(f'YEAR(joueur.NeLe) >= {min_year}')
+                    case _, _:
+                        age_conditions.append(
+                            f'YEAR(joueur.NeLe) BETWEEN {min_year} AND {max_year}'
+                        )
+            if age_conditions:
+                conditions.append(f'({" OR ".join(age_conditions)})')
+        return conditions

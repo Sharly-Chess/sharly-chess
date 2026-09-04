@@ -1,10 +1,22 @@
-from typing import override
+from typing import TYPE_CHECKING, Any, override
+from common.sharly_chess_config import SharlyChessConfig
 from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter
 from data.criteria import tournament_criteria as crit
-from data.criteria.tournament_criteria import TournamentCriterion
+from data.criteria.tournament_criteria import (
+    AgeCategoryTournamentCriterion,
+    ClubTournamentCriterion,
+    FederationTournamentCriterion,
+    GenderTournamentCriterion,
+    RatingTournamentCriterion,
+    TournamentCriterion,
+)
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager
+from utils.enum import PlayerGender
+
+if TYPE_CHECKING:
+    from data.event import Event
 
 
 class PrizePlayerFilterManager(EventBoundEntityManager[PlayerFilter]):
@@ -64,3 +76,94 @@ class TournamentCriterionManager(EventBoundEntityManager[TournamentCriterion]):
             criteria_types=criteria
         )
         return criteria
+
+
+class SearchFilterManager:
+    def __init__(self, event: 'Event'):
+        self.event = event
+
+    def get_filters(self) -> dict[str, Any]:
+        federations = {'': '-'} | {
+            federation_id: f'{federation_id} - {federation_name}'
+            for federation_id, federation_name in SharlyChessConfig().federations.items()
+        }
+        if 'NON' in federations:
+            del federations['NON']
+
+        categories = self.event.player_categories
+        del categories[0]
+
+        filters = {
+            'federation': {
+                'template_name': 'search_filters/federation.html',
+                'options': federations,
+            },
+            'gender': {
+                'template_name': 'search_filters/gender.html',
+                'options': {gender: gender.name for gender in PlayerGender},
+            },
+            'category': {
+                'template_name': 'search_filters/category.html',
+                'options': {category.id: category.name for category in categories},
+            },
+            'club': {
+                'template_name': 'search_filters/club.html',
+            },
+        }
+        plugin_manager.hook_for_event(self.event, 'insert_search_filter_types')(
+            filters=filters
+        )
+
+        return filters
+
+    def get_filters_by_datasource(self) -> dict:
+        datasource_mapping = {
+            'fide': ['federation_filter', 'gender_filter', 'category_filter']
+        }
+
+        plugin_manager.hook_for_event(
+            self.event, 'insert_search_filter_for_datasource'
+        )(datasource_mapping=datasource_mapping)
+        return datasource_mapping
+
+    def get_filters_by_tournament(self) -> dict:
+        mapping = {}
+
+        for tournament in self.event.tournaments:
+            filter_list: list[tuple] = []
+            for criterion in tournament.criteria:
+                if isinstance(criterion, AgeCategoryTournamentCriterion):
+                    categories = [
+                        category.name for category in self.event.player_categories
+                    ]
+                    if criterion.value['min'] in categories:
+                        start = categories.index(criterion.value['min'])
+                    else:
+                        start = 0
+                    if criterion.value['max'] in categories:
+                        stop = categories.index(criterion.value['max'])
+                    else:
+                        stop = len(categories) - 1
+
+                    filter_list.append(
+                        ('category_filter', [categories[i] for i in range(start, stop)])
+                    )
+
+                elif isinstance(criterion, ClubTournamentCriterion):
+                    filter_list.append(('club_filter', criterion.value))
+
+                elif isinstance(criterion, FederationTournamentCriterion):
+                    filter_list.append(('federation_filter', criterion.value))
+
+                elif isinstance(criterion, GenderTournamentCriterion):
+                    filter_list.append(('gender_filter', criterion.value))
+
+                elif isinstance(criterion, RatingTournamentCriterion):
+                    pass  # criterion not mapped to a filter
+
+                else:
+                    plugin_manager.hook_for_event(
+                        self.event, 'map_filter_to_tournament_criteria'
+                    )(filter_list=filter_list, criterion=criterion)
+            mapping[tournament.id] = filter_list
+        return mapping

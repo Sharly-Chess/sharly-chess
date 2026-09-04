@@ -1,0 +1,44 @@
+<div>
+    <div id="search-criteria-collapse" class="collapse filter-collapsable-container my-2 p-2">
+        <div>
+            <form id="filter-form" class="row gy-2 gx-3">
+                {% for search_filter in search_filters %}
+                    {% with filter = search_filters[search_filter] %}
+                        <div class="col-12 col-md-6">
+                            {% include filter.template_name %}
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </form>
+        </div>
+        <div class="row my-2">
+            <div class="col-md-6">
+            </div>
+            <div class="me-auto col-md-6">
+                <div class="dropdown btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{_('Load tournament criteria')}}<span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <div class="dropdown-menu" style="z-index:1010">
+                        {% for id in tournament_options %}
+                            {% if id != "" %}
+                                <a name="{{tournament_options[id]}}" class="dropdown-item" onclick="loadFiltersFromTournament({{id}})">
+                                    {{tournament_options[id]}}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <button type="button" class="btn btn-danger pull-right" onclick="clearFilters()">{{_('Clear all')}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.filter-collapsable-container {
+    border: 3px solid gray;
+    border-radius: 15px;
+    background: #444;
+}
+</style>
