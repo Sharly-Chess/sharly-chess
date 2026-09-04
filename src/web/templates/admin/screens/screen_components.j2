@@ -2,6 +2,16 @@
     collection-status-{{ 'public' if item.public else 'private' }}
 {%- endmacro %}
 
+{% macro row_href(item, view, placement) %}
+    {% if not client.can_manage_screens %}
+        {{ url_for(
+            'user-screen',
+            event_uniq_id=admin_event.uniq_id,
+            screen_uniq_id=item.uniq_id,
+        ) }}
+    {% endif %}
+{% endmacro %}
+
 {% macro identity(item, view, placement) %}
     <span class="d-inline-flex align-items-center gap-2 min-width-0">
         {% if client.can_manage_screens %}
