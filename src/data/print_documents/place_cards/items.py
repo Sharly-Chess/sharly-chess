@@ -10,6 +10,7 @@ from xml.etree.ElementTree import ElementTree
 from PIL import Image, UnidentifiedImageError
 
 from common import BASE_DIR
+from common.i18n import _
 from common.i18n.utils import parse_jinja_string
 from common.logger import get_logger
 from data.print_documents.place_cards.data import (
@@ -128,9 +129,10 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         pairing: PlaceCardPairing | None = None,
         team: PlaceCardTeam | None = None,
         preview: bool = False,
+        editor: bool = False,
     ) -> str:
         """Returns the HTML to output for the item."""
-        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, player, board, pairing, team, preview)}</div>'
+        return f'<div class="card-item-wrapper {self.css_class}">{self._inner_html(event, tournament, player, board, pairing, team, preview, editor)}</div>'
 
     @abstractmethod
     def _inner_html(
@@ -142,6 +144,7 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         pairing: PlaceCardPairing | None = None,
         team: PlaceCardTeam | None = None,
         preview: bool = False,
+        editor: bool = False,
     ) -> str:
         """Returns the inner HTML of the item."""
         pass
@@ -166,36 +169,49 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         unit: str,
     ) -> dict[str, str]:
         """Returns the CSS for the item."""
+        # Items are absolutely positioned within their (full-size) wrapper so
+        # that left/right/top/bottom offsets always apply - including centre and
+        # middle, which are expressed as a 50% offset plus a translate. With the
+        # default 0 offsets this renders identically to the previous model.
         item_css: dict[str, str] = {
             'opacity': f'{self.opacity}',
+            'position': 'absolute',
         }
         # font-size must apply to subitems (for federation flags)
         if self.width:
             item_css['width'] = f'{self.width}{unit}'
         if self.height:
             item_css['height'] = f'{self.height}{unit}'
+        transforms: list[str] = []
         match self.h_align:
             case 'left':
                 item_css['left'] = f'{self.h_pos}{unit}'
-                item_css['margin-right'] = 'auto'
-            case 'center':
-                item_css['margin-left'] = 'auto'
-                item_css['margin-right'] = 'auto'
             case 'right':
                 item_css['right'] = f'{self.h_pos}{unit}'
-                item_css['margin-left'] = 'auto'
+            case 'center':
+                item_css['left'] = '50%'
+                transforms.append('translateX(-50%)')
         match self.v_align:
-            case 'top' | 'bottom':
-                item_css['position'] = 'absolute'
-                item_css[self.v_align] = f'{self.v_pos}{unit}'
+            case 'top':
+                item_css['top'] = f'{self.v_pos}{unit}'
+            case 'bottom':
+                item_css['bottom'] = f'{self.v_pos}{unit}'
+            case 'middle':
+                item_css['top'] = '50%'
+                transforms.append('translateY(-50%)')
         if self.max_width is not None:
             item_css['max-width'] = f'{self.max_width}{unit}'
         if self.rotate:
-            item_css['transform'] = f'rotate({self.rotate}deg)'
+            transforms.append(f'rotate({self.rotate}deg)')
+        if transforms:
+            item_css['transform'] = ' '.join(transforms)
         if self.background_color:
             item_css['background-color'] = self.background_color
         if self.color:
             item_css['color'] = self.color
+        if self.border_width and self.border_color:
+            item_css['box-sizing'] = 'border-box'
+            item_css['border'] = f'{self.border_width}{unit} solid {self.border_color}'
         return item_css
 
     def _inner_css_properties(
@@ -289,6 +305,7 @@ class PlaceCardText(PlaceCardItem):
         pairing: PlaceCardPairing | None = None,
         team: PlaceCardTeam | None = None,
         preview: bool = False,
+        editor: bool = False,
     ) -> str:
         if not self.display:
             return ''
@@ -306,11 +323,12 @@ class PlaceCardText(PlaceCardItem):
             },
             on_error=self.render_error('Jinja error'),
         )
-        return (
-            f'<div class="card-item {self.css_class}">{content}</div>'
-            if self.display
-            else ''
-        )
+        # In the editor an item that resolves to nothing (e.g. a field with no
+        # value) would be invisible and impossible to select or drag. Show a
+        # dimmed placeholder so it stays visible and editable.
+        if editor and not content.strip():
+            content = f'<span class="pc-empty-placeholder">{_("Text")}</span>'
+        return f'<div class="card-item {self.css_class}">{content}</div>'
 
     def _item_css_properties(
         self,
@@ -321,6 +339,16 @@ class PlaceCardText(PlaceCardItem):
             'font-weight': 'bold' if self.bold else 'normal',
             'font-style': 'italic' if self.italic else 'normal',
         }
+        decorations: list[str] = []
+        if self.underline:
+            decorations.append('underline')
+        if self.strikethrough:
+            decorations.append('line-through')
+        item_css['text-decoration'] = ' '.join(decorations) if decorations else 'none'
+        if self.uppercase:
+            item_css['text-transform'] = 'uppercase'
+        if self.font_family:
+            item_css['font-family'] = self._font_family_css()
         if self.italic:
             # Italic glyphs overhang their advance width; without a
             # little slack the item's overflow:hidden clips the last
@@ -339,7 +367,19 @@ class PlaceCardText(PlaceCardItem):
             # the font style must be set to inner elements to apply to the federation flags.
             'font-size': f'{self.font_size}pt',
         }
+        if self.font_family:
+            # The template sets font-family on every element via `.<template> *`,
+            # so an item override must also reach the item's children.
+            inner_css['font-family'] = self._font_family_css()
         return super()._inner_css_properties(unit) | inner_css
+
+    def _font_family_css(self) -> str:
+        """The CSS font-family for this item. A bundled font file (``*.ttf``) is
+        referenced by its embedded @font-face name; anything else is treated as a
+        ready-made CSS font stack (a generic or web-safe family)."""
+        if self.font_family.lower().endswith('.ttf'):
+            return f'"{Path(self.font_family).stem}", sans-serif'
+        return self.font_family
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}({self.raw_text=}, {self.back=})'
@@ -369,6 +409,9 @@ class PlaceCardImage(PlaceCardItem):
                 logger.debug('Image file [%s] not found.', file)
             if not image:
                 logger.warning('Image file [%s] not found.', image_name)
+        # An item with no image chosen yet renders as an empty placeholder box in
+        # the editor (rather than the fallback logo on a red error background).
+        self.has_image: bool = image is not None
         if not image:
             self._background_color = 'red'
         self.image = image or self.default_image
@@ -458,7 +501,13 @@ class PlaceCardImage(PlaceCardItem):
         pairing: PlaceCardPairing | None = None,
         team: PlaceCardTeam | None = None,
         preview: bool = False,
+        editor: bool = False,
     ) -> str:
+        if editor and not self.has_image:
+            return (
+                f'<div class="card-item image pc-image-empty {self.css_class}">'
+                '<i class="bi-image"></i></div>'
+            )
         return f'<div class="card-item image {self.css_class}"></div>'
 
     @cached_property
