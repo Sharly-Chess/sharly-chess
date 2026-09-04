@@ -88,7 +88,7 @@
         >
             <td class="rank text-end {{ no_played_games_class }}">{{ tournament_player.rank }}</td>
             <td class="title text-end {{ no_played_games_class }}">{{ tournament_player.display_title }}</td>
-            <td class="name text-start {{ no_played_games_class }}">
+            <td class="name text-start {{ no_played_games_class }} fw-bold">
                 {% include '/admin/player_link.html' %}
                 <button
                     type="button"
@@ -109,7 +109,7 @@
             <td class="federation text-center {{ no_played_games_class }}">{{ tournament_player.federation }}</td>
 
             {% for tie_break_value in tournament_player.tie_break_values %}
-                <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %} {{ no_played_games_class }}">
+                <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %} {{ no_played_games_class }} {% if loop.index == 1 %}fw-bold{% endif %}">
 
                     <span
                         {% if tie_break_value.rank_progress %}
