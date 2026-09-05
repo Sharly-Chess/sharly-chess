@@ -672,6 +672,31 @@ class Event:
         player.optional_single_tournament_id = destination_tournament.id
         self.clear_player_cache()
 
+    def move_players_to_tournaments(
+        self,
+        target_tournament_ids_by_player_id: dict[int, int],
+    ):
+        """Moves the given players to the target tournaments."""
+        with EventDatabase(self.uniq_id, write=True) as database:
+            for (
+                player_id,
+                target_tournament_id,
+            ) in target_tournament_ids_by_player_id.items():
+                player = self.players_by_id[player_id]
+                source_tournament: Tournament = player.single_tournament
+                target_tournament: Tournament = self.tournaments_by_id[
+                    target_tournament_id
+                ]
+                target_tournament.add_player_to_tournament(
+                    player.stored_player, database
+                )
+                database.delete_stored_tournament_player(
+                    source_tournament.id, player.id
+                )
+                del source_tournament.tournament_players_by_id[player.id]
+            player.optional_single_tournament_id = target_tournament.id
+        self.clear_player_cache()
+
     # --------------------------------------------------------------------------
     # Teams
     # --------------------------------------------------------------------------

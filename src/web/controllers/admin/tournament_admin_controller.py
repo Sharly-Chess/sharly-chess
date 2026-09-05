@@ -1,6 +1,6 @@
 import json
 import random
-from collections import defaultdict
+from collections import defaultdict, Counter
 from datetime import datetime
 from functools import partial
 from tempfile import NamedTemporaryFile
@@ -2610,8 +2610,9 @@ class TournamentAdminController(BaseEventAdminController):
         player_count_by_tournament_id: dict[int, int],
         groups_by_id: dict[str, list[int]],
         split_clubs: bool,
-    ):
-        """Distribute the players among the tournaments with the given settings."""
+    ) -> dict[int, int]:
+        """Distribute the players among the tournaments by desc rating.
+        Returns a dict with the player IDs as keys and the target tournament IDs as values."""
         # initialize the distribution: distributed_players_by_tournament will hold the
         # players distributed by tournaments, and all the moves will be done at the end.
         distributed_players_by_tournament: dict[Tournament, list[TournamentPlayer]] = (
@@ -2728,6 +2729,9 @@ class TournamentAdminController(BaseEventAdminController):
                 for club in clubs_sorted_by_player_count:
                     group_players_sorted += players_by_club[club]
             # players are now correctly sorted, iterate on the players to distribute them
+            player_count_by_tournament_and_club: Counter[tuple[Tournament, Club]] = (
+                Counter[tuple[Tournament, Club]]()
+            )
             logger.debug('Group players:')
             for player in group_players_sorted:
                 logger.debug(
@@ -2753,6 +2757,7 @@ class TournamentAdminController(BaseEventAdminController):
                         ]
                     ),
                 )
+
                 # find the lowest player count of the incomplete tournaments
                 lowest_player_count = min(
                     len(distributed_players_by_tournament[tournament])
@@ -2775,7 +2780,38 @@ class TournamentAdminController(BaseEventAdminController):
                         ]
                     ),
                 )
-                target_tournament: Tournament = tournaments_with_lowest_player_count[0]
+
+                if split_clubs:
+                    # among these tournaments, find the lowest player-of-the-same-club count
+                    lowest_club_count = min(
+                        player_count_by_tournament_and_club[(tournament, player.club)]
+                        for tournament in tournaments_with_lowest_player_count
+                    )
+                    logger.debug('Lowest club count: %d', lowest_club_count)
+                    tournaments_with_lowest_club_count: list[Tournament] = [
+                        tournament
+                        for tournament in tournaments_with_lowest_player_count
+                        if player_count_by_tournament_and_club[
+                            (tournament, player.club)
+                        ]
+                        == lowest_club_count
+                    ]
+                    logger.debug(
+                        'Tournaments with the lowest club count (%d): %s',
+                        len(tournaments_with_lowest_club_count),
+                        ', '.join(
+                            [
+                                f'{tournament.name} ({player_count_by_tournament_and_club[(tournament, player.club)]}/{player_count_by_tournament_id[tournament.id]})'
+                                for tournament in tournaments_with_lowest_player_count
+                            ]
+                        ),
+                    )
+                else:
+                    tournaments_with_lowest_club_count: list[Tournament] = (
+                        tournaments_with_lowest_player_count
+                    )
+
+                target_tournament: Tournament = tournaments_with_lowest_club_count[0]
                 if len(tournaments_with_lowest_player_count) > 1:
                     min_average_rating: float = float('inf')
                     # set the tournament with the lowest average rating as the target
@@ -2806,6 +2842,21 @@ class TournamentAdminController(BaseEventAdminController):
                     target_tournament.name,
                 )
                 distributed_players_by_tournament[target_tournament].append(player)
+                if split_clubs:
+                    player_count_by_tournament_and_club[
+                        (target_tournament, player.club)
+                    ] += 1
+                    logger.debug('Player distribution for club [%s]:', player.club)
+                    for tournament in tournament_group:
+                        logger.debug(
+                            '- %d/%d in [%s]',
+                            player_count_by_tournament_and_club[
+                                (tournament, player.club)
+                            ],
+                            len(distributed_players_by_tournament[tournament]),
+                            tournament.name,
+                        )
+        target_tournament_ids_by_player_id: dict[int, int] = {}
         for tournament, players in distributed_players_by_tournament.items():
             for player in players:
                 if player.tournament != tournament:
@@ -2814,13 +2865,37 @@ class TournamentAdminController(BaseEventAdminController):
                         player.full_name,
                         tournament.name,
                     )
-                    tournament.event.move_player_to_tournament(player, tournament)
+                    target_tournament_ids_by_player_id[player.id] = tournament.id
                 else:
                     logger.debug(
                         'Player [%s] already in tournament [%s]...',
                         player.full_name,
                         tournament.name,
                     )
+        return target_tournament_ids_by_player_id
+
+    @classmethod
+    def _distribute_players_by_criteria(
+        cls,
+        event: Event,
+        tournament_ids: list[int],
+    ) -> dict[int, int]:
+        """Distribute the players among the tournaments by criteria.
+        Returns a dict with the player IDs as keys and the target tournament IDs as values."""
+        tournament_players = event.tournament_players
+        matched_player_ids: list[int] = []
+        target_tournament_ids_by_player_id: dict[int, int] = {}
+        for tournament in event.sorted_tournaments:
+            if tournament.id not in tournament_ids:
+                continue
+            for player in tournament_players:
+                if player.id in matched_player_ids:
+                    continue
+                if tournament.player_matches_criteria(player):
+                    matched_player_ids.append(player.id)
+                    if player.tournament.id != tournament.id:
+                        target_tournament_ids_by_player_id[player.id] = tournament.id
+        return target_tournament_ids_by_player_id
 
     @post(
         path='/distribute-players/{event_uniq_id:str}',
@@ -2878,25 +2953,22 @@ class TournamentAdminController(BaseEventAdminController):
                 or 0
                 for tournament in event.sorted_tournaments
             }
-            self._distribute_players_by_rating(
-                event,
-                player_count_by_tournament_id,
-                groups_by_id if use_balance_groups else {},
-                split_clubs,
+            target_tournament_ids_by_player_id: dict[int, int] = (
+                self._distribute_players_by_rating(
+                    event,
+                    player_count_by_tournament_id,
+                    groups_by_id if use_balance_groups else {},
+                    split_clubs,
+                )
             )
         else:
-            tournament_players = event.tournament_players
-            matched_player_ids: list[int] = []
-            for tournament in event.sorted_tournaments:
-                if tournament.id not in tournament_ids:
-                    continue
-                for player in tournament_players:
-                    if player.id in matched_player_ids:
-                        continue
-                    if tournament.player_matches_criteria(player):
-                        matched_player_ids.append(player.id)
-                        if player.tournament.id != tournament.id:
-                            event.move_player_to_tournament(player, tournament)
+            target_tournament_ids_by_player_id: dict[int, int] = (
+                self._distribute_players_by_criteria(
+                    event,
+                    tournament_ids,
+                )
+            )
+        event.move_players_to_tournaments(target_tournament_ids_by_player_id)
         Message.success(
             request, _('Players successfully distributed among the tournaments.')
         )
