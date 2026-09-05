@@ -295,10 +295,13 @@ class PapiRound:
         papi_color: PapiColor | None
         if pairing.result == Result.NO_RESULT and not pairing.board:
             papi_color = PapiColor.UNPAIRED
-        elif (
-            # Since Papi does not support custom PAB values, we convert these case to a Bye
-            pairing.result == Result.PAIRING_ALLOCATED_BYE and pab_value != Result.WIN
-        ) or pairing.result == Result.REST_GAME:
+        elif pairing.opponent_id is None and pairing.result.is_bye:
+            # Any bye — full/half/zero-point, pairing-allocated or rest.
+            # Papi has no custom PAB value, so all of them are a Bye (the
+            # result code still carries the points). A knock-out seats its
+            # byes on a real board where the player holds White; the colour
+            # must come from the bye itself, not the board, or Papi records
+            # a white game against no adversary.
             papi_color = PapiColor.BYE
         elif pairing.color == BoardColor.WHITE:
             papi_color = PapiColor.WHITE
@@ -311,6 +314,14 @@ class PapiRound:
             pairing.opponent_id,
             cls._result_to_papi_result(pairing.result, pab_value),
         )
+
+    @classmethod
+    def zero_point_bye(cls) -> Self:
+        """A zero-point bye: the entrant sits the round out with no opponent
+        and scores nothing. A knock-out gives one to a player in the rounds
+        after they are eliminated, so Papi reads every entrant as paired or
+        given a bye in each round it has played, without altering the score."""
+        return cls(PapiColor.BYE, None, PapiResult.UNPLAYED_OR_NOT_PAIRED)
 
     @staticmethod
     def _result_to_papi_result(result: Result, pab_value: Result):

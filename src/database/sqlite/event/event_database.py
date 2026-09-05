@@ -809,17 +809,38 @@ class EventDatabase(MigrationDatabase):
         tournament_id: int | None = self._last_inserted_id()
         if tournament_id is None:
             raise RuntimeError('Tournament insertion failed')
-        from data.tie_breaks.tie_breaks import PointsTieBreak
+        from data.tie_breaks.tie_breaks import ManualTieBreak, PointsTieBreak
+        from data.pairings.knockout import (
+            KnockoutPairingSystem,
+            TeamKnockoutPairingSystem,
+        )
 
-        self.add_stored_tie_break(
-            StoredTieBreak(
-                id=None,
-                tournament_id=tournament_id,
-                type=PointsTieBreak.static_id(),
-                options={},
-                index=0,
+        is_knockout = (stored_tournament.pairing or '').startswith(
+            (
+                KnockoutPairingSystem.static_id() + '_',
+                TeamKnockoutPairingSystem.static_id() + '_',
             )
         )
+        if is_knockout:
+            # A knock-out configures advancement tie-breaks, and its standings
+            # are fixed to the round reached — so no Points criterion. A level
+            # match nothing computed separates is settled by a play-off, so
+            # seed the manual marker: the pairing tab can then designate a
+            # winner. (Covers every knock-out variant: single/double, two-game.)
+            manual = ManualTieBreak().to_stored_value()
+            manual.tournament_id = tournament_id
+            manual.index = 0
+            self.add_stored_tie_break(manual)
+        else:
+            self.add_stored_tie_break(
+                StoredTieBreak(
+                    id=None,
+                    tournament_id=tournament_id,
+                    type=PointsTieBreak.static_id(),
+                    options={},
+                    index=0,
+                )
+            )
         return tournament_id
 
     def update_stored_tournament(self, stored_tournament: StoredTournament):
@@ -1397,7 +1418,8 @@ class EventDatabase(MigrationDatabase):
                 'SELECT `board`.`id`, `board`.`white_player_id`, '
                 '`board`.`black_player_id`, `board`.`index`, '
                 '`board`.`last_result_update`, `board`.`team_board_id`, '
-                '`board`.`fixed_number`, `paired_board`.`round` '
+                '`board`.`fixed_number`, `board`.`knockout_winner_player_id`, '
+                '`paired_board`.`round` '
                 'FROM ('
                 '  SELECT `board_id`, MIN(`round`) AS `round` '
                 '  FROM `pairing` '
@@ -1409,7 +1431,8 @@ class EventDatabase(MigrationDatabase):
                 'SELECT `board`.`id`, `board`.`white_player_id`, '
                 '`board`.`black_player_id`, `board`.`index`, '
                 '`board`.`last_result_update`, `board`.`team_board_id`, '
-                '`board`.`fixed_number`, `team_board`.`round` '
+                '`board`.`fixed_number`, `board`.`knockout_winner_player_id`, '
+                '`team_board`.`round` '
                 'FROM `team_board` '
                 'JOIN `board` ON `board`.`team_board_id` = `team_board`.`id` '
                 'WHERE `team_board`.`tournament_id` = ? '
@@ -1432,6 +1455,7 @@ class EventDatabase(MigrationDatabase):
             last_result_update,
             team_board_id,
             fixed_number,
+            knockout_winner_player_id,
             round_,
         ) in self.cursor.fetchall():
             board = StoredBoard(
@@ -1444,6 +1468,7 @@ class EventDatabase(MigrationDatabase):
                 ),
                 team_board_id=team_board_id,
                 fixed_number=fixed_number,
+                knockout_winner_player_id=knockout_winner_player_id,
             )
             if round_ in stored_boards_by_round:
                 stored_boards_by_round[round_].append(board)
@@ -1460,6 +1485,7 @@ class EventDatabase(MigrationDatabase):
                 'index',
                 'team_board_id',
                 'fixed_number',
+                'knockout_winner_player_id',
             ],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
@@ -1481,6 +1507,7 @@ class EventDatabase(MigrationDatabase):
                 'index',
                 'team_board_id',
                 'fixed_number',
+                'knockout_winner_player_id',
             ],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
@@ -1739,6 +1766,7 @@ class EventDatabase(MigrationDatabase):
                 row['last_result_update']
             ),
             bye_type=row['bye_type'],
+            knockout_winner_team_id=row.get('knockout_winner_team_id'),
         )
 
     def load_tournament_stored_team_boards_by_round(
@@ -1758,7 +1786,14 @@ class EventDatabase(MigrationDatabase):
     def add_stored_team_board(self, stored_team_board: StoredTeamBoard) -> int:
         fields = self._get_fields_dict(
             stored_team_board,
-            ['tournament_id', 'team_a_id', 'team_b_id', 'index', 'bye_type'],
+            [
+                'tournament_id',
+                'team_a_id',
+                'team_b_id',
+                'index',
+                'bye_type',
+                'knockout_winner_team_id',
+            ],
         ) | {'round': stored_team_board.round_}
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1773,7 +1808,14 @@ class EventDatabase(MigrationDatabase):
     def update_stored_team_board(self, stored_team_board: StoredTeamBoard):
         fields = self._get_fields_dict(
             stored_team_board,
-            ['tournament_id', 'team_a_id', 'team_b_id', 'index', 'bye_type'],
+            [
+                'tournament_id',
+                'team_a_id',
+                'team_b_id',
+                'index',
+                'bye_type',
+                'knockout_winner_team_id',
+            ],
         ) | {'round': stored_team_board.round_}
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_team_board.id is not None
