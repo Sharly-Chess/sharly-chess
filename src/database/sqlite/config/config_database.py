@@ -103,6 +103,14 @@ class ConfigDatabase(MigrationDatabase):
             capitalise_last_name=self.load_bool_from_database_field(
                 row['capitalise_last_name']
             ),
+            snapshot_enabled=self.load_bool_from_database_field(
+                row['snapshot_enabled']
+            ),
+            snapshot_dir=row['snapshot_dir'],
+            snapshot_keep_milestones=row['snapshot_keep_milestones'],
+            snapshot_keep_auto=row['snapshot_keep_auto'],
+            snapshot_max_total_mb=row['snapshot_max_total_mb'],
+            snapshot_max_age_days=row['snapshot_max_age_days'],
         )
 
     def _get_stored_config(self) -> StoredConfig:
@@ -136,6 +144,12 @@ class ConfigDatabase(MigrationDatabase):
                 'date_formatter',
                 'name_formatter',
                 'capitalise_last_name',
+                'snapshot_enabled',
+                'snapshot_dir',
+                'snapshot_keep_milestones',
+                'snapshot_keep_auto',
+                'snapshot_max_total_mb',
+                'snapshot_max_age_days',
             ],
         )
         field_sets = (f'`{f}` = ?' for f in fields)
