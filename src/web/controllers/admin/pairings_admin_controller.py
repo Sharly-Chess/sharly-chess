@@ -27,6 +27,8 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.board import Board
 from data.player import TournamentPlayer
+from data.snapshot import SnapshotReason
+from data.snapshot_worker import SnapshotScheduler
 from data.event import Event
 from data.teams.team import Team
 from data.teams.team_board import TeamBoard
@@ -2070,7 +2072,7 @@ class PairingsAdminController(BaseEventAdminController):
             return None
         return calculated
 
-    def _generate_round_pairings(
+    async def _generate_round_pairings(
         self, web_context: PairingsAdminWebContext, confirmed: bool = False
     ) -> Template:
         tournament = web_context.get_admin_tournament()
@@ -2090,6 +2092,12 @@ class PairingsAdminController(BaseEventAdminController):
                         'calculated_rounds': calculated,
                     },
                 )
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_PAIRING,
+            round_,
+            tournament.id,
+        )
         if error := tournament.generate_round_pairings(round_):
             Message.error(request, error)
         else:
@@ -2134,7 +2142,7 @@ class PairingsAdminController(BaseEventAdminController):
             )
         tournament = web_context.get_admin_tournament()
         tournament.set_valid_pairing_settings()
-        return self._generate_round_pairings(web_context, confirmed=confirmed)
+        return await self._generate_round_pairings(web_context, confirmed=confirmed)
 
     @post(
         path='/pairings/generate-partial/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
@@ -2238,6 +2246,11 @@ class PairingsAdminController(BaseEventAdminController):
                             'calculated_rounds': calculated,
                         },
                     )
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_PAIRING,
+            tournament_id=tournament.id,
+        )
         error: str = ''
         for round_ in range(1, tournament.rounds + 1):
             if error := tournament.pairing_variation.engine.generate_pairings(
@@ -2289,6 +2302,12 @@ class PairingsAdminController(BaseEventAdminController):
                 action=PairingAction.FULL_UNPAIRING,
             )
             tournament = web_context.get_admin_tournament()
+            await SnapshotScheduler.snapshot_before_async(
+                tournament.event.uniq_id,
+                SnapshotReason.BEFORE_UNPAIRING,
+                web_context.admin_round,
+                tournament.id,
+            )
             tournament.unpair_boards(web_context.admin_boards)
             # A fully-unpaired round loses its prohibited-pairing snapshot;
             # re-pairing writes a fresh one.
@@ -2315,6 +2334,11 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_UNPAIRING,
+            tournament_id=tournament.id,
+        )
         tournament.unpair_boards(list(tournament.boards_by_id.values()))
         tournament.set_current_round(0)
 
@@ -2590,7 +2614,7 @@ class PairingsAdminController(BaseEventAdminController):
                 tournament.check_in_team(team, True)
         if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
-        return self._generate_round_pairings(web_context)
+        return await self._generate_round_pairings(web_context)
 
     @classmethod
     def _render_pairings_settings_modal(
@@ -2713,7 +2737,7 @@ class PairingsAdminController(BaseEventAdminController):
             return self._render_pairings_settings_modal(web_context, data, errors)
 
         self._save_pairing_settings_data(tournament, data)
-        return self._generate_round_pairings(web_context)
+        return await self._generate_round_pairings(web_context)
 
     @post(
         path='/pairings/settings-action/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
@@ -2796,7 +2820,7 @@ class PairingsAdminController(BaseEventAdminController):
                         tournament.check_in_player(player, check_in=True)
         if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
-        return self._generate_round_pairings(web_context)
+        return await self._generate_round_pairings(web_context)
 
     @put(
         path='/tournament/set-current-round/{event_uniq_id:str}/{tournament_id:int}/{current_round:int}',
@@ -2815,6 +2839,12 @@ class PairingsAdminController(BaseEventAdminController):
             round_=current_round,
         )
         tournament = web_context.get_admin_tournament()
+        await SnapshotScheduler.snapshot_before_async(
+            tournament.event.uniq_id,
+            SnapshotReason.BEFORE_NEXT_ROUND,
+            current_round,
+            tournament.id,
+        )
         tournament.set_current_round(round_=current_round)
         SessionPairingsSelectedRound(request, tournament).set(current_round)
         return self._admin_event_pairings_render(web_context)
