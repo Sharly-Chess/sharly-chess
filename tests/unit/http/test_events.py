@@ -78,6 +78,26 @@ def test_an_event_keeps_its_contents_when_its_id_changes(
 
 
 @pytest.mark.unit
+def test_the_event_is_exported_from_its_configuration(http: TestClient, cleanup: None):
+    """The export writes the whole event to a file of its own, which is a
+    property of the event rather than of its tournaments."""
+    TestUtils.create_event(EVENT_ID)
+    TestUtils.create_tournament(EVENT_ID, 'A tournament')
+
+    configuration = http.get(f'/event-modal/update/{EVENT_ID}')
+    assert configuration.status_code == 200
+    assert f'/event-export-modal/{EVENT_ID}' in configuration.text
+
+    tournaments = http.get(f'/event/{EVENT_ID}/tournaments')
+    assert tournaments.status_code == 200
+    assert '/event-export-modal/' not in tournaments.text
+
+    exported = http.get(f'/event-export/{EVENT_ID}', params={'include_players': 'on'})
+    assert exported.status_code == 200
+    assert exported.content.startswith(b'SQLite format 3')
+
+
+@pytest.mark.unit
 def test_an_oauth_callback_without_a_state_goes_home(http: TestClient):
     """The identity provider answers with whatever it was given; a reply
     to a request this installation never made is sent to the home page

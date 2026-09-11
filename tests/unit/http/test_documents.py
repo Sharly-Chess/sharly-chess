@@ -4,6 +4,8 @@ A document opens in a tab of its own, carrying the modal's choices in one
 query parameter, and what those choices put in the markup is read here.
 """
 
+import json
+import re
 from collections.abc import Iterator
 
 import pytest
@@ -52,3 +54,19 @@ def test_the_crosstable_carries_a_history_per_player_on_request(
 ):
     markup = crosstable(http, tournament_id, **option)
     assert ('class="player-history"' in markup) is included
+
+
+@pytest.mark.unit
+def test_the_place_cards_remind_the_arbiter_to_update_the_players(
+    http: TestClient, tournament_id: int
+):
+    """Only the cards printed from the player records carry the reminder:
+    a board card names no one, and would send the arbiter updating for
+    nothing."""
+    response = http.get(f'/documents-modal/{EVENT_ID}')
+    assert response.status_code == 200
+    assert 'before printing the place cards' in response.text
+
+    named = re.search(r'const playerDataTypes = (\[.*?\]);', response.text)
+    assert named is not None
+    assert set(json.loads(named.group(1))) == {'player', 'pairing', 'team'}
