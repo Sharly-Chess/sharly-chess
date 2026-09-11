@@ -87,6 +87,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
             data = {}
         name = ''
         public = WebContext.form_data_to_bool(data, 'public')
+        remote = WebContext.form_data_to_bool(data, 'remote')
         match action:
             case 'create' | 'update':
                 name = WebContext.form_data_to_str(data, field := 'name') or ''
@@ -132,6 +133,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
         return StoredDisplayController(
             id=display_controller_id,
             public=public,
+            remote=remote,
             name=name,
             screen_id=screen_id,
             rotator_id=rotator_id,
@@ -243,6 +245,9 @@ class DisplayControllerAdminController(BaseEventAdminController):
             )
         else:
             admin_sorted_display_controllers = []
+        admin_sorted_display_controllers = web_context.client.reachable(
+            admin_sorted_display_controllers
+        )
 
         template_context: dict[str, Any] = web_context.template_context | {
             'admin_event_tab': 'admin-event-display-controllers-tab',
@@ -257,6 +262,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     name: str | None = None
                     public: bool | None = None
                     item_ids: list[str] = []
+                    remote: bool | None = None
                     match action:
                         case 'update':
                             display_controller = (
@@ -289,14 +295,17 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     match action:
                         case 'update':
                             public = web_context.get_admin_display_controller().stored_display_controller.public
+                            remote = web_context.get_admin_display_controller().stored_display_controller.remote
                         case 'create':
                             public = True
+                            remote = False
                         case 'delete':
                             pass
                         case _:
                             raise ValueError(f'action=[{action}]')
                     data = {
                         'public': WebContext.value_to_form_data(public),
+                        'remote': WebContext.value_to_form_data(remote),
                         'name': WebContext.value_to_form_data(name),
                         'item_ids': WebContext.value_to_form_data(item_ids),
                     }

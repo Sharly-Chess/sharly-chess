@@ -3109,6 +3109,7 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
             type=row['type'],
             public=cls.load_bool_from_database_field(row['public']),
+            remote=cls.load_bool_from_database_field(row['remote']),
             tournament_id=row['tournament_id'],
             input_exit_button=cls.load_bool_or_none_from_database_field(
                 row['input_exit_button']
@@ -3176,6 +3177,7 @@ class EventDatabase(MigrationDatabase):
             'name',
             'type',
             'public',
+            'remote',
             'tournament_id',
             'columns',
             'font_size',
@@ -3209,6 +3211,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.name,
             stored_family.type,
             stored_family.public,
+            stored_family.remote,
             stored_family.tournament_id,
             stored_family.columns,
             stored_family.font_size,
@@ -3294,6 +3297,7 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
             type=row['type'],
             public=cls.load_bool_from_database_field(row['public']),
+            remote=cls.load_bool_from_database_field(row['remote']),
             columns=row['columns'],
             font_size=row['font_size'],
             menu_text=row['menu_text'],
@@ -3417,6 +3421,7 @@ class EventDatabase(MigrationDatabase):
             'name',
             'type',
             'public',
+            'remote',
             'input_exit_button',
             'accepts_input',
             'boards_hide_players',
@@ -3452,6 +3457,7 @@ class EventDatabase(MigrationDatabase):
             stored_screen.name,
             stored_screen.type,
             stored_screen.public,
+            stored_screen.remote,
             stored_screen.input_exit_button
             if stored_screen.type
             in ('boards', 'players', 'check-in', 'round-robin-grid')
@@ -3740,6 +3746,7 @@ class EventDatabase(MigrationDatabase):
             id=row['id'],
             name=row['name'],
             public=cls.load_bool_from_database_field(row['public']),
+            remote=cls.load_bool_from_database_field(row['remote']),
             delay=row['delay'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
@@ -3763,6 +3770,7 @@ class EventDatabase(MigrationDatabase):
             [
                 'name',
                 'public',
+                'remote',
                 'delay',
                 'message_default',
                 'message_text',
@@ -3785,6 +3793,7 @@ class EventDatabase(MigrationDatabase):
             [
                 'name',
                 'public',
+                'remote',
                 'delay',
                 'message_default',
                 'message_text',
@@ -3989,6 +3998,7 @@ class EventDatabase(MigrationDatabase):
             family_page=row['family_page'],
             menu_id=row['menu_id'],
             public=cls.load_bool_from_database_field(row['public']),
+            remote=cls.load_bool_from_database_field(row['remote']),
         )
 
     def _load_display_controller_items(
@@ -4147,6 +4157,7 @@ class EventDatabase(MigrationDatabase):
         fields: list[str] = [
             'name',
             'public',
+            'remote',
             'screen_id',
             'rotator_id',
             'family_id',
@@ -4157,6 +4168,7 @@ class EventDatabase(MigrationDatabase):
         params: list = [
             stored_display_controller.name,
             stored_display_controller.public,
+            stored_display_controller.remote,
             stored_display_controller.screen_id,
             stored_display_controller.rotator_id,
             stored_display_controller.family_id,

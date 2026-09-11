@@ -132,6 +132,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
         assert stored_screen is not None
         form_values: dict[str, Any] = {
             'public': stored_screen.public,
+            'remote': stored_screen.remote,
             'name': stored_screen.name,
             'columns': stored_screen.columns,
             'font_size': stored_screen.font_size,
@@ -267,6 +268,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
                             type_values = create_type.create_form_data(event)
                             form_values = {
                                 'public': True,
+                                'remote': False,
                                 'columns': type_values.pop('columns', None),
                                 'message_text_checkbox': True,
                                 # Set-based screens open on a first tournament.
@@ -394,31 +396,41 @@ class DisplayAdminRenderer(BaseEventAdminController):
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
         include_private = web_context.client.can_view_private_screens
-        feeds = (
+        # What a caller from the internet is offered: a tile whose screen is
+        # kept on the venue's own network answers nothing, however the caller
+        # signed in.
+        reachable = web_context.client.reachable
+        feeds = reachable(
             event.sorted_display_controllers
             if include_private
             else event.sorted_public_display_controllers
         )
-        screens = [
-            screen
-            for screen in event.sorted_basic_screens
-            if include_private or screen.public
-        ]
-        families = [
-            family
-            for family in event.sorted_families
-            if (include_private or family.public) and family.screens_by_uniq_id
-        ]
-        menus = event.menus_for(include_private)
-        rotators = [
-            rotator
-            for rotator in (
-                event.sorted_rotators
-                if include_private
-                else event.public_sorted_rotators
-            )
-            if rotator.rotating_screens
-        ]
+        screens = reachable(
+            [
+                screen
+                for screen in event.sorted_basic_screens
+                if include_private or screen.public
+            ]
+        )
+        families = reachable(
+            [
+                family
+                for family in event.sorted_families
+                if (include_private or family.public) and family.screens_by_uniq_id
+            ]
+        )
+        menus = event.menus_for(include_private, remote=web_context.client.remote)
+        rotators = reachable(
+            [
+                rotator
+                for rotator in (
+                    event.sorted_rotators
+                    if include_private
+                    else event.public_sorted_rotators
+                )
+                if rotator.rotating_screens
+            ]
+        )
         groups: list[tuple[ScreenType, list[Screen | Family]]] = []
         for screen_type in ScreenTypeManager(event).objects():
             items: list[Screen | Family] = [
@@ -551,6 +563,7 @@ class ScreenAdminController(ScreenAdminRenderer):
                 raise ValueError(f'action=[{action}]')
         name: str | None = None
         public: bool | None = None
+        remote: bool | None = None
         menu_text: str | None = None
         columns: int | None = None
         font_size: int | None = None
@@ -565,6 +578,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             case 'create' | 'clone' | 'update':
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 public = WebContext.form_data_to_bool(data, 'public')
+                remote = WebContext.form_data_to_bool(data, 'remote')
                 field = 'columns'
                 columns = WebContext.read_int_field(data, field, errors, minimum=1)
                 field = 'font_size'
@@ -681,6 +695,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             uniq_id=uniq_id,
             type=type_,
             public=bool(public),
+            remote=bool(remote),
             name=name,
             columns=columns,
             font_size=font_size,

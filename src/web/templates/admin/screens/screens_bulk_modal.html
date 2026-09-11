@@ -53,6 +53,7 @@
                         data=data, errors=errors
                     ) }}
                 </div>
+                {% include '../common/remote_access_switch.html' %}
                 {% if not screen_type.has_config_fields %}
                     {% include '/admin/display_controllers/destination_field.html' %}
                 {% endif %}
