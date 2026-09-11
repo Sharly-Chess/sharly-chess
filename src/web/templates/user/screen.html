@@ -149,7 +149,7 @@
 {% block content %}
     {% set menu_entries = [] %}
     {% if not rotator and not display_controller %}
-        {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
+        {% set menu_entries = screen.menu_nav_entries(client.can_view_private_screens, client.remote) %}
     {% endif %}
     <div id="top-nav-wrapper" class="screen-top-nav pt-0 {% if menu_entries %}with-menu{% endif %} {% if timer %}with-timer{% endif %}">
         {% if timer %}

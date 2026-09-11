@@ -115,6 +115,12 @@ class ConfigDatabase(MigrationDatabase):
             snapshot_max_total_mb=row['snapshot_max_total_mb'],
             snapshot_max_age_days=row['snapshot_max_age_days'],
             admin_theme=row['admin_theme'],
+            remote_install_id=row['remote_install_id'],
+            remote_access_token=row['remote_access_token'],
+            remote_access_refresh_token=row['remote_access_refresh_token'],
+            remote_access_token_expires_at=row['remote_access_token_expires_at'],
+            remote_access=self.load_bool_from_database_field(row['remote_access']),
+            remote_uniq_id=row['remote_uniq_id'],
         )
 
     def _get_stored_config(self) -> StoredConfig:
@@ -169,6 +175,39 @@ class ConfigDatabase(MigrationDatabase):
             'UPDATE `info` SET `computer_private_key` = ?, `computer_public_key` = ?',
             (private_key, public_key),
         )
+
+    def update_remote_install_id(self, install_id: str | None) -> StoredConfig:
+        """Records what the remote access control plane calls this computer."""
+        self.execute(
+            'UPDATE `info` SET `remote_install_id` = ?',
+            (install_id,),
+        )
+        return self._get_stored_config()
+
+    def update_remote_access(
+        self, remote_access: bool, remote_uniq_id: str | None
+    ) -> StoredConfig:
+        """Records whether this server should be reachable, and under what
+        identity."""
+        self.execute(
+            'UPDATE `info` SET `remote_access` = ?, `remote_uniq_id` = ?',
+            (remote_access, remote_uniq_id),
+        )
+        return self._get_stored_config()
+
+    def update_remote_access_tokens(
+        self,
+        access_token: str | None,
+        refresh_token: str | None,
+        expires_at: float | None,
+    ) -> StoredConfig:
+        """Records the account remote access is opened under."""
+        self.execute(
+            'UPDATE `info` SET `remote_access_token` = ?,'
+            ' `remote_access_refresh_token` = ?, `remote_access_token_expires_at` = ?',
+            (access_token, refresh_token, expires_at),
+        )
+        return self._get_stored_config()
 
     # ---------------------------------------------------------------------------------
     # StoredPlugin
