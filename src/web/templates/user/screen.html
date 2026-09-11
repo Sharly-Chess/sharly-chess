@@ -93,7 +93,7 @@
         {% endif %}
         <div id="top-nav-content">
             {% if not rotator and not display_controller %}
-                {% set menu_entries = screen.admin_menu_nav_entries if client.can_view_private_screens else screen.public_menu_nav_entries %}
+                {% set menu_entries = screen.menu_nav_entries(client.can_view_private_screens, client.remote) %}
                 {% if menu_entries %}
                     <div id="screen-menu" class="screen-menu text-start w-100 m-0 p-2 fw-bold">
                         {% for entry in menu_entries %}
