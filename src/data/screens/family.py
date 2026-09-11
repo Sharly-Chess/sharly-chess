@@ -71,6 +71,11 @@ class Family:
         return self.stored_family.public
 
     @property
+    def remote(self) -> bool:
+        """Whether this may be reached from outside the venue."""
+        return self.stored_family.remote
+
+    @property
     def uniq_id(self) -> str:
         return self.stored_family.uniq_id
 
