@@ -130,6 +130,7 @@ class FamilyAdminController(BaseEventAdminController):
         type_values: dict[str, Any] = {}
         name = WebContext.form_data_to_str(data, 'name')
         public = WebContext.form_data_to_bool(data, 'public')
+        remote = WebContext.form_data_to_bool(data, 'remote')
         match action:
             case 'create' | 'clone' | 'update':
                 field = 'tournament_id'
@@ -233,6 +234,7 @@ class FamilyAdminController(BaseEventAdminController):
             uniq_id=uniq_id,
             type=type_,
             public=bool(public),
+            remote=bool(remote),
             tournament_id=tournament_id,
             name=name,
             columns=columns,
@@ -281,6 +283,7 @@ class FamilyAdminController(BaseEventAdminController):
                 if data is None:
                     name: str | None = None
                     public: bool | None = None
+                    remote: bool | None = None
                     menu_text: str | None = None
                     columns: int | None = None
                     font_size: int | None = None
@@ -317,6 +320,7 @@ class FamilyAdminController(BaseEventAdminController):
                             family = web_context.get_admin_family()
                             stored_family = family.stored_family
                             public = stored_family.public
+                            remote = stored_family.remote
                             tournament_id = stored_family.tournament_id
                             columns = stored_family.columns
                             font_size = stored_family.font_size
@@ -334,6 +338,7 @@ class FamilyAdminController(BaseEventAdminController):
                             message_text = stored_family.message_text
                         case 'create':
                             public = True
+                            remote = False
                             message_default = True
                             tournament_id = next(iter(event.tournaments_by_id.keys()))
                             create_type = web_context.family_type
@@ -346,6 +351,7 @@ class FamilyAdminController(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     form_values: dict[str, Any] = {
                         'public': public,
+                        'remote': remote,
                         'name': name,
                         'tournament_id': tournament_id,
                         'columns': columns,
