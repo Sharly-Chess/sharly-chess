@@ -1210,3 +1210,10 @@
 [data-sc-interface=admin] table.prominent tr.team-block-header :is(.team-header-name-a, .team-header-name-b) {
     font-weight: 500;
 }
+
+/* The internet status under the switch is about what is happening now, so it
+   is shown only while the switch is on. A switch that is off has no status
+   worth reporting, and saying so under every one of them would be noise. */
+.remote-access-field:has(input[name="remote"]:not(:checked)) .remote-access-status {
+    display: none;
+}
