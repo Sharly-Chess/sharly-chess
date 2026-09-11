@@ -1124,3 +1124,15 @@
 .wrapping-form-check .switch-placeholder {
     line-height: 1.25;
 }
+
+/* The internet status under the switch is about what is happening now, so it
+   is shown only while the switch is on. A switch that is off has no status
+   worth reporting, and saying so under every one of them would be noise. */
+.remote-access-field:has(input[name="remote"]:not(:checked)) .remote-access-status {
+    display: none;
+}
+
+.remote-access-status .bi-circle-fill {
+    font-size: 0.6em;
+    vertical-align: middle;
+}

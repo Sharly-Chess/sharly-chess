@@ -790,6 +790,12 @@ msgstr "Niveau d'accès déjà défini pour ce compte."
 msgid "Access log files"
 msgstr "Accéder aux fichiers de logs"
 
+msgid "Access over the internet"
+msgstr "Accès par Internet"
+
+msgid "Access over the internet has stopped"
+msgstr "L'accès par Internet s'est arrêté"
+
 msgid "Access unrated and penalty results."
 msgstr "Accéder aux résultats non homologués et pénalisés"
 
@@ -1186,11 +1192,20 @@ msgstr "Angola"
 msgid "Anonymous"
 msgstr "Anonyme"
 
+msgid "Another machine signed in to this account is already serving this address."
+msgstr "Un autre ordinateur connecté à ce compte diffuse déjà cette adresse."
+
 msgid "Antigua and Barbuda"
 msgstr "Antigua-et-Barbuda"
 
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
+
+msgid "Anyone with this address can reach the public screens."
+msgstr "Toute personne disposant de cette adresse peut consulter les écrans publics."
+
+msgid "Apart from being public: this decides whether it leaves the venue at all, not who may look at it."
+msgstr "Distinct du caractère public : ceci détermine si l'écran sort du lieu du tournoi, et non qui a le droit de le consulter."
 
 msgid "Applicant's federation"
 msgstr "Fédération du·de la candidat·e"
@@ -5486,6 +5501,9 @@ msgstr "Catégorie générale"
 msgid "Main group"
 msgstr "Groupe principal"
 
+msgid "Making this server reachable…"
+msgstr "Mise en ligne du serveur…"
+
 msgid "Malawi"
 msgstr "Malawi"
 
@@ -6725,6 +6743,9 @@ msgstr "Non apparié·e pour cette ronde"
 #, python-brace-format
 msgid "Not paired yet ({rounds}): blank entries are read as players still to be paired, not as Zero-Point Byes."
 msgstr "Pas encore apparié ({rounds}) : les cases vides sont lues comme des joueur·euses restant à apparier, et non comme des exemptions à zéro point."
+
+msgid "Not reachable yet: this server is not shared over the internet. Turn it on in the Networks tab of the application window."
+msgstr "Pas encore accessible : ce serveur n'est pas diffusé sur Internet. Activez la diffusion dans l'onglet Réseaux de la fenêtre de l'application."
 
 msgid "Not specified"
 msgstr "Non spécifié"
@@ -8340,6 +8361,16 @@ msgstr "Mise à jour des classements"
 msgid "Ratings update for tournament [%(tournament)s]"
 msgstr "Mise à jour des classements du tournoi [%(tournament)s]"
 
+msgid "Re-generate"
+msgstr "Régénérer"
+
+#, python-format
+msgid "Reachable at %(address)s."
+msgstr "Accessible à l'adresse %(address)s."
+
+msgid "Reachable over the internet"
+msgstr "Accessible par Internet"
+
 msgid "Read online"
 msgstr "Lue en ligne"
 
@@ -8404,6 +8435,12 @@ msgstr "Rappel : vous devez peut-être mettre à jour les informations des joue
 
 msgid "Reminder: you might have to update the players' ratings before pairing."
 msgstr "Rappel : vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
+
+msgid "Remote access is not available."
+msgstr "L'accès à distance n'est pas disponible."
+
+msgid "Remote access to the screens over the internet"
+msgstr "Accès aux écrans par Internet"
 
 msgid "Remove"
 msgstr "Retirer"
@@ -9320,6 +9357,9 @@ msgstr "Serbie"
 msgid "Serif"
 msgstr "Avec empattement"
 
+msgid "Serve it from here"
+msgstr "Diffuser depuis cet ordinateur"
+
 msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
 
@@ -9500,8 +9540,26 @@ msgstr "Face B"
 msgid "Sierra Leone"
 msgstr "Sierra Leone"
 
+msgid "Sign in"
+msgstr "Se connecter"
+
+msgid "Sign in to make this server reachable from outside the venue."
+msgstr "Connectez-vous pour rendre ce serveur accessible depuis l'extérieur du lieu du tournoi."
+
+msgid "Sign out"
+msgstr "Se déconnecter"
+
 msgid "Signature"
 msgstr "Signature"
+
+msgid "Signed in for remote access."
+msgstr "Connecté·e pour l'accès à distance."
+
+msgid "Signed out of remote access."
+msgstr "Déconnecté·e de l'accès à distance."
+
+msgid "Signing out…"
+msgstr "Déconnexion…"
 
 msgid "Simple criteria"
 msgstr "Critères simples"
@@ -9879,6 +9937,12 @@ msgstr "Tadjikistan"
 
 msgid "Take the screens back to the previous round."
 msgstr "Ramener les écrans à la ronde précédente."
+
+msgid "Taking a new address…"
+msgstr "Attribution d'une nouvelle adresse…"
+
+msgid "Taking this server off the internet…"
+msgstr "Retrait du serveur d'Internet…"
 
 msgid "Talk to us on Discord"
 msgstr "Discutons-en sur Discord"
@@ -10608,6 +10672,10 @@ msgstr "Les appariements de cette ronde sont en cours de modification. Validez o
 msgid "The participants have changed since the schedule was saved: it has to be edited."
 msgstr "Les participant·es ont changé depuis l'enregistrement du calendrier : il doit être modifié."
 
+#, python-brace-format
+msgid "The password must be at least {length} characters long."
+msgstr "Le mot de passe doit comporter au moins {length} caractères."
+
 msgid "The percentage of a player's own current Keizer value awarded for an excused absence or a requested bye (0 = nothing, 100 = the full value)."
 msgstr "Le pourcentage de la valeur Keizer actuelle d'un·e joueur·euse attribué pour une absence excusée ou un bye demandé (0 = rien, 100 = la valeur entière)."
 
@@ -10836,6 +10904,18 @@ msgstr "Le serveur va s'arrêter : l'application ne sera plus accessible depuis
 
 msgid "The settings are set and can no longer be changed."
 msgstr "Les paramètres sont fixés et ne peuvent plus être modifiés."
+
+msgid "The sign-in could not be completed, consult the logs."
+msgstr "La connexion n'a pas pu aboutir, consultez les journaux."
+
+msgid "The sign-in did not complete."
+msgstr "La connexion n'a pas abouti."
+
+msgid "The sign-in took too long, please try again."
+msgstr "La connexion a pris trop de temps, veuillez réessayer."
+
+msgid "The sign-in was refused."
+msgstr "La connexion a été refusée."
 
 #, python-brace-format
 msgid "The snapshot has been restored as the new event [{uniq_id}]."
@@ -11324,6 +11404,15 @@ msgstr "Cette seconde instance va se fermer et Sharly Chess va s'afficher dans v
 msgid "This second instance will close."
 msgstr "Cette seconde instance va se fermer."
 
+msgid ""
+"This server will be given a different address on the internet.\n"
+"\n"
+"Every QR code and link already printed for the current address will stop working, and it cannot be given back."
+msgstr ""
+"Ce serveur recevra une autre adresse sur Internet.\n"
+"\n"
+"Tous les QR codes et liens déjà imprimés pour l'adresse actuelle cesseront de fonctionner, et celle-ci ne pourra pas être récupérée."
+
 #, python-brace-format
 msgid "This set contains [{name}] twice in a row."
 msgstr "Cet ensemble contient [{name}] deux fois de suite."
@@ -11565,6 +11654,10 @@ msgstr "Trop peu d'équipes pour générer les appariements (minimum : {min})."
 msgid "Too many byes for player [{player_name}]."
 msgstr "Trop de byes pour le·la joueurÏeuse [{player_name}]."
 
+#, python-brace-format
+msgid "Too many failed attempts, please try again in {minutes} minutes."
+msgstr "Trop de tentatives échouées, veuillez réessayer dans {minutes} minutes."
+
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 
@@ -11737,6 +11830,12 @@ msgstr "Turquie"
 
 msgid "Turkmenistan"
 msgstr "Turkménistan"
+
+msgid "Turn off internet access"
+msgstr "Désactiver l'accès par Internet"
+
+msgid "Turn on internet access"
+msgstr "Activer l'accès par Internet"
 
 msgid "Two draws cannot be worth more than a win and a loss."
 msgstr "Deux nulles ne peuvent pas valoir plus qu'une victoire et une défaite."
@@ -12116,6 +12215,9 @@ msgstr "Utiliser une source de données pour importer des joueur·euses à parti
 
 msgid "Use a fixed rating"
 msgstr "Utiliser un Elo fixe"
+
+msgid "Use a new address"
+msgstr "Utiliser une nouvelle adresse"
 
 msgid "Use a tournament's criteria"
 msgstr "Utiliser les critères d'un tournoi"
@@ -13553,6 +13655,16 @@ msgstr "{prefix}{int_value}<sup>{suffix}</sup>"
 #, python-brace-format
 msgid "{rating} · from the rating lists"
 msgstr "{rating} · selon les listes de classement"
+
+#, python-brace-format
+msgid ""
+"{reason}\n"
+"\n"
+"The screens are still served on the local network."
+msgstr ""
+"{reason}\n"
+"\n"
+"Les écrans restent diffusés sur le réseau local."
 
 #, python-brace-format
 msgid "{results} of {boards} results"
