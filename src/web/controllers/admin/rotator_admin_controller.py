@@ -48,6 +48,7 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
             admin_rotators = event.sorted_rotators
         elif self.client.can_view_public_screens:
             admin_rotators = event.public_sorted_rotators
+        admin_rotators = self.client.reachable(admin_rotators)
         return super().template_context | {
             'admin_event_tab': 'admin-event-rotators-tab',
             'show_details': SessionRotatorsShowDetails(self.request).get(),
@@ -82,6 +83,7 @@ class RotatorAdminController(BaseEventAdminController):
             {
                 'name': stored_rotator.name,
                 'public': stored_rotator.public,
+                'remote': stored_rotator.remote,
                 'delay': stored_rotator.delay,
                 'message_text_checkbox': stored_rotator.message_default,
                 'message_text': stored_rotator.message_text,
@@ -124,6 +126,7 @@ class RotatorAdminController(BaseEventAdminController):
             {
                 'name': '',
                 'public': True,
+                'remote': False,
                 'delay': None,
                 'message_text_checkbox': True,
                 'message_text': '',
@@ -292,6 +295,7 @@ class RotatorAdminController(BaseEventAdminController):
             id=None,
             name=name,
             public=WebContext.form_data_to_bool(data, 'public'),
+            remote=WebContext.form_data_to_bool(data, 'remote'),
             delay=delay,
             message_default=WebContext.form_data_to_bool(data, 'message_text_checkbox'),
             message_text=WebContext.form_data_to_str(data, 'message_text'),
