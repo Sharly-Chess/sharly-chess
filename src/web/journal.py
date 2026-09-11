@@ -21,10 +21,15 @@ from web.utils import RequestUtils
 def request_actor(request: HTMXRequest) -> Actor:
     """Who acts through *request*, if anybody, the account it is signed in
     with telling; and where from: the computer running the application, a
-    screen, or another device of the network."""
+    screen, or another device of the network.
+
+    A caller from the internet reaches the server through the tunnel client
+    running on this machine, so the address it arrives from names that client
+    and not the caller: the journal keeps the address the relay saw instead,
+    which is what tells two callers apart."""
     client = RequestUtils.get_client(request)
     account = client.account
-    host = client.host or None
+    host = client.source_host or None
     author: Author | None = None
     if account.administrator:
         author = Author(AuthorKind.ADMINISTRATOR, account.id)

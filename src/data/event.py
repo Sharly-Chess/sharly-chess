@@ -1494,9 +1494,13 @@ class Event:
         if menu.id in self.menus_by_id:
             del self.menus_by_id[menu.id]
 
-    def menus_for(self, include_private: bool) -> list[Menu]:
+    def menus_for(self, include_private: bool, *, remote: bool) -> list[Menu]:
         """The menus with something a viewer can reach."""
-        return [menu for menu in self.sorted_menus if menu.screens_for(include_private)]
+        return [
+            menu
+            for menu in self.sorted_menus
+            if menu.screens_for(include_private, remote=remote)
+        ]
 
     @cached_property
     def display_controllers_by_id(self) -> dict[int, DisplayController]:

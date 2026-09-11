@@ -51,7 +51,7 @@ class UserInputWebContext(ScreenEntityUserWebContext):
         self.display_controller = RequestUtils.get_optional_display_controller(request)
         if self.display_controller:
             screens = self.display_controller.screens_for(
-                self.client.can_view_private_screens
+                self.client.can_view_private_screens, remote=self.client.remote
             )
             if not screens:
                 raise NotFoundException(
@@ -76,7 +76,9 @@ class UserInputWebContext(ScreenEntityUserWebContext):
         )
         if menu is None:
             return
-        indexes = menu.screen_indexes(self.client.can_view_private_screens)
+        indexes = menu.screen_indexes(
+            self.client.can_view_private_screens, remote=self.client.remote
+        )
         if self._screen.uniq_id in indexes:
             self.menu = menu
             self.rotator_screen_index = indexes[self._screen.uniq_id]

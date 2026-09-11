@@ -209,8 +209,8 @@
     {% set menu_entries = [] %}
     {% set shown_menu = display_controller.menu if display_controller else menu %}
     {% if shown_menu %}
-        {% set menu_entries = shown_menu.nav_entries(screen, client.can_view_private_screens) %}
-        {% set menu_screen_indexes = shown_menu.screen_indexes(client.can_view_private_screens) %}
+        {% set menu_entries = shown_menu.nav_entries(screen, client.can_view_private_screens, remote=client.remote) %}
+        {% set menu_screen_indexes = shown_menu.screen_indexes(client.can_view_private_screens, remote=client.remote) %}
     {% endif %}
     <div id="top-nav-wrapper" class="screen-top-nav pt-0 {% if menu_entries %}with-menu{% endif %} {% if timer %}with-timer{% endif %}">
         {% if timer %}

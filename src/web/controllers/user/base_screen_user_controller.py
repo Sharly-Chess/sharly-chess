@@ -119,11 +119,14 @@ class RotatorUserWebContext(ScreenEntityUserWebContext):
         self.rotator = RequestUtils.get_rotator(request)
         self.rotator_screen_index = 0
         self._screen: Screen | None = None
-        if self.rotator.rotating_screens:
-            self.rotator_screen_index = rotator_screen_index % len(
-                self.rotator.rotating_screens
+        screens = self.rotator.rotating_screens_for(self.client.remote)
+        if screens:
+            self.rotator_screen_index = rotator_screen_index % len(screens)
+            self._screen = screens[self.rotator_screen_index]
+        elif self.client.remote:
+            raise NotFoundException(
+                f'Rotator [{self.rotator.id}] has no screen served over the internet.'
             )
-            self._screen = self.rotator.rotating_screens[self.rotator_screen_index]
         self.is_rotator = True
 
     @property
@@ -156,7 +159,9 @@ class MenuUserWebContext(ScreenEntityUserWebContext):
     def __init__(self, request: HTMXRequest, rotator_screen_index: int):
         super().__init__(request, user_event_tab='menus')
         self.menu = RequestUtils.get_menu(request)
-        screens = self.menu.screens_for(self.client.can_view_private_screens)
+        screens = self.menu.screens_for(
+            self.client.can_view_private_screens, remote=self.client.remote
+        )
         if not screens:
             raise NotFoundException(f'Menu [{self.menu.id}] has no screen to show.')
         self.rotator_screen_index = rotator_screen_index % len(screens)
@@ -175,7 +180,7 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
         self.rotator_screen_index = 0
         self.is_rotator = self.display_controller.cycles
         screens = self.display_controller.screens_for(
-            self.client.can_view_private_screens
+            self.client.can_view_private_screens, remote=self.client.remote
         )
         if screens:
             showing = request.query_params.get('showing')
@@ -183,6 +188,11 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
                 rotator_screen_index = 0
             self.rotator_screen_index = rotator_screen_index % len(screens)
             self._screen = screens[self.rotator_screen_index]
+        elif self.client.remote:
+            raise NotFoundException(
+                f'Display controller [{self.display_controller.id}] shows no '
+                f'screen served over the internet.'
+            )
 
     @property
     def has_screen(self) -> bool:

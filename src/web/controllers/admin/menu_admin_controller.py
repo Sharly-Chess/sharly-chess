@@ -45,7 +45,9 @@ class MenuAdminWebContext(BaseEventAdminWebContext):
         if self.client.can_manage_screens:
             admin_menus = event.sorted_menus
         elif self.client.can_view_public_screens:
-            admin_menus = event.menus_for(self.client.can_view_private_screens)
+            admin_menus = event.menus_for(
+                self.client.can_view_private_screens, remote=self.client.remote
+            )
         return super().template_context | {
             'admin_event_tab': 'admin-event-menus-tab',
             'show_details': SessionMenusShowDetails(self.request).get(),
