@@ -1372,6 +1372,9 @@ msgstr "Composition de base"
 msgid "Base lineup:"
 msgstr "Composition de base :"
 
+msgid "Based on each tournament's criteria"
+msgstr "Selon les critères de chaque tournoi"
+
 msgid "Basic"
 msgstr "Simple"
 

@@ -1372,6 +1372,9 @@ msgstr ""
 msgid "Base lineup:"
 msgstr ""
 
+msgid "Based on each tournament's criteria"
+msgstr ""
+
 msgid "Basic"
 msgstr ""
 

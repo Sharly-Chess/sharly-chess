@@ -2577,7 +2577,7 @@ class TournamentAdminController(BaseEventAdminController):
                     ),
                 ),
                 'criteria': SelectOption(
-                    _('Criteria'),
+                    _("Based on each tournament's criteria"),
                     _(
                         'Allocate players to the first tournament '
                         'for which the criteria are met.'
