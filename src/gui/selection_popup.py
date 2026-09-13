@@ -95,7 +95,7 @@ if sys.platform == 'darwin':
                 ),
             )
 elif sys.platform == 'linux':
-    from toga_gtk.libs import GLib, GTK_VERSION, Gtk
+    from toga_gtk.libs import Gdk, GLib, GTK_VERSION, Gtk
 
     #: Makes a selection display its items in a list, which GTK confines to the
     #: screen and scrolls, instead of in a menu, which it does neither to.
@@ -118,16 +118,27 @@ elif sys.platform == 'linux':
         return None
 
     def item_height(tree_view) -> float | None:
-        """The height of an item of *tree_view*, measured from the height it
-        asks for, None as long as it asks for nothing (which it does until its
-        items have been laid out once)."""
+        """The height of an item of *tree_view*, measured both from the height
+        the whole list asks for and from what it takes to display one item, as
+        the list asks for a height of its own only once it has been laid out.
+        None as long as neither can be measured."""
+        heights = []
         item_count = tree_view.get_model().iter_n_children(None)
-        if not item_count:
-            return None
         natural_height = tree_view.get_preferred_height()[1]
-        if not natural_height:
+        if item_count and natural_height:
+            heights.append(natural_height / item_count)
+        column = tree_view.get_column(0)
+        if column is not None:
+            cells = [
+                cell.get_preferred_height(tree_view)[1] for cell in column.get_cells()
+            ]
+            if cells:
+                heights.append(
+                    max(cells) + tree_view.style_get_property('vertical-separator')
+                )
+        if not heights:
             return None
-        return natural_height / item_count
+        return max(heights)
 
     def restrict_list(combo_box, max_visible_items: int):
         """Gives the scrolled window the height of *max_visible_items* items,
@@ -146,6 +157,11 @@ elif sys.platform == 'linux':
         height = round(height * max_visible_items)
         scrolled_window.set_min_content_height(height)
         scrolled_window.set_max_content_height(height)
+        # GTK stops the list from scrolling before it measures it, which is
+        # undone from the change itself: leaving it scrollable here is what
+        # makes that a change.
+        horizontal_policy = scrolled_window.get_policy()[0]
+        scrolled_window.set_policy(horizontal_policy, Gtk.PolicyType.AUTOMATIC)
 
     def scroll_to_item(tree_view, index: int) -> bool:
         """Displays the item of *tree_view* at *index*, halfway down the list."""
@@ -170,6 +186,36 @@ elif sys.platform == 'linux':
         if index < 0:
             return
         GLib.idle_add(scroll_to_item, tree_view, index)
+
+    def place_list(combo_box):
+        """Places the list against the selection, which GTK works out from the
+        coordinates of the selection on the screen. Those are not what places a
+        window on every desktop, so the list is placed against the selection
+        itself here, the way menus are."""
+        parts = list_parts(combo_box)
+        if parts is None:
+            return
+        scrolled_window, _tree_view = parts
+        popup_window = scrolled_window.get_toplevel()
+        gdk_window = popup_window.get_window()
+        if gdk_window is None:
+            return
+        window = combo_box.get_toplevel()
+        coordinates = combo_box.translate_coordinates(window, 0, 0)
+        if coordinates is None:
+            return
+        allocation = combo_box.get_allocation()
+        rectangle = Gdk.Rectangle()
+        rectangle.x, rectangle.y = coordinates
+        rectangle.width, rectangle.height = allocation.width, allocation.height
+        gdk_window.move_to_rect(
+            rectangle,
+            Gdk.Gravity.SOUTH_WEST,
+            Gdk.Gravity.NORTH_WEST,
+            Gdk.AnchorHints.FLIP_Y | Gdk.AnchorHints.SLIDE_X | Gdk.AnchorHints.RESIZE_Y,
+            0,
+            0,
+        )
 
     def keep_list_scrollable(scrolled_window, _parameter):
         """Keeps the list scrollable, which GTK stops it from being each time it
@@ -207,6 +253,7 @@ def limit_popup_height(selection: toga.Selection, max_visible_items: int):
         # notices on its own only as long as it has not displayed the selection.
         combo_box.emit('style-updated')
         combo_box.connect('popup', restrict_list, max_visible_items)
+        combo_box.connect_after('popup', place_list)
         parts = list_parts(combo_box)
         if parts is not None:
             scrolled_window, tree_view = parts
