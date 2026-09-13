@@ -112,3 +112,5 @@ In order to maintain compatibility with the display of table numbers on the _FFE
 - Title norm calculations now take women titles into account: opponents holding a WGM or WIM title are correctly counted towards the 1.4.5 and 1.4.3d requirements, even when they also hold an open title (5.0.0)
 - The pairings document now has an option to include a federation column (5.0.0)
 - Upload documents to a custom location thanks to new plugin **Custom upload** (5.0.0)
+- The round-robin schedule document is now called **Round-robin pairings**, and shows the name of the tournament it was printed for (5.0.5)
+- The _FFE_ arbiter compensation document quotes the 2026 social security ceiling (5.0.5)

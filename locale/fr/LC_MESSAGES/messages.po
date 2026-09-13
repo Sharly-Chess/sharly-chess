@@ -7231,8 +7231,8 @@ msgstr "Ronde {} commencée depuis %%s"
 msgid "Round-Robin"
 msgstr "Toutes rondes"
 
-msgid "Round-robin schedule"
-msgstr "Calendrier toutes rondes"
+msgid "Round-robin pairings"
+msgstr "Appariements toutes rondes"
 
 msgid "Round:"
 msgstr "Ronde :"

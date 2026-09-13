@@ -1562,7 +1562,7 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return _('Round-robin schedule')
+        return _('Round-robin pairings')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1606,7 +1606,11 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
             rounds_data = self._team_rounds_data(tournament, engine, rounds)
         else:
             rounds_data = self._individual_rounds_data(tournament, engine, rounds)
-        return {'tournament': tournament, 'rounds_data': rounds_data}
+        return {
+            'tournament': tournament,
+            'subtitle': tournament.name,
+            'rounds_data': rounds_data,
+        }
 
     @staticmethod
     def _team_rounds_data(
