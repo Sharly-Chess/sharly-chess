@@ -95,7 +95,7 @@ if sys.platform == 'darwin':
                 ),
             )
 elif sys.platform == 'linux':
-    from toga_gtk.libs import Gdk, GLib, GTK_VERSION, Gtk
+    from toga_gtk.libs import GLib, GTK_VERSION, IS_WAYLAND, Gtk
 
     #: Makes a selection display its items in a list, which GTK confines to the
     #: screen and scrolls, instead of in a menu, which it does neither to.
@@ -187,31 +187,39 @@ elif sys.platform == 'linux':
             return
         GLib.idle_add(scroll_to_item, tree_view, index)
 
-    def place_list(popup_window, combo_box):
-        """Places the list against the selection. GTK places it at the
-        coordinates of the selection on the screen, which a window is not
-        placed at on Wayland: a window is placed against another window there,
-        which is what is asked for here. Done before the list is displayed, as
-        the placement of a displayed window is only taken into account the next
-        time it is displayed."""
-        popup_window.realize()
-        gdk_window = popup_window.get_window()
+    def list_position(combo_box) -> tuple | None:
+        """Where the list belongs: under the selection, in the coordinates of
+        the window holding it."""
         window = combo_box.get_toplevel()
         coordinates = combo_box.translate_coordinates(window, 0, 0)
-        if gdk_window is None or coordinates is None:
+        if coordinates is None:
+            return None
+        return coordinates[0], coordinates[1] + combo_box.get_allocation().height
+
+    def place_list(popup_window, combo_box):
+        """Moves the list back under the selection. GTK places it at the
+        coordinates of the selection on the desktop, and keeps those inside the
+        screen the selection is displayed on. Wayland places a window against
+        another window instead, and gives every window the coordinates it would
+        have on a desktop of its own: the list ends up as far from the
+        selection as its screen is from the left of the desktop."""
+        if not popup_window.get_mapped():
             return
-        allocation = combo_box.get_allocation()
-        rectangle = Gdk.Rectangle()
-        rectangle.x, rectangle.y = coordinates
-        rectangle.width, rectangle.height = allocation.width, allocation.height
-        gdk_window.move_to_rect(
-            rectangle,
-            Gdk.Gravity.SOUTH_WEST,
-            Gdk.Gravity.NORTH_WEST,
-            Gdk.AnchorHints.FLIP_Y | Gdk.AnchorHints.SLIDE_X | Gdk.AnchorHints.RESIZE_Y,
-            0,
-            0,
-        )
+        position = list_position(combo_box)
+        gdk_window = popup_window.get_window()
+        if position is None or gdk_window is None:
+            return
+        current = gdk_window.get_position()
+        if (current.x, current.y) != position:
+            popup_window.move(*position)
+
+    def keep_list_placed(combo_box, _allocation):
+        """GTK places the displayed list again every time it lays the selection
+        out, which is what it does after displaying it."""
+        parts = list_parts(combo_box)
+        if parts is None:
+            return
+        place_list(parts[0].get_toplevel(), combo_box)
 
     def keep_list_scrollable(scrolled_window, _parameter):
         """Keeps the list scrollable, which GTK stops it from being each time it
@@ -253,5 +261,7 @@ def limit_popup_height(selection: toga.Selection, max_visible_items: int):
         if parts is not None:
             scrolled_window, tree_view = parts
             scrolled_window.connect('notify::vscrollbar-policy', keep_list_scrollable)
-            scrolled_window.get_toplevel().connect('show', place_list, combo_box)
+            if IS_WAYLAND:
+                scrolled_window.get_toplevel().connect('show', place_list, combo_box)
+                combo_box.connect_after('size-allocate', keep_list_placed)
             tree_view.connect('size-allocate', show_selected_item, combo_box)
