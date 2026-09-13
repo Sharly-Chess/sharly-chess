@@ -340,7 +340,7 @@ class SharlyChessServerToga(toga.App):
 
         # Thread-safe communication
         self.message_queue: queue.Queue[tuple[str, str, Optional[str]]] = queue.Queue()
-        self.compact_size = (450, 100)
+        self.compact_size = (500, 100)
         self.expanded_size = (1200, 700)
 
         # Styles
@@ -771,16 +771,24 @@ class SharlyChessServerToga(toga.App):
     def _align_settings_labels(self):
         """Gives every label of the settings the width of the widest one. The
         width of a text depends on the language it is written in and on the
-        font of the platform, so it is measured instead of being set."""
+        font of the platform, so it is measured instead of being set. What is
+        measured is the width the label asks for: the width it is displayed
+        with is the width of the row on the platforms that give a label the
+        space its row has left."""
         assert isinstance(self.main_window, toga.Window)
         if not self.settings_labels or self.main_window.content is None:
             return
-        self.main_window.content.refresh()
-        width = max(label.layout.content_width for label in self.settings_labels)
+        widths = []
+        for label in self.settings_labels:
+            label._impl.rehint()
+            asked_width = label.intrinsic.width
+            widths.append(getattr(asked_width, 'value', asked_width) or 0)
+        width = max(widths)
         if not width:
             return
         for label in self.settings_labels:
             label.style.width = width
+        self.main_window.content.refresh()
 
     @staticmethod
     def _select(
