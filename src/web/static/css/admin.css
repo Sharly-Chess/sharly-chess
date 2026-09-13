@@ -253,8 +253,10 @@
     display: inline-flex;
 }
 [data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection {
-    padding: .375rem .375rem;
     border-radius: var(--bs-border-radius);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple {
+    padding: .375rem .375rem;
 }
 [data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
     display: inline-flex;
@@ -268,6 +270,9 @@
 [data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true] {
     background-color: var(--bs-secondary-bg) !important;
     opacity: 1;
+}
+.input-group .select2-container--bootstrap-5 {
+    height: 100%;
 }
 .select2-border-radius-0-left .select2-selection {
     border-top-left-radius: 0 !important;

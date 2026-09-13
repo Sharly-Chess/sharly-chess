@@ -502,7 +502,7 @@
 {% endmacro %}
 
 {% macro search_indicator(id) %}
-    <span id="{{ id }}" class="input-group-text with-input-group-indicator px-2 pt-2">
+    <span id="{{ id }}" class="input-group-text with-input-group-indicator px-2">
         <i class="bi bi-search"></i>
         <span class="htmx-indicator">
             <svg
@@ -788,7 +788,7 @@ with_indicator: display a loading indicator, optional
                         {% if with_indicator %}
                             {{ search_indicator(id ~ '_indicator') }}
                         {% else %}
-                            <span class="input-group-text px-2 pt-2">
+                            <span class="input-group-text px-2">
                                 <i class="bi bi-search"></i>
                             </span>
                         {% endif %}
