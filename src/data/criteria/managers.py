@@ -119,9 +119,9 @@ class SearchFilterManager:
                 'template_name': 'search_filters/club.html',
             },
         }
-        plugin_manager.hook_for_event(self.event, 'insert_search_filter_types')(
-            filters=filters
-        )
+        # The data sources are inserted by the plugins enabled for the
+        # application, so the filters describing them are too.
+        plugin_manager.hook.insert_search_filter_types(filters=filters)
 
         return filters
 
@@ -130,9 +130,9 @@ class SearchFilterManager:
             'fide': ['federation_filter', 'gender_filter', 'category_filter']
         }
 
-        plugin_manager.hook_for_event(
-            self.event, 'insert_search_filter_for_datasource'
-        )(datasource_mapping=datasource_mapping)
+        plugin_manager.hook.insert_search_filter_for_datasource(
+            datasource_mapping=datasource_mapping
+        )
         return datasource_mapping
 
     def get_filters_by_tournament(self) -> dict:
