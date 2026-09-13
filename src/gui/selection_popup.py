@@ -95,7 +95,7 @@ if sys.platform == 'darwin':
                 ),
             )
 elif sys.platform == 'linux':
-    from toga_gtk.libs import GLib, GTK_VERSION, Gtk
+    from toga_gtk.libs import Gdk, GLib, GTK_VERSION, Gtk
 
     #: Makes a selection display its items in a list, which GTK confines to the
     #: screen and scrolls, instead of in a menu, which it does neither to.
@@ -187,6 +187,32 @@ elif sys.platform == 'linux':
             return
         GLib.idle_add(scroll_to_item, tree_view, index)
 
+    def place_list(popup_window, combo_box):
+        """Places the list against the selection. GTK places it at the
+        coordinates of the selection on the screen, which a window is not
+        placed at on Wayland: a window is placed against another window there,
+        which is what is asked for here. Done before the list is displayed, as
+        the placement of a displayed window is only taken into account the next
+        time it is displayed."""
+        popup_window.realize()
+        gdk_window = popup_window.get_window()
+        window = combo_box.get_toplevel()
+        coordinates = combo_box.translate_coordinates(window, 0, 0)
+        if gdk_window is None or coordinates is None:
+            return
+        allocation = combo_box.get_allocation()
+        rectangle = Gdk.Rectangle()
+        rectangle.x, rectangle.y = coordinates
+        rectangle.width, rectangle.height = allocation.width, allocation.height
+        gdk_window.move_to_rect(
+            rectangle,
+            Gdk.Gravity.SOUTH_WEST,
+            Gdk.Gravity.NORTH_WEST,
+            Gdk.AnchorHints.FLIP_Y | Gdk.AnchorHints.SLIDE_X | Gdk.AnchorHints.RESIZE_Y,
+            0,
+            0,
+        )
+
     def keep_list_scrollable(scrolled_window, _parameter):
         """Keeps the list scrollable, which GTK stops it from being each time it
         displays it, and which is what a restricted list is measured from: a
@@ -227,4 +253,5 @@ def limit_popup_height(selection: toga.Selection, max_visible_items: int):
         if parts is not None:
             scrolled_window, tree_view = parts
             scrolled_window.connect('notify::vscrollbar-policy', keep_list_scrollable)
+            scrolled_window.get_toplevel().connect('show', place_list, combo_box)
             tree_view.connect('size-allocate', show_selected_item, combo_box)
