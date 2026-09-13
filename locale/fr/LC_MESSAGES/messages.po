@@ -4770,6 +4770,9 @@ msgstr "Gestion des écrans"
 msgid "Manage source databases"
 msgstr "Gestion des bases de données sources"
 
+msgid "Manage the place card templates, which are available for all events."
+msgstr "Gérer les modèles de chevalets, qui sont disponibles pour tous les évènements."
+
 msgid "Manage the prize brackets"
 msgstr "Gérer les groupes non cumulables"
 
