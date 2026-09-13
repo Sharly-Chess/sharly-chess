@@ -4905,6 +4905,9 @@ msgstr ""
 msgid "Manage source databases"
 msgstr ""
 
+msgid "Manage the place card templates, which are available for all events."
+msgstr ""
+
 msgid "Manage the prize brackets"
 msgstr ""
 
