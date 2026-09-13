@@ -95,7 +95,7 @@ if sys.platform == 'darwin':
                 ),
             )
 elif sys.platform == 'linux':
-    from toga_gtk.libs import Gdk, GLib, GTK_VERSION, Gtk
+    from toga_gtk.libs import GLib, GTK_VERSION, Gtk
 
     #: Makes a selection display its items in a list, which GTK confines to the
     #: screen and scrolls, instead of in a menu, which it does neither to.
@@ -187,36 +187,6 @@ elif sys.platform == 'linux':
             return
         GLib.idle_add(scroll_to_item, tree_view, index)
 
-    def place_list(combo_box):
-        """Places the list against the selection, which GTK works out from the
-        coordinates of the selection on the screen. Those are not what places a
-        window on every desktop, so the list is placed against the selection
-        itself here, the way menus are."""
-        parts = list_parts(combo_box)
-        if parts is None:
-            return
-        scrolled_window, _tree_view = parts
-        popup_window = scrolled_window.get_toplevel()
-        gdk_window = popup_window.get_window()
-        if gdk_window is None:
-            return
-        window = combo_box.get_toplevel()
-        coordinates = combo_box.translate_coordinates(window, 0, 0)
-        if coordinates is None:
-            return
-        allocation = combo_box.get_allocation()
-        rectangle = Gdk.Rectangle()
-        rectangle.x, rectangle.y = coordinates
-        rectangle.width, rectangle.height = allocation.width, allocation.height
-        gdk_window.move_to_rect(
-            rectangle,
-            Gdk.Gravity.SOUTH_WEST,
-            Gdk.Gravity.NORTH_WEST,
-            Gdk.AnchorHints.FLIP_Y | Gdk.AnchorHints.SLIDE_X | Gdk.AnchorHints.RESIZE_Y,
-            0,
-            0,
-        )
-
     def keep_list_scrollable(scrolled_window, _parameter):
         """Keeps the list scrollable, which GTK stops it from being each time it
         displays it, and which is what a restricted list is measured from: a
@@ -253,7 +223,6 @@ def limit_popup_height(selection: toga.Selection, max_visible_items: int):
         # notices on its own only as long as it has not displayed the selection.
         combo_box.emit('style-updated')
         combo_box.connect('popup', restrict_list, max_visible_items)
-        combo_box.connect_after('popup', place_list)
         parts = list_parts(combo_box)
         if parts is not None:
             scrolled_window, tree_view = parts
