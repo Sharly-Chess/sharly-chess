@@ -3119,18 +3119,38 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: FromPath[int],
         round: FromPath[int],
         player_id: FromPath[int],
+        board_id: FromQuery[int | None] = None,
     ) -> Template:
         web_context: PairingsAdminWebContext = PairingsAdminWebContext(
             request,
             tournament_id=tournament_id,
             player_id=player_id,
             round_=round,
+            board_id=board_id,
         )
         tournament = web_context.get_admin_tournament()
         tournament_player = web_context.get_admin_player()
         tournament.store_illegal_move(tournament_player)
+        if board_id is None:
+            return self._admin_event_pairings_render(web_context=web_context)
+        # Called from the board modal, which stays open for the next tap: the
+        # modal has to be part of the answer or the swap closes it, and it has
+        # to be built from a context read back after the change or it shows
+        # the count as it was.
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            board_id=board_id,
+            reload_event=True,
+        )
         return self._admin_event_pairings_render(
             web_context=web_context,
+            template_context={
+                'modal': 'pairing',
+                'board': web_context.admin_board,
+                'illegal_moves_changed': True,
+            },
         )
 
     @delete(
@@ -3145,18 +3165,38 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: FromPath[int],
         round: FromPath[int],
         player_id: FromPath[int],
+        board_id: FromQuery[int | None] = None,
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
             tournament_id=tournament_id,
             player_id=player_id,
             round_=round,
+            board_id=board_id,
         )
         tournament = web_context.get_admin_tournament()
         tournament_player = web_context.get_admin_player()
         tournament.delete_illegal_move(tournament_player)
+        if board_id is None:
+            return self._admin_event_pairings_render(web_context=web_context)
+        # Called from the board modal, which stays open for the next tap: the
+        # modal has to be part of the answer or the swap closes it, and it has
+        # to be built from a context read back after the change or it shows
+        # the count as it was.
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            board_id=board_id,
+            reload_event=True,
+        )
         return self._admin_event_pairings_render(
             web_context=web_context,
+            template_context={
+                'modal': 'pairing',
+                'board': web_context.admin_board,
+                'illegal_moves_changed': True,
+            },
         )
 
     @get(

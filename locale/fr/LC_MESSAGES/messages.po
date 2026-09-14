@@ -5231,6 +5231,9 @@ msgstr "Chasse fixe"
 msgid "Montenegro"
 msgstr "Monténégro"
 
+msgid "More"
+msgstr "Plus"
+
 msgid "Morocco"
 msgstr "Maroc"
 

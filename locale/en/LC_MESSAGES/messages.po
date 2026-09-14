@@ -5231,6 +5231,9 @@ msgstr ""
 msgid "Montenegro"
 msgstr ""
 
+msgid "More"
+msgstr ""
+
 msgid "Morocco"
 msgstr ""
 
