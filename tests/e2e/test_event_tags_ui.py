@@ -134,7 +134,9 @@ class TestEventTags:
             arg=TAG_NAME,
         )
 
-        TestUtils.submit_modal(page, page.get_by_test_id('event-form-submit-button'))
+        TestUtils.submit_modal_and_wait_for_refresh(
+            page, page.get_by_test_id('event-form-submit-button')
+        )
         expect(page).to_have_url(f'/event/{EVENT_ID}/tournaments')
 
         # The tag survives the save and shows on the event list...
