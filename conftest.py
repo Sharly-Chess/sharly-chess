@@ -8,11 +8,16 @@ import sys
 import time
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Generator
+from typing import Generator, cast
 
 import pytest
 import requests
-from playwright.sync_api import Browser, Playwright, APIRequestContext
+from playwright.sync_api import (
+    Browser,
+    Error as PlaywrightError,
+    Playwright,
+    APIRequestContext,
+)
 
 from common import DATA_DIR
 from common.sharly_chess_config import SharlyChessConfig
@@ -300,10 +305,53 @@ def lan_page(lan_context):
             open_page.close()
 
 
+#: Errors raised when the server closed the connection before reading the
+#: request: the socket was gone, so nothing reached a route handler.
+HANG_UP_ERRORS = ('socket hang up', 'ECONNRESET', 'other side closed')
+
+#: The verbs :class:`RetryingAPIRequestContext` retries.
+HTTP_METHODS = frozenset({'delete', 'fetch', 'get', 'head', 'patch', 'post', 'put'})
+
+
+class RetryingAPIRequestContext:
+    """An API request context that sends a hung-up request a second time.
+
+    The context is session-scoped and keeps its connection pooled, while
+    the server closes a keep-alive connection it has heard nothing on for
+    a few seconds. A test that drives the browser for longer than that
+    leaves the two disagreeing about whether the connection is still
+    open, and the next request loses the race: it goes out just as the
+    close lands and fails with a socket hang up. The retry gets a fresh
+    connection; it cannot repeat work the server did, because a hang up
+    means the request was never read.
+    """
+
+    def __init__(self, context: APIRequestContext):
+        self._context = context
+
+    def __getattr__(self, name: str):
+        attribute = getattr(self._context, name)
+        if name not in HTTP_METHODS:
+            return attribute
+        return self._retrying(attribute)
+
+    @staticmethod
+    def _retrying(method):
+        def send(*args, **kwargs):
+            try:
+                return method(*args, **kwargs)
+            except PlaywrightError as error:
+                if not any(hang_up in error.message for hang_up in HANG_UP_ERRORS):
+                    raise
+            return method(*args, **kwargs)
+
+        return send
+
+
 @pytest.fixture(scope='session')
 def api_request_context(
     playwright: Playwright,
 ) -> Generator[APIRequestContext, None, None]:
     request_context = playwright.request.new_context(base_url='http://127.0.0.1:9000')
-    yield request_context
+    yield cast(APIRequestContext, RetryingAPIRequestContext(request_context))
     request_context.dispose()
