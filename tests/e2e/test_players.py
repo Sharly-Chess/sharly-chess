@@ -30,6 +30,7 @@ class TestPlayersFunctionality:
         page.get_by_test_id('add-player-button').click()
         modal = page.locator('#player-modal:not(.htmx-added)')
         expect(modal).to_be_visible()
+        expect(modal.locator('#search-input')).to_be_focused()
         TestUtils.fill_and_confirm(modal.get_by_test_id('last-name'), 'doe')
         modal.get_by_test_id('first-name').fill('john')
         modal.get_by_test_id('date-of-birth').fill('2000-10-30')
