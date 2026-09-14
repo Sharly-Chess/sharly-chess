@@ -171,10 +171,22 @@ class ViewScreenEntityGuard[T](BaseGuard, ABC):
     def is_entity_public(entity: T) -> bool:
         return getattr(entity, 'public')
 
+    @staticmethod
+    def is_entity_remote(entity: T) -> bool:
+        return getattr(entity, 'remote')
+
     def authorize_client(self, client: Client, request: HTMXRequest):
         entity = self.get_entity(request)
         if not entity:
             return
+        if client.remote and not self.is_entity_remote(entity):
+            # Not found rather than forbidden: no account changes this answer,
+            # so saying it exists would only tell whoever is probing the
+            # hostname something they could not otherwise learn.
+            raise NotFoundException(
+                f'[{getattr(entity, "uniq_id", entity)}] is not served '
+                f'over the internet.'
+            )
         action = (
             AuthAction.VIEW_PUBLIC_SCREENS
             if self.is_entity_public(entity)

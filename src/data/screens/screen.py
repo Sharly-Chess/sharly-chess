@@ -50,6 +50,7 @@ class Screen:
             weakref.ref(family) if family else None
         )
         self.family_part: int | None = family_part
+        self._menu_nav_entries_cache: dict[tuple[bool, bool], list['MenuNavEntry']] = {}
 
     @property
     def event(self) -> 'Event':
@@ -119,6 +120,20 @@ class Screen:
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.public
+
+    @property
+    def remote(self) -> bool:
+        """Whether this screen may be reached from outside the venue.
+
+        Apart from `public`, which says who may look rather than from where: a
+        public screen kept off the internet still asks nothing of whoever opens
+        it on the venue's own network.
+        """
+        if self.stored_screen:
+            return self.stored_screen.remote
+        if self.family is None:
+            raise RuntimeError('Family reference unexpectedly None')
+        return self.family.remote
 
     @property
     def uniq_id(self) -> str:
@@ -277,44 +292,39 @@ class Screen:
         first, last = self.sorted_screen_sets[0].range_bounds(abbreviated=True)
         return format_range(first, last)
 
-    def _menu_and_screens(self, admin: bool) -> tuple['Menu | None', list['Screen']]:
-        """The menu this screen belongs to and the screens it navigates to. A
-        screen belongs to at most one menu; the menu is only displayed when it
-        holds more than one screen visible to the viewer."""
+    def _menu_and_screens(
+        self, admin: bool, remote: bool
+    ) -> tuple['Menu | None', list['Screen']]:
+        """The menu this screen belongs to and the screens it navigates to.
+
+        A screen belongs to at most one menu; the menu is only displayed when it
+        holds more than one screen visible to the viewer. A viewer from the
+        internet is offered only what is served there: a link that answers
+        nothing reads as a broken tournament rather than as a screen somebody
+        chose to keep on the venue's own network.
+        """
         for menu in self.event.sorted_menus:
             resolved = menu.resolved_screens()
             if not any(screen.uniq_id == self.uniq_id for screen in resolved):
                 continue
-            entries = (
-                resolved if admin else [screen for screen in resolved if screen.public]
-            )
+            entries = [
+                screen
+                for screen in resolved
+                if (admin or screen.public) and (not remote or screen.remote)
+            ]
             return (menu, entries) if len(entries) > 1 else (None, [])
         return None, []
 
-    def _menu_screens(self, admin: bool) -> list['Screen']:
-        return self._menu_and_screens(admin)[1]
-
-    @cached_property
-    def public_menu_screens(self) -> list['Screen']:
-        return self._menu_screens(False)
-
-    @cached_property
-    def admin_menu_screens(self) -> list['Screen']:
-        return self._menu_screens(True)
-
-    def _menu_nav_entries(self, admin: bool) -> list['MenuNavEntry']:
+    def menu_nav_entries(self, admin: bool, remote: bool) -> list['MenuNavEntry']:
+        """What to offer this viewer alongside the screen they are looking at."""
         from data.screens.menu import group_menu_nav_entries
 
-        menu, screens = self._menu_and_screens(admin)
-        return group_menu_nav_entries(screens, menu, current_screen=self)
-
-    @cached_property
-    def public_menu_nav_entries(self) -> list['MenuNavEntry']:
-        return self._menu_nav_entries(False)
-
-    @cached_property
-    def admin_menu_nav_entries(self) -> list['MenuNavEntry']:
-        return self._menu_nav_entries(True)
+        if (admin, remote) not in self._menu_nav_entries_cache:
+            menu, screens = self._menu_and_screens(admin, remote)
+            self._menu_nav_entries_cache[(admin, remote)] = group_menu_nav_entries(
+                screens, menu, current_screen=self
+            )
+        return self._menu_nav_entries_cache[(admin, remote)]
 
     @property
     def timer(self) -> Timer | None:

@@ -96,6 +96,11 @@ class Rotator:
         return self.stored_rotator.public
 
     @property
+    def remote(self) -> bool:
+        """Whether this may be reached from outside the venue."""
+        return self.stored_rotator.remote
+
+    @property
     def name(self) -> str:
         return self.stored_rotator.name
 
@@ -157,6 +162,18 @@ class Rotator:
                 for screen in rotating_screen.family.screens_by_uniq_id.values():
                     rotating_screens.append(screen)
         return rotating_screens
+
+    def rotating_screens_for(self, remote: bool) -> list[Screen]:
+        """The cycle as this viewer sees it.
+
+        A rotator shown over the internet may hold screens that are not, and a
+        cycle that paused on one of them would show whoever is following the
+        tournament a refusal every few seconds. Those are passed over rather
+        than shown, which is the same answer a link to one gets.
+        """
+        if not remote:
+            return self.rotating_screens
+        return [screen for screen in self.rotating_screens if screen.remote]
 
     def _get_rotating_screens_by_id(self) -> dict[int, RotatingScreen]:
         rotating_screens_by_id = {}

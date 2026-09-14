@@ -16,7 +16,7 @@ from litestar.controller import Controller
 from litestar.response import Template
 from typing_extensions import TYPE_CHECKING
 
-from common import check_rgb_str, DEVEL_ENV
+from common import check_rgb_str, DEVEL_ENV, experimental_features_enabled
 from common.exception import FormError
 from common.i18n import (
     set_locale,
@@ -421,7 +421,22 @@ class WebContext:
             'user_agent': self.request.headers.get('User-Agent', ''),
             'utils': Utils,
             'has_app_window': self.has_app_window,
+            'remote_access_url': self.remote_access_url,
         }
+
+    @property
+    def remote_access_url(self) -> str | None:
+        """Where this server is reachable from the internet, if it is at all.
+
+        The screens carry a switch for being reachable, and a switch that is on
+        while the server is sharing nothing is a promise the arbiter has no way
+        of checking. This is what lets the form say which of the two it is.
+        """
+        if not experimental_features_enabled():
+            return None
+        from web.remote_access_manager import url
+
+        return url()
 
     @property
     def has_app_window(self) -> bool:

@@ -90,7 +90,9 @@ class EventAdminController(BaseEventAdminController):
                     web_context.admin_event.sorted_public_screens_by_screen_type
                 )
             for screen_type in ScreenTypeManager(web_context.admin_event).objects():
-                if sorted_screens_by_screen_type[screen_type.id]:
+                if web_context.client.reachable(
+                    sorted_screens_by_screen_type[screen_type.id]
+                ):
                     return Redirect(
                         path=request.app.route_reverse(
                             f'admin-event-{screen_type.id}-screens-tab',
@@ -104,7 +106,7 @@ class EventAdminController(BaseEventAdminController):
                 rotators = web_context.admin_event.sorted_rotators
             else:
                 rotators = web_context.admin_event.public_sorted_rotators
-            if rotators:
+            if web_context.client.reachable(rotators):
                 return Redirect(
                     path=request.app.route_reverse(
                         'admin-event-rotators-tab', event_uniq_id=event_uniq_id
@@ -119,7 +121,7 @@ class EventAdminController(BaseEventAdminController):
                 display_controllers = (
                     web_context.admin_event.sorted_public_display_controllers
                 )
-            if display_controllers:
+            if web_context.client.reachable(display_controllers):
                 return Redirect(
                     path=request.app.route_reverse(
                         'admin-event-displayer_controllers-tab',

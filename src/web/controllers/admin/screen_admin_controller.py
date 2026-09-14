@@ -177,6 +177,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
                 sorted_screens = event.sorted_public_screens_by_screen_type[
                     screen_type_obj.id
                 ]
+            sorted_screens = web_context.client.reachable(sorted_screens)
             if not sorted_screens:
                 return Redirect(admin_event_url(request, event_uniq_id=event.uniq_id))
 
@@ -202,6 +203,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
             case 'screen':
                 if data is None:
                     public: bool | None = None
+                    remote: bool | None = None
                     name: str | None = None
                     columns: int | None = None
                     font_size: int | None = None
@@ -243,6 +245,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
                             stored_screen = screen.stored_screen
                             assert stored_screen is not None
                             public = stored_screen.public
+                            remote = stored_screen.remote
                             columns = stored_screen.columns
                             font_size = stored_screen.font_size
                             menu_text = stored_screen.menu_text
@@ -252,6 +255,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
                             message_text = stored_screen.message_text
                         case 'create':
                             public = True
+                            remote = False
                             message_default = True
                             create_type = web_context.screen_type
                             assert create_type is not None
@@ -263,6 +267,7 @@ class ScreenAdminRenderer(BaseEventAdminController):
                             raise ValueError(f'action=[{action}]')
                     form_values: dict[str, Any] = {
                         'public': public,
+                        'remote': remote,
                         'name': name,
                         'columns': columns,
                         'font_size': font_size,
@@ -396,6 +401,7 @@ class ScreenAdminController(ScreenAdminRenderer):
                 raise ValueError(f'action=[{action}]')
         name: str | None = None
         public: bool | None = None
+        remote: bool | None = None
         menu_text: str | None = None
         columns: int | None = None
         font_size: int | None = None
@@ -410,6 +416,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             case 'create' | 'clone' | 'update':
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 public = WebContext.form_data_to_bool(data, 'public')
+                remote = WebContext.form_data_to_bool(data, 'remote')
                 field = 'columns'
                 try:
                     columns = WebContext.form_data_to_int(data, field, minimum=1)
@@ -515,6 +522,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             uniq_id=uniq_id,
             type=type_,
             public=bool(public),
+            remote=bool(remote),
             name=name,
             columns=columns,
             font_size=font_size,

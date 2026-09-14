@@ -1,5 +1,5 @@
 from functools import cached_property, cache
-from typing import TYPE_CHECKING, Optional, Collection
+from typing import TYPE_CHECKING, Optional, Collection, Sequence
 
 from litestar_htmx import HTMXRequest
 
@@ -522,6 +522,18 @@ class Client:
     def can_view_public_screens(self) -> bool:
         """Returns true if the client can view public screens."""
         return AuthAction.VIEW_PUBLIC_SCREENS in self.allowed_actions
+
+    def reachable[T](self, entities: Sequence[T]) -> list[T]:
+        """Those of these this client could actually open.
+
+        Apart from what they are allowed to see: a caller from the internet is
+        offered only what is served there, because listing a screen that
+        answers nothing reads as a broken tournament rather than as one kept on
+        the venue's own network on purpose.
+        """
+        if not self.remote:
+            return list(entities)
+        return [entity for entity in entities if getattr(entity, 'remote')]
 
     # ---------------------------------------------------------------------------------
     # Prizes
