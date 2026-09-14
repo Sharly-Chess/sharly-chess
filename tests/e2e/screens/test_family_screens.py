@@ -38,8 +38,8 @@ class TestFamilyScreensFunctionality:
         expect(modal).to_be_visible()
 
         name = 'Test family'
-        modal.get_by_test_id('name').fill(name)
-        modal.locator('button[type=submit]').click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), name)
+        TestUtils.submit_modal(page, modal.locator('button[type=submit]'))
         item = page.get_by_test_id('families-item').filter(has_text=name)
         expect(item).to_be_visible()
 

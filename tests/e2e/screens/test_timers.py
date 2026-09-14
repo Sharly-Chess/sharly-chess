@@ -21,8 +21,8 @@ class TestTimersFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Test Timer'
-        modal.get_by_test_id('name').fill(name)
-        modal.locator('button[type=submit]').click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), name)
+        TestUtils.submit_modal(page, modal.locator('button[type=submit]'))
 
         hours_modal = page.locator('#admin-timer-hour-form-modal.modal-dialog')
         expect(hours_modal).to_be_visible()

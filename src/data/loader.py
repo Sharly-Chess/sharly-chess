@@ -57,7 +57,9 @@ class EventLoader:
 
     @classmethod
     def unload_event(cls, uniq_id: str):
-        cls._valid_event_ids.remove(uniq_id)
+        # An event that was never scanned as valid, or that is held as invalid
+        # or inaccessible, still has to be unloadable.
+        cls._valid_event_ids.discard(uniq_id)
         cls.load_event_ids()
 
     @classmethod

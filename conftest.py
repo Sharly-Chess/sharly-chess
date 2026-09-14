@@ -68,6 +68,16 @@ class BackendServer:
     def start(self):
         """Start the backend server."""
 
+        # A server left over from a previous run still answers on the port,
+        # and _wait_for_server would take it for the one started here: the
+        # suite would then run against its stale events and fail on names it
+        # believes are already used.
+        if not self._wait_for_free_port():
+            raise RuntimeError(
+                f'Port {self.port} is already in use: stop whatever is '
+                'listening on it before running the tests.'
+            )
+
         # Add src directory to PYTHONPATH for server to find modules
         current_pythonpath = env.get('PYTHONPATH', '')
         project_root = Path(__file__).parent
@@ -185,8 +195,8 @@ class BackendServer:
         else:
             self.process.terminate()
 
-    def _wait_for_port_release(self):
-        """Block until the port can be bound again.
+    def _wait_for_free_port(self) -> bool:
+        """Block until the port can be bound, and say whether it came free.
 
         Waiting on the process is not enough: the socket outlives it
         briefly, and a suite that starts a server per run would race its
@@ -198,10 +208,14 @@ class BackendServer:
                 probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 try:
                     probe.bind((self.host, self.port))
-                    return
+                    return True
                 except OSError:
                     time.sleep(0.1)
-        print(f'Warning: port {self.port} still in use after stopping the server')
+        return False
+
+    def _wait_for_port_release(self):
+        if not self._wait_for_free_port():
+            print(f'Warning: port {self.port} still in use after stopping the server')
 
     def _wait_for_server(self, timeout: int | None = None):
         """Wait for the server to be ready to accept connections."""

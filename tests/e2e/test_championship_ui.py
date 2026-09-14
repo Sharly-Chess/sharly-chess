@@ -26,16 +26,14 @@ RENAMED_CHAMPIONSHIP_ID = 'championship-ui-renamed'
 TEAM_CHAMPIONSHIP_ID = 'team_championship_ui_test'
 
 
-def _select_criterion_type(modal, type_value: str, reveal_container_id: str):
-    """Pick a criterion type and wait for its option container to reveal.
+def _select_and_reveal(select, value: str, container):
+    """Pick a Select2 option and wait for the container it reveals.
 
-    Setting the Select2 ``#type`` fires a late empty-value ``change`` that its
+    Setting a Select2 select fires a late empty-value ``change`` that its
     toggle handler reads as "hide everything", so re-fire ``change`` until the
     reveal survives Select2's settle.
     """
-    select = modal.locator('select[name="type"]')
-    container = modal.locator(f'#{reveal_container_id}')
-    select.select_option(type_value, force=True)
+    select.select_option(value, force=True)
     deadline = time.monotonic() + 10
     while time.monotonic() < deadline:
         select.dispatch_event('change')
@@ -44,6 +42,14 @@ def _select_criterion_type(modal, type_value: str, reveal_container_id: str):
             if container.is_visible():
                 return
     expect(container).to_be_visible()
+
+
+def _select_criterion_type(modal, type_value: str, reveal_container_id: str):
+    _select_and_reveal(
+        modal.locator('select[name="type"]'),
+        type_value,
+        modal.locator(f'#{reveal_container_id}'),
+    )
 
 
 def _delete_test_championship():
@@ -112,8 +118,8 @@ def test_championship_admin_workflow(page: Page):
     page.get_by_role('button', name='Create a championship', exact=True).first.click()
     modal = page.locator('.modal-dialog')
     expect(modal).to_be_visible()
-    modal.locator('input[name="name"]').fill(CHAMPIONSHIP_NAME)
-    modal.get_by_test_id('championship-create-submit').click()
+    TestUtils.fill_and_confirm(modal.locator('input[name="name"]'), CHAMPIONSHIP_NAME)
+    TestUtils.submit_modal(page, modal.get_by_test_id('championship-create-submit'))
 
     expect(page).to_have_url(re.compile(r'/championship/.+/configuration$'))
     expect(page.get_by_role('heading', name=CHAMPIONSHIP_NAME)).to_be_visible()
@@ -173,6 +179,12 @@ def test_championship_admin_workflow(page: Page):
         'The source event and tournament will not be deleted.'
     )
     remove_modal.get_by_role('button', name='Cancel').click()
+    # The tab behind it is only clickable once the wrapper has stopped being
+    # shown and its backdrop is gone — and only once the swap the dismissal
+    # started has landed, or the wrapper is shown again on top of it.
+    TestUtils.wait_for_htmx_idle(page)
+    expect(page.locator('#modal-wrapper.show')).to_have_count(0)
+    expect(page.locator('.modal-backdrop')).to_have_count(0)
 
     page.get_by_test_id('nav-competitors-tab').click()
     expect(page.get_by_role('heading', name='Players')).to_be_visible()
@@ -197,13 +209,13 @@ def test_championship_admin_workflow(page: Page):
     # The document picker shows only the selected document's options (the
     # #document select is a Select2, so drive the native element + change).
     document_select = modal.locator('select[name="document"]')
-    document_select.select_option('tournaments', force=True)
-    document_select.dispatch_event('change')
-    expect(modal.locator('#tournament_name_container')).to_be_visible()
+    _select_and_reveal(
+        document_select, 'tournaments', modal.locator('#tournament_name_container')
+    )
     expect(modal.locator('#include_popover_container')).to_be_hidden()
-    document_select.select_option('rankings', force=True)
-    document_select.dispatch_event('change')
-    expect(modal.locator('#include_popover_container')).to_be_visible()
+    _select_and_reveal(
+        document_select, 'rankings', modal.locator('#include_popover_container')
+    )
     expect(modal.locator('#tournament_name_container')).to_be_hidden()
     modal.get_by_role('button', name='Cancel').click()
 
@@ -234,8 +246,12 @@ def test_championship_admin_workflow(page: Page):
     modal.get_by_test_id('uniq-id-update-button').click()
     uniq_id_input = modal.get_by_test_id('uniq-id-update-input')
     expect(uniq_id_input).to_be_visible()
-    uniq_id_input.fill(RENAMED_CHAMPIONSHIP_ID)
-    modal.get_by_test_id('uniq-id-update-submit-button').click()
+    TestUtils.fill_and_confirm(uniq_id_input, RENAMED_CHAMPIONSHIP_ID)
+    TestUtils.submit_modal(
+        page,
+        modal.get_by_test_id('uniq-id-update-submit-button'),
+        '#uniq-id-update-form',
+    )
     expect(page).to_have_url(
         re.compile(rf'/championship/{RENAMED_CHAMPIONSHIP_ID}/configuration$')
     )
@@ -250,8 +266,8 @@ def test_championship_admin_workflow(page: Page):
     page.get_by_test_id('championship-add-rule').click()
     modal = page.locator('.modal-dialog')
     expect(modal.get_by_role('heading', name='Add a rule')).to_be_visible()
-    modal.locator('select[name="type"]').select_option('COUNT_WINS', force=True)
-    modal.get_by_role('button', name='Add').click()
+    TestUtils.select_and_confirm(modal.locator('select[name="type"]'), 'COUNT_WINS')
+    TestUtils.submit_modal(page, modal.get_by_role('button', name='Add'))
     expect(rule_rows).to_have_count(2)
     expect(rule_rows.nth(1)).to_contain_text('Number of wins')
 
@@ -259,7 +275,7 @@ def test_championship_admin_workflow(page: Page):
     rule_rows.nth(0).get_by_role('button', name='Edit rule').click()
     modal = page.locator('.modal-dialog')
     expect(modal.get_by_role('heading', name='Edit rule')).to_be_visible()
-    modal.locator('input[name="best_n"]').fill('4')
+    TestUtils.fill_and_confirm(modal.locator('input[name="best_n"]'), '4')
     modal.get_by_role('button', name='Save').click()
     expect(rule_rows.nth(0)).to_contain_text('best 4 stages')
 
@@ -306,13 +322,13 @@ def test_championship_admin_workflow(page: Page):
     modal = page.locator('.modal-dialog')
     expect(modal.get_by_role('heading', name='Create a category')).to_be_visible()
     expect(modal.locator('input[name="is_main"]')).to_have_count(0)
-    modal.locator('input[name="name"]').fill('Under 12')
+    TestUtils.fill_and_confirm(modal.locator('input[name="name"]'), 'Under 12')
     modal.locator('.dropdown-toggle-split').click()
     modal.get_by_role('button', name='Create and add another').click()
     expect(
         modal.get_by_text('Category [Under 12] successfully created!')
     ).to_be_visible()
-    modal.locator('input[name="name"]').fill('Women')
+    TestUtils.fill_and_confirm(modal.locator('input[name="name"]'), 'Women')
     modal.locator('.dropdown-toggle-split').click()
     modal.get_by_role('button', name='Create', exact=True).click()
 
@@ -430,9 +446,11 @@ def test_team_championship_uses_team_ranking_controls(page: Page):
     page.goto('/championships')
     page.get_by_role('button', name='Create a championship', exact=True).first.click()
     modal = page.locator('.modal-dialog')
-    modal.locator('input[name="name"]').fill(TEAM_CHAMPIONSHIP_NAME)
+    TestUtils.fill_and_confirm(
+        modal.locator('input[name="name"]'), TEAM_CHAMPIONSHIP_NAME
+    )
     modal.locator('select[name="competitor_type"]').select_option('TEAM', force=True)
-    modal.get_by_test_id('championship-create-submit').click()
+    TestUtils.submit_modal(page, modal.get_by_test_id('championship-create-submit'))
 
     expect(page.get_by_test_id('nav-competitors-tab')).to_be_visible()
     page.get_by_test_id('nav-sources-tab').click()

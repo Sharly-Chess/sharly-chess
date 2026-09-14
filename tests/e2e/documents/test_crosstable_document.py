@@ -84,5 +84,5 @@ class TestCrosstableDocument:
         document_name_input = page.locator('#modal-wrapper input[type=search]').filter(
             visible=True
         )
-        document_name_input.fill(document_type)
+        TestUtils.fill_and_confirm(document_name_input, document_type)
         document_name_input.press('Enter')
