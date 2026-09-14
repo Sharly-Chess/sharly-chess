@@ -5081,6 +5081,9 @@ msgstr "Chasse fixe"
 msgid "Montenegro"
 msgstr "Monténégro"
 
+msgid "More"
+msgstr "Plus"
+
 msgid "Morocco"
 msgstr "Maroc"
 
@@ -11196,3 +11199,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

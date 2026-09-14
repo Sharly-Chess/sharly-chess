@@ -4,7 +4,7 @@
         <div class="flex-grow-1"></div>
         {% if admin_tournament %}
             <span
-                class="pe-2 me-1"
+                class="pairings-player-search pe-2 me-1"
                     style="z-index: 1;"
                 {{ macros.tooltip_attributes('info', _('Search for player'), 'bottom') }}
             >
@@ -61,7 +61,7 @@
     <div class="container-fluid">
         <div class="pt-1 pb-1 row">
             {% if has_unpaired %}
-                <div class="col-12 col-lg-3"></div>
+                <div class="col-12 col-lg-3 d-none d-lg-block"></div>
             {% endif %}
             <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }} d-flex gap-2 align-items-end">
                 <div class="flex-grow-1 d-flex align-items-center gap-3">
@@ -95,7 +95,7 @@
                     {% endif %}
                 </div>
                 {% if not display_rankings %}
-                    <div class="d-flex flex-wrap gap-2 justify-content-end mb-2 align-items-end w-100">
+                    <div class="pairings-action-buttons d-flex flex-wrap gap-2 justify-content-end mb-2 align-items-end w-100">
                         {% include admin_tournament.pairing_system.pairing_buttons_template %}
                         {% if admin_boards %}
                             {% with name='show_without_results', wo_results=show_without_results %}
@@ -122,7 +122,8 @@
                             {% endwith %}
 
                             {% if 'RESULT_UPDATE' in existing_actions %}
-                            <div class="d-flex flex-column">
+                            {# No keyboard to drive them on a phone. #}
+                            <div class="d-none d-md-flex flex-column">
                                 <div style="font-size: 0.8rem;">
                                     {{ _('Keyboard shortcuts:') }}
                                     <i
@@ -210,7 +211,7 @@
                with the table below. #}
             {% if not display_rankings and pairings_generation_disabled_message %}
                 {% if has_unpaired %}
-                    <div class="col-12 col-lg-3"></div>
+                    <div class="col-12 col-lg-3 d-none d-lg-block"></div>
                 {% endif %}
                 <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
                     {% with type='warning',
@@ -225,7 +226,7 @@
 
             {% if not display_rankings %}
                 {% if has_unpaired %}
-                    <div class="col-12 col-lg-3">
+                    <div class="col-12 col-lg-3 order-last order-lg-0">
                         {% if is_team_paired_mode %}
                             {% with title=_('Byes *** ZPB, HPB or FPB'), teams=admin_team_bye, table_id='bye-teams-table' %}
                                 {% include '/admin/pairings/team_unpaired_table.html' %}
@@ -453,6 +454,11 @@
 
         function rowClickHandler(e) {
             if ($(e.target).closest('a').length) {
+                return;
+            }
+            // The click only moves the cursor the keyboard shortcuts enter
+            // results at, and the card layout has no keyboard to drive them.
+            if (window.matchMedia('(max-width: 767.98px)').matches) {
                 return;
             }
 

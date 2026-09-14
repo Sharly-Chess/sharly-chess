@@ -165,6 +165,196 @@ body[data-bs-theme="dark"] #sidebar-expander {
     margin: 0;
 }
 
+#sidebar-drawer-toggle,
+#sidebar-drawer-backdrop,
+#top-nav-more-toggle {
+    display: none;
+}
+
+/* Narrow screens: the sidebar slides over the page instead of taking a
+   column of its own, so the whole width is left to the content. */
+@media (max-width: 991.98px) {
+    #main-wrapper:has(> .admin-sidebar),
+    .compact-sidebar #main-wrapper:has(> .admin-sidebar) {
+        --side-bar-width: 0px;
+    }
+
+    .admin-sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 16rem;
+        min-width: 16rem;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        /* Clears the drawer button, which stays on top of the open drawer so
+           that the same control closes it again. */
+        padding-top: 4rem;
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        z-index: 1045;
+    }
+
+    .sidebar-drawer-open .admin-sidebar {
+        transform: none;
+    }
+
+    .admin-sidebar .sidebar {
+        position: static;
+        width: 100%;
+        min-width: 0;
+        min-height: 100%;
+    }
+
+    .admin-sidebar #sidebar-expander {
+        display: none !important;
+    }
+
+    /* The drawer is always expanded — the compact rail exists to save a
+       column, and here the sidebar no longer occupies one. */
+    .compact-sidebar .admin-sidebar h4,
+    .compact-sidebar .admin-sidebar .expanded-only {
+        display: revert;
+    }
+
+    .compact-sidebar .admin-sidebar .compact-only {
+        display: none;
+    }
+
+    #main-wrapper:has(> .admin-sidebar) #sidebar-drawer-toggle {
+        display: flex;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        align-items: center;
+        justify-content: center;
+        height: 2.5rem;
+        width: 2.5rem;
+        padding: 0;
+        font-size: 1.4rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius);
+        background-color: var(--pw-nav-bg);
+        color: var(--bs-body-color);
+        z-index: 1046;
+    }
+
+    .sidebar-drawer-open #sidebar-drawer-backdrop {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, .5);
+        z-index: 1044;
+    }
+
+    /* The drawer button is out of the flow, so the title is lined up with it
+       the other way round: the toolbar starts at the button's top edge and
+       the title matches its height, which centres the two on each other. */
+    #main-wrapper:has(> .admin-sidebar) #top-nav-wrapper {
+        padding-top: 1rem;
+    }
+
+    #main-wrapper:has(> .admin-sidebar) #top-nav-content .admin-tab-title {
+        min-height: 2.5rem;
+    }
+
+    /* The title row is as tall as the drawer and "more" buttons and no
+       taller, so without this the first row of controls sits right up
+       against them. */
+    #main-wrapper:has(> .admin-sidebar) #top-nav-content {
+        row-gap: .75rem;
+    }
+
+    /* The title takes the whole first line and is centred on the screen. Only
+       it shares a row with the drawer and "more" buttons, so the gutters that
+       clear them belong to the title rather than to the whole toolbar — on
+       the toolbar they would indent every row below past content that starts
+       at the page margin — and being equal they leave the title centred. A
+       long title wraps inside them rather than running under a button. Some
+       tabs wrap the title in a div, so both it and a bare title are matched. */
+    #main-wrapper:has(> .admin-sidebar) #top-nav-content > .admin-tab-title,
+    #main-wrapper:has(> .admin-sidebar) #top-nav-content > :has(> .admin-tab-title) {
+        display: flex;
+        flex: 1 0 100%;
+        justify-content: center;
+        padding-inline: 2.5rem;
+        text-align: center;
+    }
+
+    /* Toolbar groups are flex items sized to their content, so without these
+       they run off the side of the screen rather than wrapping. Groups that
+       have to stay on one line (the round controls) use d-inline-flex. */
+    #main-wrapper:has(> .admin-sidebar) #top-nav-content > * {
+        min-width: 0;
+    }
+
+    #main-wrapper:has(> .admin-sidebar) #top-nav-content .d-flex {
+        flex-wrap: wrap;
+    }
+}
+
+/* Phone: a toolbar folds its secondary controls away behind a "more" button,
+   so a tab opens on its content instead of on four rows of buttons. Each
+   toolbar marks the few controls that earn a permanent row. */
+@media (max-width: 767.98px) {
+    /* !important because the controls carry Bootstrap display utilities
+       (d-inline, d-flex), which are themselves !important. */
+    body:not(.top-nav-expanded) .top-nav-collapsible > *:not(.top-nav-keep) {
+        display: none !important;
+    }
+
+    /* A group that keeps nothing has nothing left to show once collapsed, and
+       left in place it would still cost a gap between the buttons either
+       side of it. */
+    body:not(.top-nav-expanded) .top-nav-collapsible:not(:has(> .top-nav-keep)) {
+        display: none !important;
+    }
+
+    /* Wrapped onto several rows the group is full width, so the auto margin
+       that right-aligns it on one line no longer does anything and every row
+       has to be aligned in its own right. */
+    .top-nav-collapsible {
+        justify-content: flex-end;
+    }
+
+    #main-wrapper:has(.top-nav-collapsible > *:not(.top-nav-keep)) #top-nav-more-toggle {
+        display: flex;
+        position: fixed;
+        top: 1rem;
+        /* Not `right`: where a page scrolls sideways the mobile layout
+           viewport is as wide as the document, which would anchor the button
+           to the far edge of the content rather than of the screen. */
+        left: calc(var(--vw, 100vw) - 3.5rem);
+        align-items: center;
+        justify-content: center;
+        height: 2.5rem;
+        width: 2.5rem;
+        padding: 0;
+        font-size: 1.4rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius);
+        background-color: var(--pw-nav-bg);
+        color: var(--bs-body-color);
+        z-index: 1046;
+    }
+
+    .top-nav-expanded #top-nav-more-toggle {
+        background-color: var(--bs-primary);
+        color: var(--pw-contrast-text);
+    }
+}
+
+/* A modal is sized against the layout viewport, which on a phone is as wide
+   as the document whenever the page behind it scrolls sideways — a width
+   given as a percentage or in vw then makes the dialog wider than the screen.
+   Measure the screen instead, and use the whole of it less the margins. */
+@media (max-width: 767.98px) {
+    .modal-dialog {
+        max-width: calc(var(--vw, 100vw) - 1rem) !important;
+    }
+}
+
 #page-wrapper {
     display: inline-block;
     min-height: calc(var(--vh, 100vh) - 60px);

@@ -5081,6 +5081,9 @@ msgstr ""
 msgid "Montenegro"
 msgstr ""
 
+msgid "More"
+msgstr ""
+
 msgid "Morocco"
 msgstr ""
 
@@ -11194,3 +11197,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
