@@ -4,6 +4,8 @@
 
 - The language, federation and date format settings have moved from the browser to the main application window (5.1.0)
 - Plugins are now installed and uninstalled from the main application window (5.1.0)
+- The event export feature has been moved to the event's configuration window (5.1.0)
+- A reminder to update player data is shown before distributing players across tournaments (5.1.0)
 
 ## Tournaments
 
@@ -16,6 +18,8 @@
 ## Documents
 
 - Place cards can now be edited with an embedded editor (5.1.0)
+- A reminder to update player data is shown before generating place cards (5.1.0)
+
 ## Players
 
 - The player search can now be narrowed by federation, gender, age category and club (plus licence and league for _FFE_ searches), and the filters can be filled in one go from the criteria of any tournament of the event (5.0.3)
