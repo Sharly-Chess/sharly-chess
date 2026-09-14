@@ -17,6 +17,7 @@
 
 - Ask if a round should be marked as completed for individual round robins (5.1.0)
 - Added support for individual and team knockout pairings (single/double elimination, and two-game-match variants) (5.1.0)
+- Results entered on an administration pairings screen now notify the other administration screens immediately, as results entered on an input screen already did (5.1.0)
 
 ## Documents
 
