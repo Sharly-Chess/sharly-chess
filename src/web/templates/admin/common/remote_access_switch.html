@@ -1,0 +1,27 @@
+{# Whether this leaves the venue, and whether that is happening yet.
+
+   Apart from public and private, which say who may look rather than from
+   where. The status below is shown only while the switch is on: a server that
+   shares nothing is the ordinary state, and saying so under every switch that
+   is off would be noise.
+#}
+{% if sharly_chess_config.experimental %}
+    <div class="col-12 remote-access-field">
+        {{ admin_macros.switch_input(
+            name='remote',
+            label='',
+            placeholder=_('Reachable over the internet'),
+            tooltip_text=_('Apart from being public: this decides whether it leaves the venue at all, not who may look at it.'),
+            data=data, errors=errors
+        ) }}
+        <div class="form-text w-100 remote-access-status">
+            {% if remote_access_url %}
+                <i class="bi bi-circle-fill text-success"></i>
+                {{ _('Reachable at %(address)s.', address=remote_access_url) }}
+            {% else %}
+                <i class="bi bi-circle-fill text-warning"></i>
+                {{ _('Not reachable yet: this server is not shared over the internet. Turn it on in the Networks tab of the application window.') }}
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
