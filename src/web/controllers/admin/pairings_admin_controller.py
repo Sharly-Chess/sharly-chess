@@ -872,6 +872,7 @@ class PairingsAdminController(BaseEventAdminController):
     def _admin_update_result(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         tournament_id: int,
         round_: int,
         board_id: int,
@@ -917,6 +918,9 @@ class PairingsAdminController(BaseEventAdminController):
                     Message.warning(request, message)
 
             tournament.add_result(board, r)
+            self.publish_new_user_results(
+                channels, event.uniq_id, tournament.id, round_
+            )
             target_board_id = self._next_board_id(
                 board_id, web_context.admin_filtered_boards
             )
@@ -959,6 +963,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_set_result(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
         board_id: FromPath[int],
@@ -966,6 +971,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_update_result(
             request,
+            channels,
             tournament_id=tournament_id,
             round_=round,
             board_id=board_id,
@@ -1040,6 +1046,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_set_result_hotkey(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
         data: Annotated[
@@ -1089,6 +1096,7 @@ class PairingsAdminController(BaseEventAdminController):
         assert result is not None
         return self._admin_update_result(
             request,
+            channels,
             tournament_id=tournament_id,
             round_=round,
             board_id=board_id,

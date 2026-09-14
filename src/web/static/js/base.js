@@ -118,6 +118,13 @@ window.addEventListener("htmx:wsBeforeMessage", function(evt) {
     }
 });
 
+window.addEventListener('htmx:beforeRequest', function (evt) {
+    const path = evt.detail.requestConfig?.path || '';
+    if (path.includes('/pairing/set-result/')) {
+        refreshMessagesIgnored += 1;
+    }
+});
+
 const tooltipSelector = '[data-bs-toggle="tooltip"]';
 
 function closeTooltips () {
