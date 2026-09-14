@@ -1,9 +1,23 @@
 import pytest
 from playwright.sync_api import Page, expect, APIRequestContext
+
+from database.sqlite.event.event_database import EventDatabase
 from tests.test_config import TestUtils
 
 
 EVENT_ID = 'test-event-e2e'
+RENAMED_EVENT_ID = EVENT_ID + '-2'
+
+
+@pytest.fixture(scope='module', autouse=True)
+def setup(api_request_context: APIRequestContext):
+    yield
+
+    # The tests create, delete and rename the event themselves, so which of
+    # the two ids is left behind depends on how far each one got.
+    for uniq_id in (EVENT_ID, RENAMED_EVENT_ID):
+        if EventDatabase(uniq_id).file.exists():
+            TestUtils.delete_event(uniq_id, via_api_request_context=api_request_context)
 
 
 @pytest.mark.e2e
@@ -32,8 +46,8 @@ class TestEventFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         modal.get_by_test_id('federation').select_option('FRA', force=True)
-        modal.get_by_test_id('name').fill(EVENT_ID)
-        modal.get_by_test_id('event-form-submit-button').click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), EVENT_ID)
+        TestUtils.submit_modal(page, modal.get_by_test_id('event-form-submit-button'))
         expect(page).to_have_url(f'/event/{EVENT_ID}/tournaments')
 
         page.goto('/current_events')
@@ -45,13 +59,13 @@ class TestEventFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         modal.locator('#archive').check()
-        modal.locator('button[type=submit]').click()
+        TestUtils.submit_modal(page, modal.locator('button[type=submit]'))
         page.goto('/event/current_events')
         item = page.get_by_test_id('events-item').filter(has_text=EVENT_ID)
         expect(item).not_to_be_attached()
 
     def test_rename_event(self, page: Page, api_request_context: APIRequestContext):
-        new_uniq_id = EVENT_ID + '-2'
+        new_uniq_id = RENAMED_EVENT_ID
         TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
         page.goto(f'/event/{EVENT_ID}')
         page.get_by_test_id('nav-admin-event-config-tab-tab').click()
@@ -60,6 +74,10 @@ class TestEventFunctionality:
         page.get_by_test_id('uniq-id-update-button').click()
         update_input = page.get_by_test_id('uniq-id-update-input')
         expect(update_input).to_be_visible()
-        update_input.fill(new_uniq_id)
-        page.get_by_test_id('uniq-id-update-submit-button').click()
+        TestUtils.fill_and_confirm(update_input, new_uniq_id)
+        TestUtils.submit_modal(
+            page,
+            page.get_by_test_id('uniq-id-update-submit-button'),
+            '#uniq-id-update-form',
+        )
         expect(page).to_have_url(f'/event/{new_uniq_id}/tournaments')

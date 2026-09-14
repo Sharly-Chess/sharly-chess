@@ -142,6 +142,25 @@ class TestUtils:
         )
 
     @staticmethod
+    def wait_for_htmx_bound(page, selector: str, timeout=5000):
+        """Wait until htmx has taken an element over.
+
+        A form submitted before htmx has processed it goes off as a native
+        GET and the save is lost. Being idle is not enough — the swap is over
+        before the new nodes are initialised — but htmx stamps each node it
+        initialises with an ``initHash``.
+        """
+        page.wait_for_function(
+            '(selector) => {'
+            '  const node = document.querySelector(selector);'
+            "  const data = node && node['htmx-internal-data'];"
+            '  return !!(data && data.initHash);'
+            '}',
+            arg=selector,
+            timeout=timeout,
+        )
+
+    @staticmethod
     def fill_and_confirm(locator: Locator, value: str, attempts: int = 10):
         """Fill a field and make sure the value holds.
 
@@ -151,6 +170,34 @@ class TestUtils:
         """
         for attempt in range(attempts):
             locator.fill(value)
+            try:
+                expect(locator).to_have_value(value, timeout=250)
+                return
+            except AssertionError:
+                if attempt == attempts - 1:
+                    raise
+
+    @staticmethod
+    def submit_modal(page, button: Locator, form: str = '#modal-form'):
+        """Click a modal's submit button once htmx owns the form.
+
+        Submitted before that, the form goes off as a native GET: nothing is
+        saved, and the page lands on the form's action with every field in
+        the query string.
+        """
+        TestUtils.wait_for_htmx_bound(page, form)
+        button.click()
+
+    @staticmethod
+    def select_and_confirm(locator: Locator, value: str, attempts: int = 10):
+        """Pick an option and make sure the choice holds.
+
+        Select2 fires a late empty-value ``change`` over the native select it
+        wraps, so a value set while it is still settling is dropped and the
+        form is submitted without it.
+        """
+        for attempt in range(attempts):
+            locator.select_option(value, force=True)
             try:
                 expect(locator).to_have_value(value, timeout=250)
                 return

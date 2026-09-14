@@ -9,19 +9,27 @@ EVENT_ID = 'tournament-test-event'
 TOURNAMENT_ID = 'test-tournament'
 
 
+@pytest.fixture(scope='module', autouse=True)
+def setup(api_request_context: APIRequestContext):
+    TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
+
+    yield
+
+    TestUtils.delete_event(EVENT_ID, via_api_request_context=api_request_context)
+
+
 @pytest.mark.e2e
 class TestTournamentFunctionality:
-    def test_create_and_delete_tournament(
-        self, page: Page, api_request_context: APIRequestContext
-    ):
-        TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
+    def test_create_and_delete_tournament(self, page: Page):
         page.goto(f'/event/{EVENT_ID}/tournaments')
         TestUtils.button_by_text(page, 'Create a tournament').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Test Tournament'
-        modal.get_by_test_id('name').fill(name)
-        modal.get_by_role('button', name='Create', exact=True).click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), name)
+        TestUtils.submit_modal(
+            page, modal.get_by_role('button', name='Create', exact=True)
+        )
 
         # Redirection to Tie-breaks
         success_alert = modal.locator(f"div.alert:has-text('{name}')")

@@ -55,8 +55,8 @@ class TestSingleScreensFunctionality:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Test Screen'
-        modal.get_by_test_id('name').fill(name)
-        modal.locator('button[type=submit]').click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), name)
+        TestUtils.submit_modal(page, modal.locator('button[type=submit]'))
 
         screen_type_section = page.get_by_test_id('accordion-screen-type-input')
         if screen_type_section.get_attribute('aria-expanded') == 'false':
@@ -109,8 +109,12 @@ class TestSingleScreensFunctionality:
             page.get_by_test_id('uniq-id-update-button').click()
             update_input = page.get_by_test_id('uniq-id-update-input')
             expect(update_input).to_be_visible()
-            update_input.fill(new_uniq_id)
-            page.get_by_test_id('uniq-id-update-submit-button').click()
+            TestUtils.fill_and_confirm(update_input, new_uniq_id)
+            TestUtils.submit_modal(
+                page,
+                page.get_by_test_id('uniq-id-update-submit-button'),
+                '#uniq-id-update-form',
+            )
 
             # The eye link in the background card must now point to the new uniq ID
             expect(page.locator(eye_selector)).to_have_attribute(

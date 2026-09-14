@@ -30,7 +30,7 @@ class TestPlayersFunctionality:
         page.get_by_test_id('add-player-button').click()
         modal = page.locator('#player-modal:not(.htmx-added)')
         expect(modal).to_be_visible()
-        modal.get_by_test_id('last-name').fill('doe')
+        TestUtils.fill_and_confirm(modal.get_by_test_id('last-name'), 'doe')
         modal.get_by_test_id('first-name').fill('john')
         modal.get_by_test_id('date-of-birth').fill('2000-10-30')
         modal.get_by_test_id('gender').select_option(
@@ -92,7 +92,7 @@ class TestPlayersFunctionality:
         edit_link.click()
         modal = page.locator('#player-modal:not(.htmx-added)')
         expect(modal).to_be_visible()
-        modal.get_by_test_id('last-name').fill('hoe')
+        TestUtils.fill_and_confirm(modal.get_by_test_id('last-name'), 'hoe')
         modal.locator('button[type=submit]').click()
 
         row = page.locator(f'tr#player-{player_id}')

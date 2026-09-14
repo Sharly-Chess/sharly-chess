@@ -15,8 +15,11 @@ FAMILY_ID = 'rotator-test-family'
 ROTATOR_NAME = 'rotator-test-rotator'
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 def setup(api_request_context: APIRequestContext):
+    # Per test rather than per module: the tests create rotators through the
+    # UI and delete them at the end of their body, so a test that fails early
+    # would otherwise leave a name behind and fail the ones after it too.
     TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
     yield
     TestUtils.delete_event(EVENT_ID, via_api_request_context=api_request_context)
@@ -70,8 +73,8 @@ class TestRotator:
         TestUtils.button_by_text(page, 'Create a rotator').click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.get_by_test_id('name').fill(ROTATOR_NAME)
-        modal.locator('button[type=submit]').click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), ROTATOR_NAME)
+        TestUtils.submit_modal(page, modal.locator('button[type=submit]'))
         TestUtils.button_by_text(modal, 'Close').click()
 
         item = page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
@@ -108,8 +111,8 @@ class TestRotator:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Duplicated rotator'
-        modal.get_by_test_id('name').fill(name)
-        modal.locator('button[type=submit]').click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), name)
+        TestUtils.submit_modal(page, modal.locator('button[type=submit]'))
         item = page.get_by_test_id('rotators-item').filter(has_text=name)
         expect(item).to_be_visible()
         expect(item.get_by_test_id('screens-count')).to_contain_text('1')

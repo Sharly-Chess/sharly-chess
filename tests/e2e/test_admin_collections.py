@@ -86,8 +86,10 @@ class TestAdminCollections:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Collection Team'
-        modal.get_by_test_id('name').fill(name)
-        modal.get_by_role('button', name='Create', exact=True).click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), name)
+        TestUtils.submit_modal(
+            page, modal.get_by_role('button', name='Create', exact=True)
+        )
 
         item = page.get_by_test_id('teams-item').filter(has_text=name)
         expect(item).to_be_visible()
@@ -161,16 +163,25 @@ class TestAdminCollections:
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
         name = 'Collection Category'
-        modal.get_by_test_id('name').fill(name)
-        modal.get_by_role('button', name='Create', exact=True).click()
+        TestUtils.fill_and_confirm(modal.get_by_test_id('name'), name)
+        TestUtils.submit_modal(
+            page, modal.get_by_role('button', name='Create', exact=True)
+        )
 
+        # The create swaps the bracket back in, and the opener is only bound
+        # once that has landed.
+        TestUtils.wait_for_htmx_idle(page)
         create_category = page.get_by_role('button', name='Create a category')
         create_category.first.click()
         create_category.last.click()
         modal = page.locator('.modal-dialog')
         expect(modal).to_be_visible()
-        modal.get_by_test_id('name').fill('Second Collection Category')
-        modal.get_by_role('button', name='Create', exact=True).click()
+        TestUtils.fill_and_confirm(
+            modal.get_by_test_id('name'), 'Second Collection Category'
+        )
+        TestUtils.submit_modal(
+            page, modal.get_by_role('button', name='Create', exact=True)
+        )
 
         item = page.get_by_test_id('prize-categories-item').filter(has_text=name)
         expect(item).to_be_visible()
