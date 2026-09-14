@@ -396,6 +396,12 @@ class TeamCardType(PlaceCardType):
     def static_singular_name() -> str:
         return _('Team')
 
+    @property
+    def includes_player_data(self) -> bool:
+        """The cards name the captain, which is a player's full name when the
+        captain plays in the team."""
+        return True
+
     @classmethod
     def supports_event_type(cls, is_team_event: bool) -> bool:
         return is_team_event

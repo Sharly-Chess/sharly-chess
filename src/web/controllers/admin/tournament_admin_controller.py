@@ -2536,6 +2536,13 @@ class TournamentAdminController(BaseEventAdminController):
         )
         return self._admin_event_tournaments_render(web_context)
 
+    @staticmethod
+    def _distribute_players_tab(tab: str | None) -> str:
+        """The tab the distribution returns to, guarded against a value that
+        names no route (the players have been moved by then, and the redirect
+        would fail after the fact)."""
+        return tab if tab in ('players', 'tournaments') else 'tournaments'
+
     @classmethod
     def _player_distribution_modal_context(
         cls, web_context: TournamentAdminWebContext, tab: str
@@ -2618,7 +2625,9 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request)
         return self._admin_event_tournaments_render(
             web_context,
-            self._player_distribution_modal_context(web_context, tab),
+            self._player_distribution_modal_context(
+                web_context, self._distribute_players_tab(tab)
+            ),
         )
 
     @staticmethod
@@ -2765,7 +2774,9 @@ class TournamentAdminController(BaseEventAdminController):
         Message.success(
             request, _('Players successfully distributed among the tournaments.')
         )
-        tab = WebContext.form_data_to_str(flat_data, 'tab') or 'tournaments'
+        tab = self._distribute_players_tab(
+            WebContext.form_data_to_str(flat_data, 'tab')
+        )
         return ClientRedirect(
             redirect_to=request.app.route_reverse(
                 f'admin-event-{tab}-tab', event_uniq_id=event.uniq_id

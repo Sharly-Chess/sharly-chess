@@ -6,14 +6,17 @@
         data=data, errors=errors
     ) }}
 </div>
-<div class="col-12 mt-2" id="{{ option.id }}-update-players-alert" style="display:none">
-    {% with update_players_alert_message=_(
+{% with
+    update_players_alert_message=_(
         'Reminder: you might have to update the players\' information '
         'before printing the place cards.'
-    ) %}
-        {% include '/admin/players/update_players_alert.html' %}
-    {% endwith %}
-</div>
+    ),
+    update_players_alert_id=option.id ~ '-update-players-alert',
+    update_players_alert_class='col-12 mt-2',
+    update_players_alert_hidden=true
+%}
+    {% include '/admin/players/update_players_alert.html' %}
+{% endwith %}
 <script>
     (() => {
         function refreshUpdatePlayersAlert() {
