@@ -189,6 +189,22 @@ class TestUtils:
         button.click()
 
     @staticmethod
+    def submit_modal_and_wait_for_refresh(
+        page, button: Locator, form: str = '#modal-form'
+    ):
+        """Submit a modal that reloads the page once it closes.
+
+        The reload is queued on the modal's hide, after the response has
+        been swapped in: htmx is idle by then, and a navigation the test
+        starts in the meantime is aborted by it. The marker goes on the
+        window, which only a document load clears — the swap does not, and
+        neither does the URL change, the reload leaving it as it was.
+        """
+        page.evaluate('() => { window.beforeModalSubmit = true; }')
+        TestUtils.submit_modal(page, button, form)
+        page.wait_for_function('() => !window.beforeModalSubmit')
+
+    @staticmethod
     def select_and_confirm(locator: Locator, value: str, attempts: int = 10):
         """Pick an option and make sure the choice holds.
 
