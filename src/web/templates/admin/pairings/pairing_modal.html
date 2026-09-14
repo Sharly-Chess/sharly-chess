@@ -42,6 +42,52 @@
     {% endif %}
 {% endmacro %}
 
+{# Illegal moves are recorded here rather than in the pairings row: the row
+   shows the count, and a stepper has room for a real target either side of
+   it instead of one tap zone per flag. #}
+{% macro illegal_move_stepper(tournament_player, pairing) %}
+    {% set count = pairing.illegal_moves if pairing else 0 %}
+    {% set maximum = admin_tournament.record_illegal_moves %}
+    {% set editable = client.can_set_illegal_moves(admin_tournament.id) %}
+    {% set route_args = {
+        'event_uniq_id': admin_event.uniq_id,
+        'tournament_id': admin_tournament.id,
+        'round': admin_round,
+        'player_id': tournament_player.id,
+    } %}
+    <div class="d-flex align-items-center justify-content-center gap-2">
+        <button
+            type="button"
+            class="btn btn-outline-primary"
+            aria-label="{{ _('Remove') }}"
+            {% if not editable or count < 1 %}
+                disabled
+            {% else %}
+                hx-delete="{{ url_for('admin-tournament-delete-illegal-move', **route_args) }}?board_id={{ board.identifier }}"
+                hx-indicator="#please-wait"
+            {% endif %}
+        >
+            <i class="bi bi-dash-lg"></i>
+        </button>
+        <span class="text-nowrap">
+            <i class="bi-flag pe-1"></i><span class="fw-bold">{{ count }}</span>
+        </span>
+        <button
+            type="button"
+            class="btn btn-outline-primary"
+            aria-label="{{ _('Add') }}"
+            {% if not editable or count >= maximum %}
+                disabled
+            {% else %}
+                hx-put="{{ url_for('admin-tournament-add-illegal-move', **route_args) }}?board_id={{ board.identifier }}"
+                hx-indicator="#please-wait"
+            {% endif %}
+        >
+            <i class="bi bi-plus-lg"></i>
+        </button>
+    </div>
+{% endmacro %}
+
 {% macro result_button(result_id, disabled, label, btn_class) %}
     {{ action_button(
         'RESULT_UPDATE',
@@ -153,11 +199,11 @@
                 {# White / neutral / Black columns. Buttons show just the
                    score; the headers and column position convey the rest. #}
                 <div class="row g-2 mb-1">
-                    <div class="col-4 text-center">
+                    <div class="col-6 col-md-4 text-center">
                         <div class="text-uppercase small fw-bold text-muted">
                             <span class="board-color-chip {{ 'white' if left_is_white else 'black' }}"></span>{{ _('White') if left_is_white else _('Black') }}
                         </div>
-                        <div class="text-nowrap fw-bold">
+                        <div class="fw-bold">
                             {{ left_tp.full_name if left_tp else (_left_code or '—') }}
                         </div>
                         <div class="text-muted small">
@@ -167,12 +213,12 @@
                             <div class="text-muted small">{{ left_team.name }}</div>
                         {% endif %}
                     </div>
-                    <div class="col-4"></div>
-                    <div class="col-4 text-center">
+                    <div class="d-none d-md-block col-md-4"></div>
+                    <div class="col-6 col-md-4 text-center">
                         <div class="text-uppercase small fw-bold text-muted">
                             <span class="board-color-chip {{ 'black' if left_is_white else 'white' }}"></span>{{ _('Black') if left_is_white else _('White') }}
                         </div>
-                        <div class="text-nowrap fw-bold">
+                        <div class="fw-bold">
                             {{ right_tp.full_name if right_tp else (_right_code or '—') }}
                         </div>
                         <div class="text-muted small">
@@ -183,6 +229,20 @@
                         {% endif %}
                     </div>
                 </div>
+
+                {% if admin_tournament.record_illegal_moves %}
+                    {% set left_pairing = board.white_pairing if left_is_white else board.black_pairing %}
+                    {% set right_pairing = board.black_pairing if left_is_white else board.white_pairing %}
+                    <div class="row g-2 mt-1 mb-4">
+                        <div class="col-6 col-md-4">
+                            {% if left_tp %}{{ illegal_move_stepper(left_tp, left_pairing) }}{% endif %}
+                        </div>
+                        <div class="d-none d-md-block col-md-4"></div>
+                        <div class="col-6 col-md-4">
+                            {% if right_tp %}{{ illegal_move_stepper(right_tp, right_pairing) }}{% endif %}
+                        </div>
+                    </div>
+                {% endif %}
 
                 {% if not _flat_hole %}
                     {# Result ids stay white-oriented — only the button
@@ -240,7 +300,7 @@
                     </div>
                 {% else %}
                 <div class="row g-2">
-                    <div class="col-4">
+                    <div class="col-12 col-md-4">
                         {{ action_button(
                             'RESULT_UPDATE',
                             'put',
@@ -269,7 +329,7 @@
                         ) }}
                     </div>
                     {% if not admin_tournament.event.is_team_event or not admin_tournament.pairing_system.paired_by_team %}
-                        <div class="col-4">
+                        <div class="col-12 col-md-4">
                             {{ action_button(
                                 'MANUAL_UNPAIRING',
                                 'delete',
@@ -290,7 +350,7 @@
                             ) }}
                         </div>
                     {% endif %}
-                    <div class="col-4">
+                    <div class="col-12 col-md-4">
                         {{ action_button(
                             'COLOR_PERMUTE',
                             'patch',
@@ -365,4 +425,7 @@
             </div>
         </div>
     </div>
+    {% if illegal_moves_changed | default(false) %}
+        <script>requestRefresh()</script>
+    {% endif %}
 {% endwith %}

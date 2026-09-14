@@ -64,9 +64,9 @@
         hx-swap-oob="true"
     {% endif %}
 >
-    <td class="text-center text-nowrap">{% if board.fixed_number %}<span class="border border-light rounded p-1" data-bs-toggle="tooltip" data-bs-title="{{ _('Fixed table') }}">{{ board.number_str }}</span>{% else %}{{ board.number_str }}{% endif %}</td>
+    <td class="pairing-cell-board text-center text-nowrap">{% if board.fixed_number %}<span class="border border-light rounded p-1" data-bs-toggle="tooltip" data-bs-title="{{ _('Fixed table') }}">{{ board.number_str }}</span>{% else %}{{ board.number_str }}{% endif %}</td>
     {% if admin_tournament.record_illegal_moves %}
-        {% with player=team_a_player, illegal_moves=team_a_pairing.illegal_moves if team_a_pairing else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+        {% with player=team_a_player, illegal_moves=team_a_pairing.illegal_moves if team_a_pairing else 0, side='white' %}{% include 'illegal_moves_cell.html' %}{% endwith %}
     {% endif %}
     <td class="lineup-side-a">
         <div class="d-flex align-items-center">
@@ -91,7 +91,7 @@
         board.stored_board.white_player_id is none
         or board.stored_board.black_player_id is none
     ) %}
-    <td class="text-center" style="width: 4.5rem;">
+    <td class="pairing-cell-result text-center" style="width: 4.5rem;">
         <span
             {% if not client.can_enter_results(admin_tournament.id) %}
                 {{ macros.tooltip_attributes('warning', _('You are not allowed to enter results.'), 'top') }}
@@ -122,7 +122,7 @@
         </span>
     </td>
     {% if admin_tournament.record_illegal_moves %}
-        {% with player=team_b_player, illegal_moves=team_b_pairing.illegal_moves if team_b_pairing else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+        {% with player=team_b_player, illegal_moves=team_b_pairing.illegal_moves if team_b_pairing else 0, side='black' %}{% include 'illegal_moves_cell.html' %}{% endwith %}
     {% endif %}
     <td class="lineup-side-b">
         <div class="d-flex align-items-center">

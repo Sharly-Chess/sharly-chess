@@ -447,6 +447,33 @@ function toggle_sidebar(e) {
     }
 }
 
+// Below the drawer breakpoint the sidebar slides over the content instead of
+// taking a column of its own, so a phone keeps the full width for the page.
+function toggle_sidebar_drawer(e) {
+    e.preventDefault();
+    $('body').toggleClass('sidebar-drawer-open');
+}
+
+function close_sidebar_drawer() {
+    $('body').removeClass('sidebar-drawer-open');
+}
+
+$(document).on('click', '#sidebar-nav a, #sidebar-nav button', function () {
+    // A submenu toggle stays in the drawer; only navigation closes it.
+    const toggle = $(this).attr('data-bs-toggle');
+    if (toggle === 'collapse' || toggle === 'dropdown') {
+        return;
+    }
+    close_sidebar_drawer();
+});
+
+// On a narrow screen a toolbar's secondary controls are folded away behind a
+// "more" button, leaving only the ones the tab marks as worth a permanent row.
+function toggle_top_nav(e) {
+    e.preventDefault();
+    $('body').toggleClass('top-nav-expanded');
+}
+
 function errorBeep() {
     var snd = new Audio("/static/sounds/error-beep.wav");
     snd.play();

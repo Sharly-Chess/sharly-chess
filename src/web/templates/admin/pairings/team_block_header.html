@@ -20,17 +20,17 @@
         style="cursor: pointer;"
         {% if match_excluded %}data-bs-toggle="tooltip" data-bs-title="{{ _('The result of this match is not taken into account for the final standings because at least one of the teams did not play 50%% of the matches (FIDE 6.6).') }}"{% endif %}
     >
-        <td class="text-center text-nowrap">
+        <td class="team-header-cell-number text-center text-nowrap">
             <i class="bi bi-chevron-down team-block-chevron me-1"></i>
             <strong>{{ team_board.display_number }}</strong>
         </td>
-        <td colspan="{{ team_a_colspan }}">
+        <td class="team-header-cell-team-a" colspan="{{ team_a_colspan }}">
             <div class="d-flex align-items-center">
-                <strong class="flex-grow-1">
+                <strong class="team-header-name-a flex-grow-1">
                     {% set _a_score = admin_tournament.team_primary_score_before_round(
                         team_board.team_a.id, team_board.round
                     ) %}
-                    <span class="text-contrast me-1">{{ '%g'|format(_a_score) }}</span>
+                    <span class="team-header-standing-score text-contrast me-1">{{ '%g'|format(_a_score) }}</span>
                     <a
                         class="player-link"
                         hx-get="{{ url_for(
@@ -74,7 +74,7 @@
                 {% if client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="btn btn-sm btn-outline-primary ms-2"
+                        class="team-header-lineup-a btn btn-sm btn-outline-primary ms-2"
                         hx-get="{{ url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -92,7 +92,7 @@
                 {% endif %}
             </div>
         </td>
-        <td class="text-center align-middle">
+        <td class="team-header-cell-score text-center align-middle">
             {% set _score_text %}
                 {% if team_board.team_b %}
                     {% if team_board.no_games_played %}
@@ -130,12 +130,12 @@
                 <span class="fw-bold text-nowrap d-inline-block" style="width: 4.5rem;">{{ _score_text | trim }}</span>
             {% endif %}
         </td>
-        <td colspan="{{ team_b_colspan }}">
+        <td class="team-header-cell-team-b" colspan="{{ team_b_colspan }}">
             <div class="d-flex align-items-center">
                 {% if team_board.team_b and client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="btn btn-sm btn-outline-primary me-2"
+                        class="team-header-lineup-b btn btn-sm btn-outline-primary me-2"
                         hx-get="{{ url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -151,7 +151,7 @@
                         <i class="bi-list-ol"></i>
                     </button>
                 {% endif %}
-                <strong class="text-end flex-grow-1">
+                <strong class="team-header-name-b text-end flex-grow-1">
                     {% if team_board.team_b %}
                         <a
                             class="player-link"
@@ -195,7 +195,7 @@
                         {% set _b_score = admin_tournament.team_primary_score_before_round(
                             team_board.team_b.id, team_board.round
                         ) %}
-                        <span class="text-contrast ms-1">{{ '%g'|format(_b_score) }}</span>
+                        <span class="team-header-standing-score text-contrast ms-1">{{ '%g'|format(_b_score) }}</span>
                     {% else %}
                         {{ _('EXEMPT') }}
                     {% endif %}
