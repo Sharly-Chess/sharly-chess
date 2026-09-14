@@ -79,11 +79,17 @@ function handleModalOpened(static) {
 
     closeTooltips();
     activateTooltips();
-    if (!scrollToFirstError() && modalForm) {
-        let fields = modalForm.getElementsByClassName("form-control");
-        if (fields.length > 0) {
-            // TODO: exclude filters from this
-            fields[0].select(); // If the modal contains a form, set focus on the first field
+    if (!scrollToFirstError()) {
+        // The player search sits above the form rather than inside it, so it
+        // has to be looked up on the modal itself.
+        let searchInput = modal._element.querySelector("#search-input");
+        if (searchInput) {
+            searchInput.select();
+        } else if (modalForm) {
+            let fields = modalForm.getElementsByClassName("form-control");
+            if (fields.length > 0) {
+                fields[0].select(); // If the modal contains a form, set focus on the first field
+            }
         }
     }
 }
