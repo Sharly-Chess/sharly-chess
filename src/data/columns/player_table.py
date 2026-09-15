@@ -1,7 +1,9 @@
 from abc import ABC
+from functools import cached_property
 from typing import Any, override
 
 from common.i18n import _
+from common.i18n.utils import ordinal_integer
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from utils import Utils
@@ -109,7 +111,7 @@ class RankOverallColumn(TournamentPlayerTableColumn):
         return _('Rk. O. *** RANK OVERALL COLUMN HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'({Utils.ordinal_integer(tournament_player.rank)})'
+        return f'({ordinal_integer(tournament_player.rank)})'
 
     @property
     def is_cell_content_safe(self) -> bool:
@@ -337,6 +339,31 @@ class TieBreakColumn(TournamentPlayerTableColumn):
     def shared_classes(self) -> str:
         emphasis = 'fw-bold ' if self.index == 0 else ''
         return f'{emphasis}text-center'
+
+
+class KnockoutResultColumn(TournamentPlayerTableColumn):
+    """A knock-out's ranking result — 'Winner', 'Runner-up', 'Out — round N'
+    or 'Still in' — shown in place of a points / tie-break column, which a
+    knock-out (ranked by the round reached) does not have."""
+
+    def __init__(self, usage: ColumnUsage, tournament: Tournament):
+        super().__init__(usage)
+        self.tournament = tournament
+
+    @cached_property
+    def _labels(self) -> dict[int, str]:
+        return self.tournament.knockout.standing_labels()
+
+    @property
+    def header_content(self) -> str:
+        return _('Result *** KNOCK-OUT RESULT COLUMN')
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return self._labels.get(tournament_player.id, '')
+
+    @property
+    def shared_classes(self) -> str:
+        return 'fw-bold text-center'
 
 
 class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):

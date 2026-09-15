@@ -92,11 +92,34 @@ class DomainLocaleInfo(Domain):
                 break
         return sorted(tokens)
 
+    @classmethod
+    def offered_tokens(cls, msg: Message) -> list[str]:
+        """The tokens the code passes on top of the ones the source wording
+        uses, declared in an ``i18n:`` comment next to the string. A language
+        that counts something else than English does — 'Round of 16' against
+        '8es de finale' — reaches for one of these instead."""
+        tokens: list[str] = []
+        for comment in msg.auto_comments:
+            tokens += cls.sorted_tokens(comment)
+        return tokens
+
+    @classmethod
+    def message_tokens_match(cls, id_: str, string: str, offered: list[str]) -> bool:
+        """Whether a translation uses the tokens it is allowed to. Without an
+        offer it has to use exactly the ones the source does; with one, any of
+        those it names, since the wording decides which apply."""
+        id_tokens = cls.sorted_tokens(id_)
+        string_tokens = cls.sorted_tokens(string)
+        if not offered:
+            return id_tokens == string_tokens
+        return set(string_tokens) <= set(id_tokens) | set(offered)
+
     def compare_message_tokens(self, msg: Message) -> bool:
         error: bool = False
+        offered = self.offered_tokens(msg)
         if isinstance(msg.string, str):
             assert isinstance(msg.id, str)
-            if self.sorted_tokens(msg.id) != self.sorted_tokens(msg.string):
+            if not self.message_tokens_match(msg.id, msg.string, offered):
                 msg.user_comments = [
                     f'Error: tokens differ between [{msg.id}] and [{msg.string}]',
                 ]
@@ -105,7 +128,7 @@ class DomainLocaleInfo(Domain):
             assert isinstance(msg.id, tuple)
             assert isinstance(msg.string, tuple)
             for i in reversed(range(len(msg.id))):
-                if self.sorted_tokens(msg.id[i]) != self.sorted_tokens(msg.string[i]):
+                if not self.message_tokens_match(msg.id[i], msg.string[i], offered):
                     msg.user_comments = [
                         f'Error: tokens differ between [{msg.id[i]}] and [{msg.string[i]}]',
                     ]

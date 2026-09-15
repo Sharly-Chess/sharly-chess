@@ -1234,7 +1234,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             color = TrfColor.get_core_object(trf_game.color)
         except KeyError:
             raise ImporterError(
-                _('Unknown color [{color}].').format(color=trf_game.color)
+                _('Unknown colour [{color}].').format(color=trf_game.color)
             )
         try:
             result = TrfResult.get_core_object(
@@ -1268,7 +1268,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
         if trf_game.opponent_id and not color:
             raise ImporterError(
-                _("Color [{color}] can't be used with an opponent.").format(
+                _("Colour [{color}] can't be used with an opponent.").format(
                     color=trf_game.color
                 )
             )
@@ -1283,7 +1283,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
         ):
             raise ImporterError(
-                _("Color [{color}] can't be used without an opponent.").format(
+                _("Colour [{color}] can't be used without an opponent.").format(
                     color=trf_game.color
                 )
             )
@@ -1357,7 +1357,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     initial_color
                 )
             except ValueError:
-                message = _('Unknown color [{color}].').format(color=initial_color)
+                message = _('Unknown colour [{color}].').format(color=initial_color)
                 raise ImporterError(
                     _('{string}: {value}').format(string='152', value=message)
                 )

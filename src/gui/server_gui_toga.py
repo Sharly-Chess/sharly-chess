@@ -622,7 +622,7 @@ class SharlyChessServerToga(toga.App):
             data={'level': config.console_log_level}
         )
         self.log_color_switch = toga.Switch(
-            text=_('Level specific colors'),
+            text=_('Level specific colours'),
             value=config.console_color,
             on_change=self._on_log_color_switch_change,
         )

@@ -1850,7 +1850,7 @@ class ImageScreenType(ScreenType):
                 values['background_color'] = WebContext.form_data_to_rgb(data, field)
             except ValueError:
                 errors[field] = _(
-                    'Invalid color [{color}] ([#RRGGBB] expected).'
+                    'Invalid colour [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
         return values
 
