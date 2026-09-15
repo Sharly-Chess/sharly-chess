@@ -2029,6 +2029,33 @@ class TestIndividualTwoGameKnockout:
             ('P2', 'P1'),
         ]
 
+    def test_game_two_reverses_the_colours_game_one_was_played_with(
+        self, tournament_name
+    ):
+        # Permuting a game-one board is the arbiter saying that match ran the
+        # other way round; game two owes it the reverse of what was played,
+        # not of what was drawn.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        permuted = self._board_between(tournament, 1, 'P0', 'P3')
+        permuted.permute_colors()
+        tournament = self._load()
+        assert self._board_names(tournament, 1) == [
+            ('P3', 'P0'),
+            ('P1', 'P2'),
+        ]
+
+        for board in tournament.get_round_boards(1):
+            tournament.add_result(board, Result.DRAW)
+        tournament = self._load()
+        assert tournament.generate_round_pairings(2) == ''
+        tournament = self._load()
+        assert self._board_names(tournament, 2) == [
+            ('P0', 'P3'),
+            ('P2', 'P1'),
+        ]
+
     def test_drawn_game_one_does_not_block_game_two(self, tournament_name):
         tournament = self._load()
         assert tournament.generate_round_pairings(1) == ''
