@@ -28,9 +28,10 @@
     {% set bracket_ncols = 4 + (2 if admin_tournament.record_illegal_moves else 0) %}
     {% set bracket_sections = admin_tournament.round_sections(admin_team_boards) %}
     {% for section_label, section_boards in bracket_sections %}
-        {# Head each knock-out round with its name (Upper Bracket Semifinals /
-           Lower Bracket Round 1 / Final / Grand Final / …). #}
-        {% if section_label %}
+        {# Name each section a round splits into (Final and Third-place
+           playoff, the two brackets of a double elimination). A round that is
+           all one section is named by the round select. #}
+        {% if section_label and bracket_sections | length > 1 %}
             <tbody>
                 <tr class="bracket-section-header">
                     {# Override the striped/hover table background variables
