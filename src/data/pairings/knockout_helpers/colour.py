@@ -5,6 +5,7 @@ from enum import StrEnum
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from common.i18n import _
+from data.pairings.knockout_helpers.common import seed_sort_key
 from data.pairings.settings import PairingSetting
 from utils.enum import BoardColor
 
@@ -174,7 +175,7 @@ class KnockoutColourMixin:
         a, b = players.get(a_id), players.get(b_id)
         if a is None or b is None:
             return a_id, b_id
-        if b.starting_rank_sort_key < a.starting_rank_sort_key:
+        if seed_sort_key(b) < seed_sort_key(a):
             return b_id, a_id
         return a_id, b_id
 

@@ -12,6 +12,7 @@ from data.pairings.knockout_helpers.colour import (
 )
 from data.pairings.knockout_helpers.common import (
     board_winner_player_id,
+    seeded_players,
     find_knockout_board,
     find_knockout_team_board,
     team_match_all_games_played,
@@ -192,7 +193,7 @@ class KnockoutEngine(
         leaves = self._grouped_leaves(tournament)
         if leaves is not None:
             return list(zip(leaves[::2], leaves[1::2]))
-        by_rank = tournament.tournament_players_by_starting_rank
+        by_seed = seeded_players(tournament)
         result: list[tuple[int | None, int | None]] = []
         if tournament.player_count < self.MIN_PLAYERS:
             # No bracket below two players; the display asks for the layout
@@ -201,8 +202,8 @@ class KnockoutEngine(
         for high_seed, low_seed in knockout_bracket.first_round_pairs(
             tournament.player_count
         ):
-            white = by_rank[high_seed]
-            black = by_rank[low_seed] if low_seed is not None else None
+            white = by_seed[high_seed]
+            black = by_seed[low_seed] if low_seed is not None else None
             result.append((white.id, black.id if black is not None else None))
         return result
 
@@ -338,7 +339,7 @@ class DoubleEliminationEngine(
         }
 
     def _seed_id(self, tournament: 'Tournament', seed: int) -> int:
-        return tournament.tournament_players_by_starting_rank[seed].id
+        return seeded_players(tournament)[seed].id
 
     def _played_match_winner(
         self, tournament: 'Tournament', match: double_elimination.Match, a_id, b_id

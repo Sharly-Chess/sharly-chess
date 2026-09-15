@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from common.i18n import _
 from data.pairings.knockout_helpers.bracket import seed_order
+from data.pairings.knockout_helpers.common import seeded_players
 from data.pairings.settings import PairingSetting
 
 if TYPE_CHECKING:
@@ -159,8 +160,8 @@ class KnockoutGroupingMixin:
         if tournament.pairing_system.paired_by_team:
             entities: list = self._grouping_host()._teams_for_tournament(tournament)
         else:
-            by_rank = tournament.tournament_players_by_starting_rank
-            entities = [by_rank[rank] for rank in sorted(by_rank)]
+            by_seed = seeded_players(tournament)
+            entities = [by_seed[seed] for seed in sorted(by_seed)]
         return [(entity.id, dimension.group_key(entity)) for entity in entities]
 
     def _grouped_leaves(self, tournament: 'Tournament') -> list[int | None] | None:

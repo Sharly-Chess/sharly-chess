@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Protocol, cast
 from common.i18n import _
 from data.pairings.knockout_helpers.common import (
     find_knockout_board,
+    seeded_players,
     find_knockout_team_board,
     team_match_winner_id,
 )
@@ -158,10 +159,7 @@ class KnockoutDisplayMixin:
                     self._display_host()._teams_for_tournament(tournament)
                 )
             }
-        return {
-            player.id: rank
-            for rank, player in tournament.tournament_players_by_starting_rank.items()
-        }
+        return {player.id: seed for seed, player in seeded_players(tournament).items()}
 
     @staticmethod
     def _slot_scores(
