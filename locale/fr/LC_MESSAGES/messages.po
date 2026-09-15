@@ -7436,7 +7436,7 @@ msgstr "Réinitialiser le zoom"
 
 #, python-brace-format
 msgid "Resolve the tied match(es) of round {round} before pairing the next round."
-msgstr "Résolvez le·s match·s à égalité du tour {round} avant d'apparier le tour suivant."
+msgstr "Résolvez le(s) match(s) à égalité de la ronde {round} avant d'apparier le tour suivant."
 
 msgid "Restart to complete the move"
 msgstr "Redémarrer pour appliquer le déplacement"
