@@ -8,7 +8,7 @@ from typing import Any, Callable, override
 
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
-from common.i18n.utils import unicode_normalize
+from common.i18n.utils import ordinal_integer, unicode_normalize
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
@@ -1866,7 +1866,7 @@ class PrizeListPrintDocument(PrintDocument):
         prize_currency = self.get_event().prize_currency
         return {
             'tournaments': self.tournaments,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
                 Utils.currency_value_str,
@@ -1904,7 +1904,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         return {
             'tournaments': self.tournaments,
             'show_warnings': self._get_option(ShowWarningsPrintOption).value,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
                 Utils.currency_value_str,
@@ -1952,7 +1952,7 @@ class PrizeReceiptsPrintDocument(PrintDocument):
         return {
             'tournaments': self.tournaments,
             'monetary_only': not self._get_option(NonMonetaryPrintOption).value,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
                 Utils.currency_value_str,
@@ -3030,7 +3030,7 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
             'subtitle': self.tournament.name,
             'ordered_teams': self.ordered_teams,
             'player_columns': self.player_columns,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'localized_number': Utils.localized_number,
             'points_str': Utils.points_str,
         }

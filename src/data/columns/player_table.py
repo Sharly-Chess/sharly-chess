@@ -3,6 +3,7 @@ from functools import cached_property
 from typing import Any, override
 
 from common.i18n import _
+from common.i18n.utils import ordinal_integer
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from utils import Utils
@@ -110,7 +111,7 @@ class RankOverallColumn(TournamentPlayerTableColumn):
         return _('Rk. O. *** RANK OVERALL COLUMN HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'({Utils.ordinal_integer(tournament_player.rank)})'
+        return f'({ordinal_integer(tournament_player.rank)})'
 
     @property
     def is_cell_content_safe(self) -> bool:

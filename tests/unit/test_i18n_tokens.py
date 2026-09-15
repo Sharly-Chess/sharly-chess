@@ -13,12 +13,11 @@ import pytest
 from babel.messages.catalog import Message
 
 from common.i18n.locale_info import DomainLocaleInfo
-from utils import Utils
 from web.settings import _ordinal_suffix_pattern, raise_ordinal_suffix_svg
 
 
 def _raise_svg(value: str, suffixes: tuple[str, ...]) -> str:
-    with patch.object(Utils, 'ordinal_suffixes', return_value=suffixes):
+    with patch('web.settings.ordinal_suffixes', return_value=suffixes):
         return str(raise_ordinal_suffix_svg(value))
 
 
