@@ -78,6 +78,7 @@ class BabelDomainWrapper(Domain):
                 f'--input-file={self.pot_file}',
                 f'--output-file={po_file}',
                 '--no-fuzzy-matching',
+                '--ignore-obsolete',
                 '--no-wrap',
                 '--omit-header',
             ],
