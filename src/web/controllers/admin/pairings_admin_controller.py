@@ -3210,7 +3210,10 @@ class PairingsAdminController(BaseEventAdminController):
             return self._team_pairings_info_modal(web_context, tournament, round)
 
         engine = tournament.pairing_variation.engine
-        assert isinstance(engine, BbpPairings)
+        if not isinstance(engine, BbpPairings):
+            # The system offers no information button; a page that still
+            # carries one is out of date, so answer with a fresh one.
+            return self._admin_event_pairings_render(web_context)
 
         warning: str | None = None
         (history, boards) = engine.get_history(tournament=tournament, round_=round)
