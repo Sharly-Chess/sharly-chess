@@ -10,8 +10,11 @@
 sup {
     vertical-align: baseline;
     position: relative;
-    top: -0.4em;
-    font-size: 0.85em;
+    top: -0.5em;
+    font-size: 0.65em;
+}
+tspan.ordinal-sup {
+    font-size: 0.65em;
 }
 .center-wrapper {
   display: flex;

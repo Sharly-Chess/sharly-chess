@@ -6,6 +6,7 @@ from common.i18n import _
 from data.pairings import double_elimination
 from data.pairings.knockout_helpers import bracket as knockout_bracket
 from data.pairings.knockout_helpers.common import tie_resolution_message
+from data.pairings.knockout_helpers.single import round_of_name
 from data.pairings.knockout_helpers.two_game import TwoGameMatchMixin
 from data.pairings.settings import PairingSetting
 
@@ -495,11 +496,12 @@ class DoubleEliminationMixin:
                     if short
                     else _('Upper Bracket Quarterfinals')
                 )
-            return (
-                _('Upper Round of {count}')
-                if short
-                else _('Upper Bracket Round of {count}')
-            ).format(count=2 ** (from_end + 1))
+            # Composed rather than spelled out per size, so the bracket
+            # side wraps whatever the stage is called in the language.
+            stage = round_of_name(2 ** (from_end + 1))
+            return (_('Upper {stage}') if short else _('Upper Bracket {stage}')).format(
+                stage=stage
+            )
         losers_rounds = 2 * (rounds - 1)
         from_end = losers_rounds - number
         if from_end <= 0:

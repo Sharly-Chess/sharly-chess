@@ -39,7 +39,7 @@
                        highlight on the header. #}
                     <td colspan="{{ bracket_ncols }}" class="fw-semibold small text-primary py-1 text-start"
                         style="--bs-table-bg-type: var(--bs-body-bg); --bs-table-bg-state: var(--bs-body-bg);">
-                        {{ section_label }}
+                        {{ section_label | raise_ordinal_suffix }}
                     </td>
                 </tr>
             </tbody>

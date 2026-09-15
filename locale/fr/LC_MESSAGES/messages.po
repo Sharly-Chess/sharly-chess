@@ -7645,9 +7645,12 @@ msgstr "La ronde satisfait 1.5.6a ?"
 msgid "Round number or text"
 msgstr "Numéro de ronde ou texte"
 
+#. i18n: {matches} is the games the round plays, half the participants
+#. still in — a language that names the stage after them (French, '8es
+#. de finale') uses it in place of {count}.
 #, python-brace-format
 msgid "Round of {count}"
-msgstr "Tour à {count}"
+msgstr "{matches}es de finale"
 
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
@@ -10242,12 +10245,12 @@ msgstr "Finale du tableau supérieur"
 msgid "Upper Bracket Quarterfinals"
 msgstr "Quarts de finale du tableau supérieur"
 
-#, python-brace-format
-msgid "Upper Bracket Round of {count}"
-msgstr "Tour à {count} du tableau supérieur"
-
 msgid "Upper Bracket Semifinals"
 msgstr "Demi-finales du tableau supérieur"
+
+#, python-brace-format
+msgid "Upper Bracket {stage}"
+msgstr "{stage} du tableau supérieur"
 
 msgid "Upper Final"
 msgstr "Finale sup."
@@ -10255,12 +10258,12 @@ msgstr "Finale sup."
 msgid "Upper Quarterfinals"
 msgstr "Quarts sup."
 
-#, python-brace-format
-msgid "Upper Round of {count}"
-msgstr "Tour à {count} sup."
-
 msgid "Upper Semifinals"
 msgstr "Demies sup."
+
+#, python-brace-format
+msgid "Upper {stage}"
+msgstr "{stage} sup."
 
 msgid "Uruguay"
 msgstr "Uruguay"
@@ -11552,4 +11555,38 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Click again to clear."
 #~ msgstr "Cliquez à nouveau pour effacer."
+
+# Error: tokens differ between [Upper Bracket Round of {count}] and
+# [{matches}es de finale du tableau supérieur]
+#~ msgid "Upper Bracket Round of {count}"
+#~ msgstr "{matches}es de finale du tableau supérieur"
+
+# Error: tokens differ between [Upper Round of {count}] and [{matches}es de
+# finale sup.]
+#~ msgid "Upper Round of {count}"
+#~ msgstr "{matches}es de finale sup."
+
+#~ msgid "Round of 1024"
+#~ msgstr "512es de finale"
+
+#~ msgid "Round of 128"
+#~ msgstr "64es de finale"
+
+#~ msgid "Round of 16"
+#~ msgstr "8es de finale"
+
+#~ msgid "Round of 2048"
+#~ msgstr "1024es de finale"
+
+#~ msgid "Round of 256"
+#~ msgstr "128es de finale"
+
+#~ msgid "Round of 32"
+#~ msgstr "16es de finale"
+
+#~ msgid "Round of 512"
+#~ msgstr "256es de finale"
+
+#~ msgid "Round of 64"
+#~ msgstr "32es de finale"
 

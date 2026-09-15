@@ -235,6 +235,23 @@ class Utils:
             return country.alpha_3
         return None
 
+    # Letters an ordinal ends with, per language. The plurals are the stage
+    # names' ('8es de finale'), which name an ordinal rather than count with
+    # it, so they never come out of the affix functions below.
+    _ordinal_suffixes: dict[str, tuple[str, ...]] = {
+        'en': ('st', 'nd', 'rd', 'th'),
+        'fr': ('er', 'ers', 'e', 'es', 're', 'res', 'ère', 'ères', 'ème', 'èmes'),
+    }
+
+    @classmethod
+    def ordinal_suffixes(cls) -> tuple[str, ...]:
+        """Every ending an ordinal may take in the current language, for
+        recognising one inside a text. Empty for a language whose endings
+        nobody has written down — the text then reads as it was written."""
+        from common.i18n import get_locale
+
+        return cls._ordinal_suffixes.get(get_locale(), ())
+
     @classmethod
     def ordinal_integer(cls, value: int) -> str:
         from common.i18n import get_locale, _

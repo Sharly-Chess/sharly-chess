@@ -7643,6 +7643,9 @@ msgstr ""
 msgid "Round number or text"
 msgstr ""
 
+#. i18n: {matches} is the games the round plays, half the participants
+#. still in — a language that names the stage after them (French, '8es
+#. de finale') uses it in place of {count}.
 #, python-brace-format
 msgid "Round of {count}"
 msgstr ""
@@ -10240,11 +10243,11 @@ msgstr ""
 msgid "Upper Bracket Quarterfinals"
 msgstr ""
 
-#, python-brace-format
-msgid "Upper Bracket Round of {count}"
+msgid "Upper Bracket Semifinals"
 msgstr ""
 
-msgid "Upper Bracket Semifinals"
+#, python-brace-format
+msgid "Upper Bracket {stage}"
 msgstr ""
 
 msgid "Upper Final"
@@ -10253,11 +10256,11 @@ msgstr ""
 msgid "Upper Quarterfinals"
 msgstr ""
 
-#, python-brace-format
-msgid "Upper Round of {count}"
+msgid "Upper Semifinals"
 msgstr ""
 
-msgid "Upper Semifinals"
+#, python-brace-format
+msgid "Upper {stage}"
 msgstr ""
 
 msgid "Uruguay"
@@ -11470,3 +11473,34 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
+#~ msgid "Upper Bracket Round of {count}"
+#~ msgstr ""
+
+#~ msgid "Upper Round of {count}"
+#~ msgstr ""
+
+#~ msgid "Round of 1024"
+#~ msgstr ""
+
+#~ msgid "Round of 128"
+#~ msgstr ""
+
+#~ msgid "Round of 16"
+#~ msgstr ""
+
+#~ msgid "Round of 2048"
+#~ msgstr ""
+
+#~ msgid "Round of 256"
+#~ msgstr ""
+
+#~ msgid "Round of 32"
+#~ msgstr ""
+
+#~ msgid "Round of 512"
+#~ msgstr ""
+
+#~ msgid "Round of 64"
+#~ msgstr ""
+

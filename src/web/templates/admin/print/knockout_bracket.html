@@ -128,7 +128,7 @@
                         {% if column.matches %}
                             <text class="ko-col-header"
                                   x="{{ column.x + bw / 2 }}"
-                                  y="{{ column.header_y }}">{{ column.name }}</text>
+                                  y="{{ column.header_y }}">{{ column.name | raise_ordinal_suffix_svg }}</text>
                         {% endif %}
                         {% for pm in column.matches %}
                             {% set m = pm.match %}

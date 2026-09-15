@@ -19,6 +19,14 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+def round_of_name(count: int) -> str:
+    """The stage name of the round *count* participants come into."""
+    # i18n: {matches} is the games the round plays, half the participants
+    # still in — a language that names the stage after them (French, '8es
+    # de finale') uses it in place of {count}.
+    return _('Round of {count}').format(count=count, matches=count // 2)
+
+
 def single_elimination_round_name(round_: int, rounds: int) -> str:
     """The stage name of a single-elimination round."""
     from_end = rounds - round_
@@ -28,7 +36,7 @@ def single_elimination_round_name(round_: int, rounds: int) -> str:
         return _('Semifinals')
     if from_end == 2:
         return _('Quarterfinals')
-    return _('Round of {count}').format(count=2 ** (from_end + 1))
+    return round_of_name(2 ** (from_end + 1))
 
 
 class _SingleEliminationBracketHost(Protocol):
