@@ -12,6 +12,7 @@ from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common.exception import OptionError
 from common.i18n import _, ngettext
+from common.i18n.utils import ordinal_integer
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.criteria.managers import PrizePlayerFilterManager, PlayerFilterOptionManager
@@ -156,7 +157,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'admin_prize_category': self.admin_prize_category,
             'admin_prize_criterion': self.admin_prize_criterion,
             'admin_prize': self.admin_prize,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'format_prize_value': partial(
                 Utils.currency_value_str,
                 currency=prize_currency,

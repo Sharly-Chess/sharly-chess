@@ -41,7 +41,7 @@ from litestar.middleware.base import DefineMiddleware
 from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.exception import DatabaseInaccessibleException
 from common.i18n import gettext, ngettext
-from utils import Utils
+from common.i18n.utils import ordinal_suffixes
 from data.input_output import OnlineDataSourceManager
 
 from plugins.manager import plugin_manager
@@ -264,7 +264,7 @@ def _ordinal_suffix_pattern(suffixes: tuple[str, ...]) -> re.Pattern[str] | None
 
 def raise_ordinal_suffix(value: str) -> Markup:
     """Raise the letters an ordinal ends with — '8es de finale', '1st'."""
-    pattern = _ordinal_suffix_pattern(Utils.ordinal_suffixes())
+    pattern = _ordinal_suffix_pattern(ordinal_suffixes())
     text = escape(value)
     if pattern is None:
         return text
@@ -275,7 +275,7 @@ def raise_ordinal_suffix_svg(value: str) -> Markup:
     """The same for a label drawn in SVG text, which has no ``<sup>``: the
     suffix is lifted off the baseline and the rest of the line put back on
     it, a shift otherwise carrying over to the glyphs that follow."""
-    pattern = _ordinal_suffix_pattern(Utils.ordinal_suffixes())
+    pattern = _ordinal_suffix_pattern(ordinal_suffixes())
     text = escape(value)
     if pattern is None:
         return text
