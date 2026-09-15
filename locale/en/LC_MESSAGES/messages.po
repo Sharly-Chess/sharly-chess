@@ -1952,9 +1952,6 @@ msgstr ""
 msgid "Clear the tag filter."
 msgstr ""
 
-msgid "Click again to clear."
-msgstr ""
-
 msgid "Click and drag to select balanced groups."
 msgstr ""
 
@@ -10086,6 +10083,9 @@ msgstr ""
 msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
 msgstr ""
 
+msgid "Unmark winner"
+msgstr ""
+
 msgid "Unmerge"
 msgstr ""
 
@@ -11444,4 +11444,7 @@ msgstr ""
 
 #~ msgid "Res. ** RESULT COLUMN HEADER"
 #~ msgstr "Res."
+
+#~ msgid "Click again to clear."
+#~ msgstr ""
 
