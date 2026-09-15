@@ -7,7 +7,7 @@ from data.pairings import double_elimination
 from data.pairings.knockout_helpers import bracket as knockout_bracket
 from data.pairings.knockout_helpers.common import tie_resolution_message
 from data.pairings.knockout_helpers.single import round_of_name
-from data.pairings.knockout_helpers.two_game import TwoGameMatchMixin
+from data.pairings.knockout_helpers.two_game import TwoGameMatchMixin, two_game_label
 from data.pairings.settings import PairingSetting
 
 if TYPE_CHECKING:
@@ -579,9 +579,7 @@ class TwoGameDoubleElimMixin(TwoGameMatchMixin):
         )
         if stage is None:
             return None
-        return _('{stage} — game {game}').format(
-            stage=stage, game=self._game_of(round_)
-        )
+        return two_game_label(stage, self._game_of(round_))
 
     def _double_elimination_gate(
         self, tournament: 'Tournament', at_round: int
@@ -650,9 +648,8 @@ class TwoGameDoubleElimMixin(TwoGameMatchMixin):
         match = host._board_match(tournament, board)
         if match is None:
             return None
-        return _('{stage} — game {game}').format(
-            stage=host._match_section_label(tournament, match),
-            game=self._game_of(board.round),
+        return two_game_label(
+            host._match_section_label(tournament, match), self._game_of(board.round)
         )
 
     def ranking_value(

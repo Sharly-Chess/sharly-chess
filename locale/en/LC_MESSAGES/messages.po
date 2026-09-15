@@ -11449,8 +11449,12 @@ msgid "{screen_type}-screen"
 msgstr ""
 
 #, python-brace-format
-msgid "{stage} — game {game}"
-msgstr ""
+msgid "{stage} — game 1"
+msgstr "{stage} — game 1"
+
+#, python-brace-format
+msgid "{stage} — game 2"
+msgstr "{stage} — game 2"
 
 #, python-brace-format
 msgid "{start} → {end}"
@@ -11550,5 +11554,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Unknown color [{color}]."
+#~ msgstr ""
+
+#~ msgid "{stage} — game {game}"
 #~ msgstr ""
 

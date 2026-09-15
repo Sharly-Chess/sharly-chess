@@ -129,6 +129,15 @@ class _TwoGameSingleElimHost(Protocol):
     ) -> bool: ...
 
 
+def two_game_label(stage: str, game: int) -> str:
+    """The stage a game of a two-game match plays. Named per game rather than
+    formatted with its number: a language may call the two legs by name
+    ('aller' and 'retour') rather than count them."""
+    if game == 1:
+        return _('{stage} — game 1').format(stage=stage)
+    return _('{stage} — game 2').format(stage=stage)
+
+
 class TwoGameMatchMixin:
     """Elimination-agnostic two-game match behavior."""
 
@@ -348,11 +357,11 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
         return cast(_TwoGameSingleElimHost, self)
 
     def round_label(self, tournament: 'Tournament', round_: int) -> str | None:
-        return _('{stage} — game {game}').format(
-            stage=single_elimination_round_name(
+        return two_game_label(
+            single_elimination_round_name(
                 self._level_of(round_), self._level_count(tournament)
             ),
-            game=self._game_of(round_),
+            self._game_of(round_),
         )
 
     def pairings_generation_disabled_message(
@@ -426,7 +435,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
             stage = host._third_place_label()
         else:
             stage = single_elimination_round_name(level, self._level_count(tournament))
-        return _('{stage} — game {game}').format(stage=stage, game=game)
+        return two_game_label(stage, game)
 
     def bracket_match_descriptors(
         self, tournament: 'Tournament'
