@@ -17,12 +17,21 @@ def tie_resolution_message(tournament: 'Tournament', round_: int) -> str:
         return _(
             'Resolve the tied match(es) of round {round} before pairing the next round.'
         ).format(round=round_)
-    return _(
-        'Round {round} has tied match(es) that the advancement tie-breaks '
-        'cannot decide. Add the "Manual" tie-break in the tie-break settings '
-        'to designate the winner of a play-off — or add other advancement '
-        'tie-breaks.'
-    ).format(round=round_)
+    return (
+        _(
+            'Round {round} has tied match(es) that the advancement tie-breaks '
+            'cannot decide. Add the "Manual" tie-break in the tie-break settings '
+            'to designate the winner of a play-off — or add other advancement '
+            'tie-breaks. *** TEAM'
+        ).format(round=round_)
+        if tournament.is_team_tournament
+        else _(
+            'Round {round} has tied match(es) that the advancement tie-breaks '
+            'cannot decide. Add the "Manual" tie-break in the tie-break settings '
+            'to designate the winner of a play-off — or add other advancement '
+            'tie-breaks. *** PLAYER'
+        ).format(round=round_)
+    )
 
 
 def board_winner_player_id(board: 'Board') -> int | None:

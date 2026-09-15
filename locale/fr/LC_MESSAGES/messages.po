@@ -2200,8 +2200,10 @@ msgid "Continue"
 msgstr "Continuer"
 
 #, python-format
-msgid "Continue with %(calculated)s round(s)?"
-msgstr "Continuer avec %(calculated)s ronde·s ?"
+msgid "Continue with %(num)d round?"
+msgid_plural "Continue with %(num)d rounds?"
+msgstr[0] "Continuer avec %(num)d ronde ?"
+msgstr[1] "Continuer avec %(num)d rondes ?"
 
 msgid "Corners"
 msgstr "Coins"
@@ -3202,6 +3204,9 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 msgid "Each competitor row carries a popover with the per-stage breakdown."
 msgstr "Chaque ligne affiche une infobulle détaillant chaque étape."
 
+msgid "Each competitor takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For teams, the color is the one on the first board."
+msgstr "Chaque compétiteur prend la couleur opposée à sa ronde précédente ; en cas de conflit, la meilleure tête de série alterne et l'autre prend la couleur restante. Pour les équipes, la couleur est celle au premier échiquier."
+
 msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
@@ -3213,9 +3218,6 @@ msgstr "Chaque ligne représente une norme réalisée par un·e joueur·euse. Le
 
 msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
 msgstr "Chaque règle attribue des points virtuels à une plage de numéros d'appariement sur une plage de rondes. Ces points ne sont utilisés que pour l'appariement, pas pour le classement."
-
-msgid "Each side takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For a team, this alternates which team is board-one White."
-msgstr "Chaque camp prend la couleur opposée à sa ronde précédente ; lorsqu'une surprise crée un conflit, la meilleure tête de série alterne et l'autre prend la couleur restante. Pour une équipe, cela alterne quelle équipe a les Blancs à l'échiquier un."
 
 msgid "Each stage rescaled so the winner scores 1 and the last-placed 0, then summed. Evens out stages with different field sizes."
 msgstr "Chaque étape est mise à l'échelle pour que le vainqueur obtienne 1 et le dernier 0, puis sommée. Compense les étapes de tailles différentes."
@@ -4937,8 +4939,11 @@ msgstr "Marquer « %(status)s » "
 msgid "Mark as \"Present\" (recommended)"
 msgstr "Marquer « Présent·e » (recommandé)"
 
-msgid "Mark as winner"
+msgid "Mark as winner *** PLAYER"
 msgstr "Désigner comme vainqueur·e"
+
+msgid "Mark as winner *** TEAM"
+msgstr "Désigner comme vainqueure"
 
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
@@ -5719,8 +5724,11 @@ msgstr "Aucun classement n'est encore disponible."
 msgid "No ranking rules configured"
 msgstr "Aucune règle de classement configurée"
 
-msgid "No reset game is needed: the winners-bracket champion won the grand final."
+msgid "No reset game is needed: the winners-bracket champion won the grand final. *** PLAYER"
 msgstr "Aucune belle n'est nécessaire : le·la champion·ne du tableau supérieur a remporté la grande finale."
+
+msgid "No reset game is needed: the winners-bracket champion won the grand final. *** TEAM"
+msgstr "Aucune belle n'est nécessaire : l'équipe championne du tableau supérieur a remporté la grande finale."
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -6213,7 +6221,7 @@ msgid "Others"
 msgstr "Autres"
 
 #, python-brace-format
-msgid "Out — round {round}"
+msgid "Out — round {round} *** PLAYER KNOCK-OUT"
 msgstr "Éliminé·e — tour {round}"
 
 #, python-brace-format
@@ -7666,8 +7674,12 @@ msgid "Round {round}"
 msgstr "Ronde {round}"
 
 #, python-brace-format
-msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
+msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks. *** PLAYER"
 msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner le·la vainqueur·e d'un barrage — ou ajoutez d'autres départages de qualification."
+
+#, python-brace-format
+msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks. *** TEAM"
+msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner l'équipe vainqueure d'un barrage — ou ajoutez d'autres départages de qualification."
 
 #, python-brace-format
 msgid "Round {round} is already paired. Unpair it before pairing it again."
@@ -9179,8 +9191,8 @@ msgid "The rule set fixes the team sort order."
 msgstr "Le jeu de règles fixe l'ordre de tri des équipes."
 
 #, python-format
-msgid "The schedule was configured with %(scheduled)s round(s), but this pairing system will play %(calculated)s."
-msgstr "Le calendrier a été établi sur %(scheduled)s ronde·s, mais ce système d'appariement en jouera %(calculated)s."
+msgid "The schedule was configured with %(scheduled)d round(s), but this pairing system will play %(calculated)d."
+msgstr "Le calendrier a été établi sur %(scheduled)d ronde(s), mais ce système d'appariement en jouera %(calculated)d."
 
 msgid "The scoring criterion applied to rank the competitors."
 msgstr "Le critère de score appliqué pour classer les compétiteurs."
@@ -9307,8 +9319,11 @@ msgstr "La manière de constituer les équipes."
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueur·euses ayant le même nombre de points."
 
-msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice)."
+msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice). *** PLAYER"
 msgstr "Le·la champion·ne du tableau supérieur atteint la grande finale invaincu·e. Si le·la champion·ne du tableau inférieur la remporte, disputez une seconde partie décisive (il faut le·la battre deux fois)."
+
+msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice). *** TEAM"
+msgstr "L'équipe championne du tableau supérieur atteint la grande finale invaincu·e. Si l'équipe championne du tableau inférieur la remporte, disputez une seconde partie décisive (il faut la battre deux fois)."
 
 msgid "There already is an hour defined at this time."
 msgstr "Il y a déjà un horaire défini à cette heure-ci."
@@ -10104,7 +10119,10 @@ msgstr "Valeur inconnue (attendu : {expected})."
 msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les écrans multiples ne peuvent être utilisés que pour afficher les informations d'un seul tournoi."
 
-msgid "Unmark winner"
+msgid "Unmark winner *** PLAYER"
+msgstr "Annuler la désignation"
+
+msgid "Unmark winner *** TEAM"
 msgstr "Annuler la désignation"
 
 msgid "Unmerge"
@@ -10587,7 +10605,7 @@ msgstr "Victoire"
 msgid "Win:"
 msgstr "Victoire :"
 
-msgid "Winner"
+msgid "Winner *** PLAYER KNOCK-OUT"
 msgstr "Vainqueur·e"
 
 msgid "Winner *** TEAM KNOCK-OUT"
@@ -11589,4 +11607,34 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Round of 64"
 #~ msgstr "32es de finale"
+
+#~ msgid "Continue with %(calculated)s round(s)?"
+#~ msgstr "Continuer avec %(calculated)s ronde·s ?"
+
+#~ msgid "Each side takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For a team, this alternates which team is board-one White."
+#~ msgstr "Chaque camp prend la couleur opposée à sa ronde précédente ; lorsqu'une surprise crée un conflit, la meilleure tête de série alterne et l'autre prend la couleur restante. Pour une équipe, cela alterne quelle équipe a les Blancs à l'échiquier un."
+
+#~ msgid "Mark as winner"
+#~ msgstr "Désigner comme vainqueur·e"
+
+#~ msgid "No reset game is needed: the winners-bracket champion won the grand final."
+#~ msgstr "Aucune belle n'est nécessaire : le·la champion·ne du tableau supérieur a remporté la grande finale."
+
+#~ msgid "Out — round {round}"
+#~ msgstr "Éliminé·e — tour {round}"
+
+#~ msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
+#~ msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner le·la vainqueur·e d'un barrage — ou ajoutez d'autres départages de qualification."
+
+#~ msgid "The schedule was configured with %(scheduled)s round(s), but this pairing system will play %(calculated)s."
+#~ msgstr "Le calendrier a été établi sur %(scheduled)s ronde·s, mais ce système d'appariement en jouera %(calculated)s."
+
+#~ msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice)."
+#~ msgstr "Le·la champion·ne du tableau supérieur atteint la grande finale invaincu·e. Si le·la champion·ne du tableau inférieur la remporte, disputez une seconde partie décisive (il faut le·la battre deux fois)."
+
+#~ msgid "Unmark winner"
+#~ msgstr "Annuler la désignation"
+
+#~ msgid "Winner"
+#~ msgstr "Vainqueur·e"
 
