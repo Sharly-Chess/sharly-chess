@@ -113,7 +113,12 @@ class _KnockoutSystemMixin:
 
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
-        return swiss_style_permission_handler(protect_unpairing=False)
+        # Freeing a single board leaves the bracket a match short and the
+        # round unable to finish, and pairing the two back by hand skips the
+        # colour rule — the round is the unit to undo here.
+        return swiss_style_permission_handler(
+            protect_unpairing=False, unpair_boards=False
+        )
 
     def default_current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
