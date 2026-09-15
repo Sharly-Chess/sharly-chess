@@ -138,9 +138,13 @@
                                 <line class="ko-divider"
                                       x1="{{ pm.x }}" y1="{{ pm.y + bh / 2 }}"
                                       x2="{{ pm.x + bw }}" y2="{{ pm.y + bh / 2 }}" />
+                                {# A grouped bracket seats the name high to
+                                   leave its group the line below; without one
+                                   the name has the slot to itself. #}
+                                {% set name_high = 0.24 if svg.grouped else 0.31 %}
                                 {% for slot, name_y, sub_y, slot_top in [
-                                        (m.top, pm.y + bh * 0.24, pm.y + bh * 0.42, pm.y),
-                                        (m.bottom, pm.y + bh * 0.72, pm.y + bh * 0.90, pm.y + bh / 2)] %}
+                                        (m.top, pm.y + bh * name_high, pm.y + bh * 0.42, pm.y),
+                                        (m.bottom, pm.y + bh * (name_high + 0.48), pm.y + bh * 0.90, pm.y + bh / 2)] %}
                                     <g class="ko-slot"{% if slot.participant_id %} data-pid="{{ slot.participant_id }}"{% endif %}>
                                         <rect class="ko-slot-hit"
                                               x="{{ pm.x }}" y="{{ slot_top }}"

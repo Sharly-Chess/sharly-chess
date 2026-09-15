@@ -16,13 +16,15 @@ from dataclasses import dataclass
 from data.pairings.knockout_helpers.layout import BracketLayout, BracketMatch
 
 BOX_WIDTH = 210
-# Tall enough for two lines per slot (the name, and the group/seed line).
+# Tall enough for two lines per slot (the name, and the group line).
 BOX_HEIGHT = 58
+# A bracket with nothing to say on the second line gets that space back.
+BOX_HEIGHT_ONE_LINE = 40
 COLUMN_GAP = 46
 SECTION_GAP = 70
 HEADER_HEIGHT = 44
 MARGIN = 16
-_UNIT = BOX_HEIGHT + 18  # vertical pitch between adjacent matches
+_PITCH_GAP = 18  # vertical gap between adjacent matches
 
 
 @dataclass(frozen=True)
@@ -69,9 +71,19 @@ class BracketSvg:
     box_width: int = BOX_WIDTH
     box_height: int = BOX_HEIGHT
     header_height: int = HEADER_HEIGHT
+    # Whether the slots carry a group line; the boxes are drawn to fit.
+    grouped: bool = True
 
 
 def build_svg(layout: BracketLayout) -> BracketSvg:
+    grouped = any(
+        slot.group
+        for section in layout.sections
+        for column in section.columns
+        for match in column.matches
+        for slot in (match.top, match.bottom)
+    )
+    box_height = BOX_HEIGHT if grouped else BOX_HEIGHT_ONE_LINE
     centres: dict[str, tuple[float, float]] = {}  # match id -> (centre x, centre y)
     columns: list[PositionedColumn] = []
 
@@ -90,6 +102,7 @@ def build_svg(layout: BracketLayout) -> BracketSvg:
             columns=columns,
             section_key=section.key,
             section_of=section_of,
+            box_height=box_height,
         )
         section_top = section_bottom + SECTION_GAP
 
@@ -104,16 +117,17 @@ def build_svg(layout: BracketLayout) -> BracketSvg:
             columns=columns,
             section_key='final',
             section_of=section_of,
+            box_height=box_height,
         )
 
-    connectors = _connectors(columns, centres, section_of)
+    connectors = _connectors(columns, centres, section_of, box_height)
     connectors += _final_connectors(
         final_sections[0] if final_sections else None, centres
     )
     width = max((column.x + BOX_WIDTH for column in columns), default=0) + MARGIN
     height = (
         max(
-            (m.y + BOX_HEIGHT for column in columns for m in column.matches),
+            (m.y + box_height for column in columns for m in column.matches),
             default=0,
         )
         + MARGIN
@@ -138,11 +152,20 @@ def build_svg(layout: BracketLayout) -> BracketSvg:
         bands=tuple(bands_by_round.values()),
         width=width,
         height=height,
+        box_height=box_height,
+        grouped=grouped,
     )
 
 
 def _place_section(
-    section_columns, *, section_top, centres, columns, section_key, section_of
+    section_columns,
+    *,
+    section_top,
+    centres,
+    columns,
+    section_key,
+    section_of,
+    box_height,
 ) -> float:
     """Position one bracket's columns; return the section's bottom y.
 
@@ -169,14 +192,18 @@ def _place_section(
             if source_centres:
                 centre_y = sum(source_centres) / len(source_centres)
             else:
-                centre_y = section_top + even_counter * _UNIT + BOX_HEIGHT / 2
+                centre_y = (
+                    section_top
+                    + even_counter * (box_height + _PITCH_GAP)
+                    + box_height / 2
+                )
                 even_counter += 1
-            top = centre_y - BOX_HEIGHT / 2
+            top = centre_y - box_height / 2
             centres[match.id] = (x, centre_y)
             section_ids.add(match.id)
             section_of[match.id] = section_key
             placed.append(PositionedMatch(match=match, x=x, y=top))
-            bottom = max(bottom, top + BOX_HEIGHT)
+            bottom = max(bottom, top + box_height)
         columns.append(
             PositionedColumn(
                 name=column.name,
@@ -189,7 +216,7 @@ def _place_section(
     return bottom
 
 
-def _connectors(columns, centres, section_of) -> list[Connector]:
+def _connectors(columns, centres, section_of, box_height) -> list[Connector]:
     """The classic bracket connector, one per match: the matches feeding it
     run to a shared vertical bar in the gap, then a single line enters the
     box at its centre. Only same-bracket feeds are drawn — a cross-bracket
@@ -208,7 +235,7 @@ def _connectors(columns, centres, section_of) -> list[Connector]:
             if not sources:
                 continue
             bar_x = positioned.x - COLUMN_GAP / 2
-            box_centre_y = positioned.y + BOX_HEIGHT / 2
+            box_centre_y = positioned.y + box_height / 2
             source_ys = [centres[source][1] for source in sources]
             for source in sources:
                 sx, sy = centres[source]
