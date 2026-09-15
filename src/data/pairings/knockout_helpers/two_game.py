@@ -149,6 +149,10 @@ class TwoGameMatchMixin:
     def _game_app_round(level: int, game: int) -> int:
         return 2 * level - 2 + game
 
+    def match_rounds(self, tournament: 'Tournament', round_: int) -> tuple[int, ...]:
+        level = self._level_of(round_)
+        return (self._game_app_round(level, 1), self._game_app_round(level, 2))
+
     def _level_count(self, tournament: 'Tournament') -> int:
         return tournament.rounds // self.GAMES_PER_MATCH
 

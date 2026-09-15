@@ -4574,6 +4574,8 @@ class Tournament:
 
             board.set_last_result_update(board.white_pairing.result, event_database)
 
+        self.knockout.forget_settled_winners(board)
+
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
@@ -4599,6 +4601,9 @@ class Tournament:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
+
+        self.knockout.forget_settled_winners(board)
+
         logger.info(
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,

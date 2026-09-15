@@ -696,6 +696,58 @@ class TestIndividualKnockout:
         board = tournament.boards_by_id[board_id]
         assert tournament.knockout.board_advancement(board).winner_id is None
 
+    def test_clearing_the_result_forgets_the_designated_winner(self, tournament_name):
+        # A designation belongs to the drawn game it settles: clear the result
+        # and it goes, so entering ½-½ again asks for the winner afresh rather
+        # than answering with the old one.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        drawn = next(
+            board
+            for board in tournament.get_round_boards(1)
+            if board.black_tournament_player is not None
+        )
+        board_id = drawn.identifier
+        white_id = drawn.optional_white_tournament_player.id
+        tournament.add_result(drawn, Result.DRAW)
+        tournament = self._load()
+        tournament.knockout.set_player_match_winner(board_id, white_id)
+        tournament = self._load()
+
+        tournament.delete_result(tournament.boards_by_id[board_id])
+        tournament = self._load()
+        board = tournament.boards_by_id[board_id]
+        assert board.stored_board.knockout_winner_player_id is None
+
+        tournament.add_result(board, Result.DRAW)
+        tournament = self._load()
+        board = tournament.boards_by_id[board_id]
+        assert tournament.knockout.board_advancement(board).manual_pending is True
+
+    def test_a_decisive_result_forgets_the_designated_winner(self, tournament_name):
+        # The game decides it itself, so the designation has nothing left to
+        # settle.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        drawn = next(
+            board
+            for board in tournament.get_round_boards(1)
+            if board.black_tournament_player is not None
+        )
+        board_id = drawn.identifier
+        white_id = drawn.optional_white_tournament_player.id
+        tournament.add_result(drawn, Result.DRAW)
+        tournament = self._load()
+        tournament.knockout.set_player_match_winner(board_id, white_id)
+        tournament = self._load()
+
+        tournament.add_result(tournament.boards_by_id[board_id], Result.WIN)
+        tournament = self._load()
+        board = tournament.boards_by_id[board_id]
+        assert board.stored_board.knockout_winner_player_id is None
+
     def test_tie_blocks_next_round(self, tournament_name):
         tournament = self._load()
         assert tournament.generate_round_pairings(1) == ''
