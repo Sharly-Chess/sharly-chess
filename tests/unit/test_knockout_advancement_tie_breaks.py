@@ -11,6 +11,7 @@ from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from data.tie_breaks.team_tie_breaks import BoardCountTieBreak
 from data.tie_breaks.tie_breaks import PointsTieBreak
+from data.tie_breaks.managers import TieBreakManager
 from tests.test_config import TestUtils
 from utils.enum import EventType
 
@@ -57,6 +58,39 @@ class TestAdvancementTieBreakStorage:
         self._event = EventLoader().load_event(EVENT_ID)
         yield self._event.tournaments_by_name[TOURNAMENT_NAME]
         TestUtils.delete_event(EVENT_ID)
+
+    def test_offered_advancement_criteria(self, tournament):
+        """The criteria a knock-out offers: the play-off, seeding and rating,
+        the path taken there, and whether the earlier matches were won
+        outright. Each tie-break that refuses carries its reason."""
+        offered = sorted(
+            tie_break.acronym
+            for tie_break in TieBreakManager(tournament.event).objects()
+            if tie_break.usable_as_knockout_advancement
+        )
+        assert offered == [
+            'ARO',
+            'BBE',
+            'BC',
+            'BWG',
+            'Be',
+            'EMMSB',
+            'Elo',
+            'MAN',
+            'MPvGP',
+            'PTP',
+            'Perf',
+            'RTNG',
+            'SSSC',
+            'TBR',
+            'TPN',
+            'TPR',
+            'WIN',
+            'WON',
+            'd',
+            'dEch',
+            'p',
+        ]
 
     def test_advancement_list_keeps_only_the_usable_tie_breaks(self, tournament):
         # The advancement list carries the Art. 12 tie-break, filtering out the

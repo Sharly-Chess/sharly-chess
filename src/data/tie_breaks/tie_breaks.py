@@ -257,12 +257,16 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         the separate advancement list, not :meth:`is_compatible_with` (a
         knock-out's standings are the round reached, never a tie-break).
 
-        Any tie-break that can separate two participants who reached the
-        same bracket depth qualifies — team board tie-breaks (Art. 12),
-        the team score/strength families (Art. 13), and on the individual
-        side wins, ratings, opponent-strength, and so on. The cumulative
-        score itself cannot (same-depth participants share it), and legacy
-        tie-breaks are not offered."""
+        A tie-break qualifies unless it says otherwise, so a new one is
+        offered by default and each refusal carries its reason where the
+        tie-break is defined. Two participants in a level match reached
+        the same bracket depth, which is what most of the refusals turn
+        on: anything that is a function of how far a participant got —
+        the score and its restatements, the strength of the field they
+        beat — is equal for both by construction. What can separate them
+        is their seeding or rating, the path they took there, and
+        whether they won their earlier matches outright rather than
+        advancing on a tie-break of their own."""
         return not self.is_legacy
 
     def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
@@ -595,6 +599,12 @@ class GamesPlayedWithBlackTieBreak(PlayerRecordTieBreak):
         return 'BPG'
 
     @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Counts the games played with Black, which a knock-out hands out by
+        # its colour rule — it would settle the match on the colour draw.
+        return False
+
+    @property
     def base_help_text(self) -> str:
         return _('The number of games played over the board with the Black pieces.')
 
@@ -669,6 +679,12 @@ class ProgressiveScoresTieBreak(PlayerRecordTieBreak):
     @property
     def base_acronym(self) -> str:
         return 'PS'
+
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # A same-depth participant's score follows the bracket round by round,
+        # so the progressive sum is the same for both.
+        return False
 
     @property
     def base_help_text(self) -> str:
@@ -748,6 +764,13 @@ class RoundsElectedToPlayTieBreak(PlayerRecordTieBreak):
     @property
     def base_acronym(self) -> str:
         return 'REP'
+
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Counts the rounds a participant was not byed out of. A bracket bye is
+        # the draw's doing, not a choice, so this would punish the seeds the
+        # bracket hands them to.
+        return False
 
     @property
     def base_help_text(self) -> str:
@@ -999,6 +1022,12 @@ class KashdanTieBreak(PlayerRecordTieBreak):
         return 'KA'
 
     @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # A weighted restatement of the score, which two participants at the
+        # same bracket depth share.
+        return False
+
+    @property
     def is_fide(self) -> bool:
         return False
 
@@ -1049,6 +1078,14 @@ class OpponentRecordTieBreak(TieBreak, ABC):
 
 
 class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Two participants who reached the same bracket depth beat the same
+        # shape of field — a first-round loser, a second-round loser, and so
+        # on — so every Buchholz is equal by construction, moving only on bye
+        # and draw artefacts.
+        return False
+
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
         """Buchholz depends on which opponents were played, so it
@@ -1754,6 +1791,13 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
         return 'SB'
 
     @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Weights the same opponent scores as Buchholz by the points scored
+        # against them; the bracket fixes both for participants of the same
+        # depth.
+        return False
+
+    @property
     def base_help_text(self) -> str:
         return _(
             'Score computed by adding, for each round, '
@@ -1903,6 +1947,13 @@ class KoyaTieBreak(OpponentRecordTieBreak):
     @property
     def base_acronym(self) -> str:
         return 'KS'
+
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Reads the points scored against opponents who reached half the
+        # maximum — a proportion of a full field that a bracket, whose losers
+        # stop playing, never produces.
+        return False
 
     @property
     def equation_suffix(self) -> str:
@@ -2156,6 +2207,13 @@ class AveragePerformanceRatingOpponentsTieBreak(OpponentRatingTieBreak):
         return 'APRO'
 
     @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Averages a rating measure over the opponents rather than over the
+        # path itself; across a bracket's handful of games it separates on
+        # noise. ARO and TPR measure the path directly.
+        return False
+
+    @property
     def base_help_text(self) -> str:
         return _(
             'The average of the [{tie_break}] scores of '
@@ -2398,6 +2456,13 @@ class AveragePerfectPerformanceTieBreak(OpponentRatingTieBreak):
         return 'APPO'
 
     @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Averages a rating measure over the opponents rather than over the
+        # path itself; across a bracket's handful of games it separates on
+        # noise. ARO and PTP measure the path directly.
+        return False
+
+    @property
     def base_help_text(self) -> str:
         return _(
             'The average of the [{tie_break}] scores of '
@@ -2532,6 +2597,14 @@ class DirectEncounterTieBreak(TieBreak):
     @property
     def base_acronym(self) -> str:
         return 'DE'
+
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # The only game the two have ever played against each other is the one
+        # that just drew. It is also the one tie-break computed per rank
+        # group rather than per participant, so a match would read 0 against
+        # 0 even where the bracket did let them meet twice.
+        return False
 
     @property
     def base_help_text(self) -> str:
