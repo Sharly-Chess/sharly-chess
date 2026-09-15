@@ -250,9 +250,28 @@ class KnockoutTwoGameEngine(_TwoGameSingleElimMixin, KnockoutEngine):
                 continue
             white, black = self._stronger_players(tournament, high, low)
             if game == 2:
-                white, black = black, white
+                # Reverse the colours of the game actually played, not the
+                # ones it was drawn with: an arbiter who permuted game one
+                # meant the second game to be the other way round.
+                game_1 = self._find_board(
+                    tournament, self._game_app_round(level, 1), high, low
+                )
+                played = self._board_colours(game_1)
+                white, black = played[::-1] if played else (black, white)
             pairs.append((white, black))
         return self._boards_from_pairs(pairs)
+
+    @staticmethod
+    def _board_colours(board: 'Board | None') -> tuple[int, int] | None:
+        """The ``(white_id, black_id)`` a board was played with, or ``None``
+        for a board that seats no pair."""
+        if board is None:
+            return None
+        white = board.optional_white_tournament_player
+        black = board.black_tournament_player
+        if white is None or black is None:
+            return None
+        return white.id, black.id
 
     @override
     def _pair_winner(
