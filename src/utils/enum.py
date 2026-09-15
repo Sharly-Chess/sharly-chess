@@ -1417,7 +1417,7 @@ class PlayersScreenBoardFormat(IntEnum):
                 | PlayersScreenBoardFormat.MEDIUM_2
                 | PlayersScreenBoardFormat.FULL
             ):
-                return _('Board and Color')
+                return _('Board and Colour')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 

@@ -74,7 +74,7 @@ class KnockoutColourRuleSetting(PairingSetting[KnockoutColourRule]):
                     'Each competitor takes the opposite colour to its previous '
                     'round; when an upset makes two clash, the higher seed '
                     'alternates and the lower seed takes what is left. For '
-                    'teams, the color is the one on the first board.'
+                    'teams, the colour is the one on the first board.'
                 ),
             ),
             KnockoutColourRule.HIGHER_SEED_WHITE.value: SelectOption(
