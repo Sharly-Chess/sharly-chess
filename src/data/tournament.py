@@ -4815,10 +4815,9 @@ class Tournament:
                 self, deleted_pairing_numbers
             )
         )
-        if self.current_round >= 4:
-            # FIDE Handbook C.04.2.B.3: No modification of a pairing number
-            # is allowed after the fourth round has been paired.
-            # --> We keep the numbering only to inserted / deleted players
+        if self.pairing_system.pairing_numbers_are_frozen(self):
+            # The numbering stands: keep it, and number only the players
+            # inserted into it or freed from it.
             if (
                 not inserted_tournament_players
                 and not deleted_pairing_numbers
