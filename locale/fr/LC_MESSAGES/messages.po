@@ -11454,8 +11454,12 @@ msgid "{screen_type}-screen"
 msgstr "ecran-{screen_type}"
 
 #, python-brace-format
-msgid "{stage} — game {game}"
-msgstr "{stage} — partie {game}"
+msgid "{stage} — game 1"
+msgstr "{stage} — aller"
+
+#, python-brace-format
+msgid "{stage} — game 2"
+msgstr "{stage} — retour"
 
 #, python-brace-format
 msgid "{start} → {end}"
@@ -11640,4 +11644,7 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Unknown color [{color}]."
 #~ msgstr ""
+
+#~ msgid "{stage} — game {game}"
+#~ msgstr "{stage} — partie {game}"
 
