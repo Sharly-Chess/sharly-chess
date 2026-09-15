@@ -2056,6 +2056,46 @@ class TestIndividualTwoGameKnockout:
             ('P2', 'P1'),
         ]
 
+    def test_game_one_stays_open_while_its_match_is_played(self, tournament_name):
+        # The two games decide one match together, so pairing game two does
+        # not settle game one: its result stays correctable until the next
+        # match is drawn from the aggregate.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        for board in tournament.get_round_boards(1):
+            tournament.add_result(board, Result.DRAW)
+        tournament = self._load()
+        assert tournament.generate_round_pairings(2) == ''
+        tournament = self._load()
+
+        assert tournament.round_is_locked(1) is False
+        assert tournament.round_is_locked(2) is False
+
+        # The match is decided and the next one paired: both games close.
+        for board in tournament.get_round_boards(2):
+            self._win(
+                tournament,
+                board,
+                'P0'
+                if 'P0'
+                in {
+                    p.last_name
+                    for p in (
+                        board.optional_white_tournament_player,
+                        board.black_tournament_player,
+                    )
+                    if p is not None
+                }
+                else 'P1',
+            )
+        tournament = self._load()
+        assert tournament.generate_round_pairings(3) == ''
+        tournament = self._load()
+        assert tournament.round_is_locked(1) is True
+        assert tournament.round_is_locked(2) is True
+        assert tournament.round_is_locked(3) is False
+
     def test_drawn_game_one_does_not_block_game_two(self, tournament_name):
         tournament = self._load()
         assert tournament.generate_round_pairings(1) == ''

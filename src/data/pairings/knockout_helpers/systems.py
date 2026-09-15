@@ -33,9 +33,15 @@ class _KnockoutSystemMixin:
         return True
 
     def round_is_locked(self, tournament: 'Tournament', round_: int) -> bool:
-        # A round is read-only once the next round is paired from its
-        # results — changing them would invalidate the drawn bracket.
-        return round_ < tournament.rounds and tournament.round_has_pairings(round_ + 1)
+        # A round is read-only once the next match is paired from its
+        # results — changing them would invalidate the drawn bracket. The
+        # games of one match are not each other's next match: the second is
+        # paired with the first still standing, and the aggregate they decide
+        # together is open until both are played.
+        last_game = max(tournament.knockout.match_rounds(round_))
+        return last_game < tournament.rounds and tournament.round_has_pairings(
+            last_game + 1
+        )
 
     def tournament_is_over(self, tournament: 'Tournament') -> bool:
         # Only double elimination ends early (its reset round is skipped when
