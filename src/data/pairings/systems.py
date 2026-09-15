@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 @cache
 def swiss_style_permission_handler(
-    *, protect_unpairing: bool = True
+    *, protect_unpairing: bool = True, unpair_boards: bool = True
 ) -> PermissionHandler[PairingAction]:
     """Permissions for round-by-round systems using the Swiss pairing tab.
 
@@ -35,6 +35,10 @@ def swiss_style_permission_handler(
     round changes what the next pairing would have been. Without it, unpairing
     is plain: a table- or bracket-driven schedule pairs the same way whatever
     is undone.
+
+    *unpair_boards* offers the single-board unpairing. A system that says who
+    meets whom has no second answer to give once a board is freed, so it
+    leaves the round short of a match and hands the arbiter the round.
     """
     full_unpairing_mode = (
         SafetyMode.FIDE_INCOMPATIBLE if protect_unpairing else SafetyMode.SAFE
@@ -71,7 +75,11 @@ def swiss_style_permission_handler(
                 PairingAction.FULL_UNPAIRING,
                 {RoundStatus.CURRENT: full_unpairing_mode},
             ),
-            Permission(PairingAction.MANUAL_UNPAIRING, manual_unpairing_rules),
+            *(
+                [Permission(PairingAction.MANUAL_UNPAIRING, manual_unpairing_rules)]
+                if unpair_boards
+                else []
+            ),
             Permission(
                 PairingAction.COLOR_PERMUTE,
                 {
