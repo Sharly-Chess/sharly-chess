@@ -26,36 +26,11 @@
             {{ _('Mark all players as "%(status)s" ', status=_('Present')) }}
         </button>
     {% endif %}
-    <div
-        {{ macros.tooltip_attributes(
-            'info',
-            pairings_generation_disabled_message
-            or set_all_present_message
-            or _('See the pairings information for the start of this round.'),
-            'top',
-        ) }}
-    >
-        <button
-            class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for(
-                'admin-pairings-info-modal',
-                event_uniq_id=admin_event.uniq_id,
-                tournament_id=admin_tournament.id,
-                round=admin_round
-            ) }}"
-            hx-trigger="click"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            {% if pairings_generation_disabled_message %}
-                disabled
-            {% endif %}
-        >
-            <i class="bi-info-circle pe-1"></i>
-            {{ _('Info') }}
-        </button>
-    </div>
+    {% with info_button_template = admin_tournament.pairing_system.pairing_info_button_template %}
+        {% if info_button_template %}
+            {% include info_button_template %}
+        {% endif %}
+    {% endwith %}
     {% include 'prohibited_button.html' %}
     {% include 'pairing_settings_button.html' %}
     {% set can_use_pairing_engine = client.can_use_pairing_engine(admin_tournament.id) %}

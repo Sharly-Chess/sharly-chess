@@ -105,6 +105,12 @@ class _KnockoutSystemMixin:
         # previous one is decided.
         return '/admin/pairings/swiss_pairing_buttons.html'
 
+    @property
+    def pairing_info_button_template(self) -> str | None:
+        # Who meets whom follows from the bracket, so there is no score group
+        # or colour history to explain.
+        return None
+
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return swiss_style_permission_handler(protect_unpairing=False)

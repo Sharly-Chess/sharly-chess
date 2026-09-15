@@ -115,6 +115,14 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     def pairing_buttons_template(self) -> str:
         """Template of the buttons handling the pairings."""
 
+    @property
+    def pairing_info_button_template(self) -> str | None:
+        """Template of the button opening the pairing information — how the
+        round's pairings were arrived at. ``None`` for a system that pairs
+        from a bracket or a table, where the pairings follow from the draw
+        and there is nothing to explain."""
+        return '/admin/pairings/pairing_info_button.html'
+
     @cached_property
     @abstractmethod
     def permission_handler(self) -> PermissionHandler[PairingAction]:
