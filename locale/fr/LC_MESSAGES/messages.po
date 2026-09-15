@@ -1952,9 +1952,6 @@ msgstr "Effacer le résultat"
 msgid "Clear the tag filter."
 msgstr "Effacer le filtre par étiquette."
 
-msgid "Click again to clear."
-msgstr "Cliquez à nouveau pour effacer."
-
 msgid "Click and drag to select balanced groups."
 msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
 
@@ -10091,6 +10088,9 @@ msgstr "Valeur inconnue (attendu : {expected})."
 msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les écrans multiples ne peuvent être utilisés que pour afficher les informations d'un seul tournoi."
 
+msgid "Unmark winner"
+msgstr "Annuler la désignation"
+
 msgid "Unmerge"
 msgstr "Séparer"
 
@@ -11523,4 +11523,7 @@ msgstr "← Retour au certificat IT1"
 #~ msgid_plural "Used by %(num)d events."
 #~ msgstr[0] "Utilisé par %(num)d évènement."
 #~ msgstr[1] "Utilisé par %(num)d évènements."
+
+#~ msgid "Click again to clear."
+#~ msgstr "Cliquez à nouveau pour effacer."
 

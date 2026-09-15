@@ -393,8 +393,8 @@
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th class="text-end">{{ wtp.full_name }}</th>
-                                        <th class="text-end">{{ btp.full_name }}</th>
+                                        <th class="text-center">{{ wtp.full_name }}</th>
+                                        <th class="text-center">{{ btp.full_name }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -403,7 +403,7 @@
                                             <tr class="{{ '' if row.used else 'text-muted' }}">
                                                 <td class="align-middle">{{ _('Manual') }}</td>
                                                 {% for side in [wtp, btp] %}
-                                                    <td class="text-end">
+                                                    <td class="text-center">
                                                         <button
                                                             class="btn btn-sm {{ 'btn-primary'
                                                                 if ko_adv.winner_id == side.id
@@ -419,21 +419,20 @@
                                                                 ) }}"
                                                                 hx-target="body"
                                                                 hx-indicator="#please-wait"
-                                                                {{ macros.tooltip_attributes('',
-                                                                    _('Click again to clear.'), 'top')
-                                                                    if ko_adv.winner_id == side.id }}
                                                             {% else %}
                                                                 disabled
                                                             {% endif %}
-                                                        >{{ _('Mark as winner') }}</button>
+                                                        >{{ _('Unmark winner')
+                                                            if ko_adv.winner_id == side.id
+                                                            else _('Mark as winner') }}</button>
                                                     </td>
                                                 {% endfor %}
                                             </tr>
                                         {% else %}
                                             <tr class="{{ 'fw-bold' if row.decisive }}{{ ' text-muted' if not row.used }}">
                                                 <td>{{ row.acronym }}</td>
-                                                <td class="text-end">{{ '%g'|format(row.value_a) }}</td>
-                                                <td class="text-end">{{ '%g'|format(row.value_b) }}</td>
+                                                <td class="text-center">{{ '%g'|format(row.value_a) }}</td>
+                                                <td class="text-center">{{ '%g'|format(row.value_b) }}</td>
                                             </tr>
                                         {% endif %}
                                     {% endfor %}
