@@ -293,6 +293,12 @@ class PapiKashdanTieBreak(BasePapiTieBreak):
     def base_acronym(self) -> str:
         return 'Ka.'
 
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # A weighted restatement of the score, which two participants at the
+        # same bracket depth share.
+        return False
+
     def compute_player_value(
         self, player: 'TournamentPlayer', *, after_round: int
     ) -> float:
@@ -519,6 +525,13 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
         return self.type.acronym
 
     @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Two participants who reached the same bracket depth beat the same
+        # shape of field — a first-round loser, a second-round loser, and so
+        # on — so every Buchholz is equal by construction.
+        return False
+
+    @property
     def trf_sub_acronym(self) -> str:
         return f'{self.sub_id()}_{self.type.id}'
 
@@ -675,6 +688,12 @@ class PapiSumOfBuchholzTieBreak(BasePapiTieBreak):
     @property
     def base_acronym(self) -> str:
         return 'SBh'
+
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Sums Buchholz scores the bracket already fixes for both participants
+        # of the same depth.
+        return False
 
     def compute_player_value(
         self, player: 'TournamentPlayer', *, after_round: int
