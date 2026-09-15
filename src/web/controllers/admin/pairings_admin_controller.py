@@ -173,7 +173,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         if SessionPairingsShowWithoutResults(request).get():
             self.admin_filtered_boards = [
-                b for b in self.admin_boards if b.result == Result.NO_RESULT
+                b
+                for b in self.admin_boards
+                if b.result == Result.NO_RESULT or self._awaits_board_winner(b)
             ]
         else:
             self.admin_filtered_boards = self.admin_boards
@@ -246,6 +248,20 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                     f'Action [{action}] does not exist for '
                     f'round with status [{self.round_status}].'
                 ) from None
+
+    def _awaits_board_winner(self, board: Board) -> bool:
+        """Whether a drawn knock-out game is still waiting for its winner to
+        be designated."""
+        assert self.admin_tournament is not None
+        advancement = self.admin_tournament.knockout.board_advancement(board)
+        return advancement is not None and advancement.winner_id is None
+
+    def _awaits_team_match_winner(self, team_board: TeamBoard) -> bool:
+        """Whether a tied knock-out match is still waiting for its winner to
+        be designated."""
+        assert self.admin_tournament is not None
+        advancement = self.admin_tournament.knockout.team_board_advancement(team_board)
+        return advancement is not None and advancement.winner_id is None
 
     def _points_recompute_scope(
         self,
@@ -452,11 +468,13 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                         in TeamByeType.manual_bye_types()
                     )
                     # 'In play' hides the matches whose boards all have a
-                    # result (the whole match, to keep board context).
+                    # result (the whole match, to keep board context), unless
+                    # the match is tied and its winner is yet to be designated.
                     and not (
                         SessionPairingsShowWithoutResults(self.request).get()
                         and tb.boards
                         and all(board.result != Result.NO_RESULT for board in tb.boards)
+                        and not self._awaits_team_match_winner(tb)
                     )
                 ]
                 if self.admin_tournament and not self.display_rankings
