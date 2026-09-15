@@ -7,8 +7,26 @@ from utils.enum import Result
 
 if TYPE_CHECKING:
     from data.board import Board
+    from data.player import TournamentPlayer
     from data.teams.team_board import TeamBoard
     from data.tournament import Tournament
+
+
+def seeded_players(tournament: 'Tournament') -> dict[int, 'TournamentPlayer']:
+    """The field in seed order, by seed. The pairing numbers hold that order:
+    they are the starting order as it stood when the bracket was drawn, and
+    the starting order itself until then. Reading the starting rank instead
+    would re-seed the bracket under a rating corrected mid-event."""
+    return tournament.tournament_players_by_pairing_number
+
+
+def seed_sort_key(player: 'TournamentPlayer') -> tuple:
+    """Where a player sits in the seed order. A team's players are
+    synthesised from its roster and hold no pairing number; they fall back to
+    the starting rank, which is all they have."""
+    if player.pairing_number is not None:
+        return (0, player.pairing_number)
+    return (1,) + player.starting_rank_sort_key
 
 
 def tie_resolution_message(tournament: 'Tournament', round_: int) -> str:

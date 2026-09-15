@@ -2028,6 +2028,17 @@ class TestIndividualTwoGameKnockout:
         return result
 
     @staticmethod
+    def _names(board) -> set[str]:
+        return {
+            player.last_name
+            for player in (
+                board.optional_white_tournament_player,
+                board.black_tournament_player,
+            )
+            if player is not None
+        }
+
+    @staticmethod
     def _win(tournament, board, winner_last_name):
         white = board.optional_white_tournament_player
         if white is not None and white.last_name == winner_last_name:
@@ -2157,6 +2168,47 @@ class TestIndividualTwoGameKnockout:
             is None
         )
         assert tournament.generate_round_pairings(2) == ''
+
+    def test_a_rating_change_does_not_reseed_the_drawn_bracket(self, tournament_name):
+        # The bracket answers to the order it was drawn from, whatever order
+        # the field is in now: its matches have boards on the table.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        for board in tournament.get_round_boards(1):
+            self._win(tournament, board, 'P0' if 'P0' in self._names(board) else 'P1')
+        tournament = self._load()
+        assert tournament.generate_round_pairings(2) == ''
+        tournament = self._load()
+        for board in tournament.get_round_boards(2):
+            self._win(tournament, board, 'P0' if 'P0' in self._names(board) else 'P1')
+        tournament = self._load()
+        level_1 = self._board_names(tournament, 1) + self._board_names(tournament, 2)
+
+        # The weakest seed turns out to be the strongest of the field.
+        outsider = next(
+            player
+            for player in tournament.tournament_players
+            if player.last_name == 'P3'
+        )
+        with EventDatabase(TWO_GAME_EVENT_ID, write=True) as database:
+            stored = outsider.stored_player
+            stored.ratings = {1: {'fide': 2800}}
+            database.update_stored_player(stored)
+        tournament = self._load()
+        # The starting order really does move, which is what used to re-seed.
+        assert tournament.tournament_players_by_starting_rank[1].last_name == 'P3'
+
+        assert self._board_names(tournament, 1) + self._board_names(tournament, 2) == (
+            level_1
+        )
+        assert (
+            tournament.pairing_variation.engine.pairings_generation_disabled_message(
+                tournament, 3
+            )
+            is None
+        )
+        assert tournament.generate_round_pairings(3) == ''
 
     def test_match_decided_on_aggregate_after_two_games(self, tournament_name):
         tournament = self._load()
