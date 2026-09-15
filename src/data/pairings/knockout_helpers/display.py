@@ -321,11 +321,15 @@ class KnockoutDisplayMixin:
         *,
         for_teams: bool = False,
     ) -> dict[int, str]:
-        winner = _('Winner *** TEAM KNOCK-OUT') if for_teams else _('Winner')
+        winner = (
+            _('Winner *** TEAM KNOCK-OUT')
+            if for_teams
+            else _('Winner *** PLAYER KNOCK-OUT')
+        )
         out = (
             _('Out — round {round} *** TEAM KNOCK-OUT')
             if for_teams
-            else _('Out — round {round}')
+            else _('Out — round {round} *** PLAYER KNOCK-OUT')
         )
         still_in = [eid for eid in ids if values[eid] >= rounds + 1]
         sole_survivor = still_in[0] if len(still_in) == 1 else None

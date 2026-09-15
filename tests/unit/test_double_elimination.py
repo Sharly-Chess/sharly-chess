@@ -181,6 +181,7 @@ class TestGroupedResetGate:
         tournament = SimpleNamespace(
             stored_pairing_settings={DoubleEliminationResetSetting.static_id(): True},
             is_round_finished=lambda round_: True,
+            is_team_tournament=False,
         )
         typed_tournament = cast('Tournament', tournament)
         engine = Engine()

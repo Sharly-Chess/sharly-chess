@@ -370,9 +370,16 @@ class DoubleEliminationMixin:
             if at_round == reset_round and not self._reset_needed(
                 tournament, by_id, cache
             ):
-                return _(
-                    'No reset game is needed: the winners-bracket champion won '
-                    'the grand final.'
+                return (
+                    _(
+                        'No reset game is needed: the winners-bracket champion won '
+                        'the grand final. *** TEAM'
+                    )
+                    if tournament.is_team_tournament
+                    else _(
+                        'No reset game is needed: the winners-bracket champion won '
+                        'the grand final. *** PLAYER'
+                    )
                 )
         return None
 
@@ -610,9 +617,16 @@ class TwoGameDoubleElimMixin(TwoGameMatchMixin):
             if self._level_of(at_round) == reset_de_round and not host._reset_needed(
                 tournament, by_id, cache
             ):
-                return _(
-                    'No reset game is needed: the winners-bracket champion won '
-                    'the grand final.'
+                return (
+                    _(
+                        'No reset game is needed: the winners-bracket champion won '
+                        'the grand final. *** TEAM'
+                    )
+                    if tournament.is_team_tournament
+                    else _(
+                        'No reset game is needed: the winners-bracket champion won '
+                        'the grand final. *** PLAYER'
+                    )
                 )
         return None
 

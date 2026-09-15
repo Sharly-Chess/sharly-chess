@@ -5,7 +5,11 @@
         tooltip_text=_(
             'The winners-bracket champion reaches the grand final unbeaten. '
             'If the losers-bracket champion wins it, play a deciding second '
-            'game (they must be beaten twice).'
+            'game (they must be beaten twice). *** TEAM'
+        ) if admin_tournament.is_team_tournament else _(
+            'The winners-bracket champion reaches the grand final unbeaten. '
+            'If the losers-bracket champion wins it, play a deciding second '
+            'game (they must be beaten twice). *** PLAYER'
         ),
         data=data, errors=errors
     ) }}

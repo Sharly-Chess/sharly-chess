@@ -2200,8 +2200,10 @@ msgid "Continue"
 msgstr ""
 
 #, python-format
-msgid "Continue with %(calculated)s round(s)?"
-msgstr ""
+msgid "Continue with %(num)d round?"
+msgid_plural "Continue with %(num)d rounds?"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Corners"
 msgstr ""
@@ -3202,6 +3204,9 @@ msgstr ""
 msgid "Each competitor row carries a popover with the per-stage breakdown."
 msgstr ""
 
+msgid "Each competitor takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For teams, the color is the one on the first board."
+msgstr ""
+
 msgid "Each player can only be awarded one prize per bracket."
 msgstr ""
 
@@ -3212,9 +3217,6 @@ msgid "Each row represents one norm achieved by a player. The IT1 certificate fo
 msgstr ""
 
 msgid "Each rule grants virtual points to a range of pairing numbers over a range of rounds. Those points only are used for pairing, not for ranking."
-msgstr ""
-
-msgid "Each side takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For a team, this alternates which team is board-one White."
 msgstr ""
 
 msgid "Each stage rescaled so the winner scores 1 and the last-placed 0, then summed. Evens out stages with different field sizes."
@@ -4937,8 +4939,11 @@ msgstr ""
 msgid "Mark as \"Present\" (recommended)"
 msgstr ""
 
-msgid "Mark as winner"
-msgstr ""
+msgid "Mark as winner *** PLAYER"
+msgstr "Mark as winner"
+
+msgid "Mark as winner *** TEAM"
+msgstr "Mark as winner"
 
 msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
@@ -5719,8 +5724,11 @@ msgstr ""
 msgid "No ranking rules configured"
 msgstr ""
 
-msgid "No reset game is needed: the winners-bracket champion won the grand final."
-msgstr ""
+msgid "No reset game is needed: the winners-bracket champion won the grand final. *** PLAYER"
+msgstr "No reset game is needed: the winners-bracket champion won the grand final."
+
+msgid "No reset game is needed: the winners-bracket champion won the grand final. *** TEAM"
+msgstr "No reset game is needed: the winners-bracket champion won the grand final."
 
 msgid "No result"
 msgstr ""
@@ -6211,8 +6219,8 @@ msgid "Others"
 msgstr ""
 
 #, python-brace-format
-msgid "Out — round {round}"
-msgstr ""
+msgid "Out — round {round} *** PLAYER KNOCK-OUT"
+msgstr "Out — round {round}"
 
 #, python-brace-format
 msgid "Out — round {round} *** TEAM KNOCK-OUT"
@@ -7661,8 +7669,12 @@ msgid "Round {round}"
 msgstr ""
 
 #, python-brace-format
-msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
-msgstr ""
+msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks. *** PLAYER"
+msgstr "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
+
+#, python-brace-format
+msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks. *** TEAM"
+msgstr "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
 
 #, python-brace-format
 msgid "Round {round} is already paired. Unpair it before pairing it again."
@@ -9174,7 +9186,7 @@ msgid "The rule set fixes the team sort order."
 msgstr ""
 
 #, python-format
-msgid "The schedule was configured with %(scheduled)s round(s), but this pairing system will play %(calculated)s."
+msgid "The schedule was configured with %(scheduled)d round(s), but this pairing system will play %(calculated)d."
 msgstr ""
 
 msgid "The scoring criterion applied to rank the competitors."
@@ -9302,8 +9314,11 @@ msgstr ""
 msgid "The way to share the prizes between players with the same points."
 msgstr ""
 
-msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice)."
-msgstr ""
+msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice). *** PLAYER"
+msgstr "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice)."
+
+msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice). *** TEAM"
+msgstr "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice)."
 
 msgid "There already is an hour defined at this time."
 msgstr ""
@@ -10099,8 +10114,11 @@ msgstr ""
 msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
 msgstr ""
 
-msgid "Unmark winner"
-msgstr ""
+msgid "Unmark winner *** PLAYER"
+msgstr "Unmark winner"
+
+msgid "Unmark winner *** TEAM"
+msgstr "Unmark winner"
 
 msgid "Unmerge"
 msgstr ""
@@ -10582,8 +10600,8 @@ msgstr ""
 msgid "Win:"
 msgstr ""
 
-msgid "Winner"
-msgstr ""
+msgid "Winner *** PLAYER KNOCK-OUT"
+msgstr "Winner"
 
 msgid "Winner *** TEAM KNOCK-OUT"
 msgstr "Winner"
@@ -11499,5 +11517,35 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Round of 64"
+#~ msgstr ""
+
+#~ msgid "Continue with %(calculated)s round(s)?"
+#~ msgstr ""
+
+#~ msgid "Each side takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For a team, this alternates which team is board-one White."
+#~ msgstr ""
+
+#~ msgid "Mark as winner"
+#~ msgstr ""
+
+#~ msgid "No reset game is needed: the winners-bracket champion won the grand final."
+#~ msgstr ""
+
+#~ msgid "Out — round {round}"
+#~ msgstr ""
+
+#~ msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
+#~ msgstr ""
+
+#~ msgid "The schedule was configured with %(scheduled)s round(s), but this pairing system will play %(calculated)s."
+#~ msgstr ""
+
+#~ msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice)."
+#~ msgstr ""
+
+#~ msgid "Unmark winner"
+#~ msgstr ""
+
+#~ msgid "Winner"
 #~ msgstr ""
 

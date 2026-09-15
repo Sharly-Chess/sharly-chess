@@ -14,14 +14,18 @@
         <div class="modal-body">
             <h5 class="text-warning">
                 {{ _(
-                    'The schedule was configured with %(scheduled)s round(s), but '
-                    'this pairing system will play %(calculated)s.',
+                    'The schedule was configured with %(scheduled)d round(s), but '
+                    'this pairing system will play %(calculated)d.',
                     scheduled=scheduled_rounds,
                     calculated=calculated_rounds,
                 ) }}
             </h5>
             <p class="mb-0">
-                {{ _('Continue with %(calculated)s round(s)?', calculated=calculated_rounds) }}
+                {{ ngettext(
+                    'Continue with %(num)d round?',
+                    'Continue with %(num)d rounds?',
+                    calculated_rounds
+                ) }}
             </p>
         </div>
         <div class="modal-footer">
