@@ -48,6 +48,10 @@ class _TwoGameDoubleElimHost(Protocol):
 
     def _bracket_participant_count(self, tournament: 'Tournament') -> int: ...
 
+    def _de_round_stage_label(
+        self, tournament: 'Tournament', de_round: int, *, short: bool = False
+    ) -> str | None: ...
+
     def _match_section_label(
         self, tournament: 'Tournament', match: 'double_elimination.Match'
     ) -> str: ...
@@ -443,9 +447,34 @@ class DoubleEliminationMixin:
                 result[ids] = match
         return result
 
+    def _de_round_stage_label(
+        self, tournament: 'Tournament', de_round: int, *, short: bool = False
+    ) -> str | None:
+        """The stage(s) a bracket round plays: it can hold both a winners'
+        and a losers' match set, and then names both."""
+        schedule, _by_id, _cache = self._resolved(tournament)
+        labels: list[str] = []
+        for match in double_elimination.matches_for_round(schedule, de_round):
+            label = self._match_section_label(tournament, match, short=short)
+            if label not in labels:
+                labels.append(label)
+        return ' / '.join(labels) or None
+
+    def round_label(self, tournament: 'Tournament', round_: int) -> str | None:
+        return self._de_round_stage_label(
+            tournament, self._de_round_of(round_), short=True
+        )
+
     def _match_section_label(
-        self, tournament: 'Tournament', match: 'double_elimination.Match'
+        self,
+        tournament: 'Tournament',
+        match: 'double_elimination.Match',
+        *,
+        short: bool = False,
     ) -> str:
+        """The name of the stage a match belongs to. The *short* form names
+        the bracket in a word, for the round navigation — where a round that
+        holds both brackets has to fit them on one line."""
         if match.bracket == double_elimination.GRAND_FINAL:
             return _('Grand Final')
         if match.bracket == double_elimination.GRAND_FINAL_RESET:
@@ -457,21 +486,33 @@ class DoubleEliminationMixin:
         if match.bracket == double_elimination.WINNERS:
             from_end = rounds - number
             if from_end <= 0:
-                return _('Upper Bracket Final')
+                return _('Upper Final') if short else _('Upper Bracket Final')
             if from_end == 1:
-                return _('Upper Bracket Semifinals')
+                return _('Upper Semifinals') if short else _('Upper Bracket Semifinals')
             if from_end == 2:
-                return _('Upper Bracket Quarterfinals')
-            return _('Upper Bracket Round of {count}').format(count=2 ** (from_end + 1))
+                return (
+                    _('Upper Quarterfinals')
+                    if short
+                    else _('Upper Bracket Quarterfinals')
+                )
+            return (
+                _('Upper Round of {count}')
+                if short
+                else _('Upper Bracket Round of {count}')
+            ).format(count=2 ** (from_end + 1))
         losers_rounds = 2 * (rounds - 1)
         from_end = losers_rounds - number
         if from_end <= 0:
-            return _('Lower Bracket Final')
+            return _('Lower Final') if short else _('Lower Bracket Final')
         if from_end == 1:
-            return _('Lower Bracket Semifinals')
+            return _('Lower Semifinals') if short else _('Lower Bracket Semifinals')
         if from_end == 2:
-            return _('Lower Bracket Quarterfinals')
-        return _('Lower Bracket Round {number}').format(number=number)
+            return (
+                _('Lower Quarterfinals') if short else _('Lower Bracket Quarterfinals')
+            )
+        return (
+            _('Lower Round {number}') if short else _('Lower Bracket Round {number}')
+        ).format(number=number)
 
     def bracket_match_descriptors(
         self, tournament: 'Tournament'
@@ -521,6 +562,17 @@ class TwoGameDoubleElimMixin(TwoGameMatchMixin):
 
     def _two_game_double_elim_host(self) -> _TwoGameDoubleElimHost:
         return cast(_TwoGameDoubleElimHost, self)
+
+    def round_label(self, tournament: 'Tournament', round_: int) -> str | None:
+        host = self._two_game_double_elim_host()
+        stage = host._de_round_stage_label(
+            tournament, self._de_round_of(round_), short=True
+        )
+        if stage is None:
+            return None
+        return _('{stage} — game {game}').format(
+            stage=stage, game=self._game_of(round_)
+        )
 
     def _double_elimination_gate(
         self, tournament: 'Tournament', at_round: int

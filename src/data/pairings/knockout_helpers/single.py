@@ -53,6 +53,11 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
     def _single_elim_host(self) -> _SingleEliminationBracketHost:
         return cast(_SingleEliminationBracketHost, self)
 
+    def round_label(self, tournament: 'Tournament', round_: int) -> str | None:
+        """The stage a whole round plays, for the round navigation. The
+        third-place match shares the final round, which the final names."""
+        return single_elimination_round_name(round_, tournament.rounds)
+
     def _single_elim_bracket_pairs(
         self, tournament: 'Tournament', round_: int
     ) -> list[tuple[int | None, int | None]]:

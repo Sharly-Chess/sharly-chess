@@ -3209,6 +3209,13 @@ class Tournament:
 
         return KnockoutView(self)
 
+    def round_label(self, round_: int) -> str | None:
+        """The name of a whole round for the round navigation — a knock-out's
+        stage ('Semifinals', 'Upper Bracket Final', …). ``None`` for a system
+        whose rounds have no name of their own."""
+        label = getattr(self.pairing_variation.engine, 'round_label', None)
+        return label(self, round_) if label is not None else None
+
     def round_sections(self, boards: list) -> list[tuple[str | None, list]]:
         """Group a round's *boards* (individual boards or team matches) into
         the sections the pairing tab heads with a title — for a knock-out the

@@ -4802,6 +4802,19 @@ msgstr ""
 msgid "Lower Bracket Semifinals"
 msgstr ""
 
+msgid "Lower Final"
+msgstr ""
+
+msgid "Lower Quarterfinals"
+msgstr ""
+
+#, python-brace-format
+msgid "Lower Round {number}"
+msgstr ""
+
+msgid "Lower Semifinals"
+msgstr ""
+
 msgid "Luxembourg"
 msgstr ""
 
@@ -10234,6 +10247,19 @@ msgstr ""
 msgid "Upper Bracket Semifinals"
 msgstr ""
 
+msgid "Upper Final"
+msgstr ""
+
+msgid "Upper Quarterfinals"
+msgstr ""
+
+#, python-brace-format
+msgid "Upper Round of {count}"
+msgstr ""
+
+msgid "Upper Semifinals"
+msgstr ""
+
 msgid "Uruguay"
 msgstr ""
 
@@ -11444,10 +11470,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "Res. ** RESULT COLUMN HEADER"
-#~ msgstr "Res."
-
-#~ msgid "Click again to clear."
-#~ msgstr ""
-

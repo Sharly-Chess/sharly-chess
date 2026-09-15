@@ -49,7 +49,8 @@
             {% with rounds=admin_tournament.current_round if admin_tournament.current_round > admin_round else admin_round %}
                 {% for round in range(1, rounds + 1) %}
                     <option value="{{ round }}" {% if round == admin_round %}selected{%endif %}>
-                        {{ _('Round #%(round)d', round=round) }}
+                        {{ admin_tournament.round_label(round)
+                            or _('Round #%(round)d', round=round) }}
                     </option>
                 {% endfor %}
             {% endwith %}

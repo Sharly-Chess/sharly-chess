@@ -333,6 +333,15 @@ class TestIndividualKnockout:
             self._play_round(tournament, round_)
             tournament = self._load()
 
+    def test_round_navigation_names_the_stages(self, tournament_name):
+        # The round select names each round before a single board exists.
+        tournament = self._load()
+        assert [tournament.round_label(round_) for round_ in range(1, 4)] == [
+            'Quarterfinals',
+            'Semifinals',
+            'Final',
+        ]
+
     def test_bracket_layout(self, tournament_name):
         tournament = self._load()
         for round_ in range(1, 4):
@@ -1199,6 +1208,12 @@ class TestDoubleElimination:
         # stronger seed plays White in each winners'-bracket round-one match.
         r1 = {w: b for w, b in self._board_names(tournament, 1) if b is not None}
         assert r1 == {'PLAYER00': 'PLAYER03', 'PLAYER01': 'PLAYER02'}
+
+    def test_round_navigation_shortens_the_bracket_names(self, tournament_name):
+        # A round holding both brackets names them on one line, so the round
+        # navigation gets them in short form.
+        tournament = self._load()
+        assert tournament.round_label(2) == 'Upper Final / Lower Semifinals'
 
     def test_bracket_sections_group_boards(self, tournament_name):
         tournament = self._load()

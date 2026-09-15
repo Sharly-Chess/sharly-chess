@@ -343,6 +343,14 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
     def _two_game_single_elim_host(self) -> _TwoGameSingleElimHost:
         return cast(_TwoGameSingleElimHost, self)
 
+    def round_label(self, tournament: 'Tournament', round_: int) -> str | None:
+        return _('{stage} — game {game}').format(
+            stage=single_elimination_round_name(
+                self._level_of(round_), self._level_count(tournament)
+            ),
+            game=self._game_of(round_),
+        )
+
     def pairings_generation_disabled_message(
         self, tournament: 'Tournament', at_round: int
     ) -> str | None:
