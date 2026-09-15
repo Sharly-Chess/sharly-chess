@@ -77,12 +77,12 @@ def parse_jinja_template(
 # Ordinals
 # ---------------------------------------------------------------------------
 
-# Letters an ordinal ends with, per language. The plurals are the stage names'
-# ('8es de finale'), which name an ordinal rather than count with it, so they
-# never come out of the affix functions below.
+# Letters an ordinal ends with, per language. The plural is the stage names'
+# ('8es de finale'), which name an ordinal rather than count with it, so it
+# never comes out of the affix functions below.
 _ORDINAL_SUFFIXES: dict[str, tuple[str, ...]] = {
     'en': ('st', 'nd', 'rd', 'th'),
-    'fr': ('er', 'ers', 'e', 'es', 're', 'res', 'ère', 'ères', 'ème', 'èmes'),
+    'fr': ('er', 'e', 'es'),
 }
 
 
