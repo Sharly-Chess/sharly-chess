@@ -1492,7 +1492,7 @@ msgstr ""
 msgid "Board Pairings"
 msgstr ""
 
-msgid "Board and Color"
+msgid "Board and Colour"
 msgstr ""
 
 msgid "Board count"
@@ -2013,20 +2013,6 @@ msgstr ""
 msgid "Colombia"
 msgstr ""
 
-msgid "Color"
-msgstr ""
-
-#, python-brace-format
-msgid "Color [{color}] can't be used with an opponent."
-msgstr ""
-
-#, python-brace-format
-msgid "Color [{color}] can't be used without an opponent."
-msgstr ""
-
-msgid "Colors and delays"
-msgstr ""
-
 msgid "Colour"
 msgstr ""
 
@@ -2035,15 +2021,23 @@ msgid "Colour #%(num)d:"
 msgstr ""
 
 #, python-brace-format
-msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
+msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the colour then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
 msgstr ""
 
 #, python-brace-format
-msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
+msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the colour then changes gradually until colour #3 (at the start of the rounds)."
 msgstr ""
 
 #, python-brace-format
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr ""
+
+#, python-brace-format
+msgid "Colour [{color}] can't be used with an opponent."
+msgstr ""
+
+#, python-brace-format
+msgid "Colour [{color}] can't be used without an opponent."
 msgstr ""
 
 msgid "Colour assignment"
@@ -2059,6 +2053,9 @@ msgid "Colour rule:"
 msgstr ""
 
 msgid "Colour thresholds"
+msgstr ""
+
+msgid "Colours and delays"
 msgstr ""
 
 msgid "Colours are drawn at random for each match."
@@ -3204,7 +3201,7 @@ msgstr ""
 msgid "Each competitor row carries a popover with the per-stage breakdown."
 msgstr ""
 
-msgid "Each competitor takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For teams, the color is the one on the first board."
+msgid "Each competitor takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For teams, the colour is the one on the first board."
 msgstr ""
 
 msgid "Each player can only be awarded one prize per bracket."
@@ -4408,7 +4405,7 @@ msgid "Invalid board number [{fixed_board_str}]."
 msgstr ""
 
 #, python-brace-format
-msgid "Invalid color [{color}] ([#RRGGBB] expected)."
+msgid "Invalid colour [{color}] ([#RRGGBB] expected)."
 msgstr ""
 
 #, python-brace-format
@@ -4702,7 +4699,7 @@ msgstr ""
 msgid "Lesotho"
 msgstr ""
 
-msgid "Level specific colors"
+msgid "Level specific colours"
 msgstr ""
 
 msgid "Liberia"
@@ -7940,7 +7937,7 @@ msgstr ""
 msgid "See the pairings information for the start of this round."
 msgstr ""
 
-msgid "Seed color"
+msgid "Seed colour"
 msgstr ""
 
 msgid "Seed the bracket so each group plays itself before it meets other groups. Groups are padded with byes to fit the bracket. Within a group, players are ordered by rating."
@@ -8833,7 +8830,7 @@ msgstr ""
 msgid "The coefficient has been saved."
 msgstr ""
 
-msgid "The color attributed to the highest ranked player at the first round."
+msgid "The colour attributed to the highest ranked player at the first round."
 msgstr ""
 
 msgid "The competitors have been unmerged."
@@ -10071,7 +10068,7 @@ msgid "Unknown"
 msgstr ""
 
 #, python-brace-format
-msgid "Unknown color [{color}]."
+msgid "Unknown colour [{color}]."
 msgstr ""
 
 #, python-brace-format
@@ -11550,5 +11547,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Winner"
+#~ msgstr ""
+
+#~ msgid "Invalid color [{color}] ([#RRGGBB] expected)."
+#~ msgstr ""
+
+#~ msgid "Unknown color [{color}]."
 #~ msgstr ""
 

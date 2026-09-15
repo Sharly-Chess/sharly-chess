@@ -154,7 +154,7 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
 
     @staticmethod
     def static_name() -> str:
-        return _('Seed color')
+        return _('Seed colour')
 
     @property
     def template_path(self) -> str:
