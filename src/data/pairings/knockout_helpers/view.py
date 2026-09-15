@@ -179,6 +179,34 @@ class KnockoutView:
 
     # -- Manual winner designation ------------------------------------------
 
+    def match_rounds(self, round_: int) -> tuple[int, ...]:
+        """The rounds a match is played over — one, or the games of a
+        two-game match."""
+        method = getattr(self._t.pairing_variation.engine, 'match_rounds', None)
+        return method(self._t, round_) if method is not None else (round_,)
+
+    def forget_settled_winners(self, board: 'Board') -> None:
+        """Drop the designations a result has settled. A match that is no
+        longer level decides who advances by itself, and a cleared result
+        leaves nothing to advance from — a designation kept either way would
+        come back the next time the match fell level."""
+        if not self._t.pairing_system.eliminates_participants:
+            return
+        for round_ in self.match_rounds(board.round):
+            for match_board in self._t.get_round_boards(round_):
+                if match_board.stored_board.knockout_winner_player_id is None:
+                    continue
+                if self.board_advancement(match_board) is not None:
+                    continue
+                self.set_player_match_winner(match_board.identifier, None)
+        team_board = board.team_board
+        if (
+            team_board is not None
+            and team_board.stored_team_board.knockout_winner_team_id is not None
+            and self.team_board_advancement(team_board) is None
+        ):
+            self.set_team_match_winner(team_board.id, None)
+
     def set_team_match_winner(self, team_board_id: int, team_id: int | None) -> None:
         """Designate (or clear, with ``None``) the team that advances from a
         level team match the tie-breaks could not settle."""
