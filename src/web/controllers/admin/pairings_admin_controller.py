@@ -2078,8 +2078,20 @@ class PairingsAdminController(BaseEventAdminController):
             request,
             tournament_id=tournament_id,
             round_=round,
-            action=PairingAction.FULL_PAIRING,
         )
+        if not web_context.get_admin_tournament().round_has_pairings(
+            web_context.admin_round
+        ):
+            # Claim the action only while there is a round to pair: a second
+            # submission of the same draw arrives once the round is paired,
+            # and the pairing engine answers it plainly rather than as a
+            # request for an action the round no longer has.
+            web_context = PairingsAdminWebContext(
+                request,
+                tournament_id=tournament_id,
+                round_=round,
+                action=PairingAction.FULL_PAIRING,
+            )
         tournament = web_context.get_admin_tournament()
         tournament.set_valid_pairing_settings()
         return self._generate_round_pairings(web_context, confirmed=confirmed)
