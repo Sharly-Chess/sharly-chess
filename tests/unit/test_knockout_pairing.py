@@ -5,6 +5,8 @@ to pair the next round while a match is drawn.
 Six players in a bracket of eight: the two top seeds get round-one byes.
 """
 
+from operator import attrgetter
+
 import pytest
 
 from data.loader import EventLoader
@@ -747,6 +749,50 @@ class TestIndividualKnockout:
         tournament = self._load()
         board = tournament.boards_by_id[board_id]
         assert board.stored_board.knockout_winner_player_id is None
+
+    def test_the_draw_freezes_the_pairing_numbers(self, tournament_name):
+        # The bracket is seeded from the pairing numbers, so renumbering the
+        # field after the draw would seed a different bracket from the one
+        # being played: the matches stop lining up with the boards and a
+        # played round reads as undecided. Anything that moves a player in
+        # the starting order — a rating corrected, a name fixed — does it.
+        tournament = self._load()
+        assert tournament.pairing_system.pairing_numbers_are_frozen(tournament) is False
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        assert tournament.pairing_system.pairing_numbers_are_frozen(tournament) is True
+        tournament.set_tournament_players_pairing_numbers()
+        self._play_round(tournament, 1)
+        tournament = self._load()
+        tournament.set_tournament_players_pairing_numbers()
+        numbers = {
+            player.last_name: player.pairing_number
+            for player in tournament.tournament_players
+        }
+        round_1 = self._board_names(tournament, 1)
+
+        # The top seed drops to the bottom of the starting order.
+        top_seed = min(tournament.tournament_players, key=attrgetter('pairing_number'))
+        with EventDatabase(EVENT_ID, write=True) as database:
+            stored = top_seed.stored_player
+            stored.last_name = 'ZZZ'
+            database.update_stored_player(stored)
+        tournament = self._load()
+        tournament.set_tournament_players_pairing_numbers()
+
+        renumbered = {
+            player.last_name: player.pairing_number
+            for player in tournament.tournament_players
+        }
+        assert renumbered['ZZZ'] == numbers[f'PLAYER{0:02d}']
+        assert {
+            name: number for name, number in renumbered.items() if name != 'ZZZ'
+        } == {name: number for name, number in numbers.items() if name != 'PLAYER00'}
+        assert self._board_names(tournament, 1) == [
+            ('ZZZ' if name == 'PLAYER00' else name, opponent)
+            for name, opponent in round_1
+        ]
+        assert tournament.generate_round_pairings(2) == ''
 
     def test_tie_blocks_next_round(self, tournament_name):
         tournament = self._load()

@@ -231,6 +231,18 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         plays every round."""
         return False
 
+    def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
+        """Whether the numbering stands as it is when the field changes — a
+        rating corrected, a player added.
+
+        It does from the first pairing on, because a system that pairs from a
+        table reads the numbering to know who meets whom: renumber it and the
+        schedule that was drawn is no longer the schedule being played. A
+        system that only reports the numbers can go on reshuffling them, and
+        says so.
+        """
+        return tournament.has_pairings
+
     def round_is_locked(self, tournament: 'Tournament', round_: int) -> bool:
         """Whether a round's results are read-only. Default False — most
         systems let a result be corrected at any time. A knock-out locks a
@@ -360,6 +372,14 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
 
         return SwissVariationManager(event)
 
+    def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
+        # The numbering orders the players within a score group, so it has
+        # its say in who meets whom. FIDE Handbook C.04.2.B.3 lets it follow
+        # the field up to the fourth round all the same, and holds it from
+        # there: no modification of a pairing number is allowed after the
+        # fourth round has been paired.
+        return tournament.current_round >= 4
+
     @property
     def pairing_buttons_template(self) -> str:
         return '/admin/pairings/swiss_pairing_buttons.html'
@@ -487,6 +507,14 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
     @staticmethod
     def static_name() -> str:
         return _('Team Swiss')
+
+    def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
+        # The numbering orders the players within a score group, so it has
+        # its say in who meets whom. FIDE Handbook C.04.2.B.3 lets it follow
+        # the field up to the fourth round all the same, and holds it from
+        # there: no modification of a pairing number is allowed after the
+        # fourth round has been paired.
+        return tournament.current_round >= 4
 
     @property
     @override
