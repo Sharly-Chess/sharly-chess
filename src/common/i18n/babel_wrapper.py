@@ -44,6 +44,7 @@ class BabelDomainWrapper(Domain):
                 f'--output-file={self.pot_file}',
                 '--sort-output',
                 '--add-location=never',
+                '--add-comments=i18n:',
                 '--no-wrap',
                 '--omit-header',
                 '--ignore-dirs="**/static"',
