@@ -177,6 +177,19 @@ class KnockoutView:
                 return method(self._t, dimension)
         return None
 
+    def waiting_participants(self, round_: int) -> list[tuple[str, list[int]]]:
+        """Who the next draw would seat in *round_*, as ``(bracket, ids)``.
+
+        One group for a single elimination, which has one bracket; two for a
+        double elimination, where a participant is in the winners' bracket
+        until it loses. Empty once the round is drawn — the boards then say
+        who plays, and whoever is not on one is out.
+        """
+        if self._t.round_has_pairings(round_):
+            return []
+        method = getattr(self._t.pairing_variation.engine, 'waiting_participants', None)
+        return method(self._t, round_) if method is not None else []
+
     # -- Manual winner designation ------------------------------------------
 
     def match_rounds(self, round_: int) -> tuple[int, ...]:

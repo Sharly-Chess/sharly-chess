@@ -187,9 +187,11 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_team_bye: list[Team] = []
         self.admin_team_unpaired: list[Team] = []
         self.admin_team_absent: list[Team] = []
+        self.admin_waiting_groups: list[tuple[str, list[Any]]] = []
         if not self.display_rankings:
             self.reload_unpaired_player_lists()
             self.reload_unpaired_team_lists()
+            self.reload_waiting_lists()
 
         self.admin_board: Board | None = None
         if board_id is not None:
@@ -336,6 +338,27 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         else:
             self.admin_unpaired = sorted(unpaired, key=attrgetter('name_sort_key'))
 
+    def reload_waiting_lists(self):
+        """The participants the next draw will seat, grouped by bracket — a
+        knock-out's answer to the "to pair" list. Empty for every other
+        system, and for a round already drawn."""
+        self.admin_waiting_groups = []
+        tournament = self.admin_tournament
+        if tournament is None or self.display_rankings:
+            return
+        groups = tournament.knockout.waiting_participants(self.admin_round)
+        if not groups:
+            return
+        by_id: dict[int, Any] = (
+            tournament.event.teams_by_id
+            if tournament.pairing_system.paired_by_team
+            else tournament.tournament_players_by_id
+        )
+        for label, ids in groups:
+            members = [by_id[id_] for id_ in ids if id_ in by_id]
+            if members:
+                self.admin_waiting_groups.append((label, members))
+
     def _unpaired_holes(self, round_: int) -> list[dict[str, Any]]:
         """The round's unboarded table cells as ``{'index', 'label'}`` for the
         sidebar — a waiting player can be given a forfeit win on one. Thin
@@ -481,6 +504,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 else []
             ),
             'admin_unpaired': self.admin_unpaired,
+            'admin_waiting_groups': self.admin_waiting_groups,
             'admin_unpaired_holes': self.admin_unpaired_holes,
             'admin_bye_players': self.admin_bye_players,
             'admin_absent_players': self.admin_absent_players,

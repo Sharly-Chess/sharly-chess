@@ -455,6 +455,36 @@ class DoubleEliminationMixin:
                 result[ids] = match
         return result
 
+    def waiting_participants(
+        self, tournament: 'Tournament', round_: int
+    ) -> list[tuple[str, list[int]]]:
+        """The round's participants, one group per bracket: a participant is
+        in the winners' bracket until it loses, in the losers' bracket after
+        that, and out after the second loss."""
+        schedule, by_id, cache = self._resolved(tournament)
+        groups: dict[str, list[int]] = {}
+        for match in double_elimination.matches_for_round(
+            schedule, self._de_round_of(round_)
+        ):
+            if match.bracket == double_elimination.GRAND_FINAL_RESET and (
+                not self._reset_needed(tournament, by_id, cache)
+            ):
+                continue
+            a_id, b_id = self._match_participants(tournament, by_id, match.id, cache)
+            ids = [pid for pid in (a_id, b_id) if pid is not None]
+            if not ids:
+                continue
+            groups.setdefault(self._bracket_label(match.bracket), []).extend(ids)
+        return list(groups.items())
+
+    @staticmethod
+    def _bracket_label(bracket: str) -> str:
+        if bracket == double_elimination.WINNERS:
+            return _('Upper bracket')
+        if bracket == double_elimination.LOSERS:
+            return _('Lower bracket')
+        return _('Grand Final')
+
     def _de_round_stage_label(
         self, tournament: 'Tournament', de_round: int, *, short: bool = False
     ) -> str | None:

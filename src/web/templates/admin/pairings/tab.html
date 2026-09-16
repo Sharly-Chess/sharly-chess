@@ -50,8 +50,12 @@
         {% set has_unpaired = admin_team_bye|length > 0 or admin_team_unpaired|length > 0 or admin_team_absent|length > 0 %}
         {# Before a round is paired, show the team column so lineups can be set
            — round-robin has no "to pair" list, so it would otherwise stay
-           hidden. Once paired, lineups are edited from the match headers. #}
-        {% if not admin_tournament.round_has_pairings(admin_round) and admin_tournament.teams|length > 0 %}
+           hidden. Once paired, lineups are edited from the match headers.
+           A knock-out lists the teams the draw will seat instead, so it goes
+           by that list. #}
+        {% if admin_tournament.pairing_system.eliminates_participants %}
+            {% set has_unpaired = admin_waiting_groups|length > 0 %}
+        {% elif not admin_tournament.round_has_pairings(admin_round) and admin_tournament.teams|length > 0 %}
             {% set has_unpaired = true %}
         {% endif %}
     {% elif is_flat_team_mode %}
@@ -59,7 +63,8 @@
            round is paired so lineups can still be changed. #}
         {% set has_unpaired = admin_tournament.teams|length > 0 %}
     {% else %}
-        {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 or admin_absent_players|length > 0 %}
+        {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0
+            or admin_absent_players|length > 0 or admin_waiting_groups|length > 0 %}
     {% endif %}
 
     <div class="container-fluid">
@@ -245,9 +250,19 @@
                                     {% include '/admin/pairings/team_unpaired_table.html' %}
                                 {% endwith %}
                             {% endif %}
-                            {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
-                                {% include '/admin/pairings/team_lineup_table.html' %}
-                            {% endwith %}
+                            {% if admin_tournament.pairing_system.eliminates_participants %}
+                                {% for bracket, waiting in admin_waiting_groups %}
+                                    {% with title=bracket or _('To pair'),
+                                        teams=waiting,
+                                        table_id='lineup-teams-table-' ~ loop.index %}
+                                        {% include '/admin/pairings/team_lineup_table.html' %}
+                                    {% endwith %}
+                                {% endfor %}
+                            {% else %}
+                                {% with title=_('Teams'), teams=admin_tournament.teams_in_pairing_order, table_id='lineup-teams-table' %}
+                                    {% include '/admin/pairings/team_lineup_table.html' %}
+                                {% endwith %}
+                            {% endif %}
                         {% elif is_flat_team_mode %}
                             {# Only once the round is paired — before that the
                                arbiter generates pairings, not pairs by hand. #}
@@ -271,6 +286,13 @@
                             ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
                             {% endwith %}
+                            {% for bracket, waiting in admin_waiting_groups %}
+                                {% with title=bracket or _('To pair'),
+                                    unpaired_players=waiting,
+                                    table_id='waiting-players-table-' ~ loop.index %}
+                                    {% include '/admin/pairings/unpaired_table.html' %}
+                                {% endwith %}
+                            {% endfor %}
                         {% endif %}
                     </div>
                 {% endif %}

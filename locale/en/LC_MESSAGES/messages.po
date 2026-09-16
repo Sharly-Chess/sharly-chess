@@ -4814,6 +4814,9 @@ msgstr ""
 msgid "Lower Semifinals"
 msgstr ""
 
+msgid "Lower bracket"
+msgstr "Lower bracket"
+
 msgid "Luxembourg"
 msgstr ""
 
@@ -10273,6 +10276,9 @@ msgstr ""
 
 msgid "Upper Semifinals"
 msgstr ""
+
+msgid "Upper bracket"
+msgstr "Upper bracket"
 
 #, python-brace-format
 msgid "Upper {stage}"

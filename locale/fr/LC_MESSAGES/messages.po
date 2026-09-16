@@ -4814,6 +4814,9 @@ msgstr "Tour {number} inf."
 msgid "Lower Semifinals"
 msgstr "Demies inf."
 
+msgid "Lower bracket"
+msgstr "Tableau inférieur"
+
 msgid "Luxembourg"
 msgstr "Luxembourg"
 
@@ -10275,6 +10278,9 @@ msgstr "Quarts sup."
 
 msgid "Upper Semifinals"
 msgstr "Demies sup."
+
+msgid "Upper bracket"
+msgstr "Tableau supérieur"
 
 #, python-brace-format
 msgid "Upper {stage}"

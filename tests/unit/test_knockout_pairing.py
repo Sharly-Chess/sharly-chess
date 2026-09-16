@@ -794,6 +794,27 @@ class TestIndividualKnockout:
         ]
         assert tournament.generate_round_pairings(2) == ''
 
+    def test_the_waiting_list_holds_the_players_the_draw_will_seat(
+        self, tournament_name
+    ):
+        # Before a round is drawn the side column names who is still in; once
+        # it is drawn the boards say it, and whoever is not on one is out.
+        tournament = self._load()
+        waiting = tournament.knockout.waiting_participants(1)
+        assert [label for label, _ids in waiting] == ['']
+        assert len(waiting[0][1]) == PLAYER_COUNT
+
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        assert tournament.knockout.waiting_participants(1) == []
+
+        self._play_round(tournament, 1)
+        tournament = self._load()
+        round_2 = tournament.knockout.waiting_participants(2)
+        # Four players came through round one; the two who lost are gone.
+        assert [label for label, _ids in round_2] == ['']
+        assert len(round_2[0][1]) == 4
+
     def test_tie_blocks_next_round(self, tournament_name):
         tournament = self._load()
         assert tournament.generate_round_pairings(1) == ''
@@ -1312,6 +1333,27 @@ class TestDoubleElimination:
         # navigation gets them in short form.
         tournament = self._load()
         assert tournament.round_label(2) == 'Upper Final / Lower Semifinals'
+
+    def test_the_waiting_list_splits_by_bracket(self, tournament_name):
+        # A double elimination runs two brackets at once, so the side column
+        # names them apart: a participant is in the upper bracket until it
+        # loses, in the lower one after that.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        self._win_white(tournament, 1)
+        tournament = self._load()
+
+        waiting = dict(tournament.knockout.waiting_participants(2))
+        assert sorted(waiting) == ['Lower bracket', 'Upper bracket']
+        names = {
+            bracket: sorted(
+                tournament.tournament_players_by_id[id_].last_name for id_ in ids
+            )
+            for bracket, ids in waiting.items()
+        }
+        assert names['Upper bracket'] == ['PLAYER00', 'PLAYER01']
+        assert names['Lower bracket'] == ['PLAYER02', 'PLAYER03']
 
     def test_bracket_sections_group_boards(self, tournament_name):
         tournament = self._load()
