@@ -1355,6 +1355,33 @@ class TestDoubleElimination:
         assert names['Upper bracket'] == ['PLAYER00', 'PLAYER01']
         assert names['Lower bracket'] == ['PLAYER02', 'PLAYER03']
 
+    def test_a_seed_the_field_no_longer_holds_seats_nobody(self, tournament_name):
+        # A seed beyond the field seats nobody, the way a bye's slot does.
+        tournament = self._load()
+        engine = tournament.pairing_variation.engine
+        beyond = tournament.player_count + 1
+
+        assert engine._seed_id(tournament, beyond) is None
+        assert engine._seed_participant(tournament, beyond) is None
+        assert tournament.knockout.layout() is not None
+
+    def test_deleting_a_player_redraws_the_bracket(self, tournament_name):
+        # The bracket is resolved from the field's size and memoised, and the
+        # whole graph is walked to answer whether the tournament is over — so
+        # a departure has to reach it.
+        tournament = self._load()
+        assert tournament.finished is False
+        count = tournament.player_count
+
+        tournament_player = next(iter(tournament.tournament_players))
+        tournament.event.delete_player(
+            tournament.event.players_by_id[tournament_player.id]
+        )
+
+        assert tournament.player_count == count - 1
+        assert tournament.finished is False
+        assert tournament.knockout.layout() is not None
+
     def test_bracket_sections_group_boards(self, tournament_name):
         tournament = self._load()
         assert tournament.generate_round_pairings(1) == ''

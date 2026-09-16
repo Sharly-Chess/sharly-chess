@@ -4739,6 +4739,9 @@ class Tournament:
             'sorted_tournament_players',
             'sorted_tournament_players_without_unpaired',
         )
+        # A knock-out resolves its whole match graph from the field's size
+        # and holds on to it.
+        self.knockout.invalidate_engine_cache()
 
     def get_available_board_indexes(self, round_: int) -> list[int]:
         board_indexes = [

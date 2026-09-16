@@ -113,7 +113,7 @@ class DoubleEliminationMixin:
     def _participant_count(self, tournament: 'Tournament') -> int:
         raise NotImplementedError
 
-    def _seed_id(self, tournament: 'Tournament', seed: int) -> int:
+    def _seed_id(self, tournament: 'Tournament', seed: int) -> int | None:
         raise NotImplementedError
 
     def _played_match_winner(

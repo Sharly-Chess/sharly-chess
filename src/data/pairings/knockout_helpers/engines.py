@@ -202,8 +202,10 @@ class KnockoutEngine(
         for high_seed, low_seed in knockout_bracket.first_round_pairs(
             tournament.player_count
         ):
-            white = by_seed[high_seed]
-            black = by_seed[low_seed] if low_seed is not None else None
+            white = by_seed.get(high_seed)
+            black = by_seed.get(low_seed) if low_seed is not None else None
+            if white is None:
+                continue
             result.append((white.id, black.id if black is not None else None))
         return result
 
@@ -338,8 +340,11 @@ class DoubleEliminationEngine(
             if player is not None
         }
 
-    def _seed_id(self, tournament: 'Tournament', seed: int) -> int:
-        return seeded_players(tournament)[seed].id
+    def _seed_id(self, tournament: 'Tournament', seed: int) -> int | None:
+        # A seed the field no longer holds — a player deleted while the
+        # bracket was drawn for a larger one — seats nobody, as a bye does.
+        player = seeded_players(tournament).get(seed)
+        return player.id if player is not None else None
 
     def _played_match_winner(
         self, tournament: 'Tournament', match: double_elimination.Match, a_id, b_id
@@ -709,8 +714,9 @@ class TeamDoubleEliminationEngine(
             team_id for team_id in (stb.team_a_id, stb.team_b_id) if team_id is not None
         }
 
-    def _seed_id(self, tournament: 'Tournament', seed: int) -> int:
-        return self._teams_for_tournament(tournament)[seed - 1].id
+    def _seed_id(self, tournament: 'Tournament', seed: int) -> int | None:
+        teams = self._teams_for_tournament(tournament)
+        return teams[seed - 1].id if 1 <= seed <= len(teams) else None
 
     def _played_match_winner(
         self, tournament: 'Tournament', match: double_elimination.Match, a_id, b_id
