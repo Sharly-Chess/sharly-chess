@@ -133,6 +133,15 @@ class _KnockoutSystemMixin:
 class KnockoutPairingSystem(_KnockoutSystemMixin, PairingSystem['KnockoutVariation']):
     """Individual single-elimination."""
 
+    @property
+    @override
+    def supports_point_adjustments(self) -> bool:
+        # A player advances on the board result and is ranked by the round
+        # reached, and an aller-retour aggregates the results themselves, so
+        # an adjustment would land nowhere. Teams are another matter: their
+        # match is decided on game points, which an adjustment moves.
+        return False
+
     @staticmethod
     def static_id() -> str:
         return 'KNOCKOUT'

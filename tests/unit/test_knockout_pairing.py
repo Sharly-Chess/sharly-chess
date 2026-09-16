@@ -2894,3 +2894,28 @@ class TestTeamKnockoutEmptySeats:
         assert [match['id'] for match in tournament.knockout.unresolved_matches(1)] == [
             team_board.id
         ]
+
+
+@pytest.mark.unit
+class TestKnockoutPointAdjustments:
+    """Bonus and penalty points have nowhere to land in an individual
+    knock-out: a player advances on the board result and is ranked by the
+    round reached. A team knock-out decides its match on game points, which
+    an adjustment does move, so it keeps them."""
+
+    def test_an_individual_knock_out_offers_none(self):
+        # One system carries every individual flavour — standard, aller-retour
+        # and double elimination are variations of it.
+        from data.pairings.knockout import KnockoutPairingSystem
+
+        assert KnockoutPairingSystem().supports_point_adjustments is False
+
+    def test_a_team_knock_out_keeps_them(self):
+        from data.pairings.knockout import TeamKnockoutPairingSystem
+
+        assert TeamKnockoutPairingSystem().supports_point_adjustments is True
+
+    def test_a_swiss_keeps_them(self):
+        from data.pairings.systems import SwissPairingSystem
+
+        assert SwissPairingSystem().supports_point_adjustments is True

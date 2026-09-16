@@ -231,6 +231,13 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         plays every round."""
         return False
 
+    @property
+    def supports_point_adjustments(self) -> bool:
+        """Whether a participant's points can be adjusted by hand (a bonus or
+        a penalty). A system that ranks on points has somewhere to put them;
+        one that ranks on how far a participant went does not."""
+        return True
+
     def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
         """Whether the numbering stands as it is when the field changes — a
         rating corrected, a player added.
