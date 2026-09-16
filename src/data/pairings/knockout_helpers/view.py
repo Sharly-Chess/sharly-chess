@@ -177,6 +177,17 @@ class KnockoutView:
                 return method(self._t, dimension)
         return None
 
+    def team_last_round(self, team_id: int) -> int | None:
+        """The last round a knocked-out team plays, or ``None`` while it is
+        still in and may yet reach the final."""
+        values = self._engine.team_ranking_values(self._t, after_round=self._t.rounds)
+        value = values.get(team_id)
+        rounds = self._t.rounds
+        if value is None or value >= rounds + 1:
+            return None
+        # A third-place play-off is played in the final round.
+        return rounds if value >= rounds - 0.5 else int(value)
+
     def waiting_participants(self, round_: int) -> list[tuple[str, list[int]]]:
         """Who the next draw would seat in *round_*, as ``(bracket, ids)``.
 

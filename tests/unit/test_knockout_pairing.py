@@ -1596,6 +1596,30 @@ class TestTeamKnockout:
             if team_board.team_b is not None
         }
 
+    def test_a_knocked_out_team_has_no_later_rounds_to_field(self, tournament_name):
+        # The lineup modal offers a team the rounds it plays; a team that is
+        # out plays none after the one it lost.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        self._play_round(tournament, 1)
+        tournament = self._load()
+
+        winners = {
+            team_board.team_a.id
+            for team_board in tournament.get_round_team_boards(1)
+            if team_board.team_b is not None
+        }
+        losers = {
+            team_board.team_b.id
+            for team_board in tournament.get_round_team_boards(1)
+            if team_board.team_b is not None
+        }
+        for team_id in winners:
+            assert tournament.knockout.team_last_round(team_id) is None
+        for team_id in losers:
+            assert tournament.knockout.team_last_round(team_id) == 1
+
     def test_colour_rule_sets_team_orientation(self, tournament_name):
         from data.pairings.knockout import (
             KnockoutColourRule,
