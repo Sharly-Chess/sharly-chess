@@ -61,13 +61,14 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
     def _single_elim_host(self) -> _SingleEliminationBracketHost:
         return cast(_SingleEliminationBracketHost, self)
 
-    def waiting_participants(
-        self, tournament: 'Tournament', round_: int
+    def still_in_groups(
+        self, tournament: 'Tournament', from_round: int
     ) -> list[tuple[str, list[int]]]:
-        """The round's participants, in bracket order. A single elimination
-        has one bracket, so they come as one unnamed group."""
+        """Who is still in, in bracket order. A single elimination has one
+        bracket and everyone in it plays every round, so the round's own
+        participants are the whole of it, as one unnamed group."""
         ids: list[int] = []
-        for high, low in self._single_elim_bracket_pairs(tournament, round_):
+        for high, low in self._single_elim_bracket_pairs(tournament, from_round):
             ids += [pid for pid in (high, low) if pid is not None]
         return [('', ids)] if ids else []
 

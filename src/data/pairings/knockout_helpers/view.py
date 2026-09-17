@@ -16,6 +16,8 @@ template may call them unconditionally.
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
+from common.i18n import _
+from data.pairings.knockout_helpers.common import seeded_players
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import set_stored_fields
 
@@ -188,18 +190,75 @@ class KnockoutView:
         # A third-place play-off is played in the final round.
         return rounds if value >= rounds - 0.5 else int(value)
 
-    def waiting_participants(self, round_: int) -> list[tuple[str, list[int]]]:
-        """Who the next draw would seat in *round_*, as ``(bracket, ids)``.
+    def side_sections(self, round_: int) -> list[dict[str, Any]]:
+        """The side column of a knock-out at *round_*: who is still in, by
+        bracket, and who is out.
 
-        One group for a single elimination, which has one bracket; two for a
-        double elimination, where a participant is in the winners' bracket
-        until it loses. Empty once the round is drawn — the boards then say
-        who plays, and whoever is not on one is out.
+        Each section is ``{'label', 'ids', 'collapsed'}``. Whoever the
+        round seats is left out — the boards show them. What remains is a
+        double elimination's bracket sitting the round out, named with the
+        round it plays instead, and last of all the eliminated, folded away.
+        Before the draw nothing is seated, so the whole field is there.
         """
-        if self._t.round_has_pairings(round_):
+        method = getattr(self._t.pairing_variation.engine, 'still_in_groups', None)
+        if method is None:
             return []
-        method = getattr(self._t.pairing_variation.engine, 'waiting_participants', None)
-        return method(self._t, round_) if method is not None else []
+        seated = self._seated_ids(round_)
+        sections: list[dict[str, Any]] = []
+        for label, ids in method(self._t, round_):
+            # Whoever has a board this round is on it; the column is for the
+            # rest — the bracket sitting the round out, and the eliminated.
+            waiting = [id_ for id_ in ids if id_ not in seated]
+            if waiting:
+                sections.append({'label': label, 'ids': waiting, 'collapsed': False})
+        eliminated = self._eliminated_ids(
+            seated | {id_ for section in sections for id_ in section['ids']}
+        )
+        if eliminated:
+            sections.append(
+                {'label': _('Eliminated'), 'ids': eliminated, 'collapsed': True}
+            )
+        return sections
+
+    def _seated_ids(self, round_: int) -> set[int]:
+        """Who the round has a board for."""
+        seated: set[int] = set()
+        if self._t.pairing_system.paired_by_team:
+            for team_board in self._t.get_round_team_boards(round_):
+                stb = team_board.stored_team_board
+                seated.add(stb.team_a_id)
+                if stb.team_b_id is not None:
+                    seated.add(stb.team_b_id)
+            return seated
+        for board in self._t.get_round_boards(round_):
+            for player in (
+                board.optional_white_tournament_player,
+                board.black_tournament_player,
+            ):
+                if player is not None:
+                    seated.add(player.id)
+        return seated
+
+    def _eliminated_ids(self, still_in: set[int]) -> list[int]:
+        """Everyone the bracket has no further match for, in seed order."""
+        if self._t.pairing_system.paired_by_team:
+            participants: list[Any] = sorted(
+                self._t.teams,
+                key=lambda team: (
+                    team.pairing_number
+                    if team.pairing_number is not None
+                    else float('inf'),
+                    team.id,
+                ),
+            )
+        else:
+            by_seed = seeded_players(self._t)
+            participants = [by_seed[seed] for seed in sorted(by_seed)]
+        return [
+            participant.id
+            for participant in participants
+            if participant.id not in still_in
+        ]
 
     # -- Manual winner designation ------------------------------------------
 

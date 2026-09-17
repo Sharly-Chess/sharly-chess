@@ -794,26 +794,29 @@ class TestIndividualKnockout:
         ]
         assert tournament.generate_round_pairings(2) == ''
 
-    def test_the_waiting_list_holds_the_players_the_draw_will_seat(
-        self, tournament_name
-    ):
-        # Before a round is drawn the side column names who is still in; once
-        # it is drawn the boards say it, and whoever is not on one is out.
+    def test_the_side_column_names_who_is_in_and_who_is_out(self, tournament_name):
+        # The side column names who is still in, and folds the eliminated
+        # away below them.
         tournament = self._load()
-        waiting = tournament.knockout.waiting_participants(1)
-        assert [label for label, _ids in waiting] == ['']
-        assert len(waiting[0][1]) == PLAYER_COUNT
+        sections = tournament.knockout.side_sections(1)
+        assert [section['label'] for section in sections] == ['']
+        assert len(sections[0]['ids']) == PLAYER_COUNT
 
+        # Once the round is drawn its players are on the boards, so the
+        # column has nothing left to say about them.
         assert tournament.generate_round_pairings(1) == ''
         tournament = self._load()
-        assert tournament.knockout.waiting_participants(1) == []
+        assert tournament.knockout.side_sections(1) == []
 
         self._play_round(tournament, 1)
         tournament = self._load()
-        round_2 = tournament.knockout.waiting_participants(2)
-        # Four players came through round one; the two who lost are gone.
-        assert [label for label, _ids in round_2] == ['']
-        assert len(round_2[0][1]) == 4
+        sections = tournament.knockout.side_sections(2)
+        # Four came through round one; the two who lost are folded away.
+        assert [section['label'] for section in sections] == ['', 'Eliminated']
+        assert len(sections[0]['ids']) == 4
+        assert sections[0]['collapsed'] is False
+        assert len(sections[1]['ids']) == 2
+        assert sections[1]['collapsed'] is True
 
     def test_tie_blocks_next_round(self, tournament_name):
         tournament = self._load()
@@ -1334,7 +1337,7 @@ class TestDoubleElimination:
         tournament = self._load()
         assert tournament.round_label(2) == 'Upper Final / Lower Semifinals'
 
-    def test_the_waiting_list_splits_by_bracket(self, tournament_name):
+    def test_the_side_column_splits_by_bracket(self, tournament_name):
         # A double elimination runs two brackets at once, so the side column
         # names them apart: a participant is in the upper bracket until it
         # loses, in the lower one after that.
@@ -1344,13 +1347,17 @@ class TestDoubleElimination:
         self._win_white(tournament, 1)
         tournament = self._load()
 
-        waiting = dict(tournament.knockout.waiting_participants(2))
-        assert sorted(waiting) == ['Lower bracket', 'Upper bracket']
+        sections = {
+            section['label']: section
+            for section in tournament.knockout.side_sections(2)
+        }
+        assert sorted(sections) == ['Lower bracket', 'Upper bracket']
         names = {
-            bracket: sorted(
-                tournament.tournament_players_by_id[id_].last_name for id_ in ids
+            label: sorted(
+                tournament.tournament_players_by_id[id_].last_name
+                for id_ in section['ids']
             )
-            for bracket, ids in waiting.items()
+            for label, section in sections.items()
         }
         assert names['Upper bracket'] == ['PLAYER00', 'PLAYER01']
         assert names['Lower bracket'] == ['PLAYER02', 'PLAYER03']
@@ -1381,6 +1388,70 @@ class TestDoubleElimination:
         assert tournament.player_count == count - 1
         assert tournament.finished is False
         assert tournament.knockout.layout() is not None
+
+    def test_the_side_column_keeps_the_upper_bracket_in_view(self, tournament_name):
+        # The brackets take turns, so a lower-bracket round would otherwise
+        # hide the upper-bracket players entirely — they are still in, and the
+        # column says so whether or not they play this round.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        self._win_white(tournament, 1)
+        tournament = self._load()
+        assert tournament.generate_round_pairings(2) == ''
+        tournament = self._load()
+        self._win_white(tournament, 2)
+        tournament = self._load()
+
+        # Round 3 is the losers' bracket alone, yet nobody still in is
+        # missing from the column: the player through to the grand final is
+        # named by the match that awaits them.
+        sections = {
+            section['label']: section
+            for section in tournament.knockout.side_sections(3)
+        }
+        assert 'Lower bracket' in sections
+        # The grand final is two rounds off, and its section says so.
+        assert 'Grand Final — round 4' in sections
+        still_in = {
+            id_
+            for label, section in sections.items()
+            if label != 'Eliminated'
+            for id_ in section['ids']
+        }
+        names = {tournament.tournament_players_by_id[id_].last_name for id_ in still_in}
+        assert names == {'PLAYER00', 'PLAYER01', 'PLAYER02'}
+        assert sections['Eliminated']['collapsed'] is True
+        assert [
+            tournament.tournament_players_by_id[id_].last_name
+            for id_ in sections['Eliminated']['ids']
+        ] == ['PLAYER03']
+
+    def test_the_side_column_drops_the_players_the_round_seats(self, tournament_name):
+        # With the round drawn, the lower bracket is on the boards and only
+        # the bracket sitting it out — and the eliminated — remain in the
+        # column.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        self._win_white(tournament, 1)
+        tournament = self._load()
+        assert tournament.generate_round_pairings(2) == ''
+        tournament = self._load()
+        self._win_white(tournament, 2)
+        tournament = self._load()
+        assert tournament.generate_round_pairings(3) == ''
+        tournament = self._load()
+
+        sections = {
+            section['label']: section
+            for section in tournament.knockout.side_sections(3)
+        }
+        assert sorted(sections) == ['Eliminated', 'Grand Final — round 4']
+        assert [
+            tournament.tournament_players_by_id[id_].last_name
+            for id_ in sections['Grand Final — round 4']['ids']
+        ] == ['PLAYER00']
 
     def test_bracket_sections_group_boards(self, tournament_name):
         tournament = self._load()

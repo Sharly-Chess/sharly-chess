@@ -51,8 +51,8 @@
         {# Before a round is paired, show the team column so lineups can be set
            — round-robin has no "to pair" list, so it would otherwise stay
            hidden. Once paired, lineups are edited from the match headers.
-           A knock-out lists the teams the draw will seat instead, so it goes
-           by that list. #}
+           A knock-out keeps its column throughout: it names who is still in,
+           by bracket, and folds the eliminated away. #}
         {% if admin_tournament.pairing_system.eliminates_participants %}
             {% set has_unpaired = admin_waiting_groups|length > 0 %}
         {% elif not admin_tournament.round_has_pairings(admin_round) and admin_tournament.teams|length > 0 %}
@@ -251,9 +251,11 @@
                                 {% endwith %}
                             {% endif %}
                             {% if admin_tournament.pairing_system.eliminates_participants %}
-                                {% for bracket, waiting in admin_waiting_groups %}
-                                    {% with title=bracket or _('To pair'),
-                                        teams=waiting,
+                                {% for section in admin_waiting_groups %}
+                                    {% with title=section.label or _('To pair'),
+                                        teams=section.members,
+                                        collapsed=section.collapsed,
+                                        lineup=not section.collapsed,
                                         table_id='lineup-teams-table-' ~ loop.index %}
                                         {% include '/admin/pairings/team_lineup_table.html' %}
                                     {% endwith %}
@@ -286,9 +288,10 @@
                             ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
                             {% endwith %}
-                            {% for bracket, waiting in admin_waiting_groups %}
-                                {% with title=bracket or _('To pair'),
-                                    unpaired_players=waiting,
+                            {% for section in admin_waiting_groups %}
+                                {% with title=section.label or _('To pair'),
+                                    unpaired_players=section.members,
+                                    collapsed=section.collapsed,
                                     table_id='waiting-players-table-' ~ loop.index %}
                                     {% include '/admin/pairings/unpaired_table.html' %}
                                 {% endwith %}

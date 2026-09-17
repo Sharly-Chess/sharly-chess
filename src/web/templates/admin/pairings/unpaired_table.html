@@ -5,6 +5,7 @@
 {% set _flat_team_repair = admin_event.is_team_event and not admin_tournament.pairing_system.paired_by_team %}
 {% set _holes = admin_unpaired_holes if (_flat_team_repair and admin_unpaired_holes is defined) else [] %}
 {% set _can_flat_pair = _flat_team_repair and client.can_manually_pair_players(admin_tournament.id) %}
+{% set _collapsed = collapsed is defined and collapsed %}
 {% if unpaired_players or _holes %}
     <table
         id="{{ table_id }}"
@@ -27,11 +28,24 @@
         >
             <tr>
                 <th colspan="{% if admin_tournament.pairing_system.show_unpaired_player_modal or _flat_team_repair %}3{% else %}2{% endif %}">
-                    {{ title }} ({{ unpaired_players|length + _holes|length }})
+                    {% if _collapsed %}
+                        <button
+                            class="btn btn-sm p-0 border-0 bg-transparent text-reset"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#{{ table_id }}-body"
+                            aria-expanded="false"
+                        >
+                            <i class="bi-caret-right-fill"></i>
+                            {{ title }} ({{ unpaired_players|length + _holes|length }})
+                        </button>
+                    {% else %}
+                        {{ title }} ({{ unpaired_players|length + _holes|length }})
+                    {% endif %}
                 </th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="{{ table_id }}-body" class="{{ 'collapse' if _collapsed }}">
             {% for tournament_player in unpaired_players %}
                 {% set status=tournament_player.check_in_status_for_round(admin_round) %}
                 <tr id="player-{{ tournament_player.id }}" class="player-row" data-player-id="{{ tournament_player.id }}">

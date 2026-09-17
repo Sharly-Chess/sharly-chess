@@ -455,26 +455,42 @@ class DoubleEliminationMixin:
                 result[ids] = match
         return result
 
-    def waiting_participants(
-        self, tournament: 'Tournament', round_: int
+    def still_in_groups(
+        self, tournament: 'Tournament', from_round: int
     ) -> list[tuple[str, list[int]]]:
-        """The round's participants, one group per bracket: a participant is
-        in the winners' bracket until it loses, in the losers' bracket after
-        that, and out after the second loss."""
+        """Who is still in, one group per bracket: a participant is in the
+        winners' bracket until it loses, in the losers' bracket after that,
+        and out after the second loss.
+
+        The two brackets take turns, so a round of its own names only half
+        the field. Each participant is placed by the next match the schedule
+        holds for them, which is the bracket they are in whether or not they
+        play this round.
+        """
         schedule, by_id, cache = self._resolved(tournament)
         groups: dict[str, list[int]] = {}
-        for match in double_elimination.matches_for_round(
-            schedule, self._de_round_of(round_)
-        ):
+        placed: set[int] = set()
+        for match in sorted(schedule, key=lambda m: m.round):
+            if match.round < self._de_round_of(from_round):
+                continue
             if match.bracket == double_elimination.GRAND_FINAL_RESET and (
                 not self._reset_needed(tournament, by_id, cache)
             ):
                 continue
             a_id, b_id = self._match_participants(tournament, by_id, match.id, cache)
-            ids = [pid for pid in (a_id, b_id) if pid is not None]
-            if not ids:
-                continue
-            groups.setdefault(self._bracket_label(match.bracket), []).extend(ids)
+            label = self._bracket_label(match.bracket)
+            app_round = self._descriptor_played_rounds(match.round)[0]
+            if app_round > from_round:
+                # This bracket sits out the round being drawn; say when it
+                # plays, so the section is not read as part of this draw.
+                label = _('{bracket} — round {round}').format(
+                    bracket=label, round=app_round
+                )
+            for participant_id in (a_id, b_id):
+                if participant_id is None or participant_id in placed:
+                    continue
+                placed.add(participant_id)
+                groups.setdefault(label, []).append(participant_id)
         return list(groups.items())
 
     @staticmethod

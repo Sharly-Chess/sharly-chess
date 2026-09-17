@@ -3366,6 +3366,9 @@ msgstr "Égypte"
 msgid "El Salvador"
 msgstr "El Salvador"
 
+msgid "Eliminated"
+msgstr "Éliminé·es"
+
 msgid "Elo *** ELO RATING"
 msgstr "Elo"
 
@@ -11338,6 +11341,10 @@ msgstr "{age_limit}+"
 #, python-brace-format
 msgid "{board_number} {color}"
 msgstr "{board_number} {color}"
+
+#, python-brace-format
+msgid "{bracket} — round {round}"
+msgstr "{bracket} — ronde {round}"
 
 #, python-brace-format
 msgid "{code} Unknown tie-breaks: {tie_breaks}"

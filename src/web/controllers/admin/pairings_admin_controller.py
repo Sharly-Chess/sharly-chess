@@ -187,7 +187,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_team_bye: list[Team] = []
         self.admin_team_unpaired: list[Team] = []
         self.admin_team_absent: list[Team] = []
-        self.admin_waiting_groups: list[tuple[str, list[Any]]] = []
+        self.admin_waiting_groups: list[dict[str, Any]] = []
         if not self.display_rankings:
             self.reload_unpaired_player_lists()
             self.reload_unpaired_team_lists()
@@ -339,25 +339,31 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_unpaired = sorted(unpaired, key=attrgetter('name_sort_key'))
 
     def reload_waiting_lists(self):
-        """The participants the next draw will seat, grouped by bracket — a
-        knock-out's answer to the "to pair" list. Empty for every other
-        system, and for a round already drawn."""
+        """The side column of a knock-out about to be drawn: who is still in,
+        by bracket, and who is out. Empty for every other system, and for a
+        round already drawn."""
         self.admin_waiting_groups = []
         tournament = self.admin_tournament
         if tournament is None or self.display_rankings:
             return
-        groups = tournament.knockout.waiting_participants(self.admin_round)
-        if not groups:
+        sections = tournament.knockout.side_sections(self.admin_round)
+        if not sections:
             return
         by_id: dict[int, Any] = (
             tournament.event.teams_by_id
             if tournament.pairing_system.paired_by_team
             else tournament.tournament_players_by_id
         )
-        for label, ids in groups:
-            members = [by_id[id_] for id_ in ids if id_ in by_id]
+        for section in sections:
+            members = [by_id[id_] for id_ in section['ids'] if id_ in by_id]
             if members:
-                self.admin_waiting_groups.append((label, members))
+                self.admin_waiting_groups.append(
+                    {
+                        'label': section['label'],
+                        'members': members,
+                        'collapsed': section['collapsed'],
+                    }
+                )
 
     def _unpaired_holes(self, round_: int) -> list[dict[str, Any]]:
         """The round's unboarded table cells as ``{'index', 'label'}`` for the
