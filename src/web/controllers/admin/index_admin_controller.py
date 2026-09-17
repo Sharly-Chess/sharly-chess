@@ -998,10 +998,9 @@ class IndexAdminController(BaseAdminController):
             database.update_stored_event(stored_event)
             if not clone_players:
                 database.delete_all_stored_players()
-            elif not clone_pairings:
-                database.delete_all_stored_pairings()
 
             if not (clone_pairings and clone_players):
+                database.delete_all_stored_pairings()
                 for tournament in event.tournaments:
                     database.set_tournament_pairing_settings(tournament.id, {})
                     database.set_tournament_current_round(tournament.id, None)
@@ -1689,6 +1688,7 @@ class IndexAdminController(BaseAdminController):
             tmp_event_database.delete_all_tags()
             if include_players != 'on':
                 tmp_event_database.delete_all_stored_players()
+                tmp_event_database.delete_all_stored_pairings()
             elif include_private_player_data != 'on':
                 tmp_event_database.delete_players_personal_data()
             if include_connection_data != 'on':

@@ -1442,7 +1442,17 @@ class EventDatabase(MigrationDatabase):
         )
 
     def delete_all_stored_pairings(self) -> None:
+        """Undo every round: the pairings and the boards they were played
+        on, the team matches those boards sit in, the lineups fielded for
+        them and the adjustments made to them. A pairing left without its
+        board — or a board without its pairing — is an event no round can be
+        drawn in."""
         self.execute('DELETE FROM `pairing`')
+        self.execute('DELETE FROM `board`')
+        self.execute('DELETE FROM `team_board`')
+        self.execute('DELETE FROM `team_round_lineup`')
+        self.execute('DELETE FROM `player_point_adjustment`')
+        self.execute('DELETE FROM `team_point_adjustment`')
 
     # ---------------------------------------------------------------------------------
     # StoredBoard
