@@ -154,7 +154,8 @@ class FRASchoolPlayerFilter(PlayerFilter):
 
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
-        school_ids, exclude = self.get_option_values()
+        school_ids = self._get_option(FRASchoolsFilterOption).value
+        exclude = self._get_option(ExcludeFilterOption).value
         if exclude:
             return lambda tournament_player: (
                 FRASchoolsUtils.get_player_plugin_data(tournament_player).fra_school_id
@@ -166,7 +167,8 @@ class FRASchoolPlayerFilter(PlayerFilter):
         )
 
     def full_name(self, tournament: 'Tournament') -> str:
-        school_ids, exclude = self.get_option_values()
+        school_ids = self._get_option(FRASchoolsFilterOption).value
+        exclude = self._get_option(ExcludeFilterOption).value
         schools_by_id = FRASchoolsUtils.get_event_plugin_data(
             tournament.event
         ).fra_schools_by_id

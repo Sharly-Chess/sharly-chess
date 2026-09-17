@@ -284,7 +284,8 @@ class FfeLeaguePlayerFilter(PlayerFilter):
 
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
-        leagues, exclude = self.get_option_values()
+        leagues = self._get_option(FfeLeaguesFilterOption).value
+        exclude = self._get_option(ExcludeFilterOption).value
         if exclude:
             return lambda tournament_player: (
                 FFEUtils.get_player_plugin_data(tournament_player).league not in leagues
@@ -294,7 +295,8 @@ class FfeLeaguePlayerFilter(PlayerFilter):
         )
 
     def full_name(self, tournament: 'Tournament') -> str:
-        leagues, exclude = self.get_option_values()
+        leagues = self._get_option(FfeLeaguesFilterOption).value
+        exclude = self._get_option(ExcludeFilterOption).value
         option_str = ', '.join(leagues)
         if exclude:
             option_str = _('Exclude: {values}').format(values=option_str)

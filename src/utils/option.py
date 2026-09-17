@@ -104,15 +104,6 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
             option_type(),
         )
 
-    def get_option_values(self) -> list:
-        """Retrieves for each of the available options
-        the corresponding value in an ordered list.
-        Intended usage: option1, option2 = self.get_option_values()"""
-        return [
-            self._get_option(option_type).value
-            for option_type in self.available_options()
-        ]
-
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, OptionHandler):
             return NotImplemented

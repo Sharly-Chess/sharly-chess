@@ -895,7 +895,7 @@ class PairingNumberTieBreak(PlayerRecordTieBreak):
 
     @property
     def help_text(self) -> str:
-        is_reversed = self.get_option_values()[0]
+        is_reversed = self._get_option(ReversedTieBreakOption).value
         if is_reversed is None:
             return _(
                 'The pairing numbers of the tournament in ascending '
@@ -908,7 +908,7 @@ class PairingNumberTieBreak(PlayerRecordTieBreak):
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
     ) -> int:
-        is_reversed = self.get_option_values()[0]
+        is_reversed = self._get_option(ReversedTieBreakOption).value
         pairing_number = player.pairing_number
         assert pairing_number is not None
         if is_reversed:
@@ -928,7 +928,7 @@ class PairingNumberTieBreak(PlayerRecordTieBreak):
         after_round: int,
     ) -> int:
         # TPN for teams reads the team's pairing_number directly.
-        is_reversed = self.get_option_values()[0]
+        is_reversed = self._get_option(ReversedTieBreakOption).value
         if team_record.pairing_number is None:
             return 0
         return (
@@ -1692,7 +1692,7 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
 
     @cached_property
     def played_modifier(self) -> bool:
-        return cast(bool, self.get_option_values()[1])
+        return self._get_option(PlayedModifierTieBreakOption).value
 
     @cached_property
     def legacy_03_2026(self) -> bool:
@@ -1840,7 +1840,7 @@ class KoyaTieBreak(OpponentRecordTieBreak):
 
     @cached_property
     def limit(self) -> int | None:
-        return cast(int | None, self.get_option_values()[0])
+        return self._get_option(KoyaLimitTieBreakOption).value
 
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
@@ -2412,7 +2412,7 @@ class PlayerRatingTieBreak(OpponentRatingTieBreak):
 
     @property
     def help_text(self) -> str:
-        is_reversed = self.get_option_values()[0]
+        is_reversed = self._get_option(ReversedTieBreakOption).value
         if is_reversed is None:
             return _(
                 'The ratings in ascending or descending order (descending by default).'
@@ -2424,7 +2424,7 @@ class PlayerRatingTieBreak(OpponentRatingTieBreak):
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
     ) -> int:
-        is_reversed = self.get_option_values()[0]
+        is_reversed = self._get_option(ReversedTieBreakOption).value
         if is_reversed:
             return -player.rating
         return player.rating
@@ -2469,7 +2469,7 @@ class DirectEncounterTieBreak(TieBreak):
 
     @cached_property
     def played_modifier(self) -> bool:
-        return cast(bool, self.get_option_values()[0])
+        return self._get_option(PlayedModifierTieBreakOption).value
 
     @property
     def base_acronym(self) -> str:

@@ -138,7 +138,9 @@ class TrfTournamentImporter(FileTournamentImporter):
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        (file_path, tournament_rating) = self.get_option_values()
+        file_path = self._get_option(FileOption).value
+        assert file_path is not None
+        tournament_rating = self._get_option(TournamentRatingOption).value
         with open(file_path, encoding='utf-8') as file:
             trf_tournament = TrfSerializer.load(file)
         self._check_team_event_compatibility(event, trf_tournament)
@@ -315,7 +317,8 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
 
     def get_not_importable_features(self, event: Event) -> list[str]:
-        file_path = self.get_option_values()[0]
+        file_path = self._get_option(FileOption).value
+        assert file_path is not None
         with open(file_path, encoding='utf-8') as file:
             tournament = TrfSerializer.load(file)
         features: list[str] = []

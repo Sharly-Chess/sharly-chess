@@ -14,7 +14,10 @@ from common.exception import SharlyChessException, DictReaderException, Importer
 from common.i18n import _
 from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
-from data.input_output.tournament_importer_options import TournamentImporterOption
+from data.input_output.tournament_importer_options import (
+    FileOption,
+    TournamentImporterOption,
+)
 from data.input_output.tournament_importers import FileTournamentImporter
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
@@ -118,7 +121,8 @@ class PapiTournamentImporter(FfeTournamentImporter):
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        (file_path,) = self.get_option_values()
+        file_path = self._get_option(FileOption).value
+        assert file_path is not None
         try:
             papi_data = PapiConverter().read_papi_file(file_path)
             self._add_rating_threshold_task(papi_data)
@@ -147,7 +151,8 @@ class PapiJsonTournamentImporter(FfeTournamentImporter):
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        (file_path,) = self.get_option_values()
+        file_path = self._get_option(FileOption).value
+        assert file_path is not None
         try:
             with open(file_path, encoding='utf-8') as file:
                 papi_data_dict = json.load(file)
@@ -216,7 +221,7 @@ class OnlineTournamentImporter(FfeTournamentImporter):
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        (tournament_id,) = self.get_option_values()
+        tournament_id = self._get_option(FfeTournamentIdOption).value
         with tempfile.TemporaryDirectory() as tmpdir:
             target: Path = Path(tmpdir) / f'{tournament_id}.papi'
             url: str = f'https://www.echecs.asso.fr/Tournois/Id/{tournament_id}/{tournament_id}.papi'

@@ -101,7 +101,10 @@ class ChessEventTournamentImporter(TournamentImporter):
         """Executed when a SharlyChessException is raised."""
 
     def _resolve_request_data(self, event: Event) -> ChessEventTournamentRequestData:
-        event_id, user_id, password, tournament_name = self.get_option_values()
+        event_id = self._get_option(options.ChessEventEventOption).value
+        user_id = self._get_option(options.ChessEventUserOption).value
+        password = self._get_option(options.ChessEventPasswordOption).value
+        tournament_name = self._get_option(options.ChessEventTournamentOption).value
         event_plugin_data = ChessEventUtils.get_event_plugin_data(event)
         if not user_id:
             user_id = event_plugin_data.user
@@ -109,6 +112,11 @@ class ChessEventTournamentImporter(TournamentImporter):
             password = event_plugin_data.password
         if not event_id:
             event_id = event_plugin_data.event_id
+        # validate_options() rejects an import missing any of the four.
+        assert event_id is not None
+        assert user_id is not None
+        assert password is not None
+        assert tournament_name is not None
         return ChessEventTournamentRequestData(
             event_id=event_id,
             user_id=user_id,
@@ -140,12 +148,10 @@ class ChessEventTournamentImporter(TournamentImporter):
         event: Event | None = None,
     ) -> None:
         assert event is not None
-        (
-            user_option,
-            password_option,
-            event_option,
-            tournament_option,
-        ) = self.options
+        user_option = self._get_option(options.ChessEventUserOption)
+        password_option = self._get_option(options.ChessEventPasswordOption)
+        event_option = self._get_option(options.ChessEventEventOption)
+        tournament_option = self._get_option(options.ChessEventTournamentOption)
         plugin_data = ChessEventUtils.get_event_plugin_data(event)
         if not user_option.value and not plugin_data.user:
             raise OptionError(_('A value is expected.'), user_option)
