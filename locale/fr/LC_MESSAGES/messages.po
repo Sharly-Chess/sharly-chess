@@ -6659,6 +6659,9 @@ msgstr "Veuillez choisir une fédération"
 msgid "Please choose a name for the set."
 msgstr "Veuillez choisir un nom pour l'ensemble."
 
+msgid "Please choose a network."
+msgstr "Veuillez choisir un réseau."
+
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
 
@@ -11196,3 +11199,4 @@ msgstr "—"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
