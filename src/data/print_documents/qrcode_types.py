@@ -132,6 +132,8 @@ class NetworkQRCodeType(QRCodeType):
         from data.print_documents.options import QRCodeNetworkPrintOption
 
         ip = doc._get_option(QRCodeNetworkPrintOption).value
+        if ip is None:
+            return False, _('Please choose a network.')
         return True, SharlyChessConfig().app_url(ip)
 
     @staticmethod

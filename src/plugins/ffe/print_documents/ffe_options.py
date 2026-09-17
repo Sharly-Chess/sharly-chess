@@ -29,7 +29,7 @@ class FFEDocumentTypePrintOption(FFEPrintOption[str | None]):
 
     @property
     def type(self) -> type | UnionType:
-        return str
+        return str | None
 
     @property
     def default_value(self) -> str | None:

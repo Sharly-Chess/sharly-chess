@@ -267,6 +267,8 @@ class KoyaLimitTieBreakOption(TieBreakOption[int | None]):
 
     @property
     def operator(self) -> str:
+        # Only read for a variation, which is what having a limit at all means.
+        assert self.value is not None
         return '+' if self.value > 0 else '-'
 
     @property
@@ -296,6 +298,7 @@ class KoyaLimitTieBreakOption(TieBreakOption[int | None]):
 
     @property
     def variation_name(self) -> str:
+        assert self.value is not None
         return ngettext(
             'Limit {operator} {count} half-point',
             'Limit {operator} {count} half-points',
