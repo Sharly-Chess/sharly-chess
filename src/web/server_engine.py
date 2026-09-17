@@ -1,6 +1,5 @@
 import asyncio
 import platform
-import time
 import signal
 import socket
 import sys
@@ -144,7 +143,7 @@ class ServerEngine:
                     sc_config.web_port = self.port
                     break
                 logger.debug(f'Port {self.port} already in use (waiting)')
-                time.sleep(1)
+                await asyncio.sleep(1)
             if not sc_config.web_port:
                 logger.info(
                     f'Timeout exceeded for port {self.port}, fallback to other ports'

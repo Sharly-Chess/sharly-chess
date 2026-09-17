@@ -1,4 +1,6 @@
+import asyncio
 from functools import partial, cached_property
+from pathlib import Path
 from typing import Any, Annotated
 
 from litestar import get, post, patch
@@ -9,7 +11,7 @@ from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common import SharlyChessException
-from common.i18n import _, ngettext
+from common.i18n import _, get_locale, ngettext, set_locale
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.tournament import Tournament
@@ -201,6 +203,27 @@ class FfeUploadController(BaseEventAdminController):
 
         return self._render_ffe_upload_modal(web_context, message, message_type)
 
+    @staticmethod
+    def _upload_rules(
+        tournaments: list[Tournament], rules_file: Path, locale: str
+    ) -> list[str]:
+        """Upload *rules_file* to each of *tournaments*, returning the names of
+        those it failed for. Runs in a worker thread, hence the locale which is
+        thread-local."""
+        set_locale(locale)
+        error_tournament_names: list[str] = []
+        for tournament in tournaments:
+            try:
+                FFESession(tournament).upload_rules(rules_file)
+            except SharlyChessException as error:
+                logger.exception(
+                    '%sError when uploading rules to the FFE website: %s',
+                    tournament.log_prefix,
+                    error,
+                )
+                error_tournament_names.append(tournament.name)
+        return error_tournament_names
+
     @post(
         path='/ffe/upload-modal/upload-rules/{event_uniq_id:str}',
         name='ffe-modal-upload-rules',
@@ -215,7 +238,6 @@ class FfeUploadController(BaseEventAdminController):
         web_context = FfeWebContext(request)
         normalized_data = await WebContext.normalize_multipart_data(data)
         rules_file = WebContext.form_data_to_path(normalized_data, 'rules_file')
-        error_tournament_names: list[str] = []
         if not rules_file or rules_file.suffix != '.pdf':
             if rules_file:
                 message = _(
@@ -231,20 +253,16 @@ class FfeUploadController(BaseEventAdminController):
                 web_context, normalized_data, {'rules_file': message}
             )
 
-        for tournament in web_context.ffe_configured_tournaments:
-            if not WebContext.form_data_to_path(
+        selected_tournaments = [
+            tournament
+            for tournament in web_context.ffe_configured_tournaments
+            if WebContext.form_data_to_path(
                 normalized_data, f'tournament_{tournament.id}'
-            ):
-                continue
-            try:
-                FFESession(tournament).upload_rules(rules_file)
-            except SharlyChessException as error:
-                logger.exception(
-                    '%sError when uploading rules to the FFE website: %s',
-                    tournament.log_prefix,
-                    error,
-                )
-                error_tournament_names.append(tournament.name)
+            )
+        ]
+        error_tournament_names = await asyncio.to_thread(
+            self._upload_rules, selected_tournaments, rules_file, get_locale()
+        )
         message_type: str | None = None
         if len(error_tournament_names) == 0:
             message = _('Rules successfully uploaded.')

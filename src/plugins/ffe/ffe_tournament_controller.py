@@ -1,3 +1,4 @@
+import asyncio
 from functools import partial
 from pathlib import Path
 from typing import Annotated, Any
@@ -9,7 +10,7 @@ from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
 from common import SharlyChessException
-from common.i18n import _, set_locale
+from common.i18n import _, get_locale, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
@@ -73,8 +74,8 @@ class FfeTournamentController(BaseEventAdminController):
             ffe_password: str = WebContext.form_data_to_str(data, 'ffe_password') or ''
 
             if ffe_id and ffe_password:
-                ffe_auth_valid = FFESession(tournament=None).test_auth(
-                    ffe_id=ffe_id, ffe_password=ffe_password
+                ffe_auth_valid = await asyncio.to_thread(
+                    self._test_auth, ffe_id, ffe_password, get_locale()
                 )
 
         errors = {}
@@ -157,6 +158,18 @@ class FfeTournamentController(BaseEventAdminController):
             ffe.TMP_DIR / 'fees' / tournament.event.uniq_id / f'{tournament.name}.html'
         )
 
+    @classmethod
+    def _extract_fees(cls, tournament: Tournament, locale: str) -> str | None:
+        """Download the fees of *tournament* and write them to their file.
+        Runs in a worker thread, hence the locale which is thread-local."""
+        set_locale(locale)
+        html = FFESession(tournament).get_fees()
+        if html:
+            fees_file = cls.tournament_fees_file(tournament)
+            fees_file.parent.mkdir(parents=True, exist_ok=True)
+            fees_file.write_text(html)
+        return html
+
     @get(
         path='/ffe/extract-fees/{event_uniq_id:str}/{tournament_id:int}',
         name='ffe-extract-fees',
@@ -171,11 +184,7 @@ class FfeTournamentController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
         try:
-            if html := FFESession(tournament).get_fees():
-                fees_file = self.tournament_fees_file(tournament)
-                fees_file.parent.mkdir(parents=True, exist_ok=True)
-                with open(fees_file, 'w') as f:
-                    f.write(html)
+            if await asyncio.to_thread(self._extract_fees, tournament, get_locale()):
                 url: str = request.app.route_reverse(
                     'ffe-download-fees',
                     event_uniq_id=event_uniq_id,
@@ -183,7 +192,7 @@ class FfeTournamentController(BaseEventAdminController):
                 )
                 logger.debug(
                     'Fees written to [%s], redirecting to [%s].',
-                    fees_file,
+                    self.tournament_fees_file(tournament),
                     url,
                 )
                 response: ClientRedirect = ClientRedirect(redirect_to=url)
