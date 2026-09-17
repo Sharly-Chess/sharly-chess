@@ -122,6 +122,7 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
     """
     players_list = []
     num_rounds = 0
+    header_found = False
 
     for line in text_content.split('\n'):
         # Look for header line that starts with "ID"
