@@ -3366,7 +3366,10 @@ msgstr ""
 msgid "El Salvador"
 msgstr ""
 
-msgid "Eliminated"
+msgid "Eliminated *** PLAYERS"
+msgstr "Eliminated"
+
+msgid "Eliminated *** TEAMS"
 msgstr "Eliminated"
 
 msgid "Elo *** ELO RATING"

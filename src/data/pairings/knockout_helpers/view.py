@@ -190,7 +190,7 @@ class KnockoutView:
         # A third-place play-off is played in the final round.
         return rounds if value >= rounds - 0.5 else int(value)
 
-    def side_sections(self, round_: int) -> list[dict[str, Any]]:
+    def side_sections(self, round_: int, teams: bool) -> list[dict[str, Any]]:
         """The side column of a knock-out at *round_*: who is still in, by
         bracket, and who is out.
 
@@ -216,7 +216,13 @@ class KnockoutView:
         )
         if eliminated:
             sections.append(
-                {'label': _('Eliminated'), 'ids': eliminated, 'collapsed': True}
+                {
+                    'label': _('Eliminated *** TEAMS')
+                    if teams
+                    else _('Eliminated *** PLAYERS'),
+                    'ids': eliminated,
+                    'collapsed': True,
+                }
             )
         return sections
 

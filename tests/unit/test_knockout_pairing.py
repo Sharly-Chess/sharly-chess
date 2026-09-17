@@ -798,7 +798,7 @@ class TestIndividualKnockout:
         # The side column names who is still in, and folds the eliminated
         # away below them.
         tournament = self._load()
-        sections = tournament.knockout.side_sections(1)
+        sections = tournament.knockout.side_sections(1, tournament.is_team_tournament)
         assert [section['label'] for section in sections] == ['']
         assert len(sections[0]['ids']) == PLAYER_COUNT
 
@@ -806,11 +806,11 @@ class TestIndividualKnockout:
         # column has nothing left to say about them.
         assert tournament.generate_round_pairings(1) == ''
         tournament = self._load()
-        assert tournament.knockout.side_sections(1) == []
+        assert tournament.knockout.side_sections(1, tournament.is_team_tournament) == []
 
         self._play_round(tournament, 1)
         tournament = self._load()
-        sections = tournament.knockout.side_sections(2)
+        sections = tournament.knockout.side_sections(2, tournament.is_team_tournament)
         # Four came through round one; the two who lost are folded away.
         assert [section['label'] for section in sections] == ['', 'Eliminated']
         assert len(sections[0]['ids']) == 4
@@ -1349,7 +1349,9 @@ class TestDoubleElimination:
 
         sections = {
             section['label']: section
-            for section in tournament.knockout.side_sections(2)
+            for section in tournament.knockout.side_sections(
+                2, tournament.is_team_tournament
+            )
         }
         assert sorted(sections) == ['Lower bracket', 'Upper bracket']
         names = {
@@ -1408,7 +1410,9 @@ class TestDoubleElimination:
         # named by the match that awaits them.
         sections = {
             section['label']: section
-            for section in tournament.knockout.side_sections(3)
+            for section in tournament.knockout.side_sections(
+                3, tournament.is_team_tournament
+            )
         }
         assert 'Lower bracket' in sections
         # The grand final is two rounds off, and its section says so.
@@ -1445,7 +1449,9 @@ class TestDoubleElimination:
 
         sections = {
             section['label']: section
-            for section in tournament.knockout.side_sections(3)
+            for section in tournament.knockout.side_sections(
+                3, tournament.is_team_tournament
+            )
         }
         assert sorted(sections) == ['Eliminated', 'Grand Final — round 4']
         assert [

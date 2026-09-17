@@ -346,7 +346,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         tournament = self.admin_tournament
         if tournament is None or self.display_rankings:
             return
-        sections = tournament.knockout.side_sections(self.admin_round)
+        sections = tournament.knockout.side_sections(
+            self.admin_round, tournament.is_team_tournament
+        )
         if not sections:
             return
         by_id: dict[int, Any] = (

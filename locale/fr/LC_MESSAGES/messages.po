@@ -3183,14 +3183,14 @@ msgid "ESB variant"
 msgstr "Variante ESB"
 
 msgid "EXEMPT"
-msgstr "EXEMPT·E"
+msgstr "EXEMPT"
 
 msgid "EXEMPT (1.4.3d)"
 msgstr "EXEMPTÉ (1.4.3d)"
 
 #, python-format
 msgid "EXEMPT (already received at round #%(round)d)"
-msgstr "EXEMPT·E (déjà reçu à la ronde n°%(round)d)"
+msgstr "EXEMPT (déjà reçu à la ronde n°%(round)d)"
 
 msgid "Each board number multiplied by the game points scored on that board, summed over the tournament. The lower the sum, the higher the ranking — it rewards points won on the top boards. Only meaningful between teams on equal game points."
 msgstr "Le numéro de chaque échiquier multiplié par les points de parties marqués sur cet échiquier, additionnés sur l'ensemble du tournoi. Plus la somme est faible, meilleur est le classement : cela récompense les points gagnés sur les premiers échiquiers. N'a de sens qu'entre équipes à égalité de points de parties."
@@ -3366,8 +3366,11 @@ msgstr "Égypte"
 msgid "El Salvador"
 msgstr "El Salvador"
 
-msgid "Eliminated"
+msgid "Eliminated *** PLAYERS"
 msgstr "Éliminé·es"
+
+msgid "Eliminated *** TEAMS"
+msgstr "Éliminées"
 
 msgid "Elo *** ELO RATING"
 msgstr "Elo"
@@ -6319,7 +6322,7 @@ msgid "Pairing"
 msgstr "Appariement"
 
 msgid "Pairing Allocated Bye"
-msgstr "Exempt·e"
+msgstr "Exempt"
 
 msgid "Pairing Cards"
 msgstr "Chevalets d'appariement"
