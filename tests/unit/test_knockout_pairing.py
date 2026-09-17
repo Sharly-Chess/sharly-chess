@@ -185,6 +185,30 @@ class TestIndividualKnockout:
         ]
         assert len(finals) == 1
 
+    def test_a_beaten_player_is_named_once_the_game_is_decided(self, tournament_name):
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        contested = [
+            board
+            for board in tournament.get_round_boards(1)
+            if board.black_tournament_player is not None
+        ]
+        for board in contested:
+            assert tournament.knockout.board_loser_id(board) is None
+        self._play_round(tournament, 1)
+        tournament = self._load()
+
+        for board in tournament.get_round_boards(1):
+            white = board.optional_white_tournament_player
+            black = board.black_tournament_player
+            if black is None:
+                # A bye knocks nobody out.
+                assert tournament.knockout.board_loser_id(board) is None
+                continue
+            weaker = max((white, black), key=attrgetter('starting_rank_sort_key'))
+            assert tournament.knockout.board_loser_id(board) == weaker.id
+
     def test_papi_export_has_no_tie_breaks(self, tournament_name):
         # A knock-out ranks by the round reached, and its configured tie-breaks
         # are Art. 12 advancement criteria, not standings — so none is exported.
@@ -1220,6 +1244,38 @@ class TestDoubleElimination:
         assert grand_final.top.winner is False
         assert grand_final.bottom.winner is False
 
+    def test_only_a_second_loss_names_a_player(self, tournament_name):
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        self._win_white(tournament, 1)
+        tournament = self._load()
+        # A winners'-bracket loss drops into the losers' bracket: still in.
+        for board in tournament.get_round_boards(1):
+            assert tournament.knockout.board_loser_id(board) is None
+
+        assert tournament.generate_round_pairings(2) == ''
+        tournament = self._load()
+        self._win_white(tournament, 2)
+        tournament = self._load()
+        # Round 2 holds both the winners' final (its loser drops to the
+        # losers' final) and the losers'-bracket round (its loser is out).
+        named = set()
+        for board in tournament.get_round_boards(2):
+            loser_id = tournament.knockout.board_loser_id(board)
+            if loser_id is not None:
+                named.add(
+                    next(
+                        player.last_name
+                        for player in (
+                            board.optional_white_tournament_player,
+                            board.black_tournament_player,
+                        )
+                        if player.id == loser_id
+                    )
+                )
+        assert named == {'PLAYER03'}
+
     def test_round_count_no_reset_then_reset(self, tournament_name):
         from data.pairings.knockout import DoubleEliminationResetSetting
 
@@ -1723,6 +1779,24 @@ class TestTeamKnockout:
             assert tournament.knockout.team_last_round(team_id) is None
         for team_id in losers:
             assert tournament.knockout.team_last_round(team_id) == 1
+
+    def test_a_beaten_team_is_named_but_not_its_players(self, tournament_name):
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        for team_board in tournament.get_round_team_boards(1):
+            assert tournament.knockout.team_board_loser_id(team_board) is None
+        self._play_round(tournament, 1)
+        tournament = self._load()
+
+        for team_board in tournament.get_round_team_boards(1):
+            assert (
+                tournament.knockout.team_board_loser_id(team_board)
+                == team_board.team_b.id
+            )
+        # The match is what eliminates, so no game inside it names a player.
+        for board in tournament.get_round_boards(1):
+            assert tournament.knockout.board_loser_id(board) is None
 
     def test_colour_rule_sets_team_orientation(self, tournament_name):
         from data.pairings.knockout import (
@@ -2234,6 +2308,48 @@ class TestIndividualTwoGameKnockout:
         tournament = self._load()
         # 4 players -> 2 bracket levels -> 4 app rounds (2 games each).
         assert tournament.automatic_rounds == 4
+
+    def test_the_beaten_player_is_named_on_the_second_game(self, tournament_name):
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        for board in tournament.get_round_boards(1):
+            self._win(tournament, board, self._winner_name(board))
+        tournament = self._load()
+        # Game 1 is half a match: it settles nothing, whatever its result.
+        for board in tournament.get_round_boards(1):
+            assert tournament.knockout.board_loser_id(board) is None
+
+        assert tournament.generate_round_pairings(2) == ''
+        tournament = self._load()
+        for board in tournament.get_round_boards(2):
+            assert tournament.knockout.board_loser_id(board) is None
+            self._win(tournament, board, self._winner_name(board))
+        tournament = self._load()
+        for board in tournament.get_round_boards(2):
+            names = self._names(board)
+            loser_id = tournament.knockout.board_loser_id(board)
+            loser = next(
+                player
+                for player in (
+                    board.optional_white_tournament_player,
+                    board.black_tournament_player,
+                )
+                if player.id == loser_id
+            )
+            assert loser.last_name == max(names)
+
+    @staticmethod
+    def _winner_name(board) -> str:
+        """The stronger seed of the board — P0 is seed 1, P3 seed 4."""
+        return min(
+            player.last_name
+            for player in (
+                board.optional_white_tournament_player,
+                board.black_tournament_player,
+            )
+            if player is not None
+        )
 
     def test_game_one_forced_colours_then_reversed_in_game_two(self, tournament_name):
         tournament = self._load()
@@ -2855,6 +2971,19 @@ class TestDoubleEliminationTwoGame:
         tournament = self._load()
         # 4 players -> double-elim 4 rounds -> 8 app rounds (2 games each).
         assert tournament.automatic_rounds == 8
+
+    def test_a_dropped_player_is_not_named_after_either_game(self, tournament_name):
+        tournament = self._load()
+        for round_ in (1, 2):
+            assert tournament.generate_round_pairings(round_) == ''
+            tournament = self._load()
+            self._win_stronger(tournament, round_)
+            tournament = self._load()
+        # Both games of the winners'-bracket level are in and each match has
+        # a loser — who drops into the losers' bracket rather than out.
+        for round_ in (1, 2):
+            for board in tournament.get_round_boards(round_):
+                assert tournament.knockout.board_loser_id(board) is None
 
     def test_drawn_game_one_does_not_block_or_warn(self, tournament_name):
         tournament = self._load()

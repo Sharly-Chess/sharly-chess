@@ -24,6 +24,8 @@
            team's line-up, and the score becomes a button that opens the
            designate-winner modal. #}
         {% set ko_adv = admin_tournament.knockout.team_board_advancement(team_board) %}
+        {# Struck through: the knock-out is over for them. #}
+        {% set ko_loser_id = admin_tournament.knockout.team_board_loser_id(team_board) %}
         <td class="text-center text-nowrap">
             <i class="bi bi-chevron-down team-block-chevron me-1"></i>
             <strong>{{ team_board.display_number }}</strong>
@@ -38,7 +40,7 @@
                         <span class="text-contrast me-1">{{ '%g'|format(_a_score) }}</span>
                     {% endif %}
                     <a
-                        class="player-link"
+                        class="player-link {{ 'text-decoration-line-through' if ko_loser_id == team_board.team_a.id }}"
                         hx-get="{{ url_for(
                             'admin-team-record-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -200,7 +202,7 @@
                 <strong class="text-end flex-grow-1">
                     {% if team_board.team_b %}
                         <a
-                            class="player-link"
+                            class="player-link {{ 'text-decoration-line-through' if ko_loser_id == team_board.team_b.id }}"
                             hx-get="{{ url_for(
                                 'admin-team-record-modal',
                                 event_uniq_id=admin_event.uniq_id,

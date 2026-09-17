@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from data.pairings.knockout_helpers.common import (
     board_winner_player_id,
+    loss_is_elimination,
     team_match_all_games_played,
     team_match_winner_id,
 )
@@ -216,6 +217,36 @@ class KnockoutAdvancementMixin:
         if a_gp != b_gp:
             return None
         return self.team_advancement(tournament, team_board)
+
+    def board_loser_id(self, tournament: 'Tournament', board: 'Board') -> int | None:
+        """The player this game knocks out of the bracket, or ``None`` while
+        it is undecided. A team match eliminates as a whole, so the games
+        inside one name nobody."""
+        if tournament.pairing_system.paired_by_team:
+            return None
+        white = board.optional_white_tournament_player
+        black = board.black_tournament_player
+        if white is None or black is None:
+            return None
+        winner = board_winner_player_id(board)
+        if winner is None and not board.no_result:
+            winner = self.player_advancement(tournament, board).winner_id
+        if winner is None or not loss_is_elimination(self, tournament, board):
+            return None
+        return black.id if winner == white.id else white.id
+
+    def team_board_loser_id(
+        self, tournament: 'Tournament', team_board: 'TeamBoard'
+    ) -> int | None:
+        """The team this match knocks out of the bracket, or ``None`` while it
+        is undecided."""
+        stb = team_board.stored_team_board
+        if stb.team_b_id is None:
+            return None
+        winner = team_match_winner_id(tournament, team_board)
+        if winner is None or not loss_is_elimination(self, tournament, team_board):
+            return None
+        return stb.team_b_id if winner == stb.team_a_id else stb.team_a_id
 
     def advancement_has_manual(self, tournament: 'Tournament') -> bool:
         return any(

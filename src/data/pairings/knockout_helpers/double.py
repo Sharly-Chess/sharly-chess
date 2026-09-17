@@ -428,6 +428,23 @@ class DoubleEliminationMixin:
         match = self._board_match(tournament, board)
         return self._match_section_label(tournament, match) if match else None
 
+    def loser_stays_in_bracket(self, tournament: 'Tournament', board) -> bool:
+        """Whether whoever loses this match plays on. A winners'-bracket loss
+        drops into the losers' bracket — the schedule holds a match seated by
+        it — and a grand final won by the losers'-bracket champion leaves both
+        sides on one loss, to be settled by the reset game."""
+        match = self._board_match(tournament, board)
+        if match is None:
+            return False
+        if match.bracket == double_elimination.GRAND_FINAL:
+            return self.reset_is_due(tournament)
+        return any(
+            isinstance(source, double_elimination.LoserOf)
+            and source.match_id == match.id
+            for scheduled in self._schedule(tournament)
+            for source in (scheduled.a, scheduled.b)
+        )
+
     def _board_match(
         self, tournament: 'Tournament', board
     ) -> 'double_elimination.Match | None':

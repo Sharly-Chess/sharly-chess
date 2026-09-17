@@ -1,6 +1,6 @@
 """Common result helpers for knock-out pairing engines."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from common.i18n import _
 from utils.enum import Result
@@ -27,6 +27,15 @@ def seed_sort_key(player: 'TournamentPlayer') -> tuple:
     if player.pairing_number is not None:
         return (0, player.pairing_number)
     return (1,) + player.starting_rank_sort_key
+
+
+def loss_is_elimination(engine: Any, tournament: 'Tournament', board: Any) -> bool:
+    """Whether losing this match puts its loser out of the tournament. It does
+    in a single elimination, where one loss is the whole story; a double
+    elimination seats a first-time loser in its other bracket and says so
+    itself."""
+    stays = getattr(engine, 'loser_stays_in_bracket', None)
+    return not stays(tournament, board) if stays is not None else True
 
 
 def tie_resolution_message(tournament: 'Tournament', round_: int) -> str:

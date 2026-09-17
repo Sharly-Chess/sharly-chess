@@ -123,6 +123,19 @@ class KnockoutView:
         )
         return method(self._t, team_board) if method is not None else None
 
+    def board_loser_id(self, board: 'Board') -> int | None:
+        """The player a decided knock-out game puts out of the tournament, so
+        the pairings can strike their name through. ``None`` for any other
+        system, for a match still open, and inside a team match, which
+        eliminates as a whole."""
+        method = getattr(self._t.pairing_variation.engine, 'board_loser_id', None)
+        return method(self._t, board) if method is not None else None
+
+    def team_board_loser_id(self, team_board: 'TeamBoard') -> int | None:
+        """The team a decided knock-out match puts out of the tournament."""
+        method = getattr(self._t.pairing_variation.engine, 'team_board_loser_id', None)
+        return method(self._t, team_board) if method is not None else None
+
     @property
     def advancement_has_manual(self) -> bool:
         """Whether the advancement list contains the play-off (manual) marker,

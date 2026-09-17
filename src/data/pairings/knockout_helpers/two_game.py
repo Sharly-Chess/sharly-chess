@@ -10,6 +10,7 @@ from common.i18n import _
 from data.pairings.knockout_helpers.common import (
     find_knockout_board,
     find_knockout_team_board,
+    loss_is_elimination,
     team_match_all_games_played,
     tie_resolution_message,
 )
@@ -246,9 +247,13 @@ class TwoGameMatchMixin:
         if black is not None and black.id in totals:
             totals[black.id] += board.black_pairing.result.points()
 
-    def board_advancement(
+    def _aggregate(
         self, tournament: 'Tournament', board: 'Board'
-    ) -> 'KnockoutAdvancement | None':
+    ) -> tuple[tuple[int, float], tuple[int, float]] | None:
+        """Each player's points over both games of the match *board* is the
+        second game of, or ``None`` while the match is not that far. The
+        aggregate is what the match is won on, so it can only be read on the
+        second game."""
         if self._game_of(board.round) != 2:
             return None
         white = board.optional_white_tournament_player
@@ -267,13 +272,13 @@ class TwoGameMatchMixin:
         totals = {white.id: 0.0, black.id: 0.0}
         for game_board in (game1, board):
             self._add_individual_points(game_board, totals)
-        if totals[white.id] != totals[black.id]:
-            return None
-        return self._two_game_match_host().player_advancement(tournament, board)
+        return (white.id, totals[white.id]), (black.id, totals[black.id])
 
-    def team_board_advancement(
+    def _team_aggregate(
         self, tournament: 'Tournament', team_board: 'TeamBoard'
-    ) -> 'KnockoutAdvancement | None':
+    ) -> tuple[tuple[int, float], tuple[int, float]] | None:
+        """Each team's game points over both legs of the match, or ``None``
+        while a leg is still to be played."""
         if self._game_of(team_board.round) != 2:
             return None
         stb = team_board.stored_team_board
@@ -296,9 +301,70 @@ class TwoGameMatchMixin:
                 totals[leg_stb.team_a_id] += a_gp
             if leg_stb.team_b_id is not None and leg_stb.team_b_id in totals:
                 totals[leg_stb.team_b_id] += b_gp
-        if totals[stb.team_a_id] != totals[stb.team_b_id]:
+        return (
+            (stb.team_a_id, totals[stb.team_a_id]),
+            (stb.team_b_id, totals[stb.team_b_id]),
+        )
+
+    def board_advancement(
+        self, tournament: 'Tournament', board: 'Board'
+    ) -> 'KnockoutAdvancement | None':
+        aggregate = self._aggregate(tournament, board)
+        if aggregate is None:
+            return None
+        (_, a_points), (_, b_points) = aggregate
+        if a_points != b_points:
+            return None
+        return self._two_game_match_host().player_advancement(tournament, board)
+
+    def team_board_advancement(
+        self, tournament: 'Tournament', team_board: 'TeamBoard'
+    ) -> 'KnockoutAdvancement | None':
+        aggregate = self._team_aggregate(tournament, team_board)
+        if aggregate is None:
+            return None
+        (_, a_points), (_, b_points) = aggregate
+        if a_points != b_points:
             return None
         return self._two_game_match_host().team_advancement(tournament, team_board)
+
+    def board_loser_id(self, tournament: 'Tournament', board: 'Board') -> int | None:
+        if tournament.pairing_system.paired_by_team:
+            return None
+        aggregate = self._aggregate(tournament, board)
+        if aggregate is None:
+            return None
+        (a_id, a_points), (b_id, b_points) = aggregate
+        if a_points == b_points:
+            winner = (
+                self._two_game_match_host()
+                .player_advancement(tournament, board)
+                .winner_id
+            )
+        else:
+            winner = a_id if a_points > b_points else b_id
+        if winner is None or not loss_is_elimination(self, tournament, board):
+            return None
+        return b_id if winner == a_id else a_id
+
+    def team_board_loser_id(
+        self, tournament: 'Tournament', team_board: 'TeamBoard'
+    ) -> int | None:
+        aggregate = self._team_aggregate(tournament, team_board)
+        if aggregate is None:
+            return None
+        (a_id, a_points), (b_id, b_points) = aggregate
+        if a_points == b_points:
+            winner = (
+                self._two_game_match_host()
+                .team_advancement(tournament, team_board)
+                .winner_id
+            )
+        else:
+            winner = a_id if a_points > b_points else b_id
+        if winner is None or not loss_is_elimination(self, tournament, team_board):
+            return None
+        return b_id if winner == a_id else a_id
 
     def unresolved_matches(
         self, tournament: 'Tournament', round_: int
