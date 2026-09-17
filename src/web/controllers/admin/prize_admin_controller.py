@@ -1133,12 +1133,11 @@ class PrizeAdminController(BaseEventAdminController):
             player.rating for player in tournament.tournament_players if player.rating
         ]
         if not errors and method == 'groups':
+            # No error recorded means the two ratings above are both set.
+            assert rating_min is not None and rating_max is not None
             if not group_count:
                 errors['group_count'] = _('A positive number of groups is expected.')
-            elif not any(
-                rating_min <= r <= rating_max  # type: ignore[operator]
-                for r in ratings
-            ):
+            elif not any(rating_min <= r <= rating_max for r in ratings):
                 errors['group_count'] = _(
                     'No player is rated within this range; '
                     'use the rating step method instead.'
@@ -1150,10 +1149,12 @@ class PrizeAdminController(BaseEventAdminController):
             errors['prizes'] = _('Positive values are expected.')
         if errors:
             return self._render_generate_rating_modal(web_context, data, errors)
+        # Past the guard, so the rating check above passed.
+        assert rating_min is not None and rating_max is not None
         bands = self._compute_rating_bands(
             method,
-            rating_min,  # type: ignore[arg-type]
-            rating_max,  # type: ignore[arg-type]
+            rating_min,
+            rating_max,
             group_count or 0,
             step or 0,
             ratings,

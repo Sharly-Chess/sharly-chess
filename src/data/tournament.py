@@ -4863,9 +4863,11 @@ class Tournament:
                 stored_boards = engine._team_match_stored_boards(self, new_stb)
         self.clear_team_cache()
         self.create_boards(stored_boards, round_, Result.PAIRING_ALLOCATED_BYE)
-        target_id = pab_stb.id if completing_pair else new_stb.id  # type: ignore[union-attr]
-        assert target_id is not None
-        return self.team_boards_by_id[target_id]
+        # Whichever of the two branches above ran assigned the one read here.
+        target_stb = pab_stb if completing_pair else new_stb
+        assert target_stb is not None
+        assert target_stb.id is not None
+        return self.team_boards_by_id[target_stb.id]
 
     def unpair_team_board(self, team_board: TeamBoard) -> None:
         """Unpair a single team match. Deletes the team_board envelope

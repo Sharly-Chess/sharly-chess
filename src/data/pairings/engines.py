@@ -1399,7 +1399,8 @@ class TeamBergerEngine(TeamRoundRobinPairingEngine):
             if a_id is None:
                 # The phantom slot was berger A; flip so the real team
                 # gets the bye record as team_a.
-                team_pairs.append((b_id, None))  # type: ignore[arg-type]
+                assert b_id is not None  # the both-None case continued above
+                team_pairs.append((b_id, None))
                 continue
             team_pairs.append((a_id, b_id))
         return team_pairs
@@ -1448,7 +1449,8 @@ class TeamDoubleBergerEngine(TeamBergerEngine):
             if a_id is None and b_id is None:
                 continue
             if a_id is None:
-                team_pairs.append((b_id, None))  # type: ignore[arg-type]
+                assert b_id is not None  # the both-None case continued above
+                team_pairs.append((b_id, None))
                 continue
             team_pairs.append((a_id, b_id))
         return team_pairs
