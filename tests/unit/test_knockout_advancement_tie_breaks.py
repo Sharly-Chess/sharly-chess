@@ -298,6 +298,42 @@ class TestAdvancementResolver:
         assert tournament.knockout.team_board_advancement(team_board) is None
         assert tournament.knockout.unresolved_matches(1) == []
 
+    def test_a_match_settles_nothing_until_its_last_game(self, tournament):
+        from utils.enum import Result
+
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._reload()
+
+        # One board in, one still to play. Whoever leads, the match decides
+        # nothing: the game left can level it, and the advancement tie-breaks
+        # have no say until it is played.
+        tournament.add_result(tournament.get_round_boards(1)[0], Result.WIN)
+        tournament = self._reload()
+        team_board = tournament.team_boards_by_round[1][0]
+        assert not team_board.all_games_played
+        assert tournament.knockout.team_last_round(team_board.team_a.id) is None
+        assert tournament.knockout.team_last_round(team_board.team_b.id) is None
+
+        # The last game in: level on game points, so Board Count settles it
+        # and the team it leaves behind is out.
+        tournament.add_result(tournament.get_round_boards(1)[1], Result.WIN)
+        tournament = self._reload()
+        team_board = tournament.team_boards_by_round[1][0]
+        settled = tournament.knockout.team_board_advancement(team_board)
+        assert settled is not None and settled.winner_id is not None
+        out = (
+            team_board.team_b.id
+            if settled.winner_id == team_board.team_a.id
+            else team_board.team_a.id
+        )
+        assert tournament.knockout.team_last_round(out) == 1
+
+        # A lineup change clears the board its player was moved off, which
+        # takes the match back to unfinished — and the team back in.
+        tournament.delete_result(tournament.get_round_boards(1)[1])
+        tournament = self._reload()
+        assert tournament.knockout.team_last_round(out) is None
+
     def test_manual_playoff_designation(self, tournament):
         from data.tie_breaks.tie_breaks import ManualTieBreak
         from utils.enum import Result

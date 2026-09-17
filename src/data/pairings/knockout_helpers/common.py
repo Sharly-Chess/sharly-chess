@@ -91,7 +91,10 @@ def team_match_winner_id(
     stb = team_board.stored_team_board
     if stb.team_b_id is None:
         return stb.team_a_id
-    if team_board.no_games_played:
+    if not team_match_all_games_played(team_board):
+        # A match with a game still to play is undecided, whoever leads: the
+        # games left can level it, and a lineup change that clears a board
+        # puts a decided match back in play.
         return None
     a_gp, b_gp = team_board.effective_game_points
     if a_gp > b_gp:
