@@ -66,6 +66,13 @@ lint = [
   "pre-commit",
   "ruff ~= 0.15.21",
   "validate-pyproject",
+  # Stubs for the dependencies typeshed carries. Without them mypy knows
+  # nothing about these APIs and checks none of the calls into them.
+  "types-colorama",
+  "types-paramiko",
+  "types-psutil",
+  "types-qrcode",
+  "types-toml",
 ]
 
 translate = [
@@ -84,6 +91,7 @@ export = [
 
 tests = [
   "pytest",
+  "pytest-cov",
   "pytest-playwright",
   "pytest-asyncio",
   "pytest-base-url",
@@ -99,15 +107,180 @@ scripts = [
   "resources/*.mrec",
 ]
 
+[tool.ruff]
+target-version = "py313"
+
 [tool.ruff.format]
 quote-style = "single"
+
+[tool.ruff.lint]
+select = [
+  "A",      # shadowed builtins
+  "ARG",    # unused arguments
+  "ASYNC",  # blocking calls in async functions
+  "B",      # likely bugs (bugbear)
+  "C4",     # comprehensions
+  "E4", "E7", "E9", "F",  # pycodestyle errors and pyflakes
+  "ISC",    # implicit string concatenation
+  "LOG",    # logging misuse
+  "PERF",   # avoidable overhead
+  "PIE",    # miscellaneous lints
+  "PLE", "PLW",  # pylint errors and warnings
+  "PTH",    # os.path calls with a pathlib equivalent
+  "RET",    # return statements
+  "RUF",    # ruff-specific lints
+  "SIM",    # simplifications
+  "TID",    # tidy imports
+  "UP",     # syntax available on the minimum Python version
+]
+
+# Not selected: `DTZ` (timezone-naive datetimes). Timestamps are stored as UTC
+# ISO text and converted to local naive datetimes on the way in, by the four
+# functions on `SQLiteDatabase` that are the only aware datetimes in the tree.
+# In memory everything is local naive, which is what `datetime.now()` returns,
+# and a tournament's dates are `date` objects that carry no zone at all. Making
+# the calls aware would raise on every comparison with a value read back from
+# the database, to restate at 123 call sites what the boundary already handles.
+
+ignore = [
+  # Parameters named after builtins (`id`, `type`, `filter`) are part of the
+  # public shape of entities, stores and hooks.
+  "A002",
+  # Arguments a signature has to accept to conform to its base class.
+  "ARG002", "ARG003", "ARG004",
+  # And what a caller dictates: shutil's onerror, a signal handler, a Toga
+  # on_press, a key function — each has to take what it is handed.
+  "ARG001", "ARG005",
+  # Same for a method named after one (`Option.type` is the option's own type)
+  # and for an import that carries a library's name (`requests`' ConnectionError,
+  # `webbrowser.open`).
+  "A003", "A004",
+  # Accented and typographic characters are expected in translatable strings.
+  "RUF001", "RUF002", "RUF003",
+  # Normalising the item in place — strip it, parse it, swap the pair — is what
+  # a loop variable is reassigned for.
+  "PLW2901",
+  # An optional hook declares a no-op default on purpose; making it abstract
+  # would force every subclass to restate it.
+  "B027",
+  # Module-level singletons and lazy caches are built with `global`: the logger,
+  # the plugin manager, the experimental-features flag.
+  "PLW0603",
+  # `open()` reads better than `Path.open()` at the call sites that use it.
+  "PTH123",
+  # The nine handles left outlive their scope on purpose: a
+  # `NamedTemporaryFile(delete=False)` whose path is what the caller wants, and
+  # the devnull that stdout and stderr are pointed at for the life of the
+  # process. A context manager would close the file the caller is about to read.
+  "SIM115",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# One-off generators for the Molter appendix. Every helper they define inside a
+# loop is called in the same iteration, which `B023` cannot tell apart from a
+# closure that outlives it.
+"docs/technical-appendices/molter/*" = ["B023"]
+
+[tool.coverage.run]
+source = ["src"]
+# The end-to-end suite drives the web layer through a server in a child
+# process, which measures nothing unless each process writes its own data
+# file and the run combines them afterwards.
+parallel = true
+# That server is signalled, not asked to exit, and it holds the screens'
+# event streams open: without a handler that flushes on SIGTERM its data
+# never reaches disk.
+sigterm = true
+# The GUI only runs under Toga, and the migrations only against a database of
+# the version they migrate, so neither is reachable from the suite.
+omit = [
+  "src/gui/*",
+  "src/database/sqlite/*/migrations/*",
+]
+
+[tool.coverage.report]
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+  "@(abc\\.)?abstractmethod",
+]
+# A floor, not a target: it exists so a change cannot quietly take coverage
+# down with it. Raise it when the figure rises, never lower it to pass.
+fail_under = 55
 
 [tool.mypy]
 mypy_path = "src:."
 explicit_package_bases = true
 namespace_packages = true
 check_untyped_defs = true
-disable_error_code = [
-  "import-untyped",
-  "no-redef",
+warn_unused_ignores = true
+enable_error_code = [
+  # A name read on a path that never assigned it.
+  "possibly-undefined",
+  # An awaitable whose result is dropped, so the call never runs.
+  "unused-awaitable",
+  # Truth-testing something that cannot be empty.
+  "truthy-iterable",
+  # A standard-library call the runtime is due to take away.
+  "deprecated",
+  # A bare `# type: ignore` silences whatever else lands on that line later.
+  "ignore-without-code",
 ]
+
+[[tool.mypy.overrides]]
+# These ship neither stubs nor a `py.typed` marker, and typeshed carries none
+# for them, so there is nothing to install and nothing to check. Named one by
+# one rather than silenced as a family: a dependency added without types
+# should be a decision, not a default.
+module = [
+  "AdvancedHTMLParser.*",
+  "aiosqlitepool.*",
+  "apluggy.*",
+  "fontTools.*",
+  "pyexcel_ods3.*",
+  "pytds.*",
+  "rubicon.objc.*",
+  "text_unidecode.*",
+  "toga_cocoa.*",
+  "xlsxwriter.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Code behind a `sys.platform` test is unreachable, and so unchecked, on every
+# other platform, which makes the ignores it needs look unused there.
+module = ["utils.scripts"]
+warn_unused_ignores = false
+
+[[tool.mypy.overrides]]
+# Every package under `src` is annotated, and kept that way. `tests` and
+# `scripts` are not, which is why this is a per-module setting.
+module = [
+  "utils.*",
+  "common.*",
+  "web.*",
+  "gui.*",
+  "plugins.*",
+  "database.*",
+  "data.*",
+]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+warn_return_any = true
+# A test narrows a property with an assert, reads it again expecting the new
+# value, and compares fixtures by identity: all three look like dead code to
+# mypy and are not. Same reason the annotation rules above stop at `src`.
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+# Last, so it wins over the block above. Same reason as the unused ignores:
+# the branch that serves another platform is dead on the one running mypy,
+# and saying so on every line only reports which machine the check ran on.
+module = [
+  "utils.scripts",
+  "utils.fonts",
+  "common.network",
+  "gui.server_gui_toga",
+]
+warn_unreachable = false
