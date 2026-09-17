@@ -225,11 +225,12 @@ class PapiConverter:
         finally:
             # Clean up the temporary SQL dump file
             sql_dump_file.unlink(missing_ok=True)
-            if not target_file.exists():
-                raise SharlyChessException(
-                    'Player database conversion error: SQLite database was not created.'
-                )
-            return True
+
+        if not target_file.exists():
+            raise SharlyChessException(
+                'Player database conversion error: SQLite database was not created.'
+            )
+        return True
 
     def read_papi_file(self, source_file: Path) -> PapiData:
         """Read the papi file *source_file* into stored objects.
@@ -623,12 +624,11 @@ class PapiConverter:
                 white_id = player_id
                 black_id = papi_round.opponent
             else:
-                if papi_round is None:
+                if papi_round.opponent is None:
                     raise_exception(
                         'color',
                         _('Black pairings are supposed to have an opponent'),
                     )
-                assert papi_round.opponent is not None
                 white_id = papi_round.opponent
                 black_id = player_id
             stored_board = StoredBoard(
