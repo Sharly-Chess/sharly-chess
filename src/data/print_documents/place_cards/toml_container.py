@@ -207,9 +207,9 @@ class TOMLContainer:
         except ValueError:
             assert prop is not None
             logger.warning(
-                'Value [%s] not accepted for custom property [%s] (float expected), defaults to [%s].',
+                '[%s]: value [%s] not accepted for custom property [%s] (float expected), defaults to [%s].',
                 self.toml_file.name,
-                self.data[prop],
+                value,
                 prop,
                 default,
             )
