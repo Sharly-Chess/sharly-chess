@@ -134,7 +134,10 @@ class ChampionshipAdminController(BaseAdminController):
         for event_uniq_id in event_loader.event_uniq_ids:
             try:
                 event = event_loader.load_event(event_uniq_id)
-            except Exception:
+            except Exception as error:
+                # The picker drops the event rather than failing the page, but
+                # it says which one and why, as the events list does.
+                logger.warning('Could not load event [%s]: %s', event_uniq_id, error)
                 continue
             if event.is_team_event != want_team:
                 continue
@@ -1795,6 +1798,7 @@ class ChampionshipAdminController(BaseAdminController):
                 'is_team': is_team,
                 'competitor_rows': cls._competitor_rows(championship),
             }
+        assert isinstance(document, ChampionshipRankingsPrintDocument)
         ranking_sets = []
         categories_by_id = {
             str(category.id): category for category in championship.categories

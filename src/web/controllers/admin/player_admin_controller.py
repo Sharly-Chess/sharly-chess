@@ -2260,15 +2260,13 @@ class PlayerAdminController(BaseEventAdminController):
             try:
                 content_by_column_id = self._read_csv_file(file_path)
             except SharlyChessException as error:
-                if isinstance(error, SharlyChessException):
-                    message = str(error)
-                else:
-                    message = _(
-                        'An unexpected error occurred while reading '
-                        'the CSV file. Consult the logs for more details.'
-                    )
-                    logger.exception(error)
-                errors['alert'] = message
+                errors['alert'] = str(error)
+            except Exception as error:
+                errors['alert'] = _(
+                    'An unexpected error occurred while reading '
+                    'the CSV file. Consult the logs for more details.'
+                )
+                logger.exception(error)
         use_data_source = WebContext.form_data_to_bool(
             normalized_data, 'use_data_source'
         )
