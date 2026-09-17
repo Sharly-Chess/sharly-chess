@@ -20,7 +20,7 @@ import subprocess
 import sys
 import threading
 import webbrowser
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from datetime import datetime
 from pathlib import Path
 from typing import Any, cast
@@ -334,6 +334,7 @@ class SharlyChessServerToga(toga.App):
 
         self._logview_ready = False
         self._pending_js: list[str] = []
+        self._background_tasks: set[asyncio.Task] = set()
 
         # State
         self.server_thread: threading.Thread | None = None
@@ -1374,6 +1375,14 @@ class SharlyChessServerToga(toga.App):
             if not (await self.main_window.dialog(toga.QuestionDialog(title, message))):
                 return
 
+    def _spawn_task(self, coro: Coroutine[Any, Any, None]) -> None:
+        """Run *coro* in the background. The loop only holds a weak reference to
+        the task, so it is kept here until it is done or it can be collected
+        before it has run."""
+        task = asyncio.create_task(coro)
+        self._background_tasks.add(task)
+        task.add_done_callback(self._background_tasks.discard)
+
     def on_running(self) -> None:
         # Logging handler
         assert self.html_view is not None
@@ -1382,7 +1391,7 @@ class SharlyChessServerToga(toga.App):
         self.gui_handler.setLevel(logging.DEBUG)
 
         # Start message processing
-        asyncio.create_task(self._process_message_queue())
+        self._spawn_task(self._process_message_queue())
         if SharlyChessConfig().force_edit:
             # The application only starts once its settings have been set, so
             # that it is never reachable half configured (see _on_setup_done()).
@@ -1752,7 +1761,7 @@ class SharlyChessServerToga(toga.App):
                         pass
                 self._pending_js.clear()
 
-        asyncio.create_task(_mark_ready_and_flush())
+        self._spawn_task(_mark_ready_and_flush())
 
     def _eval_or_buffer_js(self, js: str) -> None:
         if self._logview_ready:

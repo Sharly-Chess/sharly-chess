@@ -333,6 +333,7 @@ class LocalDataSource(DataSource, ABC):
 class OnlineDataSource(DataSource, ABC):
     connection_status: ClassVar[bool | None] = None
     _connection_last_checked_at: ClassVar[datetime | None] = None
+    _background_tasks: ClassVar[set[asyncio.Task]] = set()
 
     @classmethod
     @abstractmethod
@@ -347,8 +348,11 @@ class OnlineDataSource(DataSource, ABC):
             # No running loop yet — safe fallback if someone calls too early
             loop = asyncio.get_event_loop()
 
-        # Schedule background task
-        loop.create_task(self.reload_connection_status())
+        # The loop only holds a weak reference, so the task is kept here until
+        # it is done or it can be collected before it has run.
+        task = loop.create_task(self.reload_connection_status())
+        OnlineDataSource._background_tasks.add(task)
+        task.add_done_callback(OnlineDataSource._background_tasks.discard)
 
     @classmethod
     async def reload_connection_status(cls) -> None:
