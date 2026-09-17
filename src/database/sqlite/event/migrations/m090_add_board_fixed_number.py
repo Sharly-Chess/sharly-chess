@@ -6,7 +6,7 @@ class Migration(BaseMigration):
     screens/families choose how fixed boards are ordered (natural position vs
     board number)."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `board` ADD `fixed_number` INT')
         self.database.execute('ALTER TABLE `screen_set` ADD `fixed_board_order` TEXT')
         self.database.execute('ALTER TABLE `family` ADD `fixed_board_order` TEXT')
@@ -17,7 +17,7 @@ class Migration(BaseMigration):
             'WHERE `fixed_boards_str` IS NOT NULL'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `family` DROP COLUMN `fixed_board_order`')
         self.database.execute(
             'ALTER TABLE `screen_set` DROP COLUMN `fixed_board_order`'

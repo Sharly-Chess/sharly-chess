@@ -20,7 +20,7 @@ class DisplayController:
         event: 'Event',
         stored_display_controller: StoredDisplayController,
     ):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_display_controller: StoredDisplayController = (
             stored_display_controller
         )
@@ -50,7 +50,7 @@ class DisplayController:
         return self.stored_display_controller.screen_id
 
     @screen_id.setter
-    def screen_id(self, new_id):
+    def screen_id(self, new_id: int | None) -> None:
         self.stored_display_controller.screen_id = new_id
         self.stored_display_controller.rotator_id = None
 
@@ -59,7 +59,7 @@ class DisplayController:
         return self.stored_display_controller.rotator_id
 
     @rotator_id.setter
-    def rotator_id(self, new_id):
+    def rotator_id(self, new_id: int | None) -> None:
         self.stored_display_controller.rotator_id = new_id
         self.stored_display_controller.screen_id = None
 
@@ -98,12 +98,11 @@ class DisplayController:
             return _('Currently displaying screen [{name}]').format(
                 name=assigned_object.name
             )
-        elif self.assigned_type == 'rotator':
+        if self.assigned_type == 'rotator':
             return _('Currently displaying rotator [{name}]').format(
                 name=assigned_object.name
             )
-        else:
-            return None
+        return None
 
     @property
     def screen(self) -> Screen | None:

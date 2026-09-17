@@ -33,6 +33,7 @@ from data.loader import EventLoader
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result
 from web.controllers.admin.team_admin_controller import TeamAdminController
+import contextlib
 
 
 EVENT_ID = 'test-team-lineup-reconcile'
@@ -130,10 +131,8 @@ class TeamLineupReconcileTestCase(TestCase):
                     )
 
     def _load(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 
@@ -246,10 +245,10 @@ class TeamLineupReconcileTestCase(TestCase):
         team_a = self._event.teams_by_id[self.team_a]
         # Force the divergence: store a hole at the last slot, boards intact.
         with EventDatabase(EVENT_ID, write=True) as db:
-            team_a.set_round_lineup(1, self.a_ids[:-1] + [None], db)
+            team_a.set_round_lineup(1, [*self.a_ids[:-1], None], db)
 
         # Move the last roster player to slot 0, leaving the last slot empty.
-        new = [self.a_ids[-1]] + self.a_ids[1:-1] + [None]
+        new = [self.a_ids[-1], *self.a_ids[1:-1], None]
         self._reconcile(self.team_a, new)
 
         tournament = self._load()
@@ -307,7 +306,7 @@ class TeamLineupReconcileTestCase(TestCase):
         self.assertTrue(TeamAdminController._player_is_paired(team_a, seated))
 
         # Bench the last player; they should no longer count as paired.
-        self._reconcile(self.team_a, self.a_ids[:-1] + [None])
+        self._reconcile(self.team_a, [*self.a_ids[:-1], None])
         self._load()
         team_a = self._event.teams_by_id[self.team_a]
         benched = self._event.players_by_id[self.a_ids[-1]]

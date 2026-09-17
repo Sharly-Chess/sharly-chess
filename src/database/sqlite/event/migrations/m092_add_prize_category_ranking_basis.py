@@ -7,13 +7,13 @@ class Migration(BaseMigration):
     standing, average per-round performance or best single-round performance).
     Existing categories keep the historic behaviour (final standing)."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `prize_category` '
             "ADD `ranking_basis` TEXT NOT NULL DEFAULT 'final_standing'"
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `prize_category` DROP COLUMN `ranking_basis`'
         )

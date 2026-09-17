@@ -14,8 +14,7 @@ class Translator:
     def markdown(self) -> str:
         if self.github_user:
             return f'[{self.name}](https://github.com/{self.github_user})'
-        else:
-            return self.name
+        return self.name
 
     @classmethod
     def get_translators(

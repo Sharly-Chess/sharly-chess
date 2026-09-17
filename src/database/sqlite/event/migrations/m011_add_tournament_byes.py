@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `tournament` ADD `first_board_number` INTEGER'
         )
@@ -15,7 +15,7 @@ class Migration(BaseMigration):
         # had been left by error in create_event.sql
         self.database.execute('DROP TABLE IF EXISTS `chessevent`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `first_board_number`'
         )

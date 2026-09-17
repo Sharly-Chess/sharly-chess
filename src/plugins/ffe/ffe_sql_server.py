@@ -34,7 +34,7 @@ class FFESqlServer(SqlServer):
     TIMEOUT = 10
     CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.sql-server-credentials'
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(self.CREDENTIALS_FILE, timeout=self.TIMEOUT)
         if not NetworkMonitor.connected():
             error: str = _('No internet connection')
@@ -48,7 +48,7 @@ class FFESqlServer(SqlServer):
         user: str,
         password: str,
         database: str,
-    ):
+    ) -> None:
         SqlServerCredentials.dump(
             cls.CREDENTIALS_FILE,
             host,
@@ -157,7 +157,7 @@ class FFESqlServer(SqlServer):
     def get_club_fields(self) -> list[str]:
         return [f'club.{f} AS Club{f}' for f in self.CLUB_FIELDS]
 
-    RATING_TYPE_CONDITION: str = f'joueur.Fide IN ({", ".join(map(lambda s: f"'{s}'", [PlayerRatingType.ESTIMATED, PlayerRatingType.NATIONAL, PlayerRatingType.FIDE]))})'
+    RATING_TYPE_CONDITION: str = f'joueur.Fide IN ({", ".join(f"'{s}'" for s in [PlayerRatingType.ESTIMATED, PlayerRatingType.NATIONAL, PlayerRatingType.FIDE])})'
 
     @staticmethod
     def string_matches_fide_id(string: str) -> int | None:
@@ -220,7 +220,7 @@ class FFESqlServer(SqlServer):
                 ' OR '.join(token_expressions),
             ]
             params += token_params
-        condition: str = ' AND '.join(map(lambda c: f'({c})', conditions))
+        condition: str = ' AND '.join(f'({c})' for c in conditions)
 
         # We build one CASE block that sorts best → worst
         order_clauses = []
@@ -266,8 +266,7 @@ class FFESqlServer(SqlServer):
         await self.execute(query, tuple(params))
         if row := await self.fetchone():
             return self._get_stored_player_from_row(row)
-        else:
-            return None
+        return None
 
     async def _get_stored_players_by_condition(
         self,
@@ -343,7 +342,7 @@ class FFESqlServer(SqlServer):
 
     async def _get_stored_players_by_name_keys_page(
         self, name_keys: list[tuple[str, str, date]]
-    ):
+    ) -> list[StoredPlayer]:
         name_str_keys: list[str] = []
         name_dob_str_keys: list[str] = []
         for name_key in name_keys:
@@ -426,7 +425,7 @@ class FFESqlServer(SqlServer):
             club: str = filters['club_filter']
             conditions.append('LOWER(club.Nom) LIKE LOWER(%s)')
             params.append(f'%{club}%')
-        if filters.get('year_of_birth_filter', None):
+        if filters.get('year_of_birth_filter'):
             age_conditions = []
             for min_year, max_year in filters['year_of_birth_filter']:
                 match min_year, max_year:

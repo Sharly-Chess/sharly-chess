@@ -57,6 +57,7 @@ from utils.enum import (
     Result,
     TournamentRating,
 )
+import itertools
 
 ROUNDS = 6
 
@@ -172,7 +173,7 @@ class PrizesTestCase(TestCase):
         self,
         name: str = 'category',
         is_main: bool = False,
-        prize_sharing: PrizeSharing = NoPrizeSharing(),
+        prize_sharing: PrizeSharing | None = None,
         stored_prizes: list[StoredPrize] | None = None,
         stored_prize_criteria: list[StoredPrizeCriterion] | None = None,
         threshold: float | None = None,
@@ -181,7 +182,7 @@ class PrizesTestCase(TestCase):
             stored_prizes = []
         if not stored_prize_criteria:
             stored_prize_criteria = []
-        for index, prize in enumerate(stored_prizes):
+        for _index, prize in enumerate(stored_prizes):
             prize.prize_category_id = self.category_index
         for criterion in stored_prize_criteria:
             criterion.prize_category_id = self.category_index
@@ -190,7 +191,7 @@ class PrizesTestCase(TestCase):
             index=0,
             prize_group_id=1,
             name=name,
-            prize_sharing=prize_sharing.static_id(),
+            prize_sharing=(prize_sharing or NoPrizeSharing()).static_id(),
             is_main=is_main,
             sharing_threshold=threshold,
             stored_prize_criteria=stored_prize_criteria,
@@ -1322,6 +1323,6 @@ class RatingBandsTestCase(TestCase):
         # Bands are contiguous and cover the whole range without overlap.
         self.assertEqual(bands[0][0], 1000)
         self.assertEqual(bands[-1][1], 2000)
-        for (lo, hi), (next_lo, _next_hi) in zip(bands, bands[1:]):
+        for (lo, hi), (next_lo, _next_hi) in itertools.pairwise(bands):
             self.assertLessEqual(lo, hi)
             self.assertEqual(hi + 1, next_lo)

@@ -109,10 +109,7 @@ class Account:
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[AccountPluginData]]:
-        return {
-            plugin_id: plugin_data_class
-            for plugin_id, plugin_data_class in plugin_manager.hook.get_account_plugin_data_class()
-        }
+        return dict(plugin_manager.hook.get_account_plugin_data_class())
 
     def _get_plugin_data(self) -> dict[str, AccountPluginData]:
         return {
@@ -182,7 +179,7 @@ class Account:
         """Returns the password hash of the account."""
         return self.stored_account.password_hash
 
-    def update_password(self, new_hash: str):
+    def update_password(self, new_hash: str) -> None:
         self.stored_account.password_hash = new_hash
 
     @property
@@ -288,7 +285,7 @@ class Account:
                 continue
             permissions_by_access_level[access_level] = self._merge_permissions(
                 permission,
-                permissions_by_access_level.get(access_level, None),
+                permissions_by_access_level.get(access_level),
             )
             if not with_inheritance:
                 continue
@@ -297,7 +294,7 @@ class Account:
                 sub_stored_permission.access_level = sub_access_level.id
                 permissions_by_access_level[sub_access_level] = self._merge_permissions(
                     Permission(sub_stored_permission, inherited_by=access_level),
-                    permissions_by_access_level.get(sub_access_level, None),
+                    permissions_by_access_level.get(sub_access_level),
                 )
         return {
             access_level: permissions_by_access_level[access_level]
@@ -340,7 +337,7 @@ class Account:
     def __str__(self) -> str:
         return f'Account(id={self.id}, full_name={self.full_name})'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(stored_account={self.stored_account!r})'
 
     # Accounts are stored at event-level, the methods below provide event-free

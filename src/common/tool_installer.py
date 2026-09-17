@@ -58,22 +58,21 @@ class ToolInstaller(ABC):
         if self.is_installed:
             logger.debug('Library [%s] is installed.', self.name)
             return True
-        else:
-            if not DEVEL_ENV:
-                print_interactive_error(
-                    _('Library [{lib}] is missing.').format(lib=self.name)
-                )
-                return False
-            print_interactive_warning(
+        if not DEVEL_ENV:
+            print_interactive_error(
                 _('Library [{lib}] is missing.').format(lib=self.name)
             )
-            if not self.install():
-                print_interactive_error(
-                    _('Installation of [{lib}] failed.').format(lib=self.name)
-                )
-            else:
-                print_interactive_success(_('Installed [{lib}].').format(lib=self.name))
-            return self.is_installed
+            return False
+        print_interactive_warning(
+            _('Library [{lib}] is missing.').format(lib=self.name)
+        )
+        if not self.install():
+            print_interactive_error(
+                _('Installation of [{lib}] failed.').format(lib=self.name)
+            )
+        else:
+            print_interactive_success(_('Installed [{lib}].').format(lib=self.name))
+        return self.is_installed
 
     @abstractmethod
     def install(self) -> bool:
@@ -83,7 +82,7 @@ class ToolInstaller(ABC):
     def download_file(
         url: str,
         dest_file: Path,
-    ):
+    ) -> None:
         print_interactive_info(f'Downloading {url}...')
         response = requests.get(url, stream=True, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
@@ -93,7 +92,7 @@ class ToolInstaller(ABC):
         print_interactive_success('Done.')
 
     @staticmethod
-    def install_archive_and_delete(archive_path: Path, install_dir: Path):
+    def install_archive_and_delete(archive_path: Path, install_dir: Path) -> None:
         print_interactive_info(f'Installing to {install_dir}...')
         install_dir.mkdir(parents=True, exist_ok=True)
         shutil.unpack_archive(archive_path, install_dir)
@@ -190,11 +189,11 @@ class WebLibArchiveInstaller(WebLibInstaller):
                 extracted_licence_files = []
                 for licence_file in self.licence_files:
                     # Handle licence file paths within the archive
-                    src_file: Path = tmp_dir / self.version_folder_name / licence_file
+                    src_file = tmp_dir / self.version_folder_name / licence_file
                     if src_file.exists():
                         # Preserve the full relative path for the destination
-                        dst_file: Path = self.version_install_dir / licence_file
-                        dst_dir: Path = dst_file.parent
+                        dst_file = self.version_install_dir / licence_file
+                        dst_dir = dst_file.parent
                         dst_dir.mkdir(parents=True, exist_ok=True)
                         try:
                             shutil.copy2(src_file, dst_file)
@@ -311,12 +310,12 @@ class ExecutableInstaller(ToolInstaller, ABC):
         extensions_to_sign = {'exe'}
         files: list[Path] = []
         for extension in extensions_to_sign:
-            files += [f for f in self.install_dir.glob(f'**/*.{extension}')]
+            files += list(self.install_dir.glob(f'**/*.{extension}'))
         return files
 
 
 class BbpPairingsInstaller(ExecutableInstaller):
-    def __init__(self):
+    def __init__(self) -> None:
         # Specify which files in the archive are licence files
         super().__init__(
             licence_files={
@@ -422,7 +421,7 @@ class BbpPairingsInstaller(ExecutableInstaller):
 
 
 class PapiConverterInstaller(ExecutableInstaller):
-    def __init__(self):
+    def __init__(self) -> None:
         # Specify which files in the archive are licence files
         super().__init__()
 

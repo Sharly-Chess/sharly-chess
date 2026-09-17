@@ -25,7 +25,7 @@ class AesEcb:
         input_file: Path,
         output_encrypted_file: Path,
         key: str,
-    ):
+    ) -> None:
         with open(input_file, 'rb') as file:
             data = file.read()
 
@@ -44,7 +44,7 @@ class AesEcb:
         input_encrypted_file: Path,
         output_decrypted_file: Path,
         key: str,
-    ):
+    ) -> None:
         with open(input_encrypted_file, 'rb') as file:
             ciphertext = file.read()
 

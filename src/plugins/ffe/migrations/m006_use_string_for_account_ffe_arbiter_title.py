@@ -1,8 +1,9 @@
+from typing import ClassVar
 from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    TITLE_MAPPING: dict[int, str] = {
+    TITLE_MAPPING: ClassVar[dict[int, str]] = {
         0: '',
         10: 'AS',
         20: 'AFJ',
@@ -13,7 +14,7 @@ class Migration(BaseMigration):
         51: 'AFE2',
     }
 
-    def forward(self):
+    def forward(self) -> None:
         for int_value, str_value in self.TITLE_MAPPING.items():
             self.database.execute(
                 "UPDATE `account` SET plugin_data = JSON_SET(plugin_data, '$.ffe.ffe_arbiter_title', ?) "
@@ -21,7 +22,7 @@ class Migration(BaseMigration):
                 (str_value, int_value),
             )
 
-    def backward(self):
+    def backward(self) -> None:
         for int_value, str_value in self.TITLE_MAPPING.items():
             self.database.execute(
                 "UPDATE `account` SET plugin_data = JSON_SET(plugin_data, '$.ffe.ffe_arbiter_title', ?) "

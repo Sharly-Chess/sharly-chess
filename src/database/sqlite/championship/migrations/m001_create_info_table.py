@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `info` ('
             "    `name` TEXT NOT NULL DEFAULT '',"
@@ -109,7 +109,7 @@ class Migration(BaseMigration):
             ')'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP TABLE `championship_manual_tiebreak`')
         self.database.execute('DROP TABLE `championship_criterion`')
         self.database.execute('DROP TABLE `championship_category`')

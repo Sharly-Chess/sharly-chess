@@ -80,9 +80,11 @@ class SparkleUpdater:
 
             ns_string = ObjCClass('NSString')
 
-            class _SparkleFeedDelegate(NSObject):  # type: ignore[misc]
+            class _SparkleFeedDelegate(NSObject):
                 @objc_method
-                def feedURLStringForUpdater_(self, updater) -> ObjCInstance:
+                def feedURLStringForUpdater_(
+                    self, updater: ObjCInstance
+                ) -> ObjCInstance:
                     # Our detection has already chosen the version; hand Sparkle
                     # that release's appcast asset.
                     feed_url = SparkleUpdater._feed_url
@@ -91,7 +93,7 @@ class SparkleUpdater:
 
             updater_controller = ObjCClass('SPUStandardUpdaterController')
             cls._delegate = _SparkleFeedDelegate.alloc().init()
-            cls._controller = updater_controller.alloc().initWithStartingUpdater_updaterDelegate_userDriverDelegate_(  # noqa: E501
+            cls._controller = updater_controller.alloc().initWithStartingUpdater_updaterDelegate_userDriverDelegate_(
                 True, cls._delegate, None
             )
         except Exception:

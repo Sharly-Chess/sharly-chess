@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import cached_property
 
-from typing_extensions import TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from common.exception import OptionError
 from common.i18n import _
@@ -95,7 +95,7 @@ class RatingPlayerFilter(PlayerFilter):
         min_rating, max_rating = self.get_option_values()
         return Utils.get_rating_range_label(min_rating, max_rating)
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         min_rating, max_rating = self.get_option_values()
         if not min_rating and not max_rating:
@@ -136,29 +136,29 @@ class AgePlayerFilter(PlayerFilter):
         min_category, max_category = self.category_range
         if not min_category:
             return lambda player: (
-                player.category <= max_category  # type: ignore
-                and player.category != NoCategory()
+                player.category <= max_category and player.category != NoCategory()
             )
         if not max_category:
             return lambda player: (
-                player.category >= min_category  # type: ignore
-                and player.category != NoCategory()
+                player.category >= min_category and player.category != NoCategory()
             )
         if max_category == min_category:
             return lambda player: player.category == max_category
-        return lambda player: min_category <= player.category <= max_category  # type: ignore
+        return lambda player: min_category <= player.category <= max_category
 
     def full_name(self, tournament: 'Tournament') -> str:
         min_category, max_category = self.category_range
         if not min_category:
-            return f'{self.name} ≤ {getattr(max_category, "name")}'
+            # One of the two is always set; only the other can be None here.
+            assert max_category is not None
+            return f'{self.name} ≤ {max_category.name}'
         if not max_category:
             return f'{self.name} ≥ {min_category.name}'
         if max_category == min_category:
             return f'{self.name} ({min_category.name})'
         return f'{min_category.name} ≤ {self.name} ≤ {max_category.name}'
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         min_category, max_category = self.category_range
         if not min_category and not max_category:
@@ -226,8 +226,7 @@ class ClubPlayerFilter(PlayerFilter):
         clubs, exclude = self.get_option_values()
         if exclude:
             return lambda player: player.club.name not in clubs
-        else:
-            return lambda player: player.club.name in clubs
+        return lambda player: player.club.name in clubs
 
     def full_name(self, tournament: 'Tournament') -> str:
         clubs, exclude = self.get_option_values()
@@ -258,8 +257,7 @@ class FederationPlayerFilter(PlayerFilter):
         federations, exclude = self.get_option_values()
         if exclude:
             return lambda player: player.federation.name not in federations
-        else:
-            return lambda player: player.federation.name in federations
+        return lambda player: player.federation.name in federations
 
     def full_name(self, tournament: 'Tournament') -> str:
         federations, exclude = self.get_option_values()
@@ -290,8 +288,7 @@ class CommentPlayerFilter(PlayerFilter):
         comments, exclude = self.get_option_values()
         if exclude:
             return lambda player: player.comment not in comments
-        else:
-            return lambda player: player.comment in comments
+        return lambda player: player.comment in comments
 
     def full_name(self, tournament: 'Tournament') -> str:
         comments, exclude = self.get_option_values()
@@ -322,8 +319,7 @@ class PlayerIdPlayerFilter(PlayerFilter):
         player_ids, exclude = self.get_option_values()
         if exclude:
             return lambda player: player.id not in player_ids
-        else:
-            return lambda player: player.id in player_ids
+        return lambda player: player.id in player_ids
 
     def full_name(self, tournament: 'Tournament') -> str:
         player_ids, exclude = self.get_option_values()

@@ -1,6 +1,6 @@
 import copy
 from functools import partial
-from typing import Any, Annotated
+from typing import Any, Annotated, ClassVar
 
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
@@ -140,7 +140,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
                 )
             self.admin_prize = prize_category.prizes_by_id[prize_id]
 
-    def set_default_prize_group(self):
+    def set_default_prize_group(self) -> None:
         if self.admin_tournament and self.admin_tournament.prize_groups:
             self.admin_prize_group = self.admin_tournament.sorted_prize_groups[0]
         else:
@@ -200,11 +200,13 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
 
 
 class PrizeAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         TournamentActionGuard(AuthAction.VIEW_PRIZES_TAB),
     ]
-    manage_guards = [TournamentActionGuard(AuthAction.MANAGE_PRIZES)]
+    manage_guards: ClassVar = [TournamentActionGuard(AuthAction.MANAGE_PRIZES)]
     MAX_PRIZE_PLACES = 8
 
     @classmethod
@@ -669,13 +671,12 @@ class PrizeAdminController(BaseEventAdminController):
                 errors=errors,
                 previous_category=prize_category,
             )
-        else:
-            Message.success(
-                request,
-                _('Prize category [{prize_category}] successfully created.').format(
-                    prize_category=prize_category.name
-                ),
-            )
+        Message.success(
+            request,
+            _('Prize category [{prize_category}] successfully created.').format(
+                prize_category=prize_category.name
+            ),
+        )
         return self._admin_event_prizes_render(web_context)
 
     @patch(

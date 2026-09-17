@@ -77,7 +77,7 @@ class ChampionshipDatabase(MigrationDatabase):
     def championship_database_path(uniq_id: str) -> Path:
         return CHAMPIONSHIPS_DIR / f'{uniq_id}.{Extension.CHAMPIONSHIP_DB}'
 
-    def rename(self, new_uniq_id: str):
+    def rename(self, new_uniq_id: str) -> None:
         """Move the championship file to the one for ``new_uniq_id``."""
         self.file.rename(self.championship_database_path(new_uniq_id))
 
@@ -201,7 +201,7 @@ class ChampionshipDatabase(MigrationDatabase):
         )
         return stored_source
 
-    def delete_stored_source(self, source_id: int):
+    def delete_stored_source(self, source_id: int) -> None:
         self.execute('DELETE FROM `source` WHERE `id` = ?', (source_id,))
 
     # ---------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ class ChampionshipDatabase(MigrationDatabase):
 
     def delete_stored_player_override(
         self, event_uniq_id: str, tournament_id: int, source_player_id: int
-    ):
+    ) -> None:
         self.execute(
             'DELETE FROM `player_override` '
             'WHERE `event_uniq_id` = ? AND `tournament_id` = ? '
@@ -253,7 +253,7 @@ class ChampionshipDatabase(MigrationDatabase):
             (event_uniq_id, tournament_id, source_player_id),
         )
 
-    def delete_stored_player_override_group(self, group_key: str):
+    def delete_stored_player_override_group(self, group_key: str) -> None:
         self.execute(
             'DELETE FROM `player_override` WHERE `group_key` = ?', (group_key,)
         )
@@ -297,7 +297,7 @@ class ChampionshipDatabase(MigrationDatabase):
 
     def delete_stored_team_override(
         self, event_uniq_id: str, tournament_id: int, source_team_id: int
-    ):
+    ) -> None:
         self.execute(
             'DELETE FROM `team_override` '
             'WHERE `event_uniq_id` = ? AND `tournament_id` = ? '
@@ -305,7 +305,7 @@ class ChampionshipDatabase(MigrationDatabase):
             (event_uniq_id, tournament_id, source_team_id),
         )
 
-    def delete_stored_team_override_group(self, group_key: str):
+    def delete_stored_team_override_group(self, group_key: str) -> None:
         self.execute('DELETE FROM `team_override` WHERE `group_key` = ?', (group_key,))
 
     # ---------------------------------------------------------------------------------
@@ -329,7 +329,7 @@ class ChampionshipDatabase(MigrationDatabase):
 
     def replace_stored_championship_rules(
         self, stored_rules: list[StoredChampionshipRule]
-    ):
+    ) -> None:
         """Replace the whole ordered rule list (the config is edited as a
         list, so it is simplest to rewrite it wholesale)."""
         self.execute('DELETE FROM `championship_rule`')
@@ -376,10 +376,10 @@ class ChampionshipDatabase(MigrationDatabase):
         )
         return stored_rule
 
-    def delete_stored_championship_rule(self, rule_id: int):
+    def delete_stored_championship_rule(self, rule_id: int) -> None:
         self.execute('DELETE FROM `championship_rule` WHERE `id` = ?', (rule_id,))
 
-    def reorder_stored_championship_rules(self, rule_ids: list[int]):
+    def reorder_stored_championship_rules(self, rule_ids: list[int]) -> None:
         existing_ids = [rule.id for rule in self.load_stored_championship_rules()]
         if len(rule_ids) != len(existing_ids) or set(rule_ids) != set(existing_ids):
             raise ValueError('Rule order does not match the stored rules')
@@ -393,7 +393,7 @@ class ChampionshipDatabase(MigrationDatabase):
         self.execute('SELECT * FROM `championship_manual_tiebreak`')
         return {row['competitor_key']: row['position'] for row in self.fetchall()}
 
-    def set_stored_manual_tiebreaks(self, updates: dict[str, int | None]):
+    def set_stored_manual_tiebreaks(self, updates: dict[str, int | None]) -> None:
         """Upsert a position for each competitor key, or clear it (None)."""
         for competitor_key, position in updates.items():
             if position is None:
@@ -410,16 +410,17 @@ class ChampionshipDatabase(MigrationDatabase):
                     (competitor_key, position, position),
                 )
 
-    def delete_stored_manual_tiebreaks(self):
+    def delete_stored_manual_tiebreaks(self) -> None:
         self.execute('DELETE FROM `championship_manual_tiebreak`')
 
-    def rename_event_references(self, old_event_uniq_id: str, new_event_uniq_id: str):
+    def rename_event_references(
+        self, old_event_uniq_id: str, new_event_uniq_id: str
+    ) -> None:
         """Repoint every reference to a renamed event (its sources and the
         identity overrides that pin its players/teams)."""
         for table in ('source', 'player_override', 'team_override'):
             self.execute(
-                f'UPDATE `{table}` SET `event_uniq_id` = ? '  # noqa: S608
-                'WHERE `event_uniq_id` = ?',
+                f'UPDATE `{table}` SET `event_uniq_id` = ? WHERE `event_uniq_id` = ?',
                 (new_event_uniq_id, old_event_uniq_id),
             )
 
@@ -470,7 +471,7 @@ class ChampionshipDatabase(MigrationDatabase):
 
     def replace_stored_championship_categories(
         self, stored_categories: list[StoredChampionshipCategory]
-    ):
+    ) -> None:
         """Replace categories and their criteria as one ordered config."""
         self.execute('DELETE FROM `championship_category`')
         for index, stored_category in enumerate(stored_categories):
@@ -507,18 +508,18 @@ class ChampionshipDatabase(MigrationDatabase):
             self.add_stored_championship_criterion(stored_criterion)
         return stored_category
 
-    def rename_stored_championship_category(self, category_id: int, name: str):
+    def rename_stored_championship_category(self, category_id: int, name: str) -> None:
         self.execute(
             'UPDATE `championship_category` SET `name` = ? WHERE `id` = ?',
             (name, category_id),
         )
 
-    def delete_stored_championship_category(self, category_id: int):
+    def delete_stored_championship_category(self, category_id: int) -> None:
         self.execute(
             'DELETE FROM `championship_category` WHERE `id` = ?', (category_id,)
         )
 
-    def reorder_stored_championship_categories(self, category_ids: list[int]):
+    def reorder_stored_championship_categories(self, category_ids: list[int]) -> None:
         existing_categories = self.load_stored_championship_categories()
         existing_ids = [category.id for category in existing_categories]
         if len(category_ids) != len(existing_ids) or set(category_ids) != set(
@@ -562,7 +563,9 @@ class ChampionshipDatabase(MigrationDatabase):
         )
         return stored_criterion
 
-    def delete_stored_championship_criterion(self, category_id: int, criterion_id: int):
+    def delete_stored_championship_criterion(
+        self, category_id: int, criterion_id: int
+    ) -> None:
         self.execute(
             'DELETE FROM `championship_criterion` '
             'WHERE `id` = ? AND `championship_category_id` = ?',

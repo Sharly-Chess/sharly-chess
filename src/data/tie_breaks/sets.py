@@ -111,9 +111,9 @@ def _all_tie_break_subclasses() -> 'list[type[TieBreak]]':
     ignoring abstract intermediates."""
     from data.tie_breaks.tie_breaks import TieBreak
 
-    seen: 'set[type[TieBreak]]' = set()
-    stack: 'list[type[TieBreak]]' = list(TieBreak.__subclasses__())
-    result: 'list[type[TieBreak]]' = []
+    seen: set[type[TieBreak]] = set()
+    stack: list[type[TieBreak]] = list(TieBreak.__subclasses__())
+    result: list[type[TieBreak]] = []
     while stack:
         cls = stack.pop()
         if cls in seen:

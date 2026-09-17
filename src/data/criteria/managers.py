@@ -135,11 +135,11 @@ class SearchFilterManager:
         )
         return datasource_mapping
 
-    def get_filters_by_tournament(self) -> dict:
+    def get_filters_by_tournament(self) -> dict[int, list[tuple[Any, ...]]]:
         mapping = {}
 
         for tournament in self.event.tournaments:
-            filter_list: list[tuple] = []
+            filter_list: list[tuple[Any, ...]] = []
             for criterion in tournament.criteria:
                 if isinstance(criterion, AgeCategoryTournamentCriterion):
                     min_category, max_category = criterion.category_limits

@@ -3,7 +3,7 @@ from plugins.migration import BasePluginMigration
 
 
 class Migration(BasePluginMigration):
-    def forward(self):
+    def forward(self) -> None:
         # Event data
         self.database.execute(
             'SELECT plugin_data, chessevent_user_id, chessevent_password, chessevent_event_id FROM info'
@@ -70,7 +70,7 @@ class Migration(BasePluginMigration):
             'ALTER TABLE `tournament` DROP COLUMN `chessevent_last_sync`'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         # Event data
 
         self.database.execute('ALTER TABLE `info` ADD `chessevent_user_id` TEXT')

@@ -54,7 +54,7 @@ class FakeOpponent:
     id: int
     rating: int
     rating_type: PlayerRatingType = PlayerRatingType.FIDE
-    federation: Federation = Federation('FRA')
+    federation: Federation = field(default_factory=lambda: Federation('FRA'))
     title: PlayerTitle = PlayerTitle.NONE
     women_title: PlayerTitle = PlayerTitle.NONE
     # Set by the tests that need the opponent's own games (1.4.3d).
@@ -428,8 +428,7 @@ class TestSearchOne:
 
     @pytest.fixture
     def searcher(self):
-        s = _make_searcher(rounds=11)
-        return s
+        return _make_searcher(rounds=11)
 
     def test_baseline_passes_no_search(self, searcher):
         baseline = make_inputs([])
@@ -957,7 +956,7 @@ class TestSearcherWithRealEvaluator:
         searcher = _real_searcher(
             rounds=11, federation='USA', rule_143_exemption='1.4.3b'
         )
-        setattr(searcher.player.event, 'federation', 'FRA')
+        setattr(searcher.player.event, 'federation', 'FRA')  # noqa: B010
         # Re-resolve the exemption against the FRA event federation.
         from data.norms.tournament_checks import resolve_143abc_code
 
@@ -1085,7 +1084,7 @@ class TestSearcherWholeEvaluate:
 
         # Patch collect_inputs to return our hand-built inputs (twice — for
         # baseline and for the 1.4.2c branch, which is None here).
-        setattr(searcher.evaluator, 'collect_inputs', MagicMock(return_value=inputs))
+        setattr(searcher.evaluator, 'collect_inputs', MagicMock(return_value=inputs))  # noqa: B010
         results_dict = searcher.evaluate()
         assert set(results_dict.keys()) == {
             TitleNorm.GM,
@@ -1093,7 +1092,7 @@ class TestSearcherWholeEvaluate:
             TitleNorm.WGM,
             TitleNorm.WIM,
         }
-        for tn, res in results_dict.items():
+        for res in results_dict.values():
             # Every result has tournament-wide flags populated.
             assert res.all_federations_count == 0
             assert res.requirement_156a_met is False

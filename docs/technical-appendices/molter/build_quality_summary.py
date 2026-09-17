@@ -21,7 +21,7 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from time import perf_counter
-from typing import Iterable
+from collections.abc import Iterable
 
 ROOT = Path(__file__).resolve().parents[3]
 SRC_DIR = ROOT / 'src'
@@ -226,7 +226,7 @@ def _quality_metrics(table: FixedPairingTable) -> QualityMetrics:
                 max_team_colour_drift, abs(team_colour_drift[team])
             )
 
-        for seat, whites in enumerate(player_white_counts):
+        for _seat, whites in enumerate(player_white_counts):
             played = r_index + 1
             blacks = played - whites
             max_player_colour_drift = max(max_player_colour_drift, abs(whites - blacks))
@@ -514,7 +514,7 @@ def _write_dashboard(
             formats['number'] if isinstance(value, float) else formats['cell'],
         )
 
-    grade_counts = {grade: 0 for grade in ('A', 'B', 'C', 'D', 'FAIL')}
+    grade_counts = dict.fromkeys(('A', 'B', 'C', 'D', 'FAIL'), 0)
     for row in rows:
         grade_counts[row.quality_grade] += 1
     ws.write(3, 3, 'Grade', formats['header'])

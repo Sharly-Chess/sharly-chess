@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
-from typing import Any, Callable, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING, cast
+from collections.abc import Callable
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
@@ -24,7 +25,7 @@ class TournamentCriterion[T](IdentifiableEntity, ABC):
         assert self._value is not None
         return self._value
 
-    def set_value(self, value: T):
+    def set_value(self, value: T) -> None:
         self._value = value
 
     @property
@@ -48,7 +49,7 @@ class TournamentCriterion[T](IdentifiableEntity, ABC):
 
     def value_from_stored_value(self, stored_value: Any) -> T:
         """Initialize a value from the stored value."""
-        return stored_value
+        return cast(T, stored_value)
 
     @abstractmethod
     def value_from_form_data(
@@ -57,7 +58,7 @@ class TournamentCriterion[T](IdentifiableEntity, ABC):
         """Initialize the value from form data.
         Returns None if the criterion is not taken into account."""
 
-    def add_to_form_data(self, data: dict[str, str]):
+    def add_to_form_data(self, data: dict[str, str]) -> None:
         """Add the value to the form data."""
         data[self.form_key] = WebContext.value_to_form_data(self._value)
 
@@ -70,10 +71,15 @@ class TournamentCriterion[T](IdentifiableEntity, ABC):
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         """Return a function checking if a player is included by the criteria or not."""
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, TournamentCriterion):
             return NotImplemented
         return self.id == other.id and self.value == other.value
+
+    def __hash__(self) -> int:
+        # Equality requires the same id, so hashing on it stays consistent —
+        # and without this the override would drop the hash the base defines.
+        return hash(self.id)
 
 
 class GenderTournamentCriterion(TournamentCriterion[str]):
@@ -157,13 +163,12 @@ class RatingTournamentCriterion(TournamentCriterion[dict[str, int | None]]):
         min_rating, max_rating = self.rating_limits
         if min_rating and max_rating:
             return lambda player: min_rating <= player.rating <= max_rating
-        elif max_rating:
+        if max_rating:
             return lambda player: player.rating <= max_rating
-        else:
-            assert min_rating is not None
-            return lambda player: player.rating >= min_rating
+        assert min_rating is not None
+        return lambda player: player.rating >= min_rating
 
-    def add_to_form_data(self, data: dict[str, str]):
+    def add_to_form_data(self, data: dict[str, str]) -> None:
         min_rating, max_rating = self.rating_limits
         data[self.form_key + '_min'] = WebContext.value_to_form_data(min_rating)
         data[self.form_key + '_max'] = WebContext.value_to_form_data(max_rating)
@@ -202,9 +207,9 @@ class AgeCategoryTournamentCriterion(TournamentCriterion[dict[str, str | None]])
             if min_category == max_category:
                 return f'{self.name} ({min_category.name})'
             return f'{min_category.name} ≤ {self.name} ≤ {max_category.name}'
-        elif max_category:
+        if max_category:
             return f'{self.name} ≤ {max_category.name}'
-        elif min_category:
+        if min_category:
             assert min_category is not None
             return f'{self.name} ≥ {min_category.name}'
         return self.name
@@ -243,20 +248,17 @@ class AgeCategoryTournamentCriterion(TournamentCriterion[dict[str, str | None]])
         if min_category and max_category:
             if min_category == max_category:
                 return lambda player: player.category == min_category
-            return lambda player: min_category <= player.category <= max_category  # type: ignore
-        elif max_category:
+            return lambda player: min_category <= player.category <= max_category
+        if max_category:
             return lambda player: (
-                player.category <= max_category  # type: ignore
-                and player.category != NoCategory()
+                player.category <= max_category and player.category != NoCategory()
             )
-        else:
-            assert min_category is not None
-            return lambda player: (
-                player.category >= min_category  # type: ignore
-                and player.category != NoCategory()
-            )
+        assert min_category is not None
+        return lambda player: (
+            player.category >= min_category and player.category != NoCategory()
+        )
 
-    def add_to_form_data(self, data: dict[str, str]):
+    def add_to_form_data(self, data: dict[str, str]) -> None:
         min_category, max_category = self.category_limits
         data[self.form_key + '_min'] = WebContext.value_to_form_data(
             getattr(min_category, 'id', None)

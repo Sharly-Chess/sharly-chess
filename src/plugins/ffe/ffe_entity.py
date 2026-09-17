@@ -2,7 +2,7 @@ from collections import Counter
 from collections.abc import Callable
 from functools import partial, cached_property, cache
 from types import UnionType
-from typing import Any
+from typing import Any, cast
 
 from common.exception import OptionError, SharlyChessException
 from common.i18n import _
@@ -91,7 +91,7 @@ class FFESiteQRCodeType(QRCodeType):
         return True, FFEUtils.tournament_url(ffe_id)
 
     @staticmethod
-    def get_qr_code(url) -> str:
+    def get_qr_code(url: str) -> str:
         return QRCodeType.generate_qr_code(
             url=url,
             logo=PLUGIN_DIR / 'static' / 'images' / 'ffe-qr-logo.jpg',
@@ -289,10 +289,9 @@ class FfeLeaguePlayerFilter(PlayerFilter):
             return lambda tournament_player: (
                 FFEUtils.get_player_plugin_data(tournament_player).league not in leagues
             )
-        else:
-            return lambda tournament_player: (
-                FFEUtils.get_player_plugin_data(tournament_player).league in leagues
-            )
+        return lambda tournament_player: (
+            FFEUtils.get_player_plugin_data(tournament_player).league in leagues
+        )
 
     def full_name(self, tournament: 'Tournament') -> str:
         leagues, exclude = self.get_option_values()
@@ -302,7 +301,7 @@ class FfeLeaguePlayerFilter(PlayerFilter):
         return f'{self.name} ({option_str})'
 
 
-class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
+class FfeLeaguesFilterOption(SelectPlayerFilterOption[list[str], str]):
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-LEAGUES'
@@ -316,7 +315,7 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
         return list[str]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[str]:
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
@@ -337,7 +336,7 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
             return object_
         return f'{object_} - {FFE_LEAGUES[object_]}'
 
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(str)
         if not self.value:
             raise OptionError(_('At least one league is expected.'), self)
@@ -449,7 +448,7 @@ class FfeLeaguePlayersTabColumn(FilterPlayersTabColumn):
         if not value:
             return '-'
         if value not in FFE_LEAGUES:
-            return value
+            return cast(str, value)
         return f'{value} - {FFE_LEAGUES[value]}'
 
 
@@ -484,7 +483,7 @@ class FfeLicencePlayersTabColumn(FilterPlayersTabColumn):
         return PlayerFFELicence(filter_key)
 
     def get_filter_row_content(self, value: Any) -> str:
-        return value.compact_name
+        return cast(str, value.compact_name)
 
 
 class FfeLeagueTableColumn(TournamentPlayerTableColumn):
@@ -521,7 +520,7 @@ class FfeIdDatasheetColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return FFEUtils.get_player_plugin_data(player).ffe_id
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         if not value.isdigit() or int(value) == 0:
@@ -541,7 +540,7 @@ class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return FFEUtils.get_player_plugin_data(player).ffe_licence_number or ''
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         if not PlayerFFELicence.validate(value):
@@ -569,7 +568,7 @@ class FfeLicenceDatasheetColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return FFEUtils.get_player_plugin_data(player).ffe_licence.value
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         plugin_data = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
@@ -580,7 +579,7 @@ class FfeLicenceDatasheetColumn(DatasheetColumn):
                 _('Unknown value (expected: {expected}).').format(
                     expected='|'.join(PlayerFFELicence)
                 )
-            )
+            ) from None
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 
 
@@ -592,7 +591,7 @@ class FfeLeagueDatasheetColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return FFEUtils.get_player_plugin_data(player).league or ''
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         if value not in FFE_LEAGUES:

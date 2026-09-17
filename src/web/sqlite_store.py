@@ -1,7 +1,9 @@
 import asyncio
 import logging
 import sqlite3
+from collections.abc import Awaitable, Callable
 from datetime import datetime, timedelta
+from typing import Any
 
 from litestar.stores.base import StorageObject, Store
 from aiosqlitepool import SQLiteConnectionPool
@@ -25,7 +27,7 @@ class SQLiteStore(Store):
     # ------------------------------------------------------------------
 
     @staticmethod
-    async def _retry_on_locked(operation):
+    async def _retry_on_locked(operation: Callable[[], Awaitable[Any]]) -> Any:
         """Retry *operation* with exponential back-off on ``database is locked``."""
         for attempt in range(_MAX_RETRIES):
             try:
@@ -41,21 +43,24 @@ class SQLiteStore(Store):
                     delay * 1000,
                 )
                 await asyncio.sleep(delay)
+        return None
 
     async def __aenter__(self) -> None:
         return
 
-    async def __aexit__(self, exc_type, exc_value, exc_tb):
+    async def __aexit__(self, exc_type: Any, exc_value: Any, exc_tb: Any) -> None:
         pass
 
     async def get(
         self, key: str, renew_for: int | timedelta | None = None
     ) -> bytes | None:
-        async with self.pool.connection() as db:
-            async with db.execute(
+        async with (
+            self.pool.connection() as db,
+            db.execute(
                 'SELECT data, expires_at FROM store WHERE key = ?', parameters=(key,)
-            ) as cursor:
-                row = await cursor.fetchone()
+            ) as cursor,
+        ):
+            row = await cursor.fetchone()
         if not row:
             return None
 
@@ -63,7 +68,7 @@ class SQLiteStore(Store):
 
         if storage_object.expired:
 
-            async def _delete_expired_key():
+            async def _delete_expired_key() -> None:
                 async with self.pool.connection() as db:
                     await db.execute(
                         'DELETE FROM store WHERE key = ?', parameters=(key,)
@@ -76,7 +81,7 @@ class SQLiteStore(Store):
         if renew_for and storage_object.expires_at:
             storage_object = StorageObject.new(storage_object.data, renew_for)
 
-            async def _renew():
+            async def _renew() -> None:
                 async with self.pool.connection() as db:
                     await db.execute(
                         'UPDATE store SET expires_at = ? WHERE key = ?',
@@ -96,7 +101,7 @@ class SQLiteStore(Store):
 
         storage_object = StorageObject.new(value, expires_in)
 
-        async def _write():
+        async def _write() -> None:
             async with self.pool.connection() as db:
                 await db.execute(
                     """
@@ -109,24 +114,24 @@ class SQLiteStore(Store):
 
         await self._retry_on_locked(_write)
 
-    async def delete(self, key: str):
-        async def _write():
+    async def delete(self, key: str) -> None:
+        async def _write() -> None:
             async with self.pool.connection() as db:
                 await db.execute('DELETE FROM store WHERE key = ?', parameters=(key,))
                 await db.commit()
 
         await self._retry_on_locked(_write)
 
-    async def delete_all(self):
-        async def _write():
+    async def delete_all(self) -> None:
+        async def _write() -> None:
             async with self.pool.connection() as db:
                 await db.execute('DELETE FROM store')
                 await db.commit()
 
         await self._retry_on_locked(_write)
 
-    async def delete_expired(self):
-        async def _write():
+    async def delete_expired(self) -> None:
+        async def _write() -> None:
             async with self.pool.connection() as db:
                 await db.execute(
                     "DELETE FROM store WHERE expires_at <= datetime('now')"
@@ -136,20 +141,24 @@ class SQLiteStore(Store):
         await self._retry_on_locked(_write)
 
     async def exists(self, key: str) -> bool:
-        async with self.pool.connection() as db:
-            async with db.execute(
+        async with (
+            self.pool.connection() as db,
+            db.execute(
                 'SELECT EXISTS(SELECT 1 from store where key = ?) as exists',
                 parameters=(key,),
-            ) as cursor:
-                row = await cursor.fetchone()
+            ) as cursor,
+        ):
+            row = await cursor.fetchone()
         return int(row[0]) == 1
 
     async def expires_in(self, key: str) -> int | None:
-        async with self.pool.connection() as db:
-            async with db.execute(
+        async with (
+            self.pool.connection() as db,
+            db.execute(
                 'SELECT expires_at FROM store where key = ?', parameters=(key,)
-            ) as cursor:
-                row = await cursor.fetchone()
+            ) as cursor,
+        ):
+            row = await cursor.fetchone()
         if not row:
             return None
         return int((datetime.fromisoformat(row[0]) - datetime.now()).total_seconds())

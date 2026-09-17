@@ -1,4 +1,4 @@
-from typing import cast, override
+from typing import override
 
 from data.pairings import systems, PairingVariation
 from data.pairings.keizer import KeizerPairingSystem, KeizerVariationManager
@@ -87,39 +87,18 @@ class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
     @override
     def entity_types(self) -> list[type[PairingVariation]]:
         if self.event is not None and self.event.is_team_event:
-            result: list[type[PairingVariation]] = (
-                cast(
-                    list[type[PairingVariation]],
-                    TeamSwissVariationManager(self.event).entity_types(),
-                )
-                + cast(
-                    list[type[PairingVariation]],
-                    TeamRoundRobinVariationManager(self.event).entity_types(),
-                )
-                + cast(
-                    list[type[PairingVariation]],
-                    ScheveningenVariationManager(self.event).entity_types(),
-                )
-                + cast(
-                    list[type[PairingVariation]],
-                    MolterVariationManager(self.event).entity_types(),
-                )
-            )
+            result: list[type[PairingVariation]] = [
+                *TeamSwissVariationManager(self.event).entity_types(),
+                *TeamRoundRobinVariationManager(self.event).entity_types(),
+                *ScheveningenVariationManager(self.event).entity_types(),
+                *MolterVariationManager(self.event).entity_types(),
+            ]
             plugin_manager.hook_for_event(self.event, 'insert_team_pairing_variations')(
                 variations=result
             )
             return result
-        return (
-            cast(
-                list[type[PairingVariation]],
-                SwissVariationManager(self.event).entity_types(),
-            )
-            + cast(
-                list[type[PairingVariation]],
-                RoundRobinVariationManager(self.event).entity_types(),
-            )
-            + cast(
-                list[type[PairingVariation]],
-                KeizerVariationManager(self.event).entity_types(),
-            )
-        )
+        return [
+            *SwissVariationManager(self.event).entity_types(),
+            *RoundRobinVariationManager(self.event).entity_types(),
+            *KeizerVariationManager(self.event).entity_types(),
+        ]

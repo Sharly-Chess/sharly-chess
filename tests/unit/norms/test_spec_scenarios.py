@@ -1476,8 +1476,6 @@ class TestRule_1_4_3d_eligibility:
     players who missed more than one non-PAB / non-forfeit-win round."""
 
     def _make_player(self, federation: str, missed_rounds: set[int], rounds: int = 9):
-        from data.pairings.systems import SwissPairingSystem  # noqa: F401
-
         def _pairing(missed: bool):
             return SimpleNamespace(
                 result=Result.ZERO_POINT_BYE if missed else Result.DRAW,
@@ -1503,7 +1501,7 @@ class TestRule_1_4_3d_eligibility:
             event=SimpleNamespace(federation='FRA'),
             rounds=rounds,
             pairing_system=SwissPairingSystem(),
-            tournament_players_by_id={i: p for i, p in enumerate(players, start=1)},
+            tournament_players_by_id=dict(enumerate(players, start=1)),
         )
 
     def test_player_with_zero_missed_rounds_is_eligible(self):
@@ -1893,7 +1891,7 @@ class TestForecastDocumentEarlyUnlock:
 
         tournament = NS(
             rounds=rounds,
-            tournament_players_by_id={i: p for i, p in enumerate(players)},
+            tournament_players_by_id=dict(enumerate(players)),
         )
         return NS(tournament=tournament)
 
@@ -2320,7 +2318,7 @@ class TestCalculationDetailsHooks:
         evaluator = TitleNormEvaluator(as_tournament_player(player))
         results = evaluator.evaluate()
         # IM is reachable; check whichever norm picked up 1.4.2c.
-        for tn, res in results.items():
+        for res in results.values():
             if res.applied_142c:
                 # Side-by-side data present.
                 assert res.alternate_142c is not None
@@ -2617,7 +2615,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
         pairings_r1_8 = list(
             zip(
                 range(1, 9),
-                ger_opps + [fin_opp, gab_opp],
+                [*ger_opps, fin_opp, gab_opp],
                 results_r1_8,
             )
         )

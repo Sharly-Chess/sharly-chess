@@ -23,7 +23,7 @@ class Migration(BaseMigration):
             suffixed_uniq_id_by_id[id_] = new_uniq_id
         return suffixed_uniq_id_by_id
 
-    def _sanitize_table_uniq_ids(self, table_name: str):
+    def _sanitize_table_uniq_ids(self, table_name: str) -> None:
         """Sanitize all the uniq_id fields of a table.
         Ensures the field is uniq in the table."""
         self.database.execute(f'SELECT `id`, `uniq_id` FROM `{table_name}`')
@@ -50,9 +50,9 @@ class Migration(BaseMigration):
                     uniq_id_by_id[id_] = uniq_id
             values_to_insert.pop(0)
 
-    def forward(self):
+    def forward(self) -> None:
         self._sanitize_table_uniq_ids('screen')
         self._sanitize_table_uniq_ids('family')
 
-    def backward(self):
+    def backward(self) -> None:
         pass

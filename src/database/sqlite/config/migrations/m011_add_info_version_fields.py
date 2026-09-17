@@ -3,7 +3,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `info` ADD `check_beta_versions` INTEGER NOT NULL DEFAULT 0'
         )
@@ -11,6 +11,6 @@ class Migration(BaseMigration):
         if DEVEL_ENV or SHARLY_CHESS_VERSION.is_prerelease:
             self.database.execute('UPDATE `info` SET `check_beta_versions` = 1')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `info` DROP COLUMN `check_beta_versions`')
         self.database.execute('ALTER TABLE `info` DROP COLUMN `last_notified_version`')

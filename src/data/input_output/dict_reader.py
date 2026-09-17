@@ -72,23 +72,22 @@ def _read_field_value(
                     key = int(key)
                 _check_type(field_name, key, key_type, path)
                 field_dict[key] = _read_field_value(
-                    str(key), value, value_type, path + [str(key)]
+                    str(key), value, value_type, [*path, str(key)]
                 )
             return field_dict
-        elif base_type is list:
+        if base_type is list:
             _check_type(field_name, field_value, list, path)
             sub_type = get_args(field_type)[0]
             return [
                 _read_field_value(field_name, sub_value, sub_type, path)
                 for sub_value in field_value
             ]
-        else:
-            raise ValueError(f'Unhandled type [{field_type}]')
+        raise ValueError(f'Unhandled type [{field_type}]')
     elif isinstance(field_value, field_type):
         return field_value
     elif is_dataclass(field_type):
         _check_type(field_name, field_value, dict, path)
-        return dict_to_dataclass(field_type, field_value, path + [field_name])
+        return dict_to_dataclass(field_type, field_value, [*path, field_name])
     elif issubclass(field_type, Enum):
         try:
             return field_type(field_value)
@@ -103,8 +102,9 @@ def _read_field_value(
                     field=field_name,
                     expected_values=', '.join(member.value for member in field_type),
                 ),
-            )
+            ) from None
     _check_type(field_name, field_value, field_type, path)
+    return None
 
 
 def _check_type(
@@ -112,7 +112,7 @@ def _check_type(
     field_value: Any,
     field_type: type | UnionType,
     path: list[str],
-):
+) -> None:
     if not isinstance(field_value, field_type):
         raise DictReaderException(
             path,

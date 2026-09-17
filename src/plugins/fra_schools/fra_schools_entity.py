@@ -1,7 +1,9 @@
 from functools import partial, cached_property
 from operator import attrgetter
 from types import UnionType
-from typing import Any, Counter, Callable
+from typing import Any
+from collections import Counter
+from collections.abc import Callable
 
 from common.exception import OptionError, SharlyChessException
 from common.i18n import _
@@ -85,12 +87,12 @@ class FraSchoolCodeDatasheetColumn(DatasheetColumn):
     def save_stored_event(self) -> bool:
         return True
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         pass
 
     def augment_stored_player_with_tournament(
         self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
-    ):
+    ) -> None:
         if not value or tournament is None:
             return
         event = tournament.event
@@ -109,8 +111,7 @@ class FraSchoolCodeDatasheetColumn(DatasheetColumn):
                 school = database.get_school_by_code(school_code)
             if not school:
                 raise SharlyChessException(_('UAI code not found in the database.'))
-            else:
-                school_id = FRASchoolsUtils.add_event_school(event, school, save=False)
+            school_id = FRASchoolsUtils.add_event_school(event, school, save=False)
         stored_player.plugin_data[PLUGIN_NAME] = FRASchoolsPlayerPluginData(
             school_id
         ).to_stored_value()
@@ -131,7 +132,7 @@ class FraSchoolLabelDatasheetColumn(DatasheetColumn):
     def export_only(self) -> bool:
         return True
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         pass
 
 
@@ -159,11 +160,10 @@ class FRASchoolPlayerFilter(PlayerFilter):
                 FRASchoolsUtils.get_player_plugin_data(tournament_player).fra_school_id
                 not in school_ids
             )
-        else:
-            return lambda tournament_player: (
-                FRASchoolsUtils.get_player_plugin_data(tournament_player).fra_school_id
-                in school_ids
-            )
+        return lambda tournament_player: (
+            FRASchoolsUtils.get_player_plugin_data(tournament_player).fra_school_id
+            in school_ids
+        )
 
     def full_name(self, tournament: 'Tournament') -> str:
         school_ids, exclude = self.get_option_values()
@@ -178,7 +178,7 @@ class FRASchoolPlayerFilter(PlayerFilter):
         return f'{self.name} ({option_str})'
 
 
-class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
+class FRASchoolsFilterOption(SelectPlayerFilterOption[list[int], FRASchool]):
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-SCHOOLS'
@@ -192,7 +192,7 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
         return list[int]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[int]:
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[FRASchool]:
@@ -222,7 +222,7 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
     def get_search(self, object_: FRASchool) -> str | None:
         return object_.full_name
 
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(int)
         if not self.value:
             raise OptionError(_('At least one school is expected.'), self)

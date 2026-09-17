@@ -14,6 +14,7 @@ from database.sqlite.event.event_store import (
 )
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result, TeamByeType
+import contextlib
 
 
 EVENT_ID = 'test-team-tournament-move'
@@ -40,10 +41,8 @@ class TeamTournamentMoveTestCase(TestCase):
         TestUtils.delete_event(EVENT_ID)
 
     def _load_event(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         return EventLoader().load_event(EVENT_ID)
 
     def test_boardless_bye_does_not_lock_team_and_is_removed_on_move(self):

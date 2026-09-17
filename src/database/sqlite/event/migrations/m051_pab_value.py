@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `info` ADD `pab_value` INTEGER NOT NULL DEFAULT 3'
         )
@@ -29,7 +29,7 @@ class Migration(BaseMigration):
             'ALTER TABLE tournament RENAME COLUMN tmp_three_points TO three_points_for_a_win;'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `info` DROP COLUMN `pab_value`')
         self.database.execute('ALTER TABLE `info` DROP COLUMN `three_points_for_a_win`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `pab_value`')

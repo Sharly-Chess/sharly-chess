@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from web.utils import SelectOption
 
 
-class TieBreakOption(Option, ABC):
+class TieBreakOption[V](Option[V], ABC):
     """Parent class of all the options of tie breaks."""
 
     @property
@@ -69,7 +69,7 @@ class TieBreakOption(Option, ABC):
         return False
 
 
-class SilentTieBreakOption(TieBreakOption, ABC):
+class SilentTieBreakOption[V](TieBreakOption[V], ABC):
     """Base class of options which are not displayed."""
 
     @property
@@ -88,7 +88,7 @@ class SilentTieBreakOption(TieBreakOption, ABC):
         return ''
 
 
-class BaseCutterTieBreakOption(TieBreakOption, ABC):
+class BaseCutterTieBreakOption(TieBreakOption[str], ABC):
     @property
     @abstractmethod
     def include_median(self) -> bool:
@@ -99,7 +99,7 @@ class BaseCutterTieBreakOption(TieBreakOption, ABC):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return NoCutTieBreakCutter.static_id()
 
     @property
@@ -135,12 +135,12 @@ class BaseCutterTieBreakOption(TieBreakOption, ABC):
     def cutter(self) -> TieBreakCutter:
         return self.cutter_manager.get_object(self.value)
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             __ = self.cutter
         except KeyError:
-            raise OptionError(f'Unknown cutter: {self.value}', self)
+            raise OptionError(f'Unknown cutter: {self.value}', self) from None
 
     @property
     def template_file_stem(self) -> str:
@@ -179,7 +179,7 @@ class CutterWithMedianTieBreakOption(BaseCutterTieBreakOption):
         return True
 
 
-class PlayedModifierTieBreakOption(TieBreakOption):
+class PlayedModifierTieBreakOption(TieBreakOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'PLAYED_MODIFIER'
@@ -189,7 +189,7 @@ class PlayedModifierTieBreakOption(TieBreakOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
     @property
@@ -215,7 +215,7 @@ class PlayedModifierTieBreakOption(TieBreakOption):
         return _('Forfeited games are considered as played.')
 
 
-class ForeModifierTieBreakOption(TieBreakOption):
+class ForeModifierTieBreakOption(TieBreakOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'FORE_MODIFIER'
@@ -225,7 +225,7 @@ class ForeModifierTieBreakOption(TieBreakOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
     @property
@@ -250,7 +250,7 @@ class ForeModifierTieBreakOption(TieBreakOption):
     # "Fore Buchholz" inside the parent tie-break's help text directly.
 
 
-class KoyaLimitTieBreakOption(TieBreakOption):
+class KoyaLimitTieBreakOption(TieBreakOption[int | None]):
     MAX_VALUE = 5
 
     @staticmethod
@@ -262,7 +262,7 @@ class KoyaLimitTieBreakOption(TieBreakOption):
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
     @property
@@ -309,7 +309,7 @@ class KoyaLimitTieBreakOption(TieBreakOption):
     def template_file_stem(self) -> str:
         return 'koya_limit'
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value and abs(self.value) > self.MAX_VALUE:
             raise OptionError(
@@ -320,7 +320,7 @@ class KoyaLimitTieBreakOption(TieBreakOption):
             )
 
 
-class EstimatedRatingsTieBreakOption(SilentTieBreakOption):
+class EstimatedRatingsTieBreakOption(SilentTieBreakOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'ESTIMATED_RATINGS'
@@ -338,7 +338,7 @@ class EstimatedRatingsTieBreakOption(SilentTieBreakOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
     @property
@@ -346,7 +346,7 @@ class EstimatedRatingsTieBreakOption(SilentTieBreakOption):
         return False
 
 
-class ReversedTieBreakOption(TieBreakOption):
+class ReversedTieBreakOption(TieBreakOption[bool | None]):
     @staticmethod
     def static_id() -> str:
         return 'REVERSED'
@@ -378,11 +378,11 @@ class ReversedTieBreakOption(TieBreakOption):
         return bool | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool | None:
         return None
 
 
-class LegacyTieBreakOption(SilentTieBreakOption, ABC):
+class LegacyTieBreakOption(SilentTieBreakOption[bool], ABC):
     @property
     def template_file_stem(self) -> str:
         return ''
@@ -400,7 +400,7 @@ class LegacyTieBreakOption(SilentTieBreakOption, ABC):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
     @property
@@ -418,7 +418,7 @@ class LegacyMarch2026TieBreakOption(LegacyTieBreakOption):
         return _('Rules used were only effective until march 2026 (legacy).')
 
 
-class NormalizationFactorOverrideTieBreakOption(TieBreakOption):
+class NormalizationFactorOverrideTieBreakOption(TieBreakOption[int]):
     """SSSC :class:`/Kx` modifier — override the auto-computed
     normalisation factor F_N with an explicit integer (FIDE MTB26
     page 1: *"/Kx — Used for SSSC, to redefine the normalizing factor
@@ -436,7 +436,7 @@ class NormalizationFactorOverrideTieBreakOption(TieBreakOption):
         return int
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int:
         return 0
 
     @property
@@ -473,7 +473,7 @@ class NormalizationFactorOverrideTieBreakOption(TieBreakOption):
     def template_file_stem(self) -> str:
         return 'normalization_factor'
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value and (self.value < 1 or self.value > self.MAX_VALUE):
             raise OptionError(
@@ -484,7 +484,7 @@ class NormalizationFactorOverrideTieBreakOption(TieBreakOption):
             )
 
 
-class TeamScoreTieBreakOption(TieBreakOption):
+class TeamScoreTieBreakOption(TieBreakOption[str]):
     """Score basis (Match Points or Game Points) a tie-break uses when
     the tournament is a team competition. FIDE MTB26 rank-order
     descriptor: ``BH:MP``, ``BH:GP``, etc. Default ``MP`` matches the
@@ -506,7 +506,7 @@ class TeamScoreTieBreakOption(TieBreakOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return self.VALUE_MP
 
     @property

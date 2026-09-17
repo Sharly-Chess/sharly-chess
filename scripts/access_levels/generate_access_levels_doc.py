@@ -64,11 +64,10 @@ def print_file(
     column_centers: dict[str, bool],
     strings: dict[str, str],
 ):
-    with open(output_file, 'wt', encoding='utf-8') as output:
+    with open(output_file, 'w', encoding='utf-8') as output:
         column_widths: dict[str, int] = {
             column_id: max(
-                len(str(header[column_id])),
-                max(len(line[column_id]) for line in lines),
+                len(str(header[column_id])), *(len(line[column_id]) for line in lines)
             )
             for column_id in header
         }
@@ -86,10 +85,9 @@ def access_level_md_icon(
 ) -> str:
     if access_level.administrator:
         return '🔴'
-    elif access_level.needs_account:
+    if access_level.needs_account:
         return '🟡'
-    else:
-        return '🟢'
+    return '🟢'
 
 
 def print_details_doc(
@@ -106,7 +104,7 @@ def print_details_doc(
             )
             lines.append(f'{access_level.localized_help_text(locale)}')
         filename: str = f'access-levels-details-{locale}.md'
-        with open(output_dir / filename, 'wt', encoding='utf-8') as output:
+        with open(output_dir / filename, 'w', encoding='utf-8') as output:
             print(f'{locale_strings[locale]["edit_warning"]}', file=output)
             for line in lines:
                 print(line, file=output)
@@ -152,7 +150,7 @@ def print_actions_doc(
         }
         web_lines: list[dict[str, str]] = []
         dev_lines: list[dict[str, str]] = []
-        for category, actions in actions_by_category.items():
+        for category in actions_by_category:
             web_lines.append(
                 {
                     'title': f'**{category.localized_name(locale)}**',

@@ -26,7 +26,9 @@ from web.urls import (
 
 
 class EventAdminController(BaseEventAdminController):
-    guards = [EventGuard()]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [EventGuard()]  # noqa: RUF012
 
     @classmethod
     def _admin_event_render(

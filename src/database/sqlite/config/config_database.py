@@ -58,7 +58,7 @@ class ConfigDatabase(MigrationDatabase):
         return 'Config database - '
 
     @classmethod
-    def setup(cls):
+    def setup(cls) -> None:
         """Setup the config database. If it does not exist, create it.
         If it is not up to date, update it."""
         database = cls()
@@ -132,7 +132,7 @@ class ConfigDatabase(MigrationDatabase):
                 'date_formatter',
             ],
         )
-        field_sets = (f'`{f}` = ?' for f in fields.keys())
+        field_sets = (f'`{f}` = ?' for f in fields)
         self.execute(
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
         )
@@ -177,7 +177,7 @@ class ConfigDatabase(MigrationDatabase):
         )
         return self.load_stored_plugin(stored_plugin.name)
 
-    def insert_stored_plugin(self, stored_plugin: StoredPlugin):
+    def insert_stored_plugin(self, stored_plugin: StoredPlugin) -> None:
         fields = self._get_fields_dict(stored_plugin, ['name', 'is_enabled'])
         fields |= {
             'plugin_data': self.dump_to_json_database_field(
@@ -219,7 +219,7 @@ class ConfigDatabase(MigrationDatabase):
 
     def update_stored_local_source_database(
         self, stored_database: StoredLocalSourceDatabase
-    ):
+    ) -> None:
         fields: list[str] = [
             'outdate_delay',
             'outdate_action',
@@ -235,11 +235,11 @@ class ConfigDatabase(MigrationDatabase):
             f'UPDATE `local_source_database` '
             f'SET {", ".join(field_sets)} WHERE `name` = ?'
         )
-        self.execute(query, params + (stored_database.name,))
+        self.execute(query, (*params, stored_database.name))
 
     def insert_stored_local_source_database(
         self, stored_database: StoredLocalSourceDatabase
-    ):
+    ) -> None:
         fields: list[str] = [
             'name',
             'outdate_delay',
@@ -296,7 +296,7 @@ class ConfigDatabase(MigrationDatabase):
             raise RuntimeError('Player category set insertion failed')
         return id_
 
-    def delete_stored_player_category_set(self, player_category_set_id: int):
+    def delete_stored_player_category_set(self, player_category_set_id: int) -> None:
         self.execute(
             'DELETE FROM`player_category_set` WHERE `id` = ?',
             (player_category_set_id,),
@@ -351,7 +351,9 @@ class ConfigDatabase(MigrationDatabase):
             raise RuntimeError('Tie-break set insertion failed')
         return id_
 
-    def update_stored_tie_break_set(self, stored_tie_break_set: StoredTieBreakSet):
+    def update_stored_tie_break_set(
+        self, stored_tie_break_set: StoredTieBreakSet
+    ) -> None:
         assert stored_tie_break_set.id is not None
         self.execute(
             'UPDATE `tie_break_set` SET `name` = ?, '
@@ -366,7 +368,7 @@ class ConfigDatabase(MigrationDatabase):
             ),
         )
 
-    def delete_stored_tie_break_set(self, tie_break_set_id: int):
+    def delete_stored_tie_break_set(self, tie_break_set_id: int) -> None:
         self.execute(
             'DELETE FROM `tie_break_set` WHERE `id` = ?',
             (tie_break_set_id,),
@@ -404,7 +406,7 @@ class ConfigDatabase(MigrationDatabase):
             raise RuntimeError('Tag insertion failed')
         return id_
 
-    def update_stored_tag(self, stored_tag: StoredTag):
+    def update_stored_tag(self, stored_tag: StoredTag) -> None:
         """Updates the name and the colour; the rank is set by
         :meth:`reorder_stored_tags` alone."""
         assert stored_tag.id is not None
@@ -413,12 +415,12 @@ class ConfigDatabase(MigrationDatabase):
             (stored_tag.name, stored_tag.color, stored_tag.id),
         )
 
-    def reorder_stored_tags(self, tag_ids: list[int]):
+    def reorder_stored_tags(self, tag_ids: list[int]) -> None:
         """Ranks the tags in the order given. Ids that no longer exist are
         ignored, and tags missing from the list keep their rank — the caller
         is a drag-and-drop, which sends the whole list."""
         for index, tag_id in enumerate(tag_ids):
             self.execute('UPDATE `tag` SET `index` = ? WHERE `id` = ?', (index, tag_id))
 
-    def delete_stored_tag(self, tag_id: int):
+    def delete_stored_tag(self, tag_id: int) -> None:
         self.execute('DELETE FROM `tag` WHERE `id` = ?', (tag_id,))

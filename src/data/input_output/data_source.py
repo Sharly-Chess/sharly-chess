@@ -3,7 +3,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from functools import cached_property
 from logging import Logger
-from typing import override, ClassVar, Collection
+from typing import override, ClassVar
+from collections.abc import Collection
 
 from common import SharlyChessException
 from common.i18n import _
@@ -83,7 +84,7 @@ class DataSource(IdentifiableEntity, ABC):
     def is_available(self) -> bool:
         """Determines if the data source is available."""
 
-    def on_app_init(self):
+    def on_app_init(self) -> None:
         """Function to execute at the start of the server to initialize the data source."""
 
     @property
@@ -172,7 +173,7 @@ class DataSource(IdentifiableEntity, ABC):
         federation: str,
         page: int = 0,
         limit: int | None = None,
-        filters: dict = {},
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
@@ -206,7 +207,7 @@ class DataSource(IdentifiableEntity, ABC):
     @staticmethod
     def _adjust_player_from_fide_database(
         src_stored_player: StoredPlayer,
-    ):
+    ) -> None:
         """Cross-references the player with the FIDE Database.
         Override this method to disable this behavior."""
         fide_id = src_stored_player.fide_id
@@ -303,7 +304,7 @@ class LocalDataSource(DataSource, ABC):
     def is_available(self) -> bool:
         return self.local_database_type.file_path().exists()
 
-    def on_app_init(self):
+    def on_app_init(self) -> None:
         self.database.check()
 
     @property
@@ -316,7 +317,7 @@ class LocalDataSource(DataSource, ABC):
         federation: str,
         page: int = 0,
         limit: int | None = None,
-        filters: dict = {},
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         if not self.is_available:
             raise SharlyChessException(
@@ -339,7 +340,7 @@ class OnlineDataSource(DataSource, ABC):
         """Check the connection to the data source.
         If it fails, log the error."""
 
-    def on_app_init(self):
+    def on_app_init(self) -> None:
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
@@ -350,7 +351,7 @@ class OnlineDataSource(DataSource, ABC):
         loop.create_task(self.reload_connection_status())
 
     @classmethod
-    async def reload_connection_status(cls):
+    async def reload_connection_status(cls) -> None:
         cls._connection_last_checked_at = datetime.now()
         if not NetworkMonitor.connected():
             cls.connection_status = None
@@ -377,7 +378,7 @@ class OnlineDataSource(DataSource, ABC):
         federation: str,
         page: int = 0,
         limit: int | None = None,
-        filters: dict = {},
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         cls = self.__class__
         cls._connection_last_checked_at = datetime.now()
@@ -401,7 +402,7 @@ class OnlineDataSource(DataSource, ABC):
         federation: str,
         page: int = 0,
         limit: int | None = None,
-        filters: dict = {},
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
@@ -439,7 +440,7 @@ class FideDataSource(LocalDataSource):
     @override
     def _adjust_player_from_fide_database(
         src_stored_player: StoredPlayer,
-    ):
+    ) -> None:
         pass
 
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:

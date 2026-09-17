@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 class Migration(BaseMigration):
     """Makes the points an explicit ranking criterion."""
 
-    def forward(self):
+    def forward(self) -> None:
         # Free up index 0 across every tournament, then take it.
         self.database.execute('UPDATE `tie_break` SET `index` = `index` + 1')
         self.database.execute(
@@ -12,7 +12,7 @@ class Migration(BaseMigration):
             "SELECT `id`, 'POINTS', '{}', 0 FROM `tournament`"
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute("DELETE FROM `tie_break` WHERE `type` = 'POINTS'")
         # Close the gap left at the front. Tournaments that had no
         # POINTS entry are unaffected: their indexes are already

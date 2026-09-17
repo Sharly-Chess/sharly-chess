@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Counter, Callable
+from typing import Any, cast
+from collections import Counter
+from collections.abc import Callable
 
 from common.i18n import _
 from common.i18n.utils import normalized_key
@@ -25,7 +27,7 @@ class ColumnFilterValue:
 class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
     """Base class for columns of the players tab."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Stored states of the column
         self.is_visible: bool | None = None
         self.is_enabled: bool | None = None
@@ -122,7 +124,7 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
 
     def get_filter_row_content(self, value: Any) -> str:
         """Get the content of a filter row from the value."""
-        return value
+        return cast(str, value)
 
     def get_filter_row_tooltip(self, value: Any) -> str:
         """Get the of a filter row from the value."""
@@ -145,7 +147,7 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
 
     def set_filter_values(
         self, players: list[Player], event: Event, active_keys: list[str]
-    ):
+    ) -> None:
         count_by_key: Counter[str] = Counter[str]()
         for key in self.filter_mandatory_keys:
             count_by_key[key] = 0
@@ -191,7 +193,7 @@ class NamePlayersTabColumn(FilterPlayersTabColumn):
         return _('Name')
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return tuple()
+        return ()
 
     @property
     def is_hideable(self) -> bool:
@@ -449,7 +451,7 @@ class CategoryPlayersTabColumn(FilterPlayersTabColumn):
         return (date.today() - dob,)
 
     def get_filter_row_content(self, value: Any) -> str:
-        return value.name
+        return cast(str, value.name)
 
     def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
         return filter_value.value
@@ -537,7 +539,7 @@ class GenderPlayersTabColumn(FilterPlayersTabColumn):
         return PlayerGender(filter_key)
 
     def get_filter_row_content(self, value: Any) -> str:
-        return value.name
+        return cast(str, value.name)
 
 
 class FixedPlayersTabColumn(PlayersTabColumn):

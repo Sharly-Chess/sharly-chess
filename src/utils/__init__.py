@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 import subprocess
 import sys
 from abc import ABC, abstractmethod
@@ -7,7 +8,8 @@ from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
 from subprocess import CompletedProcess
-from typing import Callable, Iterable, Protocol, Hashable, Collection, TYPE_CHECKING
+from typing import Any, Protocol, TYPE_CHECKING, cast, ClassVar
+from collections.abc import Callable, Iterable, Hashable, Collection
 
 import iso4217parse
 import pycountry
@@ -24,7 +26,7 @@ class Utils:
 
     EMAIL_REGEX = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$'
 
-    PERFORMANCE_TABLE: list[int] = [
+    PERFORMANCE_TABLE: ClassVar[list[int]] = [
         0,
         7,
         14,
@@ -78,7 +80,7 @@ class Utils:
         800,
     ]
 
-    DIFFERENCE_TO_PROBABILITY_TABLE = [
+    DIFFERENCE_TO_PROBABILITY_TABLE: ClassVar = [
         (0, 3, 0.50),
         (4, 10, 0.51),
         (11, 17, 0.52),
@@ -166,10 +168,7 @@ class Utils:
     def points_str(points: float | None, plus_sign: bool = False) -> str:
         if points is None:
             return ''
-        if plus_sign:
-            points_str = f'{points:+.2f}'
-        else:
-            points_str = f'{points:.2f}'
+        points_str = f'{points:+.2f}' if plus_sign else f'{points:.2f}'
         # Drop the leading zero of a bare fraction, so half a point reads
         # ½ rather than 0½ — on either side of zero, since a penalty can
         # take a score below it.
@@ -215,9 +214,9 @@ class Utils:
         currencies = iso4217parse.by_country(country.alpha_2)
         if not currencies:
             return None
-        return currencies[0].alpha3
+        return cast(str | None, currencies[0].alpha3)
 
-    country_codes_by_federation = {
+    country_codes_by_federation: ClassVar = {
         'FRA': ['FR', 'RE', 'PM', 'NC', 'GF', 'GP', 'MQ'],
     }
 
@@ -314,7 +313,7 @@ class Utils:
         return name
 
     @staticmethod
-    def run_process(cmd: list, **kwargs) -> CompletedProcess:
+    def run_process(cmd: list[str | Path], **kwargs: Any) -> CompletedProcess[Any]:
         """Run a subprocess without showing a console window on Windows."""
         if sys.platform == 'win32':
             # Prevent flashing console windows when app is packaged with PyInstaller (--windowed)
@@ -322,7 +321,9 @@ class Utils:
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             kwargs.setdefault('startupinfo', startupinfo)
             kwargs.setdefault('creationflags', subprocess.CREATE_NO_WINDOW)
-        return subprocess.run(cmd, **kwargs)
+        # Defaulted just above, so a caller that wants it can still pass it.
+        kwargs.setdefault('check', False)
+        return subprocess.run(cmd, **kwargs)  # noqa: PLW1510
 
     @staticmethod
     def concat_dicts[K, V](dict_list: list[dict[K, V]]) -> dict[K, V]:
@@ -339,7 +340,7 @@ class Utils:
         )
 
     @staticmethod
-    def reset_cached_properties(obj: object, *property_names: str):
+    def reset_cached_properties(obj: object, *property_names: str) -> None:
         for property_name in property_names:
             if property_name in obj.__dict__:
                 del obj.__dict__[property_name]
@@ -379,7 +380,7 @@ class Utils:
         return f'{prefix}{_("Rating")}{suffix}'
 
 
-class SupportsEquals(Protocol):
+class SupportsEquals(Protocol):  # noqa: PLW1641
     def __eq__(self, other: object) -> bool: ...
 
 

@@ -25,7 +25,7 @@ class PrizeGroup:
         tournament: 'Tournament',
         stored_prize_group: StoredPrizeGroup,
     ):
-        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        self._tournament_ref: ReferenceType[Tournament] = weakref.ref(tournament)
         self.stored_prize_group = stored_prize_group
 
     @cached_property
@@ -78,7 +78,7 @@ class PrizeGroup:
     def get_event_database(self) -> EventDatabase:
         return EventDatabase(self.tournament.event.uniq_id, True)
 
-    def update(self):
+    def update(self) -> None:
         with self.get_event_database() as database:
             database.update_stored_prize_group(self.stored_prize_group)
 
@@ -98,14 +98,14 @@ class PrizeGroup:
             self.reorder_categories(category_ids)
         return category
 
-    def delete_category(self, category_id: int):
+    def delete_category(self, category_id: int) -> None:
         with self.get_event_database() as database:
             database.delete_stored_prize_category(category_id)
         if category_id in self.categories_by_id:
             del self.categories_by_id[category_id]
         self.reorder_categories()
 
-    def reorder_categories(self, sorted_category_ids: list[int] | None = None):
+    def reorder_categories(self, sorted_category_ids: list[int] | None = None) -> None:
         if not sorted_category_ids:
             sorted_category_ids = [category.id for category in self.sorted_categories]
         with self.get_event_database() as database:
@@ -135,7 +135,7 @@ class PrizeGroup:
     # Calculation
     # ---------------------------------------------------------------------------------
 
-    def assign_prizes(self):
+    def assign_prizes(self) -> list[AssignedPrize]:
         self.tournament.compute_tournament_player_ranks()
         # A player dropped from the standings (FIDE 6.6) wins no prize.
         sorted_tournament_players: list[TournamentPlayer] = [
@@ -220,7 +220,7 @@ class PrizeGroup:
         # Find eligible player for a prize, following the category's own
         # ranking basis (the category player list is already filtered by
         # criteria and ordered by the ranking basis).
-        def find_eligible_tournament_player(prize_: Prize):
+        def find_eligible_tournament_player(prize_: Prize) -> TournamentPlayer | None:
             category_players = sorted_players_by_category_id[prize_.prize_category.id]
             for tournament_player_ in category_players:
                 current_ = assigned_prizes.get(tournament_player_.id)
@@ -281,10 +281,10 @@ class PrizeGroup:
 
                         newly_entered_players_ids = list(
                             set(new_top_player_ids)
-                            - set(
+                            - {
                                 tournament_player.id
                                 for tournament_player in top_tournament_players
-                            )
+                            }
                         )
 
                         for player_id in newly_entered_players_ids:
@@ -297,7 +297,7 @@ class PrizeGroup:
                                 ),
                                 None,
                             )
-                            players_current_prize = assigned_prizes.get(player_id, None)
+                            players_current_prize = assigned_prizes.get(player_id)
                             players_current_prize_value = (
                                 players_current_prize.value
                                 if players_current_prize
@@ -400,12 +400,10 @@ class PrizeGroup:
                 warning=warning,
             )
 
-        sorted_prizes = sorted(
+        return sorted(
             list(assigned_prizes.values()) + unassigned_prizes,
             key=lambda p: (-p.prize.value, p.priority, p.place_index),
         )
-
-        return sorted_prizes
 
     def get_assigned_prizes_by_category_id(self) -> dict[int, list[AssignedPrize]]:
         """Returns all the prize assignments (monetary or not, assigned to a player or not), by category ID."""
@@ -433,12 +431,13 @@ class PrizeGroup:
         """Returns the prizes assigned to a player (monetary or not depending on monetary_only), by category ID."""
         assigned_prizes_by_category_id: dict[int, list[AssignedPrize]] = {}
         for assigned_prize in self.assign_prizes():
-            if not monetary_only or assigned_prize.prize.is_monetary:
-                if assigned_prize.assigned_to:
-                    category_id = assigned_prize.prize.prize_category.id
-                    if category_id not in assigned_prizes_by_category_id:
-                        assigned_prizes_by_category_id[category_id] = []
-                    assigned_prizes_by_category_id[category_id].append(assigned_prize)
+            if (
+                not monetary_only or assigned_prize.prize.is_monetary
+            ) and assigned_prize.assigned_to:
+                category_id = assigned_prize.prize.prize_category.id
+                if category_id not in assigned_prizes_by_category_id:
+                    assigned_prizes_by_category_id[category_id] = []
+                assigned_prizes_by_category_id[category_id].append(assigned_prize)
         for category_id in assigned_prizes_by_category_id:
             assigned_prizes_by_category_id[category_id] = sorted(
                 assigned_prizes_by_category_id[category_id],

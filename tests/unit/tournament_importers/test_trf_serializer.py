@@ -1,3 +1,4 @@
+from typing import ClassVar
 from pathlib import Path
 from unittest import TestCase
 
@@ -126,25 +127,62 @@ class TestTrfSerializer(TestCase):
     # The Tournament Type Code Table for TRF_CODE 192, verbatim. The
     # parameterised forms (BERGER_ROUNDROBIN_Gn, FIDE_SCHILLER_TxP,
     # FIDE_SCHEVENINGEN_Gn) are listed in their documented default form.
-    TOURNAMENT_TYPE_CODES = (
-        'FIDE_DUTCH_2017 FIDE_DUTCH_2026 FIDE_DUTCH FIDE_DUBOV FIDE_BURSTEIN '
-        'FIDE_DUTCH_2017_BAKU FIDE_DUTCH_2026_BAKU FIDE_DUTCH_BAKU '
-        'FIDE_DUBOV_BAKU FIDE_BURSTEIN_BAKU CUSTOM_SWISS FIDE_DOUBLESWISS '
-        'FIDE_DOUBLESWISS_BAKU CUSTOM_DOUBLESWISS BERGER_ROUNDROBIN '
-        'BERGER_DOUBLEROUNDROBIN FIDE_ROUNDROBIN FIDE_DOUBLEROUNDROBIN '
-        'CUSTOM_ROUNDROBIN FIDE_SCHILLER CUSTOM_SCHILLER FIDE_SCHEVENINGEN '
-        'FIDE_DOUBLESCHEVENINGEN CUSTOM_SCHEVENINGEN CUSTOM_KNOCKOUT '
-        'FIDE_TEAM_TYPEA_MP_GP FIDE_TEAM_TYPEA_GP_MP FIDE_TEAM_TYPEA_MP '
-        'FIDE_TEAM_TYPEA_GP FIDE_TEAM_TYPEB_MP_GP FIDE_TEAM_TYPEB_GP_MP '
-        'FIDE_TEAM_TYPEB_MP FIDE_TEAM_TYPEB_GP FIDE_TEAM_MP_GP FIDE_TEAM_GP_MP '
-        'FIDE_TEAM_MP FIDE_TEAM_GP FIDE_TEAM CUSTOM_TEAM_SWISS_MP '
-        'CUSTOM_TEAM_SWISS_GP FIDE_TEAM_TYPEA_MP_GP_BAKU FIDE_TEAM_TYPEA_MP_BAKU '
-        'FIDE_TEAM_TYPEB_MP_GP_BAKU FIDE_TEAM_TYPEB_MP_BAKU FIDE_TEAM_MP_GP_BAKU '
-        'FIDE_TEAM_MP_BAKU FIDE_TEAM_BAKU CUSTOM_TEAM_SWISS '
-        'BERGER_TEAM_ROUNDROBIN BERGER_TEAM_DOUBLEROUNDROBIN '
-        'FIDE_TEAM_ROUNDROBIN FIDE_TEAM_DOUBLEROUNDROBIN CUSTOM_TEAM_ROUNDROBIN '
-        'CUSTOM_TEAM_KNOCKOUT'
-    ).split()
+    TOURNAMENT_TYPE_CODES: ClassVar = [
+        'FIDE_DUTCH_2017',
+        'FIDE_DUTCH_2026',
+        'FIDE_DUTCH',
+        'FIDE_DUBOV',
+        'FIDE_BURSTEIN',
+        'FIDE_DUTCH_2017_BAKU',
+        'FIDE_DUTCH_2026_BAKU',
+        'FIDE_DUTCH_BAKU',
+        'FIDE_DUBOV_BAKU',
+        'FIDE_BURSTEIN_BAKU',
+        'CUSTOM_SWISS',
+        'FIDE_DOUBLESWISS',
+        'FIDE_DOUBLESWISS_BAKU',
+        'CUSTOM_DOUBLESWISS',
+        'BERGER_ROUNDROBIN',
+        'BERGER_DOUBLEROUNDROBIN',
+        'FIDE_ROUNDROBIN',
+        'FIDE_DOUBLEROUNDROBIN',
+        'CUSTOM_ROUNDROBIN',
+        'FIDE_SCHILLER',
+        'CUSTOM_SCHILLER',
+        'FIDE_SCHEVENINGEN',
+        'FIDE_DOUBLESCHEVENINGEN',
+        'CUSTOM_SCHEVENINGEN',
+        'CUSTOM_KNOCKOUT',
+        'FIDE_TEAM_TYPEA_MP_GP',
+        'FIDE_TEAM_TYPEA_GP_MP',
+        'FIDE_TEAM_TYPEA_MP',
+        'FIDE_TEAM_TYPEA_GP',
+        'FIDE_TEAM_TYPEB_MP_GP',
+        'FIDE_TEAM_TYPEB_GP_MP',
+        'FIDE_TEAM_TYPEB_MP',
+        'FIDE_TEAM_TYPEB_GP',
+        'FIDE_TEAM_MP_GP',
+        'FIDE_TEAM_GP_MP',
+        'FIDE_TEAM_MP',
+        'FIDE_TEAM_GP',
+        'FIDE_TEAM',
+        'CUSTOM_TEAM_SWISS_MP',
+        'CUSTOM_TEAM_SWISS_GP',
+        'FIDE_TEAM_TYPEA_MP_GP_BAKU',
+        'FIDE_TEAM_TYPEA_MP_BAKU',
+        'FIDE_TEAM_TYPEB_MP_GP_BAKU',
+        'FIDE_TEAM_TYPEB_MP_BAKU',
+        'FIDE_TEAM_MP_GP_BAKU',
+        'FIDE_TEAM_MP_BAKU',
+        'FIDE_TEAM_BAKU',
+        'CUSTOM_TEAM_SWISS',
+        'BERGER_TEAM_ROUNDROBIN',
+        'BERGER_TEAM_DOUBLEROUNDROBIN',
+        'FIDE_TEAM_ROUNDROBIN',
+        'FIDE_TEAM_DOUBLEROUNDROBIN',
+        'CUSTOM_TEAM_ROUNDROBIN',
+        'CUSTOM_TEAM_KNOCKOUT',
+    ]
 
     def test_exported_encoded_types_are_real_codes(self):
         """Every 192 code we write has to appear in the type table."""
@@ -155,7 +193,7 @@ class TestTrfSerializer(TestCase):
 
         emitted: set[str] = set()
         for module in (variations, acceleration):
-            for _name, obj in vars(module).items():
+            for obj in vars(module).values():
                 if not inspect.isclass(obj) or not issubclass(obj, PairingVariation):
                     continue
                 try:
@@ -194,6 +232,7 @@ class TestTrfSerializer(TestCase):
             if line.startswith(din):
                 return line
         self.fail(f'no {din} record was dumped')
+        return None
 
     def test_round_dates_use_the_same_columns_as_the_player_rounds(self):
         """TRF26 132: the first date occupies 92-99, then every 10 —

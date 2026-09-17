@@ -1,4 +1,5 @@
-from typing import Any, TYPE_CHECKING, Iterable
+from typing import Any, TYPE_CHECKING
+from collections.abc import Iterable
 
 from packaging.version import Version
 
@@ -109,7 +110,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_event_duplicated(self, event_database: EventDatabase):
+    def on_event_duplicated(self, event_database: EventDatabase) -> None:
         stored_tournaments = event_database.load_stored_tournaments()
         for stored_tournament in stored_tournaments:
             old_plugin_data = ChessResultsTournamentPluginData.from_stored_value(
@@ -143,7 +144,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     @hookimpl
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
-    ):
+    ) -> None:
         # This hook being called for most database writes, it needs to be optimized
         if not CRBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
@@ -234,5 +235,5 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]) -> None:
         qrcode_types.append(ChessResultsQRCodeType)

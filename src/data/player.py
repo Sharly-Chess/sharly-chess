@@ -2,7 +2,7 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast, ClassVar
 
 from babel.lists import format_list
 
@@ -71,17 +71,14 @@ class Player:
         event: 'Event',
         stored_player: StoredPlayer,
     ):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_player = stored_player
         self.ratings = self._get_ratings()
         self.plugin_data = self._get_plugin_data()
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
-        return {
-            plugin_id: plugin_data_class
-            for plugin_id, plugin_data_class in plugin_manager.hook.get_player_plugin_data_class()
-        }
+        return dict(plugin_manager.hook.get_player_plugin_data_class())
 
     @property
     def event(self) -> 'Event':
@@ -377,7 +374,7 @@ class Player:
             return None
         return tournament.tournament_players_by_id.get(self.id)
 
-    def invalidate_team_derived_cache(self):
+    def invalidate_team_derived_cache(self) -> None:
         """Forget what was worked out from this player's team.
 
         In a team event the player's tournament comes from their team, and
@@ -385,7 +382,7 @@ class Player:
         """
         Utils.reset_cached_properties(self, 'optional_single_tournament_id')
 
-    def replace_stored_player(self, stored_player: StoredPlayer):
+    def replace_stored_player(self, stored_player: StoredPlayer) -> None:
         self.stored_player = stored_player
         self.plugin_data = self._get_plugin_data()
         self.ratings = self._get_ratings()
@@ -431,7 +428,7 @@ class Player:
                 category=category,
             )
             if rating_and_type:
-                return rating_and_type
+                return cast(PlayerRatingAndType, rating_and_type)
             if player_ratings.estimated:
                 return PlayerRatingAndType(
                     player_ratings.estimated, PlayerRatingType.ESTIMATED
@@ -460,7 +457,7 @@ class Player:
                 return f'{rating_and_type} ({tournament_rating.acronym})'
         raise ValueError('Player expected to have a real rating')
 
-    def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
+    def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]) -> None:
         for tournament_rating, player_rating in ratings.items():
             self.stored_player.ratings[tournament_rating.value] = (
                 player_rating.stored_value
@@ -485,7 +482,9 @@ class Player:
 
 
 @total_ordering
-class TournamentPlayer(Player):
+# Equality is by seat, not by player, so hashing would make two players on the
+# same board collide. Left unhashable on purpose.
+class TournamentPlayer(Player):  # noqa: PLW1641
     def __init__(
         self,
         tournament: 'Tournament',
@@ -494,7 +493,7 @@ class TournamentPlayer(Player):
         player_id = stored_tournament_player.player_id
         stored_player = tournament.event.players_by_id[player_id].stored_player
         super().__init__(tournament.event, stored_player)
-        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        self._tournament_ref: ReferenceType[Tournament] = weakref.ref(tournament)
         self.stored_tournament_player = stored_tournament_player
 
         self.points: float | None = None
@@ -556,7 +555,7 @@ class TournamentPlayer(Player):
             for round_ in range(1, self.tournament.rounds + 1)
         }
 
-    def delete_pairing(self, round_: int, event_database: EventDatabase):
+    def delete_pairing(self, round_: int, event_database: EventDatabase) -> None:
         event_database.delete_stored_pairing(
             self.pairings_by_round[round_].stored_pairing
         )
@@ -794,7 +793,7 @@ class TournamentPlayer(Player):
     # Standard W/D/L values for the TRF26 team-mode "standard score".
     # Tournament-level ``game_points`` overrides intentionally don't apply
     # here — the spec defines this as an informative over-the-board sum.
-    _TEAM_TRF_STANDARD_POINTS: 'dict[Result, float]' = {
+    _TEAM_TRF_STANDARD_POINTS: ClassVar[dict[Result, float]] = {
         Result.WIN: 1.0,
         Result.DRAW: 0.5,
         Result.LOSS: 0.0,
@@ -844,7 +843,7 @@ class TournamentPlayer(Player):
             if pairing.played or not only_played
         )
 
-    def compute_points(self, *, before_round: int):
+    def compute_points(self, *, before_round: int) -> None:
         """Computes and stores the points scored by the player before round `before_round` (returns None)"""
         self.points = self.points_before(before_round)
 
@@ -854,7 +853,7 @@ class TournamentPlayer(Player):
             for pairing in self.pairings.values()
         )
 
-    def add_points(self, points: float):
+    def add_points(self, points: float) -> None:
         """If `self.points` is set, add `points` to it.
         Otherwise, leave `self.points` as None."""
         if self.points is not None:
@@ -864,7 +863,7 @@ class TournamentPlayer(Player):
     def points_str(self) -> str:
         return Utils.points_str(self.points)
 
-    def add_vpoints(self, vpoints: float):
+    def add_vpoints(self, vpoints: float) -> None:
         """If `self.vpoints` is set, add `vpoints` to it.
         Otherwise, leave `self.vpoints` as None."""
         if self.vpoints is not None:
@@ -952,13 +951,13 @@ class TournamentPlayer(Player):
         return trf_player
 
     # FIXME(Amaras): this should not be in the Player class
-    def reset_board(self):
+    def reset_board(self) -> None:
         self.board_id = None
         self.board_number = None
         self.color = None
 
     # FIXME(Amaras): this should not be in the Player class
-    def set_board(self, board_id: int, board_number: int, color: BoardColor):
+    def set_board(self, board_id: int, board_number: int, color: BoardColor) -> None:
         self.board_id = board_id
         self.board_number = board_number
         self.color = color
@@ -1101,7 +1100,7 @@ class TournamentPlayer(Player):
         *,
         after_round: int,
         tie_breaks: list['TieBreak'] | None = None,
-    ):
+    ) -> None:
         if tie_breaks is None:
             tie_breaks = self.tournament.tie_breaks
         self._tie_break_values = [
@@ -1122,7 +1121,7 @@ class TournamentPlayer(Player):
         return self._rank
 
     @rank.setter
-    def rank(self, rank: int):
+    def rank(self, rank: int) -> None:
         self._rank = rank
 
     @cached_property
@@ -1141,7 +1140,7 @@ class TournamentPlayer(Player):
 
     @property
     def starting_rank_sort_key(self) -> tuple:
-        return (-self.rating, -self.title.sort_index) + self.name_sort_key
+        return (-self.rating, -self.title.sort_index, *self.name_sort_key)
 
     @property
     def board_number_sort_key(self) -> tuple:
@@ -1187,11 +1186,14 @@ class TournamentPlayer(Player):
         """Returns a rank sort key as if the tie-break of type *tie_break_type* was not set."""
         elements = self._rank_key_elements()
         assert self.pairing_number is not None
-        return tuple(
-            element
-            for index, element in enumerate(elements)
-            if index != tie_break_index
-        ) + (self.pairing_number,)
+        return (
+            *tuple(
+                element
+                for index, element in enumerate(elements)
+                if index != tie_break_index
+            ),
+            self.pairing_number,
+        )
 
     @property
     def rank_sort_key_without_pairing_number(self) -> tuple:
@@ -1199,7 +1201,7 @@ class TournamentPlayer(Player):
 
     @property
     def rank_sort_key(self) -> tuple:
-        return self.rank_sort_key_without_pairing_number + (self.pairing_number,)
+        return (*self.rank_sort_key_without_pairing_number, self.pairing_number)
 
     def __le__(self, other: 'TournamentPlayer') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
@@ -1207,20 +1209,20 @@ class TournamentPlayer(Player):
             return NotImplemented
         return self.board_number_sort_key > other.board_number_sort_key
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         # p1 == p2 calls p1.__eq__(p2)
         if not isinstance(other, TournamentPlayer):
             return NotImplemented
         return self.board_number_sort_key == other.board_number_sort_key
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f'(#{self.id} rank={self._rank} ratings={self.ratings_str} '
             f'title={self.title.value} gender={self.gender.value} '
             f'name={self.last_name} {self.first_name} points={self.points})'
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(tournament={self.tournament!r}, stored_tournament_player={self.stored_tournament_player!r})'
 
     # --------------------------------------------------------------------------

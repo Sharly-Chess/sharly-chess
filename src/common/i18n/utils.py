@@ -8,7 +8,7 @@ from typing import Any
 from jinja2 import TemplateError
 
 
-def locale_flag_url(locale: str):
+def locale_flag_url(locale: str) -> str:
     """Returns the uri of a locale to the image of its flag."""
     return f'/static/images/locales/{locale}.svg'
 

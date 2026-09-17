@@ -3,7 +3,7 @@ from plugins.migration import BasePluginMigration
 
 
 class Migration(BasePluginMigration):
-    def forward(self):
+    def forward(self) -> None:
         # Event data
         self.database.execute(
             'SELECT plugin_data, ffe_auto_upload, ffe_auto_upload_delay FROM info'
@@ -60,7 +60,7 @@ class Migration(BasePluginMigration):
             'ALTER TABLE `tournament` DROP COLUMN `ffe_last_rules_upload`'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         # Event data
 
         self.database.execute(

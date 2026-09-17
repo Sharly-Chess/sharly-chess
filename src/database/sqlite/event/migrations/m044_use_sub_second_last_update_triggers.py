@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         for trigger in [
             'set_tournament_last_pairing_update_on_pairing_insert',
             'set_tournament_last_pairing_update_on_pairing_update',
@@ -117,5 +117,5 @@ class Migration(BaseMigration):
             """
         )
 
-    def backward(self):
+    def backward(self) -> None:
         pass

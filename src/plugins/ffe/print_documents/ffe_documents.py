@@ -63,7 +63,7 @@ class FFEPrintDocument(PrintDocument):
             FFEArbiterPrintOption,
         ]
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         valid_options_types = self.ffe_document_type.get_valid_option_types()
         for option in self.options:
             if type(option) in valid_options_types:

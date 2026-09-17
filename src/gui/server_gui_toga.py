@@ -23,7 +23,7 @@ import webbrowser
 from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
-from typing import Optional, Any
+from typing import Any, cast
 from PIL import Image as PILImage
 
 import toga
@@ -254,14 +254,16 @@ LOG_HTML = f"""<!doctype html>
 # Fix a Windows Toga issue in v0.52 - _on_gain_focus is called by doesn't exist
 if not hasattr(toga.Window, '_on_gain_focus'):
 
-    def _noop_gain(self, *_, **__):  # bound method signature (self will be bound)
+    def _noop_gain(
+        self: Any, *_: Any, **__: Any
+    ) -> None:  # bound method signature (self will be bound)
         pass
 
     toga.Window._on_gain_focus = _noop_gain
 
 if not hasattr(toga.Window, '_on_lose_focus'):
 
-    def _noop_lose(self, *_, **__):
+    def _noop_lose(self: Any, *_: Any, **__: Any) -> None:
         pass
 
     toga.Window._on_lose_focus = _noop_lose
@@ -275,7 +277,7 @@ def make_qr_pil(data: str) -> PILImage.Image:
     )
     qr.add_data(data)
     qr.make()
-    return qr.make_image(fill_color='black', back_color='white')
+    return cast(PILImage.Image, qr.make_image(fill_color='black', back_color='white'))
 
 
 def pil_to_toga_image(pil_img: PILImage.Image) -> toga.Image:
@@ -287,7 +289,7 @@ def pil_to_toga_image(pil_img: PILImage.Image) -> toga.Image:
 class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
-    instance: Optional['SharlyChessServerToga'] = None
+    instance: SharlyChessServerToga | None = None
 
     def __init__(
         self, *, debug: bool = False, profile: bool = False, port: int | None = None
@@ -334,12 +336,12 @@ class SharlyChessServerToga(toga.App):
         self._pending_js: list[str] = []
 
         # State
-        self.server_thread: Optional[threading.Thread] = None
+        self.server_thread: threading.Thread | None = None
         self.serve_task: asyncio.Task | None = None
         self.server_running = False
 
         # Thread-safe communication
-        self.message_queue: queue.Queue[tuple[str, str, Optional[str]]] = queue.Queue()
+        self.message_queue: queue.Queue[tuple[str, str, str | None]] = queue.Queue()
         self.compact_size = (500, 100)
         self.expanded_size = (1200, 700)
 
@@ -357,60 +359,60 @@ class SharlyChessServerToga(toga.App):
         )
 
         # GUI elements (initialized in startup)
-        self.main_box: Optional[toga.Box] = None
+        self.main_box: toga.Box | None = None
 
         # Menu buttons
-        self.menu_home_btn: Optional[toga.Button] = None
-        self.menu_networks_btn: Optional[toga.Button] = None
-        self.menu_plugins_btn: Optional[toga.Button] = None
-        self.menu_logs_btn: Optional[toga.Button] = None
-        self.menu_settings_btn: Optional[toga.Button] = None
+        self.menu_home_btn: toga.Button | None = None
+        self.menu_networks_btn: toga.Button | None = None
+        self.menu_plugins_btn: toga.Button | None = None
+        self.menu_logs_btn: toga.Button | None = None
+        self.menu_settings_btn: toga.Button | None = None
         self.active_view_name: str | None = None
         self.requested_window_size: tuple[int, int] | None = None
         #: The buttons displayed as selected, and whether the window is the
         #: active one, which the colour of their text depends on.
 
         # Home view
-        self.home_view: Optional[toga.Box] = None
-        self.server_state_container: Optional[toga.Box] = None
-        self.update_available_box: Optional[toga.Box] = None
-        self.home_main_label: Optional[toga.Label] = None
-        self.home_progress_bar: Optional[toga.ProgressBar] = None
+        self.home_view: toga.Box | None = None
+        self.server_state_container: toga.Box | None = None
+        self.update_available_box: toga.Box | None = None
+        self.home_main_label: toga.Label | None = None
+        self.home_progress_bar: toga.ProgressBar | None = None
 
         # Networks view
-        self.networks_view: Optional[toga.Box] = None
+        self.networks_view: toga.Box | None = None
         self.lan_ifaces: list[dict[str, str]] | None = None
 
         # Plugins view
-        self.plugins_view: Optional[toga.Box] = None
-        self.plugins_web_view: Optional[toga.WebView] = None
+        self.plugins_view: toga.Box | None = None
+        self.plugins_web_view: toga.WebView | None = None
 
         # Logs view
-        self.logs_view: Optional[toga.Box] = None
-        self.html_view: Optional[toga.WebView] = None
-        self.log_settings_btn: Optional[toga.Button] = None
-        self.log_settings_container: Optional[toga.Box] = None
-        self.log_settings: Optional[toga.Box] = None
-        self.log_level_select: Optional[toga.Selection] = None
-        self.log_color_switch: Optional[toga.Switch] = None
-        self.show_log_level_switch: Optional[toga.Switch] = None
-        self.show_log_time_switch: Optional[toga.Switch] = None
+        self.logs_view: toga.Box | None = None
+        self.html_view: toga.WebView | None = None
+        self.log_settings_btn: toga.Button | None = None
+        self.log_settings_container: toga.Box | None = None
+        self.log_settings: toga.Box | None = None
+        self.log_level_select: toga.Selection | None = None
+        self.log_color_switch: toga.Switch | None = None
+        self.show_log_level_switch: toga.Switch | None = None
+        self.show_log_time_switch: toga.Switch | None = None
 
         # Settings view
-        self.settings_view: Optional[toga.Box] = None
-        self.launch_browser_switch: Optional[toga.Switch] = None
-        self.data_path_input: Optional[TextInput] = None
-        self.data_path_move_button: Optional[toga.Button] = None
-        self.check_beta_switch: Optional[toga.Switch] = None
-        self.latest_version_label: Optional[toga.Label] = None
-        self.latest_version_btn: Optional[toga.Button] = None
-        self.locale_select: Optional[toga.Selection] = None
-        self.date_formatter_select: Optional[toga.Selection] = None
-        self.experimental_switch: Optional[toga.Switch] = None
+        self.settings_view: toga.Box | None = None
+        self.launch_browser_switch: toga.Switch | None = None
+        self.data_path_input: TextInput | None = None
+        self.data_path_move_button: toga.Button | None = None
+        self.check_beta_switch: toga.Switch | None = None
+        self.latest_version_label: toga.Label | None = None
+        self.latest_version_btn: toga.Button | None = None
+        self.locale_select: toga.Selection | None = None
+        self.date_formatter_select: toga.Selection | None = None
+        self.experimental_switch: toga.Switch | None = None
 
         # Setup content, displayed while the settings have not been set
-        self.federation_field: Optional[toga.Widget] = None
-        self.setup_start_button: Optional[toga.Button] = None
+        self.federation_field: toga.Widget | None = None
+        self.setup_start_button: toga.Button | None = None
         self.settings_labels: list[toga.Label] = []
         self.version_search_ongoing = False
 
@@ -455,7 +457,7 @@ class SharlyChessServerToga(toga.App):
         )
 
     # --- Toga lifecycle ---
-    def startup(self):
+    def startup(self) -> None:
         SharlyChessConfig().load_and_set_env()
 
         # The web views are built once and reused by every content: rebuilding
@@ -468,7 +470,7 @@ class SharlyChessServerToga(toga.App):
 
         # Window class used instead of MainWindow to avoid having a toolbar
         # See https://github.com/beeware/toga/issues/1870#issuecomment-2272534628
-        self.main_window = toga.Window(  # type: ignore
+        self.main_window = toga.Window(  # type: ignore[assignment]
             title='Sharly Chess',
             size=self.compact_size,
         )
@@ -476,7 +478,7 @@ class SharlyChessServerToga(toga.App):
         self._build_content()
         self.main_window.show()
 
-    def _build_content(self):
+    def _build_content(self) -> None:
         """Builds the content of the window. The texts of the widgets are
         translated when they are built, so the whole content is built again
         when the language changes (see _rebuild_content())."""
@@ -768,7 +770,7 @@ class SharlyChessServerToga(toga.App):
             children=[label_widget, widget],
         )
 
-    def _align_settings_labels(self):
+    def _align_settings_labels(self) -> None:
         """Gives every label of the settings the width of the widest one. The
         width of a text depends on the language it is written in and on the
         font of the platform, so it is measured instead of being set. What is
@@ -854,7 +856,7 @@ class SharlyChessServerToga(toga.App):
         )
         return self.date_formatter_select
 
-    def _build_setup_content(self):
+    def _build_setup_content(self) -> None:
         """The content displayed while the settings of the application have not
         been set: the application can not be used before they are."""
         self.main_box = toga.Box(
@@ -894,7 +896,7 @@ class SharlyChessServerToga(toga.App):
         self._align_settings_labels()
         self._request_window_size(self.compact_size)
 
-    def _rebuild_content(self):
+    def _rebuild_content(self) -> None:
         """Builds the content again, so that it is displayed in the language
         that has just been chosen."""
         active_view_name = self.active_view_name
@@ -912,8 +914,9 @@ class SharlyChessServerToga(toga.App):
         else:
             self._request_window_size(self.compact_size)
 
-    def _on_locale_change(self, widget: toga.Selection, **kwargs):
-        locale = getattr(widget.value, 'locale')
+    def _on_locale_change(self, widget: toga.Selection, **kwargs: Any) -> None:
+        # A row of a Toga ListSource, whose columns are named at runtime.
+        locale = getattr(widget.value, 'locale')  # noqa: B009
         if locale == SharlyChessConfig().locale:
             return
         self._update_config('locale', locale)
@@ -921,19 +924,21 @@ class SharlyChessServerToga(toga.App):
         # selection this handler was called from.
         self.gui_loop.call_soon_threadsafe(self._rebuild_content)
 
-    def _on_federation_change(self, widget: toga.Selection, **kwargs):
-        federation = getattr(widget.value, 'federation') or None
+    def _on_federation_change(self, widget: toga.Selection, **kwargs: Any) -> None:
+        federation = getattr(widget.value, 'federation') or None  # noqa: B009
         self._update_config('federation', federation)
         if self.setup_start_button is not None:
             self.setup_start_button.enabled = federation is not None
 
-    def _on_date_formatter_change(self, widget: toga.Selection, **kwargs):
-        self._update_config('date_formatter', getattr(widget.value, 'date_formatter'))
+    def _on_date_formatter_change(self, widget: toga.Selection, **kwargs: Any) -> None:
+        self._update_config('date_formatter', getattr(widget.value, 'date_formatter'))  # noqa: B009
 
-    def _on_experimental_switch_change(self, widget: toga.Switch, **kwargs):
+    def _on_experimental_switch_change(
+        self, widget: toga.Switch, **kwargs: Any
+    ) -> None:
         self._update_config('experimental', widget.value)
 
-    def _on_setup_done(self, widget):
+    def _on_setup_done(self, widget: Any) -> None:
         """The settings have been set: the application is usable and the web
         server is started."""
         if not SharlyChessConfig().stored_config.federation:
@@ -947,12 +952,12 @@ class SharlyChessServerToga(toga.App):
         self._request_window_size(self.compact_size)
         self._start()
 
-    def update_from_sharly_chess_config(self):
+    def update_from_sharly_chess_config(self) -> None:
         if self.launch_browser_switch is None:
             # The setup content does not hold these widgets.
             return
 
-        def config_update():
+        def config_update() -> None:
             config = SharlyChessConfig()
             assert self.launch_browser_switch is not None
             self.launch_browser_switch.value = config.launch_browser
@@ -973,11 +978,13 @@ class SharlyChessServerToga(toga.App):
 
         self.gui_loop.call_soon_threadsafe(config_update)
 
-    def _set_button_active(self, button: toga.Button, style: Pack, active: bool):
+    def _set_button_active(
+        self, button: toga.Button, style: Pack, active: bool
+    ) -> None:
         """Displays *button* as the one that is selected, or not."""
         button.style = style
 
-    def _show_view(self, name: str, is_compact_window: bool = True):
+    def _show_view(self, name: str, is_compact_window: bool = True) -> None:
         if self.active_view_name == name:
             return
         assert self.main_box is not None
@@ -995,22 +1002,22 @@ class SharlyChessServerToga(toga.App):
             self.compact_size if is_compact_window else self.expanded_size
         )
 
-    def _show_home_view(self, widget):
+    def _show_home_view(self, widget: Any) -> None:
         self._show_view('home')
 
-    def _show_logs_view(self, widget):
+    def _show_logs_view(self, widget: Any) -> None:
         self._show_view('logs', is_compact_window=False)
         assert self.html_view is not None
         self.html_view.refresh()
 
-    def _show_plugins_view(self, widget):
+    def _show_plugins_view(self, widget: Any) -> None:
         self._show_view('plugins', is_compact_window=False)
         # Loading a page while the window is being resized leaves the interface
         # unresponsive: the load is queued behind the resize, which does not
         # return before its animation is over.
         self.gui_loop.call_soon_threadsafe(self._load_plugins_page)
 
-    def _load_plugins_page(self):
+    def _load_plugins_page(self) -> None:
         assert self.plugins_web_view is not None
         # Reloaded on every display so that the page shows the plugins as they
         # are, whatever happened since the last time it was displayed.
@@ -1018,7 +1025,7 @@ class SharlyChessServerToga(toga.App):
             f'{SharlyChessConfig().local_url}/plugins?embedded=1'
         )
 
-    def _request_window_size(self, size: tuple[int, int]):
+    def _request_window_size(self, size: tuple[int, int]) -> None:
         """Requests a resize of the window, applied once the view being displayed
         has been built. Resizes are animated, and changing the content of a view
         interrupts the animation and leaves the window half resized: the size is
@@ -1029,7 +1036,7 @@ class SharlyChessServerToga(toga.App):
         if schedule:
             self.gui_loop.call_soon_threadsafe(self._apply_requested_window_size)
 
-    def _apply_requested_window_size(self):
+    def _apply_requested_window_size(self) -> None:
         assert isinstance(self.main_window, toga.Window)
         assert self.main_box is not None
         assert self.requested_window_size is not None
@@ -1078,17 +1085,17 @@ class SharlyChessServerToga(toga.App):
             return False
         return True
 
-    def _show_networks_view(self, widget):
+    def _show_networks_view(self, widget: Any) -> None:
         self._show_view('networks')
         self._refresh_networks_view(hard_refresh=False)
 
-    def _show_settings_view(self, widget):
+    def _show_settings_view(self, widget: Any) -> None:
         self._show_view('settings')
         # The labels can only be measured once the view they are in is laid out.
         self._align_settings_labels()
         self._update_latest_version_components()
 
-    def _toggle_log_settings(self, widget):
+    def _toggle_log_settings(self, widget: Any) -> None:
         assert self.log_settings_container is not None
         assert self.log_settings is not None
         assert self.log_settings_btn is not None
@@ -1103,10 +1110,10 @@ class SharlyChessServerToga(toga.App):
                 self.log_settings_btn, self.active_button_style, active=True
             )
 
-    def _open_data_path_explorer(self, widget):
+    def _open_data_path_explorer(self, widget: Any) -> None:
         self._open_dir_in_explorer(DATA_DIR)
 
-    async def _handle_data_path_selection(self, widget):
+    async def _handle_data_path_selection(self, widget: Any) -> None:
         folder_dialog = toga.SelectFolderDialog('', initial_directory=DATA_DIR)
         assert isinstance(self.main_window, toga.Window)
         new_data_dir: Path | None = await self.main_window.dialog(folder_dialog)
@@ -1114,7 +1121,9 @@ class SharlyChessServerToga(toga.App):
             return
 
         error: str | None = None
-        if any(new_data_dir.iterdir()):
+        # The Toga event loop, not the web server's: a directory listing here
+        # blocks the interface for as long as it takes, and nothing else.
+        if any(new_data_dir.iterdir()):  # noqa: ASYNC240
             # Directory is not empty
             error = _('This folder is not empty.')
         if not os.access(new_data_dir, os.W_OK):
@@ -1159,7 +1168,7 @@ class SharlyChessServerToga(toga.App):
         if sys.platform == 'win32':
             await self._ask_windows_defender_exception(new_data_dir)
 
-    async def _ask_windows_defender_exception(self, new_data_dir: Path):
+    async def _ask_windows_defender_exception(self, new_data_dir: Path) -> None:
         assert isinstance(self.main_window, toga.Window)
         await asyncio.sleep(0.1)
         process = Utils.run_process(
@@ -1234,7 +1243,7 @@ class SharlyChessServerToga(toga.App):
             minutes,
         ).format(count=minutes)
 
-    def _update_latest_version_components(self):
+    def _update_latest_version_components(self) -> None:
         assert self.latest_version_btn is not None
         assert self.latest_version_label is not None
         assert self.update_available_box is not None
@@ -1269,14 +1278,14 @@ class SharlyChessServerToga(toga.App):
         self,
         widget: toga.Widget | None = None,
         is_startup: bool = False,
-    ):
+    ) -> None:
         if self.version_search_ongoing:
             return
 
         self.version_search_ongoing = True
         self._update_latest_version_components()
 
-        async def run_search():
+        async def run_search() -> None:
             config = SharlyChessConfig()
             try:
                 check_beta = config.check_beta_versions
@@ -1302,7 +1311,7 @@ class SharlyChessServerToga(toga.App):
     def _dialog_title(subtitle: str) -> str:
         return f'Sharly Chess - {subtitle}'
 
-    async def _show_update_dialog(self, widget):
+    async def _show_update_dialog(self, widget: Any) -> None:
         assert isinstance(self.main_window, toga.Window)
         latest = VersionUpdater.LATEST_VERSION
         assert latest is not None
@@ -1343,7 +1352,7 @@ class SharlyChessServerToga(toga.App):
             message += '\n' + _('Use Flatpak to handle updates.')
             await self.main_window.dialog(toga.InfoDialog(title, message))
 
-    async def _run_sparkle_updater(self, version: Version):
+    async def _run_sparkle_updater(self, version: Version) -> None:
         """Runs the Sparkle updater, ask a retry if it fails."""
         assert isinstance(self.main_window, toga.Window)
         while True:
@@ -1365,7 +1374,7 @@ class SharlyChessServerToga(toga.App):
             if not (await self.main_window.dialog(toga.QuestionDialog(title, message))):
                 return
 
-    def on_running(self):
+    def on_running(self) -> None:
         # Logging handler
         assert self.html_view is not None
         self.html_view.set_content('about:blank', LOG_HTML)
@@ -1380,7 +1389,7 @@ class SharlyChessServerToga(toga.App):
             return
         self._start()
 
-    def _start(self):
+    def _start(self) -> None:
         """Looks for updates and starts the web server."""
         assert self.home_progress_bar is not None
         self.home_progress_bar.value = 1
@@ -1397,7 +1406,7 @@ class SharlyChessServerToga(toga.App):
         button.on_press = lambda widget, **kwargs: webbrowser.open(url)
         return button
 
-    def on_server_ready(self):
+    def on_server_ready(self) -> None:
         assert self.home_main_label is not None
         assert self.home_progress_bar is not None
         assert self.server_state_container is not None
@@ -1422,8 +1431,8 @@ class SharlyChessServerToga(toga.App):
             button.enabled = True
 
     def _refresh_networks_view(
-        self, widget: Any = None, hard_refresh: bool = True, **kwargs
-    ):
+        self, widget: Any = None, hard_refresh: bool = True, **kwargs: Any
+    ) -> None:
         assert self.networks_view is not None
         config = SharlyChessConfig()
         lan_ifaces = SharlyChessConfig().lan_ifaces
@@ -1467,9 +1476,9 @@ class SharlyChessServerToga(toga.App):
                 pil_img = make_qr_pil(url)
                 toga_img = pil_to_toga_image(pil_img)
                 label = item['label']
-                type = item['type'] if 'type' in item else None
-                if type and type != label:
-                    label = f'{label} ({type})'
+                item_type = item.get('type', None)
+                if item_type and item_type != label:
+                    label = f'{label} ({item_type})'
 
                 qr_widget = toga.ImageView(
                     image=toga_img,
@@ -1504,15 +1513,15 @@ class SharlyChessServerToga(toga.App):
         self.networks_view.add(refresh_box)
         self._request_window_size(self.compact_size)
 
-    def _noop(self, widget: toga.Widget):
+    def _noop(self, widget: toga.Widget) -> None:
         pass
 
     # ------- Public API used by handler / background code -------
-    def add_log_message(self, message: str, tag: Optional[str] = None):
+    def add_log_message(self, message: str, tag: str | None = None) -> None:
         self.message_queue.put(('log', message, tag))
 
     # ------- Internals -------
-    async def _process_message_queue(self):
+    async def _process_message_queue(self) -> None:
         """Background task to process pending messages from other threads."""
         while True:
             try:
@@ -1525,7 +1534,7 @@ class SharlyChessServerToga(toga.App):
 
             await asyncio.sleep(0.1)
 
-    def _append_log_message(self, message: str, level: Optional[str]):
+    def _append_log_message(self, message: str, level: str | None) -> None:
         ts = datetime.now().strftime('%H:%M:%S')
 
         if '\x1b[' in message:
@@ -1538,7 +1547,7 @@ class SharlyChessServerToga(toga.App):
         # Use json.dumps to make safe JS string literals
         ts_js = json.dumps(ts)
         html_js = json.dumps(html)
-        level_js = json.dumps((level or ''))
+        level_js = json.dumps(level or '')
 
         js = f"""
         (function() {{
@@ -1550,7 +1559,7 @@ class SharlyChessServerToga(toga.App):
 
         self._eval_or_buffer_js(js)
 
-    def _on_start_server(self, widget: Any | None = None, **kwargs) -> None:
+    def _on_start_server(self, widget: Any | None = None, **kwargs: Any) -> None:
         """Start the server in a background thread."""
         if self.server_running:
             self.add_log_message(_('Server is already running!'), 'warning')
@@ -1566,10 +1575,12 @@ class SharlyChessServerToga(toga.App):
         # IMPORTANT: bypass Toga's event-loop policy in this *background* thread
         loop = self.server_loop
         if sys.platform != 'linux':
-            asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
+            # Deprecated in 3.14, and there is no replacement for displacing
+            # Toga's policy in a thread it did not start.
+            asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())  # type: ignore[deprecated]
             asyncio.set_event_loop(loop)
 
-        def schedule_ready():
+        def schedule_ready() -> None:
             self.gui_loop.call_soon_threadsafe(self.on_server_ready)
 
         engine = ServerEngine(
@@ -1597,7 +1608,7 @@ class SharlyChessServerToga(toga.App):
                 assert self.app is not None
                 self.gui_loop.call_soon_threadsafe(self.app.exit)
 
-    def _open_browser(self, widget: Any = None, **kwargs) -> None:
+    def _open_browser(self, widget: Any = None, **kwargs: Any) -> None:
         try:
             url = SharlyChessConfig().local_url
             webbrowser.open(url)
@@ -1606,26 +1617,26 @@ class SharlyChessServerToga(toga.App):
             self.add_log_message(f'Failed to open browser: {e}', 'error')
 
     @staticmethod
-    def _open_documentation(widget: Any = None, **kwargs) -> None:
+    def _open_documentation(widget: Any = None, **kwargs: Any) -> None:
         webbrowser.open(_('https://sharly-chess.com/getting-started/'))
 
     @staticmethod
-    def _open_changelog(widget: Any = None, **kwargs) -> None:
+    def _open_changelog(widget: Any = None, **kwargs: Any) -> None:
         webbrowser.open(_('https://sharly-chess.com/changelog/'))
 
     @staticmethod
-    def _open_discord(widget):
+    def _open_discord(widget: Any) -> None:
         webbrowser.open(SharlyChessConfig().discord_url)
 
     @staticmethod
-    def _open_mail(widget):
+    def _open_mail(widget: Any) -> None:
         webbrowser.open('mailto:support@sharly-chess.com')
 
     @staticmethod
-    def _open_donate(widget: Any = None, **kwargs) -> None:
+    def _open_donate(widget: Any = None, **kwargs: Any) -> None:
         webbrowser.open(SharlyChessConfig().donate_url)
 
-    def _clear_log(self, widget: Any = None, **kwargs) -> None:
+    def _clear_log(self, widget: Any = None, **kwargs: Any) -> None:
         try:
             while True:
                 self.message_queue.get_nowait()
@@ -1643,7 +1654,7 @@ class SharlyChessServerToga(toga.App):
         self._eval_or_buffer_js(js)
 
     @staticmethod
-    def _open_dir_in_explorer(dir_path: Path):
+    def _open_dir_in_explorer(dir_path: Path) -> None:
         match sys.platform:
             case 'win32':
                 subprocess.Popen(f'explorer "{dir_path}"')
@@ -1653,33 +1664,37 @@ class SharlyChessServerToga(toga.App):
                 subprocess.Popen(['xdg-open', str(dir_path)])
 
     @classmethod
-    def _open_logs_dir(cls, widget):
+    def _open_logs_dir(cls, widget: Any) -> None:
         cls._open_dir_in_explorer(LOG_DIR)
 
     @staticmethod
-    def _update_config(field: str, value):
+    def _update_config(field: str, value: Any) -> None:
         stored_config = SharlyChessConfig().stored_config
         setattr(stored_config, field, value)
         with ConfigDatabase(write=True) as config_database:
             config_database.update_stored_config(stored_config)
         SharlyChessConfig().load_and_set_env()
 
-    def _on_level_change(self, widget: toga.Selection, **kwargs):
-        self._update_config('console_log_level', getattr(widget.value, 'level'))
+    def _on_level_change(self, widget: toga.Selection, **kwargs: Any) -> None:
+        self._update_config('console_log_level', getattr(widget.value, 'level'))  # noqa: B009
 
-    def _on_log_color_switch_change(self, widget: toga.Switch, **kwargs):
+    def _on_log_color_switch_change(self, widget: toga.Switch, **kwargs: Any) -> None:
         self._update_config('console_color', widget.value)
 
-    def _on_show_log_level_switch_change(self, widget: toga.Switch, **kwargs):
+    def _on_show_log_level_switch_change(
+        self, widget: toga.Switch, **kwargs: Any
+    ) -> None:
         self._update_config('console_show_level', widget.value)
 
-    def _on_show_date_switch_change(self, widget: toga.Switch, **kwargs):
+    def _on_show_date_switch_change(self, widget: toga.Switch, **kwargs: Any) -> None:
         self._update_config('console_show_date', widget.value)
 
-    def _on_launch_browser_switch_change(self, widget: toga.Switch, **kwargs):
+    def _on_launch_browser_switch_change(
+        self, widget: toga.Switch, **kwargs: Any
+    ) -> None:
         self._update_config('launch_browser', widget.value)
 
-    def _on_check_beta_switch_change(self, widget: toga.Switch, **kwargs):
+    def _on_check_beta_switch_change(self, widget: toga.Switch, **kwargs: Any) -> None:
         self._update_config('check_beta_versions', widget.value)
 
     # --- Interactive prompts ---
@@ -1689,7 +1704,7 @@ class SharlyChessServerToga(toga.App):
         """Blocking Yes/No prompt callable from background threads."""
         text = question + '?'
 
-        async def _ask_on_ui():
+        async def _ask_on_ui() -> bool:
             # Show the dialog on the main window; returns True/False
             assert isinstance(self.main_window, toga.Window)
             dialog = toga.QuestionDialog(title=self._dialog_title(title), message=text)
@@ -1721,9 +1736,9 @@ class SharlyChessServerToga(toga.App):
 
         loop.call_soon_threadsafe(_stop)
 
-    def _on_logview_load(self, widget, **kwargs: Any):
+    def _on_logview_load(self, widget: Any, **kwargs: Any) -> None:
         # Wait one loop turn so the inline <script> in LOG_HTML actually runs
-        async def _mark_ready_and_flush():
+        async def _mark_ready_and_flush() -> None:
             await asyncio.sleep(0)  # next iteration guarantees <script> executed
             self._logview_ready = True
             if self._pending_js:
@@ -1731,20 +1746,20 @@ class SharlyChessServerToga(toga.App):
                 for js in self._pending_js:
                     try:
                         assert self.html_view is not None
-                        self.html_view.evaluate_javascript(js)
+                        # Fire and forget: the log view is written to, never read.
+                        __ = self.html_view.evaluate_javascript(js)
                     except Exception:
                         pass
                 self._pending_js.clear()
 
         asyncio.create_task(_mark_ready_and_flush())
 
-    def _eval_or_buffer_js(self, js: str):
+    def _eval_or_buffer_js(self, js: str) -> None:
         if self._logview_ready:
             try:
                 assert self.html_view is not None
-                self.html_view.evaluate_javascript(js)
+                __ = self.html_view.evaluate_javascript(js)
             except Exception as e:
                 print(e)
-                pass
         else:
             self._pending_js.append(js)

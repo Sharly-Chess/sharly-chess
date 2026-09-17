@@ -2,10 +2,10 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `player` ADD COLUMN `year_of_birth` INTEGER')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'UPDATE `player` SET `date_of_birth` = `year_of_birth` || ? '
             'WHERE `year_of_birth` IS NOT NULL AND `date_of_birth` IS NOT NULL',

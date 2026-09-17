@@ -92,12 +92,12 @@ class HandicapGamesPlugin(Plugin):
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> bool:
         handicap_games_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
-        if any(
-            handicap_games_data.get(k)
-            for k in ('penalty_step', 'penalty_value', 'min_time')
-        ):
-            return True
-        return False
+        return bool(
+            any(
+                handicap_games_data.get(k)
+                for k in ('penalty_step', 'penalty_value', 'min_time')
+            )
+        )
 
     # ---------------------------------------------------------------------------------
     # Tournaments
@@ -135,13 +135,13 @@ class HandicapGamesPlugin(Plugin):
     @hookimpl
     def validate_tournament_form_fields(
         self, data: dict[str, str], errors: dict[str, str]
-    ):
+    ) -> None:
         time_control_trf25 = WebContext.form_data_to_str(data, 'time_control_trf25')
         time_control_handicap_penalty_value = WebContext.form_data_to_int(
             data, 'handicap_games_penalty_value'
         )
 
-        initial_time, inc = self._get_handicap_tim_control_options(time_control_trf25)
+        initial_time, _inc = self._get_handicap_tim_control_options(time_control_trf25)
         if initial_time == 0 and time_control_handicap_penalty_value:
             errors['handicap_games_penalty_value'] = _(
                 'Penalties require a time control with a single period.'
@@ -156,7 +156,7 @@ class HandicapGamesPlugin(Plugin):
         return '/handicap_games_tournament_card_time_control.html'
 
     @hookimpl
-    def set_for_round(self, tournament: 'Tournament', round_: int):
+    def set_for_round(self, tournament: 'Tournament', round_: int) -> None:
         plugin_data = HandicapGameUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.penalty_value:
             return
@@ -207,7 +207,7 @@ class HandicapGamesPlugin(Plugin):
         usage: ColumnUsage,
         board_columns: list[BoardColumn],
         tournament: 'Tournament',
-    ):
+    ) -> None:
         plugin_data = HandicapGameUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.penalty_value:
             return

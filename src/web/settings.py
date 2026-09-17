@@ -5,7 +5,7 @@ import posixpath
 import sqlite3
 import typing as t
 from pathlib import Path
-from typing import Sequence
+from collections.abc import Sequence
 
 import aiosqlite
 from aiosqlitepool import SQLiteConnectionPool
@@ -146,7 +146,7 @@ exception_handlers = {
 
 
 @listener('connected')
-async def load_first_online_data_sources_connection_status():
+async def load_first_online_data_sources_connection_status() -> None:
     for data_source in OnlineDataSourceManager().objects():
         if data_source.connection_status is None:
             await data_source.reload_connection_status()
@@ -162,7 +162,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         self,
         environment: Environment,
         template: str,
-    ) -> t.Tuple[str, str, t.Callable[[], bool]]:
+    ) -> tuple[str, str, t.Callable[[], bool]]:
         # pieces = self.split_template_path(template)
         pieces: list[str] = template.split('/')
 
@@ -170,7 +170,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
             # Use posixpath even on Windows to avoid "drive:" or UNC
             # segments breaking out of the search directory.
             filename = posixpath.join(searchpath, *pieces)
-            if os.path.isfile(filename):
+            if os.path.isfile(filename):  # noqa: PTH113
                 break
         else:
             plural = 'path' if len(self.searchpath) == 1 else 'paths'
@@ -183,11 +183,11 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         with open(filename, encoding=self.encoding) as f:
             contents = f.read()
 
-        mtime = os.path.getmtime(filename)
+        mtime = os.path.getmtime(filename)  # noqa: PTH204
 
         def uptodate() -> bool:
             try:
-                return os.path.getmtime(filename) == mtime
+                return os.path.getmtime(filename) == mtime  # noqa: PTH204
             except OSError:
                 return False
 
@@ -271,7 +271,7 @@ class SharlyChessEnvironment(Environment):
         self.context_class = ReleasableJinjaContext
         self.template_class = ProfiledJinjaTemplate
         self.add_extension('jinja2.ext.i18n')
-        self.install_gettext_callables(  # type: ignore
+        self.install_gettext_callables(  # type: ignore[attr-defined]
             gettext=gettext, ngettext=ngettext, newstyle=True
         )
         self.add_extension('jinja2.ext.do')
@@ -282,7 +282,7 @@ class SharlyChessEnvironment(Environment):
 
 template_dirs: list[Path] = [
     BASE_DIR / 'src/web/templates',
-    *[path for path in plugin_manager.templates_paths],
+    *list(plugin_manager.templates_paths),
     # lib files can be included in print view to build self-contained files
     BASE_DIR / 'src/web/static',
 ]
@@ -301,7 +301,7 @@ template_config: TemplateConfig = TemplateConfig(
 sessions_path: Path = TMP_DIR / 'session.db'
 
 
-def create_sessions_database(path: Path):
+def create_sessions_database(path: Path) -> None:
     database = sqlite3.connect(path)
     cursor = database.cursor()
     cursor.execute(
@@ -311,7 +311,7 @@ def create_sessions_database(path: Path):
     database.commit()
     cursor.close()
     database.close()
-    return None
+    return
 
 
 create_sessions_database(sessions_path)

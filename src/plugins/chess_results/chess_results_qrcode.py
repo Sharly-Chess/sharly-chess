@@ -38,7 +38,7 @@ class ChessResultsQRCodeType(QRCodeType):
         return True, CRUtils.tournament_public_url(tournament)
 
     @staticmethod
-    def get_qr_code(url) -> str:
+    def get_qr_code(url: str) -> str:
         return QRCodeType.generate_qr_code(
             url=url,
             logo=PLUGIN_DIR / 'static' / 'images' / 'chess-results-qr-logo.jpg',

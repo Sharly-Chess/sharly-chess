@@ -18,7 +18,7 @@ import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Callable
+from collections.abc import Callable
 
 import build_solver_recipes as recipes
 from molter_recipe_generator import generate_molter_table
@@ -187,9 +187,7 @@ def _i2_watch_or_avoid_cases(recipe_by_key: dict[str, dict]) -> tuple[Case, ...]
         if recipe is None or recipe.get('schedule', {}).get('kind') != 'odd_cell_drops':
             continue
         metrics = _metrics_for_case(case, recipe_by_key)
-        if metrics.i2_l1 > 2 * (team_count - 1):
-            out.append(case)
-        elif metrics.i2_l1 > team_count - 1:
+        if metrics.i2_l1 > 2 * (team_count - 1) or metrics.i2_l1 > team_count - 1:
             out.append(case)
     return tuple(out)
 

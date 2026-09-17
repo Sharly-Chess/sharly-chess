@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import List
 from enum import IntEnum
 import re
 
@@ -19,8 +18,6 @@ class Floater(IntEnum):
                 return '↓'
             case Floater.NONE:
                 return '·'
-            case _:
-                return str(self.value)
 
 
 @dataclass
@@ -42,20 +39,20 @@ class ColorPreferenceData:
 class TournamentHistoryPlayer:
     id: int  # pairing number
     points: float = 0.0
-    color_history: List[BoardColor | None] = field(default_factory=list)
+    color_history: list[BoardColor | None] = field(default_factory=list)
     color_preference: ColorPreferenceData | None = None
     eligible_for_bye: bool = False
     floater_prev: Floater | None = None
     floater_prev_prev: Floater | None = None
     current_opponent: int | None = None
     current_color: BoardColor | None = None
-    previous_opponents: List[int | None] = field(default_factory=list)
+    previous_opponents: list[int | None] = field(default_factory=list)
 
 
 @dataclass
 class TournamentHistory:
     rounds: int
-    players: List[TournamentHistoryPlayer] = field(default_factory=list)
+    players: list[TournamentHistoryPlayer] = field(default_factory=list)
 
 
 @dataclass
@@ -68,19 +65,19 @@ class TournamentHistoryTeam:
     id: int  # team pairing number
     points: float = 0.0
     secondary_points: float | None = None
-    color_history: List[BoardColor | None] = field(default_factory=list)
+    color_history: list[BoardColor | None] = field(default_factory=list)
     color_preference: ColorPreferenceData | None = None
     eligible_for_bye: bool = False
     current_opponent: int | None = None
     current_color: BoardColor | None = None
     has_bye: bool = False
-    previous_opponents: List[int | None] = field(default_factory=list)
+    previous_opponents: list[int | None] = field(default_factory=list)
 
 
 @dataclass
 class TeamTournamentHistory:
     rounds: int
-    teams: List[TournamentHistoryTeam] = field(default_factory=list)
+    teams: list[TournamentHistoryTeam] = field(default_factory=list)
 
 
 def parse_color_preference(pref_str: str) -> ColorPreferenceData | None:
@@ -88,22 +85,21 @@ def parse_color_preference(pref_str: str) -> ColorPreferenceData | None:
 
     if pref_str == 'W':
         return ColorPreferenceData(color=BoardColor.WHITE, absolute=True, strong=False)
-    elif pref_str == 'B':
+    if pref_str == 'B':
         return ColorPreferenceData(color=BoardColor.BLACK, absolute=True, strong=False)
-    elif pref_str == '(W)':
+    if pref_str == '(W)':
         return ColorPreferenceData(color=BoardColor.WHITE, absolute=False, strong=True)
-    elif pref_str == '(B)':
+    if pref_str == '(B)':
         return ColorPreferenceData(color=BoardColor.BLACK, absolute=False, strong=True)
-    elif pref_str == 'w':
+    if pref_str == 'w':
         return ColorPreferenceData(color=BoardColor.WHITE, absolute=False, strong=False)
-    elif pref_str == 'b':
+    if pref_str == 'b':
         return ColorPreferenceData(color=BoardColor.BLACK, absolute=False, strong=False)
-    else:
-        return ColorPreferenceData(color=None, absolute=False, strong=False)
+    return ColorPreferenceData(color=None, absolute=False, strong=False)
 
 
-def parse_color_history(history_str: str) -> List[BoardColor | None]:
-    colors: List[BoardColor | None] = []
+def parse_color_history(history_str: str) -> list[BoardColor | None]:
+    colors: list[BoardColor | None] = []
 
     # Skip the first character (padding space) and process the rest
     history_chars = history_str[1:] if len(history_str) > 0 else ''
@@ -233,7 +229,7 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
 
             # Extract previous round opponents (columns 10 onwards, skipping empty column 9)
             # Process exactly num_rounds opponent columns (R1-R{num_rounds})
-            previous_opponents: List[int | None] = []
+            previous_opponents: list[int | None] = []
             for round_idx in range(num_rounds):
                 part = parts[9 + round_idx]
                 stripped_part = part.strip()
@@ -274,7 +270,7 @@ def parse_bbp_team_checklist_text(text_content: str) -> TeamTournamentHistory:
     so adding a criterion on the engine side won't silently shift the
     values here.
     """
-    teams_list: List[TournamentHistoryTeam] = []
+    teams_list: list[TournamentHistoryTeam] = []
     num_rounds = 0
     index_by_name: dict[str, int] = {}
 
@@ -295,11 +291,13 @@ def parse_bbp_team_checklist_text(text_content: str) -> TeamTournamentHistory:
 
         parts = line.split('\t')
 
+        # Defined and called inside this iteration, so it closes over the row
+        # it is reading and no other.
         def column(name: str) -> str:
-            index = index_by_name.get(name)
-            if index is None or index >= len(parts):
+            index = index_by_name.get(name)  # noqa: B023
+            if index is None or index >= len(parts):  # noqa: B023
                 return ''
-            return parts[index].strip()
+            return parts[index].strip()  # noqa: B023
 
         if not column('ID').isdigit():
             continue
@@ -331,7 +329,7 @@ def parse_bbp_team_checklist_text(text_content: str) -> TeamTournamentHistory:
             )
 
         # The opponent columns follow the blank separator after ``Cur``.
-        previous_opponents: List[int | None] = []
+        previous_opponents: list[int | None] = []
         first_round_index = index_by_name.get('R1')
         if first_round_index is not None:
             for offset in range(num_rounds):

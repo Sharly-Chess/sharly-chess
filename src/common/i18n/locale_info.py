@@ -44,21 +44,19 @@ class DomainLocaleInfo(Domain):
         return string.replace('*', r'\*')
 
     @staticmethod
-    def message_is_empty(msg: Message):
+    def message_is_empty(msg: Message) -> bool:
         if isinstance(msg.id, str):
             assert isinstance(msg.string, str)
             return not msg.string
-        else:
-            assert isinstance(msg.string, tuple)
-            return any(not s for s in msg.string)
+        assert isinstance(msg.string, tuple)
+        return any(not s for s in msg.string)
 
     @staticmethod
-    def message_is_mandatory(msg: Message):
+    def message_is_mandatory(msg: Message) -> bool:
         if isinstance(msg.id, str):
             return msg.id.__contains__('***')
-        else:
-            assert isinstance(msg.string, tuple)
-            return any(s.__contains__('***') for s in msg.id)
+        assert isinstance(msg.string, tuple)
+        return any(s.__contains__('***') for s in msg.id)
 
     @staticmethod
     def sorted_tokens(string: str) -> list[str]:
@@ -70,19 +68,12 @@ class DomainLocaleInfo(Domain):
         # now really extract the tokens
         while True:
             token: str | None = None
-            if match := re.search(r'{[^}]*}', string):  # Looking for {name}
-                token = match.group()
-            elif match := re.search(
-                r'%%[sflt]', string
-            ):  # Looking for %%s, %%f, %%l and %%t
-                token = match.group()
-            elif match := re.search(
-                r'%[sflt]', string
-            ):  # Looking for %s, %f, %l and %t
-                token = match.group()
-            elif match := re.search(
-                r'%\([^)]*\)[ds]', string
-            ):  # Looking for %(name)s or %(name)d
+            if (
+                (match := re.search(r'{[^}]*}', string))
+                or (match := re.search(r'%%[sflt]', string))
+                or (match := re.search(r'%[sflt]', string))
+                or (match := re.search(r'%\([^)]*\)[ds]', string))
+            ):  # Looking for {name}
                 token = match.group()
             if token:
                 # string = string.replace(token, f'{self.token_replacement}_{len(tokens)}', 1)
@@ -135,7 +126,7 @@ class DomainLocaleInfo(Domain):
                     break
         return not error
 
-    def control(self):
+    def control(self) -> bool:
         # Read the catalog.
         with open(self.po_file, 'rb') as f:
             catalog: Catalog = read_po(f)
@@ -179,12 +170,12 @@ class DomainLocaleInfo(Domain):
                         self.flagged_messages[flag][msg_key] = msg
         tmp_file: Path = self.po_file.with_suffix('.tmp')
         with open(tmp_file, 'wb') as f:
-            write_po(f, catalog, width=0, omit_header=True)  # type: ignore
+            write_po(f, catalog, width=0, omit_header=True)
         # compare line by line because files differ on CR/LF
         changed: bool = False
         with (
-            open(self.po_file, 'r', encoding='utf-8') as before_f,
-            open(tmp_file, 'r', encoding='utf-8') as after_f,
+            open(self.po_file, encoding='utf-8') as before_f,
+            open(tmp_file, encoding='utf-8') as after_f,
         ):
             for before_line, after_line in zip_longest(
                 before_f.readlines(), after_f.readlines()
@@ -198,7 +189,7 @@ class DomainLocaleInfo(Domain):
             tmp_file.unlink()
         return changed
 
-    def print_summary(self):
+    def print_summary(self) -> None:
         """print a summary of the locale."""
         errors: bool = bool(
             self.error_messages

@@ -1,4 +1,5 @@
-from typing import Iterable, Any, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
+from collections.abc import Iterable
 
 from packaging.version import Version
 
@@ -98,7 +99,7 @@ class CustomUploadPlugin(Plugin):
         return self.id, CustomUploadEventPluginData
 
     @hookimpl
-    def on_event_duplicated(self, event_database: 'EventDatabase'):
+    def on_event_duplicated(self, event_database: 'EventDatabase') -> None:
         stored_event = event_database.load_stored_event()
         event_plugin_data = CustomUploadEventPluginData.from_stored_value(
             stored_event.plugin_data.get(PLUGIN_NAME, {})
@@ -114,7 +115,7 @@ class CustomUploadPlugin(Plugin):
     @hookimpl
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
-    ):
+    ) -> None:
         """Schedule an automatic upload of the documents targeting a tournament
         whose data just changed, for documents that have auto-upload enabled."""
         event_plugin_data = CustomUploadEventPluginData.from_stored_value(

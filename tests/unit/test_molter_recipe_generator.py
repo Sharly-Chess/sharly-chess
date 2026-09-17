@@ -67,7 +67,7 @@ def test_generator_reference_is_stable() -> None:
 
 
 def test_standard_generator_rejects_three_team_three_round_compromise() -> None:
-    from molter_recipe_generator import (  # type: ignore[import-not-found]
+    from molter_recipe_generator import (
         MolterGenerationError,
         generate_molter_table,
     )
@@ -662,7 +662,7 @@ def test_generated_team_colours_obey_relaxed_s5(
 
     table = generate_molter_table(team_count, players_per_team)
     teams = tuple(chr(ord('A') + index) for index in range(team_count))
-    drift = Counter({team: 0 for team in teams})
+    drift = Counter(dict.fromkeys(teams, 0))
     for r_index, round_ in enumerate(table.rounds, start=1):
         white = Counter(pairing.white_team for pairing in round_)
         black = Counter(pairing.black_team for pairing in round_)

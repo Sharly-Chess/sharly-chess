@@ -36,6 +36,7 @@ from database.sqlite.event.event_store import (
 )
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result
+import contextlib
 
 # Transcribed verbatim from the paper, "Scheveningen tables".
 PUBLISHED: dict[int, str] = {
@@ -315,10 +316,8 @@ class TestScheveningenTournament(TestCase):
         TestUtils.delete_event(self.EVENT_ID)
 
     def _tournament(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(self.EVENT_ID)
-        except KeyError:
-            pass
         # A Tournament holds its event weakly, so the event has to
         # outlive this call.
         event = EventLoader().load_event(self.EVENT_ID)

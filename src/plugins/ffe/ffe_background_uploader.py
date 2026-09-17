@@ -1,3 +1,4 @@
+from typing import ClassVar
 import time
 from datetime import datetime, timedelta
 from functools import partial
@@ -34,9 +35,9 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class FfeBackgroundUploader:
-    timeout_threads: dict[str, Timer] = {}
-    group_upload_wait_queue: set[str] = set()
-    ongoing_result_ids: set[str] = set()
+    timeout_threads: ClassVar[dict[str, Timer]] = {}
+    group_upload_wait_queue: ClassVar[set[str]] = set()
+    ongoing_result_ids: ClassVar[set[str]] = set()
 
     @staticmethod
     def result_id(event_uniq_id: str, tournament_id: int) -> str:
@@ -64,7 +65,7 @@ class FfeBackgroundUploader:
         return key in cls.group_upload_wait_queue
 
     @classmethod
-    def remove_scheduled_upload(cls, tournament: Tournament):
+    def remove_scheduled_upload(cls, tournament: Tournament) -> None:
         key = cls.tournament_result_id(tournament)
         thread = cls.timeout_threads.get(key)
         if thread and thread.is_alive():
@@ -91,7 +92,7 @@ class FfeBackgroundUploader:
         )
 
     @classmethod
-    def publish_upload_event(cls, start: bool = False):
+    def publish_upload_event(cls, start: bool = False) -> None:
         if channels_plugin:
             channels_plugin.publish(
                 {
@@ -107,7 +108,7 @@ class FfeBackgroundUploader:
         event_uniq_id: str,
         tournament_id: int,
         set_visible: bool = False,
-    ):
+    ) -> None:
         """Upload a tournament to FFE."""
 
         # Set the locale (called in a new thread)
@@ -180,7 +181,7 @@ class FfeBackgroundUploader:
         for tournament in eligible:
             cls.group_upload_wait_queue.add(cls.tournament_result_id(tournament))
 
-        def _run():
+        def _run() -> None:
             set_locale(SharlyChessConfig().locale)
             for tournament in eligible:
                 cls.upload_tournament(event_uniq_id, tournament.id)
@@ -216,14 +217,16 @@ class FfeBackgroundUploader:
             # There's already a thread running for this tournament
             return False
 
-        if not cls.ffe_upload_needed(stored_tournament):
+        # Last of a chain of guard clauses; collapsing it would break the shape
+        # the ones above it read in.
+        if not cls.ffe_upload_needed(stored_tournament):  # noqa: SIM103
             # Latest version already uploaded
             return False
 
         return True
 
     @classmethod
-    def schedule_upload(cls, tournament: Tournament, force=False):
+    def schedule_upload(cls, tournament: Tournament, force: bool = False) -> None:
         """Schedule the upload of a tournament that has been modified."""
         if FFEUtils.ffe_actions_unavailable_message(tournament):
             return

@@ -29,13 +29,13 @@ logger: logging.Logger = get_logger()
 
 
 class FFEDocumentType(IdentifiableEntity, ABC):
-    def __init__(self):
+    def __init__(self) -> None:
         self._ffe_document: FFEPrintDocument | None = None
 
     def set_ffe_document(
         self,
         ffe_document: 'FFEPrintDocument',
-    ):
+    ) -> None:
         self._ffe_document = ffe_document
 
     @property
@@ -59,7 +59,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
     def validate_options(
         self,
         ffe_document: 'FFEPrintDocument',
-    ):
+    ) -> None:
         self.set_ffe_document(ffe_document)
 
     @classmethod
@@ -119,16 +119,15 @@ class FFEDocumentType(IdentifiableEntity, ABC):
                 RoleType.ORGANISER,
             ]
         }
-        for account_id, account in self.event.accounts_by_id.items():
-            if not account.administrator and not account.anonymous:
-                if account.roles:
-                    for role in account.roles:
-                        if role.tournament_ids is not None:
-                            for tournament_id in role.tournament_ids:
-                                if tournament_id in (
-                                    tournament.id for tournament in self.tournaments
-                                ):
-                                    accounts_by_role[role.role_type].add(account)
+        for account in self.event.accounts_by_id.values():
+            if not account.administrator and not account.anonymous and account.roles:
+                for role in account.roles:
+                    if role.tournament_ids is not None:
+                        for tournament_id in role.tournament_ids:
+                            if tournament_id in (
+                                tournament.id for tournament in self.tournaments
+                            ):
+                                accounts_by_role[role.role_type].add(account)
         chief_arbiters: list[Account] = sorted(
             accounts_by_role[RoleType.CHIEF_ARBITER], key=lambda a: a.full_name
         )
@@ -175,8 +174,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
         if account_id := self.ffe_document._get_option(FFEWriterPrintOption).value:
             return self.event.accounts_by_id[account_id]
-        else:
-            return None
+        return None
 
     @property
     def tournament_ffe_ids(self) -> str:
@@ -191,7 +189,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
     def tournaments_rounds(self) -> str:
         """Returns the list of the tournaments' rounds, as a printable string."""
         return '/'.join(
-            sorted(set(str(tournament.rounds) for tournament in self.tournaments))
+            sorted({str(tournament.rounds) for tournament in self.tournaments})
         )
 
     @property
@@ -199,10 +197,10 @@ class FFEDocumentType(IdentifiableEntity, ABC):
         """Returns the list of the tournaments' time control, as a printable string."""
         return ', '.join(
             sorted(
-                set(
+                {
                     trf25_to_human_readable(tournament.time_control_trf25)
                     for tournament in self.tournaments
-                )
+                }
             )
         )
 
@@ -274,8 +272,7 @@ class FFETrainingCertificateType(FFEDocumentType, ABC):
 
         if account_id := self.ffe_document._get_option(FFETraineePrintOption).value:
             return self.event.accounts_by_id[account_id]
-        else:
-            return None
+        return None
 
     def template_context(
         self,
@@ -392,11 +389,10 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
                 min(tournament.start_date for tournament in self.tournaments),
                 max(tournament.stop_date for tournament in self.tournaments),
             )
-        else:
-            return (
-                self.event.start_date,
-                self.event.stop_date,
-            )
+        return (
+            self.event.start_date,
+            self.event.stop_date,
+        )
 
     @property
     def tournaments_date(self) -> str:
@@ -418,11 +414,11 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
         """Returns the list of the tournaments' location, as a printable string."""
         return ' '.join(
             sorted(
-                set(
+                {
                     tournament.location
                     for tournament in self.tournaments
                     if tournament.location
-                )
+                }
             )
         )
 
@@ -454,7 +450,8 @@ class FFET1Type(FFETournamentsDocumentType):
             FFEChiefArbiterPrintOption,
         )
 
-        return FFETournamentsDocumentType.get_valid_option_types() + [
+        return [
+            *FFETournamentsDocumentType.get_valid_option_types(),
             FFEWriterPrintOption,
             FFEChiefArbiterPrintOption,
         ]
@@ -467,8 +464,7 @@ class FFET1Type(FFETournamentsDocumentType):
             FFEChiefArbiterPrintOption
         ).value:
             return self.event.accounts_by_id[account_id]
-        else:
-            return None
+        return None
 
     @property
     def tournaments_prizes_sharing_systems(self) -> str:
@@ -498,10 +494,10 @@ class FFET1Type(FFETournamentsDocumentType):
         """Returns the list of the tournaments' pairing, as a printable string."""
         return ', '.join(
             sorted(
-                set(
+                {
                     f'{tournament.pairing_system.name} - {tournament.pairing_variation.name}'
                     for tournament in self.tournaments
-                )
+                }
             )
         )
 
@@ -510,10 +506,10 @@ class FFET1Type(FFETournamentsDocumentType):
         """Returns the list of the tournaments' tiebreaks, as a printable string."""
         return ' '.join(
             sorted(
-                set(
+                {
                     ', '.join(tie_break.acronym for tie_break in tournament.tie_breaks)
                     for tournament in self.tournaments
-                )
+                }
             )
         )
 
@@ -587,7 +583,8 @@ class FFEArbiterCompensationType(FFETournamentsDocumentType):
             FFEArbiterPrintOption,
         )
 
-        return FFETournamentsDocumentType.get_valid_option_types() + [
+        return [
+            *FFETournamentsDocumentType.get_valid_option_types(),
             FFEArbiterPrintOption,
         ]
 
@@ -597,8 +594,7 @@ class FFEArbiterCompensationType(FFETournamentsDocumentType):
 
         if account_id := self.ffe_document._get_option(FFEArbiterPrintOption).value:
             return self.event.accounts_by_id[account_id]
-        else:
-            return None
+        return None
 
     def template_context(
         self,
@@ -702,8 +698,7 @@ class FFET3T4Type(FFEPlayersDocumentType, ABC):
                 self.tournament.tournament_players_by_id[player_id]
                 for player_id in player_ids
             ]
-        else:
-            return self.players_print_option().get_tournament_players(self.tournament)
+        return self.players_print_option().get_tournament_players(self.tournament)
 
     def template_context(
         self,

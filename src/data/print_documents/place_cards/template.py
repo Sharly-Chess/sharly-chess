@@ -331,21 +331,17 @@ class PlaceCardTemplate(PlaceCardItemStyle):
         pairings: list[PlaceCardPairing],
     ) -> set[str]:
         """Return the federations of the players in the template data."""
-        return (
-            set(
-                pairing.white_player.federation
+        return {
+            pairing.white_player.federation
+            for pairing in pairings
+            if pairing.black_player
+        }.union(
+            {
+                pairing.black_player.federation
                 for pairing in pairings
                 if pairing.black_player
-            )
-            .union(
-                set(
-                    pairing.black_player.federation
-                    for pairing in pairings
-                    if pairing.black_player
-                )
-            )
-            .union(set(player.federation for player in players))
-        )
+            }
+        ).union({player.federation for player in players})
 
     def _template_context(
         self,
@@ -594,16 +590,16 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             for template_file in CUSTOM_PLACE_CARDS_DIR.glob(
                 f'*/*.{Extension.TEMPLATE}'
             ):
-                template_id: str = f'{template_file.parent.name}/{template_file.stem}'
+                template_id = f'{template_file.parent.name}/{template_file.stem}'
                 place_card_templates_by_id[template_id] = cls.load(template_id)
         # example templates are loaded at the very end
         if examples:
             for template_file in EXAMPLE_PLACE_CARDS_DIR.glob(
                 f'*/*.{Extension.TEMPLATE}'
             ):
-                template_id: str = f'{template_file.parent.name}/{template_file.stem}'
+                template_id = f'{template_file.parent.name}/{template_file.stem}'
                 place_card_templates_by_id[template_id] = cls.load(template_id)
-        return place_card_templates_by_id  # type: ignore
+        return place_card_templates_by_id  # type: ignore[return-value]
 
     @classmethod
     def get_place_card_templates_by_type(
@@ -624,7 +620,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
         return {
             place_card_type: sorted(
                 (
-                    place_card_template  # type: ignore
+                    place_card_template  # type: ignore[misc]
                     for place_card_template in place_card_templates
                     if place_card_template.type == place_card_type
                 ),

@@ -10,11 +10,11 @@ dmgbuild writes the .DS_Store directly, so the layout works headless (CI) —
 no Finder/AppleScript required.
 """
 
-import os.path
+from pathlib import Path
 
 # `defines` is injected by dmgbuild from the -D flags.
 app_path = defines['app']  # noqa: F821
-app_name = os.path.basename(app_path)
+app_name = Path(app_path).name
 licenses_path = defines.get('licenses')  # noqa: F821
 background_path = defines.get('background')  # noqa: F821
 vol_icon = defines.get('volicon')  # noqa: F821
@@ -48,4 +48,4 @@ icon_locations = {
 # Licenses folder below the fold so it stays in the DMG but out of the way
 # (reachable by scrolling).
 if licenses_path:
-    icon_locations[os.path.basename(licenses_path)] = (320, 560)
+    icon_locations[Path(licenses_path).name] = (320, 560)

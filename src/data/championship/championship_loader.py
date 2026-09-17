@@ -164,13 +164,13 @@ class ChampionshipLoader:
             stored_championship = database.load_stored_championship()
         return Championship(stored_championship, uniq_id)
 
-    def delete_championship(self, uniq_id: str):
+    def delete_championship(self, uniq_id: str) -> None:
         ChampionshipDatabase(uniq_id).file.unlink(missing_ok=True)
 
-    def rename_championship(self, uniq_id: str, new_uniq_id: str):
+    def rename_championship(self, uniq_id: str, new_uniq_id: str) -> None:
         ChampionshipDatabase(uniq_id).rename(new_uniq_id)
 
-    def set_name(self, championship_uniq_id: str, name: str):
+    def set_name(self, championship_uniq_id: str, name: str) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             stored_championship = database.load_stored_championship()
             stored_championship.name = name
@@ -251,7 +251,7 @@ class ChampionshipLoader:
                 )
             )
 
-    def delete_source(self, championship_uniq_id: str, source_id: int):
+    def delete_source(self, championship_uniq_id: str, source_id: int) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_source(source_id)
 
@@ -264,7 +264,7 @@ class ChampionshipLoader:
         championship_uniq_id: str,
         refs: list[tuple[str, int, int]],
         group_key: str,
-    ):
+    ) -> None:
         """Force the given source players — ``(event_uniq_id, tournament_id,
         source_player_id)`` tuples — into the same reconciled player by pinning
         them all to ``group_key``."""
@@ -286,13 +286,15 @@ class ChampionshipLoader:
         event_uniq_id: str,
         tournament_id: int,
         source_player_id: int,
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_player_override(
                 event_uniq_id, tournament_id, source_player_id
             )
 
-    def clear_player_override_group(self, championship_uniq_id: str, group_key: str):
+    def clear_player_override_group(
+        self, championship_uniq_id: str, group_key: str
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_player_override_group(group_key)
 
@@ -301,7 +303,7 @@ class ChampionshipLoader:
         championship_uniq_id: str,
         refs: list[tuple[str, int, int]],
         group_key: str,
-    ):
+    ) -> None:
         """Force source-team references into the same reconciled team."""
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             for event_uniq_id, tournament_id, source_team_id in refs:
@@ -321,13 +323,15 @@ class ChampionshipLoader:
         event_uniq_id: str,
         tournament_id: int,
         source_team_id: int,
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_team_override(
                 event_uniq_id, tournament_id, source_team_id
             )
 
-    def clear_team_override_group(self, championship_uniq_id: str, group_key: str):
+    def clear_team_override_group(
+        self, championship_uniq_id: str, group_key: str
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_team_override_group(group_key)
 
@@ -335,7 +339,9 @@ class ChampionshipLoader:
     # Championship rules
     # -------------------------------------------------------------------------
 
-    def set_championship_rules(self, championship_uniq_id: str, rules: list[tuple]):
+    def set_championship_rules(
+        self, championship_uniq_id: str, rules: list[tuple]
+    ) -> None:
         """Replace the ordered rule list, in application order. Each rule is a
         ``(type, best_n)`` pair, optionally with a third ``options`` dict (e.g.
         an F1 points table, or the place a "number of placings" rule counts)."""
@@ -366,29 +372,29 @@ class ChampionshipLoader:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             return database.update_stored_championship_rule(stored_rule)
 
-    def delete_championship_rule(self, championship_uniq_id: str, rule_id: int):
+    def delete_championship_rule(self, championship_uniq_id: str, rule_id: int) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_championship_rule(rule_id)
 
     def reorder_championship_rules(
         self, championship_uniq_id: str, rule_ids: list[int]
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.reorder_stored_championship_rules(rule_ids)
 
     def set_manual_tiebreaks(
         self, championship_uniq_id: str, updates: dict[str, int | None]
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.set_stored_manual_tiebreaks(updates)
 
-    def reset_manual_tiebreaks(self, championship_uniq_id: str):
+    def reset_manual_tiebreaks(self, championship_uniq_id: str) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_manual_tiebreaks()
 
     def set_source_coefficient(
         self, championship_uniq_id: str, source_id: int, coefficient: float
-    ):
+    ) -> None:
         """Set the weight applied to a stage's points and tie-break values."""
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             sources = {source.id: source for source in database.load_stored_sources()}
@@ -404,19 +410,21 @@ class ChampionshipLoader:
 
     def set_age_category_base_date(
         self, championship_uniq_id: str, base_date: date | None
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             stored_championship = database.load_stored_championship()
             stored_championship.age_category_base_date = base_date
             database.update_stored_championship(stored_championship)
 
-    def set_min_participation(self, championship_uniq_id: str, min_participation: int):
+    def set_min_participation(
+        self, championship_uniq_id: str, min_participation: int
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             stored_championship = database.load_stored_championship()
             stored_championship.min_participation = min_participation
             database.update_stored_championship(stored_championship)
 
-    def set_team_score_basis(self, championship_uniq_id: str, score_basis: str):
+    def set_team_score_basis(self, championship_uniq_id: str, score_basis: str) -> None:
         score_basis = TeamScoreBasis(score_basis).value
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             stored_championship = database.load_stored_championship()
@@ -432,7 +440,7 @@ class ChampionshipLoader:
         self,
         championship_uniq_id: str,
         categories: list[StoredChampionshipCategory],
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             if (
                 ChampionshipCompetitorType(
@@ -464,17 +472,19 @@ class ChampionshipLoader:
 
     def rename_championship_category(
         self, championship_uniq_id: str, category_id: int, name: str
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.rename_stored_championship_category(category_id, name)
 
-    def delete_championship_category(self, championship_uniq_id: str, category_id: int):
+    def delete_championship_category(
+        self, championship_uniq_id: str, category_id: int
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_championship_category(category_id)
 
     def reorder_championship_categories(
         self, championship_uniq_id: str, category_ids: list[int]
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.reorder_stored_championship_categories(category_ids)
 
@@ -496,7 +506,7 @@ class ChampionshipLoader:
 
     def delete_championship_criterion(
         self, championship_uniq_id: str, category_id: int, criterion_id: int
-    ):
+    ) -> None:
         with ChampionshipDatabase(championship_uniq_id, write=True) as database:
             database.delete_stored_championship_criterion(category_id, criterion_id)
 
@@ -505,7 +515,9 @@ class ChampionshipLoader:
     # -------------------------------------------------------------------------
 
     @classmethod
-    def rename_event_references(cls, old_event_uniq_id: str, new_event_uniq_id: str):
+    def rename_event_references(
+        cls, old_event_uniq_id: str, new_event_uniq_id: str
+    ) -> None:
         """Repoint every championship that references a renamed event, so its
         sources and identity overrides keep resolving."""
         if old_event_uniq_id == new_event_uniq_id:

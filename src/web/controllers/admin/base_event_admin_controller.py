@@ -45,7 +45,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         assert self.admin_event is not None
         return self.admin_event
 
-    def check_admin_tab(self):
+    def check_admin_tab(self) -> None:
         pass
 
     def default_tournament_for_print_modal(
@@ -353,7 +353,9 @@ class BaseEventAdminWebContext(AdminWebContext):
 
 
 class BaseEventAdminController(BaseAdminController):
-    guards = [EventGuard()]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [EventGuard()]  # noqa: RUF012
 
     @classmethod
     def _admin_base_event_render(

@@ -74,7 +74,9 @@ class TeamAdminWebContext(BaseEventAdminWebContext):
 
 
 class TeamAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
     ]
@@ -1203,7 +1205,7 @@ class TeamAdminController(BaseEventAdminController):
 
         round_boards = tournament.get_round_boards(round_)
         boards_by_index = {board.index: board for board in round_boards}
-        board_side_by_player: dict[int, tuple['Board', str]] = {}
+        board_side_by_player: dict[int, tuple[Board, str]] = {}
         for board in round_boards:
             if board.stored_board.white_player_id is not None:
                 board_side_by_player[board.stored_board.white_player_id] = (

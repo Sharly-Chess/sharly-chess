@@ -28,6 +28,7 @@ from database.sqlite.event.event_store import (
 from plugins.ffe.ffe_tie_breaks import BerlinTieBreak
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result
+import contextlib
 
 
 EVENT_ID = 'test-team-standings-integration'
@@ -182,10 +183,8 @@ class TeamStandingsIntegrationTestCase(TestCase):
         self.team_b_id = team_b_id
 
     def _load(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 

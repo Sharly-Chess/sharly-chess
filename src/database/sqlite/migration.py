@@ -8,7 +8,8 @@ from logging import Logger
 from pkgutil import iter_modules
 from sqlite3 import OperationalError
 from types import ModuleType
-from typing import Callable, Any
+from typing import Any, cast
+from collections.abc import Callable
 
 from packaging.version import Version
 
@@ -16,6 +17,7 @@ from common import DEVEL_ENV, SHARLY_CHESS_VERSION, APP_NAME
 from common.exception import SharlyChessException
 from common.logger import get_logger
 from database.sqlite.migration_database import MigrationDatabase
+import contextlib
 
 logger: Logger = get_logger()
 
@@ -30,7 +32,7 @@ class PostUpgradeTask:
     args: list = field(default_factory=list)
     kwargs: dict[str, Any] = field(default_factory=dict[str, Any])
 
-    def execute(self):
+    def execute(self) -> None:
         self.function(*self.args, **self.kwargs)
 
 
@@ -48,10 +50,10 @@ class BaseMigration(ABC):
         return True
 
     @abstractmethod
-    def forward(self):
+    def forward(self) -> None:
         """Apply the migration."""
 
-    def backward(self):
+    def backward(self) -> None:
         """Rollback the migration. Does not have to be implemented,
         but raises an error on rollback if it is not."""
         raise NotImplementedError('Rollback not implemented for this migration')
@@ -87,7 +89,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
         These fields are used to store the version and the migration."""
 
     @abstractmethod
-    def install_metadata(self, database: T):
+    def install_metadata(self, database: T) -> None:
         """Install the metadata field into the database.
         There must be one for the version and one for the migration."""
 
@@ -96,7 +98,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
         """Retrieve the migration from the database."""
 
     @abstractmethod
-    def set_migration(self, migration: str, database: T):
+    def set_migration(self, migration: str, database: T) -> None:
         """Set the migration field of the database to *migration*."""
 
     @abstractmethod
@@ -104,7 +106,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
         """Retrieve the version from the database."""
 
     @abstractmethod
-    def set_version(self, version: Version, database: T):
+    def set_version(self, version: Version, database: T) -> None:
         """Set the version field of the database to *version*."""
 
     @property
@@ -119,7 +121,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
         # TODO remove once all legacy migrations have been squashed
 
     @abstractmethod
-    def remove_legacy_version_field(self, database: T):
+    def remove_legacy_version_field(self, database: T) -> None:
         """Remove the version field which was used
         as the migration field in the legacy migration system.
         Field might not exist."""
@@ -163,7 +165,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
         if version < self.latest_version:
             status = False
         migration = self.get_migration(database)
-        if migration not in self.migrations + [self.MIGRATION_ZERO]:
+        if migration not in [*self.migrations, self.MIGRATION_ZERO]:
             if migration > self.migrations[-1]:
                 message = (
                     f'Database can only be opened by a later version of {APP_NAME}.'
@@ -178,11 +180,11 @@ class MigrationManager[T: MigrationDatabase](ABC):
                 self.log_prefix + 'unknown migration '
                 f'[{migration}] in the database. {message}'
             )
-        elif migration != self.migrations[-1]:
+        if migration != self.migrations[-1]:
             status = False
         return status
 
-    def _check_timeline(self):
+    def _check_timeline(self) -> None:
         indexes = []
         for migration in self.migrations:
             assert re.match(r'^m\d{3}_[a-z0-9_]+$', migration), (
@@ -203,9 +205,12 @@ class MigrationManager[T: MigrationDatabase](ABC):
         return f'{self.base_migration_module.__name__}.{migration}'
 
     def _get_migration_class(self, migration: str) -> type[BaseMigration]:
-        return getattr(
-            import_module(self._get_migration_module_name(migration)),
-            self.MIGRATION_CLASS_NAME,
+        return cast(
+            type[BaseMigration],
+            getattr(
+                import_module(self._get_migration_module_name(migration)),
+                self.MIGRATION_CLASS_NAME,
+            ),
         )
 
     @cached_property
@@ -236,17 +241,17 @@ class MigrationManager[T: MigrationDatabase](ABC):
     def _previous_migration(self, current_migration: str) -> str:
         return next(
             migration
-            for migration in reversed([self.MIGRATION_ZERO] + self.migrations)
+            for migration in reversed([self.MIGRATION_ZERO, *self.migrations])
             if current_migration > migration
         )
 
-    def migrate(self, target_migration: str | None = None):
+    def migrate(self, target_migration: str | None = None) -> None:
         """Migrate *database* to the migration *target_migration*.
         *target_migration* defaults to the latest migration.
         Raises a SharlyChessException if it fails."""
         if target_migration is None:
             target_migration = self.migrations[-1]
-        elif target_migration not in self.migrations + [self.MIGRATION_ZERO]:
+        elif target_migration not in [*self.migrations, self.MIGRATION_ZERO]:
             raise ValueError(
                 self.log_prefix + f'unknown migration [{target_migration}]'
             )
@@ -282,9 +287,11 @@ class MigrationManager[T: MigrationDatabase](ABC):
                 logger.debug(self.log_prefix + 'Migration complete.')
         except Exception as error:
             logger.debug(self.log_prefix + traceback.format_exc())
-            raise SharlyChessException(self.log_prefix + f'Migration failed: {error}')
+            raise SharlyChessException(
+                self.log_prefix + f'Migration failed: {error}'
+            ) from error
 
-    def _upgrade(self, current_migration: str, target_migration: str):
+    def _upgrade(self, current_migration: str, target_migration: str) -> None:
         migration: str | None = current_migration
         while migration := self._next_migration(migration or '', target_migration):
             migration_class = self._get_migration_class(migration)
@@ -297,7 +304,7 @@ class MigrationManager[T: MigrationDatabase](ABC):
                 self.post_upgrade_tasks += migration_object.post_upgrade_tasks
             logger.debug(self.log_prefix + f'\t{migration} applied')
 
-    def _rollback(self, current_migration: str, target_migration: str):
+    def _rollback(self, current_migration: str, target_migration: str) -> None:
         migration = current_migration
         while migration != target_migration:
             migration_class = self._get_migration_class(migration)
@@ -321,13 +328,13 @@ class DatabaseMigrationManager(MigrationManager[MigrationDatabase]):
     def get_migration(self, database: MigrationDatabase) -> str:
         return database.get_migration()
 
-    def set_migration(self, migration: str, database: MigrationDatabase):
+    def set_migration(self, migration: str, database: MigrationDatabase) -> None:
         database.set_migration(migration)
 
     def get_version(self, database: MigrationDatabase) -> Version:
         return database.get_version()
 
-    def set_version(self, version: Version, database: MigrationDatabase):
+    def set_version(self, version: Version, database: MigrationDatabase) -> None:
         database.set_version(version)
 
     @property
@@ -337,14 +344,12 @@ class DatabaseMigrationManager(MigrationManager[MigrationDatabase]):
     def is_metadata_installed(self, database: MigrationDatabase) -> bool:
         return database.is_metadata_table_installed()
 
-    def install_metadata(self, database: MigrationDatabase):
+    def install_metadata(self, database: MigrationDatabase) -> None:
         database.create_metadata_table()
 
-    def remove_legacy_version_field(self, database: MigrationDatabase):
-        try:
+    def remove_legacy_version_field(self, database: MigrationDatabase) -> None:
+        with contextlib.suppress(OperationalError):
             database.execute('ALTER TABLE `info` DROP COLUMN `version`')
-        except OperationalError:
-            pass
 
     def get_migration_from_legacy_version(
         self, database: MigrationDatabase

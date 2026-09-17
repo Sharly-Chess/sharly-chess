@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 class Migration(BaseMigration):
     """Prevent an account from holding multiple arbiter roles for one tournament."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('DROP INDEX `ux_no_dual_arbiter_role`')
         self.database.execute(
             'CREATE UNIQUE INDEX `ux_no_dual_arbiter_role` '
@@ -12,7 +12,7 @@ class Migration(BaseMigration):
             'WHERE `role` IN ("chief_arbiter", "deputy_arbiter", "arbiter")'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP INDEX `ux_no_dual_arbiter_role`')
         self.database.execute(
             'CREATE UNIQUE INDEX `ux_no_dual_arbiter_role` '

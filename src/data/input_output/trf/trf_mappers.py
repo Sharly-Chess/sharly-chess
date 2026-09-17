@@ -1,3 +1,4 @@
+from typing import ClassVar
 from data.pairings import PairingVariation
 from data.pairings.variations import (
     BergerRoundRobinVariation,
@@ -131,7 +132,7 @@ class TrfPointSystemResult(CoreMapper[str, Result]):
 
 class TrfEncodedType:
     #: Codes the tournament-type table defines as meaning another code.
-    ALIASES: dict[str, str] = {
+    ALIASES: ClassVar[dict[str, str]] = {
         'FIDE_TEAM': 'FIDE_TEAM_TYPEA_MP_GP',
         'FIDE_TEAM_BAKU': 'FIDE_TEAM_TYPEA_MP_GP_BAKU',
     }
@@ -290,7 +291,7 @@ class TrfEncodedType:
                 return 'FIDE_DUTCH_2026'
 
 
-class TrfColor(CoreMapper[str, BoardColor | None]):  # type: ignore
+class TrfColor(CoreMapper[str, BoardColor | None]):  # type: ignore[type-var]
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, BoardColor | None]:
         return {

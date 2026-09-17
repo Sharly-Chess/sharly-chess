@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         # Reset player check-in status of tournaments with the check-in closed
         self.database.execute(
             'UPDATE player SET check_in = 1 WHERE ('
@@ -18,5 +18,5 @@ class Migration(BaseMigration):
         # Set all check-in open
         self.database.execute('UPDATE tournament SET check_in_open = 1')
 
-    def backward(self):
+    def backward(self) -> None:
         pass

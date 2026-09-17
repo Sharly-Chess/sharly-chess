@@ -45,7 +45,7 @@ class DisplayControllerAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 raise NotFoundException(
                     f'Display controller [{display_controller_id}] not found.'
-                )
+                ) from None
 
     def get_admin_display_controller(self) -> DisplayController:
         assert self.admin_display_controller is not None
@@ -59,7 +59,9 @@ class DisplayControllerAdminWebContext(BaseEventAdminWebContext):
 
 
 class DisplayControllerAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
         ManageScreenEntityGuard(RequestUtils.DISPLAY_CONTROLLER_ID_PARAM),

@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration, PostUpgradeTask
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('SELECT `path` FROM `info`')
         event_path = self.database.fetchone()['path'] or 'papi'
         self.database.execute('SELECT * FROM `tournament`')
@@ -28,7 +28,7 @@ class Migration(BaseMigration):
                 field_sets = ', '.join(f'`{field_}` = ?' for field_ in fields)
                 self.database.execute(
                     f'UPDATE `tournament` SET {field_sets} WHERE `id` = ?',
-                    tuple(fields.values()) + (row['id'],),
+                    (*tuple(fields.values()), row['id']),
                 )
 
         self.database.execute('ALTER TABLE `info` DROP COLUMN `path`')
@@ -43,7 +43,7 @@ class Migration(BaseMigration):
             'FLOAT NOT NULL DEFAULT 0.0'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `info` ADD `path` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `path` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `filename` TEXT')
@@ -54,7 +54,7 @@ class Migration(BaseMigration):
             'ALTER TABLE `tournament` DROP COLUMN `last_pairing_update`'
         )
 
-    def import_papi_file(self, tournament_id: int, papi_file_path: Path):
+    def import_papi_file(self, tournament_id: int, papi_file_path: Path) -> None:
         from common.logger import get_logger
         from common.exception import SharlyChessException
         from data.input_output.tournament_importer_options import FileOption

@@ -120,7 +120,9 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
                     tournament_id
                 ]
             except KeyError:
-                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+                raise NotFoundException(
+                    f'Tournament [{tournament_id}] not found.'
+                ) from None
 
         self.admin_tie_break_id = tie_break_id
         if tie_break_id:
@@ -137,7 +139,9 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
                     self.get_admin_event()
                 ).get_object(exporter_id)
             except KeyError:
-                raise NotFoundException(f'Unknown tournament exporter [{exporter_id}].')
+                raise NotFoundException(
+                    f'Unknown tournament exporter [{exporter_id}].'
+                ) from None
 
     def get_admin_tournament(self) -> Tournament:
         assert self.admin_tournament is not None
@@ -164,7 +168,9 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
 
 
 class TournamentAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
     ]
@@ -256,7 +262,7 @@ class TournamentAdminController(BaseEventAdminController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
         redirect_to: str | None = None,
-    ):
+    ) -> dict[str, Any]:
         admin_event = web_context.get_admin_event()
         pairing_systems = PairingSystemManager(admin_event).objects()
         pairing_system: PairingSystem = (
@@ -397,7 +403,7 @@ class TournamentAdminController(BaseEventAdminController):
                     WebContext.value_to_form_data(dt) if dt else ''
                 )
 
-            data: dict[str, str] = WebContext.values_dict_to_form_data(
+            data = WebContext.values_dict_to_form_data(
                 {
                     'name': name,
                     'time_control_trf25': time_control_trf25,
@@ -468,7 +474,7 @@ class TournamentAdminController(BaseEventAdminController):
                     ),
                     'redirect_to': redirect_to,
                 }
-                | {field: variation for field, variation in pairing_variations.items()}
+                | dict(pairing_variations.items())
                 | plugin_form_data
                 | schedule_form_data
                 | criteria_form_data
@@ -539,7 +545,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'label': config_field.label,
                     'kind': config_field.kind,
                     'help_text': config_field.help_text,
-                    'choices': {value: label for value, label in config_field.choices},
+                    'choices': dict(config_field.choices),
                     'affects_defaults': config_field.affects_defaults,
                     'locked_once_paired': config_field.locked_once_paired,
                 }
@@ -566,7 +572,7 @@ class TournamentAdminController(BaseEventAdminController):
             rule_set_lock_titles[rs.id] = _('Set by rule set "{name}".').format(
                 name=rs.name
             )
-        template_context = (
+        return (
             {
                 'rating_options': cls._get_rating_options(),
                 'pairing_systems': pairing_systems,
@@ -626,8 +632,6 @@ class TournamentAdminController(BaseEventAdminController):
             }
             | form_fields_templates_data
         )
-
-        return template_context
 
     @classmethod
     def _admin_get_validated_tournament_data(
@@ -904,7 +908,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
         rule_set_id = WebContext.form_data_to_str(data, field := 'rule_set') or None
-        rule_set_type: type['RuleSet'] | None = None
+        rule_set_type: type[RuleSet] | None = None
         if rule_set_id:
             try:
                 rule_set_type = RuleSetManager(event).get_type(rule_set_id)
@@ -1258,10 +1262,7 @@ class TournamentAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         rounds_value = int(rounds or 0)
         if rounds_value < 1:
-            if tournament:
-                rounds_value = tournament.rounds
-            else:
-                rounds_value = 1
+            rounds_value = tournament.rounds if tournament else 1
 
         min_date = event.start_date
         max_date = event.stop_date
@@ -1283,16 +1284,17 @@ class TournamentAdminController(BaseEventAdminController):
             existing_datetimes = tournament.round_datetimes
 
         # extract form-submitted round datetime values (sent via hx-include)
-        form_datetimes: dict[str, str] = {}
-        for key, value in request.query_params.items():
-            if key.startswith('round_') and key.endswith('_datetime'):
-                form_datetimes[key] = value
+        form_datetimes: dict[str, str] = {
+            key: value
+            for key, value in request.query_params.items()
+            if key.startswith('round_') and key.endswith('_datetime')
+        }
 
         schedule_form_data: dict[str, str] = {}
         has_any_value = False
         for round_num in range(1, rounds_value + 1):
             field = f'round_{round_num}_datetime'
-            if field in form_datetimes and form_datetimes[field]:
+            if form_datetimes.get(field):
                 schedule_form_data[field] = form_datetimes[field]
                 has_any_value = True
             else:
@@ -1444,7 +1446,7 @@ class TournamentAdminController(BaseEventAdminController):
                 if 'add_screens' in data:
                     timer_id: int | None = None
                     if len(event.timers_by_id) == 1:
-                        timer_id = list(event.timers_by_id.keys())[0]
+                        timer_id = next(iter(event.timers_by_id.keys()))
                     for screen_type in ScreenTypeManager(event).objects():
                         # Default screens are the per-tournament (set-based)
                         # types available for the event.
@@ -2651,7 +2653,7 @@ class TournamentAdminController(BaseEventAdminController):
         event: Event,
         player_count_by_tournament_id: dict[int, int],
         groups_by_id: dict[str, list[int]],
-    ):
+    ) -> None:
         """Distribute the players among the tournaments with the given settings."""
         tournament_players: list[TournamentPlayer] = sorted(
             event.tournament_players,

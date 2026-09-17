@@ -2,7 +2,8 @@
 
 from enum import Enum, StrEnum, IntEnum, auto, nonmember
 from math import ceil
-from typing import Iterator, Self, TYPE_CHECKING
+from typing import Self, TYPE_CHECKING
+from collections.abc import Iterator
 
 from common.i18n import _
 from utils import Utils
@@ -511,7 +512,8 @@ class Result(IntEnum):
     @classmethod
     def admin_imputable_results(cls) -> tuple['Result', ...]:
         """Admin imputable results are the ones that only arbiters can input."""
-        return cls.user_imputable_results() + (
+        return (
+            *cls.user_imputable_results(),
             cls.NO_RESULT,
             cls.FORFEIT_WIN,
             cls.FORFEIT_LOSS,
@@ -1056,7 +1058,7 @@ class RoleType(StrEnum):
         }
         return order_map[self]
 
-    def __str__(self):
+    def __str__(self) -> str:
         match self:
             case RoleType.CHIEF_ARBITER:
                 return _('Chief arbiter')
@@ -1518,7 +1520,7 @@ class NeedsUpload(Enum):
     RECENT_CHANGE = 1
     NO_CHANGE = 2
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         match self:
             case NeedsUpload.YES:
                 return True

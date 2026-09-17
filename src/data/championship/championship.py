@@ -1,7 +1,7 @@
 from datetime import date
 from functools import cached_property
 from logging import Logger
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from common.logger import get_logger
 from database.sqlite.championship.championship_store import (
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from data.event import Event
     from data.championship.category import ChampionshipCategory
     from data.championship.reconciliation import ReconciledPlayer, ReconciledTeam
+    from data.championship.options import ChampionshipCompetitorType, TeamScoreBasis
     from data.championship.scoring import ChampionshipRule
     from data.tournament import Tournament
 
@@ -52,8 +53,8 @@ class ChampionshipSource:
         broken_reason: str | None,
     ):
         self.stored_source: StoredChampionshipSource = stored_source
-        self.event: 'Event | None' = event
-        self.tournament: 'Tournament | None' = tournament
+        self.event: Event | None = event
+        self.tournament: Tournament | None = tournament
         self.broken_reason: str | None = broken_reason
 
     @property
@@ -205,13 +206,13 @@ class Championship:
         return self.stop_date is not None and self.stop_date < date.today()
 
     @property
-    def competitor_type(self):
+    def competitor_type(self) -> 'ChampionshipCompetitorType':
         from data.championship.options import ChampionshipCompetitorType
 
         return ChampionshipCompetitorType(self.stored_championship.competitor_type)
 
     @property
-    def team_score_basis(self):
+    def team_score_basis(self) -> 'TeamScoreBasis':
         from data.championship.options import TeamScoreBasis
 
         return TeamScoreBasis(self.stored_championship.team_score_basis)
@@ -330,8 +331,8 @@ class Championship:
         from data.championship.options import ChampionshipCompetitorType
 
         if self.competitor_type == ChampionshipCompetitorType.TEAM:
-            return cast(list['ReconciledPlayer | ReconciledTeam'], self.teams)
-        return cast(list['ReconciledPlayer | ReconciledTeam'], self.players)
+            return [*self.teams]
+        return [*self.players]
 
     @cached_property
     def rules(self) -> list['ChampionshipRule']:
@@ -374,7 +375,7 @@ class Championship:
     def _rules_before_manual(self) -> list['ChampionshipRule']:
         from data.championship.scoring import ManualRule
 
-        rules: list['ChampionshipRule'] = []
+        rules: list[ChampionshipRule] = []
         for rule in self.rules:
             if isinstance(rule, ManualRule):
                 break
@@ -419,8 +420,7 @@ class Championship:
             self.manual_positions,
         ):
             tied = len(group) > 1
-            for competitor in group:
-                entries.append(RankingEntry(rank, competitor, tied))
+            entries.extend(RankingEntry(rank, competitor, tied) for competitor in group)
             rank += len(group)
         return entries
 

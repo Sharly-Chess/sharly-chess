@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         # When a tournament player is deleted,
         # also delete the player if it is not linked to any other tournament player
         # This prevents having players associated with no tournament
@@ -44,7 +44,7 @@ class Migration(BaseMigration):
             """
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'DROP TRIGGER IF EXISTS `delete_player_on_tournament_player_delete`'
         )

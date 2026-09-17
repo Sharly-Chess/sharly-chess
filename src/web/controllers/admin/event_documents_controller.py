@@ -1,6 +1,6 @@
 import urllib
 from collections import defaultdict
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from litestar import get, post
 from litestar.enums import RequestEncodingType
@@ -36,7 +36,9 @@ from web.streaming_template import StreamingHTMXTemplate
 
 
 class EventDocumentsController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.GENERATE_DOCUMENTS),
     ]
@@ -97,7 +99,7 @@ class EventDocumentsController(BaseEventAdminController):
             for option in options:
                 document_ids_by_option_id[option.id].append(document.id)
         current_document_option_ids = []
-        if document_id := data.get('document', None):
+        if document_id := data.get('document'):
             current_document_option_ids = [
                 option.id
                 for option in PrintDocumentManager(event)
@@ -209,9 +211,12 @@ class EventDocumentsController(BaseEventAdminController):
     ) -> list[int] | None:
         for option in options:
             if isinstance(option, TournamentPrintOption):
+                # Only reached once validate_options() has passed, and it
+                # rejects a tournament option with nothing chosen.
+                assert option.value is not None
                 return [option.value]
-            elif isinstance(option, TournamentsPrintOption):
-                return option.value
+            if isinstance(option, TournamentsPrintOption):
+                return cast(list[int] | None, option.value)
         return None
 
     @post(
@@ -383,7 +388,7 @@ class EventDocumentsController(BaseEventAdminController):
     @classmethod
     def document_view(
         cls, client: Client, event: Event, document: str, options: str | None = None
-    ):
+    ) -> HTMXTemplate:
         print_document = cls.build_print_document(client, event, document, options)
         template_context = {
             'document': print_document,

@@ -18,7 +18,8 @@ import json
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from statistics import fmean
-from typing import TYPE_CHECKING, TypeAlias, cast
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Self, cast
 
 from common.i18n import _
 from data.championship.options import TeamScoreBasis
@@ -30,12 +31,12 @@ if TYPE_CHECKING:
         ReconciledTeam,
         ReconciledTeamParticipation,
     )
+    from data.championship.championship import ChampionshipSource
     from data.tie_breaks.tie_breaks import TieBreak
+    from data.tournament import Tournament
 
-    ReconciledCompetitor: TypeAlias = ReconciledPlayer | ReconciledTeam
-    CompetitorParticipation: TypeAlias = (
-        ReconciledParticipation | ReconciledTeamParticipation
-    )
+    type ReconciledCompetitor = ReconciledPlayer | ReconciledTeam
+    type CompetitorParticipation = ReconciledParticipation | ReconciledTeamParticipation
 
 
 def participation_points(
@@ -105,14 +106,14 @@ def best_participations(
     """The competitor's best ``best_n`` participations, chosen by the configured
     rule chain (see :func:`_stage_selection_key`). Shared across rules, so every
     rule reads the same subset."""
+    participations: list[CompetitorParticipation] = [*competitor.participations]
     ordered = sorted(
-        competitor.participations,
+        participations,
         key=lambda participation: _stage_selection_key(
             participation, team_score_basis, context
         ),
     )
-    selected = ordered if best_n is None else ordered[:best_n]
-    return cast(list['CompetitorParticipation'], selected)
+    return ordered if best_n is None else ordered[:best_n]
 
 
 class ScoringContext:
@@ -134,7 +135,7 @@ class ScoringContext:
         # The configured rule chain, used to break best-stage selection ties by
         # the same criteria the championship ranks competitors by.
         self.rules = rules or []
-        self._competitor_by_ref: dict[tuple[str, int, int], 'ReconciledCompetitor'] = {}
+        self._competitor_by_ref: dict[tuple[str, int, int], ReconciledCompetitor] = {}
         # Cache of computed source tie-break values, per (tournament, type,
         # options): a tie-break is computed once for a whole source tournament,
         # not per competitor per rule.
@@ -142,7 +143,7 @@ class ScoringContext:
         # Cache of the tie-break *instance* per (type, options): built once from
         # a source event that offers it, then reused to compute against every
         # source tournament (see tie_break_value).
-        self._tie_break_instances: dict[tuple[str, str], object] = {}
+        self._tie_break_instances: dict[tuple[str, str], TieBreak | None] = {}
         computed: set[int] = set()
         for competitor in competitors:
             for participation in competitor.participations:
@@ -197,7 +198,7 @@ class ScoringContext:
             )
         return self._tie_break_cache[cache_key].get(participation.source_competitor_id)
 
-    def _resolve_tie_break(self, type_id: str, options: dict):
+    def _resolve_tie_break(self, type_id: str, options: dict) -> 'TieBreak | None':
         """Build the tie-break instance once, from whichever source event offers
         it (there is at least one — that is why it was offered). The instance is
         not bound to that tournament, so it computes for any source."""
@@ -239,7 +240,7 @@ class ScoringContext:
         return instance
 
     @staticmethod
-    def _compute_values(tie_break, tournament) -> dict:
+    def _compute_values(tie_break: 'TieBreak', tournament: 'Tournament') -> dict:
         """Compute a per-player tie-break for every player of ``tournament``."""
         after_round = tournament.max_ranking_round
         values: dict[int, float] = {}
@@ -253,7 +254,12 @@ class ScoringContext:
         return values
 
 
-def _split_by_value(group, value_fn, *, reverse=True):
+def _split_by_value(
+    group: list['ReconciledCompetitor'],
+    value_fn: Callable[['ReconciledCompetitor'], float],
+    *,
+    reverse: bool = True,
+) -> list[list['ReconciledCompetitor']]:
     """Order a group by a scalar value and split it into subgroups of equal
     value (rounded, to absorb float noise), best first."""
     valued = sorted(group, key=value_fn, reverse=reverse)
@@ -328,7 +334,7 @@ class ChampionshipRule(ABC):
         # meaningful for value-type rules; forced off for the rest.
         self.use_coefficient = use_coefficient if self.uses_coefficient else False
 
-    def coefficient_for(self, participation) -> float:
+    def coefficient_for(self, participation: 'CompetitorParticipation') -> float:
         """The multiplier the source coefficient applies to this rule's value:
         the stage coefficient when enabled, otherwise 1 (unweighted)."""
         return participation.coefficient if self.use_coefficient else 1.0
@@ -357,14 +363,18 @@ class ChampionshipRule(ABC):
         direct-encounter rule when none of the tied competitors met.
         """
 
-    def stage_value(self, participation, context: ScoringContext) -> float | None:
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         """This rule's per-stage value (higher = better), used to break best-N
         selection ties by the configured rule chain. ``None`` for rules with no
         meaningful per-stage value (direct encounter, manual), which are skipped
         when ordering a competitor's stages."""
         return None
 
-    def stage_display(self, participation, context: ScoringContext) -> str | None:
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         """This rule's contribution from a single stage, formatted for display
         (unlike :meth:`stage_value`, which is a selection key). ``None`` for
         rules with no per-stage contribution (direct encounter, manual), which
@@ -425,7 +435,9 @@ class TotalPointsRule(ChampionshipRule):
     def description() -> str:
         return _('Sum of the points scored across the counted stages.')
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         return {
             id(player): sum(
                 participation_points(p, context.team_score_basis, self.use_coefficient)
@@ -439,12 +451,16 @@ class TotalPointsRule(ChampionshipRule):
             for player in group
         }
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         return participation_points(
             participation, context.team_score_basis, self.use_coefficient
         )
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         return f'{self.stage_value(participation, context):g}'
 
 
@@ -470,7 +486,9 @@ class ScaledPointsRule(ChampionshipRule):
             'then summed. Evens out stages with different field sizes.'
         )
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         return {
             id(player): sum(
                 scaled_stage_value(p, self.use_coefficient)
@@ -484,10 +502,14 @@ class ScaledPointsRule(ChampionshipRule):
             for player in group
         }
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         return scaled_stage_value(participation, self.use_coefficient)
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         return f'{self.stage_value(participation, context):.2f}'
 
 
@@ -509,7 +531,7 @@ class F1PointsRule(ChampionshipRule):
         self.table = table or list(DEFAULT_F1_POINTS)
 
     @classmethod
-    def from_options(cls, best_n, options):
+    def from_options(cls, best_n: int | None, options: dict[str, Any]) -> Self:
         return cls(
             best_n,
             [float(value) for value in options.get('points', [])],
@@ -535,12 +557,14 @@ class F1PointsRule(ChampionshipRule):
             'second), summed. Positions beyond the table score nothing.'
         )
 
-    def _f1(self, participation) -> float:
+    def _f1(self, participation: 'CompetitorParticipation') -> float:
         index = participation.rank - 1
         base = self.table[index] if 0 <= index < len(self.table) else 0.0
         return base * self.coefficient_for(participation)
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         return {
             id(player): sum(
                 self._f1(p)
@@ -554,14 +578,18 @@ class F1PointsRule(ChampionshipRule):
             for player in group
         }
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         return self._f1(participation)
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         return f'{self._f1(participation):g}'
 
     @classmethod
-    def display_details(cls, options):
+    def display_details(cls, options: dict[str, Any]) -> list[str]:
         points = options.get('points') or []
         if points:
             table = ' '.join(f'{point:g}' for point in points)
@@ -569,14 +597,14 @@ class F1PointsRule(ChampionshipRule):
         return []
 
     @classmethod
-    def config_form_data(cls, options):
+    def config_form_data(cls, options: dict[str, Any]) -> dict[str, str]:
         points = options.get('points') or []
         if points:
             return {'f1_points': ' '.join(f'{point:g}' for point in points)}
         return {}
 
     @classmethod
-    def parse_config(cls, data):
+    def parse_config(cls, data: dict[str, str]) -> tuple[dict, dict[str, str]]:
         raw = (data.get('f1_points') or '').strip()
         points: list[float] = []
         # Space-separated so a comma can be used as the decimal separator.
@@ -610,7 +638,7 @@ class RankingPointsWithBonusRule(ChampionshipRule):
         self.bonus_share = bonus_share
 
     @classmethod
-    def from_options(cls, best_n, options):
+    def from_options(cls, best_n: int | None, options: dict[str, Any]) -> Self:
         return cls(
             best_n,
             float(options.get('winner_bonus', 0.0) or 0.0),
@@ -639,7 +667,7 @@ class RankingPointsWithBonusRule(ChampionshipRule):
             'tournaments of very different sizes fairly.'
         )
 
-    def _points(self, participation) -> float:
+    def _points(self, participation: 'CompetitorParticipation') -> float:
         field_size = participation.field_size
         rank = participation.rank
         if not rank or field_size <= 0:
@@ -653,7 +681,9 @@ class RankingPointsWithBonusRule(ChampionshipRule):
             bonus = round(winner_bonus * (recipients - rank + 1) / recipients)
         return (ranking_points + bonus) * self.coefficient_for(participation)
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         return {
             id(player): sum(
                 self._points(p)
@@ -667,14 +697,18 @@ class RankingPointsWithBonusRule(ChampionshipRule):
             for player in group
         }
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         return self._points(participation)
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         return f'{self._points(participation):g}'
 
     @classmethod
-    def display_details(cls, options):
+    def display_details(cls, options: dict[str, Any]) -> list[str]:
         return [
             _('+{winner:g}% bonus for competitors in the top {share:g}%').format(
                 winner=options.get('winner_bonus', 0),
@@ -683,14 +717,14 @@ class RankingPointsWithBonusRule(ChampionshipRule):
         ]
 
     @classmethod
-    def config_form_data(cls, options):
+    def config_form_data(cls, options: dict[str, Any]) -> dict[str, str]:
         return {
             'winner_bonus': f'{options.get("winner_bonus", 0):g}',
             'bonus_share': f'{options.get("bonus_share", 0):g}',
         }
 
     @classmethod
-    def parse_config(cls, data):
+    def parse_config(cls, data: dict[str, str]) -> tuple[dict, dict[str, str]]:
         options: dict = {}
         errors: dict[str, str] = {}
         for field in ('winner_bonus', 'bonus_share'):
@@ -727,7 +761,9 @@ class AveragePointsRule(ChampionshipRule):
     def description() -> str:
         return _('Mean of the points scored over the counted stages.')
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         result: dict[int, float] = {}
         for player in group:
             selected = best_participations(
@@ -743,12 +779,16 @@ class AveragePointsRule(ChampionshipRule):
             result[id(player)] = fmean(values) if values else 0.0
         return result
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         return participation_points(
             participation, context.team_score_basis, self.use_coefficient
         )
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         return f'{self.stage_value(participation, context):g}'
 
 
@@ -772,7 +812,9 @@ class AverageRankRule(ChampionshipRule):
             'A position, so the stage coefficient is not applied.'
         )
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         result: dict[int, float] = {}
         for player in group:
             selected = best_participations(
@@ -785,11 +827,15 @@ class AverageRankRule(ChampionshipRule):
             result[id(player)] = -fmean(ranks) if ranks else 0.0
         return result
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         # Lower finishing position is better; unranked stages sort worst.
         return -float(participation.rank) if participation.rank else float('-inf')
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         return str(participation.rank) if participation.rank else '—'
 
 
@@ -801,7 +847,7 @@ class CountPlacesRule(ChampionshipRule):
         self.place = place
 
     @classmethod
-    def from_options(cls, best_n, options):
+    def from_options(cls, best_n: int | None, options: dict[str, Any]) -> Self:
         return cls(best_n, int(options.get('place', 1)))
 
     @staticmethod
@@ -832,7 +878,9 @@ class CountPlacesRule(ChampionshipRule):
     def stage_metric(self) -> str:
         return f'{self.base_acronym()}{self.place}'
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         return {
             id(player): sum(
                 1
@@ -847,22 +895,26 @@ class CountPlacesRule(ChampionshipRule):
             for player in group
         }
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         return 1.0 if participation.rank == self.place else 0.0
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         return '✓' if participation.rank == self.place else '—'
 
     @classmethod
-    def display_details(cls, options):
+    def display_details(cls, options: dict[str, Any]) -> list[str]:
         return [_('place {place}').format(place=options.get('place', 1))]
 
     @classmethod
-    def config_form_data(cls, options):
+    def config_form_data(cls, options: dict[str, Any]) -> dict[str, str]:
         return {'place': str(options.get('place', 1))}
 
     @classmethod
-    def parse_config(cls, data):
+    def parse_config(cls, data: dict[str, str]) -> tuple[dict, dict[str, str]]:
         text = (data.get('place') or '').strip()
         try:
             place = int(text) if text else 1
@@ -893,7 +945,9 @@ class CountWinsRule(ChampionshipRule):
             'weighted by the stage coefficient.'
         )
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         return {
             id(player): sum(
                 participation_wins(p)
@@ -907,10 +961,14 @@ class CountWinsRule(ChampionshipRule):
             for player in group
         }
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         return float(participation_wins(participation))
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         return str(participation_wins(participation))
 
 
@@ -938,7 +996,7 @@ class _SourceTieBreakRule(ChampionshipRule):
         self.tie_break_acronym = tie_break_acronym
 
     @classmethod
-    def from_options(cls, best_n, options):
+    def from_options(cls, best_n: int | None, options: dict[str, Any]) -> Self:
         tie_break = options.get('tie_break', {})
         return cls(
             best_n,
@@ -960,7 +1018,9 @@ class _SourceTieBreakRule(ChampionshipRule):
         # sum/average of the same tie-break share one per-stage column.
         return self.tie_break_acronym or '?'
 
-    def _values(self, competitor, context) -> list[float]:
+    def _values(
+        self, competitor: 'ReconciledCompetitor', context: ScoringContext
+    ) -> list[float]:
         values: list[float] = []
         for p in best_participations(
             competitor,
@@ -975,7 +1035,9 @@ class _SourceTieBreakRule(ChampionshipRule):
                 values.append(value * self.coefficient_for(p))
         return values
 
-    def stage_value(self, participation, context):
+    def stage_value(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> float | None:
         # A stage without the tie-break contributes 0 (neutral) so it still
         # produces a comparable per-stage value for selection ordering.
         value = context.tie_break_value(
@@ -983,7 +1045,9 @@ class _SourceTieBreakRule(ChampionshipRule):
         )
         return (value or 0.0) * self.coefficient_for(participation)
 
-    def stage_display(self, participation, context):
+    def stage_display(
+        self, participation: 'CompetitorParticipation', context: ScoringContext
+    ) -> str | None:
         # A stage that never had this tie-break shows a dash, not a neutral 0.
         value = context.tie_break_value(
             participation, self.tie_break_type, self.tie_break_options
@@ -993,7 +1057,7 @@ class _SourceTieBreakRule(ChampionshipRule):
         return f'{value * self.coefficient_for(participation):g}'
 
     @classmethod
-    def display_details(cls, options):
+    def display_details(cls, options: dict[str, Any]) -> list[str]:
         acronym = (options.get('tie_break') or {}).get('acronym')
         return [
             _('tie-break: {acronym}').format(acronym=acronym)
@@ -1002,7 +1066,7 @@ class _SourceTieBreakRule(ChampionshipRule):
         ]
 
     @classmethod
-    def config_form_data(cls, options):
+    def config_form_data(cls, options: dict[str, Any]) -> dict[str, str]:
         tie_break = options.get('tie_break') or {}
         if not tie_break:
             return {}
@@ -1039,7 +1103,9 @@ class SumTieBreakRule(_SourceTieBreakRule):
             'events (e.g. Buchholz). Stages without it are skipped.'
         )
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         return {id(c): sum(self._values(c, context)) for c in group}
 
 
@@ -1063,7 +1129,9 @@ class AverageTieBreakRule(_SourceTieBreakRule):
             'events (e.g. Buchholz).'
         )
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         result: dict[int, float] = {}
         for competitor in group:
             values = self._values(competitor, context)
@@ -1108,7 +1176,13 @@ class DirectEncounterRule(ChampionshipRule):
             'other. Skipped when they never met.'
         )
 
-    def score_ranges(self, group, context, *, secondary=False):
+    def score_ranges(
+        self,
+        group: list['ReconciledCompetitor'],
+        context: ScoringContext,
+        *,
+        secondary: bool = False,
+    ) -> dict[int, tuple[float, float]] | None:
         if len(group) < 2:
             return None
         members = set(map(id, group))
@@ -1141,12 +1215,14 @@ class DirectEncounterRule(ChampionshipRule):
         # number of boards when team game points are used.
         encounter_totals = [1.0]
         for player_id, points_by_opponent in points_by_player_and_opponent.items():
-            for opponent_id, points in points_by_opponent.items():
+            for opponent_id, encounter_points in points_by_opponent.items():
                 opponent_points = points_by_player_and_opponent[opponent_id].get(
                     player_id
                 )
                 if opponent_points:
-                    encounter_totals.append(fmean(points) + fmean(opponent_points))
+                    encounter_totals.append(
+                        fmean(encounter_points) + fmean(opponent_points)
+                    )
         win_value = max(encounter_totals)
 
         ranges: dict[int, tuple[float, float]] = {}
@@ -1160,7 +1236,9 @@ class DirectEncounterRule(ChampionshipRule):
             )
         return ranges
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         ranges = self.score_ranges(group, context)
         if ranges is None or any(
             round(minimum, 6) != round(maximum, 6)
@@ -1169,10 +1247,17 @@ class DirectEncounterRule(ChampionshipRule):
             return None
         return {player_id: minimum for player_id, (minimum, _) in ranges.items()}
 
-    def split(self, group, context):
+    def split(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> list[list['ReconciledCompetitor']]:
         return self._resolve(group, context, secondary=False)
 
-    def _resolve(self, group, context, secondary):
+    def _resolve(
+        self,
+        group: list['ReconciledCompetitor'],
+        context: ScoringContext,
+        secondary: bool,
+    ) -> list[list['ReconciledCompetitor']]:
         ranges = self.score_ranges(group, context, secondary=secondary)
         if ranges is None:
             return self._fall_back(group, context, secondary)
@@ -1200,7 +1285,12 @@ class DirectEncounterRule(ChampionshipRule):
             refined.extend(self._resolve(subgroup, context, secondary))
         return refined
 
-    def _fall_back(self, group, context, secondary):
+    def _fall_back(
+        self,
+        group: list['ReconciledCompetitor'],
+        context: ScoringContext,
+        secondary: bool,
+    ) -> list[list['ReconciledCompetitor']]:
         """A score that separates no one hands the set to the secondary score
         (Art. 13.3.1, teams). Individuals have only one score, so the set stays
         tied for the next rule."""
@@ -1209,7 +1299,7 @@ class DirectEncounterRule(ChampionshipRule):
         return [group]
 
     @staticmethod
-    def _has_secondary(group) -> bool:
+    def _has_secondary(group: list['ReconciledCompetitor']) -> bool:
         return bool(group) and all(
             participation.has_secondary_score
             for competitor in group
@@ -1242,10 +1332,14 @@ class ManualRule(ChampionshipRule):
             'Order the still-tied competitors by hand, by dragging them in the ranking.'
         )
 
-    def scores(self, group, context):
+    def scores(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> dict[int, float] | None:
         return None
 
-    def split(self, group, context):
+    def split(
+        self, group: list['ReconciledCompetitor'], context: ScoringContext
+    ) -> list[list['ReconciledCompetitor']]:
         if not context.manual_positions:
             return [group]
         return _split_by_value(
@@ -1284,7 +1378,9 @@ def build_rule(
     return championship_rule_class(static_id).from_options(best_n, options or {})
 
 
-def aggregatable_tie_break_types(sources) -> list[type['TieBreak']]:
+def aggregatable_tie_break_types(
+    sources: list['ChampionshipSource'],
+) -> list[type['TieBreak']]:
     """The tie-break *types* a "sum/average of a tie-break" rule may aggregate.
 
     Because each source tournament holds the game data, we can COMPUTE any
@@ -1297,7 +1393,7 @@ def aggregatable_tie_break_types(sources) -> list[type['TieBreak']]:
     Direct encounter / manual and other non-numeric tie-breaks are excluded."""
     from data.tie_breaks.managers import TieBreakManager
 
-    seen: dict[str, type['TieBreak']] = {}
+    seen: dict[str, type[TieBreak]] = {}
     for source in sources:
         event = getattr(source, 'event', None)
         if event is None:
@@ -1317,11 +1413,11 @@ def rank_competitors(
 ) -> list[list['ReconciledCompetitor']]:
     """Rank individual players or teams, returning ordered tie groups."""
     context = ScoringContext(competitors, team_score_basis, manual_positions, rules)
-    ordered: list[list['ReconciledCompetitor']] = (
+    ordered: list[list[ReconciledCompetitor]] = (
         [list(competitors)] if competitors else []
     )
     for rule in rules:
-        refined: list[list['ReconciledCompetitor']] = []
+        refined: list[list[ReconciledCompetitor]] = []
         for group in ordered:
             if len(group) == 1:
                 refined.append(group)
@@ -1335,5 +1431,5 @@ def rank_players(
     players: list['ReconciledPlayer'], rules: list[ChampionshipRule]
 ) -> list[list['ReconciledPlayer']]:
     """Backward-compatible individual-ranking entry point."""
-    competitors = cast(list['ReconciledCompetitor'], players)
+    competitors: list[ReconciledCompetitor] = [*players]
     return cast(list[list['ReconciledPlayer']], rank_competitors(competitors, rules))

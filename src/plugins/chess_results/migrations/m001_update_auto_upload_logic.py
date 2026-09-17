@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             "SELECT JSON_EXTRACT(plugin_data, '$.chess_results.auto_upload') AS auto_upload FROM info"
         )
@@ -18,5 +18,5 @@ class Migration(BaseMigration):
             (json.dumps(event_auto_upload),),
         )
 
-    def backward(self):
+    def backward(self) -> None:
         pass

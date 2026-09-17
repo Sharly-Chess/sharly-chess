@@ -13,7 +13,8 @@ from dataclasses import replace
 from datetime import date
 from functools import cache, partial
 from math import ceil, floor
-from typing import TYPE_CHECKING, Any, Callable, Iterable
+from typing import TYPE_CHECKING, Any
+from collections.abc import Callable, Iterable
 
 from common.i18n import _
 from data.pairings.settings import (
@@ -25,6 +26,7 @@ from data.pairings.variations import SwissVariation
 from utils import Utils
 
 if TYPE_CHECKING:
+    from data.event import Event
     from data.player import TournamentPlayer
     from data.tournament import Tournament
 
@@ -115,7 +117,7 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
         for field in (self.min_field, self.max_field):
-            if not data.get(field, None) or int(data[field]) < 0:
+            if not data.get(field) or int(data[field]) < 0:
                 errors[self.id] = _('Positive values are expected.')
                 return errors
         min_number, max_number = self.from_form_data(data)
@@ -143,7 +145,7 @@ class Base2GroupsSetting(PairingGroupSetting, ABC):
     ) -> dict[AccelerationGroup, tuple[int, int]]:
         player_count = tournament.player_count
         if player_count < 3:
-            return {group: (0, 0) for group in AccelerationGroup}
+            return dict.fromkeys(AccelerationGroup, (0, 0))
         max_a = ceil(player_count / 4) * 2
         return {
             AccelerationGroup.A: (1, max_a),
@@ -194,7 +196,7 @@ class Base3GroupsSetting(PairingGroupSetting, ABC):
             - Group C: remaining players"""
         player_count = len(tournament.tournament_players)
         if player_count < 3:
-            return {group: (0, 0) for group in AccelerationGroup}
+            return dict.fromkeys(AccelerationGroup, (0, 0))
         if player_count < 11:
             # Min ideal repartition: A(4), B(4), C(3)
             max_a = player_count // 3
@@ -421,7 +423,7 @@ class CustomAccelerationSetting(PairingSetting[list[AccelerationRule]]):
 
     def _get_vpoints_errors(
         self, errors: dict[str, str], data: dict[str, str], index: int
-    ):
+    ) -> None:
         field = self.field(index, 'vpoints')
         vpoints = _form_float(data, field)
         if vpoints is None or not 0 <= vpoints <= self.MAX_VPOINTS:
@@ -706,7 +708,9 @@ class InitialPairingScoreSetting(PairingSetting[dict[int, float]]):
                 scores_by_key[key] = score
         return scores_by_key
 
-    def _get_source_event(self, tournament: 'Tournament', data: dict[str, str]):
+    def _get_source_event(
+        self, tournament: 'Tournament', data: dict[str, str]
+    ) -> 'Event | None':
         from data.loader import EventLoader
 
         uniq_id = data.get(self.source_event_field)
@@ -807,10 +811,9 @@ class AccelerationSwissVariation(AcceleratedSwissVariation, ABC):
     ) -> str:
         if not max_round or min_round >= max_round:
             return _('Round {round}').format(round=min_round)
-        else:
-            return _('Rounds {min_round}-{max_round}').format(
-                min_round=min_round, max_round=max_round
-            )
+        return _('Rounds {min_round}-{max_round}').format(
+            min_round=min_round, max_round=max_round
+        )
 
     @classmethod
     @abstractmethod
@@ -823,10 +826,7 @@ class AccelerationSwissVariation(AcceleratedSwissVariation, ABC):
 class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
     @property
     def settings(self) -> list[PairingSetting]:
-        return super().settings + [
-            GroupA2GroupsSetting(),
-            GroupB2GroupsSetting(),
-        ]
+        return [*super().settings, GroupA2GroupsSetting(), GroupB2GroupsSetting()]
 
     @classmethod
     def get_player_group(
@@ -860,7 +860,7 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     def update_settings_from_added_pairing_number(
         self, tournament: 'Tournament', pairing_number: int
-    ):
+    ) -> bool:
         if not self.validate_settings(tournament):
             return False
         max_a = GroupA2GroupsSetting.get_value(tournament)[1]
@@ -892,7 +892,8 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
 class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
     @property
     def settings(self) -> list[PairingSetting]:
-        return super().settings + [
+        return [
+            *super().settings,
             GroupA3GroupsSetting(),
             GroupB3GroupsSetting(),
             GroupC3GroupsSetting(),
@@ -949,7 +950,7 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     def update_settings_from_added_pairing_number(
         self, tournament: 'Tournament', pairing_number: int
-    ):
+    ) -> bool:
         if not self.validate_settings(tournament):
             return False
         max_a = GroupA3GroupsSetting.get_value(tournament)[1]
@@ -1040,7 +1041,7 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         return 'BAKU'
 
     @staticmethod
-    def static_name():
+    def static_name() -> str:
         return _('Baku acceleration system')
 
     @property
@@ -1081,13 +1082,10 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         if at_round > cls.full_point_rounds(tournament.rounds):
             if rating_group == AccelerationGroup.A:
                 return tournament.draw_points
-            else:
-                return 0
-        else:
-            if rating_group == AccelerationGroup.A:
-                return tournament.win_points
-            else:
-                return 0
+            return 0
+        if rating_group == AccelerationGroup.A:
+            return tournament.win_points
+        return 0
 
     def get_tournament_accelerated_rules(
         self, tournament: 'Tournament'
@@ -1248,7 +1246,7 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
             group = cls.get_player_group(tournament, tournament_player)
             if group == AccelerationGroup.A:
                 return tournament.win_points
-            elif at_round == 2:
+            if at_round == 2:
                 return tournament.draw_points
         return 0.0
 
@@ -1420,7 +1418,7 @@ class CustomAccelerationSwissVariation(AcceleratedSwissVariation):
 
     @property
     def settings(self) -> list[PairingSetting]:
-        return super().settings + [CustomAccelerationSetting()]
+        return [*super().settings, CustomAccelerationSetting()]
 
     def get_tournament_accelerated_rules(
         self, tournament: 'Tournament'
@@ -1561,7 +1559,7 @@ class InitialScoreSwissVariation(AcceleratedSwissVariation):
 
     @property
     def settings(self) -> list[PairingSetting]:
-        return super().settings + [InitialPairingScoreSetting()]
+        return [*super().settings, InitialPairingScoreSetting()]
 
     def get_tournament_accelerated_rules(
         self, tournament: 'Tournament'
@@ -1622,7 +1620,7 @@ class AccelerationUtils:
     @classmethod
     def set_pairing_settings_from_rating_threshold(
         cls, tournament: 'Tournament', rating_threshold: int
-    ):
+    ) -> None:
         from operator import attrgetter
 
         from database.sqlite.event.event_database import EventDatabase
@@ -1654,7 +1652,7 @@ class AccelerationUtils:
         tournament: 'Tournament',
         upper_rating_threshold: int,
         lower_rating_threshold: int,
-    ):
+    ) -> None:
         from operator import attrgetter
 
         from database.sqlite.event.event_database import EventDatabase

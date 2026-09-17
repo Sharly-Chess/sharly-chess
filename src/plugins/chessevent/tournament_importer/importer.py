@@ -92,12 +92,12 @@ class ChessEventTournamentImporter(TournamentImporter):
 
     def _on_status_error_raised(
         self, error: ChessEventStatusError, tournament: Tournament | None
-    ):
+    ) -> None:
         """Executed when an ChessEventStatusError is raised."""
 
     def _on_standard_error_raised(
         self, error: SharlyChessException, tournament: Tournament | None
-    ):
+    ) -> None:
         """Executed when a SharlyChessException is raised."""
 
     def _resolve_request_data(self, event: Event) -> ChessEventTournamentRequestData:
@@ -132,13 +132,13 @@ class ChessEventTournamentImporter(TournamentImporter):
             raise SharlyChessException(
                 'Error while reading ChessEvent data '
                 f'(saved to file [{error_output}]): {error}'
-            )
+            ) from error
         return chessevent_tournament
 
     def validate_options(
         self,
         event: Event | None = None,
-    ):
+    ) -> None:
         assert event is not None
         (
             user_option,
@@ -165,7 +165,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             return super().load_tournament(event, tournament)
         except ChessEventStatusError as error:
             self._on_status_error_raised(error, tournament)
-            raise ImporterError(str(error))
+            raise ImporterError(str(error)) from error
         except SharlyChessException as error:
             self._on_standard_error_raised(error, tournament)
             raise error
@@ -224,7 +224,7 @@ class ChessEventTournamentImporter(TournamentImporter):
         except KeyError:
             raise SharlyChessException(
                 f'Unknown value [{tournament.pairing}] for field [pairing].'
-            )
+            ) from None
         stored_tournament.location = tournament.location
         stored_tournament.rating = tournament.rating
         stored_tournament.stored_tie_breaks = []
@@ -240,7 +240,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             except KeyError:
                 raise SharlyChessException(
                     f'Unknown value for tie break [{ce_tie_break}].'
-                )
+                ) from None
             stored_tournament.stored_tie_breaks.append(tie_break.to_stored_value())
 
         if ffe.PLUGIN_NAME not in stored_tournament.plugin_data:
@@ -262,11 +262,11 @@ class ChessEventTournamentImporter(TournamentImporter):
         try:
             title = ChessEventTitle.get_core_object(player.title)
         except KeyError:
-            raise unknown_exception('title')
+            raise unknown_exception('title') from None
         try:
             gender = ChessEventGender.get_core_object(player.gender)
         except KeyError:
-            raise unknown_exception('gender')
+            raise unknown_exception('gender') from None
         if player.federation not in SharlyChessConfig().federations:
             # Error raised in the form as it's the only field manually input by the user
             raise ImporterError(
@@ -283,19 +283,19 @@ class ChessEventTournamentImporter(TournamentImporter):
                 player.standard_rating_type
             )
         except KeyError:
-            raise unknown_exception('standard_rating_type')
+            raise unknown_exception('standard_rating_type') from None
         try:
             rapid_rating_type = ChessEventRatingType.get_core_object(
                 player.rapid_rating_type
             )
         except KeyError:
-            raise unknown_exception('rapid_rating_type')
+            raise unknown_exception('rapid_rating_type') from None
         try:
             blitz_rating_type = ChessEventRatingType.get_core_object(
                 player.blitz_rating_type
             )
         except KeyError:
-            raise unknown_exception('blitz_rating_type')
+            raise unknown_exception('blitz_rating_type') from None
 
         ratings = {
             TournamentRating.STANDARD.value: PlayerRating.from_type(
@@ -311,7 +311,7 @@ class ChessEventTournamentImporter(TournamentImporter):
         try:
             ffe_licence = ChessEventFFELicence.get_core_object(player.ffe_license)
         except KeyError:
-            raise unknown_exception('ffe_license')
+            raise unknown_exception('ffe_license') from None
         if player.ffe_league and player.ffe_league not in FFE_LEAGUES:
             raise unknown_exception('ffe_league')
         ffe_plugin_data = FfePlayerPluginData(
@@ -374,7 +374,7 @@ class ChessEventSyncTournamentImporter(ChessEventTournamentImporter):
     @staticmethod
     def _save_tournament_chessevent_status(
         status: ChessEventStatus, tournament: Tournament | None
-    ):
+    ) -> None:
         if not tournament:
             return
         with EventDatabase(tournament.event.uniq_id, True) as database:
@@ -385,12 +385,12 @@ class ChessEventSyncTournamentImporter(ChessEventTournamentImporter):
 
     def _on_status_error_raised(
         self, error: ChessEventStatusError, tournament: Tournament | None
-    ):
+    ) -> None:
         self._save_tournament_chessevent_status(error.status, tournament)
 
     def _on_standard_error_raised(
         self, error: SharlyChessException, tournament: Tournament | None
-    ):
+    ) -> None:
         self._save_tournament_chessevent_status(
             UnexpectedErrorChessEventStatus(), tournament
         )

@@ -42,7 +42,9 @@ class FfeWebContext(AdminWebContext):
             try:
                 self.tournament = event.tournaments_by_id[tournament_id]
             except KeyError:
-                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+                raise NotFoundException(
+                    f'Tournament [{tournament_id}] not found.'
+                ) from None
 
     def get_tournament(self) -> Tournament:
         assert self.tournament is not None
@@ -75,7 +77,9 @@ class FfeWebContext(AdminWebContext):
 class FfeUploadController(BaseEventAdminController):
     """Controller for all the endpoints sent from the FFE upload modal."""
 
-    guards = [EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)]  # noqa: RUF012
 
     @classmethod
     def _render_ffe_upload_modal(

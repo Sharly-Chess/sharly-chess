@@ -48,7 +48,7 @@ class ChessEventPluginHooks:
         importer: TournamentImporter,
         stored_player: StoredPlayer,
         chessevent_player: ChessEventPlayer,
-    ):
+    ) -> None:
         """Augment player data when fetched from ChessEvent."""
 
 
@@ -148,7 +148,9 @@ class ChessEventPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_tournament_importers(self, importers: list[type[TournamentImporter]]):
+    def insert_tournament_importers(
+        self, importers: list[type[TournamentImporter]]
+    ) -> None:
         importers.append(ChessEventTournamentImporter)
 
     # ---------------------------------------------------------------------------------
@@ -156,7 +158,7 @@ class ChessEventPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_event_duplicated(self, event_database: EventDatabase):
+    def on_event_duplicated(self, event_database: EventDatabase) -> None:
         stored_event = event_database.load_stored_event()
 
         stored_event.plugin_data[PLUGIN_NAME] = (
@@ -183,7 +185,7 @@ class ChessEventPlugin(Plugin):
         event: 'Event | None',
         data: dict[str, str],
         errors: dict[str, str],
-    ):
+    ) -> None:
         federation = WebContext.form_data_to_str(data, field := 'federation')
         if federation != 'FRA':
             # We only validate FFE fields for the FRA federation

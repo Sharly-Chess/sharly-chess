@@ -57,7 +57,9 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
 
 
 class RotatorAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
         ManageScreenEntityGuard(RequestUtils.ROTATOR_ID_PARAM),
@@ -175,7 +177,7 @@ class RotatorAdminController(BaseEventAdminController):
                 entities_by_screen_type[screen_type.id], key=attrgetter('name')
             ):
                 suffix = ''
-                if rotator_count := rotator_ids.count(getattr(entity, 'id')):
+                if rotator_count := rotator_ids.count(entity.id):
                     suffix = f' (x{rotator_count})'
                 # Families expose display_name (their range resolved); screens
                 # fall back to their name.
@@ -282,11 +284,8 @@ class RotatorAdminController(BaseEventAdminController):
                 used_names.remove(web_context.get_admin_rotator().name)
             if name in used_names:
                 errors[field] = _('This name is already used.')
-        delay: int | None = None
-        try:
-            delay = WebContext.form_data_to_int(data, field := 'delay', minimum=1)
-        except ValueError:
-            errors[field] = _('A positive integer is expected.')
+        field = 'delay'
+        delay = WebContext.read_int_field(data, field, errors, minimum=1)
         if errors:
             return None, errors
         stored_rotator = StoredRotator(
@@ -446,7 +445,7 @@ class RotatorAdminController(BaseEventAdminController):
         try:
             rotator.delete_rotating_screen(rotating_screen_id)
         except ValueError as error:
-            raise ClientException(error)
+            raise ClientException(error) from error
         return self._admin_event_rotator_render(
             web_context, self._rotator_screens_modal_context(web_context)
         )
@@ -473,7 +472,7 @@ class RotatorAdminController(BaseEventAdminController):
     @staticmethod
     def _create_rotating_screen(
         request: HTMXRequest, data: dict[str, str], is_family: bool
-    ):
+    ) -> Template:
         web_context = RotatorAdminWebContext(request)
         rotator = web_context.get_admin_rotator()
         object_id = (

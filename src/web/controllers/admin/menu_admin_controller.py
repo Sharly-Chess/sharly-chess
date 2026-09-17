@@ -51,7 +51,9 @@ class MenuAdminWebContext(BaseEventAdminWebContext):
 
 
 class MenuAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
         ManageScreenEntityGuard(RequestUtils.MENU_ID_PARAM),
@@ -460,7 +462,7 @@ class MenuAdminController(BaseEventAdminController):
         try:
             menu.delete_menu_item(menu_item_id)
         except ValueError as error:
-            raise ClientException(error)
+            raise ClientException(error) from error
         return self._admin_event_menu_render(
             web_context, self._menu_items_modal_context(web_context)
         )

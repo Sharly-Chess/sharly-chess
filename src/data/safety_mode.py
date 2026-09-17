@@ -32,7 +32,7 @@ class RoundStatus(StrEnum):
     FUTURE = 'FUTURE'
 
     @classmethod
-    def from_round(cls, round_: int, current_round: int):
+    def from_round(cls, round_: int, current_round: int) -> 'RoundStatus':
         if round_ == current_round:
             return cls.CURRENT
         if round_ == current_round - 1:

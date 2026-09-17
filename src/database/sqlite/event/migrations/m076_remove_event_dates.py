@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('SELECT start_date, stop_date FROM info')
         row = self.database.fetchone()
         start_date = row['start_date']
@@ -17,7 +17,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `info` DROP COLUMN `start_date`')
         self.database.execute('ALTER TABLE `info` DROP COLUMN `stop_date`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `info` ADD `start_date` TEXT')
         self.database.execute('ALTER TABLE `info` ADD `stop_date` TEXT')
 

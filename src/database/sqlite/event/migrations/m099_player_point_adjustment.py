@@ -6,7 +6,7 @@ class Migration(BaseMigration):
     tournament — the counterpart of `team_point_adjustment`. A single
     delta, because individual tournaments score in game points only."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `player_point_adjustment` ('
             '   `id` INTEGER NOT NULL,'
@@ -24,5 +24,5 @@ class Migration(BaseMigration):
             ')'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP TABLE `player_point_adjustment`')

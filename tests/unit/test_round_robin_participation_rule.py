@@ -7,6 +7,7 @@ left the tournament having completed only 2/5 < 50%.
 """
 
 import os
+from contextlib import suppress
 from unittest import TestCase
 from unittest.mock import patch
 from xml.etree import ElementTree
@@ -24,6 +25,7 @@ from database.sqlite.event.event_store import (
 )
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result
+import contextlib
 
 EVENT_ID = 'test-rr-participation-event'
 TOURNAMENT_ID = 'test-rr-participation-tournament'
@@ -199,11 +201,9 @@ class RoundRobinParticipationRuleTestCase(TestCase):
         tournament.compute_tournament_player_ranks()
         baseline = {}
         for tie_break in candidates:
-            try:
+            # Not applicable to this fixture (e.g. needs data it lacks).
+            with suppress(Exception):
                 baseline[tie_break.static_id()] = values_for(tie_break)
-            except Exception:
-                # Not applicable to this fixture (e.g. needs data it lacks).
-                pass
 
         self._mutate_leaver(tournament)
         tournament.compute_tournament_player_ranks()
@@ -374,10 +374,8 @@ class TeamRoundRobinParticipationRuleTestCase(TestCase):
                     )
 
     def _load(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(TEAM_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(TEAM_EVENT_ID)
         return self._event.tournaments_by_name[TEAM_TOURNAMENT_NAME]
 

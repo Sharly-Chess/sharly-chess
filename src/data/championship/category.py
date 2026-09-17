@@ -3,7 +3,8 @@
 import weakref
 from functools import cached_property
 from logging import Logger
-from typing import TYPE_CHECKING, cast
+from datetime import date
+from typing import TYPE_CHECKING
 
 from common.logger import get_logger
 from data.criteria.managers import PrizePlayerFilterManager
@@ -125,7 +126,7 @@ class ChampionshipCategory:
     def _reference_participation(
         player: ReconciledPlayer,
     ) -> 'ReconciledParticipation':
-        def start_date(participation: 'ReconciledParticipation'):
+        def start_date(participation: 'ReconciledParticipation') -> date:
             tournament = participation.source.tournament
             assert tournament is not None
             return tournament.start_date
@@ -163,8 +164,4 @@ class ChampionshipCategory:
 
     @cached_property
     def ranking(self) -> list['RankingEntry']:
-        from data.championship.reconciliation import ReconciledTeam
-
-        return self.championship.build_ranking(
-            cast(list[ReconciledPlayer | ReconciledTeam], self.players)
-        )
+        return self.championship.build_ranking([*self.players])

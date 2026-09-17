@@ -6,7 +6,7 @@ from litestar.exceptions import NotFoundException, ClientException
 from common import experimental_features_enabled
 
 from collections import defaultdict
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 from data.access_levels.actions import AuthAction
 from data.input_output import DataSourceManager
@@ -245,7 +245,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 raise ClientException(
                     f'Action [{action}] does not exist for '
                     f'round with status [{self.round_status}].'
-                )
+                ) from None
 
     def _points_recompute_scope(
         self,
@@ -279,7 +279,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         ]
         return players or None
 
-    def reload_unpaired_player_lists(self):
+    def reload_unpaired_player_lists(self) -> None:
         self.admin_absent_players = []
         self.admin_bye_players = []
         self.admin_unpaired = []
@@ -331,7 +331,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             for index, label in self.admin_tournament.unboarded_holes(round_)
         ]
 
-    def reload_unpaired_team_lists(self):
+    def reload_unpaired_team_lists(self) -> None:
         """Populate the team-side equivalents of the player byes /
         unpaired lists.
 
@@ -502,7 +502,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
 
 class PairingsAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         TournamentActionGuard(AuthAction.VIEW_PAIRINGS_TAB),
     ]
@@ -910,7 +912,7 @@ class PairingsAdminController(BaseEventAdminController):
                 )
         else:
             r = Result(result)
-            if r.is_special_result:
+            if r.is_special_result:  # noqa: SIM102
                 if message := plugin_manager.hook_for_event(
                     event, 'signal_special_result_set'
                 )(tournament=tournament, result=r):
@@ -1071,7 +1073,7 @@ class PairingsAdminController(BaseEventAdminController):
                         left_is_white = white_tp.team_id == team_a_id
                     elif black_tp is not None:
                         left_is_white = black_tp.team_id != team_a_id
-        result: Optional[Result] = None
+        result: Result | None = None
         match key:
             case 'Digit0' | 'Numpad0':
                 result = Result.NO_RESULT
@@ -1123,7 +1125,7 @@ class PairingsAdminController(BaseEventAdminController):
         try:
             new_player_id = int(data.get('new_player_id', '0') or '0')
         except ValueError:
-            raise ClientException('Invalid new_player_id.')
+            raise ClientException('Invalid new_player_id.') from None
 
         web_context = PairingsAdminWebContext(
             request,
@@ -2159,7 +2161,7 @@ class PairingsAdminController(BaseEventAdminController):
         try:
             protected_action = PairingAction(action)
         except ValueError:
-            raise NotFoundException(f'Unknown pairing action [{action}]')
+            raise NotFoundException(f'Unknown pairing action [{action}]') from None
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
         permission_handler = tournament.pairing_system.permission_handler
@@ -2209,7 +2211,7 @@ class PairingsAdminController(BaseEventAdminController):
         try:
             SessionPairingsSafetyMode(request).set(SafetyMode(mode))
         except ValueError:
-            raise NotFoundException(f'Unknown safety mode [{mode}]')
+            raise NotFoundException(f'Unknown safety mode [{mode}]') from None
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         return self._admin_event_pairings_render(web_context)
 
@@ -2560,7 +2562,9 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _save_pairing_settings_data(tournament: Tournament, data: dict[str, str]):
+    def _save_pairing_settings_data(
+        tournament: Tournament, data: dict[str, str]
+    ) -> None:
         stored_settings: dict[str, Any] = {}
         for setting in tournament.pairing_variation.settings:
             stored_settings[setting.id] = setting.to_stored_value(
@@ -3032,7 +3036,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round_: int,
-    ):
+    ) -> None:
         channels.publish(
             {
                 'event': f'new-user-results|{event_uniq_id}|{tournament_id}|{round_}',
@@ -3089,11 +3093,11 @@ class PairingsAdminController(BaseEventAdminController):
             buckets[player.points].append(player)
 
         # Sort players within each bucket by player id
-        for pts, players in buckets.items():
+        for players in buckets.values():
             players.sort(key=lambda p: p.id)
 
         # Create grouped list
-        grouped = [(pts, players) for pts, players in buckets.items()]
+        grouped = list(buckets.items())
 
         # Sort groups by points (highest first)
         grouped.sort(key=lambda it: it[0], reverse=True)

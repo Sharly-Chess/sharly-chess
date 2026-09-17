@@ -50,7 +50,7 @@ class MolterReport:
 
 
 def _check_rounds(
-    rounds: tuple[tuple['TablePairing', ...], ...],
+    rounds: tuple[tuple[TablePairing, ...], ...],
     team_count: int,
     players_per_team: int,
     label: str,
@@ -169,14 +169,13 @@ def _check_rounds(
                 white_count[white_seat] += 1
                 if n_rounds >= 2:
                     prev = prev_colour[white_seat]
-                    if prev == 1:
-                        if prev_prev_colour[white_seat] == prev:
-                            name = seat_name(white_seat)
-                            colour_errors.append(
-                                f'{label}: {name} plays the same colour three '
-                                f'rounds running (rounds {r_zero - 1}–'
-                                f'{r_zero + 1}).'
-                            )
+                    if prev == 1 and prev_prev_colour[white_seat] == prev:
+                        name = seat_name(white_seat)
+                        colour_errors.append(
+                            f'{label}: {name} plays the same colour three '
+                            f'rounds running (rounds {r_zero - 1}–'
+                            f'{r_zero + 1}).'
+                        )
                     prev_prev_colour[white_seat] = prev
                 prev_colour[white_seat] = 1
                 if black_team is not None:
@@ -189,14 +188,13 @@ def _check_rounds(
             if black_seat >= 0:
                 if n_rounds >= 2:
                     prev = prev_colour[black_seat]
-                    if prev == 0:
-                        if prev_prev_colour[black_seat] == prev:
-                            name = seat_name(black_seat)
-                            colour_errors.append(
-                                f'{label}: {name} plays the same colour three '
-                                f'rounds running (rounds {r_zero - 1}–'
-                                f'{r_zero + 1}).'
-                            )
+                    if prev == 0 and prev_prev_colour[black_seat] == prev:
+                        name = seat_name(black_seat)
+                        colour_errors.append(
+                            f'{label}: {name} plays the same colour three '
+                            f'rounds running (rounds {r_zero - 1}–'
+                            f'{r_zero + 1}).'
+                        )
                     prev_prev_colour[black_seat] = prev
                 prev_colour[black_seat] = 0
                 if white_team is not None:
@@ -279,14 +277,13 @@ def _check_rounds(
             if (
                 round_team_white[team] != target_team_white
                 or round_team_black[team] != target_team_white
-            ):
-                if relaxed_s5_note is None:
-                    relaxed_s5_note = (
-                        r_index,
-                        letter,
-                        round_team_white[team],
-                        round_team_black[team],
-                    )
+            ) and relaxed_s5_note is None:
+                relaxed_s5_note = (
+                    r_index,
+                    letter,
+                    round_team_white[team],
+                    round_team_black[team],
+                )
             team_colour_drift[team] += round_team_white[team] - round_team_black[team]
             if abs(team_colour_drift[team]) > 2:
                 err(
@@ -438,13 +435,12 @@ def _check_rounds(
     # I4 — a single-layer table (P ≤ N − 1) should float each team at most once
     # up and once down per round-pair. (For more than one layer this is
     # arithmetically impossible, so it is only checked for a single layer.)
-    if team_count % 2 == 1 and 0 < players_per_team <= team_count - 1:
-        if i5_violated:
-            note(
-                f'{label}: a team floats more than once within a round-pair — a '
-                f'single-layer table should float each team at most once up and '
-                f'once down per round-pair (I4).'
-            )
+    if team_count % 2 == 1 and 0 < players_per_team <= team_count - 1 and i5_violated:
+        note(
+            f'{label}: a team floats more than once within a round-pair — a '
+            f'single-layer table should float each team at most once up and '
+            f'once down per round-pair (I4).'
+        )
     if spread_note is not None:
         r_index, team_name, spread = spread_note
         note(
@@ -461,7 +457,7 @@ def _check_rounds(
         )
 
 
-def verify_molter_table(table: 'FixedPairingTable') -> MolterReport:
+def verify_molter_table(table: FixedPairingTable) -> MolterReport:
     """Verify ``table`` against the Molter principles."""
     report = MolterReport()
     if table.players_per_team % 2 != 0:

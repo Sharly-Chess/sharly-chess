@@ -1,5 +1,6 @@
+from typing import ClassVar
 import json
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from litestar import Response, get, route, HttpMethod, status_codes, websocket_stream
 from litestar.channels import ChannelsPlugin
@@ -20,7 +21,7 @@ from web.session import SessionEventsShowDetails
 
 
 class IndexController(BaseController):
-    ALL_HTTP_METHODS: list[HttpMethod] = [
+    ALL_HTTP_METHODS: ClassVar[list[HttpMethod]] = [
         HttpMethod.GET,
         HttpMethod.POST,
         HttpMethod.PATCH,
@@ -178,7 +179,7 @@ class IndexController(BaseController):
     @websocket_stream('/ws')
     async def ws_handler(
         self, channels: NamedDependency[ChannelsPlugin]
-    ) -> AsyncGenerator[dict, None]:
+    ) -> AsyncGenerator[dict]:
         async with channels.start_subscription(['ws']) as subscriber:
             async for raw_event in subscriber.iter_events():
                 event = (

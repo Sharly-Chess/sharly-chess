@@ -1,17 +1,21 @@
+import builtins
+from typing import Any
 from abc import ABC, abstractmethod
 from types import UnionType
-from typing import Any
 
 from common.exception import OptionError
 from utils.entity import IdentifiableEntity
 
 
-class Option(IdentifiableEntity, ABC):
+class Option[V](IdentifiableEntity, ABC):
     """Abstract class representing an option.
-    Options can either be represented in the DB or in a form."""
+    Options can either be represented in the DB or in a form.
 
-    def __init__(self, value: Any | None = None):
-        self.value = value if value is not None else self.default_value
+    ``V`` is the type of the value the option holds, so that reading it
+    through :meth:`OptionHandler._get_option` gives that type."""
+
+    def __init__(self, value: V | None = None):
+        self.value: V = value if value is not None else self.default_value
 
     @staticmethod
     def static_name() -> str:
@@ -21,11 +25,12 @@ class Option(IdentifiableEntity, ABC):
     @property
     @abstractmethod
     def type(self) -> type | UnionType:
-        """Expected type for the value of the option"""
+        """Expected type for the value of the option, checked at runtime by
+        :meth:`validate`. ``V`` is the same thing said to the type checker."""
 
     @property
     @abstractmethod
-    def default_value(self) -> Any:
+    def default_value(self) -> V:
         """Value used as default for the option.
         Should be of type {self.type}"""
 
@@ -48,13 +53,14 @@ class Option(IdentifiableEntity, ABC):
         """ID of the HTML element containing the template."""
         return f'{self.id}_container'
 
-    def validate(self):
+    def validate(self) -> None:
         """Checks if the value is correctly implemented.
         Raises an OptionError if not."""
         if not isinstance(self.value, self.type):
             raise OptionError(f'{self.value=} (expected type: {self.type})', self)
 
-    def _validate_list_type(self, item_type: type):  # type: ignore
+    # `builtins.type`, since the class's own `type` property shadows it here.
+    def _validate_list_type(self, item_type: builtins.type[Any]) -> None:
         if not isinstance(self.value, list) or not all(
             isinstance(item, item_type) for item in self.value
         ):
@@ -76,7 +82,7 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
         """List of all available options with default values."""
         return [option_type() for option_type in self.available_options()]
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         """Checks the validity of options, Raises a OptionError if invalid."""
         used_option_types: list[type[T]] = []
         for option in self.options:
@@ -120,3 +126,8 @@ class OptionHandler[T: Option](IdentifiableEntity, ABC):
             if option.value != other_option.value:
                 return False
         return True
+
+    def __hash__(self) -> int:
+        # Equality requires the same id, so hashing on it stays consistent —
+        # and without this the override would drop the hash the base defines.
+        return hash(self.id)

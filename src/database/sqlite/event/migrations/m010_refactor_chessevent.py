@@ -8,7 +8,7 @@ class Migration(BaseMigration):
     def are_foreign_keys_enabled() -> bool:
         return False
 
-    def forward(self):
+    def forward(self) -> None:
         # No need to store the rounds skipped by the users since pairing information is stored
         # at player-level after the ChessEvent import. IF EXISTS is used because the table is not
         # created since 2.4.20
@@ -37,9 +37,9 @@ class Migration(BaseMigration):
         }
         if len(chessevent_connections) == 1:
             # Set the ChessEvent connection as the event default ChessEvent connection
-            event_chessevent_connection: dict[str, Any] = list(
-                chessevent_connections.values()
-            )[0]
+            event_chessevent_connection: dict[str, Any] = next(
+                iter(chessevent_connections.values())
+            )
             self.database.execute(
                 f'UPDATE `info` SET {", ".join(f"`{field}` = ?" for field in event_chessevent_connection)}',
                 tuple(event_chessevent_connection.values()),
@@ -55,7 +55,7 @@ class Migration(BaseMigration):
                 ]
                 self.database.execute(
                     f'UPDATE `tournament` SET {", ".join(f"`{field}` = ?" for field in chessevent_connection)} WHERE `id` = ?',
-                    tuple(list(chessevent_connection.values()) + [row['id']]),
+                    (*list(chessevent_connection.values()), row['id']),
                 )
         # Simply running ALTER TABLE `tournament` DROP COLUMN `chessevent_id` fails with sqlite3.OperationalError:
         # error in table tournament after drop column: unknown column "chessevent_id" in foreign key definition

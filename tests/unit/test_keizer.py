@@ -54,7 +54,7 @@ class FakeTournament:
 
     @property
     def tournament_players_by_starting_rank(self) -> dict[int, FakePlayer]:
-        return {rank: player for rank, player in enumerate(self._players, start=1)}
+        return dict(enumerate(self._players, start=1))
 
 
 def _play(

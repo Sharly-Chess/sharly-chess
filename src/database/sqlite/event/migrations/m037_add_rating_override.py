@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `info` ADD `override_unrated_rapid_blitz` INTEGER'
         )
@@ -10,7 +10,7 @@ class Migration(BaseMigration):
             'ALTER TABLE `tournament` ADD `override_unrated_rapid_blitz` INTEGER'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `info` DROP COLUMN `override_unrated_rapid_blitz`'
         )

@@ -6,7 +6,7 @@ import tempfile
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 
 from common.exception import SharlyChessException, DictReaderException
 from common.i18n import _
@@ -173,7 +173,9 @@ class PapiConverter:
         ]
 
         for pattern in cleanup_patterns:
-            for file_path in glob.glob(pattern):
+            # The list above mixes glob patterns with exact paths, so it is
+            # walked as strings rather than split between two Path calls.
+            for file_path in glob.glob(pattern):  # noqa: PTH207
                 Path(file_path).unlink(missing_ok=True)
 
         # Also ensure the target file itself is clean
@@ -199,7 +201,7 @@ class PapiConverter:
             raise SharlyChessException(
                 f'PapiConverter execution failed with status {e.returncode}.\n'
                 f'stdout: {e.stdout}\nstderr: {e.stderr}'
-            )
+            ) from e
 
         if not sql_dump_file.exists():
             raise SharlyChessException(
@@ -208,7 +210,7 @@ class PapiConverter:
 
         try:
             # Create the SQLite database from the SQL dump using Python's sqlite3 module
-            with open(sql_dump_file, 'r', encoding='utf-8') as dump_file:
+            with open(sql_dump_file, encoding='utf-8') as dump_file:
                 sql_content = dump_file.read()
 
             # Create the SQLite database and execute the SQL dump
@@ -219,7 +221,7 @@ class PapiConverter:
             finally:
                 conn.close()
         except Exception as e:
-            raise SharlyChessException(f'SQLite database creation failed: {e}')
+            raise SharlyChessException(f'SQLite database creation failed: {e}') from e
         finally:
             # Clean up the temporary SQL dump file
             sql_dump_file.unlink(missing_ok=True)
@@ -251,7 +253,7 @@ class PapiConverter:
                     f'stdout: {result.stdout}\nstderr: {result.stderr}'
                 )
 
-            with open(target_file, 'r', encoding='utf-8') as file:
+            with open(target_file, encoding='utf-8') as file:
                 papi_data_dict = json.load(file)
             return dict_to_dataclass(PapiData, papi_data_dict)
 
@@ -297,7 +299,7 @@ class PapiConverter:
             stored_tournament_player = StoredTournamentPlayer(player_id=player_id)
             round_keys = papi_player.rounds.keys()
 
-            if has_manual_tiebreak:
+            if has_manual_tiebreak:  # noqa: SIM102
                 # The relative order of the players is stored in the fixed table field with values above 1000!
                 if stored_player.fixed and stored_player.fixed >= 1000:
                     stored_tournament_player.manual_tiebreak = (
@@ -360,10 +362,10 @@ class PapiConverter:
         variables: PapiVariables,
         stored_tournament: StoredTournament | None = None,
     ) -> StoredTournament:
-        def raise_exception(field_: str, message: str):
+        def raise_exception(field_: str, message: str) -> NoReturn:
             raise DictReaderException(['variables', field_], message)
 
-        def raise_unknown_value(field_: str, value: Any):
+        def raise_unknown_value(field_: str, value: Any) -> NoReturn:
             raise_exception(field_, _('Unknown value [{value}]').format(value=value))
 
         if not stored_tournament:
@@ -461,10 +463,10 @@ class PapiConverter:
     def _read_papi_player(
         event: Event, player_id: int, papi_player: PapiPlayer
     ) -> StoredPlayer:
-        def raise_exception(field_: str, message: str):
+        def raise_exception(field_: str, message: str) -> NoReturn:
             raise DictReaderException(['players', str(player_id), field_], message)
 
-        def raise_unknown_value(field_: str, value: Any):
+        def raise_unknown_value(field_: str, value: Any) -> NoReturn:
             raise_exception(field_, _('Unknown value [{value}]').format(value=value))
 
         if not papi_player.lastName:
@@ -595,17 +597,16 @@ class PapiConverter:
         max_opponent_id: int,
         is_round_robin: bool,
     ) -> tuple[StoredPairing, StoredBoard | None]:
-        def raise_exception(field_: str, message: str):
+        def raise_exception(field_: str, message: str) -> NoReturn:
             raise DictReaderException(['players', str(player_id), field_], message)
 
-        if papi_round.opponent is not None:
-            if papi_round.opponent > max_opponent_id:
-                raise_exception(
-                    'opponent',
-                    _('Unknown player ID [{player_id}]').format(
-                        player_id=papi_round.opponent
-                    ),
-                )
+        if papi_round.opponent is not None and papi_round.opponent > max_opponent_id:
+            raise_exception(
+                'opponent',
+                _('Unknown player ID [{player_id}]').format(
+                    player_id=papi_round.opponent
+                ),
+            )
         stored_board: StoredBoard | None = None
         result = papi_round.to_result(is_round_robin)
         stored_pairing = StoredPairing(
@@ -705,8 +706,7 @@ class PapiConverter:
             return _(
                 "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
             )
-        else:
-            return None
+        return None
 
     @classmethod
     def check_result(cls, result: Result, tournament: Tournament) -> str | None:
@@ -813,7 +813,7 @@ class PapiConverter:
         target_file: Path,
         anonymize_player_data: bool = False,
         is_ffe_upload: bool = False,
-    ):
+    ) -> None:
         """Write the tournament data to a papi file.
         Converts a Tournament to JSON format that can be sent to papi-converter.
         Raises a SharlyChessException if the conversion fails."""
@@ -853,13 +853,12 @@ class PapiConverter:
                     f'PapiConverter failed with status {result.returncode}.\n'
                     f'stdout: {result.stdout}\nstderr: {result.stderr}'
                 )
-            else:
-                logger.debug(
-                    'JSON to Papi conversion successful for tournament [%s]. '
-                    'PapiConverter output:\n%s',
-                    tournament.name,
-                    result.stdout,
-                )
+            logger.debug(
+                'JSON to Papi conversion successful for tournament [%s]. '
+                'PapiConverter output:\n%s',
+                tournament.name,
+                result.stdout,
+            )
 
     @classmethod
     def _get_rating_thresholds_from_pairing_settings(
@@ -1099,7 +1098,7 @@ class PapiConverter:
         )
 
         # Convert rounds/pairings
-        for round, pairing in tournament_player.pairings_by_round.items():
+        for round_, pairing in tournament_player.pairings_by_round.items():
             papi_round = PapiRound.from_pairing(pairing, pab_value)
 
             # Get opponent index using the mapping from internal player ID to list index
@@ -1107,7 +1106,7 @@ class PapiConverter:
             if pairing.opponent_id is not None:
                 opponent_index = player_id_to_index.get(pairing.opponent_id)
             papi_round.opponent = opponent_index
-            papi_player.rounds[round] = papi_round
+            papi_player.rounds[round_] = papi_round
 
         return papi_player
 

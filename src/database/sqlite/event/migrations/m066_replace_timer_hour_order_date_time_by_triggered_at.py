@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `timer_hour` ADD `triggered_at` TEXT')
         self.database.execute(
             'SELECT `id`, `uniq_id`, `timer_id`, `date_str`, `time_str` '
@@ -53,7 +53,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `timer_hour` DROP COLUMN `date_str`')
         self.database.execute('ALTER TABLE `timer_hour` DROP COLUMN `time_str`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `timer_hour` ADD `order` INTEGER')
         self.database.execute('ALTER TABLE `timer_hour` ADD `date_str` TEXT')
         self.database.execute('ALTER TABLE `timer_hour` ADD `time_str` TEXT')

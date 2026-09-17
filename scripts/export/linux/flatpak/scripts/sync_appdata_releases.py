@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 import subprocess
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from pathlib import Path
 
 FLATPAK_DIR = Path(__file__).resolve().parents[1]
@@ -51,9 +51,7 @@ def get_tag_info(tag: str) -> tuple[str, str]:
     for line in raw.splitlines():
         if line.startswith('tagger '):
             timestamp = int(line.split()[-2])
-            date_str = datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime(
-                '%Y-%m-%d'
-            )
+            date_str = datetime.fromtimestamp(timestamp, tz=UTC).strftime('%Y-%m-%d')
             break
 
     # Message body: after the first blank line, before PGP signature
@@ -79,8 +77,7 @@ def clean(text: str) -> str:
     """Strip Markdown italics, trailing version refs, and XML-escape."""
     text = MARKDOWN_ITALIC_RE.sub(r'\1', text)
     text = VERSION_SUFFIX_RE.sub('', text).strip()
-    text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-    return text
+    return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 
 def bullet_version(text: str) -> str | None:
@@ -131,8 +128,7 @@ def build_release_xml(version: str, date: str, message: str) -> str:
             lines.append(f'        <p>{header}</p>')
         if bullets:
             lines.append('        <ul>')
-            for bullet in bullets:
-                lines.append(f'          <li>{bullet}</li>')
+            lines.extend(f'          <li>{bullet}</li>' for bullet in bullets)
             lines.append('        </ul>')
     lines += ['      </description>', '    </release>']
     return '\n'.join(lines)

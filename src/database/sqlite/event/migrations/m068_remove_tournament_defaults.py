@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('SELECT * FROM `info`')
         row = self.database.fetchone()
         rules = row['rules']
@@ -40,7 +40,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `info` DROP COLUMN `three_points_for_a_win`')
         self.database.execute('ALTER TABLE `info` DROP COLUMN `pab_value`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `info` ADD COLUMN `rules` TEXT')
         self.database.execute(
             'ALTER TABLE `info` ADD COLUMN `record_illegal_moves` INTEGER'

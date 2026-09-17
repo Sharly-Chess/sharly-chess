@@ -61,11 +61,9 @@ class TOMLContainer:
             try:
                 if isinstance(self.data[prop], dict):
                     return default
-                value = self.data[prop]  # type: ignore
+                value = self.data[prop]  # type: ignore[assignment]
             except KeyError:
                 return default
-        if value is None:
-            return default
         if values and value not in values:
             if section:
                 logger.warning(
@@ -87,8 +85,7 @@ class TOMLContainer:
                     default,
                 )
             return default
-        else:
-            return value
+        return value
 
     def get_opt_str(
         self,
@@ -234,21 +231,16 @@ class TOMLContainer:
         if section:
             if section not in self.data:
                 return []
-            if not isinstance(self.data[section], dict):
+            section_data = self.data[section]
+            if not isinstance(section_data, dict):
                 return []
-            return [
-                key
-                for key in self.data[section].keys()  # type: ignore
-            ]
-        else:
-            return [
-                key for key in self.data.keys() if not isinstance(self.data[key], dict)
-            ]
+            return list(section_data.keys())
+        return [key for key in self.data if not isinstance(self.data[key], dict)]
 
     def get_sections(
         self,
     ) -> list[str]:
-        return [key for key in self.data.keys() if isinstance(self.data[key], dict)]
+        return [key for key in self.data if isinstance(self.data[key], dict)]
 
     def set_value(
         self,
@@ -256,12 +248,12 @@ class TOMLContainer:
         *,
         value: str | int | float | bool,
         section: str = '',
-    ):
+    ) -> None:
         if section:
             if section not in self.data:
                 self.data[section] = {}
             if isinstance(self.data[section], dict):
-                self.data[section][prop] = value  # type: ignore
+                self.data[section][prop] = value  # type: ignore[index]
         else:
             self.data[prop] = value
 
@@ -269,7 +261,7 @@ class TOMLContainer:
         self,
         properties: list[str],
         section: str = '',
-    ):
+    ) -> None:
         for prop in properties:
             with suppress(KeyError):
                 if (
@@ -277,7 +269,7 @@ class TOMLContainer:
                     and section in self.data
                     and isinstance(self.data[section], dict)
                 ):
-                    del self.data[section][prop]  # type: ignore
+                    del self.data[section][prop]  # type: ignore[union-attr]
                 else:
                     del self.data[prop]
 

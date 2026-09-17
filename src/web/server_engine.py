@@ -1,13 +1,14 @@
 import asyncio
 import platform
+import time
 import signal
 import socket
 import sys
-import time
 from threading import Thread
 from time import sleep
 from types import FrameType
-from typing import Callable, ClassVar, cast
+from typing import ClassVar, cast
+from collections.abc import Callable
 from webbrowser import open
 
 import requests
@@ -55,7 +56,7 @@ if sys.platform == 'win32':  # pragma: py-not-win32
 _PORT_TIMEOUT = 10  # Timeout when looking for a specific port
 
 
-def launch_browser(url: str):
+def launch_browser(url: str) -> None:
     # Set the locale as the function is called in a new thread.
     SharlyChessConfig().load_and_set_env()
     logger.info(f'Opening the welcome page [{url}] in a browser…')
@@ -64,9 +65,7 @@ def launch_browser(url: str):
             requests.get(url, timeout=REQUEST_TIMEOUT)
             break
         except requests.RequestException as e:
-            msg = 'Web server not started yet ({ex}), waiting…'.format(
-                ex=e.__class__.__name__
-            )
+            msg = f'Web server not started yet ({e.__class__.__name__}), waiting…'
             if isinstance(e, requests.TooManyRedirects) and e.response is not None:
                 msg += f' History: {[r.url for r in e.response.history]}'
             logger.info(msg)
@@ -125,7 +124,7 @@ class ServerEngine:
         asyncio.set_event_loop(loop)
         return loop
 
-    async def serve(self):
+    async def serve(self) -> None:
         logger.debug('System information:')
         logger.debug(
             ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
@@ -179,8 +178,8 @@ class ServerEngine:
             console_log_level=sc_config.console_log_level,
         )
 
-        def log_http_exception(exc: Exception, scope: Scope):
-            if not scope['type'] == 'http':
+        def log_http_exception(exc: Exception, scope: Scope) -> None:
+            if scope['type'] != 'http':
                 return
             if isinstance(exc, PermissionDeniedException):
                 prefix = '403 permission denied'
@@ -203,7 +202,7 @@ class ServerEngine:
             debug=self.debug,
             request_class=HTMXRequest,
             route_handlers=route_handlers,
-            exception_handlers=exception_handlers,  # type: ignore
+            exception_handlers=exception_handlers,  # type: ignore[arg-type]
             template_config=template_config,
             # Favor response latency over maximum compression.
             compression_config=CompressionConfig(backend='gzip', gzip_compress_level=3),
@@ -220,7 +219,7 @@ class ServerEngine:
                     PermissionDeniedException,
                     NotFoundException,
                 },
-            ),  # type: ignore
+            ),
             after_exception=[log_http_exception],
             middleware=middlewares,
             stores=stores,

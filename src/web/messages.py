@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import ClassVar
 
 from litestar import Request
 
@@ -16,7 +17,7 @@ class Message:
     WARNING = 30
     ERROR = 40
 
-    TYPE = {
+    TYPE: ClassVar = {
         DEBUG: 'debug',
         INFO: 'info',
         SUCCESS: 'success',
@@ -24,7 +25,7 @@ class Message:
         ERROR: 'error',
     }
 
-    AUTO_REMOVE = {
+    AUTO_REMOVE: ClassVar = {
         DEBUG: True,
         INFO: True,
         SUCCESS: True,
@@ -32,7 +33,7 @@ class Message:
         ERROR: False,
     }
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.html_type: str = self.TYPE[self.level]
         self.auto_remove: bool = self.AUTO_REMOVE[self.level]
 

@@ -5,7 +5,7 @@ from functools import partial
 from json import JSONDecodeError
 from pathlib import Path
 from types import UnionType
-from typing import Any
+from typing import ClassVar
 
 from requests import Response, get
 
@@ -29,7 +29,7 @@ logger = get_logger()
 
 class FfeTournamentImporter(FileTournamentImporter):
     # Papi (and its JSON twin) is an individual-tournament format.
-    supported_event_types = [EventType.INDIVIDUAL]
+    supported_event_types: ClassVar = [EventType.INDIVIDUAL]
 
     @classmethod
     def static_id(cls) -> str:
@@ -40,7 +40,7 @@ class FfeTournamentImporter(FileTournamentImporter):
     def sub_id() -> str:
         """ID of the importer amongst the plugin."""
 
-    def _add_rating_threshold_task(self, papi_data: PapiData):
+    def _add_rating_threshold_task(self, papi_data: PapiData) -> None:
         variables = papi_data.variables
         rating_threshold_1 = 0
         if variables.ratingThreshold1:
@@ -124,7 +124,7 @@ class PapiTournamentImporter(FfeTournamentImporter):
             self._add_rating_threshold_task(papi_data)
             return self.read_papi_data(event, papi_data, stored_tournament)
         except DictReaderException as exception:
-            raise ImporterError(str(exception))
+            raise ImporterError(str(exception)) from exception
 
 
 class PapiJsonTournamentImporter(FfeTournamentImporter):
@@ -149,18 +149,20 @@ class PapiJsonTournamentImporter(FfeTournamentImporter):
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         (file_path,) = self.get_option_values()
         try:
-            with open(file_path, 'r', encoding='utf-8') as file:
+            with open(file_path, encoding='utf-8') as file:
                 papi_data_dict = json.load(file)
             papi_data = dict_to_dataclass(PapiData, papi_data_dict)
             self._add_rating_threshold_task(papi_data)
             return self.read_papi_data(event, papi_data, stored_tournament)
         except (UnicodeDecodeError, JSONDecodeError) as error:
-            raise SharlyChessException(f'Error while reading JSON file: {error}')
+            raise SharlyChessException(
+                f'Error while reading JSON file: {error}'
+            ) from error
         except DictReaderException as exception:
-            raise ImporterError(str(exception))
+            raise ImporterError(str(exception)) from exception
 
 
-class FfeImporterOption(TournamentImporterOption, ABC):
+class FfeImporterOption[V](TournamentImporterOption[V], ABC):
     @classmethod
     def static_id(cls) -> str:
         return f'{PLUGIN_NAME}_{cls.sub_id()}'
@@ -179,7 +181,7 @@ class FfeImporterOption(TournamentImporterOption, ABC):
         return self.sub_id()
 
 
-class FfeTournamentIdOption(FfeImporterOption):
+class FfeTournamentIdOption(FfeImporterOption[int | None]):
     @staticmethod
     def sub_id() -> str:
         return 'tournament_id'
@@ -188,7 +190,7 @@ class FfeTournamentIdOption(FfeImporterOption):
     def type(self) -> type | UnionType:
         return int | None
 
-    def get_default_value(self, tournament: Tournament | None = None) -> Any:
+    def get_default_value(self, tournament: Tournament | None = None) -> int | None:
         return None
 
 
@@ -253,7 +255,7 @@ class OnlineTournamentImporter(FfeTournamentImporter):
                         )
                     case _:
                         logger.error(
-                            'Could not download [{%s}], error code {%d}.',
+                            'Could not download [%s], error code %d.',
                             url,
                             response.status_code,
                         )
@@ -263,9 +265,9 @@ class OnlineTournamentImporter(FfeTournamentImporter):
                             )
                         )
             except ConnectionError as exception:
-                logger.exception('Could not download [%s]', url, exception)
+                logger.exception('Could not download [%s]', url)
                 raise ImporterError(
                     _('Could not download [{url}]: {error}.').format(
                         url=url, error=exception
                     )
-                )
+                ) from exception

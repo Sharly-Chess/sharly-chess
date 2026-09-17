@@ -19,10 +19,10 @@ class Migration(BaseMigration):
     def are_foreign_keys_enabled() -> bool:
         return False
 
-    def forward(self):
+    def forward(self) -> None:
         self._rebuild_team_round_lineup_table('INTEGER')
 
-    def backward(self):
+    def backward(self) -> None:
         # An empty board has no way of being stored once the column is
         # NOT NULL again: such a lineup goes back to reading as a round
         # taking the previous round's.
@@ -31,7 +31,7 @@ class Migration(BaseMigration):
         )
         self._rebuild_team_round_lineup_table('INTEGER NOT NULL')
 
-    def _rebuild_team_round_lineup_table(self, player_id_column_type: str):
+    def _rebuild_team_round_lineup_table(self, player_id_column_type: str) -> None:
         self.database.execute(
             'CREATE TABLE `team_round_lineup_new` ('
             '   `team_id` INTEGER NOT NULL,'

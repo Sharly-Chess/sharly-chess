@@ -1,4 +1,5 @@
 import json
+from collections.abc import Callable
 
 from database.sqlite.migration import BaseMigration
 
@@ -33,7 +34,7 @@ _NICOIS_LEGACY = f'ffe-{PREFIX}SWISS_NICOIS'
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         for tournament_id, pairing, settings in self._read_tournaments():
             pairing = pairing.replace(PREFIX, '')
             settings = {
@@ -46,7 +47,7 @@ class Migration(BaseMigration):
             ]
         )
 
-    def backward(self):
+    def backward(self) -> None:
         for tournament_id, pairing, settings in self._read_tournaments():
             if pairing in _VARIATION_IDS:
                 pairing = f'{PREFIX}{pairing}'
@@ -78,14 +79,18 @@ class Migration(BaseMigration):
             for row in self.database.fetchall()
         ]
 
-    def _write_tournament(self, tournament_id: int, pairing: str, settings: dict):
+    def _write_tournament(
+        self, tournament_id: int, pairing: str, settings: dict
+    ) -> None:
         self.database.execute(
             'UPDATE `tournament` SET `pairing` = ?, `pairing_settings` = ? '
             'WHERE `id` = ?',
             (pairing, json.dumps(settings), tournament_id),
         )
 
-    def _rewrite_enabled_plugins(self, transform):
+    def _rewrite_enabled_plugins(
+        self, transform: Callable[[list[str]], list[str]]
+    ) -> None:
         self.database.execute('SELECT `enabled_plugins` FROM `info`')
         row = self.database.fetchone()
         if not row.get('enabled_plugins'):

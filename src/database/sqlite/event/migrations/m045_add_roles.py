@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `account` ('
             '    `id` INTEGER NOT NULL,'
@@ -25,7 +25,7 @@ class Migration(BaseMigration):
         )
         self.database.execute('ALTER TABLE `info` DROP COLUMN `update_password`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `info` ADD `update_password` TEXT',
         )

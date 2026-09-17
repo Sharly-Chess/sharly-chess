@@ -49,7 +49,7 @@ class FileCredentials:
         """Reads credentials from the given file, raises SharlyChessException on error."""
         self.password: str
         try:
-            with open(file, 'r') as f:
+            with open(file) as f:
                 (self.password,) = json.loads(
                     base64.b64decode(f.read().encode('ascii')).decode('ascii')
                 )
@@ -59,14 +59,13 @@ class FileCredentials:
                     f'Could not read file credentials [{file}] ({e}), '
                     'please run generate_xxx_credentials.py.'
                 ) from e
-            else:
-                raise SharlyChessException('Could not read file credentials.') from None
+            raise SharlyChessException('Could not read file credentials.') from None
 
     @staticmethod
     def dump(
         credentials_file: Path,
         password: str,
-    ):
+    ) -> None:
         """Dumps credentials to the given file.
         The credentials can be read by `creds = FileCredentials(file)`."""
         credentials_file.parent.mkdir(exist_ok=True, parents=True)
@@ -99,7 +98,7 @@ class DatabaseLoaderProgress:
     def log(
         self,
         count: int,
-    ):
+    ) -> None:
         now: float = time()
         if now - self.last_message_time < self.delay:
             return
@@ -147,7 +146,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         assert cls._stored_source_database is not None
         return cls._stored_source_database
 
-    def _load_stored_source_database(self):
+    def _load_stored_source_database(self) -> None:
         cls = self.__class__
         with ConfigDatabase() as database:
             cls._stored_source_database = database.load_stored_local_source_database(
@@ -164,7 +163,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         cls,
         stored_source_database: StoredLocalSourceDatabase,
         exists: bool = True,
-    ):
+    ) -> None:
         with ConfigDatabase(write=True) as database:
             if exists:
                 database.update_stored_local_source_database(stored_source_database)
@@ -180,7 +179,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         # to allow source structure changes (if ever required)
 
     @classmethod
-    def file_path(cls):
+    def file_path(cls) -> Path:
         id_ = cls.static_id()
         return DATA_SOURCES_DIR / id_ / f'{id_}-{cls.version()}.{Extension.SOURCE_DB}'
 
@@ -251,7 +250,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     @classmethod
     @abstractmethod
-    def _create_indexes(cls, database: SQLiteDatabase):
+    def _create_indexes(cls, database: SQLiteDatabase) -> None:
         """Create the indexes for the databases."""
 
     @property
@@ -299,7 +298,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         return f'Database [{self.name}] - '
 
     @classmethod
-    def publish_database_status_updated(cls):
+    def publish_database_status_updated(cls) -> None:
         # The auto-update can start before the channels plugin is initialized,
         # so we check if it exists before trying to publish.
         if channels_plugin and channels_plugin._pub_queue is not None:
@@ -318,7 +317,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 ['ws'],
             )
 
-    def on_outdated(self):
+    def on_outdated(self) -> None:
         self.outdate_action.on_outdated(self)
         self.publish_database_status_updated()
 
@@ -350,7 +349,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             self.publish_database_status_updated()
 
     @override
-    def delete(self):
+    def delete(self) -> None:
         super().delete()
         self.update_stored_source_database(self.default_stored_database)
         self.publish_database_status_updated()
@@ -372,17 +371,17 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             self.outdate_action.on_outdated(self)
         return True
 
-    def update(self):
+    def update(self) -> None:
         """Start a thread updating the database."""
         update_thread = threading.Thread(target=self._update, daemon=True)
         update_thread.start()
         atexit.register(self._stop_background_thread, update_thread)
 
-    def _stop_background_thread(self, thread: threading.Thread):
+    def _stop_background_thread(self, thread: threading.Thread) -> None:
         self.stop_event.set()
         thread.join()
 
-    def _update(self):
+    def _update(self) -> None:
         """Update the source database:
         1. Download the source file
         2. Create a temp database
@@ -500,7 +499,7 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
     def dump_credentials(
         cls,
         password: str,
-    ):
+    ) -> None:
         FileCredentials.dump(
             cls.credentials_file(),
             password,
@@ -589,7 +588,7 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
         logger.info(self.log_prefix + 'Decryption complete.')
         return True
 
-    def _use_external_generator(self):
+    def _use_external_generator(self) -> bool:
         return True
 
     def _generate_from_source_file(
@@ -601,7 +600,7 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
         return True
 
     @classmethod
-    def _create_indexes(cls, database: SQLiteDatabase):
+    def _create_indexes(cls, database: SQLiteDatabase) -> None:
         # Indices are created by GitHub.
         pass
 

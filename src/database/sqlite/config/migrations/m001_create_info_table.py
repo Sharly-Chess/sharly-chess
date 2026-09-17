@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `info` ('
             '    `force_edit` INTEGER NOT NULL,'
@@ -14,5 +14,5 @@ class Migration(BaseMigration):
         )
         self.database.execute('INSERT INTO `info`(`force_edit`) VALUES (?)', (True,))
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP TABLE `info`')

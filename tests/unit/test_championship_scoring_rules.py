@@ -2,6 +2,8 @@
 per-rule acronyms/metadata, and the class registry that replaced the rule-type
 enum. The engine is exercised with light fakes standing in for source stages."""
 
+from typing import Any, cast
+
 import pytest
 
 from data.championship.options import TeamScoreBasis
@@ -127,6 +129,7 @@ def test_ranking_points_with_bonus_matches_worked_example():
     group = list(players.values())
     rule = RankingPointsWithBonusRule(winner_bonus=50, bonus_share=5)
     scores = rule.scores(group, ScoringContext(group))
+    assert scores is not None
     assert scores[id(players[1])] == 300  # 200 RP + 100 BP
     assert scores[id(players[2])] == 289  # 199 RP +  90 BP
     assert scores[id(players[10])] == 201  # 191 RP + 10 BP
@@ -241,7 +244,7 @@ def test_uses_coefficient_flags():
     }
     unweighted = {AverageRankRule, CountPlacesRule, CountWinsRule, DirectEncounterRule}
     assert all(rule.uses_coefficient for rule in weighted)  # type: ignore[attr-defined]
-    assert not any(rule.uses_coefficient for rule in unweighted)  # type: ignore[attr-defined]
+    assert not any(rule.uses_coefficient for rule in unweighted)
 
 
 def test_point_rules_read_use_coefficient_option():
@@ -366,7 +369,8 @@ def test_average_tie_break_means_over_stages_that_have_it():
     rule = AverageTieBreakRule(
         tie_break_type='X', tie_break_options={}, tie_break_acronym='Bh'
     )
-    scores = rule.scores([a, b], context)
+    scores = rule.scores([a, b], cast(Any, context))
+    assert scores is not None
     assert scores[id(a)] == 6.0  # mean of just the one stage that had it
     assert scores[id(b)] == 4.0  # mean(4, 4)
 

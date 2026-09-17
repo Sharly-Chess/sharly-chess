@@ -18,7 +18,7 @@ class Column:
 
 
 class Migration(BasePluginMigration):
-    def forward(self):
+    def forward(self) -> None:
         # TODO replace by column creation once deprecated columns have been globally deleted
         columns: list[Column] = [
             Column('ffe_id', 'INTEGER'),
@@ -46,7 +46,7 @@ class Migration(BasePluginMigration):
                     f'`{column.name}` {column.type_declaration}'
                 )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `ffe_id`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `ffe_password`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `ffe_last_upload`')

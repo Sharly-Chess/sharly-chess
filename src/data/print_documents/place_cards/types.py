@@ -27,7 +27,6 @@ class PlaceCardType(IdentifiableEntity, ABC):
     def static_singular_name() -> str:
         """Names one card of this type, where static_name() names the document
         ("Player" against "Player Cards")."""
-        pass
 
     @classmethod
     def get_valid_option_ids(cls) -> list[str]:
@@ -169,9 +168,7 @@ class PlayerCardType(PlaceCardType):
     def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import OptionalPlayersPrintOption
 
-        return PlaceCardType.get_valid_option_types() + [
-            OptionalPlayersPrintOption,
-        ]
+        return [*PlaceCardType.get_valid_option_types(), OptionalPlayersPrintOption]
 
     @classmethod
     def tournament_players(
@@ -228,7 +225,8 @@ class BoardCardType(PlaceCardType):
             PlaceCardBoardNumbersPrintOption,
         )
 
-        return PlaceCardType.get_valid_option_types() + [
+        return [
+            *PlaceCardType.get_valid_option_types(),
             PlaceCardBoardNumbersPrintOption,
         ]
 
@@ -311,7 +309,8 @@ class PairingCardType(PlaceCardType):
             PlaceCardBoardNumbersPrintOption,
         )
 
-        return PlaceCardType.get_valid_option_types() + [
+        return [
+            *PlaceCardType.get_valid_option_types(),
             RoundPrintOption,
             PlaceCardBoardNumbersPrintOption,
         ]

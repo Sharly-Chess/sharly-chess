@@ -287,8 +287,10 @@ class RoundColumn(TournamentPlayerTableColumn):
         pairing = tournament_player.pairings_by_round[self.round]
         content = pairing.result.to_crosstable
         if opponent := pairing.opponent:
-            content += str(opponent.rank).rjust(3, '\u00a0') + getattr(
-                pairing.color, 'to_crosstable'
+            # A pairing with an opponent has been given a colour.
+            assert pairing.color is not None
+            content += (
+                str(opponent.rank).rjust(3, '\u00a0') + pairing.color.to_crosstable
             )
         return content
 

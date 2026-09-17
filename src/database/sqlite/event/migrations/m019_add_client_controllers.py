@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('DROP TABLE IF EXISTS `client_controller`')
         self.database.execute(
             'CREATE TABLE `client_controller` ('
@@ -20,5 +20,5 @@ class Migration(BaseMigration):
             ')'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP TABLE IF EXISTS `client_controller`')

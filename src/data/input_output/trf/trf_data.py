@@ -167,7 +167,7 @@ class TrfTournament:
     bb_fields: dict[str, str] = field(default_factory=dict)
 
     @property
-    def num_rounds_estimation(self):
+    def num_rounds_estimation(self) -> int:
         """An estimation of how many rounds where played in this tournament."""
 
         if self.num_rounds:
