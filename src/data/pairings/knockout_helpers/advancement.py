@@ -28,6 +28,10 @@ class AdvancementValue:
     decisive: bool
     used: bool
     is_manual: bool = False
+    # Whether the values are worth showing. A tie-break that compares board
+    # by board packs the boards into one number to sort on, which reads as
+    # an astronomical figure and tells the arbiter nothing.
+    displayable: bool = True
 
 
 @dataclass(frozen=True)
@@ -109,7 +113,14 @@ class KnockoutAdvancementMixin:
                 reason = tie_break.acronym
                 decided = True
             breakdown.append(
-                AdvancementValue(tie_break.acronym, value_a, value_b, decisive, used)
+                AdvancementValue(
+                    tie_break.acronym,
+                    value_a,
+                    value_b,
+                    decisive,
+                    used,
+                    displayable=not tie_break.display_rank_delta,
+                )
             )
         return KnockoutAdvancement(
             winner_id, reason, manual_pending, tuple(breakdown), manual_reached
@@ -168,7 +179,14 @@ class KnockoutAdvancementMixin:
                 reason = tie_break.acronym
                 decided = True
             breakdown.append(
-                AdvancementValue(tie_break.acronym, value_a, value_b, decisive, used)
+                AdvancementValue(
+                    tie_break.acronym,
+                    value_a,
+                    value_b,
+                    decisive,
+                    used,
+                    displayable=not tie_break.display_rank_delta,
+                )
             )
         return KnockoutAdvancement(
             winner_id, reason, manual_pending, tuple(breakdown), manual_reached

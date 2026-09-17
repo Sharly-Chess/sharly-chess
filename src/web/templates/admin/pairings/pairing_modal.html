@@ -431,8 +431,8 @@
                                         {% else %}
                                             <tr class="{{ 'fw-bold' if row.decisive }}{{ ' text-muted' if not row.used }}">
                                                 <td>{{ row.acronym }}</td>
-                                                <td class="text-center">{{ '%g'|format(row.value_a) }}</td>
-                                                <td class="text-center">{{ '%g'|format(row.value_b) }}</td>
+                                                <td class="text-center">{{ '%g'|format(row.value_a) if row.displayable else '—' }}</td>
+                                                <td class="text-center">{{ '%g'|format(row.value_b) if row.displayable else '—' }}</td>
                                             </tr>
                                         {% endif %}
                                     {% endfor %}

@@ -298,6 +298,20 @@ class TestAdvancementResolver:
         assert tournament.knockout.team_board_advancement(team_board) is None
         assert tournament.knockout.unresolved_matches(1) == []
 
+    def test_a_board_by_board_tie_break_shows_no_figure(self, tournament):
+        # Board Count reads as a score, so it is shown. A tie-break that
+        # compares board by board packs the boards into one number to sort
+        # on — 1.6e132 on a real event — which is no use to an arbiter.
+        from data.tie_breaks.team_tie_breaks import (
+            BoardCountTieBreak,
+            BottomBoardEliminationTieBreak,
+            TopBoardResultsTieBreak,
+        )
+
+        assert BoardCountTieBreak().display_rank_delta is False
+        assert TopBoardResultsTieBreak().display_rank_delta is True
+        assert BottomBoardEliminationTieBreak().display_rank_delta is True
+
     def test_a_match_settles_nothing_until_its_last_game(self, tournament):
         from utils.enum import Result
 

@@ -1321,6 +1321,13 @@ class TopBoardResultsTieBreak(_BoardTieBreak):
         return 'TBR'
 
     @property
+    def display_rank_delta(self) -> bool:
+        # The value packs one board's total after another into a single
+        # number so the comparison reads board by board; as a number it is
+        # astronomical and says nothing. Show what it did to the ranking.
+        return True
+
+    @property
     def base_help_text(self) -> str:
         return _(
             'The game points scored on board 1 over the tournament; if '
@@ -1366,6 +1373,11 @@ class BottomBoardEliminationTieBreak(_BoardTieBreak):
     @property
     def base_acronym(self) -> str:
         return 'BBE'
+
+    @property
+    def display_rank_delta(self) -> bool:
+        # Packed like the top-board comparison, and just as unreadable.
+        return True
 
     @property
     def base_help_text(self) -> str:
