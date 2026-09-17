@@ -2323,6 +2323,20 @@ class TestIndividualTwoGameKnockout:
         assert tournament.round_is_locked(2) is True
         assert tournament.round_is_locked(3) is False
 
+    def test_the_side_column_holds_through_both_games(self, tournament_name):
+        # The two games are one match, so game two's column says what game
+        # one's did: everyone is still in until the match is decided.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        for board in tournament.get_round_boards(1):
+            tournament.add_result(board, Result.DRAW)
+        tournament = self._load()
+
+        sections = tournament.knockout.side_sections(2, tournament.is_team_tournament)
+        assert [section['label'] for section in sections] == ['']
+        assert len(sections[0]['ids']) == 4
+
     def test_drawn_game_one_does_not_block_game_two(self, tournament_name):
         tournament = self._load()
         assert tournament.generate_round_pairings(1) == ''
@@ -2645,6 +2659,21 @@ class TestTeamTwoGameKnockout:
         engine = tournament.pairing_variation.engine
         assert engine.pairings_generation_disabled_message(tournament, 2) is None
         assert tournament.generate_round_pairings(2) == ''
+
+    def test_the_side_column_holds_through_both_legs(self, tournament_name):
+        # Reported on leg two: every team read as eliminated. The two legs
+        # are one match, so nobody is out until it is decided.
+        tournament = self._load()
+        assert tournament.generate_round_pairings(1) == ''
+        tournament = self._load()
+        for board in tournament.get_round_boards(1):
+            if board.black_tournament_player is not None:
+                tournament.add_result(board, Result.DRAW)
+        tournament = self._load()
+
+        sections = tournament.knockout.side_sections(2, tournament.is_team_tournament)
+        assert [section['label'] for section in sections] == ['']
+        assert len(sections[0]['ids']) == len(tournament.teams)
 
     def test_aggregate_decides_and_standings(self, tournament_name):
         tournament = self._load()

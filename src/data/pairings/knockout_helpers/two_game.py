@@ -356,6 +356,20 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
     def _two_game_single_elim_host(self) -> _TwoGameSingleElimHost:
         return cast(_TwoGameSingleElimHost, self)
 
+    def still_in_groups(
+        self, tournament: 'Tournament', from_round: int
+    ) -> list[tuple[str, list[int]]]:
+        """Who is still in, as one group. A match spans two rounds here, so
+        the level the round belongs to is what names its participants — the
+        round itself would ask for the level above, which no result has
+        decided yet."""
+        ids: list[int] = []
+        for high, low in self._two_game_level_pairs(
+            tournament, self._level_of(from_round)
+        ):
+            ids += [pid for pid in (high, low) if pid is not None]
+        return [('', ids)] if ids else []
+
     def round_label(self, tournament: 'Tournament', round_: int) -> str | None:
         return two_game_label(
             single_elimination_round_name(
