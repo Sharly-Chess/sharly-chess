@@ -663,6 +663,9 @@ msgstr ""
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
 msgstr ""
 
+msgid "This filter applies only to players affiliated with the French federation. Players affiliated with other federations will neither be filtered nor greyed out, as they do not require a French license."
+msgstr ""
+
 msgid "This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
 msgstr ""
 
