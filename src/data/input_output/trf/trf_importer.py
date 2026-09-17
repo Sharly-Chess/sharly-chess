@@ -653,7 +653,9 @@ class TrfTournamentImporter(FileTournamentImporter):
         )
         internal_by_external = {
             external_id: player.id
-            for external_id, player in zip(external_player_ids, stored_players)
+            for external_id, player in zip(
+                external_player_ids, stored_players, strict=True
+            )
             if external_id is not None and player.id is not None
         }
         if not self._pending_teams:

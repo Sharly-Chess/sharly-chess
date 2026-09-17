@@ -130,7 +130,7 @@ class SCEBatchBuilder:
         order they were sent (each result also carries `index`, which we
         cross-check defensively).
         """
-        for op, result in zip(ops, results):
+        for op, result in zip(ops, results, strict=True):
             if result.get('status') == 'ok':
                 op.on_success(result)
             else:

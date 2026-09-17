@@ -156,13 +156,13 @@ class SQLiteDatabase:
         assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         for row in self.cursor.fetchall():
-            yield dict(zip(columns, row))
+            yield dict(zip(columns, row, strict=True))
 
     def fetchone(self) -> dict[str, Any]:
         assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         result = self.cursor.fetchone()
-        return {} if result is None else dict(zip(columns, result))
+        return {} if result is None else dict(zip(columns, result, strict=True))
 
     def commit(self) -> None:
         assert self.database is not None

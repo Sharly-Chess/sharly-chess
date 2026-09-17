@@ -370,7 +370,7 @@ class TestScheveningenTournament(TestCase):
                 ),
                 key=lambda team: team.pairing_number or 0,
             )
-            for letter, team in zip('AB', teams):
+            for letter, team in zip('AB', teams, strict=True):
                 for index in range(per_team):
                     player_id = database.add_stored_player(
                         StoredPlayer(

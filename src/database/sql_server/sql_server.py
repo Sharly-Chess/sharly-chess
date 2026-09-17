@@ -158,7 +158,7 @@ class SqlServer:
             # Fetch all rows and convert to dictionaries
             rows = await asyncio.to_thread(self.cursor.fetchall)
             for row in rows:
-                yield dict(zip(columns, row))
+                yield dict(zip(columns, row, strict=True))
         except (pytds.Error, TimeoutError) as e:
             self._handle_database_error(e)
 
@@ -176,7 +176,7 @@ class SqlServer:
 
             # Fetch one row
             row = await asyncio.to_thread(self.cursor.fetchone)
-            return dict(zip(columns, row)) if row else None
+            return dict(zip(columns, row, strict=True)) if row else None
         except (pytds.Error, TimeoutError) as e:
             self._handle_database_error(e)
 

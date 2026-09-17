@@ -785,7 +785,9 @@ class TestTrfSerializer(TestCase):
             )
 
             self.assertEqual(len(tour.players), len(tour0.players))
-            for j, (player, player0) in enumerate(zip(tour.players, tour0.players)):
+            for j, (player, player0) in enumerate(
+                zip(tour.players, tour0.players, strict=True)
+            ):
                 self.assertIsInstance(player, TrfPlayer)
                 self.assertEqual(
                     player.id, player0.id, f'Diff of {{player[{j}].id}}' + itertext

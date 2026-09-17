@@ -154,7 +154,9 @@ def evaluate_set_against_tournament(
     """Return (disabled, reason). A set is disabled if any TB returns an
     invalid message, or if the set contains an internal duplicate."""
     tie_breaks = tie_break_set.instantiate_tie_breaks(tournament.event)
-    for stored_tb, tie_break in zip(tie_break_set.stored_tie_breaks, tie_breaks):
+    for stored_tb, tie_break in zip(
+        tie_break_set.stored_tie_breaks, tie_breaks, strict=True
+    ):
         if tie_break is None:
             return True, _('Tie-break [{name}] is not available in this event.').format(
                 name=friendly_name_for_tie_break_type(stored_tb.type)

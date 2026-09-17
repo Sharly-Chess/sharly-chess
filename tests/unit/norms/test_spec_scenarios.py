@@ -77,7 +77,7 @@ class TestRule_1_4_1c:
             _untitled(8, rating=2300, federation='AZE'),
         ]
         inputs = make_inputs(
-            list(zip(range(1, 9), opponents, [Result.WIN] * 8)),
+            list(zip(range(1, 9), opponents, [Result.WIN] * 8, strict=True)),
             forfeits_or_byes=1,  # 1 PAB in round 9 (the missing game)
         )
         searcher = _real_searcher(rounds=9)
@@ -94,7 +94,9 @@ class TestRule_1_4_1c:
         """1.4.5b: at least 1/3 OR minimum 3 GMs. With 8 played and 3 GMs,
         max(ceil(8/3), 3) = max(3, 3) = 3. Passes."""
         opponents = [_gm(i) for i in range(1, 4)] + [_im(i) for i in range(4, 9)]
-        inputs = make_inputs(list(zip(range(1, 9), opponents, [Result.DRAW] * 8)))
+        inputs = make_inputs(
+            list(zip(range(1, 9), opponents, [Result.DRAW] * 8, strict=True))
+        )
         searcher = _real_searcher(rounds=9)
         passes, count = searcher.evaluator.required_titles_requirement(
             inputs, TitleNorm.GM
@@ -108,7 +110,7 @@ class TestRule_1_4_1c:
         results = (
             [Result.WIN] * 2 + [Result.DRAW] * 2 + [Result.LOSS] * 4
         )  # 2 + 1 = 3 points
-        inputs = make_inputs(list(zip(range(1, 9), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 9), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=9)
         assert inputs.score == pytest.approx(3.0)
         assert searcher.evaluator.score_requirement(inputs)
@@ -119,7 +121,9 @@ class TestRule_1_4_1c:
         opponents_4 = [_gm(i, federation='FRA') for i in range(1, 5)] + [
             _gm(i, federation='USA') for i in range(5, 9)
         ]
-        inputs = make_inputs(list(zip(range(1, 9), opponents_4, [Result.DRAW] * 8)))
+        inputs = make_inputs(
+            list(zip(range(1, 9), opponents_4, [Result.DRAW] * 8, strict=True))
+        )
         searcher = _real_searcher(rounds=9, federation='FRA')
         assert searcher.evaluator.own_federation_requirement(inputs, TitleNorm.GM)
 
@@ -127,7 +131,9 @@ class TestRule_1_4_1c:
         opponents_5 = [_gm(i, federation='FRA') for i in range(1, 6)] + [
             _gm(i, federation='USA') for i in range(6, 9)
         ]
-        inputs5 = make_inputs(list(zip(range(1, 9), opponents_5, [Result.DRAW] * 8)))
+        inputs5 = make_inputs(
+            list(zip(range(1, 9), opponents_5, [Result.DRAW] * 8, strict=True))
+        )
         assert not searcher.evaluator.own_federation_requirement(inputs5, TitleNorm.GM)
 
 
@@ -496,7 +502,7 @@ class TestProportionalThresholdsAllowRescue:
         opponents = [_gm(i) for i in range(1, 12)]
         # 11 opponents, all wins.
         results = [Result.WIN] * 11
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         # max_ignores for 11-round Swiss = 2; play stays >= 9, games check
         # never actually triggers during search. But for the test, simulate
         # dropping more than allowed.
@@ -523,7 +529,7 @@ class TestProportionalThresholdsAllowRescue:
         # Drop 8 losses → played=3, score=1.5 → 35% of 3 = 1.05 → PASS!
         opponents = [_gm(i, rating=2400) for i in range(1, 12)]
         results = [Result.WIN] + [Result.DRAW] + [Result.LOSS] * 9
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         evaluator = self._evaluator()
 
         # Baseline (full set): score 1.5/11, threshold 35% of 11 = 3.85 → fails.
@@ -556,7 +562,7 @@ class TestProportionalThresholdsAllowRescue:
         ]
         # 4 GMs + 6 untitled = 10 opponents.
         results = [Result.WIN] * 10
-        inputs = make_inputs(list(zip(range(1, 11), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 11), opponents, results, strict=True)))
         evaluator = self._evaluator()
         # The full 10-game mix:
         # ceil(10/2)=5 → fails (4 titled < 5).
@@ -585,7 +591,9 @@ class TestProportionalThresholdsAllowRescue:
             _im(i, rating=2350, federation=feds[i - 1]) for i in range(4, 11)
         ]
         # 3 GMs + 7 IMs = 10 opponents.
-        inputs = make_inputs(list(zip(range(1, 11), opponents, [Result.DRAW] * 10)))
+        inputs = make_inputs(
+            list(zip(range(1, 11), opponents, [Result.DRAW] * 10, strict=True))
+        )
         evaluator = self._evaluator()
         baseline = evaluator.evaluate_one(inputs, TitleNorm.GM, True)
         assert baseline.not_enough_required_titles  # 3 GMs < threshold 4
@@ -615,7 +623,9 @@ class TestProportionalThresholdsAllowRescue:
             _gm(8, federation='USA'),
             _gm(9, federation='USA'),
         ]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.DRAW] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.DRAW] * 9, strict=True))
+        )
         searcher = _real_searcher(rounds=9, federation='FRA')
         # Baseline fails 1.4.4 own-fed cap.
         baseline = searcher.evaluator.evaluate_one(inputs, TitleNorm.GM, True)
@@ -658,7 +668,9 @@ class TestProportionalThresholdsAllowRescue:
             _gm(8, federation='FRA'),
             _gm(9, federation='FRA'),
         ]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.DRAW] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.DRAW] * 9, strict=True))
+        )
         searcher = _real_searcher(rounds=9, federation='FRA')
         baseline = searcher.evaluator.evaluate_one(inputs, TitleNorm.GM, True)
         assert baseline.too_many_one_federation, (
@@ -1038,7 +1050,9 @@ class TestRule_1_4_6:
                 title=PlayerTitle.INTERNATIONAL_MASTER,
             ),
         ]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.DRAW] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.DRAW] * 9, strict=True))
+        )
         searcher = _real_searcher(rounds=9)
         avg, adjusted_player, adjusted_rating = (
             searcher.evaluator.opponent_rating_floor_and_average(inputs, TitleNorm.GM)
@@ -1066,7 +1080,9 @@ class TestRule_1_4_6:
                 title=PlayerTitle.NONE,
             ),
         ]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.DRAW] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.DRAW] * 9, strict=True))
+        )
         searcher = _real_searcher(rounds=9)
         avg, adjusted_player, adjusted_rating = (
             searcher.evaluator.opponent_rating_floor_and_average(inputs, TitleNorm.GM)
@@ -1109,7 +1125,7 @@ class TestRule_1_4_8_Rp_boundary:
         ]
         results = [Result.WIN] * 6 + [Result.DRAW] * 3 + [Result.LOSS] * 2
         # 6 wins + 1.5 draws = 7.5
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         assert inputs.score == pytest.approx(7.5)
         searcher = _real_searcher(rounds=11)
         result = searcher.evaluator.evaluate_one(inputs, TitleNorm.GM, True)
@@ -1140,7 +1156,7 @@ class TestRule_1_4_8_Rp_boundary:
             )
         ]
         results = [Result.WIN] * 9 + [Result.LOSS] * 2  # 9 points
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=11)
         result = searcher.evaluator.evaluate_one(inputs, TitleNorm.GM, True)
         assert not result.performance_too_low, (
@@ -1171,7 +1187,7 @@ class TestRule_1_4_8_Rp_boundary:
             )
         ]
         results = [Result.WIN] * 11  # 100% — Rp = 2300 + 800 = 3100
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=11)
         result = searcher.evaluator.evaluate_one(inputs, TitleNorm.GM, True)
         assert result.average_too_low, (
@@ -1401,7 +1417,9 @@ class TestRule_1_4_1_min_games_override:
     def test_default_minimum_is_9(self):
         """No override → tn.minimum_rounds(tournament) (9 for non-DRR)."""
         opponents = [_gm(i) for i in range(1, 10)]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.DRAW] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.DRAW] * 9, strict=True))
+        )
         searcher = _real_searcher(rounds=9)
         # 9 played, threshold 9 → passes.
         ok, threshold = searcher.evaluator.games_requirement(inputs, TitleNorm.GM)
@@ -1411,7 +1429,9 @@ class TestRule_1_4_1_min_games_override:
     def test_override_lowers_threshold(self):
         """min_games_override=7 → 7 played games passes the games check."""
         opponents = [_gm(i) for i in range(1, 8)]
-        inputs = make_inputs(list(zip(range(1, 8), opponents, [Result.DRAW] * 7)))
+        inputs = make_inputs(
+            list(zip(range(1, 8), opponents, [Result.DRAW] * 7, strict=True))
+        )
         # Build a searcher with the override.
         from data.norms import TitleNormSubsetSearcher
 
@@ -2261,7 +2281,9 @@ class TestCalculationDetailsHooks:
             _gm(3, federation='ESP'),
             _gm(4, federation='USA'),
         ]
-        inputs = make_inputs(list(zip(range(1, 5), opps, [Result.DRAW] * 4)))
+        inputs = make_inputs(
+            list(zip(range(1, 5), opps, [Result.DRAW] * 4, strict=True))
+        )
         searcher = _real_searcher(rounds=9)
         res = searcher.evaluator.evaluate_one(inputs, TitleNorm.GM, True)
         assert res.federations_counter is not None
@@ -2617,6 +2639,7 @@ class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
                 range(1, 9),
                 [*ger_opps, fin_opp, gab_opp],
                 results_r1_8,
+                strict=True,
             )
         )
         # R9: forfeit-win against a GEO GM.

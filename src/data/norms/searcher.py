@@ -242,10 +242,14 @@ class TitleNormSubsetSearcher:
         if not ordered or max_ignores <= 0:
             return
 
-        opponent_by_round = dict(zip(inputs.included_rounds, inputs.opponents))
+        opponent_by_round = dict(
+            zip(inputs.included_rounds, inputs.opponents, strict=True)
+        )
         won = {
             rnd
-            for rnd, result in zip(inputs.included_rounds, inputs.results_list)
+            for rnd, result in zip(
+                inputs.included_rounds, inputs.results_list, strict=True
+            )
             if result in (Result.WIN, Result.UNRATED_WIN)
         }
 

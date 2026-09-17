@@ -843,7 +843,7 @@ class Tournament:
             share one display path (absolute-value flag, rank-delta arrows)
             instead of each re-implementing it."""
             wrapped: list[TieBreakValue] = []
-            for tb, value in zip(tbs, values):
+            for tb, value in zip(tbs, values, strict=True):
                 tbv = TieBreakValue(tb, value)
                 if tb.display_rank_delta:
                     tbv.rank_progress = round(value)
