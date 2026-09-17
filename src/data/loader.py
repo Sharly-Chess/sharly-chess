@@ -353,7 +353,9 @@ class ArchiveLoader:
     def get_sorted_archives() -> list[Archive]:
         return sorted(
             [
-                Archive(file, file.stem, datetime.fromtimestamp(file.lstat().st_ctime))
+                Archive(
+                    file, file.stem, datetime.fromtimestamp(file.lstat().st_birthtime)
+                )
                 for file in ARCHIVES_DIR.glob(f'*.{Extension.ARCHIVE}')
             ],
             key=lambda archive: archive.date,

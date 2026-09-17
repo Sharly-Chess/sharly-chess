@@ -62,6 +62,7 @@ def run_iscc(dst_file: Path, is_update: bool):
         text=True,
         bufsize=1,
     )
+    assert process.stdout is not None
     for line in process.stdout:
         print(line, end='')
     process.wait()
@@ -69,6 +70,7 @@ def run_iscc(dst_file: Path, is_update: bool):
     logger.info('Command returned [%d].', process.returncode)
     logger.debug(process.stdout)
     if process.returncode != 0:
+        assert process.stderr is not None
         logger.warning(process.stderr.read())
         logger.error('Inno Setup Compiler failed.')
         return False

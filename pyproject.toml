@@ -71,6 +71,8 @@ lint = [
   "types-colorama",
   "types-paramiko",
   "types-psutil",
+  "types-pyyaml",
+  "types-pyinstaller",
   "types-qrcode",
   "types-toml",
 ]

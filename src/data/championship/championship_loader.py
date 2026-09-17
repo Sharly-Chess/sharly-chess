@@ -86,7 +86,7 @@ class ChampionshipArchiveLoader:
                 ChampionshipArchive(
                     file,
                     file.stem,
-                    datetime.fromtimestamp(file.lstat().st_ctime),
+                    datetime.fromtimestamp(file.lstat().st_birthtime),
                 )
                 for file in ARCHIVES_DIR.glob(f'*.{Extension.CHAMPIONSHIP_DB}')
             ],

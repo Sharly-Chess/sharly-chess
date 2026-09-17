@@ -73,7 +73,7 @@ def get_error(
     if error_file_path.exists():
         with open(error_file_path) as f:
             return f.read()
-    error_file_path: Path = get_error_file_path(tournament_ffe_id)
+    error_file_path = get_error_file_path(tournament_ffe_id)
     if error_file_path.exists():
         if time() - error_file_path.lstat().st_mtime < cache_tll:
             with open(error_file_path) as f:
@@ -292,7 +292,7 @@ def print_tournament_checks(
     t_ko: int = t_total - t_ok
     t_ok_pc: float = t_ok / t_total * 100
     t_ko_pc: float = 100 - t_ok_pc
-    t_ok: int = len(
+    t_ok = len(
         [
             tournament_check
             for tournament_check in tournament_checks

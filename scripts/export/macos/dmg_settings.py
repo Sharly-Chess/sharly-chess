@@ -13,11 +13,11 @@ no Finder/AppleScript required.
 from pathlib import Path
 
 # `defines` is injected by dmgbuild from the -D flags.
-app_path = defines['app']  # noqa: F821
+app_path = defines['app']  # type: ignore[name-defined] # noqa: F821
 app_name = Path(app_path).name
-licenses_path = defines.get('licenses')  # noqa: F821
-background_path = defines.get('background')  # noqa: F821
-vol_icon = defines.get('volicon')  # noqa: F821
+licenses_path = defines.get('licenses')  # type: ignore[name-defined] # noqa: F821
+background_path = defines.get('background')  # type: ignore[name-defined] # noqa: F821
+vol_icon = defines.get('volicon')  # type: ignore[name-defined] # noqa: F821
 
 # Contents of the DMG window.
 files = [app_path]

@@ -467,9 +467,11 @@ class ProjectBuilder(ABC):  # noqa: B024
                     )
 
         # Process WebLibArchiveInstaller instances
-        for installer in InstallationChecker.web_lib_installers:
+        for lib_installer in InstallationChecker.web_lib_installers:
             process_installer(
-                installer, installer.version_install_dir, 'WebLibArchiveInstaller'
+                lib_installer,
+                lib_installer.version_install_dir,
+                'WebLibArchiveInstaller',
             )
 
         # Process ExecutableInstaller instances
