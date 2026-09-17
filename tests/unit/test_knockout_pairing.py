@@ -2660,6 +2660,30 @@ class TestTeamTwoGameKnockout:
         assert engine.pairings_generation_disabled_message(tournament, 2) is None
         assert tournament.generate_round_pairings(2) == ''
 
+    def test_a_team_out_on_aggregate_keeps_both_its_legs(self, tournament_name):
+        # The lineup modal offers a team the rounds it plays. A match spans
+        # two of them here, so a team knocked out on the aggregate still
+        # fielded a lineup for the return leg.
+        tournament = self._load()
+        # Leg two reverses the orientation, so a White win in leg one and a
+        # Black win in leg two are the same team twice: it takes the match.
+        for round_, result in ((1, Result.WIN), (2, Result.LOSS)):
+            assert tournament.generate_round_pairings(round_) == ''
+            tournament = self._load()
+            for board in tournament.get_round_boards(round_):
+                if board.black_tournament_player is not None:
+                    tournament.add_result(board, result)
+            tournament = self._load()
+
+        team_board = next(
+            tb for tb in tournament.get_round_team_boards(1) if tb.team_b is not None
+        )
+        capped = {
+            team.id: tournament.knockout.team_last_round(team.id)
+            for team in (team_board.team_a, team_board.team_b)
+        }
+        assert sorted(capped.values(), key=lambda v: (v is None, v)) == [2, None]
+
     def test_the_side_column_holds_through_both_legs(self, tournament_name):
         # Reported on leg two: every team read as eliminated. The two legs
         # are one match, so nobody is out until it is decided.

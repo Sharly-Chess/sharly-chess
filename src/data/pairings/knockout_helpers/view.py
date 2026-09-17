@@ -184,11 +184,29 @@ class KnockoutView:
         still in and may yet reach the final."""
         values = self._engine.team_ranking_values(self._t, after_round=self._t.rounds)
         value = values.get(team_id)
-        rounds = self._t.rounds
-        if value is None or value >= rounds + 1:
+        if value is None or value >= self._ranking_scale + 1:
             return None
-        # A third-place play-off is played in the final round.
-        return rounds if value >= rounds - 0.5 else int(value)
+        # The value counts matches, which a variant may spread over several
+        # rounds, so the rounds the team was actually seated in say when it
+        # last played.
+        seated = [
+            round_
+            for round_ in range(1, self._t.rounds + 1)
+            for team_board in self._t.get_round_team_boards(round_)
+            if team_id
+            in (
+                team_board.stored_team_board.team_a_id,
+                team_board.stored_team_board.team_b_id,
+            )
+        ]
+        return max(seated) if seated else None
+
+    @property
+    def _ranking_scale(self) -> int:
+        """What a ranking value counts up to: the matches a participant can
+        play. One per round, unless a variant spreads a match over several."""
+        level_count = getattr(self._engine, '_level_count', None)
+        return level_count(self._t) if level_count is not None else self._t.rounds
 
     def side_sections(self, round_: int, teams: bool) -> list[dict[str, Any]]:
         """The side column of a knock-out at *round_*: who is still in, by
