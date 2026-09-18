@@ -11,6 +11,7 @@ import pytest
 from litestar.testing import TestClient
 
 from data.print_documents.place_cards.template import PlaceCardTemplate
+from tests.unit.http.events import EventUnderTest
 
 NAME = 'Test place cards'
 
@@ -82,3 +83,32 @@ def test_the_templates_page_lists_them(http: TestClient, created: str):
     response = http.get('/place-card-templates')
     assert response.status_code == 200
     assert NAME in response.text
+
+
+EVENT = EventUnderTest('test-place-cards-http', 'test-place-cards-http-tournament')
+
+
+@pytest.fixture
+def event() -> Iterator[str]:
+    EVENT.create(json_file='tec-swiss')
+    yield EVENT.id
+    EVENT.delete()
+
+
+@pytest.mark.unit
+def test_the_documents_modal_links_to_the_templates_page(http: TestClient, event: str):
+    """The templates are reached from the place cards document itself."""
+    response = http.get(f'/documents-modal/{event}')
+    assert response.status_code == 200
+    assert 'id="place-card-templates-button"' in response.text
+    assert 'hx-get="/place-card-templates"' in response.text
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize('path', ['/current_events', '/event/{event}/tournaments'])
+def test_the_sidebar_does_not_link_to_the_templates_page(
+    http: TestClient, event: str, path: str
+):
+    response = http.get(path.format(event=event))
+    assert response.status_code == 200
+    assert '/place-card-templates"' not in response.text
