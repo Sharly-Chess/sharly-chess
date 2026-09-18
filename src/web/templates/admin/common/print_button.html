@@ -6,7 +6,7 @@
     class="sidebar-tooltip" {{ macros.tooltip_attributes('info', pgettext('with shortcut indication', 'Documents'), 'right') }}
 >
     <button
-        class="btn nav-link text-start"
+        class="nav-link text-start d-flex align-items-center"
         hx-get="{{ url_for('documents-modal', event_uniq_id=admin_event.uniq_id) }}"
         hx-target="body"
         hx-indicator="#please-wait"
