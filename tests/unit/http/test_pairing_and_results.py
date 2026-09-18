@@ -8,6 +8,7 @@ from litestar.testing import TestClient
 from data.tournament import Tournament
 from tests.unit.http.events import EventUnderTest
 from utils.enum import Result
+from web.controllers.admin.pairings_admin_controller import PairingsAdminController
 
 EVENT_ID = 'test-pairings-http'
 TOURNAMENT_NAME = 'test-pairings-http-tournament'
@@ -212,6 +213,60 @@ def test_a_second_entry_that_disagrees_is_not_taken(
         b for b in EVENT.tournament().get_round_boards(1) if b.id == board.id
     )
     assert checked.white_pairing.result == Result.DRAW
+
+
+@pytest.fixture
+def published(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, int, int]]:
+    """The websocket events sent out for new results, as
+    (event, tournament, round) triples."""
+    calls: list[tuple[str, int, int]] = []
+    monkeypatch.setattr(
+        PairingsAdminController,
+        'publish_new_user_results',
+        classmethod(
+            lambda cls, channels, event_uniq_id, tournament_id, round_: calls.append(
+                (event_uniq_id, tournament_id, round_)
+            )
+        ),
+    )
+    return calls
+
+
+@pytest.mark.unit
+def test_a_result_entered_by_the_arbiter_is_announced(
+    http: TestClient, tournament: Tournament, published: list[tuple[str, int, int]]
+):
+    """Other administration screens learn of a result whether it came
+    from a player on an input screen or from the arbiter on the pairings
+    page, from a button or from the keyboard."""
+    board = board_of_round_one(http, tournament)
+    http.put(
+        f'/pairing/set-result/{EVENT_ID}/{tournament.id}/1/{board.id}'
+        f'/{Result.WIN.value}'
+    )
+    http.put(
+        f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
+        data={'board_id': str(board.id), 'key': 'Digit3', 'validate_result': 'false'},
+    )
+    assert published == [(EVENT_ID, tournament.id, 1)] * 2
+
+
+@pytest.mark.unit
+def test_checking_a_result_announces_nothing(
+    http: TestClient, tournament: Tournament, published: list[tuple[str, int, int]]
+):
+    """The second, checking pass writes nothing, so there is nothing to
+    tell the other screens about."""
+    board = board_of_round_one(http, tournament)
+    entered = {'board_id': str(board.id), 'key': 'Digit3', 'validate_result': 'false'}
+    http.put(f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1', data=entered)
+    published.clear()
+    for key in ('Digit3', 'Digit1'):
+        http.put(
+            f'/pairing/set-result-hotkey/{EVENT_ID}/{tournament.id}/1',
+            data=entered | {'key': key, 'validate_result': 'true'},
+        )
+    assert published == []
 
 
 @pytest.mark.unit

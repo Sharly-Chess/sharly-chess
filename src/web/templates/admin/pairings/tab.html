@@ -24,6 +24,7 @@
     <div
         hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
         hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
+        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
@@ -539,6 +540,10 @@
 
             requestInFlight = true;
             const { code, pairing_board_id: board_id } = keyQueue.shift();
+            const validateResult = $('button[id=\'highlight-mode\']').hasClass('active');
+            if (!validateResult) {
+                refreshMessagesIgnored += 1;
+            }
 
             htmx.ajax('PUT',
                 "{{ url_for(
@@ -553,7 +558,7 @@
                     values: {
                         key: code,
                         board_id: board_id || 0,
-                        validate_result: $('button[id=\'highlight-mode\']').hasClass('active'),
+                        validate_result: validateResult,
                     },
                 },
             );
