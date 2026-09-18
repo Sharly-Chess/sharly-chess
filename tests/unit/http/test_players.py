@@ -53,6 +53,13 @@ def test_the_search_box_narrows_the_table_to_one_player(
 
 
 @pytest.mark.unit
+def test_the_tab_offers_an_export_per_format(http: TestClient, tournament: Tournament):
+    response = http.get(f'/event/{EVENT_ID}/players')
+    assert response.status_code == 200
+    assert f'/event-export-players/{EVENT_ID}/' in response.text
+
+
+@pytest.mark.unit
 def test_the_table_is_sorted_by_a_column(http: TestClient, tournament: Tournament):
     response = http.get(f'/event/{EVENT_ID}/players/sort/last_name')
     assert response.status_code == 200
