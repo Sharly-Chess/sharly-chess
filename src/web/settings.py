@@ -1,6 +1,7 @@
 from contextvars import ContextVar
-from functools import partial
+from functools import lru_cache, partial
 import os
+import re
 import posixpath
 import sqlite3
 import typing as t
@@ -15,6 +16,7 @@ from jinja2 import (
     Template as JinjaTemplate,
     TemplateNotFound,
 )
+from markupsafe import Markup, escape
 from jinja2.runtime import Context as JinjaContext
 from litestar import Router
 from litestar.plugins.jinja import JinjaTemplateEngine
@@ -39,6 +41,7 @@ from litestar.middleware.base import DefineMiddleware
 from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.exception import DatabaseInaccessibleException
 from common.i18n import gettext, ngettext
+from common.i18n.utils import ordinal_suffixes
 from data.input_output import OnlineDataSourceManager
 
 from plugins.manager import plugin_manager
@@ -249,6 +252,44 @@ class ProfiledJinjaTemplate(JinjaTemplate):
                 record_template(self.name, perf_counter() - start)
 
 
+@lru_cache
+def _ordinal_suffix_pattern(suffixes: tuple[str, ...]) -> re.Pattern[str] | None:
+    """The given letters, where they follow a number. Longest first, so 'es'
+    is raised whole rather than leaving its 's' behind."""
+    if not suffixes:
+        return None
+    parts = sorted(map(re.escape, suffixes), key=len, reverse=True)
+    return re.compile(rf'(?<=\d)({"|".join(parts)})\b')
+
+
+def raise_ordinal_suffix(value: str) -> Markup:
+    """Raise the letters an ordinal ends with — '8es de finale', '1st'."""
+    pattern = _ordinal_suffix_pattern(ordinal_suffixes())
+    text = escape(value)
+    if pattern is None:
+        return text
+    return Markup(pattern.sub(r'<sup>\1</sup>', text))
+
+
+def raise_ordinal_suffix_svg(value: str) -> Markup:
+    """The same for a label drawn in SVG text, which has no ``<sup>``: the
+    suffix is lifted off the baseline and the rest of the line put back on
+    it, a shift otherwise carrying over to the glyphs that follow."""
+    pattern = _ordinal_suffix_pattern(ordinal_suffixes())
+    text = escape(value)
+    if pattern is None:
+        return text
+    # The size comes from a class, not an attribute: a stylesheet's word
+    # beats a presentation attribute, and print.css sizes every element.
+    # Both shifts are a third of the line's size, read in the em of the
+    # tspan each sits on — the suffix's own being the smaller.
+    raised, count = pattern.subn(
+        r'<tspan class="ordinal-sup" dy="-0.5em">\1</tspan><tspan dy="0.33em">',
+        text,
+    )
+    return Markup(raised + '</tspan>' * count)
+
+
 class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
@@ -275,6 +316,8 @@ class SharlyChessEnvironment(Environment):
             gettext=gettext, ngettext=ngettext, newstyle=True
         )
         self.add_extension('jinja2.ext.do')
+        self.filters['raise_ordinal_suffix'] = raise_ordinal_suffix
+        self.filters['raise_ordinal_suffix_svg'] = raise_ordinal_suffix_svg
 
     def join_path(self, template: str, parent: str) -> str:
         return str(Path(parent).parent / template)

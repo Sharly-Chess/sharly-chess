@@ -157,10 +157,8 @@ import contextlib
 if TYPE_CHECKING:
     from data.event import Event
     from database.sqlite.event.event_store import StoredEvent
-    from data.prohibited_pairings import (
-        ProhibitedPairingDimension,
-        RoundProhibitedPairingGroup,
-    )
+    from data.pairing_dimensions import PairingDimension
+    from data.prohibited_pairings import RoundProhibitedPairingGroup
     from data.teams.team_affiliation import TeamAffiliationSource
     from data.rule_sets import RuleSet
     from data.tournament import Tournament
@@ -345,11 +343,11 @@ class FfePlugin(Plugin):
         return self.id, FfePlayerPluginData
 
     @hookimpl
-    def get_prohibited_pairing_dimensions(self) -> list['ProhibitedPairingDimension']:
-        from data.prohibited_pairings import ProhibitedPairingDimension
+    def get_prohibited_pairing_dimensions(self) -> list['PairingDimension']:
+        from data.pairing_dimensions import PairingDimension
 
         return [
-            ProhibitedPairingDimension(
+            PairingDimension(
                 id='ffe-league',
                 label=_('League'),
                 is_team=False,

@@ -206,6 +206,3 @@ msgid_plural "{n} boards forfeited above a board on which a game was played, cou
 msgstr[0] ""
 msgstr[1] ""
 
-#~ msgid "Match lost by forfeit, counted as 0 match points."
-#~ msgstr ""
-

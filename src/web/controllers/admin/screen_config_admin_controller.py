@@ -69,7 +69,7 @@ class ScreenConfigAdminController(BaseEventAdminController):
                 message_color = WebContext.form_data_to_rgb(data, field)
             except ValueError:
                 errors[field] = _(
-                    'Invalid color [{color}] ([#RRGGBB] expected).'
+                    'Invalid colour [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
         field = 'message_background_color'
         if not WebContext.form_data_to_bool(data, field + '_checkbox'):
@@ -77,7 +77,7 @@ class ScreenConfigAdminController(BaseEventAdminController):
                 message_background_color = WebContext.form_data_to_rgb(data, field)
             except ValueError:
                 errors[field] = _(
-                    'Invalid color [{color}] ([#RRGGBB] expected).'
+                    'Invalid colour [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
 
         if errors:

@@ -174,7 +174,7 @@ class TimerAdminController(BaseEventAdminController):
                     timer_colors[i] = WebContext.form_data_to_rgb(data, field)
                 except ValueError:
                     errors[field] = _(
-                        'Invalid color [{color}] ([#RRGGBB] expected).'
+                        'Invalid colour [{color}] ([#RRGGBB] expected).'
                     ).format(color={data[field]})
             field = f'delay_{i}'
             try:
@@ -274,7 +274,7 @@ class TimerAdminController(BaseEventAdminController):
                     colors[i] = WebContext.form_data_to_rgb(data, field)
                 except ValueError:
                     errors[field] = _(
-                        'Invalid color [{color}] ([#RRGGBB] expected).'
+                        'Invalid colour [{color}] ([#RRGGBB] expected).'
                     ).format(color={data[field]})
             field = f'delay_{i}'
             try:

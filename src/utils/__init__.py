@@ -9,7 +9,7 @@ from functools import lru_cache, cache
 from math import floor
 from subprocess import CompletedProcess
 from typing import Any, Protocol, TYPE_CHECKING, cast, ClassVar
-from collections.abc import Callable, Iterable, Hashable, Collection
+from collections.abc import Iterable, Hashable, Collection
 
 import iso4217parse
 import pycountry
@@ -234,39 +234,6 @@ class Utils:
         if country and country.alpha_3 in SharlyChessConfig().federations:
             return country.alpha_3
         return None
-
-    @classmethod
-    def ordinal_integer(cls, value: int) -> str:
-        from common.i18n import get_locale, _
-
-        locale = get_locale()
-        affix_fn: Callable[[int], tuple[str, str]]
-        match locale:
-            case 'en':
-                affix_fn = cls._ordinal_affix_en
-            case 'fr':
-                affix_fn = cls._ordinal_affix_fr
-            case _:
-                raise NotImplementedError(
-                    f'no ordinal affix function for locale {locale}'
-                )
-        prefix, suffix = affix_fn(value)
-        return _('{prefix}{int_value}<sup>{suffix}</sup>').format(
-            prefix=prefix, int_value=value, suffix=suffix
-        )
-
-    @staticmethod
-    @cache
-    def _ordinal_affix_en(value: int) -> tuple[str, str]:
-        suffix = 'th'
-        if not 11 <= value <= 13:
-            suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(value % 10, suffix)
-        return '', suffix
-
-    @staticmethod
-    @cache
-    def _ordinal_affix_fr(value: int) -> tuple[str, str]:
-        return '', 'er' if value == 1 else 'e'
 
     @staticmethod
     def name_to_uniq_id(name: str) -> str:

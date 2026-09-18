@@ -1442,6 +1442,28 @@ class BoardTieBreakTestCase(TestCase):
         self.assertEqual(self._value(tb, 2), -11.0)
         self.assertEqual(self._value(tb, 3), -10.5)
 
+    def test_a_pairing_allocated_bye_counts_a_win_on_every_board(self):
+        # Art. 12: "if the team received a pairing-allocated bye, the game
+        # points considered for each board are the same as those assigned to
+        # a standard win" — whatever game points the bye scored the team.
+        tb = BoardCountTieBreak()
+        byed = TeamRecord(
+            team_id=4,
+            name='Team 4',
+            total_mp=2.0,
+            total_gp=2.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=None,
+                    own_mp=2.0,
+                    own_gp=2.0,
+                    match_type=TeamMatchType.PAB,
+                )
+            ],
+        )
+        assert tb._board_totals(byed, 4, 1, _BOARD_CONTEXT) == [1.0, 1.0, 1.0, 1.0]
+
     def test_board_count_ranks_the_lower_sum_first(self):
         tb = BoardCountTieBreak()
         values = {team_id: self._value(tb, team_id) for team_id in (1, 2, 3)}

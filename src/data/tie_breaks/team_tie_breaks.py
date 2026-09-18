@@ -46,6 +46,7 @@ from data.tie_breaks.options import (
 )
 from data.tie_breaks.team_records import (
     TeamMatchRecord,
+    TeamMatchType,
     TeamRecord,
     adjust_opponent_total,
     dummy_opponent_score,
@@ -55,7 +56,7 @@ from data.tie_breaks.tie_breaks import (
     StandardBuchholzTieBreak,
     TieBreak,
 )
-from utils.enum import ScoreType
+from utils.enum import Result, ScoreType
 
 
 # ---------------------------------------------------------------------------
@@ -852,6 +853,14 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
         return self.knockout_variant.acronym
 
     @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Builds a crosstable of the matches between the tied teams — in a
+        # knock-out that is the tied match itself, so there is nothing to
+        # split on. Its Art. 13.3.2 knock-out additions are available on
+        # their own as BC, TBR and BBE.
+        return False
+
+    @property
     def acronym(self) -> str:
         # The knockout variant is already encoded in ``base_acronym``
         # (e.g. ``EDEBB``) — don't repeat it. Append only the played
@@ -1126,13 +1135,21 @@ def board_totals(
     ``opponent_ids`` restricts the sum to matches against those teams —
     what Art. 13.3.2 needs, since the knock-out tie-breaks it composes
     after EDE judge the tied teams' own encounters rather than their
-    whole tournament (TEC-2023 exercises 46-48).
+    whole tournament (TEC-2023 exercises 46-48). A bye is nobody's
+    encounter, so it stays out of that restricted sum.
     """
     totals = [0.0] * boards
     for match in team_record.matches:
         if match.round_ > after_round:
             continue
         if opponent_ids is not None and match.opponent_id not in opponent_ids:
+            continue
+        if match.match_type == TeamMatchType.PAB:
+            # Art. 12: a pairing-allocated bye counts on every board as
+            # the game points of a standard win, whatever game points
+            # the bye itself scored the team.
+            for board_index in range(boards):
+                totals[board_index] += Result.WIN.point_value
             continue
         if not match.played and not (
             include_forfeits and match.opponent_id is not None
@@ -1304,6 +1321,13 @@ class TopBoardResultsTieBreak(_BoardTieBreak):
         return 'TBR'
 
     @property
+    def display_rank_delta(self) -> bool:
+        # The value packs one board's total after another into a single
+        # number so the comparison reads board by board; as a number it is
+        # astronomical and says nothing. Show what it did to the ranking.
+        return True
+
+    @property
     def base_help_text(self) -> str:
         return _(
             'The game points scored on board 1 over the tournament; if '
@@ -1349,6 +1373,11 @@ class BottomBoardEliminationTieBreak(_BoardTieBreak):
     @property
     def base_acronym(self) -> str:
         return 'BBE'
+
+    @property
+    def display_rank_delta(self) -> bool:
+        # Packed like the top-board comparison, and just as unreadable.
+        return True
 
     @property
     def base_help_text(self) -> str:
