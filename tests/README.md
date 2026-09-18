@@ -1,184 +1,100 @@
-# Playwright Testing Setup
+# Tests
 
-This directory contains end-to-end tests using Playwright for Python. The tests automatically manage the backend server lifecycle to ensure your application is running before tests execute.
+The suite has three tiers:
+
+- `unit/` — pure Python: pairing engines, scoring, tie-breaks, exports, the
+  database layer. No server, no browser.
+- `unit/http/` — the application driven over HTTP in this process. Litestar's
+  test client calls the same handlers the server does, so a form is refused,
+  a modal renders or a record lands in the database in a millisecond, without
+  a browser or a socket. Anything a browser test does not need the browser
+  for belongs here.
+- `e2e/` — Playwright against a real server, for what only a browser can
+  show: htmx swaps, keyboard entry, screens rotating.
 
 ## Setup
 
-### Prerequisites
-
-Make sure you have the required dependencies installed:
-
 ```bash
-# Install the package with test dependencies
 pip install -e ".[tests]"
-
-# Install Playwright browsers
-playwright install
+playwright install chromium
 ```
 
-### Test Structure
-
-- `conftest.py` - pytest configuration with Playwright fixtures and backend server management
-- `test_config.py` - Configuration and utilities for testing
-- `test_e2e_basic.py` - Basic end-to-end tests
-- `screenshots/` - Directory for test screenshots (auto-created)
-- `data/` - Test data files (if needed)
-
-## Running Tests
-
-### Basic Usage
+## Running
 
 ```bash
-# Run all tests
-pytest
+# Everything but the release-only tests
+TEST_ENV=true ./venv/bin/pytest
 
-# Run with the test runner script
-python run_tests.py
+# One tier
+TEST_ENV=true ./venv/bin/pytest tests/unit
+TEST_ENV=true ./venv/bin/pytest tests/unit/http
+TEST_ENV=true ./venv/bin/pytest tests/e2e
 
-# Run specific test file
-pytest tests/test_e2e_basic.py
-
-# Run specific test
-pytest tests/test_e2e_basic.py::TestBasicFunctionality::test_homepage_loads
-```
-
-### Test Categories
-
-```bash
-# Run only end-to-end tests
+# By marker
+pytest -m unit
 pytest -m e2e
 
-# Run only unit tests
-pytest -m unit
-
-# Release-only tests are skipped by default (see addopts in pytest.ini).
-# Put them back in — this is what a release build runs:
+# Release-only tests are skipped by default; a release runs them with
 pytest -m ""
 
-# Run only the release-only tests
-pytest -m release_only
-```
+# With coverage (the floor is in pyproject.toml, under [tool.coverage.report])
+pytest --cov --cov-report=term-missing:skip-covered
 
-### Development Options
-
-```bash
-# Run with visible browser (for debugging)
-pytest --headed
-
-# Run with coverage
-pytest --cov=src --cov-report=html
-
-# Run with detailed output
-pytest -v --showlocals
-
-# Run in parallel
+# In parallel
 pytest -n 4
 ```
 
-### Using the Test Runner Script
+The backend server only starts when an `e2e`-marked test is selected; the
+other tiers run without it.
 
-The `run_tests.py` script provides convenient shortcuts:
+## Layout
 
-```bash
-# Basic test run
-./run_tests.py
+- `conftest.py` (repository root) — markers, the backend server, Playwright
+  fixtures.
+- `test_config.py` — `TestUtils`, which creates events, tournaments and
+  screens for a test, over HTTP or straight into the database.
+- `unit/http/conftest.py` — the in-process application and its clients:
+  `http` (from localhost, so an administrator), `lan` (a visitor on the
+  venue's network) and `api` (the request context `TestUtils` builds through).
+- `unit/http/events.py` — `EventUnderTest`, an event a test creates, drives
+  and reads back from the database after each request.
+- `screenshots/` — where `TestUtils.take_screenshot` writes.
 
-# Run only e2e tests
-./run_tests.py --e2e-only
-
-# Run with coverage and visible browser
-./run_tests.py --coverage --headed
-
-# Run specific test file with debug output
-./run_tests.py tests/test_e2e_basic.py --debug --verbose
-```
-
-## Configuration
-
-### Backend Server
-
-**Important**: The backend server **only starts for e2e tests**. Unit tests run without any server startup, making them much faster.
-
-The server automatically starts when:
-- Running tests marked with `@pytest.mark.e2e`
-- Using `pytest -m e2e` or `./run_tests.py --e2e-only`
-
-The server configuration is in `test_config.py`. You may need to adjust:
-
-- `TEST_HOST` and `TEST_PORT` for the server address
-- `get_test_env_vars()` for environment variables your app needs
-- Server startup command in `conftest.py`
-
-### Test Environment
-
-The test environment is isolated with:
-
-- Separate environment variables
-- Isolated server instance
-
-## Writing Tests
-
-### Basic Test Structure
+## Writing an HTTP test
 
 ```python
-async def test_example(page: Page):
-    \"\"\"Test example functionality.\"\"\"
-    await page.goto(f"/")
-    await page.wait_for_load_state("networkidle")
+from tests.unit.http.events import EventUnderTest
 
-    # Your test assertions here
-    await expect(page.locator("h1")).to_contain_text("Expected Text")
+EVENT_ID = 'test-timers-http'
+EVENT = EventUnderTest(EVENT_ID)
+
+
+@pytest.fixture
+def event() -> Iterator[str]:
+    EVENT.create()
+    yield EVENT_ID
+    EVENT.delete()
+
+
+@pytest.mark.unit
+def test_a_timer_is_created(http: TestClient, event: str):
+    response = http.post(f'/timer-create/{EVENT_ID}', data={'name': 'Round one'})
+    assert response.status_code == 200
+    assert [timer.name for timer in EVENT.load().timers_by_id.values()] == ['Round one']
 ```
 
-### Using Test Utilities
+A request of its own writes to the database, and the copy a test loaded does
+not see that: read the event back with `EVENT.load()` (or
+`EVENT.tournament()`) after every request whose effect is asserted.
 
-```python
-from tests.test_config import TestUtils
-
-async def test_with_utilities(page: Page):
-    # Take screenshot for debugging
-    await TestUtils.take_screenshot(page, "test_step_1")
-```
-
-### Test Markers
-
-Use pytest markers to categorize tests:
+## Writing a browser test
 
 ```python
 @pytest.mark.e2e
-async def test_end_to_end_flow(page: Page):
-    \"\"\"Full end-to-end test.\"\"\"
-    pass
-
-@pytest.mark.release_only
-async def test_large_dataset(page: Page):
-    \"\"\"Test with large dataset.\"\"\"
-    pass
+async def test_example(page: Page):
+    await page.goto('/')
+    await expect(page.locator('h1')).to_contain_text('Sharly Chess')
 ```
 
-## Debugging
-
-### Taking Screenshots
-
-Screenshots are automatically saved on test failures. You can also take manual screenshots:
-
-```python
-await TestUtils.take_screenshot(page, "debug_point")
-```
-
-### Running with Visible Browser
-
-Use `--headed` flag to see the browser during test execution:
-
-```bash
-pytest --headed tests/test_e2e_basic.py
-```
-
-### Test Isolation
-
-Each test gets:
-
-- Fresh browser context
-- Clean page instance
-
-The backend server is shared across all tests in a session for performance.
+Run with `--headed` to watch the browser, and
+`TestUtils.take_screenshot(page, 'step')` to keep a frame of it.

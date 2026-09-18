@@ -5,11 +5,11 @@ import shutil
 import time
 from enum import StrEnum
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Protocol
 from collections.abc import Callable
 from urllib import parse
 
-from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
+from playwright.sync_api import Page, Locator, expect
 
 from common import BASE_DIR, TMP_DIR
 from data.board import PlayerRatingType
@@ -73,6 +73,34 @@ class TestConfig:
         }
 
 
+class RequestContext(Protocol):
+    """What the helpers need of a request context.
+
+    The browser suite hands them Playwright's, which reaches the server
+    over a socket; the in-process tests hand them one that calls the
+    application directly.
+    """
+
+    def post(
+        self,
+        url: str,
+        *,
+        headers: dict[str, str] | None = ...,
+        data: Any = ...,
+        multipart: dict[str, Any] | None = ...,
+    ) -> Any: ...
+
+    def patch(
+        self,
+        url: str,
+        *,
+        headers: dict[str, str] | None = ...,
+        data: Any = ...,
+    ) -> Any: ...
+
+    def delete(self, url: str, *, headers: dict[str, str] | None = ...) -> Any: ...
+
+
 class TestUtils:
     """Utility functions for tests."""
 
@@ -113,7 +141,7 @@ class TestUtils:
         return parse.urlencode(out, doseq=True)
 
     @staticmethod
-    def check_api_response(response: APIResponse):
+    def check_api_response(response: Any):
         assert response.ok
         body = response.body().decode('utf-8')
 
@@ -158,6 +186,37 @@ class TestUtils:
             '  return !!(data && data.initHash);'
             '}',
             arg=selector,
+            timeout=timeout,
+        )
+
+    @staticmethod
+    def set_collection_details(
+        page, collection_key: str, show: bool, timeout: int = 5000
+    ):
+        """Switch a collection's details on or off, and wait for the page
+        it asks for.
+
+        The switch replaces the page it sits on, and the value it will send
+        next is baked into the new markup. A click landing in between acts
+        on the switch that is still there, sends the value that has just
+        been sent, and leaves the details as they were.
+        """
+        checkbox = page.get_by_role('checkbox', name='Details')
+        if show:
+            checkbox.check()
+        else:
+            checkbox.uncheck()
+        page.wait_for_function(
+            '([selector, expected]) => {'
+            '  const node = document.querySelector(selector);'
+            "  const data = node && node['htmx-internal-data'];"
+            '  if (!data || !data.initHash) return false;'
+            "  return (node.getAttribute('hx-vals') || '').includes(expected);"
+            '}',
+            arg=[
+                f'#collection-{collection_key}-show-details',
+                f'"collection_details": "{"false" if show else "true"}"',
+            ],
             timeout=timeout,
         )
 
@@ -260,7 +319,7 @@ class TestUtils:
     def create_event(
         cls,
         uniq_id: str,
-        via_api_request_context: APIRequestContext | None = None,
+        via_api_request_context: RequestContext | None = None,
         overrides: dict | None = None,
     ):
         overrides = overrides or {}
@@ -304,7 +363,7 @@ class TestUtils:
     def delete_event(
         cls,
         uniq_id: str,
-        via_api_request_context: APIRequestContext | None = None,
+        via_api_request_context: RequestContext | None = None,
     ):
         if via_api_request_context:
             res = via_api_request_context.delete(
@@ -320,7 +379,7 @@ class TestUtils:
         cls,
         event_uniq_id: str,
         name: str,
-        via_api_request_context: APIRequestContext | None = None,
+        via_api_request_context: RequestContext | None = None,
         overrides: dict | None = None,
         json_file: str | None = None,
     ):
@@ -394,7 +453,7 @@ class TestUtils:
     @classmethod
     def delete_tournament(
         cls,
-        api_request_context: APIRequestContext,
+        api_request_context: RequestContext,
         event_uniq_id: str,
         stored_tournament: StoredTournament,
     ):
@@ -407,7 +466,7 @@ class TestUtils:
     @classmethod
     def create_screen(
         cls,
-        api_request_context: APIRequestContext,
+        api_request_context: RequestContext,
         event_uniq_id: str,
         name: str,
         screen_type: ScreenType,
@@ -468,7 +527,7 @@ class TestUtils:
 
     @classmethod
     def delete_screen(
-        cls, api_request_context: APIRequestContext, event_uniq_id: str, screen_id: int
+        cls, api_request_context: RequestContext, event_uniq_id: str, screen_id: int
     ):
         res = api_request_context.delete(
             f'/screen-delete/{event_uniq_id}/{screen_id}',
@@ -479,7 +538,7 @@ class TestUtils:
     @classmethod
     def create_family(
         cls,
-        api_request_context: APIRequestContext,
+        api_request_context: RequestContext,
         event_uniq_id: str,
         tournament: StoredTournament,
         uniq_id: str,
@@ -571,7 +630,7 @@ class TestUtils:
 
     @classmethod
     def delete_family(
-        cls, api_request_context: APIRequestContext, event_uniq_id: str, family_id: int
+        cls, api_request_context: RequestContext, event_uniq_id: str, family_id: int
     ):
         res = api_request_context.delete(
             f'/family-delete/{event_uniq_id}/{family_id}',
@@ -593,7 +652,7 @@ class TestUtils:
     @classmethod
     def create_rotator(
         cls,
-        api_request_context: APIRequestContext,
+        api_request_context: RequestContext,
         event_uniq_id: str,
         name: str,
         overrides: dict | None = None,
@@ -647,7 +706,7 @@ class TestUtils:
 
     @classmethod
     def delete_rotator(
-        cls, api_request_context: APIRequestContext, event_uniq_id: str, rotator_id: int
+        cls, api_request_context: RequestContext, event_uniq_id: str, rotator_id: int
     ):
         res = api_request_context.delete(
             f'/rotator-delete/{event_uniq_id}/{rotator_id}',
@@ -658,7 +717,7 @@ class TestUtils:
     @classmethod
     def create_display_controller(
         cls,
-        api_request_context: APIRequestContext,
+        api_request_context: RequestContext,
         event_uniq_id: str,
         name: str,
         overrides: dict | None = None,
@@ -717,7 +776,7 @@ class TestUtils:
     @classmethod
     def delete_display_controller(
         cls,
-        api_request_context: APIRequestContext,
+        api_request_context: RequestContext,
         event_uniq_id: str,
         display_controller_id: int,
     ):

@@ -489,6 +489,16 @@ class Result(IntEnum):
         )
 
     @property
+    def is_forfeit(self) -> bool:
+        """A game nobody played out. The arbiter records it, so it is
+        asked for the same right as the other unusual results."""
+        return self in (
+            Result.FORFEIT_WIN,
+            Result.FORFEIT_LOSS,
+            Result.DOUBLE_FORFEIT,
+        )
+
+    @property
     def is_special_result(self) -> bool:
         """Unusual results that my need permission to be entered."""
         return self in (

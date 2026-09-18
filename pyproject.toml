@@ -194,10 +194,13 @@ parallel = true
 # never reaches disk.
 sigterm = true
 # The GUI only runs under Toga, and the migrations only against a database of
-# the version they migrate, so neither is reachable from the suite.
+# the version they migrate, so neither is reachable from the suite. The
+# updaters are driven by the GUI alone, and each one only on the platform it
+# updates.
 omit = [
   "src/gui/*",
   "src/database/sqlite/*/migrations/*",
+  "src/common/updaters/*",
 ]
 
 [tool.coverage.report]
@@ -208,7 +211,7 @@ exclude_also = [
 ]
 # A floor, not a target: it exists so a change cannot quietly take coverage
 # down with it. Raise it when the figure rises, never lower it to pass.
-fail_under = 55
+fail_under = 68
 
 [tool.mypy]
 mypy_path = "src:."
