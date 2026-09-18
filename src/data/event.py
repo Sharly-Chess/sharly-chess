@@ -675,7 +675,7 @@ class Event:
     def move_players_to_tournaments(
         self,
         target_tournament_ids_by_player_id: dict[int, int],
-    ):
+    ) -> None:
         """Moves the given players to the target tournaments."""
         with EventDatabase(self.uniq_id, write=True) as database:
             for (
@@ -694,7 +694,7 @@ class Event:
                     source_tournament.id, player.id
                 )
                 del source_tournament.tournament_players_by_id[player.id]
-            player.optional_single_tournament_id = target_tournament.id
+                player.optional_single_tournament_id = target_tournament.id
         self.clear_player_cache()
 
     # --------------------------------------------------------------------------
@@ -803,6 +803,7 @@ class Event:
         self.clear_team_cache()
         for tournament in self.tournaments:
             tournament.clear_team_cache()
+        assert stored_team.id is not None
         return self.teams_by_id[stored_team.id]
 
     def delete_team(self, team: Team) -> None:
