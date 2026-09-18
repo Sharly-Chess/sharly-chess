@@ -9,7 +9,7 @@ from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
 from common.exception import SharlyChessException
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from data.account import Account
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
@@ -1344,7 +1344,7 @@ class FfePlugin(Plugin):
     def update_sce_player_diff_field_labels(
         self, diff_fields: dict[str, str | None]
     ) -> None:
-        diff_fields['national_id'] = _('FFE Licence no. *** LICENCE NUMBER')
+        diff_fields['national_id'] = pgettext('licence number', 'FFE Licence no.')
         diff_fields['ffe_licence_str'] = _('FFE Licence')
         diff_fields['ffe_league'] = _('League')
 

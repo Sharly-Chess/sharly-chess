@@ -34,16 +34,16 @@
         >
             <tr class="player-header">
                 <th class="rank text-end">
-                    {{ _('Rk. *** RANK COLUMN HEADER') }}
+                    {{ pgettext('rank column header', 'Rk.') }}
                 </th>
                 <th class="title text-end">&nbsp;</th>
-                <th class="name text-start">{{ _('Name *** NAME COLUMN HEADER') }}</th>
+                <th class="name text-start">{{ pgettext('name column header', 'Name') }}</th>
                 <th class="rating text-end">
                     {{ admin_tournament.rating.print_view_header }}
                 </th>
-                <th class="category text-center">{{ _('Cat. *** CATEGORY COLUMN HEADER') }}</th>
-                <th class="category text-center">{{ _('Gen. *** GENDER COLUMN HEADER') }}</th>
-                <th class="federation text-center">{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                <th class="category text-center">{{ pgettext('category column header', 'Cat.') }}</th>
+                <th class="category text-center">{{ pgettext('gender column header', 'Gen.') }}</th>
+                <th class="federation text-center">{{ pgettext('federation column header', 'Fed.') }}</th>
                 {% for tie_break in admin_tournament.tie_breaks %}
                     <th
                         class="tie-break text-nowrap text-center"

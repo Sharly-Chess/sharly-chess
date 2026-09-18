@@ -33,7 +33,7 @@
                     {% endif %}
                 {% endif %}
                 <h4>
-                    {{ _('Search *** SECTION TITLE') }}
+                    {{ pgettext('player search section title', 'Search') }}
                 </h4>
                 {% with usage = 'player' %}
                     {% include '/admin/common/search_filter_form.html' %}
@@ -228,7 +228,7 @@
                                                 'from the rating and the age of the player.'
                                             )) }}
                                         >
-                                            {{ _('K *** FIDE RATING COEFFICIENT') }}
+                                            {{ pgettext('FIDE rating coefficient', 'K') }}
                                         </div>
                                     </div>
                                     {% if fide in errors %}

@@ -29,7 +29,7 @@
                     <thead>
                         <tr>
                             <th scope="col" class="text-start compact-col">
-                                {{ _('No. *** NB COLUMN HEADER') }}
+                                {{ pgettext('NB column header', 'No.') }}
                             <th scope="col" class="compact-col"></th>
                             <th scope="col" class="text-start">
                                 {{ _('Name') }}
@@ -38,7 +38,7 @@
                                 {{ _('Rating') }}
                             </th>
                             <th scope="col" class="text-start compact-col">
-                                {{ _('Pref. *** PREFERENCE') }}
+                                {{ pgettext('colour preference column header', 'Pref.') }}
                             </th>
                             <th scope="col" class="text-start compact-col">
                                 {{ _('Floats') }}
@@ -50,7 +50,7 @@
                                     'bye — a player can only ever receive one.'
                                 )) }}
                             >
-                                {{ _('C2 *** BYE ELIGIBILITY CRITERION') }}
+                                {{ pgettext('bye eligibility criterion', 'C2') }}
                             </th>
                             <th colspan="{{ first_entry.previous_opponents|length }}" scope="col" class="text-start compact-col">
                                 {{ _('Opponents') }}

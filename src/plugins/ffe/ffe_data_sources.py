@@ -5,7 +5,7 @@ from typing import cast
 from text_unidecode import unidecode
 
 from common import SharlyChessException
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -115,7 +115,7 @@ class FfeLicenceUpdaterField(FfePlayerUpdaterField):
 
     @staticmethod
     def static_name() -> str:
-        return _('Lic. *** LICENCE COLUMN HEADER')
+        return pgettext('licence column header', 'Lic.')
 
     def _is_ffe_plugin_data_updated(
         self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData

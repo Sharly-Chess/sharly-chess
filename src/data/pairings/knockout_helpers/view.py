@@ -16,7 +16,7 @@ template may call them unconditionally.
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
-from common.i18n import _
+from common.i18n import pgettext
 from data.pairings.knockout_helpers.common import seeded_players
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import set_stored_fields
@@ -248,9 +248,9 @@ class KnockoutView:
         if eliminated:
             sections.append(
                 {
-                    'label': _('Eliminated *** TEAMS')
+                    'label': pgettext('team knock-out', 'Eliminated')
                     if teams
-                    else _('Eliminated *** PLAYERS'),
+                    else pgettext('individual knock-out', 'Eliminated'),
                     'ids': eliminated,
                     'collapsed': True,
                 }

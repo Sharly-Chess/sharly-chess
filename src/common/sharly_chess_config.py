@@ -19,13 +19,14 @@ from common import (
     enable_experimental_features,
 )
 from common.i18n import (
-    DEFAULT_LOCALE,
     _,
+    DEFAULT_LOCALE,
+    get_locale,
     locales,
     normalize_bcp47_to_locale,
+    pgettext,
     read_macos_global_prefs,
     set_locale,
-    get_locale,
 )
 from common.logger import set_logging_config, get_logger
 from common.network import find_lan_interfaces, LOCALHOST_IP
@@ -548,7 +549,7 @@ class SharlyChessConfig(metaclass=Singleton):
     @staticmethod
     def _get_localized_federations() -> dict[str, str]:
         return {
-            'NON': _('None *** FEDERATION'),
+            'NON': pgettext('federation', 'None'),
             'FID': _('International Chess Federation'),
             'AFG': _('Afghanistan'),
             'AHO': _('Netherlands Antilles'),

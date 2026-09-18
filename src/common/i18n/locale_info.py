@@ -12,6 +12,19 @@ from common.logger import get_logger
 
 logger: Logger = get_logger()
 
+# The note a message used to carry inside its own text.
+LEGACY_NOTE: str = '***'
+
+# The contexts of the messages every locale has to translate.
+SHORTCUT_CONTEXTS: set[str] = {'with shortcut indication'}
+SHORTCUT_KEY_CONTEXT_PREFIX: str = 'keyboard shortcut for'
+
+# What a translation may add to the length of the message it translates, on top
+# of the room the ratio gives it. A short label carries the whole of its meaning
+# in a word English abbreviates and another language may spell out.
+LENGTH_RATIO: int = 5
+LENGTH_ALLOWANCE: int = 30
+
 
 class DomainLocaleInfo(Domain):
     def __init__(
@@ -53,19 +66,28 @@ class DomainLocaleInfo(Domain):
 
     @staticmethod
     def message_is_mandatory(msg: Message) -> bool:
-        if isinstance(msg.id, str):
-            return msg.id.__contains__('***')
-        assert isinstance(msg.string, tuple)
-        return any(s.__contains__('***') for s in msg.id)
+        """Whether a locale has to translate a message rather than fall back to
+        the English one. A shortcut is the case: the letter a locale underlines
+        and the key it answers to have to be picked together, and the English
+        pair suits no other language."""
+        context = msg.context or ''
+        return context in SHORTCUT_CONTEXTS or context.startswith(
+            SHORTCUT_KEY_CONTEXT_PREFIX
+        )
+
+    @staticmethod
+    def message_uses_legacy_note(msg: Message) -> bool:
+        """Whether a message carries a note inside its text, the way the
+        catalogs used to tell apart two strings reading the same. A context
+        does that now: it stays out of the text, so an untranslated string
+        still reads as English rather than showing the note."""
+        ids = (msg.id,) if isinstance(msg.id, str) else msg.id
+        return any(LEGACY_NOTE in id_ for id_ in ids)
 
     @staticmethod
     def sorted_tokens(string: str) -> list[str]:
         """Returns the sorted tokens of a string."""
         tokens: list[str] = []
-        # ignore everything after *** (mandatory strings with instructions for the translators)
-        if matches := re.match(r'^(.*)\s+\*\*\*\s+.*$', string):
-            string = matches.group(1)
-        # now really extract the tokens
         while True:
             token: str | None = None
             if (
@@ -128,11 +150,15 @@ class DomainLocaleInfo(Domain):
         return not error
 
     @staticmethod
-    def check_message_length(msg: Message) -> bool:
+    def length_limit(id_: str) -> int:
+        return LENGTH_RATIO * len(id_) + LENGTH_ALLOWANCE
+
+    @classmethod
+    def check_message_length(cls, msg: Message) -> bool:
         error: bool = False
         if isinstance(msg.id, str):
             assert isinstance(msg.string, str)
-            if len(msg.string) > 5 * len(msg.id):
+            if len(msg.string) > cls.length_limit(msg.id):
                 msg.user_comments = [
                     f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
                 ]
@@ -141,7 +167,7 @@ class DomainLocaleInfo(Domain):
             assert isinstance(msg.id, tuple)
             assert isinstance(msg.string, tuple)
             for i in reversed(range(len(msg.id))):
-                if len(msg.string[i]) > 5 * len(msg.id[i]):
+                if len(msg.string[i]) > cls.length_limit(msg.id[i]):
                     msg.user_comments = [
                         f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
                     ]
@@ -167,6 +193,13 @@ class DomainLocaleInfo(Domain):
                     assert isinstance(msg.id, tuple)
                     msg_key = str(msg.id)
                 self.messages[msg_key] = msg
+                if self.message_uses_legacy_note(msg):
+                    msg.user_comments = [
+                        f'Error: [{msg_key}] carries a [{LEGACY_NOTE}] note in its '
+                        f'text; pass what it says to pgettext() as a context instead',
+                    ]
+                    self.error_messages[msg_key] = msg
+                    continue
                 if self.message_is_mandatory(msg):
                     self.mandatory_messages[msg_key] = msg
                     if self.message_is_empty(msg):

@@ -23,7 +23,8 @@ msgid ""
 "- the clubs and the leagues available as columns, filters and groupings on the players, the documents and the screens."
 msgstr ""
 
-msgid "A - Competition *** FFE licence"
+msgctxt "FFE licence"
+msgid "A - Competition"
 msgstr "A - Competition"
 
 msgid "A non-empty string is expected"
@@ -70,7 +71,8 @@ msgstr ""
 msgid "Auto-upload enabled"
 msgstr ""
 
-msgid "B - Leisure *** FFE licence"
+msgctxt "FFE licence"
+msgid "B - Leisure"
 msgstr "B - Leisure"
 
 msgid "Back"
@@ -132,7 +134,8 @@ msgstr ""
 msgid "Could not download [{url}]: {error}."
 msgstr ""
 
-msgid "Cut *** TIE BREAK VARIATION"
+msgctxt "tie break variation"
+msgid "Cut"
 msgstr "Cut"
 
 msgid "DD/MM/YYYY"
@@ -192,7 +195,8 @@ msgstr ""
 msgid "FFE Licence"
 msgstr ""
 
-msgid "FFE Licence no. *** LICENCE NUMBER"
+msgctxt "licence number"
+msgid "FFE Licence no."
 msgstr "FFE Licence no."
 
 msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team matches, mixed Suisse / Molter / round-robin schedule. Roster must consist of women players only."
@@ -364,7 +368,8 @@ msgstr ""
 msgid "League"
 msgstr ""
 
-msgid "League *** LEAGUE COLUMN HEADER"
+msgctxt "league column header"
+msgid "League"
 msgstr "League"
 
 msgid "League not specified"
@@ -382,13 +387,15 @@ msgstr ""
 msgid "Leave empty tables for fixed boards"
 msgstr ""
 
-msgid "Lic. *** LICENCE COLUMN HEADER"
+msgctxt "licence column header"
+msgid "Lic."
 msgstr "Lic."
 
 msgid "Licence"
 msgstr ""
 
-msgid "Licence no. *** LICENCE NUMBER"
+msgctxt "licence number"
+msgid "Licence no."
 msgstr "Licence no."
 
 msgid "Licence number"
@@ -424,7 +431,8 @@ msgstr ""
 msgid "Modified"
 msgstr ""
 
-msgid "N - Expired *** FFE licence"
+msgctxt "FFE licence"
+msgid "N - Expired"
 msgstr "N - Expired"
 
 msgid "Name"
@@ -470,7 +478,8 @@ msgstr ""
 msgid "No tournament configured for FFE upload."
 msgstr ""
 
-msgid "None *** FFE licence"
+msgctxt "FFE licence"
+msgid "None"
 msgstr "None"
 
 msgid "Not configured"
@@ -730,7 +739,8 @@ msgstr ""
 msgid "Unknown value [{value}]"
 msgstr ""
 
-msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
+msgctxt "singular for unrated player"
+msgid "Unrated"
 msgstr "Unrated"
 
 msgid "Up to date"

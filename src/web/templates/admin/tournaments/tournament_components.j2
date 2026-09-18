@@ -325,7 +325,7 @@
     {% if tournament.criteria %}
         {{ tournament.criteria_string }}
     {% else %}
-        <span class="text-secondary"><i>{{ _('Undefined *** PLURAL') }}</i></span>
+        <span class="text-secondary"><i>{{ pgettext('said of several things', 'Undefined') }}</i></span>
     {% endif %}
     {% if tournament.num_players_not_matching_criteria > 0 %}
         <i
@@ -462,7 +462,7 @@
                     <span
                         class="text-secondary pe-1"
                         {{ macros.tooltip_attributes('info', arbiter_tooltip, 'right') }}
-                    ><i>{{ _('Undefined *** SINGULAR') }}</i></span>
+                    ><i>{{ pgettext('said of one thing', 'Undefined') }}</i></span>
                 {% endif %}
             </div>
             {% set deputy_label = _('%(string)s:', string=_('Deputy arbiters')) %}

@@ -154,16 +154,16 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>{{ _('Name *** NAME COLUMN HEADER') }}</th>
-                            <th>{{ _('FIDE ID *** FIDE ID COLUMN HEADER') }}</th>
-                            <th>{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
-                            <th>{{ _('Title *** TITLE COLUMN HEADER') }}</th>
-                            <th>{{ _('Norm(s) Achieved *** NORMS ACHIEVED COLUMN HEADER') }}</th>
-                            <th class="center">{{ _('Played *** GAMES PLAYED COLUMN HEADER') }}</th>
-                            <th class="center">{{ _('Score *** SCORE COLUMN HEADER') }}</th>
-                            <th class="center">{{ _('Ra *** AVERAGE OPPONENT RATING COLUMN HEADER') }}</th>
-                            <th class="center">{{ _('Rp *** PERFORMANCE RATING COLUMN HEADER') }}</th>
-                            <th>{{ _('Notes *** NOTES COLUMN HEADER') }}</th>
+                            <th>{{ pgettext('name column header', 'Name') }}</th>
+                            <th>{{ pgettext('FIDE ID column header', 'FIDE ID') }}</th>
+                            <th>{{ pgettext('federation column header', 'Fed.') }}</th>
+                            <th>{{ pgettext('title column header', 'Title') }}</th>
+                            <th>{{ pgettext('norms achieved column header', 'Norm(s) Achieved') }}</th>
+                            <th class="center">{{ pgettext('games played column header', 'Played') }}</th>
+                            <th class="center">{{ pgettext('score column header', 'Score') }}</th>
+                            <th class="center">{{ pgettext('average opponent rating column header', 'Ra') }}</th>
+                            <th class="center">{{ pgettext('performance rating column header', 'Rp') }}</th>
+                            <th>{{ pgettext('notes column header', 'Notes') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -266,15 +266,15 @@
                     <thead>
                         <tr>
                             {% if sort_mode == 'table' %}
-                                <th class="center">{{ _('Bd. *** BOARD NUMBER COLUMN HEADER') }}</th>
+                                <th class="center">{{ pgettext('board number column header', 'Bd.') }}</th>
                             {% endif %}
-                            <th class="center">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
-                            <th>{{ _('Name *** NAME COLUMN HEADER') }}</th>
-                            <th class="center">{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
-                            <th class="center">{{ _('Title *** TITLE COLUMN HEADER') }}</th>
-                            <th>{{ _('Opponent (R{round}) *** OPPONENT COLUMN HEADER').format(round=forecast_round) }}</th>
-                            <th class="center">{{ _('Norm *** NORM COLUMN HEADER') }}</th>
-                            <th class="center">{{ _('Needs *** NORM REQUIREMENT COLUMN HEADER') }}</th>
+                            <th class="center">{{ pgettext('rank column header', 'Rk.') }}</th>
+                            <th>{{ pgettext('name column header', 'Name') }}</th>
+                            <th class="center">{{ pgettext('federation column header', 'Fed.') }}</th>
+                            <th class="center">{{ pgettext('title column header', 'Title') }}</th>
+                            <th>{{ pgettext('opponent column header', 'Opponent (R{round})').format(round=forecast_round) }}</th>
+                            <th class="center">{{ pgettext('norm column header', 'Norm') }}</th>
+                            <th class="center">{{ pgettext('norm requirement column header', 'Needs') }}</th>
                         </tr>
                     </thead>
                     <tbody>

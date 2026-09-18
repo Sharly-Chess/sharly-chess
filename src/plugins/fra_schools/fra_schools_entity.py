@@ -6,7 +6,7 @@ from collections import Counter
 from collections.abc import Callable
 
 from common.exception import OptionError, SharlyChessException
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
 from data.columns.players_tab import FilterPlayersTabColumn, ColumnFilterValue
@@ -58,7 +58,7 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
 class FraSchoolTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('School *** SCHOOL COLUMN HEADER')
+        return pgettext('school column header', 'School')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return getattr(
@@ -237,7 +237,7 @@ class FraSchoolsPlayersTabColumn(FilterPlayersTabColumn):
 
     @staticmethod
     def static_name() -> str:
-        return _('School *** SCHOOL COLUMN HEADER')
+        return pgettext('school column header', 'School')
 
     @property
     def is_compact(self) -> bool:

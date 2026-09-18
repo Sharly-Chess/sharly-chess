@@ -15,7 +15,7 @@ from litestar.plugins.htmx import ClientRedirect, HTMXRequest, HTMXTemplate
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.exception import FormError, OptionError
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
@@ -893,28 +893,28 @@ class ChampionshipAdminController(BaseAdminController):
             }
         else:
             competitor_nav = {
-                'title': _('Players ({num}) *** WITH_SHORTCUT_INDICATION').format(
+                'title': pgettext('with shortcut indication', 'Players ({num})').format(
                     num=competitor_count
                 ),
                 'icon_class': 'bi-people-fill',
-                'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB")} from:body',
+                'shortcut': f'{pgettext("keyboard shortcut for the players tab", "SC_P")} from:body',
             }
         nav_tabs = {
             'configuration': {
-                'title': _('Configuration *** WITH_SHORTCUT_INDICATION'),
+                'title': pgettext('with shortcut indication', 'Configuration'),
                 'icon_class': 'bi-gear-fill',
-                'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB")} from:body',
+                'shortcut': f'{pgettext("keyboard shortcut for the configuration tab", "SC_C")} from:body',
             },
             'sources': {
-                'title': _('Sources *** WITH_SHORTCUT_INDICATION'),
+                'title': pgettext('with shortcut indication', 'Sources'),
                 'icon_class': 'bi-diagram-3-fill',
-                'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE SOURCES TAB")} from:body',
+                'shortcut': f'{pgettext("keyboard shortcut for the sources tab", "SC_S")} from:body',
             },
             'competitors': competitor_nav,
             'results': {
-                'title': _('Rankings *** WITH_SHORTCUT_INDICATION'),
+                'title': pgettext('with shortcut indication', 'Rankings'),
                 'icon_class': 'bi-trophy-fill',
-                'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE RANKINGS TAB")} from:body',
+                'shortcut': f'{pgettext("keyboard shortcut for the rankings tab", "SC_R")} from:body',
             },
         }
         context = web_context.template_context | {

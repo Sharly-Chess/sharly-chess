@@ -1,7 +1,7 @@
 import copy
 from abc import ABC, abstractmethod
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.player import Player
 from database.sqlite.event.event_store import StoredPlayer
 from utils.entity import IdentifiableEntity
@@ -317,7 +317,7 @@ class FederationUpdaterField(PlayerUpdaterField):
 
     @staticmethod
     def static_name() -> str:
-        return _('Fed. *** FEDERATION COLUMN HEADER')
+        return pgettext('federation column header', 'Fed.')
 
     def is_updated(self, player: Player, match_player: Player) -> bool:
         return player.federation != match_player.federation

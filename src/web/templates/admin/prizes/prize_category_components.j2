@@ -206,7 +206,7 @@
         {% elif prize_category.criteria %}
             {{ prize_category.criteria_string }}
         {% else %}
-            <span class="text-secondary"><i>{{ _('Undefined *** PLURAL') }}</i></span>
+            <span class="text-secondary"><i>{{ pgettext('said of several things', 'Undefined') }}</i></span>
         {% endif %}
     {% endset %}
     {% if view == 'card' %}

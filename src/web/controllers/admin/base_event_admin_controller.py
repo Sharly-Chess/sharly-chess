@@ -3,7 +3,7 @@ from typing import Any
 
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.access_levels.actions import AuthAction
 from data.access_levels.client_tracker import ClientTracker
 from data.screens.display_controller import DisplayController
@@ -101,11 +101,11 @@ class BaseEventAdminWebContext(AdminWebContext):
         if self.client.can_view_event_config:
             nav_tabs |= {
                 'admin-event-config-tab': {
-                    'title': _('Configuration *** WITH_SHORTCUT_INDICATION'),
+                    'title': pgettext('with shortcut indication', 'Configuration'),
                     'modal': 'admin-event-modal',
                     'action': FormAction.UPDATE,
                     'icon_class': 'bi-gear-fill',
-                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB")} from:body',
+                    'shortcut': f'{pgettext("keyboard shortcut for the configuration tab", "SC_C")} from:body',
                 },
             }
         if self.client.can_view_tournaments_tab:
@@ -114,23 +114,23 @@ class BaseEventAdminWebContext(AdminWebContext):
             )
             nav_tabs |= {
                 'admin-event-tournaments-tab': {
-                    'title': _(
-                        'Tournaments ({num}) *** WITH_SHORTCUT_INDICATION'
+                    'title': pgettext(
+                        'with shortcut indication', 'Tournaments ({num})'
                     ).format(num=len(tournaments) or '-'),
                     'template': 'tournaments/tab.html',
                     'icon_class': 'bi-diagram-3-fill',
-                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB")} from:body',
+                    'shortcut': f'{pgettext("keyboard shortcut for the tournaments tab", "SC_T")} from:body',
                 },
             }
         if self.client.can_view_players_tab:
             nav_tabs |= {
                 'admin-event-players-tab': {
-                    'title': _('Players ({num}) *** WITH_SHORTCUT_INDICATION').format(
-                        num=len(self.client.allowed_players_by_id) or '-'
-                    ),
+                    'title': pgettext(
+                        'with shortcut indication', 'Players ({num})'
+                    ).format(num=len(self.client.allowed_players_by_id) or '-'),
                     'template': 'players/tab.html',
                     'icon_class': 'bi-people-fill',
-                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB")} from:body',
+                    'shortcut': f'{pgettext("keyboard shortcut for the players tab", "SC_P")} from:body',
                 },
             }
         if event.is_team_event and self.client.can_view_tournaments_tab:
@@ -146,19 +146,19 @@ class BaseEventAdminWebContext(AdminWebContext):
         if self.client.can_view_pairings_tab:
             nav_tabs |= {
                 'admin-event-pairings-tab': {
-                    'title': _('Pairings *** WITH_SHORTCUT_INDICATION'),
+                    'title': pgettext('with shortcut indication', 'Pairings'),
                     'template': 'pairings/tab.html',
                     'icon_class': 'bi-arrow-left-right',
-                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB")} from:body',
+                    'shortcut': f'{pgettext("keyboard shortcut for the pairings tab", "SC_A")} from:body',
                 },
             }
         if self.client.can_view_prizes_tab and not event.is_team_event:
             nav_tabs |= {
                 'admin-event-prizes-tab': {
-                    'title': _('Prizes *** WITH_SHORTCUT_INDICATION'),
+                    'title': pgettext('with shortcut indication', 'Prizes'),
                     'template': 'prizes/tab.html',
                     'icon_class': 'bi-trophy-fill',
-                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PRIZES TAB")} from:body',
+                    'shortcut': f'{pgettext("keyboard shortcut for the prizes tab", "SC_Z")} from:body',
                 },
             }
         if self.client.can_manage_screens:
@@ -168,18 +168,18 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': 'bi-display-fill',
                     'submenu': {
                         'admin-event-screens-tab': {
-                            'title': _(
-                                'Single Screens ({num}) *** WITH_SHORTCUT_INDICATION'
+                            'title': pgettext(
+                                'with shortcut indication', 'Single Screens ({num})'
                             ).format(num=len(event.basic_screens_by_id) or '-'),
                             'template': 'screens/tab.html',
-                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB")} from:body',
+                            'shortcut': f'{pgettext("keyboard shortcut for the single screens tab", "SC_S")} from:body',
                         },
                         'admin-event-families-tab': {
-                            'title': _(
-                                'Multi-Screens ({num}) *** WITH_SHORTCUT_INDICATION'
+                            'title': pgettext(
+                                'with shortcut indication', 'Multi-Screens ({num})'
                             ).format(num=len(event.families_by_id) or '-'),
                             'template': 'families/tab.html',
-                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE MULTI-SCREENS TAB")} from:body',
+                            'shortcut': f'{pgettext("keyboard shortcut for the multi-screens tab", "SC_M")} from:body',
                         },
                         'admin-event-menus-tab': {
                             'title': _('Menus ({num})').format(
@@ -188,11 +188,11 @@ class BaseEventAdminWebContext(AdminWebContext):
                             'template': 'menus/tab.html',
                         },
                         'admin-event-rotators-tab': {
-                            'title': _(
-                                'Rotators ({num}) *** WITH_SHORTCUT_INDICATION'
+                            'title': pgettext(
+                                'with shortcut indication', 'Rotators ({num})'
                             ).format(num=len(event.rotators_by_id) or '-'),
                             'template': 'rotators/tab.html',
-                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB")} from:body',
+                            'shortcut': f'{pgettext("keyboard shortcut for the rotators tab", "SC_R")} from:body',
                         },
                         'admin-event-timers-tab': {
                             'title': _('Timers ({num})').format(
@@ -201,11 +201,12 @@ class BaseEventAdminWebContext(AdminWebContext):
                             'template': 'timers/tab.html',
                         },
                         'admin-event-display-controllers-tab': {
-                            'title': _(
-                                'Display controllers ({num}) *** WITH_SHORTCUT_INDICATION'
+                            'title': pgettext(
+                                'with shortcut indication',
+                                'Display controllers ({num})',
                             ).format(num=len(event.display_controllers_by_id) or '-'),
                             'template': 'display_controllers/tab.html',
-                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB")} from:body',
+                            'shortcut': f'{pgettext("keyboard shortcut for the display controllers tab", "SC_I")} from:body',
                         },
                     },
                 },

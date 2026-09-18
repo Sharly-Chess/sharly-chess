@@ -21,10 +21,7 @@ from common import (
     is_valid_email,
 )
 from common.exception import FormError, SharlyChessException
-from common.i18n import (
-    _,
-    locales,
-)
+from common.i18n import _, locales, pgettext
 from common.i18n.utils import by
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -821,8 +818,8 @@ class IndexAdminController(BaseAdminController):
             'event_type_locked': event_type_locked,
             'player_rating_type_options': {
                 str(PlayerRatingType.FIDE.value): _('FIDE'),
-                str(PlayerRatingType.NATIONAL.value): _(
-                    'National *** NAME FOR RATING TYPE NATIONAL'
+                str(PlayerRatingType.NATIONAL.value): pgettext(
+                    'name for rating type national', 'National'
                 ),
             },
             'has_multi_tournament_players': event

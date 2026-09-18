@@ -2,7 +2,7 @@ from abc import ABC
 from functools import cached_property
 from typing import Any, override
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.i18n.utils import ordinal_integer
 from data.player import TournamentPlayer
 from data.tournament import Tournament
@@ -51,7 +51,7 @@ class CheckinColumn(TournamentPlayerTableColumn):
 class NumberColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('No. *** NB COLUMN HEADER')
+        return pgettext('NB column header', 'No.')
 
     @property
     def cell_template(self) -> str | None:
@@ -70,7 +70,7 @@ class RankColumn(TournamentPlayerTableColumn):
 
     @property
     def header_content(self) -> str:
-        return _('Rk. *** RANK COLUMN HEADER')
+        return pgettext('rank column header', 'Rk.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.rank
@@ -88,7 +88,7 @@ class ExAequoRankColumn(TournamentPlayerTableColumn):
 
     @property
     def header_content(self) -> str:
-        return _('Rk. *** RANK COLUMN HEADER')
+        return pgettext('rank column header', 'Rk.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.tournament.ex_aequo_rank_by_player_id[
@@ -108,7 +108,7 @@ class RankOverallColumn(TournamentPlayerTableColumn):
 
     @property
     def header_content(self) -> str:
-        return _('Rk. O. *** RANK OVERALL COLUMN HEADER')
+        return pgettext('rank overall column header', 'Rk. O.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return f'({ordinal_integer(tournament_player.rank)})'
@@ -142,7 +142,7 @@ class NameColumn(TournamentPlayerTableColumn):
 
     @property
     def header_content(self) -> str:
-        return _('Name *** NAME COLUMN HEADER')
+        return pgettext('name column header', 'Name')
 
     @property
     def cell_template(self) -> str | None:
@@ -172,7 +172,7 @@ class RatingColumn(TournamentPlayerTableColumn):
 class CategoryColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Cat. *** CATEGORY COLUMN HEADER')
+        return pgettext('category column header', 'Cat.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.category.name
@@ -185,7 +185,7 @@ class CategoryColumn(TournamentPlayerTableColumn):
 class GenderColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Gen. *** GENDER COLUMN HEADER')
+        return pgettext('gender column header', 'Gen.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.gender.short_name
@@ -198,7 +198,7 @@ class GenderColumn(TournamentPlayerTableColumn):
 class FederationColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Fed. *** FEDERATION COLUMN HEADER')
+        return pgettext('federation column header', 'Fed.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.federation.name
@@ -211,7 +211,7 @@ class FederationColumn(TournamentPlayerTableColumn):
 class ClubColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Club *** CLUB COLUMN HEADER')
+        return pgettext('club column header', 'Club')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.club.name
@@ -229,7 +229,7 @@ class PointsColumn(TournamentPlayerTableColumn):
 
     @property
     def header_content(self) -> str:
-        return _('Pts *** POINTS COLUMN HEADER')
+        return pgettext('points column header', 'Pts')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.points_str
@@ -283,7 +283,7 @@ class RoundColumn(TournamentPlayerTableColumn):
 
     @property
     def header_content(self) -> str:
-        return _('R {round} *** ROUND COLUMN HEADER').format(round=self.round)
+        return pgettext('round column header', 'R {round}').format(round=self.round)
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         pairing = tournament_player.pairings_by_round[self.round]
@@ -304,7 +304,7 @@ class RoundColumn(TournamentPlayerTableColumn):
 class TournamentColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS')
+        return pgettext('tournament for players columns', 'Tournament')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.tournament.name
@@ -358,7 +358,7 @@ class KnockoutResultColumn(TournamentPlayerTableColumn):
 
     @property
     def header_content(self) -> str:
-        return _('Result *** KNOCK-OUT RESULT COLUMN')
+        return pgettext('knock-out result column', 'Result')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return self._labels.get(tournament_player.id, '')
@@ -395,7 +395,7 @@ class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
 class PaidColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Paid *** PAID COLUMN HEADER')
+        return pgettext('paid column header', 'Paid')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return Utils.currency_value_str(
@@ -416,7 +416,7 @@ class PaidColumn(TournamentPlayerTableColumn):
 class OwedColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Owed *** OWED COLUMN HEADER')
+        return pgettext('owed column header', 'Owed')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return Utils.currency_value_str(
@@ -437,7 +437,7 @@ class OwedColumn(TournamentPlayerTableColumn):
 class CommentsColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Comments *** COMMENTS COLUMN HEADER')
+        return pgettext('comments column header', 'Comments')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.comment or ''

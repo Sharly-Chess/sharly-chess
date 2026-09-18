@@ -239,8 +239,8 @@
                                 {{ admin_macros.integer_range_input(
                                     name='criterion_rating',
                                     label=_('%(string)s:', string=_('Rating')),
-                                    min_placeholder=_('Min *** MINIMUM'),
-                                    max_placeholder=_('Max *** MAXIMUM'),
+                                    min_placeholder=pgettext('minimum', 'Min'),
+                                    max_placeholder=pgettext('maximum', 'Max'),
                                     number_min=0,
                                     data=data, errors=errors,
                                 ) }}
@@ -250,8 +250,8 @@
                                     name='criterion_age_category',
                                     label=_('%(string)s:', string=_('Age')),
                                     select_options=age_category_options,
-                                    min_placeholder=_('Min *** MINIMUM'),
-                                    max_placeholder=_('Max *** MAXIMUM'),
+                                    min_placeholder=pgettext('minimum', 'Min'),
+                                    max_placeholder=pgettext('maximum', 'Max'),
                                     data=data,
                                     errors=errors,
                                 ) }}

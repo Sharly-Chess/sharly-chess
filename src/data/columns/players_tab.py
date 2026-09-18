@@ -5,7 +5,7 @@ from typing import Any, cast
 from collections import Counter
 from collections.abc import Callable
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.i18n.utils import normalized_key
 from data.event import Event
 from data.player import Player
@@ -300,7 +300,7 @@ class RatingPlayersTabColumn(PlayersTabColumn):
 
     @staticmethod
     def static_name() -> str:
-        return _('Elo *** ELO RATING')
+        return pgettext('Elo rating', 'Elo')
 
     @property
     def is_tournament_column(self) -> bool:

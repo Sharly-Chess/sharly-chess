@@ -17,19 +17,19 @@
         style="top: var(--header-height);"
     >
         <tr class="player-header">
-            <th class="rank text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+            <th class="rank text-end">{{ pgettext('rank column header', 'Rk.') }}</th>
             <th class="name text-start">{{ _('Team') }}</th>
-            <th class="text-center">{{ _('Played *** TEAM RANKING HEADER PLAYED') }}</th>
+            <th class="text-center">{{ pgettext('team ranking header played', 'Played') }}</th>
             {% if primary_is_mp %}
-                <th class="text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</th>
-                <th class="text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</th>
-                <th class="text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</th>
+                <th class="text-center">{{ pgettext('team ranking header win', 'W') }}</th>
+                <th class="text-center">{{ pgettext('team ranking header draw', 'D') }}</th>
+                <th class="text-center">{{ pgettext('team ranking header loss', 'L') }}</th>
                 <th
                     class="text-center"
                     {{ macros.tooltip_attributes(
                         '', _('Matches lost by forfeit.'), 'top'
                     ) }}
-                >{{ _('F *** TEAM RANKING HEADER FORFEIT') }}</th>
+                >{{ pgettext('team ranking header forfeit', 'F') }}</th>
             {% endif %}
             {% for tie_break in team_tie_breaks %}
                 <th

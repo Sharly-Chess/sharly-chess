@@ -53,17 +53,17 @@
                     </th>
                     <th class="text-center compact-col" scope="col">
                         {% if championship.competitor_type == competitor_type_team %}
-                            {{ _('Fed. *** FEDERATION COLUMN HEADER') }}
+                            {{ pgettext('federation column header', 'Fed.') }}
                         {% else %}
                             {{ _('FIDE ID') }}
                         {% endif %}
                     </th>
                     {% if championship.competitor_type == competitor_type_individual %}
                         <th class="text-center compact-col" scope="col">
-                            {{ _('Cat. *** CATEGORY COLUMN HEADER') }}
+                            {{ pgettext('category column header', 'Cat.') }}
                         </th>
                         <th class="text-center compact-col" scope="col">
-                            {{ _('Gen. *** GENDER COLUMN HEADER') }}
+                            {{ pgettext('gender column header', 'Gen.') }}
                         </th>
                     {% endif %}
                     <th class="text-center compact-col" scope="col">{{ _('Tournaments') }}</th>

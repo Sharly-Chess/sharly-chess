@@ -221,7 +221,7 @@ def input_interactive_yn(
 ) -> bool:
     """Prints the message to stdout with color postfixed with [Y/n] etc, and returns the user input.
     If the message could not be Unicode decoded, raises KeyboardInterrupt."""
-    from common.i18n import _
+    from common.i18n import _, pgettext
 
     __flush_logger()
 
@@ -233,8 +233,8 @@ def input_interactive_yn(
             ),
         )
 
-    yes_answer = _('Y *** THE LETTER TO ANSWER YES')
-    no_answer = _('N *** THE LETTER TO ANSWER NO')
+    yes_answer = pgettext('the letter to answer yes', 'Y')
+    no_answer = pgettext('the letter to answer no', 'N')
     question = question + _(' [{yes_answer}/{no_answer}]?').format(
         yes_answer=yes_answer.upper() if yes_is_default else yes_answer.lower(),
         no_answer=no_answer.upper() if not yes_is_default else no_answer.lower(),

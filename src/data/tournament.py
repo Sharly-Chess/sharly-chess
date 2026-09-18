@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, cast
 from _weakref import ReferenceType
 
 from common.exception import SharlyChessException
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
@@ -2099,8 +2099,8 @@ class Tournament:
 
         if isinstance(tie_break, PointsTieBreak) and self.is_team_tournament:
             if self.primary_score == ScoreType.MATCH_POINTS:
-                return _('MP *** TEAM RANKING HEADER MATCH POINTS')
-            return _('GP *** TEAM RANKING HEADER GAME POINTS')
+                return pgettext('team ranking header match points', 'MP')
+            return pgettext('team ranking header game points', 'GP')
         return tie_break.acronym
 
     @property

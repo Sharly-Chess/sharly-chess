@@ -51,7 +51,7 @@
                                         hx-target="body"
                                         hx-indicator="#please-wait"
                                     >
-                                        <i class="bi-x-circle-fill pe-1"></i>{{ _('All absent *** ALL TEAMS ABSENT') }}
+                                        <i class="bi-x-circle-fill pe-1"></i>{{ pgettext('all teams absent', 'All absent') }}
                                     </button>
                                 </span>
                                 <span {{ macros.tooltip_attributes('info', _('Mark all teams as present.'), 'top') }}>
@@ -67,7 +67,7 @@
                                         hx-target="body"
                                         hx-indicator="#please-wait"
                                     >
-                                        <i class="bi-check-circle-fill pe-1"></i>{{ _('All present *** ALL TEAMS PRESENT') }}
+                                        <i class="bi-check-circle-fill pe-1"></i>{{ pgettext('all teams present', 'All present') }}
                                     </button>
                                 </span>
                             </td>

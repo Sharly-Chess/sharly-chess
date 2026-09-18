@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, cast, ClassVar
 
 from babel.lists import format_list
 
-from common.i18n import _, get_locale
+from common.i18n import _, get_locale, pgettext
 from common.i18n.utils import normalized_key
 from data.pairing import Pairing
 from data.player_categories import PlayerCategory
@@ -492,17 +492,17 @@ class Player:
     @property
     def not_paired_str(self) -> str:
         return (
-            _('Unpaired *** WOMAN')
+            pgettext('said of a woman', 'Unpaired')
             if self.gender == PlayerGender.WOMAN
-            else _('Unpaired *** MAN')
+            else pgettext('said of a man', 'Unpaired')
         )
 
     @property
     def exempt_str(self) -> str:
         return (
-            _('Exempt *** WOMAN')
+            pgettext('said of a woman', 'Exempt')
             if self.gender == PlayerGender.WOMAN
-            else _('Exempt *** MAN')
+            else pgettext('said of a man', 'Exempt')
         )
 
 

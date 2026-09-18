@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from functools import total_ordering
 from typing import TYPE_CHECKING
 
-from common.i18n import _
+from common.i18n import pgettext
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -209,7 +209,9 @@ class JuniorCategory(PlayerCategory):
 
     @property
     def name(self) -> str:
-        return _('U{age_limit} *** YOUTH AGE CATEGORY').format(age_limit=self.age_limit)
+        return pgettext('youth age category', 'U{age_limit}').format(
+            age_limit=self.age_limit
+        )
 
     @property
     def _representative_age(self) -> int:
@@ -223,7 +225,7 @@ class SeniorCategory(PlayerCategory):
 
     @property
     def name(self) -> str:
-        return _('{age_limit}+ *** SENIOR AGE CATEGORY').format(
+        return pgettext('senior age category', '{age_limit}+').format(
             age_limit=self.age_limit
         )
 

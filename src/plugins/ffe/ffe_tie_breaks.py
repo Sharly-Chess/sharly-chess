@@ -6,7 +6,7 @@ from types import UnionType
 from typing import TYPE_CHECKING, Any, cast
 
 from common.exception import OptionError
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -386,7 +386,7 @@ class CutPapiBuchholzType(PapiBuchholzType):
 
     @staticmethod
     def static_name() -> str:
-        return _('Cut *** TIE BREAK VARIATION')
+        return pgettext('tie break variation', 'Cut')
 
     @property
     def full_name(self) -> str:
