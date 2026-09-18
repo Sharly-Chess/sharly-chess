@@ -144,6 +144,7 @@
                     $('#use-balance-groups').change(function () {
                         const isEnabled = $('#distribution-type').val() === 'rating' && this.checked;
                         $('#balance-groups-help').toggle(isEnabled);
+                        $('#split-clubs-container').toggle(isEnabled);
                         if (isEnabled) {
                             selectable = new Selectable({
                                 filter: '.selectable-item',

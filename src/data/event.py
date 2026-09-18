@@ -694,7 +694,7 @@ class Event:
                     source_tournament.id, player.id
                 )
                 del source_tournament.tournament_players_by_id[player.id]
-            player.optional_single_tournament_id = target_tournament.id
+                player.optional_single_tournament_id = target_tournament.id
         self.clear_player_cache()
 
     # --------------------------------------------------------------------------

@@ -2947,7 +2947,7 @@ class TournamentAdminController(BaseEventAdminController):
                         ', '.join(
                             [
                                 f'{tournament.name} ({player_count_by_tournament_and_club[(tournament, player.club)]}/{player_count_by_tournament_id[tournament.id]})'
-                                for tournament in tournaments_with_lowest_player_count
+                                for tournament in tournaments_with_lowest_club_count
                             ]
                         ),
                     )
@@ -2957,13 +2957,13 @@ class TournamentAdminController(BaseEventAdminController):
                     )
 
                 target_tournament: Tournament = tournaments_with_lowest_club_count[0]
-                if len(tournaments_with_lowest_player_count) > 1:
+                if len(tournaments_with_lowest_club_count) > 1:
                     min_average_rating: float = float('inf')
                     # set the tournament with the lowest average rating as the target
                     logger.debug(
-                        'Average ratings for the incomplete tournaments with the lowest player count:'
+                        'Average ratings for the incomplete tournaments with the lowest club count:'
                     )
-                    for tournament in tournaments_with_lowest_player_count:
+                    for tournament in tournaments_with_lowest_club_count:
                         average_rating: float = (
                             sum(
                                 player.rating
