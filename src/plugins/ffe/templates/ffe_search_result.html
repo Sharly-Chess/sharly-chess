@@ -2,7 +2,7 @@
 {% import '/admin/common/macros.j2' as admin_macros %}
 
 <div
-    {% if player.plugin_data.ffe and player.plugin_data.ffe.ffe_licence == "N" %}
+    {% if player.plugin_data.ffe and player.plugin_data.ffe.ffe_licence == "N" and player.federation.name == "FRA" %}
         class="license-expired"
     {% endif %}
 >

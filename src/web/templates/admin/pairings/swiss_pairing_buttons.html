@@ -26,6 +26,10 @@
             {{ _('Mark all players as "%(status)s" ', status=_('Present')) }}
         </button>
     {% endif %}
+    {# Information about the round and the settings it will be paired with:
+       worth a permanent row on a desktop, but on a phone they give way to
+       the actions. #}
+    <span class="top-nav-collapsible d-flex flex-wrap gap-2">
     {% with info_button_template = admin_tournament.pairing_system.pairing_info_button_template %}
         {% if info_button_template %}
             {% include info_button_template %}
@@ -33,6 +37,7 @@
     {% endwith %}
     {% include 'prohibited_button.html' %}
     {% include 'pairing_settings_button.html' %}
+    </span>
     {% set can_use_pairing_engine = client.can_use_pairing_engine(admin_tournament.id) %}
     {% if 'FULL_PAIRING' in allowed_actions %}
         <div
@@ -166,6 +171,7 @@
            block round-unpair; only actual played results (or
            user-entered forfeit wins on present players) should. #}
         {% if not admin_tournament.round_has_played_result(admin_round) %}
+            <span class="top-nav-collapsible d-flex">
             <div
                 {% if not client.can_unpair_round(admin_tournament.id) %}
                     {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}
@@ -201,6 +207,7 @@
                     {{ _('Unpair') }}
                 </button>
             </div>
+            </span>
         {% endif %}
     {% endif %}
 </span>
