@@ -60,7 +60,7 @@ class TestMessageContexts:
         )
         assert DomainLocaleInfo.message_uses_legacy_note(
             Message(
-                ('%(num)d column *** PLURAL', '%(num)d columns *** PLURAL'),
+                ('%(num)d column *** SINGULAR', '%(num)d columns *** PLURAL'),
                 ('', ''),
             )
         )
