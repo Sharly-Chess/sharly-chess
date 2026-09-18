@@ -13,7 +13,12 @@ final) — with no special cases.
 
 from dataclasses import dataclass
 
-from data.pairings.knockout_helpers.layout import BracketLayout, BracketMatch
+from data.pairings.knockout_helpers.layout import (
+    BracketColumn,
+    BracketLayout,
+    BracketMatch,
+    BracketSection,
+)
 
 BOX_WIDTH = 210
 # Tall enough for two lines per slot (the name, and the group line).
@@ -158,14 +163,14 @@ def build_svg(layout: BracketLayout) -> BracketSvg:
 
 
 def _place_section(
-    section_columns,
+    section_columns: tuple[BracketColumn, ...],
     *,
-    section_top,
-    centres,
-    columns,
-    section_key,
-    section_of,
-    box_height,
+    section_top: float,
+    centres: dict[str, tuple[float, float]],
+    columns: list[PositionedColumn],
+    section_key: str,
+    section_of: dict[str, str],
+    box_height: int,
 ) -> float:
     """Position one bracket's columns; return the section's bottom y.
 
@@ -178,7 +183,7 @@ def _place_section(
     would be pulled up onto the winners' bracket."""
     header_y = section_top - 18  # padding between the round title and its boxes
     section_ids: set[str] = set()
-    bottom = section_top
+    bottom: float = section_top
     for column in section_columns:
         x = MARGIN + (column.app_round - 1) * (BOX_WIDTH + COLUMN_GAP)
         placed: list[PositionedMatch] = []
@@ -216,7 +221,12 @@ def _place_section(
     return bottom
 
 
-def _connectors(columns, centres, section_of, box_height) -> list[Connector]:
+def _connectors(
+    columns: list[PositionedColumn],
+    centres: dict[str, tuple[float, float]],
+    section_of: dict[str, str],
+    box_height: int,
+) -> list[Connector]:
     """The classic bracket connector, one per match: the matches feeding it
     run to a shared vertical bar in the gap, then a single line enters the
     box at its centre. Only same-bracket feeds are drawn — a cross-bracket
@@ -247,7 +257,9 @@ def _connectors(columns, centres, section_of, box_height) -> list[Connector]:
     return connectors
 
 
-def _final_connectors(final_section, centres) -> list[Connector]:
+def _final_connectors(
+    final_section: BracketSection | None, centres: dict[str, tuple[float, float]]
+) -> list[Connector]:
     """The grand final's feeders — the winners' and losers' champions
     converging on it — plus a link from the grand final to its reset game.
     These are the one cross-bracket link worth drawing: both brackets meet

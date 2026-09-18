@@ -9,7 +9,7 @@ from functools import lru_cache, cache
 from math import floor
 from subprocess import CompletedProcess
 from typing import Any, Protocol, TYPE_CHECKING, cast, ClassVar
-from collections.abc import Callable, Iterable, Hashable, Collection
+from collections.abc import Iterable, Hashable, Collection
 
 import iso4217parse
 import pycountry

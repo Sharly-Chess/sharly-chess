@@ -4,6 +4,7 @@ fixed to the round reached, and only the tie-breaks that can settle a match
 count.
 """
 
+from contextlib import suppress
 import pytest
 
 from data.loader import EventLoader
@@ -139,10 +140,8 @@ class TestCreateDefaultTieBreaks:
     Points."""
 
     def teardown_method(self):
-        try:
+        with suppress(Exception):
             TestUtils.delete_event(DEFAULTS_EVENT_ID)
-        except Exception:
-            pass
 
     def _created(self, pairing: str, team: bool):
         from data.tie_breaks.tie_breaks import ManualTieBreak
@@ -244,10 +243,8 @@ class TestAdvancementResolver:
         TestUtils.delete_event(TB_EVENT_ID)
 
     def _reload(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(TB_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(TB_EVENT_ID)
         return self._event.tournaments_by_name[TB_TOURNAMENT]
 
@@ -441,10 +438,8 @@ class TestKnockoutCreationDefault:
         return self._event.tournaments_by_name['ko']
 
     def teardown_method(self):
-        try:
+        with suppress(Exception):
             TestUtils.delete_event(DEF_EVENT_ID)
-        except Exception:
-            pass
 
     def test_team_knockout_gets_the_playoff_marker_by_default(self):
         tournament = self._make('TEAM_KNOCKOUT_STANDARD')

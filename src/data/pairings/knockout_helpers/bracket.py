@@ -36,7 +36,7 @@ def bracket_size(participant_count: int) -> int:
     """
     if participant_count < 2:
         return 0
-    return 2 ** round_count(participant_count)
+    return int(2 ** round_count(participant_count))
 
 
 def seed_order(size: int) -> list[int]:

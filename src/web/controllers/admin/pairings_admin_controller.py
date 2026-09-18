@@ -338,7 +338,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         else:
             self.admin_unpaired = sorted(unpaired, key=attrgetter('name_sort_key'))
 
-    def reload_waiting_lists(self):
+    def reload_waiting_lists(self) -> None:
         """The side column of a knock-out about to be drawn: who is still in,
         by bracket, and who is out. Empty for every other system, and for a
         round already drawn."""

@@ -1,6 +1,7 @@
 """Colour policy for knock-out pairings."""
 
 import random
+from collections.abc import Callable
 from enum import StrEnum
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
@@ -129,8 +130,8 @@ class KnockoutColourMixin:
         tournament: 'Tournament',
         round_: int,
         pairs: list[tuple[int, int | None]],
-        stronger_first,
-        previous_colour,
+        stronger_first: Callable[['Tournament', int, int], tuple[int, int]],
+        previous_colour: Callable[['Tournament', int, int], 'BoardColor | None'],
     ) -> list[tuple[int, int | None]]:
         """Reorder each contested pair as ``(white, black)`` per the rule."""
         rule = KnockoutColourRuleSetting.get_value(tournament)

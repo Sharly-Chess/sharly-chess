@@ -56,8 +56,8 @@ class KnockoutAdvancementMixin:
         if stb.team_b_id is None:
             return KnockoutAdvancement(stb.team_a_id, None, False)
         round_ = team_board.round
-        records: dict[int, 'TeamRecord'] | None = None
-        context: 'TeamTieBreakContext | None' = None
+        records: dict[int, TeamRecord] | None = None
+        context: TeamTieBreakContext | None = None
         breakdown: list[AdvancementValue] = []
         winner_id: int | None = None
         reason: str | None = None

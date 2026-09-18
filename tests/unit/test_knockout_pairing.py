@@ -7,6 +7,7 @@ Six players in a bracket of eight: the two top seeds get round-one byes.
 
 from operator import attrgetter
 
+from contextlib import suppress
 import pytest
 
 from data.loader import EventLoader
@@ -56,10 +57,8 @@ class TestIndividualKnockout:
         TestUtils.delete_event(EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         # Hold the event so it is not garbage-collected out from under the
         # tournament's weak back-reference.
         self._event = EventLoader().load_event(EVENT_ID)
@@ -910,10 +909,8 @@ class TestGroupedKnockout:
         TestUtils.delete_event(GROUP_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(GROUP_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(GROUP_EVENT_ID)
         return self._event.tournaments_by_name[GROUP_TOURNAMENT_NAME]
 
@@ -1093,10 +1090,8 @@ class TestGroupedDoubleElimination:
         TestUtils.delete_event(GDE_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(GDE_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(GDE_EVENT_ID)
         return self._event.tournaments_by_name[GDE_TOURNAMENT_NAME]
 
@@ -1177,10 +1172,8 @@ class TestDoubleElimination:
         TestUtils.delete_event(DE_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(DE_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(DE_EVENT_ID)
         return self._event.tournaments_by_name[DE_TOURNAMENT_NAME]
 
@@ -1533,7 +1526,7 @@ class TestDoubleElimination:
             'Upper Bracket Final',
             'Lower Bracket Semifinals',
         ]  # winners' bracket first
-        by_label = {label: bs for label, bs in sections}
+        by_label = dict(sections)
         wb_names = {
             b.optional_white_tournament_player.last_name
             for b in by_label['Upper Bracket Final']
@@ -1733,10 +1726,8 @@ class TestTeamKnockout:
         TestUtils.delete_event(TEAM_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(TEAM_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(TEAM_EVENT_ID)
         return self._event.tournaments_by_name[TEAM_TOURNAMENT_NAME]
 
@@ -1981,10 +1972,8 @@ class TestGroupedTeamKnockout:
         TestUtils.delete_event(GT_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(GT_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(GT_EVENT_ID)
         return self._event.tournaments_by_name[GT_TOURNAMENT_NAME]
 
@@ -2108,10 +2097,8 @@ class TestTeamDoubleElimination:
         TestUtils.delete_event(TDE_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(TDE_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(TDE_EVENT_ID)
         return self._event.tournaments_by_name[TDE_TOURNAMENT_NAME]
 
@@ -2250,10 +2237,8 @@ class TestIndividualTwoGameKnockout:
         TestUtils.delete_event(TWO_GAME_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(TWO_GAME_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(TWO_GAME_EVENT_ID)
         return self._event.tournaments_by_name[TWO_GAME_NAME]
 
@@ -2681,10 +2666,8 @@ class TestTeamTwoGameKnockout:
         TestUtils.delete_event(TWO_GAME_TEAM_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(TWO_GAME_TEAM_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(TWO_GAME_TEAM_EVENT_ID)
         return self._event.tournaments_by_name[TWO_GAME_TEAM_NAME]
 
@@ -2948,10 +2931,8 @@ class TestDoubleEliminationTwoGame:
         TestUtils.delete_event(TWO_GAME_DE_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(TWO_GAME_DE_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(TWO_GAME_DE_EVENT_ID)
         return self._event.tournaments_by_name[TWO_GAME_DE_NAME]
 
@@ -3096,10 +3077,8 @@ class TestTeamDoubleEliminationTwoGame:
         TestUtils.delete_event(TWO_GAME_TDE_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(TWO_GAME_TDE_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(TWO_GAME_TDE_EVENT_ID)
         return self._event.tournaments_by_name[TWO_GAME_TDE_NAME]
 
@@ -3208,10 +3187,8 @@ class TestTeamKnockoutEmptySeats:
         TestUtils.delete_event(EMPTY_SEAT_EVENT_ID)
 
     def _load(self):
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(EMPTY_SEAT_EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(EMPTY_SEAT_EVENT_ID)
         return self._event.tournaments_by_name[EMPTY_SEAT_TOURNAMENT_NAME]
 

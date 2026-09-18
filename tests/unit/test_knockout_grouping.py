@@ -53,7 +53,7 @@ class TestGroupedLeaves:
         # groups meet only after each has resolved its own sub-bracket.
         leaves = grouped_leaves([[1, 2], [3, 4]])
         assert leaves == [1, 2, 3, 4]
-        pairs = list(zip(leaves[::2], leaves[1::2]))
+        pairs = list(zip(leaves[::2], leaves[1::2], strict=True))
         assert pairs == [(1, 2), (3, 4)]  # each round-one match is intra-group
 
     def test_four_equal_groups_top_two_meet_in_the_final(self):
@@ -61,7 +61,7 @@ class TestGroupedLeaves:
         # opposite halves, so the two strongest groups can only meet at the end.
         leaves = grouped_leaves([[1, 2], [3, 4], [5, 6], [7, 8]])
         assert leaves == [1, 2, 7, 8, 3, 4, 5, 6]
-        pairs = list(zip(leaves[::2], leaves[1::2]))
+        pairs = list(zip(leaves[::2], leaves[1::2], strict=True))
         assert pairs == [(1, 2), (7, 8), (3, 4), (5, 6)]  # all intra-group
 
     def test_ragged_group_sizes_pad_with_byes(self):

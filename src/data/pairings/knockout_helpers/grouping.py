@@ -22,6 +22,7 @@ from data.pairings.knockout_helpers.common import seeded_players
 from data.pairings.settings import PairingSetting
 
 if TYPE_CHECKING:
+    from data.pairing_dimensions import PairingDimension
     from data.tournament import Tournament
 
 
@@ -76,8 +77,9 @@ def grouped_leaves(groups: list[list[int]]) -> list[int | None]:
     leaves: list[int | None] = []
     for block in outer:
         group = groups[block - 1] if block - 1 < group_count else []
-        for local in inner:
-            leaves.append(group[local - 1] if local - 1 < len(group) else None)
+        leaves.extend(
+            group[local - 1] if local - 1 < len(group) else None for local in inner
+        )
     return leaves
 
 
@@ -144,7 +146,9 @@ class KnockoutGroupingMixin:
     def _grouping_host(self) -> _KnockoutGroupingHost:
         return cast(_KnockoutGroupingHost, self)
 
-    def _grouping_dimension(self, tournament: 'Tournament'):
+    def _grouping_dimension(
+        self, tournament: 'Tournament'
+    ) -> 'PairingDimension | None':
         dimension_id = KnockoutGroupingSetting.get_value(tournament)
         if not dimension_id:
             return None
@@ -154,7 +158,7 @@ class KnockoutGroupingMixin:
         return None
 
     def _grouping_members(
-        self, tournament: 'Tournament', dimension
+        self, tournament: 'Tournament', dimension: 'PairingDimension'
     ) -> list[tuple[int, str | None]]:
         """``(id, group_key)`` per participant in natural seed order."""
         if tournament.pairing_system.paired_by_team:

@@ -108,7 +108,7 @@ class PlayerColumnHandler:
             # A knock-out ranks by the round reached: a plain-language result,
             # not a score or standings tie-breaks.
             return self.get_columns(
-                base + [partial(pt.KnockoutResultColumn, tournament=tournament)]
+                [*base, partial(pt.KnockoutResultColumn, tournament=tournament)]
             )
         return self.get_columns(
             base

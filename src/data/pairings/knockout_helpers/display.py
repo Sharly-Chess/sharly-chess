@@ -14,6 +14,7 @@ from utils.enum import Result
 
 if TYPE_CHECKING:
     from data.pairings.knockout_helpers.layout import BracketLayout, MatchDescriptor
+    from data.pairing import Pairing
     from data.teams.team_board import TeamBoard
     from data.tournament import Tournament, TournamentPlayer
 
@@ -63,7 +64,7 @@ class KnockoutDisplayMixin:
                 ),
             )
 
-        def build_match(descriptor) -> BracketMatch:
+        def build_match(descriptor: 'MatchDescriptor') -> BracketMatch:
             score_a, score_b = self._slot_scores(
                 tournament, descriptor.app_round, descriptor.a_id, descriptor.b_id
             )
@@ -84,7 +85,7 @@ class KnockoutDisplayMixin:
                 source_bottom=descriptor.source_bottom,
             )
 
-        def _match_order(descriptor) -> int:
+        def _match_order(descriptor: 'MatchDescriptor') -> int:
             parts = descriptor.id.split('.')
             return int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 0
 
@@ -203,8 +204,10 @@ class KnockoutDisplayMixin:
             )
         placement = getattr(self, 'knockout_placement_values', None)
         if placement is not None:
-            return placement(tournament, after_round=after_round).get(
-                player.id, float(tournament.rounds + 1)
+            return float(
+                placement(tournament, after_round=after_round).get(
+                    player.id, float(tournament.rounds + 1)
+                )
             )
         first_loss: int | None = None
         for round_ in range(1, after_round + 1):
@@ -223,16 +226,19 @@ class KnockoutDisplayMixin:
                 after_stage=after_round,
             )
             if value is not None:
-                return value
+                return float(value)
         return float(first_loss)
 
     @staticmethod
-    def _player_lost(tournament: 'Tournament', player, pairing) -> bool:
+    def _player_lost(
+        tournament: 'Tournament', player: 'TournamentPlayer', pairing: 'Pairing'
+    ) -> bool:
         result = pairing.result
         if result.is_loss or result in (Result.FORFEIT_LOSS, Result.DOUBLE_FORFEIT):
             return True
         if result.is_draw:
-            board = tournament.boards_by_id.get(pairing.stored_pairing.board_id)
+            board_id = pairing.stored_pairing.board_id
+            board = tournament.boards_by_id.get(board_id) if board_id else None
             winner_id = (
                 tournament.knockout.advancement_winner_player(board)
                 if board is not None

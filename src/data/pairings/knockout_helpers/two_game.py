@@ -239,7 +239,7 @@ class TwoGameMatchMixin:
         return (Utils.points_str(totals[a_id]), Utils.points_str(totals[b_id]))
 
     @staticmethod
-    def _add_individual_points(board, totals: dict[int, float]) -> None:
+    def _add_individual_points(board: 'Board', totals: dict[int, float]) -> None:
         white = board.optional_white_tournament_player
         black = board.black_tournament_player
         if white is not None and white.id in totals:
@@ -486,7 +486,7 @@ class TwoGameSingleElimMixin(TwoGameMatchMixin):
             tournament, stage=level, final_stage=self._level_count(tournament)
         )
 
-    def board_section_label(self, tournament: 'Tournament', board) -> str | None:
+    def board_section_label(self, tournament: 'Tournament', board: Any) -> str | None:
         level = self._level_of(board.round)
         game = self._game_of(board.round)
         if tournament.pairing_system.paired_by_team:

@@ -18,7 +18,7 @@ class Migration(BaseMigration):
     now read as an arbiter's schedule whenever it is not zero, and a placeholder
     left in place would be taken for a deliberate one."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `team_board` ADD `knockout_winner_team_id` INTEGER'
         )
@@ -34,7 +34,7 @@ class Migration(BaseMigration):
             '(SELECT DISTINCT `tournament_id` FROM `pairing`)'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `team_board` DROP COLUMN `knockout_winner_team_id`'
         )

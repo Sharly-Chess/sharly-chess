@@ -118,7 +118,9 @@ class KnockoutEngine(
             and self._grouping_dimension(tournament) is None
         )
 
-    def board_section_label(self, tournament: 'Tournament', board) -> str | None:
+    def board_section_label(
+        self, tournament: 'Tournament', board: 'Board'
+    ) -> str | None:
         """The round name of a board — Final, Semifinals, …, or 'Third-place
         playoff' for the bronze match sharing the final round."""
         rounds = tournament.rounds
@@ -192,7 +194,7 @@ class KnockoutEngine(
         slot (a phantom group), dropped before boards are created."""
         leaves = self._grouped_leaves(tournament)
         if leaves is not None:
-            return list(zip(leaves[::2], leaves[1::2]))
+            return list(zip(leaves[::2], leaves[1::2], strict=True))
         by_seed = seeded_players(tournament)
         result: list[tuple[int | None, int | None]] = []
         if tournament.player_count < self.MIN_PLAYERS:
@@ -330,7 +332,7 @@ class DoubleEliminationEngine(
     def _participant_count(self, tournament: 'Tournament') -> int:
         return tournament.player_count
 
-    def _board_participant_ids(self, board) -> set[int]:
+    def _board_participant_ids(self, board: 'Board') -> set[int]:
         return {
             player.id
             for player in (
@@ -347,7 +349,11 @@ class DoubleEliminationEngine(
         return player.id if player is not None else None
 
     def _played_match_winner(
-        self, tournament: 'Tournament', match: double_elimination.Match, a_id, b_id
+        self,
+        tournament: 'Tournament',
+        match: double_elimination.Match,
+        a_id: int,
+        b_id: int,
     ) -> int | None:
         board = find_knockout_board(tournament, match.round, a_id, b_id)
         winner = board_winner_player_id(board) if board is not None else None
@@ -386,7 +392,11 @@ class DoubleEliminationTwoGameEngine(_TwoGameDoubleElimMixin, DoubleEliminationE
 
     @override
     def _played_match_winner(
-        self, tournament: 'Tournament', match: double_elimination.Match, a_id, b_id
+        self,
+        tournament: 'Tournament',
+        match: double_elimination.Match,
+        a_id: int,
+        b_id: int,
     ) -> int | None:
         game1 = find_knockout_board(
             tournament, self._game_app_round(match.round, 1), a_id, b_id
@@ -508,7 +518,9 @@ class TeamKnockoutEngine(
             and self._grouping_dimension(tournament) is None
         )
 
-    def board_section_label(self, tournament: 'Tournament', team_board) -> str | None:
+    def board_section_label(
+        self, tournament: 'Tournament', team_board: 'TeamBoard'
+    ) -> str | None:
         """The round name of a team match — Final, Semifinals, …, or
         'Third-place playoff' for the bronze match in the final round."""
         rounds = tournament.rounds
@@ -572,7 +584,7 @@ class TeamKnockoutEngine(
     ) -> list[tuple[int | None, int | None]]:
         leaves = self._grouped_leaves(tournament)
         if leaves is not None:
-            return list(zip(leaves[::2], leaves[1::2]))
+            return list(zip(leaves[::2], leaves[1::2], strict=True))
         teams = self._teams_for_tournament(tournament)
         result: list[tuple[int | None, int | None]] = []
         if len(teams) < self.MIN_TEAMS:
@@ -708,7 +720,7 @@ class TeamDoubleEliminationEngine(
     def _participant_count(self, tournament: 'Tournament') -> int:
         return len(self._teams_for_tournament(tournament))
 
-    def _board_participant_ids(self, team_board) -> set[int]:
+    def _board_participant_ids(self, team_board: 'TeamBoard') -> set[int]:
         stb = team_board.stored_team_board
         return {
             team_id for team_id in (stb.team_a_id, stb.team_b_id) if team_id is not None
@@ -719,7 +731,11 @@ class TeamDoubleEliminationEngine(
         return teams[seed - 1].id if 1 <= seed <= len(teams) else None
 
     def _played_match_winner(
-        self, tournament: 'Tournament', match: double_elimination.Match, a_id, b_id
+        self,
+        tournament: 'Tournament',
+        match: double_elimination.Match,
+        a_id: int,
+        b_id: int,
     ) -> int | None:
         team_board = find_knockout_team_board(tournament, match.round, a_id, b_id)
         if team_board is None:
@@ -765,7 +781,11 @@ class TeamDoubleEliminationTwoGameEngine(
 
     @override
     def _played_match_winner(
-        self, tournament: 'Tournament', match: double_elimination.Match, a_id, b_id
+        self,
+        tournament: 'Tournament',
+        match: double_elimination.Match,
+        a_id: int,
+        b_id: int,
     ) -> int | None:
         leg1 = find_knockout_team_board(
             tournament, self._game_app_round(match.round, 1), a_id, b_id

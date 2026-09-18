@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import cached_property, partial
-from typing import Any, override, cast
+from typing import Any, TYPE_CHECKING, override, cast
 from collections.abc import Callable
 
 from common.exception import SharlyChessException, OptionError
@@ -93,6 +93,9 @@ from utils.enum import (
 )
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
+
+if TYPE_CHECKING:
+    from data.pairings.knockout_helpers.layout import BracketLayout
 
 logger: logging.Logger = get_logger()
 
@@ -521,7 +524,7 @@ class KnockoutBracketPrintDocument(PrintDocument):
             context['svg'] = build_svg(layout) if layout is not None else None
         return context
 
-    def _schedule_rounds(self, layout) -> list[dict[str, Any]]:
+    def _schedule_rounds(self, layout: 'BracketLayout | None') -> list[dict[str, Any]]:
         """The bracket as a chronological list: one entry per app round, each
         grouping its matches by bracket round (a round can hold both a
         winners' and a losers' game), with the round's scheduled date/time when

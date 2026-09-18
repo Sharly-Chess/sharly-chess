@@ -9,6 +9,7 @@ and can never be drawn.
 
 from unittest import TestCase
 
+from contextlib import suppress
 import pytest
 
 from data.loader import EventLoader
@@ -79,10 +80,8 @@ class EventCloneTestCase(TestCase):
                     )
 
     def _load(self, uniq_id: str) -> Tournament:
-        try:
+        with suppress(KeyError):
             EventLoader.unload_event(uniq_id)
-        except KeyError:
-            pass
         # A Tournament holds its event weakly, so the event has to
         # outlive this call.
         self._event = EventLoader().load_event(uniq_id)

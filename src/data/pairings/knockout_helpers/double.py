@@ -117,7 +117,11 @@ class DoubleEliminationMixin:
         raise NotImplementedError
 
     def _played_match_winner(
-        self, tournament: 'Tournament', match: double_elimination.Match, a_id, b_id
+        self,
+        tournament: 'Tournament',
+        match: double_elimination.Match,
+        a_id: int,
+        b_id: int,
     ) -> int | None:
         raise NotImplementedError
 
@@ -213,7 +217,7 @@ class DoubleEliminationMixin:
     ) -> bool:
         key = ('empty', match_id)
         if key in cache:
-            return cache[key]
+            return bool(cache[key])
         cache[key] = False
         match = by_id[match_id]
         result = self._source_absent(
@@ -227,7 +231,7 @@ class DoubleEliminationMixin:
     ) -> bool:
         key = ('no_loser', match_id)
         if key in cache:
-            return cache[key]
+            return bool(cache[key])
         cache[key] = False
         match = by_id[match_id]
         result = self._source_absent(
@@ -241,7 +245,7 @@ class DoubleEliminationMixin:
     ) -> int | None:
         key = ('winner', match_id)
         if key in cache:
-            return cache[key]
+            return cast(int | None, cache[key])
         cache[key] = None
         match = by_id[match_id]
         a_absent = self._source_absent(tournament, by_id, match.a, cache)
@@ -417,18 +421,18 @@ class DoubleEliminationMixin:
             values[runner_up] = self._placement_final_value(tournament)
         return values
 
-    def _board_participant_ids(self, board) -> set[int]:
+    def _board_participant_ids(self, board: Any) -> set[int]:
         raise NotImplementedError
 
-    def board_bracket(self, tournament: 'Tournament', board) -> str | None:
+    def board_bracket(self, tournament: 'Tournament', board: Any) -> str | None:
         match = self._board_match(tournament, board)
         return match.bracket if match is not None else None
 
-    def board_section_label(self, tournament: 'Tournament', board) -> str | None:
+    def board_section_label(self, tournament: 'Tournament', board: Any) -> str | None:
         match = self._board_match(tournament, board)
         return self._match_section_label(tournament, match) if match else None
 
-    def loser_stays_in_bracket(self, tournament: 'Tournament', board) -> bool:
+    def loser_stays_in_bracket(self, tournament: 'Tournament', board: Any) -> bool:
         """Whether whoever loses this match plays on. A winners'-bracket loss
         drops into the losers' bracket — the schedule holds a match seated by
         it — and a grand final won by the losers'-bracket champion leaves both
@@ -446,7 +450,7 @@ class DoubleEliminationMixin:
         )
 
     def _board_match(
-        self, tournament: 'Tournament', board
+        self, tournament: 'Tournament', board: Any
     ) -> 'double_elimination.Match | None':
         wanted = self._board_participant_ids(board)
         if not wanted:
@@ -706,7 +710,7 @@ class TwoGameDoubleElimMixin(TwoGameMatchMixin):
             self._game_app_round(de_round, 2),
         )
 
-    def board_section_label(self, tournament: 'Tournament', board) -> str | None:
+    def board_section_label(self, tournament: 'Tournament', board: Any) -> str | None:
         host = self._two_game_double_elim_host()
         match = host._board_match(tournament, board)
         if match is None:

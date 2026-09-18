@@ -26,7 +26,7 @@ def seed_sort_key(player: 'TournamentPlayer') -> tuple:
     the starting rank, which is all they have."""
     if player.pairing_number is not None:
         return (0, player.pairing_number)
-    return (1,) + player.starting_rank_sort_key
+    return (1, *player.starting_rank_sort_key)
 
 
 def loss_is_elimination(engine: Any, tournament: 'Tournament', board: Any) -> bool:
@@ -122,7 +122,7 @@ def find_knockout_board(
     so already-paired later rounds survive an edited earlier result.
     """
     wanted = {a_id, b_id}
-    best: 'Board | None' = None
+    best: Board | None = None
     best_overlap = 0
     for board in tournament.get_round_boards(round_):
         white = board.optional_white_tournament_player
@@ -143,7 +143,7 @@ def find_knockout_team_board(
 ) -> 'TeamBoard | None':
     """Find a knock-out team board by its expected teams."""
     wanted = {a_id, b_id}
-    best: 'TeamBoard | None' = None
+    best: TeamBoard | None = None
     best_overlap = 0
     for team_board in tournament.team_boards_by_round.get(round_, []):
         stb = team_board.stored_team_board

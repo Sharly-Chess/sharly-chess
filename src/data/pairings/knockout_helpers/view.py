@@ -189,7 +189,7 @@ class KnockoutView:
             return None
         for dimension in self._t.prohibited_pairing_dimensions():
             if dimension.id == dimension_id:
-                return method(self._t, dimension)
+                return cast(dict | None, method(self._t, dimension))
         return None
 
     def team_last_round(self, team_id: int) -> int | None:

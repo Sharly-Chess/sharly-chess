@@ -103,7 +103,7 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
             return None
         losers: list[int] = []
         for (a_id, b_id), winner in zip(
-            self._single_elim_bracket_pairs(tournament, round_), winners
+            self._single_elim_bracket_pairs(tournament, round_), winners, strict=True
         ):
             if a_id is None or b_id is None or winner is None:
                 continue
@@ -117,7 +117,7 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
         host = self._single_elim_host()
         key = (round_, index)
         if key in cache:
-            return cache[key]
+            return cast(tuple[int | None, int | None, int | None], cache[key])
         cache[key] = (None, None, None)  # guard against re-entry
         if '_leaves' not in cache:
             cache['_leaves'] = host._grouped_leaves(tournament)
@@ -145,14 +145,12 @@ class SingleEliminationBracketMixin(SingleEliminationThirdPlaceMixin):
                 winner = host._single_elim_pair_winner(tournament, round_, a_id, b_id)
             else:
                 winner = None
-        elif round_ <= 1:
-            winner = host._single_elim_pair_winner(tournament, round_, a_id, b_id)
-        elif a_id is not None and b_id is not None:
+        elif round_ <= 1 or (a_id is not None and b_id is not None):
             winner = host._single_elim_pair_winner(tournament, round_, a_id, b_id)
         else:
             winner = None
         cache[key] = (a_id, b_id, winner)
-        return cache[key]
+        return a_id, b_id, winner
 
     @staticmethod
     def _slot_all_virtual(leaves: list[int | None], level: int, index: int) -> bool:
