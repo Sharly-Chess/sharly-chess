@@ -1,4 +1,5 @@
 from copy import copy
+from datetime import date
 from typing import Annotated, Any, cast
 
 from argon2 import PasswordHasher
@@ -224,7 +225,7 @@ class AccountAdminController(BaseEventAdminController):
             ) from None
 
         stored_player, errors = await PlayerAdminController.get_search_stored_player(
-            data_source, player_source_id
+            data_source, player_source_id, date.today()
         )
         if stored_player:
             stored_account = StoredAccount(
