@@ -138,7 +138,9 @@ class SetResultGuard(BaseGuard):
             self._authorize_tournament_action(
                 AuthAction.UPDATE_RESULTS, client, request
             )
-        if result.is_special_result:
+        # Both result forms offer the forfeits behind this right, and a
+        # request is not bound by what a form offered it.
+        if result.is_special_result or result.is_forfeit:
             self._authorize_tournament_action(
                 AuthAction.SET_SPECIAL_RESULTS, client, request
             )

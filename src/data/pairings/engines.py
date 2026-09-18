@@ -505,7 +505,7 @@ class BbpPairings(PairingEngine):
                     bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-output.txt',
                 )
                 shutil.copy(
-                    pairings_file_path,
+                    checklist_file_path,
                     bbp_tmp_dir / f'{tournament.sanitized_name}-checklist-output.txt',
                 )
             except PermissionError as e:

@@ -1,4 +1,4 @@
-"""Integration tests for `SCESession.sync_event`.
+"""`SCESession.sync_event`, orchestrated end to end.
 
 Real Event/Tournament/Player in a SQLite DB under `tests/tmp/`. SC.com
 HTTP boundary is mocked at the `requests.post` / `_get_event_data` level
@@ -153,7 +153,7 @@ def _canned_event_data(sce_player_id: str | None = None) -> dict:
     }
 
 
-@pytest.mark.integration
+@pytest.mark.unit
 class TestSyncEventDeleteRetry(TestCase):
     """Failed batch deletes must keep their entry in
     `deleted_player_ids` so the next sync retries. Successful deletes
@@ -261,7 +261,7 @@ class TestSyncEventDeleteRetry(TestCase):
 MOVE_EVENT_UNIQ_ID = 'test-sce-sync-event-move'
 
 
-@pytest.mark.integration
+@pytest.mark.unit
 class TestSyncEventLocalMove(TestCase):
     """Local-only move (player moved between local tournaments) should
     push an UPDATE op with op-level `tournament_id` = target so the
