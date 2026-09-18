@@ -1,10 +1,10 @@
 import re
 import shutil
 import tempfile
+from contextlib import ExitStack
 from functools import partial
 from logging import Logger
 from pathlib import Path
-from typing import Any
 
 from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
 from requests import Session
@@ -74,7 +74,6 @@ class FFESession(Session):
         """Reads any URL and returns the content as a string, or None on error (the error is logged).
         When debug is True, log the request contents received."""
         self.last_url_read = url
-        handlers: dict[str, Any] = {}
         try:
             logger.debug(
                 'read_url(%s), method=%s', url, 'POST' if data or files else 'GET'
@@ -106,11 +105,14 @@ class FFESession(Session):
                 if not files:
                     response = self.post(url, data=data)
                 else:
-                    handlers = {
-                        file_id: open(file_name, 'rb')
-                        for file_id, file_name in files.items()
-                    }
-                    response = self.post(url, data=data, files=handlers)
+                    # The stack closes every handle once the request is done,
+                    # including when it raises one of the errors caught below.
+                    with ExitStack() as stack:
+                        handlers = {
+                            file_id: stack.enter_context(open(file_name, 'rb'))
+                            for file_id, file_name in files.items()
+                        }
+                        response = self.post(url, data=data, files=handlers)
             return response.content.decode()
         except ConnectionError as ex:
             logger.exception('Failed to read [%s] (connection error): [%s].', url, ex)
@@ -125,12 +127,11 @@ class FFESession(Session):
             )
         except RequestException as ex:
             logger.exception('Failed to read [%s]: [%s].', url, ex)
-        finally:
-            for handler in handlers.values():
-                handler.close()
         return None
 
-    def _parse_html_content(self, html) -> tuple[AdvancedHTMLParser | None, str | None]:
+    def _parse_html_content(
+        self, html: str
+    ) -> tuple[AdvancedHTMLParser | None, str | None]:
         """Parses any HTML content received and returns the parsed content
         (as an HTML parser) and an error (as a string) if any (or None)"""
         parser: AdvancedHTMLParser = AdvancedHTMLParser()
@@ -140,16 +141,15 @@ class FFESession(Session):
         tag: AdvancedTag | None = parser.getElementById(
             tag_id := 'ctl00_ContentPlaceHolderMain_LabelError'
         )
-        if tag:
-            if tag.innerText:
-                matches = re.match(
-                    r'^Transfert du fichier : .* \(\d+ octets\) achevé$', tag.innerText
-                )
-                if matches:
-                    logger.debug('Tag [%s] matches: [%s]', tag_id, tag.innerText)
-                else:
-                    error = tag.innerText
-                    logger.error('Tag [%s] does not match: [%s]', tag_id, tag.innerText)
+        if tag and tag.innerText:
+            matches = re.match(
+                r'^Transfert du fichier : .* \(\d+ octets\) achevé$', tag.innerText
+            )
+            if matches:
+                logger.debug('Tag [%s] matches: [%s]', tag_id, tag.innerText)
+            else:
+                error = tag.innerText
+                logger.error('Tag [%s] does not match: [%s]', tag_id, tag.innerText)
         return parser, error
 
     def read_ffe_state(
@@ -211,8 +211,6 @@ class FFESession(Session):
         Returns True on success, False if the credentials are incorrect."""
 
         assert self.ffe_state
-        if ffe_id is None or ffe_password is None:
-            return False
         logger.debug('Authenticating...')
         url = FFE_ADMIN_URL + '/Default.aspx'
         post_data: dict[str, str] = {
@@ -273,7 +271,7 @@ class FFESession(Session):
             logger.info('FFE authentication succeeded.')
         return auth
 
-    def _validate_admin_access(self):
+    def _validate_admin_access(self) -> None:
         ffe_id, ffe_password = self.get_id_and_password()
 
         if not ffe_id or not ffe_password:
@@ -372,8 +370,7 @@ class FFESession(Session):
                 self.tournament.name,
             )
             return None, None
-        else:
-            return ffe_id, ffe_password
+        return ffe_id, ffe_password
 
     def upload(self, set_visible: bool) -> FailureFFEUploadStatus | None:
         """Upload the tournament to the FFE admin website."""
@@ -502,9 +499,7 @@ class FFESession(Session):
             return None
         if not set_visible_link_id.lower().startswith('activer'):
             logger.error(
-                'Invalid display link text [{text}]'.format(
-                    text=self.auth_state[SET_VISIBLE_LINK_ID]
-                )
+                f'Invalid display link text [{self.auth_state[SET_VISIBLE_LINK_ID]}]'
             )
             return UnexpectedFailureFFEUploadStatus()
         url = FFE_ADMIN_URL + '/MonTournoi.aspx'
@@ -524,7 +519,7 @@ class FFESession(Session):
         logger.info('Tournament visibility successfully set')
         return None
 
-    def upload_rules(self, rules_file: Path):
+    def upload_rules(self, rules_file: Path) -> None:
         """Upload the rules of the tournament to the FFE admin website.
         Raises a localised SharlyChessException if it fails"""
 
@@ -576,7 +571,7 @@ class FFESession(Session):
 
 
 class FFEArbitersLoader(FFESession):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(tournament=None)
 
     def load_ffe_arbiter_titles_by_ffe_licence_number(
@@ -605,7 +600,7 @@ class FFEArbitersLoader(FFESession):
         url = f'{FFE_PUBLIC_URL}/ListeArbitres.aspx?Action=DNALIGUE&Ligue={league}'
         post_data: dict[str, str] = {}
         if page_number > 1:
-            post_data: dict[str, str] = {
+            post_data = {
                 '__EVENTTARGET': 'ctl00$ContentPlaceHolderMain$PagerFooter',
                 '__EVENTARGUMENT': 'd',
                 VIEW_STATE_INPUT_ID: self.ffe_state[VIEW_STATE_INPUT_ID],
@@ -630,7 +625,7 @@ class FFEArbitersLoader(FFESession):
                     for tr_tag in parser.getElementsByTagName('tr'):
                         try:
                             ffe_licence_number: str = tr_tag.children[0].innerHTML
-                            if PlayerFFELicence.validate(ffe_licence_number):
+                            if PlayerFFELicence.validate(ffe_licence_number):  # noqa: SIM102
                                 if (
                                     ffe_arbiter_title := FFEArbiterTitle.from_html(
                                         tr_tag.children[2].innerHTML

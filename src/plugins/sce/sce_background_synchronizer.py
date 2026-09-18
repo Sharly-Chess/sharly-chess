@@ -35,20 +35,20 @@ def is_sync_scheduled(event_uniq_id: str) -> bool:
     return bool(thread and thread.is_alive())
 
 
-def remove_scheduled_sync(event_uniq_id: str):
+def remove_scheduled_sync(event_uniq_id: str) -> None:
     thread = _TIMEOUT_THREADS.get(event_uniq_id)
     if thread and thread.is_alive():
         thread.cancel()
 
 
-def _publish_upload_event(start: bool = False):
+def _publish_upload_event(start: bool = False) -> None:
     if channels_plugin:
         channels_plugin.publish(
             {'event': f'upload-event{"-start" if start else ""}', 'data': ''}, ['ws']
         )
 
 
-def _exit_with_status(event: Event, status: SCESyncStatus):
+def _exit_with_status(event: Event, status: SCESyncStatus) -> None:
     plugin_data = SCEUtils.get_event_plugin_data(event)
     plugin_data.last_sync_attempt_status = status.id
     now = datetime.now()
@@ -58,7 +58,7 @@ def _exit_with_status(event: Event, status: SCESyncStatus):
     SCEUtils.update_event_plugin_data(event, plugin_data)
 
 
-def sync_event(event_uniq_id: str):
+def sync_event(event_uniq_id: str) -> None:
     """Sync an event's player data with the SCE platform. Runs in a background thread."""
     set_locale(SharlyChessConfig().locale)
 
@@ -83,7 +83,7 @@ def sync_event(event_uniq_id: str):
     except Exception as e:
         logger.exception(e)
         if event:
-            status: SCESyncStatus = UnexpectedFailureSCESyncStatus()
+            status = UnexpectedFailureSCESyncStatus()
             if not SCEUtils.get_event_plugin_data(event).tokens:
                 status = AuthFailureSCESyncStatus()
             _exit_with_status(event, status)
@@ -96,7 +96,7 @@ def sync_event(event_uniq_id: str):
         _publish_upload_event()
 
 
-def schedule_sync(event: Event, force: bool = False):
+def schedule_sync(event: Event, force: bool = False) -> None:
     """Launch a background thread to upload this tournament's results."""
     if event.uniq_id in _ONGOING_EVENTS_UNIQ_IDS:
         return

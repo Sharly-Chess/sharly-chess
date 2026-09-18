@@ -3,7 +3,7 @@ from logging import Logger, getLogger
 from logging.config import dictConfig
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from colorama import Fore, Style
 
@@ -12,11 +12,10 @@ from gui.gui_logger import GUILogHandler
 
 
 class ConsoleOrNullHandler(logging.Handler):
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: Any, **kwargs: Any) -> Any:
         if DEVEL_ENV:
             return logging.StreamHandler(sys.stdout)
-        else:
-            return logging.NullHandler()
+        return logging.NullHandler()
 
 
 class LoggingConfigValues:
@@ -40,7 +39,6 @@ _LOGGER: Logger
 
 def logging_config_values() -> LoggingConfigValues:
     """The default values of the logging config, used in forms."""
-    global _LOGGING_CONFIG_VALUES
     return _LOGGING_CONFIG_VALUES
 
 
@@ -51,7 +49,7 @@ def set_logging_config(
     console_show_level: bool | None = None,
 ) -> dict[str, Any]:
     """Set logging parameters, returns the logging config as a dict that can be used by logging libraries."""
-    global _LOGGING_CONFIG_VALUES, _LOGGER
+    global _LOGGER
     if console_log_level is not None:
         _LOGGING_CONFIG_VALUES.console_log_level = console_log_level
     if console_color is not None:
@@ -67,7 +65,6 @@ def set_logging_config(
 
 def get_logging_config() -> dict[str, Any]:
     """Returns the logging config as a dict that can be used by logging libraries."""
-    global _LOGGING_CONFIG_VALUES
     console_format: str = f'{
         "%(log_color)s" if _LOGGING_CONFIG_VALUES.console_color else ""
     }{"[%(asctime)s] " if _LOGGING_CONFIG_VALUES.console_show_date else ""}{
@@ -146,7 +143,7 @@ def get_logging_config() -> dict[str, Any]:
     }
     log_file_path: Path = Path(LOG_FILE)
     log_file_path.parent.mkdir(parents=True, exist_ok=True)
-    logging_config['handlers']['file'] = {  # type: ignore
+    logging_config['handlers']['file'] = {
         'class': 'logging.handlers.RotatingFileHandler',
         'level': logging.DEBUG,
         'formatter': 'file_formatter',
@@ -156,7 +153,7 @@ def get_logging_config() -> dict[str, Any]:
         'encoding': 'UTF-8',
     }
     for logger_name in logging_config['loggers']:
-        logging_config['loggers'][logger_name]['handlers'].append('file')  # type: ignore
+        logging_config['loggers'][logger_name]['handlers'].append('file')
     return logging_config
 
 
@@ -165,40 +162,39 @@ set_logging_config()
 
 def get_logger() -> Logger:
     """Returns the global logger."""
-    global _LOGGER
     return _LOGGER
 
 
-def __flush_logger():
+def __flush_logger() -> None:
     for handler in _LOGGER.handlers:
         handler.flush()
 
 
-def print_interactive_info(string: str, end='\n'):
+def print_interactive_info(string: str, end: str = '\n') -> None:
     """Prints the message to stdout with color."""
     __flush_logger()
     print(Fore.LIGHTWHITE_EX + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
-def print_interactive_success(string: str, end='\n'):
+def print_interactive_success(string: str, end: str = '\n') -> None:
     """Prints the message to stdout with color."""
     __flush_logger()
     print(Fore.GREEN + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
-def print_interactive_warning(string: str, end='\n'):
+def print_interactive_warning(string: str, end: str = '\n') -> None:
     """Prints the message to stdout with color."""
     __flush_logger()
     print(Fore.YELLOW + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
-def print_interactive_error(string: str, end='\n'):
+def print_interactive_error(string: str, end: str = '\n') -> None:
     """Prints the message to stdout with color."""
     __flush_logger()
     print(Fore.RED + Style.BRIGHT + string + Style.RESET_ALL, end=end)
 
 
-def print_interactive_input(string: str, end='\n'):
+def print_interactive_input(string: str, end: str = '\n') -> None:
     """Prints the message to stdout with color."""
     __flush_logger()
     print(Fore.CYAN + Style.BRIGHT + string + Style.RESET_ALL, end=end)
@@ -210,7 +206,7 @@ def input_interactive(string: str) -> str:
     __flush_logger()
 
     if GUILogHandler.instance:
-        return GUILogHandler.instance.gui.handle_interactive_input(string)
+        return cast(str, GUILogHandler.instance.gui.handle_interactive_input(string))
 
     print(Fore.CYAN + Style.BRIGHT + string + Style.RESET_ALL, end='')
     try:
@@ -230,8 +226,11 @@ def input_interactive_yn(
     __flush_logger()
 
     if GUILogHandler.instance:
-        return GUILogHandler.instance.gui.handle_interactive_yn(
-            title, question, yes_is_default
+        return cast(
+            bool,
+            GUILogHandler.instance.gui.handle_interactive_yn(
+                title, question, yes_is_default
+            ),
         )
 
     yes_answer = _('Y *** THE LETTER TO ANSWER YES')
@@ -257,6 +256,7 @@ def input_interactive_yn(
 
 def quit_app() -> None:
     if GUILogHandler.instance:
-        return GUILogHandler.instance.gui.quit_app()
+        GUILogHandler.instance.gui.quit_app()
+        return
 
     sys.exit(0)

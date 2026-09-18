@@ -3,11 +3,11 @@ import platform
 import signal
 import socket
 import sys
-import time
 from threading import Thread
 from time import sleep
 from types import FrameType
-from typing import Callable, ClassVar, cast
+from typing import ClassVar, cast
+from collections.abc import Callable
 from webbrowser import open
 
 import requests
@@ -55,7 +55,7 @@ if sys.platform == 'win32':  # pragma: py-not-win32
 _PORT_TIMEOUT = 10  # Timeout when looking for a specific port
 
 
-def launch_browser(url: str):
+def launch_browser(url: str) -> None:
     # Set the locale as the function is called in a new thread.
     SharlyChessConfig().load_and_set_env()
     logger.info(f'Opening the welcome page [{url}] in a browser…')
@@ -64,9 +64,7 @@ def launch_browser(url: str):
             requests.get(url, timeout=REQUEST_TIMEOUT)
             break
         except requests.RequestException as e:
-            msg = 'Web server not started yet ({ex}), waiting…'.format(
-                ex=e.__class__.__name__
-            )
+            msg = f'Web server not started yet ({e.__class__.__name__}), waiting…'
             if isinstance(e, requests.TooManyRedirects) and e.response is not None:
                 msg += f' History: {[r.url for r in e.response.history]}'
             logger.info(msg)
@@ -125,7 +123,62 @@ class ServerEngine:
         asyncio.set_event_loop(loop)
         return loop
 
-    async def serve(self):
+    def build_app(self, logging_config: dict) -> Litestar:
+        """The application the server serves, and the one a test drives
+        in-process: both read the routes, middlewares and handlers from
+        the same place."""
+
+        def log_http_exception(exc: Exception, scope: Scope) -> None:
+            if scope['type'] != 'http':
+                return
+            if isinstance(exc, PermissionDeniedException):
+                prefix = '403 permission denied'
+            elif isinstance(exc, NotFoundException):
+                prefix = '404 not found'
+            elif isinstance(exc, ClientException) and exc.status_code == 400:
+                prefix = '400 bad request'
+            else:
+                return
+            http = cast(HTTPScope, scope)
+            logger.error(
+                '%s: %s %s\n%s',
+                prefix,
+                http.get('method', '?'),
+                http.get('path', '?'),
+                exc,
+            )
+
+        return Litestar(
+            debug=self.debug,
+            request_class=HTMXRequest,
+            route_handlers=route_handlers,
+            exception_handlers=exception_handlers,  # type: ignore[arg-type]
+            template_config=template_config,
+            # Favor response latency over maximum compression.
+            compression_config=CompressionConfig(backend='gzip', gzip_compress_level=3),
+            logging_config=LoggingConfig(
+                **logging_config,
+                # Litestar's default only logs exceptions when debug=True.
+                log_exceptions='always',
+                disable_stack_trace={
+                    400,
+                    403,
+                    404,
+                    ClientException,
+                    ValidationException,
+                    PermissionDeniedException,
+                    NotFoundException,
+                },
+            ),
+            after_exception=[log_http_exception],
+            middleware=middlewares,
+            stores=stores,
+            pdb_on_exception=self.debug,
+            plugins=[channels_plugin],
+            listeners=listeners,
+        )
+
+    async def serve(self) -> None:
         logger.debug('System information:')
         logger.debug(
             ' - Machine/processor: %s/%s', platform.machine(), platform.processor()
@@ -145,7 +198,7 @@ class ServerEngine:
                     sc_config.web_port = self.port
                     break
                 logger.debug(f'Port {self.port} already in use (waiting)')
-                time.sleep(1)
+                await asyncio.sleep(1)
             if not sc_config.web_port:
                 logger.info(
                     f'Timeout exceeded for port {self.port}, fallback to other ports'
@@ -179,55 +232,7 @@ class ServerEngine:
             console_log_level=sc_config.console_log_level,
         )
 
-        def log_http_exception(exc: Exception, scope: Scope):
-            if not scope['type'] == 'http':
-                return
-            if isinstance(exc, PermissionDeniedException):
-                prefix = '403 permission denied'
-            elif isinstance(exc, NotFoundException):
-                prefix = '404 not found'
-            elif isinstance(exc, ClientException) and exc.status_code == 400:
-                prefix = '400 bad request'
-            else:
-                return
-            http = cast(HTTPScope, scope)
-            logger.error(
-                '%s: %s %s\n%s',
-                prefix,
-                http.get('method', '?'),
-                http.get('path', '?'),
-                exc,
-            )
-
-        app: Litestar = Litestar(
-            debug=self.debug,
-            request_class=HTMXRequest,
-            route_handlers=route_handlers,
-            exception_handlers=exception_handlers,  # type: ignore
-            template_config=template_config,
-            # Favor response latency over maximum compression.
-            compression_config=CompressionConfig(backend='gzip', gzip_compress_level=3),
-            logging_config=LoggingConfig(
-                **logging_config,
-                # Litestar's default only logs exceptions when debug=True.
-                log_exceptions='always',
-                disable_stack_trace={
-                    400,
-                    403,
-                    404,
-                    ClientException,
-                    ValidationException,
-                    PermissionDeniedException,
-                    NotFoundException,
-                },
-            ),  # type: ignore
-            after_exception=[log_http_exception],
-            middleware=middlewares,
-            stores=stores,
-            pdb_on_exception=self.debug,
-            plugins=[channels_plugin],
-            listeners=listeners,
-        )
+        app: Litestar = self.build_app(logging_config)
         self.__class__.app = app
         asgi_app: ASGIApp = RequestGarbageCollectionMiddleware(app)
         if self.profile:
@@ -243,9 +248,18 @@ class ServerEngine:
         server = uvicorn.Server(config)
         self.__class__.server = server
 
+        # The handler each signal already had. Replacing it outright drops
+        # whatever the process installed before the server started -- under
+        # coverage that is the handler which writes the measurements out, so
+        # the whole server process would be measured and never recorded.
+        previous_handlers: dict[int, Callable[[int, FrameType | None], object]] = {}
+
         def handle_exit(sig_: int, frame: FrameType | None) -> None:
             server.should_exit = True
             server.force_exit = True
+            previous = previous_handlers.get(sig_)
+            if previous is not None:
+                previous(sig_, frame)
 
         # We need to handle signals ourselves in order to gracefully shut down the SSE connections.
         # Calling `serve` doesn't allow us to intercept signals, so we use `_serve` instead.  The only
@@ -256,7 +270,15 @@ class ServerEngine:
 
             if threading.current_thread() is threading.main_thread():
                 for sig in HANDLED_SIGNALS:
-                    signal.signal(sig, handle_exit)
+                    previous = signal.signal(sig, handle_exit)
+                    # The interpreter's own Ctrl+C handler raises
+                    # KeyboardInterrupt, which is the shutdown this handler
+                    # exists to replace: chaining it would undo that.
+                    if (
+                        callable(previous)
+                        and previous is not signal.default_int_handler
+                    ):
+                        previous_handlers[sig] = previous
 
         await server._serve()
 

@@ -44,8 +44,6 @@ class RequestGarbageCollectionMiddleware:
 
     @staticmethod
     def _release_request_state(scope: 'Scope') -> None:
-        state = scope.get('state')
-        if state is None:
-            return
         # Drop request references before collecting their cycles.
-        state.clear()
+        if state := scope.get('state'):
+            state.clear()

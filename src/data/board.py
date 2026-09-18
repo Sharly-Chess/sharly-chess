@@ -53,7 +53,9 @@ def compute_round_board_numbers(
 
 
 @total_ordering
-class Board:
+# Two boards are equal when they seat the same pair, which is not an identity
+# a hash can be built from: left unhashable on purpose.
+class Board:  # noqa: PLW1641
     """The Board class, represented by its index in the board order and its
     display number (fixed tables).
     Stores both tournament players and the result of the match between the two."""
@@ -63,7 +65,7 @@ class Board:
     ):
         self.round = round_
         self.stored_board = stored_board
-        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        self._tournament_ref: ReferenceType[Tournament] = weakref.ref(tournament)
         # A board may reference a player who is no longer a tournament
         # player (e.g. one removed from a team roster). Treat the dangling
         # slot as a hole rather than raising — a KeyError here would make
@@ -78,10 +80,10 @@ class Board:
             if stored_board.black_player_id
             else None
         )
-        self._white_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
+        self._white_player_ref: ReferenceType[TournamentPlayer] | None = (
             weakref.ref(white) if white is not None else None
         )
-        self._black_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
+        self._black_player_ref: ReferenceType[TournamentPlayer] | None = (
             weakref.ref(black) if black is not None else None
         )
 
@@ -208,10 +210,9 @@ class Board:
         fixed_black: int | None = getattr(self.black_tournament_player, 'fixed', None)
         if fixed_white and fixed_black:
             return max(fixed_white, fixed_black)
-        elif fixed_white:
+        if fixed_white:
             return fixed_white
-        else:
-            return fixed_black
+        return fixed_black
 
     @property
     def number(self) -> int:
@@ -300,13 +301,13 @@ class Board:
 
     def replace_player(
         self, new_player: 'TournamentPlayer', player_color: Literal['white', 'black']
-    ):
+    ) -> None:
         if player_color == 'white':
             self.white_player_id = new_player.id
         else:
             self.black_player_id = new_player.id
 
-    def permute_colors(self):
+    def permute_colors(self) -> None:
         if self.optional_white_tournament_player is None:
             raise ValueError(
                 f'Board [{self.stored_board.id}] has a forfeit hole, '
@@ -320,7 +321,9 @@ class Board:
         with EventDatabase(self.tournament.event.uniq_id, True) as database:
             database.update_stored_board(self.stored_board)
 
-    def set_last_result_update(self, new_result: Result, database: EventDatabase):
+    def set_last_result_update(
+        self, new_result: Result, database: EventDatabase
+    ) -> None:
         """Updates board timestamp. Clears board timestamp if result is NO_RESULT."""
         set_stored_fields(
             self.stored_board,
@@ -381,14 +384,14 @@ class Board:
     def _format_pgn_string(string: str) -> str:
         return string[:255].replace('\\', '\\\\').replace('"', '\\"')
 
-    def __lt__(self, other):
+    def __lt__(self, other: object) -> bool:
         # p1 < p2 calls p1.__lt__(p2)
         if not isinstance(other, Board):
             return NotImplemented
         if self.black_tournament_player is None:
             # The pairing allocated bye board is last
             return True
-        elif other.black_tournament_player is None:
+        if other.black_tournament_player is None:
             # The pairing allocated bye is last
             return False
         # Here we have no board id, so we need to compare
@@ -432,7 +435,7 @@ class Board:
             return False
         return self_player_2 < other_player_2
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         # p1 == p2 calls p1.__eq__(p2)
         if not isinstance(other, Board):
             return NotImplemented
@@ -460,10 +463,10 @@ class Board:
             other_player_2 = other.black_tournament_player
         return self_player_1 == other_player_1 and self_player_2 == other_player_2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.__class__.__name__}({self.number}. {self.white_tournament_player} {self.result_str} {self.black_tournament_player})'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(tournament={self.tournament!r}, round_={self.round!r}, stored_board={self.stored_board!r})'
 
     # --------------------------------------------------------------------------

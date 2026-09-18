@@ -21,11 +21,12 @@ from database.sqlite.event.event_store import (
     StoredBoard,
     set_stored_fields,
 )
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from utils.date_time import format_date
 from utils.enum import EventType, Result, TeamByeType
 from utils.option import OptionHandler
+import contextlib
 
 
 class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
@@ -85,7 +86,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         return False
 
     @staticmethod
-    def _reorder_tournament_boards(tournament: Tournament):
+    def _reorder_tournament_boards(tournament: Tournament) -> None:
         # Individual boards within each round are sorted by
         # ``Board.__lt__`` (strongest player's vpoints first). Team
         # tournaments instead re-rank their team-match envelopes per
@@ -122,7 +123,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             pn = team.pairing_number if team is not None else None
             return float(pn) if pn is not None else float('inf')
 
-        def _key(tb):
+        def _key(tb: Any) -> tuple:
             # ``bucket`` carves the round into three blocks (lower
             # value = earlier in the display). Within each block,
             # higher primary score wins → use a negative score so the
@@ -173,10 +174,10 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 next_index += 1
             database.update_stored_team_board(stb)
 
-    def on_import_finished(self):
+    def on_import_finished(self) -> None:
         """Function to execute when the import process ends, whether it fails or succeeds."""
 
-    def validate_options(self, event: Event | None = None):
+    def validate_options(self, event: Event | None = None) -> None:
         super().validate_options()
 
     @abstractmethod
@@ -338,8 +339,8 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             )
         return tournament_id
 
-    _asymmetric_to_symmetric_results: dict[
-        tuple[Result, Result], tuple[Result, Result]
+    _asymmetric_to_symmetric_results: ClassVar[
+        dict[tuple[Result, Result], tuple[Result, Result]]
     ] = {
         (Result.LOSS, Result.LOSS): (Result.PENALTY_LL, Result.PENALTY_LL),
         (Result.LOSS, Result.DRAW): (Result.PENALTY_LD, Result.PENALTY_DL),
@@ -363,7 +364,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
     }
 
     @classmethod
-    def check_pairing_inconsistencies(cls, stored_tournament: StoredTournament):
+    def check_pairing_inconsistencies(cls, stored_tournament: StoredTournament) -> None:
         """Check if the pairings of the tournament are coherent.
         If the incoherence can be rectified, it is,
         otherwise raises an ImporterError."""
@@ -375,7 +376,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             for stored_tournament_player in stored_tournament.stored_tournament_players
         }
         boards_by_id: dict[int, StoredBoard] = {}
-        for round_, stored_boards in stored_tournament.stored_boards_by_round.items():
+        for stored_boards in stored_tournament.stored_boards_by_round.values():
             for stored_board in stored_boards:
                 assert stored_board.id is not None
                 boards_by_id[stored_board.id] = stored_board
@@ -502,7 +503,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 other_pairing.result = other_result.value
 
     @classmethod
-    def check_players_unicity(cls, stored_players: list[StoredPlayer]):
+    def check_players_unicity(cls, stored_players: list[StoredPlayer]) -> None:
         fide_ids: list[int] = []
         name_keys: list[tuple[str, str | None, date]] = []
         for player in stored_players:
@@ -543,7 +544,7 @@ class FileTournamentImporter(TournamentImporter, ABC):
         """List of suffixes accepted by the file input."""
         return []
 
-    def validate_options(self, event: Event | None = None):
+    def validate_options(self, event: Event | None = None) -> None:
         super().validate_options()
         file_option = self._get_option(FileOption)
         if file_option.value:
@@ -559,10 +560,8 @@ class FileTournamentImporter(TournamentImporter, ABC):
                     file_option,
                 )
 
-    def on_import_finished(self):
+    def on_import_finished(self) -> None:
         file_path = self._get_option(FileOption).value
         if file_path:
-            try:
+            with contextlib.suppress(OSError):
                 file_path.unlink(missing_ok=True)
-            except OSError:
-                pass

@@ -12,7 +12,8 @@ semantics — it just dispatches by status.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Generator
+from typing import Any
+from collections.abc import Callable, Generator
 
 
 # Server cap is 200. Stay under it to leave headroom for retries / future
@@ -116,9 +117,7 @@ class SCEBatchBuilder:
             )
         )
 
-    def chunks(
-        self, chunk_size: int = BATCH_CHUNK_SIZE
-    ) -> Generator[list[_PendingOp], None, None]:
+    def chunks(self, chunk_size: int = BATCH_CHUNK_SIZE) -> Generator[list[_PendingOp]]:
         for i in range(0, len(self.pending), chunk_size):
             yield self.pending[i : i + chunk_size]
 
@@ -131,7 +130,7 @@ class SCEBatchBuilder:
         order they were sent (each result also carries `index`, which we
         cross-check defensively).
         """
-        for op, result in zip(ops, results):
+        for op, result in zip(ops, results, strict=True):
             if result.get('status') == 'ok':
                 op.on_success(result)
             else:

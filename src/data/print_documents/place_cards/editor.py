@@ -4,7 +4,7 @@ import re
 import shutil
 import zipfile
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 from common import (
     CUSTOM_PLACE_CARDS_DIR,
@@ -17,7 +17,7 @@ from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from data.print_documents.place_cards.toml_container import TOMLContainer
 from utils.enum import Extension
-from utils.file import shutil_delete_onerror
+from utils.file import shutil_delete_onexc
 
 logger: logging.Logger = get_logger()
 
@@ -115,7 +115,7 @@ class PlaceCardTemplateEditorError(SharlyChessException):
 
 
 class PlaceCardTemplateEditorBuiltInNotEditableError(PlaceCardTemplateEditorError):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(_('Only custom templates can be edited.'))
 
 
@@ -130,7 +130,7 @@ class PlaceCardTemplateEditorItemNotFoundError(PlaceCardTemplateEditorError):
 
 
 class PlaceCardTemplateEditorAlignmentError(PlaceCardTemplateEditorError):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(_('Invalid alignment.'))
 
 
@@ -143,8 +143,8 @@ class PlaceCardTemplateEditor:
     """
 
     _HISTORY_LIMIT: int = 100
-    _undo_history: dict[str, list[str]] = {}
-    _redo_history: dict[str, list[str]] = {}
+    _undo_history: ClassVar[dict[str, list[str]]] = {}
+    _redo_history: ClassVar[dict[str, list[str]]] = {}
 
     @staticmethod
     def is_custom(template_id: str) -> bool:
@@ -240,7 +240,7 @@ class PlaceCardTemplateEditor:
         try:
             path.resolve().relative_to(root)
         except ValueError:
-            raise PlaceCardTemplateEditorError(_('Invalid template path.'))
+            raise PlaceCardTemplateEditorError(_('Invalid template path.')) from None
 
     @staticmethod
     def _source_file(template_id: str) -> Path | None:
@@ -394,14 +394,14 @@ class PlaceCardTemplateEditor:
         except zipfile.BadZipFile:
             raise PlaceCardTemplateEditorError(
                 _('The file is not a valid template archive (expected a zipped file).')
-            )
+            ) from None
         # Validate the imported template actually loads; roll back if not.
         from data.print_documents.place_cards.template import PlaceCardTemplate
 
         try:
             PlaceCardTemplate.load(template_id)
         except Exception as error:
-            shutil.rmtree(dest_file.parent, onerror=shutil_delete_onerror)
+            shutil.rmtree(dest_file.parent, onexc=shutil_delete_onexc)
             raise PlaceCardTemplateEditorError(
                 _('The archive is not a valid place card template.')
             ) from error
@@ -433,7 +433,7 @@ class PlaceCardTemplateEditor:
         # A folder may hold several templates sharing an images/ folder; only
         # drop the whole folder once its last template is gone.
         if not list(file.parent.glob(f'*.{Extension.TEMPLATE}')):
-            shutil.rmtree(file.parent, onerror=shutil_delete_onerror)
+            shutil.rmtree(file.parent, onexc=shutil_delete_onexc)
         # Drop its edit history so a later template reusing this id starts fresh.
         cls._undo_history.pop(template_id, None)
         cls._redo_history.pop(template_id, None)

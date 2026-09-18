@@ -1310,8 +1310,9 @@ body[data-bs-theme=light] .nav {
     }
 
     /* A span holding nothing but an icon carrying a tooltip, whose line
-       height would space the icon out. A span holding text as well keeps its
-       own, without which the text has no line box and is not displayed. */
+       height would space the icon out. :only-child ignores text nodes, so a
+       span holding text next to the icon must wrap that text in an element of
+       its own to keep a line box and stay readable. */
     span:has(> *[data-bs-toggle="tooltip"]:only-child) {
         line-height: 0;
     }
@@ -1838,8 +1839,8 @@ input[type="color"].form-control {
 sup {
     vertical-align: baseline;
     position: relative;
-    top: -0.4em;
-    font-size: 0.85em;
+    top: -0.5em;
+    font-size: 0.65em;
 }
 
 .text-ellipsis {

@@ -17,14 +17,13 @@ import subprocess
 import json
 import sys
 from pathlib import Path
-from typing import Dict, Tuple
 
 
 class FlatpakPostBuildTester:
     """Post-build test suite for Flatpak package."""
 
     def __init__(self):
-        self.test_results: Dict[str, bool] = {}
+        self.test_results: dict[str, bool] = {}
         self.test_count = 0
         self.passed_count = 0
         self.failed_count = 0
@@ -239,7 +238,11 @@ class FlatpakPostBuildTester:
         """Test 10: Flatpak info command works."""
         try:
             result = subprocess.run(
-                ['flatpak', '--version'], capture_output=True, text=True, timeout=5
+                ['flatpak', '--version'],
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False,
             )
             available = result.returncode == 0
             version = result.stdout.strip() if available else 'Not installed'
@@ -252,7 +255,7 @@ class FlatpakPostBuildTester:
             )
             return False
 
-    def run_all_tests(self) -> Tuple[int, int]:
+    def run_all_tests(self) -> tuple[int, int]:
         """Run all tests and return pass/fail counts."""
         self.print_header('FLATPAK POST-BUILD TEST SUITE')
 
@@ -299,15 +302,14 @@ class FlatpakPostBuildTester:
         if self.failed_count == 0:
             print('🟢 ALL TESTS PASSED - READY FOR PRODUCTION BUILD')
             return True
-        else:
-            print('🔴 SOME TESTS FAILED - REVIEW REQUIRED')
-            return False
+        print('🔴 SOME TESTS FAILED - REVIEW REQUIRED')
+        return False
 
 
 def main():
     """Run the test suite."""
     tester = FlatpakPostBuildTester()
-    passed, failed = tester.run_all_tests()
+    _passed, failed = tester.run_all_tests()
     tester.print_summary()
 
     # Exit with error code if any test failed

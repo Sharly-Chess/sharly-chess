@@ -1,3 +1,4 @@
+from typing import cast
 import os
 import random
 import xml.etree.ElementTree as ET
@@ -8,6 +9,7 @@ import requests
 from requests import Session
 
 from common.logger import get_logger
+from data.event import Event
 from data.tournament import Tournament
 from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
@@ -61,7 +63,7 @@ def _forfeit_code(result: Result) -> str:
             return ''
 
 
-def _upload_federation(event) -> str:
+def _upload_federation(event: Event) -> str:
     """The federation sent to Chess-Results. Setting the
     ``CHESS_RESULTS_TEST`` environment variable forces the ``XXX`` test
     federation, which keeps the upload out of the real country listings."""
@@ -129,8 +131,7 @@ class ChessResultsSession(Session):
         result = root.find('result')
         if result is not None and result.attrib.get('status') == 'OK':
             return result.attrib['key']
-        else:
-            raise RuntimeError('GETKEY failed: ' + resp.text)
+        raise RuntimeError('GETKEY failed: ' + resp.text)
 
     def build_tournament_xml(
         self,
@@ -275,7 +276,7 @@ class ChessResultsSession(Session):
             self._append_team_sections(root, tournament)
             self._append_security(root, sid, tnr, creator_id)
             xml_bytes = ET.tostring(root, encoding='utf-8', xml_declaration=True)
-            return xml_bytes.decode('utf-8')
+            return cast(str, xml_bytes.decode('utf-8'))
 
         # --- Player list ---
         pdata = ET.SubElement(root, 'players')
@@ -302,6 +303,8 @@ class ChessResultsSession(Session):
             prev_tb_values = tb_values
 
             ratings = p.ratings.get(tournament.rating)
+            k_factor, k_factor_is_estimated = p.fide_rating_coefficient
+            rating_change = p.fide_rating_change
             ET.SubElement(
                 pdata,
                 'player',
@@ -328,7 +331,12 @@ class ChessResultsSession(Session):
                     'rank': str(p.rank),
                     'pts': str(p.points or 0),
                     'equal': 'J' if same_as_previous else 'N',
-                    'kfaktor': '',
+                    # Only the official coefficient is uploaded: an estimate
+                    # would make Chess-Results show wrong rating changes.
+                    'kfaktor': '' if k_factor_is_estimated else str(k_factor),
+                    'rtgdifference': str(rating_change)
+                    if rating_change is not None
+                    else '',
                     'state': '',
                 }
                 | {f'tb{i + 1}': tb_values[i] for i in range(MAX_TIE_BREAKS)},
@@ -408,10 +416,10 @@ class ChessResultsSession(Session):
 
         # Return as UTF-8 XML
         xml_bytes = ET.tostring(root, encoding='utf-8', xml_declaration=True)
-        return xml_bytes.decode('utf-8')
+        return cast(str, xml_bytes.decode('utf-8'))
 
     @staticmethod
-    def _append_security(root: ET.Element, sid: str, tnr: str, creator_id: str):
+    def _append_security(root: ET.Element, sid: str, tnr: str, creator_id: str) -> None:
         security = ET.SubElement(root, 'security')
         ET.SubElement(
             security,
@@ -424,7 +432,7 @@ class ChessResultsSession(Session):
             },
         )
 
-    def _append_team_sections(self, root: ET.Element, tournament: Tournament):
+    def _append_team_sections(self, root: ET.Element, tournament: Tournament) -> None:
         """Players, teams, team pairings and per-board player pairings of
         a team-vs-team tournament (Chess-Results types 2/3). Players are
         numbered sequentially grouped by team in roster order — the
@@ -482,6 +490,10 @@ class ChessResultsSession(Session):
                 ratings = (
                     member_tp.ratings.get(tournament.rating) if member_tp else None
                 )
+                k_factor, k_factor_is_estimated = (
+                    member_tp.fide_rating_coefficient if member_tp else (0, True)
+                )
+                rating_change = member_tp.fide_rating_change if member_tp else None
                 ET.SubElement(
                     pdata,
                     'player',
@@ -507,7 +519,10 @@ class ChessResultsSession(Session):
                         'rank': str(rank_by_id.get(player.id, '')),
                         'pts': str((member_tp.points if member_tp else 0) or 0),
                         'equal': 'N',
-                        'kfaktor': '',
+                        'kfaktor': '' if k_factor_is_estimated else str(k_factor),
+                        'rtgdifference': str(rating_change)
+                        if rating_change is not None
+                        else '',
                         'state': '',
                     }
                     | {f'tb{i + 1}': '' for i in range(MAX_TIE_BREAKS)},
@@ -524,8 +539,10 @@ class ChessResultsSession(Session):
             row = standings_by_team_id.get(team.id)
             tb_values: list[str] = []
             if row:
-                for tbv in row.get('tie_break_values', [])[:MAX_TIE_BREAKS]:
-                    tb_values.append(f'{tbv.value:g}')
+                tb_values.extend(
+                    f'{tbv.value:g}'
+                    for tbv in row.get('tie_break_values', [])[:MAX_TIE_BREAKS]
+                )
             while len(tb_values) < MAX_TIE_BREAKS:
                 tb_values.append('')
             same_as_previous = (

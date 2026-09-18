@@ -7,7 +7,7 @@ import os
 from io import StringIO
 from logging import Logger
 from pathlib import Path
-from typing import Any, Self, Optional
+from typing import Any, Self
 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -60,11 +60,11 @@ class ChessResultsCredentials:
     def load(
         cls,
         file: Path,
-    ) -> Optional[Self]:
+    ) -> Self | None:
         """Reads credentials from the given file, raises SharlyChessException
         on error (logs a warning and returns None on DEVEL_ENV)."""
         try:
-            with open(file, 'r') as f:
+            with open(file) as f:
                 (key, iv) = json.loads(
                     base64.b64decode(f.read().encode('ascii')).decode('ascii')
                 )
@@ -76,17 +76,16 @@ class ChessResultsCredentials:
                     'please run generate_chess_results_credentials.py.'
                 )
                 return None
-            else:
-                raise SharlyChessException(
-                    'Could not read Chess-Results credentials.'
-                ) from None
+            raise SharlyChessException(
+                'Could not read Chess-Results credentials.'
+            ) from None
 
     @staticmethod
     def dump(
         credentials_file: Path,
         key: str,
         iv: str,
-    ):
+    ) -> None:
         """Dumps credentials to the given file."""
         credentials_file.parent.mkdir(exist_ok=True, parents=True)
         with open(credentials_file, 'w') as f:
@@ -163,14 +162,14 @@ class CRUtils:
         cls,
         key: str,
         iv: str,
-    ):
+    ) -> None:
         """Dumps the credentials to the module base64-encoded file."""
         ChessResultsCredentials.dump(cls.CREDENTIALS_FILE, key, iv)
 
     @classmethod
     def load_credentials(
         cls,
-    ):
+    ) -> None:
         """Dumps the credentials from the module base64-encoded file."""
         if credentials := ChessResultsCredentials.load(cls.CREDENTIALS_FILE):
             load_dotenv(
@@ -199,7 +198,7 @@ class CRUtils:
     def update_tournament_plugin_data(
         tournament: Tournament,
         plugin_data: 'ChessResultsTournamentPluginData',
-    ):
+    ) -> None:
         tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
             plugin_data.to_stored_value()
         )
@@ -215,7 +214,7 @@ class CRUtils:
     def update_event_plugin_data(
         event: Event,
         plugin_data: 'ChessResultsEventPluginData',
-    ):
+    ) -> None:
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         event.plugin_data[PLUGIN_NAME] = plugin_data
         with EventDatabase(event.uniq_id, True) as database:
@@ -373,8 +372,8 @@ class ChessResultsTournamentPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            tnr=stored_value.get('tnr', None),
-            creator_id=stored_value.get('creator_id', None),
+            tnr=stored_value.get('tnr'),
+            creator_id=stored_value.get('creator_id'),
             auto_upload=stored_value.get('auto_upload', False),
             remark=stored_value.get('remark'),
             remark_default=stored_value.get('remark_default', True),

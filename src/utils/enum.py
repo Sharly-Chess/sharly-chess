@@ -2,7 +2,8 @@
 
 from enum import Enum, StrEnum, IntEnum, auto, nonmember
 from math import ceil
-from typing import Iterator, Self, TYPE_CHECKING
+from typing import Self, TYPE_CHECKING
+from collections.abc import Iterator
 
 from common.i18n import _
 from utils import Utils
@@ -488,6 +489,16 @@ class Result(IntEnum):
         )
 
     @property
+    def is_forfeit(self) -> bool:
+        """A game nobody played out. The arbiter records it, so it is
+        asked for the same right as the other unusual results."""
+        return self in (
+            Result.FORFEIT_WIN,
+            Result.FORFEIT_LOSS,
+            Result.DOUBLE_FORFEIT,
+        )
+
+    @property
     def is_special_result(self) -> bool:
         """Unusual results that my need permission to be entered."""
         return self in (
@@ -511,7 +522,8 @@ class Result(IntEnum):
     @classmethod
     def admin_imputable_results(cls) -> tuple['Result', ...]:
         """Admin imputable results are the ones that only arbiters can input."""
-        return cls.user_imputable_results() + (
+        return (
+            *cls.user_imputable_results(),
             cls.NO_RESULT,
             cls.FORFEIT_WIN,
             cls.FORFEIT_LOSS,
@@ -1056,7 +1068,7 @@ class RoleType(StrEnum):
         }
         return order_map[self]
 
-    def __str__(self):
+    def __str__(self) -> str:
         match self:
             case RoleType.CHIEF_ARBITER:
                 return _('Chief arbiter')
@@ -1417,7 +1429,7 @@ class PlayersScreenBoardFormat(IntEnum):
                 | PlayersScreenBoardFormat.MEDIUM_2
                 | PlayersScreenBoardFormat.FULL
             ):
-                return _('Board and Color')
+                return _('Board and Colour')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -1518,7 +1530,7 @@ class NeedsUpload(Enum):
     RECENT_CHANGE = 1
     NO_CHANGE = 2
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         match self:
             case NeedsUpload.YES:
                 return True

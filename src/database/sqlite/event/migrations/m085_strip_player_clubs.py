@@ -2,10 +2,10 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'UPDATE player set club = TRIM(club) WHERE club IS NOT NULL'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         pass

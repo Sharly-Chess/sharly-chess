@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 import PIL
 import qrcode
+from qrcode.image.pil import PilImage
 
 from common import BASE_DIR, Path
 from common.i18n import _
@@ -39,6 +40,7 @@ class QRCodeType(IdentifiableEntity, ABC):
         qr.add_data(url)
         qr.make()
         img = qr.make_image(
+            image_factory=PilImage,
             # use tuples instead of 'black'/'white' to allow colored logos
             fill_color=(0, 0, 0),
             back_color=(255, 255, 255),
@@ -47,7 +49,7 @@ class QRCodeType(IdentifiableEntity, ABC):
             logo_img = PIL.Image.open(logo)
             base_width: int = 360
             width_percent: float = base_width / float(logo_img.size[0])
-            height_size = int((float(logo_img.size[1]) * float(width_percent)))
+            height_size = int(float(logo_img.size[1]) * float(width_percent))
             resized_logo = logo_img.resize(
                 (base_width, height_size), PIL.Image.Resampling.LANCZOS
             )
@@ -130,6 +132,8 @@ class NetworkQRCodeType(QRCodeType):
         from data.print_documents.options import QRCodeNetworkPrintOption
 
         ip = doc._get_option(QRCodeNetworkPrintOption).value
+        if ip is None:
+            return False, _('Please choose a network.')
         return True, SharlyChessConfig().app_url(ip)
 
     @staticmethod

@@ -8,6 +8,7 @@ from plugins.chess960 import PLUGIN_NAME
 if TYPE_CHECKING:
     from data.event import Event
     from data.screens.screen import Screen
+    from plugins.chess960.utils import Chess960ScreenPluginData
 
 
 class Chess960ScreenType(ScreenType):
@@ -59,7 +60,7 @@ class Chess960ScreenType(ScreenType):
         return '/chess960_screen_form.html'
 
     @staticmethod
-    def _plugin_data(screen: 'Screen'):
+    def _plugin_data(screen: 'Screen') -> 'Chess960ScreenPluginData':
         from plugins.chess960.utils import Chess960ScreenPluginData
 
         plugin_data = screen.plugin_data.get(PLUGIN_NAME)

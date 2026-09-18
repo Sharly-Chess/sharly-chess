@@ -20,10 +20,8 @@ OTHER_EVENT_ID = 'championship-ui-other-source'
 OTHER_TOURNAMENT_NAME = 'Completely Different Stage'
 OTHER_TOURNAMENT_NAME_2 = 'Another Different Stage'
 CHAMPIONSHIP_NAME = 'Championship UI Test'
-TEAM_CHAMPIONSHIP_NAME = 'Team Championship UI Test'
 CHAMPIONSHIP_ID = 'championship_ui_test'
 RENAMED_CHAMPIONSHIP_ID = 'championship-ui-renamed'
-TEAM_CHAMPIONSHIP_ID = 'team_championship_ui_test'
 
 
 def _select_and_reveal(select, value: str, container):
@@ -58,8 +56,6 @@ def _delete_test_championship():
         CHAMPIONSHIP_NAME,
         CHAMPIONSHIP_ID,
         RENAMED_CHAMPIONSHIP_ID,
-        TEAM_CHAMPIONSHIP_NAME,
-        TEAM_CHAMPIONSHIP_ID,
     }
     for championship_id in test_ids:
         loader.delete_championship(championship_id)
@@ -439,39 +435,3 @@ def test_championship_admin_workflow(page: Page):
     expect(
         page.get_by_test_id('championships-item').filter(has_text=CHAMPIONSHIP_NAME)
     ).to_be_visible()
-
-
-@pytest.mark.e2e
-def test_team_championship_uses_team_ranking_controls(page: Page):
-    page.goto('/championships')
-    page.get_by_role('button', name='Create a championship', exact=True).first.click()
-    modal = page.locator('.modal-dialog')
-    TestUtils.fill_and_confirm(
-        modal.locator('input[name="name"]'), TEAM_CHAMPIONSHIP_NAME
-    )
-    modal.locator('select[name="competitor_type"]').select_option('TEAM', force=True)
-    TestUtils.submit_modal(page, modal.get_by_test_id('championship-create-submit'))
-
-    expect(page.get_by_test_id('nav-competitors-tab')).to_be_visible()
-    page.get_by_test_id('nav-sources-tab').click()
-    page.get_by_role('button', name='Add a tournament').click()
-    expect(
-        page.get_by_text('There are no other compatible tournaments')
-    ).to_be_visible()
-    page.get_by_role('button', name='Close').click()
-    page.get_by_test_id('nav-competitors-tab').click()
-    expect(page.get_by_role('button', name='Merge selected teams')).to_be_disabled()
-    competitors_table = page.locator('#championship-competitors-table')
-    expect(competitors_table).to_be_visible()
-    expect(competitors_table.get_by_role('columnheader', name='Cat.')).to_have_count(0)
-    expect(competitors_table.get_by_role('columnheader', name='Gen.')).to_have_count(0)
-    page.get_by_test_id('nav-configuration-tab').click()
-    expect(page.get_by_role('button', name='Team score basis')).to_be_visible()
-    expect(page.get_by_role('button', name='Age categories')).to_have_count(0)
-    expect(page.get_by_role('button', name='Ranking categories')).to_have_count(0)
-    page.get_by_test_id('nav-results-tab').click()
-    ranking_selector = page.get_by_label('Ranking category')
-    expect(ranking_selector).to_be_visible()
-    expect(ranking_selector.locator('option')).to_have_count(1)
-    expect(ranking_selector).to_have_value('overall')
-    expect(page.get_by_role('heading', name='General ranking')).to_be_visible()

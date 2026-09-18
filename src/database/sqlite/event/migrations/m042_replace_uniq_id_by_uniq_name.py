@@ -1,4 +1,4 @@
-from typing_extensions import Any
+from typing import Any
 
 from database.sqlite.migration import BaseMigration
 
@@ -19,7 +19,7 @@ class Migration(BaseMigration):
 
     def _uniquify_table_names(
         self, table_name: str, default: str = '', group_by: str | None = None
-    ):
+    ) -> None:
         """Make all the `name` records of a table unique.
         If `group_by` is defined, only make the names unique amongst the records
         having the same value in the `group_by` column.
@@ -47,7 +47,7 @@ class Migration(BaseMigration):
                     (name, id_),
                 )
 
-    def _replace_uniq_id_by_name(self, table_name: str):
+    def _replace_uniq_id_by_name(self, table_name: str) -> None:
         """Replaces the `uniq_id` column by the name column.
         The entries in the name column have to be unique and not NULL to respect the constraints.
         The `uniq_id` columns can't be directly dropped because of the UNIQUE constraint."""
@@ -64,7 +64,7 @@ class Migration(BaseMigration):
             f'ALTER TABLE `{table_name}` RENAME COLUMN `uniq_id` TO `name`'
         )
 
-    def forward(self):
+    def forward(self) -> None:
         self._uniquify_table_names('display_controller', 'Display Controller')
         self._replace_uniq_id_by_name('display_controller')
         self._uniquify_table_names('tournament')
@@ -75,7 +75,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `timer` RENAME COLUMN `uniq_id` TO `name`')
         self.database.execute('ALTER TABLE `rotator` RENAME COLUMN `uniq_id` TO `name`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `display_controller` RENAME COLUMN `name` TO `uniq_id`'
         )

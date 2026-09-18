@@ -109,7 +109,7 @@ def launch_application():
         # Set arguments before import because the module runs on import
         # We explicitly pass the current working directory (set in setup_flatpak_environment)
         # to ensure the application uses the versioned directory.
-        sys.argv = ['sharly-chess', '--path', os.getcwd()]
+        sys.argv = ['sharly-chess', '--path', str(Path.cwd())]
 
         logger.info(f'Importing sharly_chess module with args: {sys.argv}')
 

@@ -203,6 +203,13 @@ class KeizerPairingSystem(PairingSystem['KeizerVariation']):
     def variation_manager(self, event: 'Event') -> EntityManager['KeizerVariation']:
         return KeizerVariationManager(event)
 
+    def pairing_numbers_are_frozen(self, tournament: 'Tournament') -> bool:
+        # A Keizer pairs on the running Keizer score and reads the numbering
+        # nowhere, so it is free to follow the field whenever the field
+        # moves — players join one at a time here, and a Keizer score is
+        # recomputed over the rounds already played anyway.
+        return False
+
     @property
     def pairing_buttons_template(self) -> str:
         return '/admin/pairings/swiss_pairing_buttons.html'
@@ -368,7 +375,7 @@ class KeizerPairingEngine(PairingEngine):
     ) -> tuple[
         list[tuple['TournamentPlayer', 'TournamentPlayer']], 'TournamentPlayer | None'
     ]:
-        bye_player: 'TournamentPlayer | None' = None
+        bye_player: TournamentPlayer | None = None
         if len(players) % 2 == 1:
             bye_player = self._select_bye_player(players)
             players = [player for player in players if player is not bye_player]

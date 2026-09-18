@@ -118,6 +118,13 @@ window.addEventListener("htmx:wsBeforeMessage", function(evt) {
     }
 });
 
+window.addEventListener('htmx:beforeRequest', function (evt) {
+    const path = evt.detail.requestConfig?.path || '';
+    if (path.includes('/pairing/set-result/')) {
+        refreshMessagesIgnored += 1;
+    }
+});
+
 const tooltipSelector = '[data-bs-toggle="tooltip"]';
 
 function closeTooltips () {
@@ -513,23 +520,27 @@ async function downloadFile(el, formId) {
     try {
         const response = await fetch(url, { headers: { 'HX-Request': 'true' } });
         const contentType = response.headers.get('content-type') || '';
+        const disposition = response.headers.get('content-disposition');
 
         // If server returned a file
-        if (contentType.startsWith('application/') || response.headers.get('content-disposition')) {
+        if (contentType.startsWith('application/') || disposition) {
             // Turn it into a blob for download
             const blob = await response.blob();
             const a = document.createElement('a');
             const downloadUrl = URL.createObjectURL(blob);
-            const filename = response.headers
-                .get('content-disposition')
+            const filename = disposition
                 ?.split('filename=')[1]
                 ?.replaceAll('"', '') || 'download';
             a.href = downloadUrl;
             a.download = filename;
             document.body.appendChild(a);
             a.click();
-            a.remove();
-            URL.revokeObjectURL(downloadUrl);
+            // Safari cancels the download if the anchor or the blob URL goes
+            // away before it has taken the file over.
+            setTimeout(() => {
+                a.remove();
+                URL.revokeObjectURL(downloadUrl);
+            }, 30000);
             return;
         }
 

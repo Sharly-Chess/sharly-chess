@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from contextlib import suppress
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, NamedTuple, override
+from typing import TYPE_CHECKING, NamedTuple, override, cast
 
 from common.i18n import _
 from common.logger import get_logger
@@ -1197,9 +1197,12 @@ class PlayersScreenType(ScreenType):
 
     @staticmethod
     def default_columns(event: 'Event') -> int | None:
-        return plugin_manager.hook_for_event(
-            event, 'get_default_players_screen_columns'
-        )()
+        return cast(
+            int | None,
+            plugin_manager.hook_for_event(
+                event, 'get_default_players_screen_columns'
+            )(),
+        )
 
     @override
     def create_form_data(self, event: 'Event') -> dict:
@@ -1464,9 +1467,11 @@ class ResultsScreenType(ScreenType):
         for tournament in screen.event.tournaments:
             if tournament_ids and tournament.id not in tournament_ids:
                 continue
-            for board in tournament.get_round_boards(tournament.current_round):
-                if board.last_result_update and board.last_result_update >= oldest:
-                    boards.append(board)
+            boards.extend(
+                board
+                for board in tournament.get_round_boards(tournament.current_round)
+                if board.last_result_update and board.last_result_update >= oldest
+            )
         boards.sort(key=lambda b: b.last_result_update or datetime.min, reverse=True)
         return boards
 
@@ -1850,7 +1855,7 @@ class ImageScreenType(ScreenType):
                 values['background_color'] = WebContext.form_data_to_rgb(data, field)
             except ValueError:
                 errors[field] = _(
-                    'Invalid color [{color}] ([#RRGGBB] expected).'
+                    'Invalid colour [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
         return values
 

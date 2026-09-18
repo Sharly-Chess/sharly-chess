@@ -26,7 +26,7 @@ Not encoded, for want of somewhere to put it:
   lineup validations rather than tournament defaults.
 """
 
-from typing import Any, override, TYPE_CHECKING
+from typing import Any, override, TYPE_CHECKING, cast
 
 from common.i18n import _, ngettext
 from data.rule_sets import RuleSet
@@ -185,7 +185,7 @@ class ChampionnatScolaireRuleSet(RuleSet):
 
     @property
     def phase(self) -> str:
-        return self.config_value('phase')
+        return cast(str, self.config_value('phase'))
 
     @property
     def is_national_final(self) -> bool:

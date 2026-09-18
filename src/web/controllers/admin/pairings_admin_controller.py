@@ -6,7 +6,7 @@ from litestar.exceptions import NotFoundException, ClientException
 from common import experimental_features_enabled
 
 from collections import defaultdict
-from typing import Annotated, Any, Optional
+from typing import Annotated, Any
 
 from data.access_levels.actions import AuthAction
 from data.input_output import DataSourceManager
@@ -173,7 +173,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         if SessionPairingsShowWithoutResults(request).get():
             self.admin_filtered_boards = [
-                b for b in self.admin_boards if b.result == Result.NO_RESULT
+                b
+                for b in self.admin_boards
+                if b.result == Result.NO_RESULT or self._awaits_board_winner(b)
             ]
         else:
             self.admin_filtered_boards = self.admin_boards
@@ -185,9 +187,11 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_team_bye: list[Team] = []
         self.admin_team_unpaired: list[Team] = []
         self.admin_team_absent: list[Team] = []
+        self.admin_waiting_groups: list[dict[str, Any]] = []
         if not self.display_rankings:
             self.reload_unpaired_player_lists()
             self.reload_unpaired_team_lists()
+            self.reload_waiting_lists()
 
         self.admin_board: Board | None = None
         if board_id is not None:
@@ -245,7 +249,21 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 raise ClientException(
                     f'Action [{action}] does not exist for '
                     f'round with status [{self.round_status}].'
-                )
+                ) from None
+
+    def _awaits_board_winner(self, board: Board) -> bool:
+        """Whether a drawn knock-out game is still waiting for its winner to
+        be designated."""
+        assert self.admin_tournament is not None
+        advancement = self.admin_tournament.knockout.board_advancement(board)
+        return advancement is not None and advancement.winner_id is None
+
+    def _awaits_team_match_winner(self, team_board: TeamBoard) -> bool:
+        """Whether a tied knock-out match is still waiting for its winner to
+        be designated."""
+        assert self.admin_tournament is not None
+        advancement = self.admin_tournament.knockout.team_board_advancement(team_board)
+        return advancement is not None and advancement.winner_id is None
 
     def _points_recompute_scope(
         self,
@@ -279,7 +297,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         ]
         return players or None
 
-    def reload_unpaired_player_lists(self):
+    def reload_unpaired_player_lists(self) -> None:
         self.admin_absent_players = []
         self.admin_bye_players = []
         self.admin_unpaired = []
@@ -320,6 +338,35 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         else:
             self.admin_unpaired = sorted(unpaired, key=attrgetter('name_sort_key'))
 
+    def reload_waiting_lists(self) -> None:
+        """The side column of a knock-out about to be drawn: who is still in,
+        by bracket, and who is out. Empty for every other system, and for a
+        round already drawn."""
+        self.admin_waiting_groups = []
+        tournament = self.admin_tournament
+        if tournament is None or self.display_rankings:
+            return
+        sections = tournament.knockout.side_sections(
+            self.admin_round, tournament.is_team_tournament
+        )
+        if not sections:
+            return
+        by_id: dict[int, Any] = (
+            tournament.event.teams_by_id
+            if tournament.pairing_system.paired_by_team
+            else tournament.tournament_players_by_id
+        )
+        for section in sections:
+            members = [by_id[id_] for id_ in section['ids'] if id_ in by_id]
+            if members:
+                self.admin_waiting_groups.append(
+                    {
+                        'label': section['label'],
+                        'members': members,
+                        'collapsed': section['collapsed'],
+                    }
+                )
+
     def _unpaired_holes(self, round_: int) -> list[dict[str, Any]]:
         """The round's unboarded table cells as ``{'index', 'label'}`` for the
         sidebar — a waiting player can be given a forfeit win on one. Thin
@@ -331,7 +378,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             for index, label in self.admin_tournament.unboarded_holes(round_)
         ]
 
-    def reload_unpaired_team_lists(self):
+    def reload_unpaired_team_lists(self) -> None:
         """Populate the team-side equivalents of the player byes /
         unpaired lists.
 
@@ -452,17 +499,20 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                         in TeamByeType.manual_bye_types()
                     )
                     # 'In play' hides the matches whose boards all have a
-                    # result (the whole match, to keep board context).
+                    # result (the whole match, to keep board context), unless
+                    # the match is tied and its winner is yet to be designated.
                     and not (
                         SessionPairingsShowWithoutResults(self.request).get()
                         and tb.boards
                         and all(board.result != Result.NO_RESULT for board in tb.boards)
+                        and not self._awaits_team_match_winner(tb)
                     )
                 ]
                 if self.admin_tournament and not self.display_rankings
                 else []
             ),
             'admin_unpaired': self.admin_unpaired,
+            'admin_waiting_groups': self.admin_waiting_groups,
             'admin_unpaired_holes': self.admin_unpaired_holes,
             'admin_bye_players': self.admin_bye_players,
             'admin_absent_players': self.admin_absent_players,
@@ -502,7 +552,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
 
 class PairingsAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         TournamentActionGuard(AuthAction.VIEW_PAIRINGS_TAB),
     ]
@@ -872,6 +924,7 @@ class PairingsAdminController(BaseEventAdminController):
     def _admin_update_result(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         tournament_id: int,
         round_: int,
         board_id: int,
@@ -910,13 +963,16 @@ class PairingsAdminController(BaseEventAdminController):
                 )
         else:
             r = Result(result)
-            if r.is_special_result:
+            if r.is_special_result:  # noqa: SIM102
                 if message := plugin_manager.hook_for_event(
                     event, 'signal_special_result_set'
                 )(tournament=tournament, result=r):
                     Message.warning(request, message)
 
             tournament.add_result(board, r)
+            self.publish_new_user_results(
+                channels, event.uniq_id, tournament.id, round_
+            )
             target_board_id = self._next_board_id(
                 board_id, web_context.admin_filtered_boards
             )
@@ -959,6 +1015,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_set_result(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
         board_id: FromPath[int],
@@ -966,6 +1023,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         return self._admin_update_result(
             request,
+            channels,
             tournament_id=tournament_id,
             round_=round,
             board_id=board_id,
@@ -1032,6 +1090,56 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @put(
+        path='/pairing/knockout-team-winner/{event_uniq_id:str}'
+        '/{tournament_id:int}/{round:int}/{team_board_id:int}/{team_id:int}',
+        name='admin-pairings-knockout-team-winner',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+    )
+    async def htmx_admin_set_knockout_team_winner(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        team_board_id: FromPath[int],
+        team_id: FromPath[int],
+    ) -> Template:
+        # ``team_id`` 0 clears the designation (back to a pending play-off).
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        tournament.knockout.set_team_match_winner(team_board_id, team_id or None)
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round, reload_event=True
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @put(
+        path='/pairing/knockout-player-winner/{event_uniq_id:str}'
+        '/{tournament_id:int}/{round:int}/{board_id:int}/{player_id:int}',
+        name='admin-pairings-knockout-player-winner',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+    )
+    async def htmx_admin_set_knockout_player_winner(
+        self,
+        request: HTMXRequest,
+        tournament_id: FromPath[int],
+        round: FromPath[int],
+        board_id: FromPath[int],
+        player_id: FromPath[int],
+    ) -> Template:
+        # ``player_id`` 0 clears the designation (back to a pending play-off).
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        tournament.knockout.set_player_match_winner(board_id, player_id or None)
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round, reload_event=True
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @put(
         path='/pairing/set-result-hotkey/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-pairings-set-result-hotkey',
         guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
@@ -1040,6 +1148,7 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_set_result_hotkey(
         self,
         request: HTMXRequest,
+        channels: NamedDependency[ChannelsPlugin],
         tournament_id: FromPath[int],
         round: FromPath[int],
         data: Annotated[
@@ -1071,7 +1180,7 @@ class PairingsAdminController(BaseEventAdminController):
                         left_is_white = white_tp.team_id == team_a_id
                     elif black_tp is not None:
                         left_is_white = black_tp.team_id != team_a_id
-        result: Optional[Result] = None
+        result: Result | None = None
         match key:
             case 'Digit0' | 'Numpad0':
                 result = Result.NO_RESULT
@@ -1089,6 +1198,7 @@ class PairingsAdminController(BaseEventAdminController):
         assert result is not None
         return self._admin_update_result(
             request,
+            channels,
             tournament_id=tournament_id,
             round_=round,
             board_id=board_id,
@@ -1123,7 +1233,7 @@ class PairingsAdminController(BaseEventAdminController):
         try:
             new_player_id = int(data.get('new_player_id', '0') or '0')
         except ValueError:
-            raise ClientException('Invalid new_player_id.')
+            raise ClientException('Invalid new_player_id.') from None
 
         web_context = PairingsAdminWebContext(
             request,
@@ -1940,12 +2050,46 @@ class PairingsAdminController(BaseEventAdminController):
         web_context.reload_unpaired_player_lists()
         return self._admin_event_pairings_render(web_context)
 
+    @staticmethod
+    def _rounds_schedule_mismatch(tournament: Tournament) -> int | None:
+        """The count the pairing system will actually play when it differs from
+        the number of rounds the arbiter laid a schedule over, else ``None``.
+
+        Only for systems that settle their own count (a knock-out, a
+        round-robin): the field is pre-filled with the worked-out count but may
+        be overridden to build a schedule. A stored override that no longer
+        matches what the system will play is surfaced before pairing so the
+        arbiter can confirm."""
+        if not tournament.pairing_variation.sets_its_own_round_count:
+            return None
+        scheduled = tournament.stored_tournament.rounds
+        if not scheduled:  # 0 means "let the system decide" — no override
+            return None
+        calculated = tournament.automatic_rounds
+        if calculated is None or calculated == scheduled:
+            return None
+        return calculated
+
     def _generate_round_pairings(
-        self, web_context: PairingsAdminWebContext
+        self, web_context: PairingsAdminWebContext, confirmed: bool = False
     ) -> Template:
         tournament = web_context.get_admin_tournament()
         round_ = web_context.admin_round
         request = web_context.request
+        # Before the first round is drawn, warn if the schedule was laid over a
+        # different number of rounds than the system will actually play. Every
+        # generate path (direct, with-settings) funnels through here.
+        if not confirmed and not tournament.has_pairings:
+            calculated = self._rounds_schedule_mismatch(tournament)
+            if calculated is not None:
+                return self._admin_event_pairings_render(
+                    web_context,
+                    {
+                        'modal': 'rounds-schedule-mismatch',
+                        'scheduled_rounds': tournament.stored_tournament.rounds,
+                        'calculated_rounds': calculated,
+                    },
+                )
         if error := tournament.generate_round_pairings(round_):
             Message.error(request, error)
         else:
@@ -1968,16 +2112,29 @@ class PairingsAdminController(BaseEventAdminController):
         request: HTMXRequest,
         tournament_id: FromPath[int],
         round: FromPath[int],
+        confirmed: FromQuery[bool] = False,
     ) -> Template:
         web_context = PairingsAdminWebContext(
             request,
             tournament_id=tournament_id,
             round_=round,
-            action=PairingAction.FULL_PAIRING,
         )
+        if not web_context.get_admin_tournament().round_has_pairings(
+            web_context.admin_round
+        ):
+            # Claim the action only while there is a round to pair: a second
+            # submission of the same draw arrives once the round is paired,
+            # and the pairing engine answers it plainly rather than as a
+            # request for an action the round no longer has.
+            web_context = PairingsAdminWebContext(
+                request,
+                tournament_id=tournament_id,
+                round_=round,
+                action=PairingAction.FULL_PAIRING,
+            )
         tournament = web_context.get_admin_tournament()
         tournament.set_valid_pairing_settings()
-        return self._generate_round_pairings(web_context)
+        return self._generate_round_pairings(web_context, confirmed=confirmed)
 
     @post(
         path='/pairings/generate-partial/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
@@ -2058,14 +2215,29 @@ class PairingsAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         tournament_id: FromPath[int],
+        confirmed: FromQuery[bool] = False,
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
 
-        if errors := tournament.get_pairing_settings_data_errors(data):
-            return self._render_pairings_settings_modal(web_context, data, errors)
-
-        self._save_pairing_settings_data(tournament, data)
+        # The settings were saved (and the schedule-mismatch confirmed) on the
+        # first pass; the mismatch modal re-posts with confirmed=true and no
+        # settings body, so don't re-save then.
+        if not confirmed:
+            if errors := tournament.get_pairing_settings_data_errors(data):
+                return self._render_pairings_settings_modal(web_context, data, errors)
+            self._save_pairing_settings_data(tournament, data)
+            if not tournament.has_pairings:
+                calculated = self._rounds_schedule_mismatch(tournament)
+                if calculated is not None:
+                    return self._admin_event_pairings_render(
+                        web_context,
+                        {
+                            'modal': 'rounds-schedule-mismatch',
+                            'scheduled_rounds': tournament.stored_tournament.rounds,
+                            'calculated_rounds': calculated,
+                        },
+                    )
         error: str = ''
         for round_ in range(1, tournament.rounds + 1):
             if error := tournament.pairing_variation.engine.generate_pairings(
@@ -2099,18 +2271,29 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: FromPath[int],
         round: FromPath[int],
     ) -> Template:
-        web_context = PairingsAdminWebContext(
-            request,
-            tournament_id=tournament_id,
-            round_=round,
-            action=PairingAction.FULL_UNPAIRING,
+        # Unpairing is idempotent: a round with nothing left to unpair must
+        # not error. FULL_UNPAIRING is only valid while the round is the
+        # current one, and unpairing empties it — so the round then reads as
+        # "next" (nothing paired ⇒ current round drops back). A repeat or
+        # double-submitted request would fail the action check on that empty
+        # round, so skip the action entirely when there is nothing to unpair.
+        peek_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
         )
-        tournament = web_context.get_admin_tournament()
-        tournament.unpair_boards(web_context.admin_boards)
-        # A fully-unpaired round loses its prohibited-pairing snapshot;
-        # re-pairing writes a fresh one.
-        with EventDatabase(tournament.event.uniq_id, True) as database:
-            tournament.delete_prohibited_pairing_snapshot(round, database)
+        peek_tournament = peek_context.get_admin_tournament()
+        if peek_tournament.round_has_pairings(round):
+            web_context = PairingsAdminWebContext(
+                request,
+                tournament_id=tournament_id,
+                round_=round,
+                action=PairingAction.FULL_UNPAIRING,
+            )
+            tournament = web_context.get_admin_tournament()
+            tournament.unpair_boards(web_context.admin_boards)
+            # A fully-unpaired round loses its prohibited-pairing snapshot;
+            # re-pairing writes a fresh one.
+            with EventDatabase(tournament.event.uniq_id, True) as database:
+                tournament.delete_prohibited_pairing_snapshot(round, database)
 
         web_context = PairingsAdminWebContext(
             request,
@@ -2159,7 +2342,7 @@ class PairingsAdminController(BaseEventAdminController):
         try:
             protected_action = PairingAction(action)
         except ValueError:
-            raise NotFoundException(f'Unknown pairing action [{action}]')
+            raise NotFoundException(f'Unknown pairing action [{action}]') from None
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         tournament = web_context.get_admin_tournament()
         permission_handler = tournament.pairing_system.permission_handler
@@ -2209,7 +2392,7 @@ class PairingsAdminController(BaseEventAdminController):
         try:
             SessionPairingsSafetyMode(request).set(SafetyMode(mode))
         except ValueError:
-            raise NotFoundException(f'Unknown safety mode [{mode}]')
+            raise NotFoundException(f'Unknown safety mode [{mode}]') from None
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         return self._admin_event_pairings_render(web_context)
 
@@ -2560,7 +2743,9 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _save_pairing_settings_data(tournament: Tournament, data: dict[str, str]):
+    def _save_pairing_settings_data(
+        tournament: Tournament, data: dict[str, str]
+    ) -> None:
         stored_settings: dict[str, Any] = {}
         for setting in tournament.pairing_variation.settings:
             stored_settings[setting.id] = setting.to_stored_value(
@@ -3032,7 +3217,7 @@ class PairingsAdminController(BaseEventAdminController):
         event_uniq_id: str,
         tournament_id: int,
         round_: int,
-    ):
+    ) -> None:
         channels.publish(
             {
                 'event': f'new-user-results|{event_uniq_id}|{tournament_id}|{round_}',
@@ -3069,7 +3254,10 @@ class PairingsAdminController(BaseEventAdminController):
             return self._team_pairings_info_modal(web_context, tournament, round)
 
         engine = tournament.pairing_variation.engine
-        assert isinstance(engine, BbpPairings)
+        if not isinstance(engine, BbpPairings):
+            # The system offers no information button; a page that still
+            # carries one is out of date, so answer with a fresh one.
+            return self._admin_event_pairings_render(web_context)
 
         warning: str | None = None
         (history, boards) = engine.get_history(tournament=tournament, round_=round)
@@ -3089,11 +3277,11 @@ class PairingsAdminController(BaseEventAdminController):
             buckets[player.points].append(player)
 
         # Sort players within each bucket by player id
-        for pts, players in buckets.items():
+        for players in buckets.values():
             players.sort(key=lambda p: p.id)
 
         # Create grouped list
-        grouped = [(pts, players) for pts, players in buckets.items()]
+        grouped = list(buckets.items())
 
         # Sort groups by points (highest first)
         grouped.sort(key=lambda it: it[0], reverse=True)

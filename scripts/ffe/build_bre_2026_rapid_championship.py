@@ -45,7 +45,7 @@ def run(
                     received += len(chunk)
                     # print(f'Downloaded {received} / {total} bytes.')
             # print(f'Download complete ({received / 1_048_576:.1f} MB).')
-            event: Event = EventLoader().load_event(event_uniq_id)
+            event = EventLoader().load_event(event_uniq_id)
             PapiTournamentImporter([FileOption(papi_file)]).load_tournament(event)
             sqlite_database.execute(
                 'SELECT MAX(`id`) as `tournament_id` FROM `tournament`'

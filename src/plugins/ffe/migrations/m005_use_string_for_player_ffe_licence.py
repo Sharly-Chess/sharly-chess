@@ -1,15 +1,16 @@
+from typing import ClassVar
 from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    LICENCE_MAPPING: dict[int, str] = {
+    LICENCE_MAPPING: ClassVar[dict[int, str]] = {
         0: '',
         1: 'N',
         2: 'A',
         3: 'B',
     }
 
-    def forward(self):
+    def forward(self) -> None:
         for int_value, str_value in self.LICENCE_MAPPING.items():
             self.database.execute(
                 "UPDATE `player` SET plugin_data = JSON_SET(plugin_data, '$.ffe.ffe_licence', ?) "
@@ -19,7 +20,7 @@ class Migration(BaseMigration):
         # No tournament / prize criteria renaming because the tournament_criterion
         # has been deleted and the value has been removed from the prizes
 
-    def backward(self):
+    def backward(self) -> None:
         for int_value, str_value in self.LICENCE_MAPPING.items():
             self.database.execute(
                 "UPDATE `player` SET plugin_data = JSON_SET(plugin_data, '$.ffe.ffe_licence', ?) "

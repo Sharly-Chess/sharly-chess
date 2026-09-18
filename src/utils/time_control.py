@@ -1,21 +1,20 @@
 from dataclasses import dataclass
-from typing import Optional, List
 
 
 @dataclass
 class TimePeriod:
     seconds: int
     increment: int = 0
-    moves: Optional[int] = None
+    moves: int | None = None
 
 
 @dataclass
 class TimeControl:
-    white: List[TimePeriod]
-    black: Optional[List[TimePeriod]] = None
+    white: list[TimePeriod]
+    black: list[TimePeriod] | None = None
 
 
-def _parse_descriptor(desc: str) -> List[TimePeriod]:
+def _parse_descriptor(desc: str) -> list[TimePeriod]:
     """
     Parse a single 'd' descriptor (std/all/inc) into one or more TimePeriod objects.
     Examples of desc:
@@ -23,14 +22,14 @@ def _parse_descriptor(desc: str) -> List[TimePeriod]:
         '40/6000+30:900+30'
         '300'
     """
-    periods: List[TimePeriod] = []
+    periods: list[TimePeriod] = []
 
     for part in desc.split(':'):
         part = part.strip()
         if not part:
             continue
 
-        moves: Optional[int] = None
+        moves: int | None = None
 
         # std: M/S or M/S+I
         if '/' in part:

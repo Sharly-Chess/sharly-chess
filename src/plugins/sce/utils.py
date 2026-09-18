@@ -78,7 +78,7 @@ class SCEUtils:
         plugin_data: SCEEventPluginData,
         write: bool = True,
         write_stored_object: bool = False,
-    ):
+    ) -> None:
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         event.plugin_data[PLUGIN_NAME] = plugin_data
         if write:
@@ -98,7 +98,7 @@ class SCEUtils:
         plugin_data: SCETournamentPluginData,
         write: bool = True,
         write_stored_object: bool = False,
-    ):
+    ) -> None:
         tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
             plugin_data.to_stored_value()
         )
@@ -118,7 +118,7 @@ class SCEUtils:
         tournament: Tournament,
         plugin_data: SCETournamentPluginData,
         database: EventDatabase,
-    ):
+    ) -> None:
         database.execute(
             'UPDATE tournament SET plugin_data = '
             "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
@@ -132,7 +132,7 @@ class SCEUtils:
         plugin_data: SCEPlayerPluginData,
         write: bool = True,
         write_stored_object: bool = False,
-    ):
+    ) -> None:
         player.stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         player.plugin_data[PLUGIN_NAME] = plugin_data
         if write:
@@ -150,7 +150,7 @@ class SCEUtils:
         player: Player,
         plugin_data: SCEPlayerPluginData,
         database: EventDatabase,
-    ):
+    ) -> None:
         database.execute(
             'UPDATE player SET plugin_data = '
             "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",

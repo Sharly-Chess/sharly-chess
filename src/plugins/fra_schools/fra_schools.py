@@ -1,5 +1,6 @@
 from collections import Counter, defaultdict
-from typing import TYPE_CHECKING, Any, override, Iterable
+from typing import TYPE_CHECKING, Any, override
+from collections.abc import Iterable
 
 from packaging.version import Version
 
@@ -82,6 +83,8 @@ from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from data.rule_sets import RuleSet
+    from data.pairing_dimensions import PairingDimension
+    from data.teams.team_affiliation import TeamAffiliationSource
     from data.tie_breaks.tie_breaks import TieBreak
     from data.tournament import Tournament
 
@@ -158,7 +161,7 @@ class FRASchoolsPlugin(Plugin):
                 return True
         return False
 
-    def on_enable(self):
+    def on_enable(self) -> None:
         schools_database = FRASchoolsDatabase()
         if not schools_database.exists():
             schools_database.update()
@@ -178,7 +181,9 @@ class FRASchoolsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl(trylast=True)
-    def insert_local_source_databases(self, databases: list[type[LocalSourceDatabase]]):
+    def insert_local_source_databases(
+        self, databases: list[type[LocalSourceDatabase]]
+    ) -> None:
         schools: type[LocalSourceDatabase] = FRASchoolsDatabase
         ffe: type[LocalSourceDatabase] = FfeDatabase
         PluginUtils.insert_on_equals(databases, schools, ffe, True)
@@ -204,15 +209,15 @@ class FRASchoolsPlugin(Plugin):
         return self.id, FRASchoolsPlayerPluginData
 
     @hookimpl
-    def get_prohibited_pairing_dimensions(self):
-        from data.prohibited_pairings import ProhibitedPairingDimension
+    def get_prohibited_pairing_dimensions(self) -> list['PairingDimension']:
+        from data.pairing_dimensions import PairingDimension
 
-        def school_key(player):
+        def school_key(player: 'TournamentPlayer') -> str | None:
             school = FRASchoolsUtils.get_player_school(player)
             return str(school.id) if school and school.id is not None else None
 
         return [
-            ProhibitedPairingDimension(
+            PairingDimension(
                 id='fra-school',
                 label=_('School'),
                 is_team=False,
@@ -221,13 +226,13 @@ class FRASchoolsPlugin(Plugin):
         ]
 
     @hookimpl
-    def get_team_affiliation_sources(self):
+    def get_team_affiliation_sources(self) -> list['TeamAffiliationSource']:
         from data.teams.team_affiliation import (
             TeamAffiliationSource,
             team_shared_player_value,
         )
 
-        def school_name(player):
+        def school_name(player: 'TournamentPlayer') -> str | None:
             school = FRASchoolsUtils.get_player_school(player)
             return school.name if school else None
 
@@ -246,17 +251,17 @@ class FRASchoolsPlugin(Plugin):
         return FRASchoolsController.get_fra_school_template_context(web_context)
 
     @hookimpl
-    def insert_player_form_carry_over_field(self, fields: list[str]):
+    def insert_player_form_carry_over_field(self, fields: list[str]) -> None:
         fields.append('fra_school_id')
 
     @hookimpl
     def insert_player_form_fields_template(
         self, templates_by_section: defaultdict[str, list[str]]
-    ):
+    ) -> None:
         templates_by_section['identity'].append('/fra_schools_player_form_fields.html')
 
     @hookimpl(trylast=True)
-    def alter_players_tab_columns(self, columns: list[PlayersTabColumn]):
+    def alter_players_tab_columns(self, columns: list[PlayersTabColumn]) -> None:
         for column in columns:
             if column.__class__ in [
                 FederationPlayersTabColumn,
@@ -271,7 +276,9 @@ class FRASchoolsPlugin(Plugin):
         )
 
     @hookimpl
-    def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):
+    def insert_player_datasheet_columns(
+        self, datasheet_columns: list[DatasheetColumn]
+    ) -> None:
         club: type[DatasheetColumn] = player_datasheet.ClubColumn
         fra_school_columns: list[DatasheetColumn] = [
             FraSchoolCodeDatasheetColumn(),
@@ -307,13 +314,15 @@ class FRASchoolsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+    def insert_print_document(
+        self, print_documents: list[type['PrintDocument']]
+    ) -> None:
         sps: type[PrintDocument] = FraSchoolsRankingPrintDocument
         pps: type[PrintDocument] = IndividuelTeamRankingPrintDocument
         PluginUtils.insert_on_equals(print_documents, sps, pps, True)
 
     @hookimpl
-    def insert_print_option(self, print_options: list[type['PrintOption']]):
+    def insert_print_option(self, print_options: list[type['PrintOption']]) -> None:
         print_options.append(FRASchoolsIndividualTeamMaxPerSchoolPrintOption)
         print_options.append(FRASchoolsIndividualTeamDisplayIncompletePrintOption)
 
@@ -322,7 +331,7 @@ class FRASchoolsPlugin(Plugin):
         self,
         usage: ColumnUsage,
         player_columns: list['TournamentPlayerTableColumn'],
-    ):
+    ) -> None:
         # Remove FederationColumn and LeagueColumn
         player_columns[:] = [
             col
@@ -340,7 +349,7 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl
     def insert_print_player_splitter_types(
         self, player_splitter_types: list[type[PlayerSplitter]]
-    ):
+    ) -> None:
         lps: type[PlayerSplitter] = FraSchoolPlayerSplitter
         cps: type[PlayerSplitter] = ClubPlayerSplitter
         PluginUtils.insert_on_equals(player_splitter_types, lps, cps, False)
@@ -348,7 +357,7 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl
     def insert_print_individual_team_types(
         self, individual_team_types: list[type[IndividualTeamType]]
-    ):
+    ) -> None:
         individual_team_types.append(FraSchoolsIndividualTeamType)
 
     @hookimpl
@@ -402,7 +411,7 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl
     def insert_player_filter_types(
         self, player_filter_types: list[type['PlayerFilter']]
-    ):
+    ) -> None:
         school: type[PlayerFilter] = FRASchoolPlayerFilter
         club: type[PlayerFilter] = ClubPlayerFilter
         PluginUtils.insert_on_equals(player_filter_types, school, club, False)
@@ -410,7 +419,7 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl
     def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
-    ):
+    ) -> None:
         school: type[PlayerFilterOption] = FRASchoolsFilterOption
         club: type[PlayerFilterOption] = ClubsFilterOption
         PluginUtils.insert_on_equals(player_filter_option_types, school, club, False)
@@ -420,7 +429,7 @@ class FRASchoolsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]) -> None:
         from plugins.fra_schools.fra_schools_rule_sets import (
             ChampionnatScolaireRuleSet,
         )
@@ -428,7 +437,7 @@ class FRASchoolsPlugin(Plugin):
         rule_sets.append(ChampionnatScolaireRuleSet)
 
     @hookimpl
-    def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]):
+    def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]) -> None:
         from plugins.fra_schools.fra_schools_tie_breaks import (
             BoardOrderWinsTieBreak,
         )
@@ -438,7 +447,7 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl(trylast=True)
     def insert_swiss_system_tie_break_sets(
         self, system_sets: list['SystemTieBreakSet']
-    ):
+    ) -> None:
         from data.tie_breaks import tie_breaks
         from plugins.ffe import ffe_tie_breaks
         from plugins.ffe.ffe_tie_breaks import (
@@ -474,7 +483,7 @@ class FRASchoolsPlugin(Plugin):
         papi_player: PapiPlayer,
         tournament_player: TournamentPlayer,
         is_ffe_upload: bool,
-    ):
+    ) -> None:
         school = FRASchoolsUtils.get_player_school(tournament_player)
         club = ''
         if school:
@@ -492,7 +501,7 @@ class FRASchoolsPlugin(Plugin):
         importer: TournamentImporter,
         stored_player: StoredPlayer,
         chessevent_player: ChessEventPlayer,
-    ):
+    ) -> None:
         school_id: int | None = None
         ce_school = chessevent_player.school
         if ce_school and FRASchoolsDatabase.file_path().exists():
@@ -536,7 +545,7 @@ class FRASchoolsPlugin(Plugin):
         event: Event,
         importer: TournamentImporter,
         stored_player: StoredPlayer,
-    ):
+    ) -> None:
         school_id: int | None = None
         if stored_player.club:
             school_code = FRASchoolsUtils.extract_school_code(stored_player.club)
@@ -574,7 +583,7 @@ class FRASchoolsPlugin(Plugin):
         self,
         player: TournamentPlayer,
         sync_data: SCEPlayerSyncData,
-    ):
+    ) -> None:
         school = FRASchoolsUtils.get_player_school(player)
         sync_data.fra_school = (
             SCEFraSchoolSyncData(
@@ -590,7 +599,7 @@ class FRASchoolsPlugin(Plugin):
         self,
         sce_data: dict[str, Any],
         sync_data: SCEPlayerSyncData,
-    ):
+    ) -> None:
         sync_data.fra_school = SCEFraSchoolSyncData.from_dict_value(
             sce_data.get('fra_school')
         )
@@ -602,7 +611,7 @@ class FRASchoolsPlugin(Plugin):
         stored_player: StoredPlayer,
         sync_data: SCEPlayerSyncData,
         database: EventDatabase | None,
-    ):
+    ) -> None:
         plugin_data = FRASchoolsPlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
@@ -625,19 +634,21 @@ class FRASchoolsPlugin(Plugin):
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 
     @hookimpl
-    def update_sce_player_diff_field_labels(self, diff_fields: dict[str, str | None]):
+    def update_sce_player_diff_field_labels(
+        self, diff_fields: dict[str, str | None]
+    ) -> None:
         diff_fields['fra_school_label_str'] = _('School')
 
     @hookimpl
     def add_sce_upload_player_custom_fields(
         self, custom_fields: dict[str, Any], player: TournamentPlayer
-    ):
+    ) -> None:
         school = FRASchoolsUtils.get_player_school(player)
         if school:
             custom_fields['fra_school'] = school.label
 
     @staticmethod
-    def _replace_sce_upload_origin_columns(columns: list[SCEUploadColumn]):
+    def _replace_sce_upload_origin_columns(columns: list[SCEUploadColumn]) -> None:
         school = SCEUploadColumn('fra_school', _('French school'), is_custom=True)
         PluginUtils.insert_on_attr_equals(columns, school, 'id', 'federation')
         new_columns = [
@@ -649,9 +660,9 @@ class FRASchoolsPlugin(Plugin):
         columns.extend(new_columns)
 
     @hookimpl(trylast=True)
-    def alter_sce_upload_player_columns(self, columns: list[SCEUploadColumn]):
+    def alter_sce_upload_player_columns(self, columns: list[SCEUploadColumn]) -> None:
         self._replace_sce_upload_origin_columns(columns)
 
     @hookimpl(trylast=True)
-    def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]):
+    def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]) -> None:
         self._replace_sce_upload_origin_columns(columns)

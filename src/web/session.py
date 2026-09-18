@@ -32,12 +32,12 @@ class SessionVariable[T](ABC):
         """Default value used for the variable when nothing's stored in the session."""
 
     def get(self) -> T:
-        return self.request.session.get(self.key, self.default_value)
+        return cast(T, self.request.session.get(self.key, self.default_value))
 
-    def set(self, value: T):
+    def set(self, value: T) -> None:
         self.request.session[self.key] = value
 
-    def unset(self):
+    def unset(self) -> None:
         self.request.session.pop(self.key, None)
 
 
@@ -80,7 +80,7 @@ class WrapperListSessionVariable[T](ListSessionVariable[T], ABC):
             for value in self.request.session.get(self.key, self.default_value)
         ]
 
-    def set(self, value: list[T]):
+    def set(self, value: list[T]) -> None:
         self.request.session[self.key] = [
             self.to_session_value(element) for element in value
         ]
@@ -91,7 +91,7 @@ class SubKeySessionVariable[T](SessionVariable[T], ABC):
         super().__init__(request)
         self.sub_key = sub_key
 
-    def set(self, value: T):
+    def set(self, value: T) -> None:
         if self.key not in self.request.session:
             self.request.session[self.key] = {}
         self.request.session[self.key][self.sub_key] = value
@@ -99,9 +99,11 @@ class SubKeySessionVariable[T](SessionVariable[T], ABC):
     def get(self) -> T:
         if self.key not in self.request.session:
             return self.default_value
-        return self.request.session[self.key].get(self.sub_key, self.default_value)
+        return cast(
+            T, self.request.session[self.key].get(self.sub_key, self.default_value)
+        )
 
-    def unset(self):
+    def unset(self) -> None:
         if self.key not in self.request.session:
             return
         self.request.session[self.key].pop(self.sub_key, None)
@@ -126,7 +128,7 @@ class TournamentSessionVariable[T](SubKeySessionVariable[T], ABC):
 class DataclassSessionVariable[T](SessionVariable[T], ABC):
     _data_class: ClassVar[type[Any]]
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
 
         for base in getattr(cls, '__orig_bases__', ()):
@@ -165,7 +167,7 @@ class DataclassSessionVariable[T](SessionVariable[T], ABC):
             return self.default_value
         return dict_to_dataclass(self.data_class, self.request.session[self.key])
 
-    def set(self, value: T):
+    def set(self, value: T) -> None:
         self.request.session[self.key] = asdict(cast(Any, value))
 
 
@@ -386,7 +388,7 @@ class SessionScreensScreenTypes(SessionVariable[set[str]]):
     def get(self) -> set[str]:
         return set(super().get())
 
-    def set(self, value: set[str]):
+    def set(self, value: set[str]) -> None:
         self.request.session[self.key] = list(value)
 
 
@@ -405,7 +407,7 @@ class SessionEventsTags(SessionVariable[set[int]]):
     def get(self) -> set[int]:
         return set(super().get())
 
-    def set(self, value: set[int]):
+    def set(self, value: set[int]) -> None:
         self.request.session[self.key] = list(value)
 
 
@@ -467,7 +469,7 @@ class SessionPlayersFilters(EventSessionVariable[dict[str, list[str]]]):
     def default_value(self) -> dict[str, list[str]]:
         return {}
 
-    def set_column_filters(self, column_id: str, filter_keys: list[str]):
+    def set_column_filters(self, column_id: str, filter_keys: list[str]) -> None:
         filters = self.get()
         if not filter_keys:
             if column_id in filters:
@@ -531,7 +533,7 @@ class SessionPairingsSafetyMode(SessionVariable[SafetyMode]):
     def get(self) -> SafetyMode:
         return SafetyMode(super().get())
 
-    def set(self, safety_mode: SafetyMode):
+    def set(self, safety_mode: SafetyMode) -> None:
         self.request.session[self.key] = safety_mode.value
 
 

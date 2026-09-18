@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from functools import cached_property
 from sqlite3 import OperationalError
-from typing import Self, TYPE_CHECKING, Any
+from typing import Self, TYPE_CHECKING, Any, cast
 
 from packaging.version import Version
 
@@ -53,7 +53,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
     # Metadata
     # ---------------------------------------------------------------------------------
 
-    def create_metadata_table(self):
+    def create_metadata_table(self) -> None:
         self.execute(
             'CREATE TABLE IF NOT EXISTS `metadata` ('
             '   `version` TEXT NOT NULL,'
@@ -74,16 +74,16 @@ class MigrationDatabase(SQLiteDatabase, ABC):
 
     def get_migration(self) -> str:
         self.execute('SELECT `migration` FROM `metadata`')
-        return self.fetchone()['migration']
+        return cast(str, self.fetchone()['migration'])
 
-    def set_migration(self, migration: str):
+    def set_migration(self, migration: str) -> None:
         self.execute('UPDATE `metadata` SET `migration` = ?', (migration,))
 
     def get_version(self) -> Version:
         self.execute('SELECT `version` FROM `metadata`')
         return Version(self.fetchone()['version'])
 
-    def set_version(self, version: Version):
+    def set_version(self, version: Version) -> None:
         self.execute('UPDATE `metadata` SET `version` = ?', (str(version),))
 
     def get_migration_from_legacy_version(self) -> str | None:
@@ -123,7 +123,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
                 manager.check_status(database) for manager in self.migration_managers
             )
 
-    def upgrade(self):
+    def upgrade(self) -> None:
         """Upgrades the database to the latest version.
         This may change the structure of the database."""
         post_upgrade_tasks: list[PostUpgradeTask] = []
@@ -134,7 +134,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
         for task in post_upgrade_tasks:
             task.execute()
 
-    def create(self):
+    def create(self) -> None:
         """Create a database by running the migrations from scratch.
         The file associated to this database must not already exist.
         """

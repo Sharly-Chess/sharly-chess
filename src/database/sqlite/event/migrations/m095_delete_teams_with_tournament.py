@@ -20,13 +20,13 @@ class Migration(BaseMigration):
     def are_foreign_keys_enabled() -> bool:
         return False
 
-    def forward(self):
+    def forward(self) -> None:
         self._rebuild_team_table('ON DELETE CASCADE')
 
-    def backward(self):
+    def backward(self) -> None:
         self._rebuild_team_table('ON DELETE SET NULL')
 
-    def _rebuild_team_table(self, tournament_delete_rule: str):
+    def _rebuild_team_table(self, tournament_delete_rule: str) -> None:
         self.database.execute(
             'CREATE TABLE `team_new` ('
             '   `id` INTEGER NOT NULL,'

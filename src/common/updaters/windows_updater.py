@@ -64,7 +64,7 @@ class WindowsUpdater:
             return False
 
     @classmethod
-    def run(cls):
+    def run(cls) -> None:
         exe = str(cls.exe_path())
         locale = SharlyChessConfig().locale
         log_path = TMP_DIR / 'update.log'

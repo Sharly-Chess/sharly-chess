@@ -26,7 +26,7 @@ team A, and team B rotates around it.
 """
 
 from abc import ABC
-from functools import cached_property, lru_cache
+from functools import cached_property, cache
 from typing import TYPE_CHECKING, override
 
 from common.i18n import _
@@ -37,7 +37,7 @@ from data.pairings.fixed_table import (
     TablePairing,
 )
 from data.pairings.settings import PairingSetting
-from data.pairings.systems import PairingSystem, SwissPairingSystem
+from data.pairings.systems import PairingSystem, swiss_style_permission_handler
 from data.pairings.variations import PairingVariation
 from data.safety_mode import PairingAction, PermissionHandler
 from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
@@ -186,7 +186,7 @@ def _reversed_colours(pairing: TablePairing) -> TablePairing:
     )
 
 
-@lru_cache(maxsize=None)
+@cache
 def scheveningen_table(players_per_team: int, double_round: bool) -> FixedPairingTable:
     """The Scheveningen table for a match on *players_per_team* boards."""
     rounds: list[tuple[TablePairing, ...]] = [
@@ -312,7 +312,7 @@ class ScheveningenPairingSystem(
 
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
-        return SwissPairingSystem().permission_handler
+        return swiss_style_permission_handler(protect_unpairing=False)
 
     def default_current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
@@ -442,7 +442,7 @@ class ScheveningenEngine(TeamPairingEngine):
             else None
         )
         n = tournament.team_player_count or 0
-        slots_by_letter: dict[str, list['Player | None']] = {
+        slots_by_letter: dict[str, list[Player | None]] = {
             'A': list(team_a.effective_round_slots(stb.round_)),
             'B': list(team_b.effective_round_slots(stb.round_))
             if team_b is not None

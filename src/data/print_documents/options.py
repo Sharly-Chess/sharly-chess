@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from data.print_documents.documents import PlaceCardTemplate
 
 
-class PrintOption(Option, ABC):
+class PrintOption[V](Option[V], ABC):
     """Parent class of all the options of print documents."""
 
     def __init__(self, event: Optional['Event'], value: Any | None = None):
@@ -55,7 +55,7 @@ class PrintOption(Option, ABC):
         return self.id.replace('-', '_')
 
 
-class TournamentPrintOption(PrintOption):
+class TournamentPrintOption(PrintOption[int | None]):
     @staticmethod
     def static_id() -> str:
         return 'tournament'
@@ -65,18 +65,18 @@ class TournamentPrintOption(PrintOption):
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         # This is managed by the print controller
         return None
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value is None:
             raise OptionError(_('Please choose the tournament.'), self)
 
 
-class TournamentsPrintOption(PrintOption):
+class TournamentsPrintOption(PrintOption[str | None]):
     @staticmethod
     def static_id() -> str:
         return 'tournaments'
@@ -86,18 +86,18 @@ class TournamentsPrintOption(PrintOption):
         return str | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str | None:
         # This is managed by the print controller
         return None
 
 
-class PlayerPrintOption(PrintOption, ABC):
+class PlayerPrintOption(PrintOption[int | None], ABC):
     @property
     def template_file_name(self) -> str:
         return 'player'
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
     @property
@@ -110,7 +110,7 @@ class PlayerPrintOption(PrintOption, ABC):
         """Returns True if the selecting a player is needed to print."""
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.mandatory and self.value is None:
             raise OptionError(_('Please choose a player.'), self)
@@ -136,7 +136,7 @@ class OptionalPlayerPrintOption(PlayerPrintOption):
         return False
 
 
-class PlayersPrintOption(PrintOption, ABC):
+class PlayersPrintOption(PrintOption[list[int]], ABC):
     @property
     @abstractmethod
     def mandatory(self) -> bool:
@@ -151,11 +151,11 @@ class PlayersPrintOption(PrintOption, ABC):
         return list[int]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[int]:
         return []
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(int)
         if self.mandatory and not self.value:
             raise OptionError(_('Please select at least one player.'), self)
@@ -171,7 +171,7 @@ class OptionalPlayersPrintOption(PlayersPrintOption):
         return False
 
 
-class TeamsPrintOption(PrintOption, ABC):
+class TeamsPrintOption(PrintOption[list[int]], ABC):
     @property
     @abstractmethod
     def mandatory(self) -> bool:
@@ -186,11 +186,11 @@ class TeamsPrintOption(PrintOption, ABC):
         return list[int]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[int]:
         return []
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(int)
         if self.mandatory and not self.value:
             raise OptionError(_('Please select at least one team.'), self)
@@ -206,7 +206,7 @@ class OptionalTeamsPrintOption(TeamsPrintOption):
         return False
 
 
-class RoundPrintOption(PrintOption):
+class RoundPrintOption(PrintOption[int | None]):
     @staticmethod
     def static_id() -> str:
         return 'round'
@@ -216,17 +216,17 @@ class RoundPrintOption(PrintOption):
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value is not None and self.value < 1:
             raise OptionError(_('A positive integer is expected.'), self)
 
 
-class MatchSheetSelectionPrintOption(PrintOption):
+class MatchSheetSelectionPrintOption(PrintOption[list[int]]):
     """List of team_board ids to print, or empty to print every team
     match in the round."""
 
@@ -239,11 +239,11 @@ class MatchSheetSelectionPrintOption(PrintOption):
         return list[int]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[int]:
         return []
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(int)
 
     def match_options_by_tournament_round(
@@ -312,7 +312,7 @@ class MatchSheetSelectionPrintOption(PrintOption):
         return result
 
 
-class MatchSheetArbiterPrintOption(PrintOption):
+class MatchSheetArbiterPrintOption(PrintOption[int | None]):
     """Arbiter whose name is printed on the match-sheet signature line,
     chosen from the event's team-tournament staff (chief + deputy
     arbiters). Empty falls back to the tournament's chief arbiter."""
@@ -330,7 +330,7 @@ class MatchSheetArbiterPrintOption(PrintOption):
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
     @property
@@ -360,7 +360,7 @@ class MatchSheetArbiterPrintOption(PrintOption):
         return result
 
 
-class TeamBergerGridPlayersPrintOption(PrintOption):
+class TeamBergerGridPlayersPrintOption(PrintOption[bool]):
     """If on, the team Berger grid details down to the players: one row
     per player (grouped by team), individual game results in the
     cells."""
@@ -374,11 +374,11 @@ class TeamBergerGridPlayersPrintOption(PrintOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
 
-class PlayerSplitPrintOption(PrintOption):
+class PlayerSplitPrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'player-split'
@@ -388,7 +388,7 @@ class PlayerSplitPrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return NoSplitPlayerSplitter.static_id()
 
     @property
@@ -404,15 +404,15 @@ class PlayerSplitPrintOption(PrintOption):
         return PrintPlayerSplitterManager(self.event).get_object(self.value)
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         try:
             _splitter = self.player_splitter
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown player splitter: {self.value}', self)
+            raise OptionError(f'Unknown player splitter: {self.value}', self) from None
 
 
-class GridPlayerSortPrintOption(PrintOption):
+class GridPlayerSortPrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'grid-player-sort'
@@ -422,7 +422,7 @@ class GridPlayerSortPrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return RankGridPlayerSorter.static_id()
 
     @property
@@ -438,16 +438,18 @@ class GridPlayerSortPrintOption(PrintOption):
         return PrintGridPlayerSorterManager(self.event).get_object(self.value)
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             _sorter = self.grid_player_sorter
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown grid player sorter: {self.value}', self)
+            raise OptionError(
+                f'Unknown grid player sorter: {self.value}', self
+            ) from None
 
 
-class TeamGridSortPrintOption(PrintOption):
+class TeamGridSortPrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'team-grid-sort'
@@ -457,7 +459,7 @@ class TeamGridSortPrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return RankTeamGridSorter.static_id()
 
     @property
@@ -473,16 +475,16 @@ class TeamGridSortPrintOption(PrintOption):
         return PrintTeamGridSorterManager(self.event).get_object(self.value)
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             _sorter = self.team_grid_sorter
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown team grid sorter: {self.value}', self)
+            raise OptionError(f'Unknown team grid sorter: {self.value}', self) from None
 
 
-class ListPlayerSortPrintOption(PrintOption):
+class ListPlayerSortPrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'list-player-sort'
@@ -492,7 +494,7 @@ class ListPlayerSortPrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return NameListPlayerSorter.static_id()
 
     @property
@@ -508,16 +510,18 @@ class ListPlayerSortPrintOption(PrintOption):
         return PrintListPlayerSorterManager(self.event).get_object(self.value)
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             _sorter = self.list_player_sorter
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown list player sorter: {self.value}', self)
+            raise OptionError(
+                f'Unknown list player sorter: {self.value}', self
+            ) from None
 
 
-class FixedBoardOrderPrintOption(PrintOption):
+class FixedBoardOrderPrintOption(PrintOption[str]):
     """Ordering of the board pairings when the round is numbered compactly
     around fixed boards: by displayed board number (default) or in the natural
     pairing order. Only relevant when a tournament has fixed boards and isn't
@@ -535,7 +539,7 @@ class FixedBoardOrderPrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return self.BY_BOARD_NUMBER
 
     @property
@@ -568,24 +572,24 @@ class FixedBoardOrderPrintOption(PrintOption):
         )
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value not in self.order_options:
             # Untranslated; should not happen via UI
             raise OptionError(f'Unknown fixed board order: {self.value}', self)
 
 
-class PairingStylePrintOption(PrintOption):
+class PairingStylePrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'pairing-style'
 
     @property
     def type(self) -> type | UnionType:
-        return str | None
+        return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return BoardsPairingStyle.static_id()
 
     @property
@@ -601,16 +605,16 @@ class PairingStylePrintOption(PrintOption):
         return PrintPairingStyleManager(self.event).get_object(self.value)
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             _style = self.pairing_style
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown pairing style: {self.value}', self)
+            raise OptionError(f'Unknown pairing style: {self.value}', self) from None
 
 
-class ShowWarningsPrintOption(PrintOption):
+class ShowWarningsPrintOption(PrintOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'show-warnings'
@@ -620,11 +624,28 @@ class ShowWarningsPrintOption(PrintOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return True
 
 
-class NonMonetaryPrintOption(PrintOption):
+class KnockoutSchedulePrintOption(PrintOption[bool]):
+    """On the knock-out bracket document: show the chronological schedule
+    (matches round by round) instead of the bracket diagram."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'knockout-schedule'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
+class NonMonetaryPrintOption(PrintOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'non-monetary'
@@ -634,11 +655,11 @@ class NonMonetaryPrintOption(PrintOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
 
-class FederationPrintOption(PrintOption):
+class FederationPrintOption(PrintOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'federation'
@@ -648,11 +669,11 @@ class FederationPrintOption(PrintOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
 
-class ClubThresholdPrintOption(PrintOption):
+class ClubThresholdPrintOption(PrintOption[int | None]):
     @staticmethod
     def static_id() -> str:
         return 'club-threshold'
@@ -662,17 +683,17 @@ class ClubThresholdPrintOption(PrintOption):
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value is not None and self.value < 0:
             raise OptionError(_('A positive value is expected.'), self)
 
 
-class Rule143ExemptionPrintOption(PrintOption):
+class Rule143ExemptionPrintOption(PrintOption[str]):
     """Selects which FIDE 1.4.3 exemption (a/b/c) applies, based on the
     type of event the tournament is part of. The arbiter sets this on the
     print doc — there's no automatic detection because nothing in the
@@ -702,7 +723,7 @@ class Rule143ExemptionPrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return 'none'
 
     @property
@@ -717,14 +738,14 @@ class Rule143ExemptionPrintOption(PrintOption):
         }
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value not in ('none', '1.4.3a', '1.4.3b', '1.4.3c'):
             # Untranslated; should not happen via UI
             raise OptionError(f'Unknown 1.4.3 exemption: {self.value}', self)
 
 
-class NormsForecastSortPrintOption(PrintOption):
+class NormsForecastSortPrintOption(PrintOption[str]):
     """Row ordering for the forecast table of the Tournament Norms Summary.
 
     - 'rank'  → current standings position (default).
@@ -741,7 +762,7 @@ class NormsForecastSortPrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return 'rank'
 
     @property
@@ -754,14 +775,14 @@ class NormsForecastSortPrintOption(PrintOption):
         }
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value not in ('rank', 'table', 'name'):
             # Untranslated; should not happen via UI
             raise OptionError(f'Unknown forecast sort: {self.value}', self)
 
 
-class NormChoicePrintOption(PrintOption):
+class NormChoicePrintOption(PrintOption[str]):
     """Which norm to render in the Norm Calculation Details document.
     The detail doc shows only one norm at a time, so the arbiter picks
     which one to audit via the deep-link from the IT1."""
@@ -775,7 +796,7 @@ class NormChoicePrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return 'GM'
 
     @property
@@ -787,7 +808,7 @@ class NormChoicePrintOption(PrintOption):
         return {tn.name: tn.name for tn in TitleNorm.values()}
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         from utils.enum import TitleNorm
 
@@ -797,17 +818,17 @@ class NormChoicePrintOption(PrintOption):
             raise OptionError(f'Unknown norm: {self.value}', self)
 
 
-class QRCodePrintOption(PrintOption):
+class QRCodePrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'qrcode-type'
 
     @property
     def type(self) -> type | UnionType:
-        return str | None
+        return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return NetworkQRCodeType.static_id()
 
     @property
@@ -839,16 +860,16 @@ class QRCodePrintOption(PrintOption):
         }
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             _style = self.qrcode_type
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown QR Code type: {self.value}', self)
+            raise OptionError(f'Unknown QR Code type: {self.value}', self) from None
 
 
-class QRCodeNetworkPrintOption(PrintOption):
+class QRCodeNetworkPrintOption(PrintOption[str | None]):
     @staticmethod
     def static_id() -> str:
         return 'qrcode-network'
@@ -858,7 +879,7 @@ class QRCodeNetworkPrintOption(PrintOption):
         return str | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str | None:
         return None
 
     @property
@@ -872,17 +893,17 @@ class QRCodeNetworkPrintOption(PrintOption):
         }
 
 
-class PlaceCardPrintOption(PrintOption):
+class PlaceCardPrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'place-card-type'
 
     @property
     def type(self) -> type | UnionType:
-        return str | None
+        return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return PlayerCardType.static_id()
 
     @property
@@ -916,6 +937,16 @@ class PlaceCardPrintOption(PrintOption):
         return PrintPlaceCardTypeManager().get_object(self.value)
 
     @property
+    def player_data_place_card_type_ids(self) -> list[str]:
+        from data.print_documents import PrintPlaceCardTypeManager
+
+        return [
+            place_card_type.static_id()
+            for place_card_type in PrintPlaceCardTypeManager().objects()
+            if place_card_type.includes_player_data
+        ]
+
+    @property
     def valid_option_ids_per_type_id(self) -> dict[str, list[str]]:
         from data.print_documents import PrintPlaceCardTypeManager
 
@@ -926,16 +957,16 @@ class PlaceCardPrintOption(PrintOption):
         }
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             _style = self.place_card_type
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown Place Card type: {self.value}', self)
+            raise OptionError(f'Unknown Place Card type: {self.value}', self) from None
 
 
-class PlaceCardTemplatePrintOption(PrintOption):
+class PlaceCardTemplatePrintOption(PrintOption[str | None]):
     @staticmethod
     def static_id() -> str:
         return 'place-card-template'
@@ -945,12 +976,12 @@ class PlaceCardTemplatePrintOption(PrintOption):
         return str | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str | None:
         # This is managed by the print controller
         return None
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value is None:
             raise OptionError(_('Please choose the template.'), self)
@@ -959,6 +990,8 @@ class PlaceCardTemplatePrintOption(PrintOption):
     def place_card_template(self) -> 'PlaceCardTemplate':
         from data.print_documents.place_cards.template import PlaceCardTemplate
 
+        # A template option with nothing chosen fails validation.
+        assert self.value is not None
         return PlaceCardTemplate.load(self.value)
 
     @property
@@ -978,7 +1011,7 @@ class PlaceCardTemplatePrintOption(PrintOption):
         }
 
 
-class PlaceCardMirrorPrintOption(PrintOption):
+class PlaceCardMirrorPrintOption(PrintOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'place-card-mirror'
@@ -988,11 +1021,11 @@ class PlaceCardMirrorPrintOption(PrintOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
 
-class PlaceCardCropMarksPrintOption(PrintOption):
+class PlaceCardCropMarksPrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'place-card-crop-marks'
@@ -1002,7 +1035,7 @@ class PlaceCardCropMarksPrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return CornersPlaceCardCropMarks.static_id()
 
     @property
@@ -1018,16 +1051,18 @@ class PlaceCardCropMarksPrintOption(PrintOption):
         return PrintPlaceCardCropMarksManager().get_object(self.value)
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             _crop_marks = self.place_card_crop_marks
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown place card crop marks: {self.value}', self)
+            raise OptionError(
+                f'Unknown place card crop marks: {self.value}', self
+            ) from None
 
 
-class PlaceCardBoardNumbersPrintOption(PrintOption):
+class PlaceCardBoardNumbersPrintOption(PrintOption[str | None]):
     @staticmethod
     def static_id() -> str:
         return 'place-card-board-numbers'
@@ -1037,7 +1072,7 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
         return str | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str | None:
         return None
 
     @cached_property
@@ -1060,12 +1095,12 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
         return board_numbers
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         _board_numbers = self.board_numbers
 
 
-class AccountPrintOption(PrintOption):
+class AccountPrintOption(PrintOption[int | None]):
     @staticmethod
     def static_id() -> str:
         return 'account'
@@ -1079,7 +1114,7 @@ class AccountPrintOption(PrintOption):
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
     @property
@@ -1094,7 +1129,7 @@ class AccountPrintOption(PrintOption):
         return _('Account:')
 
 
-class PlayerHistoryOption(PrintOption):
+class PlayerHistoryOption(PrintOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'player-history'
@@ -1104,11 +1139,11 @@ class PlayerHistoryOption(PrintOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
 
-class IndividualTeamTypePrintOption(PrintOption):
+class IndividualTeamTypePrintOption(PrintOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'individual-team-type'
@@ -1118,7 +1153,7 @@ class IndividualTeamTypePrintOption(PrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return ClubIndividualTeamType.static_id()
 
     @property
@@ -1143,35 +1178,35 @@ class IndividualTeamTypePrintOption(PrintOption):
         }
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         try:
             _type = self.team_type
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown team type: {self.value}', self)
+            raise OptionError(f'Unknown team type: {self.value}', self) from None
 
 
-class IndividualTeamSizePrintOption(PrintOption):
+class IndividualTeamSizePrintOption(PrintOption[int]):
     @staticmethod
     def static_id() -> str:
         return 'individual-team-size'
 
     @property
     def type(self) -> type | UnionType:
-        return int | None
+        return int
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int:
         return 4
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value is None or self.value < 2:
             raise OptionError(_('An integer greater than 1 is expected.'), self)
 
 
-class IndividualTeamMaxPerEntityPrintOption(PrintOption):
+class IndividualTeamMaxPerEntityPrintOption(PrintOption[int | None]):
     @staticmethod
     def static_id() -> str:
         return 'individual-team-max-per-entity'
@@ -1181,17 +1216,17 @@ class IndividualTeamMaxPerEntityPrintOption(PrintOption):
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value is not None and self.value < 1:
             raise OptionError(_('A positive integer is expected.'), self)
 
 
-class IndividualTeamMinGenderCountPrintOption(PrintOption):
+class IndividualTeamMinGenderCountPrintOption(PrintOption[int | None]):
     @staticmethod
     def static_id() -> str:
         return 'individual-team-min-gender-count'
@@ -1201,17 +1236,17 @@ class IndividualTeamMinGenderCountPrintOption(PrintOption):
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value is not None and self.value < 0:
             raise OptionError(_('A positive integer is expected.'), self)
 
 
-class IndividualTeamDisplayIncompletePrintOption(PrintOption):
+class IndividualTeamDisplayIncompletePrintOption(PrintOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'individual-team-display-incomplete'
@@ -1221,5 +1256,5 @@ class IndividualTeamDisplayIncompletePrintOption(PrintOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return True

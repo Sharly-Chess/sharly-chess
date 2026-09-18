@@ -4,7 +4,7 @@ from datetime import datetime
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Iterator
+from collections.abc import Iterator
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n.babel_wrapper import BabelDomainWrapper
@@ -40,7 +40,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
     def update(
         self,
         clean: bool,
-    ):
+    ) -> bool:
         """Update all the files that need to updated (POT, PO, MO), and check the translations."""
         logger.info('Domain [%s]: updating i18n strings...', self.name)
         if clean:
@@ -166,7 +166,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
         other_locales: list[str] = [
             locale
             for locale in self.locales
-            if locale not in [self.default_locale] + perfect_locales
+            if locale not in [self.default_locale, *perfect_locales]
         ]
         for locale_info in self.domain_locale_infos.values():
             if locale_info.empty_mandatory_messages:
@@ -212,21 +212,21 @@ class BabelDomainUpdater(BabelDomainWrapper):
             with open(self.sources_for_pot_fingerprint_file(), 'rb') as f:
                 return f.read()
         except FileNotFoundError:
-            return bytes()
+            return b''
 
     def store_sources_fingerprint_for_pot(
         self,
-    ):
+    ) -> None:
         """Stores the fingerprint of the sources files."""
         with open(self.sources_for_pot_fingerprint_file(), 'wb') as f:
-            return f.write(text_files_fingerprint(self.sources))
+            f.write(text_files_fingerprint(self.sources))
 
     @cached_property
-    def sources(self):
+    def sources(self) -> list[Path]:
         """Returns the list of the source files."""
         pattern_found: bool = False
         files: list[Path] = []
-        with open(self.config_file, 'r') as f:
+        with open(self.config_file) as f:
             # looking for patterns in the Babel configuration file
             for line in f:
                 if matches := re.match(r'\[\w+: *(.*)]', line):
@@ -256,15 +256,15 @@ class BabelDomainUpdater(BabelDomainWrapper):
             with open(self.pot_for_po_fingerprint_file(locale), 'rb') as f:
                 return f.read()
         except FileNotFoundError:
-            return bytes()
+            return b''
 
     def store_pot_fingerprint_for_po(
         self,
         locale: str,
-    ):
+    ) -> None:
         """Stores the fingerprint of the POT file used to update a PO file."""
         with open(self.pot_for_po_fingerprint_file(locale), 'wb') as f:
-            return f.write(text_file_fingerprint(self.pot_file))
+            f.write(text_file_fingerprint(self.pot_file))
 
     def po_for_pot_fingerprint_file(
         self,
@@ -282,15 +282,15 @@ class BabelDomainUpdater(BabelDomainWrapper):
             with open(self.po_for_pot_fingerprint_file(locale), 'rb') as f:
                 return f.read()
         except FileNotFoundError:
-            return bytes()
+            return b''
 
     def store_po_fingerprint_for_pot(
         self,
         locale: str,
-    ):
+    ) -> None:
         """Stores the fingerprint of the PO file used to generate a MO file."""
         with open(self.po_for_pot_fingerprint_file(locale), 'wb') as f:
-            return f.write(text_file_fingerprint(self.locale_po_file(locale)))
+            f.write(text_file_fingerprint(self.locale_po_file(locale)))
 
     def po_for_mo_fingerprint_file(
         self,
@@ -308,19 +308,19 @@ class BabelDomainUpdater(BabelDomainWrapper):
             with open(self.po_for_mo_fingerprint_file(locale), 'rb') as f:
                 return f.read()
         except FileNotFoundError:
-            return bytes()
+            return b''
 
     def store_po_for_mo_fingerprint(
         self,
         locale: str,
-    ):
+    ) -> None:
         """Stores the fingerprint of the PO file used to generate a MO file."""
         with open(self.po_for_mo_fingerprint_file(locale), 'wb') as f:
-            return f.write(text_file_fingerprint(self.locale_po_file(locale)))
+            f.write(text_file_fingerprint(self.locale_po_file(locale)))
 
-    def create_absent_mo_files(self):
+    def create_absent_mo_files(self) -> None:
         """Creates the MO files when not found (used when first pulling the repository and for testing on GitHub)."""
-        for locale, locale_info in self.domain_locale_infos.items():
+        for locale in self.domain_locale_infos:
             mo_file: Path = self.locale_mo_file(locale)
             if not mo_file.exists():
                 logger.info(
@@ -334,9 +334,9 @@ class BabelDomainUpdater(BabelDomainWrapper):
 
     def update_mo_files(
         self,
-    ):
+    ) -> None:
         """Only update the MO files if the PO files have changed."""
-        for locale, locale_info in self.domain_locale_infos.items():
+        for locale in self.domain_locale_infos:
             po_file: Path = self.locale_po_file(locale)
             mo_file: Path = self.locale_mo_file(locale)
             old_po_for_mo_fingerprint: bytes = self.get_po_fingerprint_for_mo(locale)
@@ -391,10 +391,12 @@ class BabelUpdater:
         self,
         clean: bool = False,
         generate_doc: bool = False,
-    ):
+    ) -> bool:
         """For (the core and) all the plugins, update all the files that need to updated (POT, PO, MO), and check the translations."""
+        # A list, not a generator: `all()` short-circuits, and every domain has
+        # to be updated even once one of them reports a problem.
         ok: bool = all(
-            [
+            [  # noqa: C419
                 babel_domain_updater.update(clean=clean)
                 for babel_domain_updater in self.babel_domain_updaters
             ]
@@ -403,7 +405,7 @@ class BabelUpdater:
             self.write_markdown()
         return ok
 
-    def create_absent_mo_files(self):
+    def create_absent_mo_files(self) -> None:
         """For all the domains, creates the MO files when not found
         (used when first pulling the repository and for testing on GitHub)."""
         for babel_plugin_updater in self.babel_domain_updaters:
@@ -411,7 +413,7 @@ class BabelUpdater:
 
     def update_mo_files(
         self,
-    ):
+    ) -> None:
         """ ""For all the domains, only update the MO files if the PO files have changed."""
         for babel_domain_updater in self.babel_domain_updaters:
             babel_domain_updater.update_mo_files()
@@ -421,7 +423,7 @@ class BabelUpdater:
         markdown: str | list[str] | dict[str, list[str]],
         target_file: Path,
         print_last_update: bool = False,
-    ):
+    ) -> None:
         """Insert some markdown in doc file."""
         markdown_lines_dict: dict[str, list[str]]
         if isinstance(markdown, str):
@@ -434,7 +436,7 @@ class BabelUpdater:
             markdown_lines_dict = {'': markdown}
         else:
             markdown_lines_dict = markdown
-        with open(target_file, 'rt', encoding='utf-8') as f:
+        with open(target_file, encoding='utf-8') as f:
             lines = [line.rstrip() for line in f]
         for tag, markdown_lines in markdown_lines_dict.items():
             input_lines: Iterator[str] = iter(lines)
@@ -466,25 +468,17 @@ class BabelUpdater:
                     f'Could not edit [{target_file}] (comment [{end_comment}] not found).'
                 )
                 return
-            lines = start_lines + [
-                f'{start_comment}\n',
-            ]
+            lines = [*start_lines, f'{start_comment}\n']
             if print_last_update:
                 lines += [
                     f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n'
                 ]
-            lines += (
-                markdown_lines
-                + [
-                    end_comment,
-                ]
-                + end_lines
-            )
+            lines += [*markdown_lines, end_comment, *end_lines]
         with open(target_file, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines) + '\n')
         logger.info('Wrote [%s].', target_file)
 
-    def write_markdown(self):
+    def write_markdown(self) -> None:
         """Write the Markdown doc."""
         self.insert_markdown(
             markdown={
@@ -521,8 +515,9 @@ class BabelUpdater:
             '| ' + ' | '.join(headers) + ' |',
             '|--' + ('|--' * (len(headers) - 1)) + '|',
         ]
+        # A list, not a comprehension: the row is a six-line f-string.
         for locale in self.locales:
-            lines.append(
+            lines.append(  # noqa: PERF401
                 f'| <img src="../../src/web{
                     locale_flag_url(locale)
                 }" style="height: 1em;"/>&nbsp;`{locale}`&nbsp;{
@@ -541,6 +536,7 @@ class BabelUpdater:
         flags: list[str],
     ) -> list[str]:
         lines: list[str] = []
+        # A list, not a comprehension: the row is a six-line f-string.
         for locale in self.locales:
             lines.append(
                 f'### <img src="../../src/web{locale_flag_url(locale)}" style="height: 1em;"/> `{locale}` {locale_localized_name(locale)}\n'

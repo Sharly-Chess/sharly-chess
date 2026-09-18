@@ -3,7 +3,7 @@ from database.sqlite.migration import BaseMigration, PostUpgradeTask
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'SELECT id, plugin_data, time_control_handicap_penalty_step, time_control_handicap_penalty_value, time_control_handicap_min_time '
             'FROM tournament'
@@ -34,7 +34,7 @@ class Migration(BaseMigration):
         )
         self.post_upgrade_tasks.append(PostUpgradeTask(self.set_enabled_plugins))
 
-    def backward(self):
+    def backward(self) -> None:
         # Event data
 
         self.database.execute(
@@ -70,7 +70,7 @@ class Migration(BaseMigration):
                 ),
             )
 
-    def set_enabled_plugins(self):
+    def set_enabled_plugins(self) -> None:
         from database.sqlite.event.event_database import EventDatabase
         from plugins.manager import plugin_manager
         from plugins.handicap_games.handicap_games import HandicapGamesPlugin

@@ -44,7 +44,7 @@ class TournamentExporter(IdentifiableEntity, ABC):
         return None
 
     @abstractmethod
-    def dump_to_file(self, file: IO, tournament: Tournament):
+    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
         """Dump the content of the *tournament* to export into the *file*."""
 
     @property
@@ -91,7 +91,7 @@ class Trf26TournamentExporter(TournamentExporter):
             )
         return None
 
-    def dump_to_file(self, file: IO, tournament: Tournament):
+    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
         trf_tournament = TrfSerializer.dumps(tournament.to_trf())
         file.write(unicode_normalize(trf_tournament))
 
@@ -133,6 +133,6 @@ class PgnTournamentExporter(TournamentExporter):
             + _('round_{round}').format(round=tournament.current_round)
         )
 
-    def dump_to_file(self, file: IO, tournament: Tournament):
+    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
         for board in tournament.boards:
             file.write(board.to_pgn(tournament, tournament.current_round))

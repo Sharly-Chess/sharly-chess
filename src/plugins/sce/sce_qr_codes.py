@@ -39,7 +39,7 @@ class SCEEventQRCodeType(QRCodeType):
         return True, SCEUtils.event_public_url(event)
 
     @staticmethod
-    def get_qr_code(url) -> str:
+    def get_qr_code(url: str) -> str:
         return QRCodeType.generate_qr_code(
             url=url,
             logo=PLUGIN_DIR / 'static' / 'images' / 'sce-qr-logo.jpg',
@@ -79,7 +79,7 @@ class SCETournamentQRCodeType(QRCodeType):
         return True, SCEUtils.tournament_public_url(tournament)
 
     @staticmethod
-    def get_qr_code(url) -> str:
+    def get_qr_code(url: str) -> str:
         return QRCodeType.generate_qr_code(
             url=url,
             logo=PLUGIN_DIR / 'static' / 'images' / 'sce-qr-logo.jpg',

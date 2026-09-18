@@ -24,7 +24,7 @@ class TeamBoard:
         tournament: 'Tournament',
         stored_team_board: StoredTeamBoard,
     ):
-        self._tournament_ref: 'weakref.ReferenceType[Tournament]' = weakref.ref(
+        self._tournament_ref: weakref.ReferenceType[Tournament] = weakref.ref(
             tournament
         )
         self.stored_team_board = stored_team_board
@@ -308,12 +308,12 @@ class TeamBoard:
             format_datetime(self.last_result_update) if self.last_result_update else ''
         )
 
-    def set_last_result_update(self, clear: bool, database: EventDatabase):
+    def set_last_result_update(self, clear: bool, database: EventDatabase) -> None:
         self.stored_team_board.last_result_update = (
             database.update_team_board_last_result_update(self.id, clear=clear)
         )
 
-    def update(self, database: EventDatabase):
+    def update(self, database: EventDatabase) -> None:
         database.update_stored_team_board(self.stored_team_board)
 
     def __repr__(self) -> str:

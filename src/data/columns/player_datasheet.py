@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from abc import abstractmethod, ABC
-from typing import Any
+from typing import Any, cast
 
 from text_unidecode import unidecode
 
@@ -20,7 +20,7 @@ from utils.types import PlayerRating
 class DatasheetColumn(ABC):
     """Column of the datasheet, both used for player export and import."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.is_informative = self.export_only
         self.is_required = self.is_default_required
 
@@ -29,7 +29,7 @@ class DatasheetColumn(ABC):
     def id(self) -> str:
         """Identifier of the column."""
 
-    def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
+    def update_from_used_columns(self, used_columns: list['DatasheetColumn']) -> None:
         """Update the column from the other used columns."""
 
     @abstractmethod
@@ -49,7 +49,7 @@ class DatasheetColumn(ABC):
 
     def augment_stored_player_with_tournament(
         self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
-    ):
+    ) -> None:
         """Save the data of the cell value."""
         if self.is_required and not value:
             raise SharlyChessException(_('This field is required.'))
@@ -66,7 +66,7 @@ class DatasheetColumn(ABC):
         return False
 
     @abstractmethod
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         """Augment the stored player object from a cell value.
         Raise a SharlyChessException if the value is not valid."""
 
@@ -87,7 +87,7 @@ class TitleColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.title.value
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         try:
             title = PlayerTitle(value)
         except ValueError:
@@ -95,7 +95,7 @@ class TitleColumn(DatasheetColumn):
                 _('Unknown value (expected: {expected}).').format(
                     expected='|'.join(t.value for t in PlayerTitle)
                 )
-            )
+            ) from None
         # A women title entered in the open-title column is accepted and
         # routed to the women-title field rather than rejected.
         if title.is_women:
@@ -112,7 +112,7 @@ class WomenTitleColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.women_title.value
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         try:
             title = PlayerTitle(value)
         except ValueError:
@@ -138,11 +138,11 @@ class LastNameColumn(DatasheetColumn):
     def is_default_required(self) -> bool:
         return True
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         stored_player.last_name = value.upper()
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
-        return unidecode(player.last_name) == unidecode(value.upper())
+        return cast(bool, unidecode(player.last_name) == unidecode(value.upper()))
 
 
 class FirstNameColumn(DatasheetColumn):
@@ -153,11 +153,11 @@ class FirstNameColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.first_name
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         stored_player.first_name = value.title() or None
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
-        return unidecode(player.first_name) == unidecode(value.title())
+        return cast(bool, unidecode(player.first_name) == unidecode(value.title()))
 
 
 class DateOfBirthColumn(DatasheetColumn):
@@ -170,7 +170,7 @@ class DateOfBirthColumn(DatasheetColumn):
             return ''
         return format_date(player.date_of_birth)
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         formatter = SharlyChessConfig().date_formatter
@@ -188,7 +188,7 @@ class DateOfBirthColumn(DatasheetColumn):
                 _('Invalid format (expected: {format}).').format(
                     format=formatter.humanized_format
                 )
-            )
+            ) from None
 
 
 class YearOfBirthColumn(DatasheetColumn):
@@ -199,7 +199,7 @@ class YearOfBirthColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.year_of_birth or None
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value or stored_player.date_of_birth:
             return
         if not value.isdigit() or not (MIN_YOB <= int(value) <= MAX_YOB):
@@ -224,7 +224,7 @@ class MailColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.mail
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if value and not re.match(Utils.EMAIL_REGEX, value):
             raise SharlyChessException(_('Invalid email format.'))
         stored_player.mail = value or None
@@ -238,7 +238,7 @@ class PhoneColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.phone
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         stored_player.phone = value or None
 
 
@@ -250,7 +250,7 @@ class GenderColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.gender.key
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         try:
             gender = PlayerGender.from_key(value)
             stored_player.gender = gender.value
@@ -259,7 +259,7 @@ class GenderColumn(DatasheetColumn):
                 _('Unknown value (expected: {expected}).').format(
                     expected='|'.join(PlayerGender)
                 )
-            )
+            ) from None
 
 
 class TournamentColumn(DatasheetColumn):
@@ -274,7 +274,7 @@ class TournamentColumn(DatasheetColumn):
     def export_only(self) -> bool:
         return True
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         pass
 
 
@@ -293,7 +293,7 @@ class TeamColumn(DatasheetColumn):
         team = player.team
         return team.name if team is not None else ''
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         stored_player.transient_team_name = value.strip() or None
 
 
@@ -305,7 +305,7 @@ class FederationColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.federation.name
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if value not in SharlyChessConfig().federations:
             raise SharlyChessException(_('Unknown federation.'))
         stored_player.federation = value
@@ -319,7 +319,7 @@ class ClubColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.club.name
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         stored_player.club = value or None
 
 
@@ -331,7 +331,7 @@ class FideIDColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.fide_id
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         if not value.isdigit() or int(value) == 0:
@@ -351,7 +351,7 @@ class FixedColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.fide_id
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         if not value.isdigit() or int(value) == 0:
@@ -367,7 +367,7 @@ class OwedColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.owed
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         try:
@@ -376,7 +376,7 @@ class OwedColumn(DatasheetColumn):
                 raise ValueError
             stored_player.owed = float_value
         except ValueError:
-            raise SharlyChessException(_('A positive float is expected.'))
+            raise SharlyChessException(_('A positive float is expected.')) from None
 
 
 class PaidColumn(DatasheetColumn):
@@ -387,7 +387,7 @@ class PaidColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.paid
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         try:
@@ -396,7 +396,7 @@ class PaidColumn(DatasheetColumn):
                 raise ValueError
             stored_player.paid = float_value
         except ValueError:
-            raise SharlyChessException(_('A positive float is expected.'))
+            raise SharlyChessException(_('A positive float is expected.')) from None
 
 
 class CheckInColumn(DatasheetColumn):
@@ -407,7 +407,7 @@ class CheckInColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return int(player.check_in)
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         stored_player.check_in = value == '1'
 
 
@@ -419,7 +419,7 @@ class CommentColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.comment
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         stored_player.comment = value or None
 
 
@@ -431,10 +431,9 @@ class RatingColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         if player.optional_single_tournament_player:
             return player.optional_single_tournament_player.rating
-        else:
-            return 0
+        return 0
 
-    def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
+    def update_from_used_columns(self, used_columns: list['DatasheetColumn']) -> None:
         for column in used_columns:
             if isinstance(column, TypedRatingColumn):
                 self.is_informative = True
@@ -442,7 +441,7 @@ class RatingColumn(DatasheetColumn):
 
     def augment_stored_player_with_tournament(
         self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
-    ):
+    ) -> None:
         if not value:
             return
         if not value.isdigit() or (int_value := int(value)) == 0:
@@ -455,7 +454,7 @@ class RatingColumn(DatasheetColumn):
         )
         stored_player.ratings[rating_bucket] = rating.stored_value
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         pass
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
@@ -470,10 +469,9 @@ class RatingTypeColumn(DatasheetColumn):
     def get_cell_content(self, player: Player) -> Any:
         if player.optional_single_tournament_player:
             return player.optional_single_tournament_player.rating_type.key.upper()
-        else:
-            return ''
+        return ''
 
-    def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
+    def update_from_used_columns(self, used_columns: list['DatasheetColumn']) -> None:
         for column in used_columns:
             if isinstance(column, TypedRatingColumn):
                 self.is_informative = True
@@ -481,7 +479,7 @@ class RatingTypeColumn(DatasheetColumn):
 
     def augment_stored_player_with_tournament(
         self, tournament: Tournament | None, stored_player: StoredPlayer, value: str
-    ):
+    ) -> None:
         try:
             rating_type = PlayerRatingType.from_key(value)
         except ValueError:
@@ -499,7 +497,7 @@ class RatingTypeColumn(DatasheetColumn):
                 rating.set_value_from_type(None, rating_type)
         stored_player.ratings[rating_bucket] = rating.stored_value
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         pass
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
@@ -522,7 +520,7 @@ class TypedRatingColumn(DatasheetColumn):
         rating = player.ratings[self.tournament_type]
         return rating.get_type_value(self.rating_type)
 
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         if not value:
             return
         if not value.isdigit() or int(value) == 0:

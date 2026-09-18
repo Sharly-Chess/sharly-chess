@@ -98,7 +98,7 @@ class Chess960Plugin(Plugin):
         return self.id, Chess960ScreenPluginData
 
     @hookimpl
-    def insert_screen_types(self, screen_types: list[type['ScreenType']]):
+    def insert_screen_types(self, screen_types: list[type['ScreenType']]) -> None:
         screen_types.append(Chess960ScreenType)
 
     # ---------------------------------------------------------------------------------
@@ -106,5 +106,7 @@ class Chess960Plugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+    def insert_print_document(
+        self, print_documents: list[type['PrintDocument']]
+    ) -> None:
         print_documents.append(Chess960PrintDocument)

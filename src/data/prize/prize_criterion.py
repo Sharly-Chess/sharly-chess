@@ -20,7 +20,7 @@ class PrizeCriterion:
         prize_category: 'PrizeCategory',
         stored_prize_criterion: StoredPrizeCriterion,
     ):
-        self._prize_category_ref: 'ReferenceType[PrizeCategory]' = weakref.ref(
+        self._prize_category_ref: ReferenceType[PrizeCategory] = weakref.ref(
             prize_category
         )
         self.stored_prize_criterion = stored_prize_criterion
@@ -60,7 +60,7 @@ class PrizeCriterion:
     def get_event_database(self) -> EventDatabase:
         return self.prize_category.get_event_database()
 
-    def update(self):
+    def update(self) -> None:
         with self.get_event_database() as database:
             database.update_stored_prize_criterion(self.stored_prize_criterion)
         Utils.reset_cached_properties(self, 'player_filter')

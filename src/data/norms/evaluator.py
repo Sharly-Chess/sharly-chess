@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from operator import attrgetter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from common.i18n import _
 from data.norms.inputs import (
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
-def _no_opponent_reason(opponent, effective_result: Result) -> str:
+def _no_opponent_reason(opponent: Any, effective_result: Result) -> str:
     """Audit reason for a round the evaluator did NOT include as a played
     game. Four distinct cases — kept separate so the IT1 audit makes
     the cause explicit (a forfeit-win-against-no-show is not the same
@@ -48,7 +48,7 @@ def _no_opponent_reason(opponent, effective_result: Result) -> str:
 
 def _resolve_min_games(
     tn: TitleNorm,
-    tournament: 'Tournament',
+    tournament: Tournament,
     override: int | None,
 ) -> int:
     """The minimum games count this norm must clear under 1.4.1.
@@ -77,7 +77,7 @@ class TitleNormEvaluator:
 
     def __init__(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         min_games_override: int | None = None,
     ):
         """`min_games_override` overrides FIDE 1.4.1's default minimum (9,
@@ -89,7 +89,7 @@ class TitleNormEvaluator:
         self.min_games_override = min_games_override
 
     @property
-    def tournament(self):
+    def tournament(self) -> Tournament:
         return self.player.tournament
 
     def _min_games(self, tn: TitleNorm) -> int:
@@ -323,10 +323,7 @@ class TitleNormEvaluator:
         Returns (passes, distinct_federations, own_count)."""
         own_count = inputs.federations_counter.get(self.player.federation, 0)
         num_feds = len(inputs.federations_counter)
-        if own_count:
-            passes = num_feds > 2
-        else:
-            passes = num_feds >= 2
+        passes = num_feds > 2 if own_count else num_feds >= 2
         return passes, num_feds, own_count
 
     def own_federation_requirement(self, inputs: NormInputs, tn: TitleNorm) -> bool:
@@ -399,7 +396,7 @@ class TitleNormEvaluator:
 
     def opponent_rating_floor_and_average(
         self, inputs: NormInputs, tn: TitleNorm
-    ) -> tuple[float, 'TournamentPlayer | None', int | None]:
+    ) -> tuple[float, TournamentPlayer | None, int | None]:
         """1.4.6 + 1.4.7 — apply rating floor to (at most) the single lowest
         opponent, then return the rounded average. Also returns the adjusted
         opponent and the floor value so the form can show the adjustment.
@@ -416,7 +413,7 @@ class TitleNormEvaluator:
             for o in sorted_opponents
         ]
 
-        adjusted_player: 'TournamentPlayer | None' = None
+        adjusted_player: TournamentPlayer | None = None
         adjusted_rating: int | None = None
         if rating_list and rating_list[0].value < tn.minimum_rating:
             rating_list[0].value = tn.minimum_rating

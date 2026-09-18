@@ -1,4 +1,4 @@
-from typing import Counter
+from collections import Counter
 
 from plugins.ffe.ffe_session import FFEArbitersLoader
 from plugins.ffe.utils import FFEArbiterTitle
@@ -6,8 +6,8 @@ from plugins.ffe.utils import FFEArbiterTitle
 
 print('Loading arbiters from the FFE website...')
 counter = Counter[FFEArbiterTitle]()
-for ffe_licence_number, ffe_arbiter_title in (
-    FFEArbitersLoader().load_ffe_arbiter_titles_by_ffe_licence_number().items()
+for ffe_arbiter_title in (
+    FFEArbitersLoader().load_ffe_arbiter_titles_by_ffe_licence_number().values()
 ):
     counter[ffe_arbiter_title] += 1
 

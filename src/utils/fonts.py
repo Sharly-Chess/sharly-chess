@@ -1,3 +1,4 @@
+from typing import cast
 import functools
 import os
 import sys
@@ -45,7 +46,9 @@ def _family_name(file: Path) -> str | None:
         name_table = font['name']
         # Typographic family (16) is the most user-friendly; fall back to the
         # legacy family name (1).
-        return name_table.getDebugName(16) or name_table.getDebugName(1)
+        return cast(
+            str | None, name_table.getDebugName(16) or name_table.getDebugName(1)
+        )
     except (KeyError, AttributeError):
         return None
     finally:

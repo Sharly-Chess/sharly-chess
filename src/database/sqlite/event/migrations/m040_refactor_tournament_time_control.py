@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         # Add the new time_control_trf25 column
         self.database.execute('ALTER TABLE `tournament` ADD `time_control_trf25` TEXT')
 
@@ -28,7 +28,7 @@ class Migration(BaseMigration):
             'ALTER TABLE `tournament` DROP COLUMN `time_control_increment`'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         # Add back the original columns
         self.database.execute(
             'ALTER TABLE `tournament` ADD `time_control_initial_time` INTEGER'

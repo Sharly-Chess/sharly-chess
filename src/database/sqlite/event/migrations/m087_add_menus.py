@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `menu` ('
             '   `id` INTEGER NOT NULL,'
@@ -38,7 +38,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `family` DROP COLUMN `menu_link`')
         self.database.execute('ALTER TABLE `family` DROP COLUMN `menu`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `screen` ADD `menu_link` INTEGER')
         self.database.execute('ALTER TABLE `screen` ADD `menu` TEXT')
         self.database.execute(

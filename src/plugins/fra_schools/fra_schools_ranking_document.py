@@ -1,3 +1,5 @@
+from typing import cast
+
 from common.i18n import _
 from data.player import TournamentPlayer
 from data.print_documents import IndividualTeamType, PrintOption
@@ -112,13 +114,19 @@ class FraSchoolsRankingPrintDocument(IndividuelTeamRankingPrintDocument):
 
     @property
     def display_incomplete_teams(self) -> bool:
-        return self._get_option(
-            FRASchoolsIndividualTeamDisplayIncompletePrintOption
-        ).value
+        return cast(
+            bool,
+            self._get_option(
+                FRASchoolsIndividualTeamDisplayIncompletePrintOption
+            ).value,
+        )
 
     @property
     def max_teams_per_entity(self) -> int | None:
-        return self._get_option(FRASchoolsIndividualTeamMaxPerSchoolPrintOption).value
+        return cast(
+            int | None,
+            self._get_option(FRASchoolsIndividualTeamMaxPerSchoolPrintOption).value,
+        )
 
     @property
     def team_type(self) -> IndividualTeamType:

@@ -109,7 +109,9 @@ class InputUserController(BaseScreenUserController):
     """Controller containing all the input endpoints accessed from screens.
     All endpoints have to be accessible from either a screen of a display controller."""
 
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ViewScreenGuard(),
         ViewDisplayControllerGuard(),

@@ -137,7 +137,7 @@ class AdminCollectionSpec:
 Placement = TypeVar('Placement', bound=ComponentPlacement)
 
 
-def _insert_placement(
+def _insert_placement[Placement: ComponentPlacement](
     placements: tuple[Placement, ...],
     placement: Placement,
     *,
@@ -208,6 +208,9 @@ def resolve_admin_collection_show_details(
     return session_value.get()
 
 
+# The registry, last: every module below imports `AdminCollectionSpec` and the
+# layout classes from this one, so importing them at the top would close the
+# cycle before the names they need exist.
 from web.admin.accounts.collection import COLLECTION_SPEC as _accounts_spec  # noqa: E402
 from web.admin.display_controllers.collection import (  # noqa: E402
     COLLECTION_SPEC as _display_controllers_spec,

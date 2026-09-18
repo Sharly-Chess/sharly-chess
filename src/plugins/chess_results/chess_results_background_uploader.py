@@ -1,3 +1,4 @@
+from typing import ClassVar
 import time
 from datetime import datetime, timedelta
 from functools import partial
@@ -34,9 +35,9 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
 class CRBackgroundUploader:
-    timeout_threads: dict[str, Timer] = {}
-    group_upload_wait_queue: set[str] = set()
-    ongoing_result_ids: set[str] = set()
+    timeout_threads: ClassVar[dict[str, Timer]] = {}
+    group_upload_wait_queue: ClassVar[set[str]] = set()
+    ongoing_result_ids: ClassVar[set[str]] = set()
 
     @classmethod
     def result_id(cls, event_uniq_id: str, tournament_id: int) -> str:
@@ -64,7 +65,7 @@ class CRBackgroundUploader:
         return key in cls.group_upload_wait_queue
 
     @classmethod
-    def remove_scheduled_upload(cls, tournament: Tournament):
+    def remove_scheduled_upload(cls, tournament: Tournament) -> None:
         key = cls.tournament_result_id(tournament)
         thread = cls.timeout_threads.get(key)
         if thread and thread.is_alive():
@@ -96,7 +97,7 @@ class CRBackgroundUploader:
         )
 
     @classmethod
-    def publish_upload_event(cls, start: bool = False):
+    def publish_upload_event(cls, start: bool = False) -> None:
         if channels_plugin:
             channels_plugin.publish(
                 {
@@ -107,7 +108,7 @@ class CRBackgroundUploader:
             )
 
     @classmethod
-    def upload_tournament(cls, event_uniq_id: str, tournament_id: int):
+    def upload_tournament(cls, event_uniq_id: str, tournament_id: int) -> None:
         """Upload a tournament to Chess-Results.com."""
 
         # Set the locale (called in a new thread)
@@ -173,7 +174,7 @@ class CRBackgroundUploader:
         for tournament in eligible:
             cls.group_upload_wait_queue.add(cls.tournament_result_id(tournament))
 
-        def _run():
+        def _run() -> None:
             set_locale(SharlyChessConfig().locale)
             for tournament in eligible:
                 cls.upload_tournament(event_uniq_id, tournament.id)
@@ -206,14 +207,16 @@ class CRBackgroundUploader:
             # There's already a thread running for this tournament
             return False
 
-        if not cls.chess_results_upload_needed(stored_tournament):
+        # Last of a chain of guard clauses; collapsing it would break the shape
+        # the ones above it read in.
+        if not cls.chess_results_upload_needed(stored_tournament):  # noqa: SIM103
             # Latest version already uploaded
             return False
 
         return True
 
     @classmethod
-    def schedule_upload(cls, tournament: Tournament, force=False):
+    def schedule_upload(cls, tournament: Tournament, force: bool = False) -> None:
         """Schedule the upload of a tournament that has been modified."""
         cr_last_upload = cls.chess_results_last_upload(tournament)
         delay = CHESS_RESULTS_UPLOAD_DELAY

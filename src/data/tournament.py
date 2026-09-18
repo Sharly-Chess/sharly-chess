@@ -5,7 +5,7 @@ from collections.abc import Collection
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 from _weakref import ReferenceType
 
 from common.exception import SharlyChessException
@@ -32,6 +32,7 @@ from data.tie_breaks import (
     TieBreakOption,
     TieBreakManager,
     TieBreakOptionManager,
+    TieBreakPurpose,
 )
 from data.criteria.tournament_criteria import TournamentCriterion
 from database.sqlite.event.event_store import (
@@ -88,12 +89,11 @@ if TYPE_CHECKING:
     )
     from data.rule_sets import RuleSet
     from data.rule_sets.rule_sets import PointAdjustment
-    from data.prohibited_pairings import (
-        ProhibitedPairingDimension,
-        RoundProhibitedPairingGroup,
-    )
+    from data.pairing_dimensions import PairingDimension
+    from data.prohibited_pairings import RoundProhibitedPairingGroup
     from data.pairings import PairingVariation, PairingSystem
     from data.pairings.keizer import KeizerScorer
+    from data.pairings.knockout_helpers.view import KnockoutView
     from data.teams.team import Team
     from data.tie_breaks.team_records import TeamRecord
     from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
@@ -134,15 +134,16 @@ class Tournament:
         event: 'Event',
         stored_tournament: StoredTournament,
     ):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
         self._tournament_players_by_rank: dict[int, TournamentPlayer] | None = None
+        self._ranks_after_round: int | None = None
         # Per-player caches are valid only while pairings are stable.
         self._compute_caching_enabled: bool = False
         self._round_board_numbers_cache: dict[tuple[int, int], dict[int, int]] = {}
         # Whole-table Keizer scorer, rebuilt whenever the per-player caches
         # are cleared (see ``set_for_round`` / ``_compute_tournament_player_ranks``).
-        self._keizer_scorer: 'KeizerScorer | None' = None
+        self._keizer_scorer: KeizerScorer | None = None
 
     # -------------------------------------------------------------------------
     # Plugin
@@ -150,10 +151,7 @@ class Tournament:
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
-        return {
-            plugin_id: plugin_data_class
-            for plugin_id, plugin_data_class in plugin_manager.hook.get_tournament_plugin_data_class()
-        }
+        return dict(plugin_manager.hook.get_tournament_plugin_data_class())
 
     @cached_property
     def plugin_data(self) -> dict[str, PluginData]:
@@ -314,22 +312,19 @@ class Tournament:
     def paired_bye_result(self) -> Result:
         if self.stored_tournament.paired_bye_result is None:
             return SharlyChessConfig.default_paired_bye_result
-        else:
-            return Result(self.stored_tournament.paired_bye_result)
+        return Result(self.stored_tournament.paired_bye_result)
 
     @property
     def max_byes(self) -> int:
         if self.stored_tournament.max_byes is None:
             return SharlyChessConfig.default_max_byes
-        else:
-            return self.stored_tournament.max_byes
+        return self.stored_tournament.max_byes
 
     @property
     def last_rounds_no_byes(self) -> int:
         if self.stored_tournament.last_rounds_no_byes is None:
             return SharlyChessConfig.default_last_rounds_no_byes
-        else:
-            return self.stored_tournament.last_rounds_no_byes
+        return self.stored_tournament.last_rounds_no_byes
 
     @property
     def last_update(self) -> datetime:
@@ -849,10 +844,10 @@ class Tournament:
             share one display path (absolute-value flag, rank-delta arrows)
             instead of each re-implementing it."""
             wrapped: list[TieBreakValue] = []
-            for tb, value in zip(tbs, values):
+            for tb, value in zip(tbs, values, strict=True):
                 tbv = TieBreakValue(tb, value)
                 if tb.display_rank_delta:
-                    tbv.rank_progress = int(round(value))
+                    tbv.rank_progress = round(value)
                 wrapped.append(tbv)
             return wrapped
 
@@ -1017,6 +1012,16 @@ class Tournament:
         self._apply_point_adjustments_to_standings(standings, after_round)
         rows = list(standings.values())
 
+        # A knock-out ranks by the round reached, not by match/game points:
+        # bigger value (later exit) ranks first, ahead of everything else.
+        elimination_values: dict[int, float] = {}
+        if self.pairing_system.eliminates_participants:
+            elimination_values = self.knockout.team_ranking_values(
+                after_round=(
+                    after_round if after_round is not None else self.max_ranking_round
+                )
+            )
+
         def base_key(entry: dict[str, Any]) -> tuple[float, ...]:
             """Nothing ranks ahead of the configured criteria.
 
@@ -1025,7 +1030,12 @@ class Tournament:
             chosen (TRF26 record 212). The secondary score has never been
             implicit either: it is opted into with MPvGP. A tournament
             whose list holds neither ranks on its tie-breaks alone.
+
+            A knock-out is the exception: it ranks by the round reached, so
+            that is the leading key.
             """
+            if elimination_values:
+                return (-elimination_values.get(entry['team'].id, 0.0),)
             return ()
 
         for row in rows:
@@ -1195,14 +1205,14 @@ class Tournament:
             return forced[1]
         return self.stored_tournament.prohibited_pairing_dimension_is_hard
 
-    def prohibited_pairing_dimensions(self) -> 'list[ProhibitedPairingDimension]':
+    def prohibited_pairing_dimensions(self) -> 'list[PairingDimension]':
         """All grouping dimensions applicable to this tournament: the
         core ones plus any contributed by enabled plugins, filtered to
         match this tournament's individual/team nature."""
-        from data.prohibited_pairings import core_prohibited_pairing_dimensions
+        from data.pairing_dimensions import core_pairing_dimensions
         from plugins.manager import plugin_manager
 
-        dimensions = list(core_prohibited_pairing_dimensions())
+        dimensions = list(core_pairing_dimensions())
         for plugin_result in plugin_manager.hook_for_event(
             self.event, 'get_prohibited_pairing_dimensions'
         )():
@@ -1210,7 +1220,7 @@ class Tournament:
                 dimensions.extend(plugin_result)
         return [d for d in dimensions if d.is_team == self.is_team_tournament]
 
-    def prohibited_pairing_dimension(self) -> 'ProhibitedPairingDimension | None':
+    def prohibited_pairing_dimension(self) -> 'PairingDimension | None':
         dimension_id = self.prohibited_pairing_dimension_id
         if dimension_id is None:
             return None
@@ -1224,7 +1234,7 @@ class Tournament:
         dimension_id: str | None,
         dimension_is_hard: bool,
         database: 'EventDatabase',
-    ):
+    ) -> None:
         self.stored_tournament.prohibited_pairing_dimension = dimension_id or None
         self.stored_tournament.prohibited_pairing_dimension_is_hard = dimension_is_hard
         database.update_stored_tournament(self.stored_tournament)
@@ -1237,8 +1247,8 @@ class Tournament:
             return list(self.teams)
         return list(self.tournament_players)
 
-    def _member_id(self, member) -> int:
-        return member.id
+    def _member_id(self, member: Any) -> int:
+        return cast(int, member.id)
 
     def manual_prohibited_pairing_groups(
         self,
@@ -1253,7 +1263,7 @@ class Tournament:
         self,
         groups: list[tuple[bool, list[int]]],
         database: 'EventDatabase',
-    ):
+    ) -> None:
         database.replace_manual_prohibited_pairing_groups(self.id, groups)
         self.stored_tournament.stored_prohibited_pairing_groups = (
             database.load_tournament_stored_prohibited_pairing_groups(self.id)
@@ -1300,12 +1310,16 @@ class Tournament:
         groups: list[tuple[bool, list[int]]] = list(
             self.dimension_prohibited_pairing_groups()
         )
-        for group in self.manual_prohibited_pairing_groups():
-            if len(group.member_ids) >= 2:
-                groups.append((group.is_hard, list(group.member_ids)))
+        groups.extend(
+            (group.is_hard, list(group.member_ids))
+            for group in self.manual_prohibited_pairing_groups()
+            if len(group.member_ids) >= 2
+        )
         if round_ is not None:
-            for rule_group in self.round_rule_prohibited_pairing_groups(round_):
-                groups.append((rule_group.is_hard, list(rule_group.member_ids)))
+            groups.extend(
+                (rule_group.is_hard, list(rule_group.member_ids))
+                for rule_group in self.round_rule_prohibited_pairing_groups(round_)
+            )
         return groups
 
     def round_rule_prohibited_pairing_groups(
@@ -1318,13 +1332,13 @@ class Tournament:
         Groups of fewer than two members are dropped."""
         from plugins.manager import plugin_manager
 
-        groups: 'list[RoundProhibitedPairingGroup]' = []
+        groups: list[RoundProhibitedPairingGroup] = []
         for plugin_result in plugin_manager.hook_for_event(
             self.event, 'get_round_prohibited_pairing_groups'
         )(tournament=self, round_=round_):
-            for group in plugin_result or []:
-                if len(group.member_ids) >= 2:
-                    groups.append(group)
+            groups.extend(
+                group for group in plugin_result or [] if len(group.member_ids) >= 2
+            )
         return groups
 
     def prohibited_pairing_snapshot(
@@ -1414,7 +1428,7 @@ class Tournament:
         number drop out."""
         from data.input_output.trf.trf_data import TrfProhibitedPairing
 
-        lines: list['TrfProhibitedPairing'] = []
+        lines: list[TrfProhibitedPairing] = []
         for group in hard_groups:
             numbers = [
                 n
@@ -1466,7 +1480,7 @@ class Tournament:
                     pairing_numbers=protected_numbers,
                 )
             ]
-        lines: list['TrfProhibitedPairing'] = []
+        lines: list[TrfProhibitedPairing] = []
         for member in unprotected:
             number = self._member_pairing_number(member)
             if number is None:
@@ -1475,7 +1489,7 @@ class Tournament:
                 TrfProhibitedPairing(
                     first_round=round_,
                     last_round=round_,
-                    pairing_numbers=protected_numbers + [number],
+                    pairing_numbers=[*protected_numbers, number],
                 )
             )
         return lines
@@ -1526,7 +1540,7 @@ class Tournament:
 
     def write_prohibited_pairing_snapshot(
         self, round_: int, protect_rank: int | None, database: 'EventDatabase'
-    ):
+    ) -> None:
         """Freeze the round's prohibited-pairing **groups** (the configured
         hard and soft groups that were the basis for this round's pairing)
         together with the soft-relaxation cutoff ``protect_rank`` chosen for
@@ -1546,7 +1560,7 @@ class Tournament:
 
     def delete_prohibited_pairing_snapshot(
         self, round_: int, database: 'EventDatabase'
-    ):
+    ) -> None:
         database.delete_round_prohibited_pairing_snapshot(self.id, round_)
         self.stored_tournament.stored_prohibited_pairing_groups = [
             group
@@ -1554,7 +1568,7 @@ class Tournament:
             if group.round_ != round_
         ]
 
-    def clear_team_cache(self):
+    def clear_team_cache(self) -> None:
         Utils.reset_cached_properties(
             self,
             'teams_by_id',
@@ -1850,19 +1864,17 @@ class Tournament:
                         )
                         break
 
-        records: list[TeamRecord] = []
-        for team in self.teams:
-            records.append(
-                TeamRecord(
-                    team_id=team.id,
-                    name=team.name,
-                    total_mp=totals_mp[team.id],
-                    total_gp=totals_gp[team.id],
-                    matches=sorted(matches_per_team[team.id], key=lambda m: m.round_),
-                    pairing_number=team.pairing_number,
-                )
+        return [
+            TeamRecord(
+                team_id=team.id,
+                name=team.name,
+                total_mp=totals_mp[team.id],
+                total_gp=totals_gp[team.id],
+                matches=sorted(matches_per_team[team.id], key=lambda m: m.round_),
+                pairing_number=team.pairing_number,
             )
-        return records
+            for team in self.teams
+        ]
 
     @cached_property
     def team_pairing_blocks(self) -> list[TeamPairingBlock]:
@@ -1906,10 +1918,10 @@ class Tournament:
             self.event, 'get_tournament_pairing_warning_message'
         )(tournament=self)
         if plugin_warning:
-            return plugin_warning
+            return cast(str | None, plugin_warning)
         return None
 
-    def set_valid_pairing_settings(self):
+    def set_valid_pairing_settings(self) -> None:
         modified_settings: dict[str, Any] = {}
         for setting in self.pairing_variation.settings:
             if setting.is_valid(self):
@@ -1922,7 +1934,7 @@ class Tournament:
                 self.stored_pairing_settings | modified_settings
             )
 
-    def update_pairing_settings(self, pairing_settings: dict[str, Any]):
+    def update_pairing_settings(self, pairing_settings: dict[str, Any]) -> None:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
         self.stored_tournament.pairing_settings = pairing_settings
@@ -1963,6 +1975,11 @@ class Tournament:
 
     @cached_property
     def tie_breaks_by_id(self) -> dict[int, TieBreak]:
+        """Every stored tie-break for this tournament, keyed by id, in order.
+        What they decide depends on the pairing system: a knock-out's are its
+        advancement (FIDE Art. 12) tie-breaks; every other system's are the
+        standings criteria (a knock-out's standings are fixed to the round
+        reached, so it configures advancement here instead)."""
         tie_breaks_by_id: dict[int, TieBreak] = {}
         for stored_tie_break in self.stored_tournament.stored_tie_breaks:
             if not (
@@ -1975,6 +1992,39 @@ class Tournament:
         return tie_breaks_by_id
 
     @property
+    def advancement_tie_breaks(self) -> list[TieBreak]:
+        """A knock-out's advancement tie-breaks, in order — the stored
+        tie-breaks that can decide a level match. Only read on a knock-out,
+        where the stored list *is* the advancement list."""
+        return [
+            tie_break
+            for tie_break in self.tie_breaks_by_id.values()
+            if tie_break.usable_as_knockout_advancement
+        ]
+
+    @property
+    def advancement_tie_breaks_after_manual(self) -> bool:
+        """Whether a tie-break is listed after the play-off (manual)
+        marker. A play-off settles the match outright, so anything below it
+        can never apply — worth flagging so the arbiter reorders."""
+        seen_manual = False
+        for tie_break in self.tie_breaks_by_id.values():
+            if tie_break.is_manual:
+                seen_manual = True
+            elif seen_manual:
+                return True
+        return False
+
+    @property
+    def tie_break_config_purpose(self) -> TieBreakPurpose:
+        """Whether the tie-break configuration UI edits *advancement* (a
+        knock-out) or *standings* (every other system) tie-breaks. Derived from
+        the pairing system, not stored — a tournament only ever configures one."""
+        if self.pairing_system.eliminates_participants:
+            return TieBreakPurpose.ADVANCEMENT
+        return TieBreakPurpose.STANDINGS
+
+    @property
     def tie_breaks(self) -> list[TieBreak]:
         """The ranking criteria, in order.
 
@@ -1984,6 +2034,11 @@ class Tournament:
         otherwise rank nobody. Removing the Points tie-break from a list
         that holds others is a deliberate act and is honoured.
         """
+        if self.pairing_system.eliminates_participants:
+            # A knock-out is ranked by the round reached, carried by the
+            # points themselves; it has no configurable standings
+            # tie-breaks (its Art. 12 tie-breaks are for advancement).
+            return self._default_tie_breaks
         invalid_tie_break_ids = self.tie_breaks_invalid_messages.keys()
         configured = [
             tie_break
@@ -2129,10 +2184,10 @@ class Tournament:
             self.event, 'get_tournament_tie_breaks_warning_message'
         )(tournament=self)
         if plugin_warning:
-            return plugin_warning
+            return cast(str | None, plugin_warning)
         return None
 
-    def reorder_tie_breaks(self, ordered_ids: list[int]):
+    def reorder_tie_breaks(self, ordered_ids: list[int]) -> None:
         if len(ordered_ids) != len(self.tie_breaks_by_id):
             raise ValueError(f'{ordered_ids=}')
         for object_id in self.tie_breaks_by_id:
@@ -2146,7 +2201,9 @@ class Tournament:
             object_id: self.tie_breaks_by_id[object_id] for object_id in ordered_ids
         }
 
-    def _set_tie_break_indexes(self, database: EventDatabase, ordered_ids: list[int]):
+    def _set_tie_break_indexes(
+        self, database: EventDatabase, ordered_ids: list[int]
+    ) -> None:
         for index, object_id in enumerate(ordered_ids):
             stored_tie_break = self.tie_breaks_by_id[object_id].to_stored_value()
             stored_tie_break.id = object_id
@@ -2154,7 +2211,7 @@ class Tournament:
             stored_tie_break.index = index
             database.update_stored_tie_break(stored_tie_break)
 
-    def add_tie_break(self, tie_break: TieBreak):
+    def add_tie_break(self, tie_break: TieBreak) -> TieBreak:
         stored_tie_break = tie_break.to_stored_value()
         stored_tie_break.tournament_id = self.id
         stored_tie_break.index = len(self.tie_breaks_by_id)
@@ -2163,7 +2220,7 @@ class Tournament:
         self.tie_breaks_by_id[object_id] = tie_break
         return tie_break
 
-    def update_tie_break(self, tie_break_id: int, new_tie_break: TieBreak):
+    def update_tie_break(self, tie_break_id: int, new_tie_break: TieBreak) -> None:
         if tie_break_id not in self.tie_breaks_by_id:
             raise ValueError(
                 f'Tie-break [{tie_break_id}] not part of tournament [{self.name}].'
@@ -2176,14 +2233,18 @@ class Tournament:
             database.update_stored_tie_break(stored_tie_break)
         self.tie_breaks_by_id[tie_break_id] = new_tie_break
 
-    def delete_tie_break(self, tie_break_id: int):
+    def delete_tie_break(self, tie_break_id: int) -> None:
         if tie_break_id not in self.tie_breaks_by_id:
             raise ValueError(
                 f'Tie-break [{tie_break_id}] not part of tournament [{self.name}].'
             )
-        if len(self.tie_breaks_by_id) == 1:
-            # The standings rank on the criteria listed and nothing else,
-            # so the last one cannot go — there would be nothing to rank on.
+        if (
+            self.tie_break_config_purpose == TieBreakPurpose.STANDINGS
+            and len(self.tie_breaks_by_id) == 1
+        ):
+            # The standings rank on the criteria listed and nothing else, so
+            # the last one cannot go — there would be nothing to rank on. A
+            # knock-out's advancement list may be emptied (a play-off decides).
             raise ValueError(
                 f'Tie-break [{tie_break_id}] is the only ranking criterion '
                 f'of tournament [{self.name}].'
@@ -2195,7 +2256,7 @@ class Tournament:
             del self.tie_breaks_by_id[tie_break_id]
             self._set_tie_break_indexes(database, list(self.tie_breaks_by_id))
 
-    def delete_manual_tie_break_values(self, database: EventDatabase):
+    def delete_manual_tie_break_values(self, database: EventDatabase) -> None:
         manual_updates: dict[int, int | None] = {}
         for tournament_player in self.tournament_players:
             if tournament_player.manual_tiebreak is not None:
@@ -2311,7 +2372,7 @@ class Tournament:
         self.prize_groups_by_id[object_id] = prize_group
         return prize_group
 
-    def delete_prize_group(self, prize_group_id: int):
+    def delete_prize_group(self, prize_group_id: int) -> None:
         with EventDatabase(self.event.uniq_id, True) as database:
             database.delete_stored_prize_group(prize_group_id)
 
@@ -2380,9 +2441,7 @@ class Tournament:
             self.tournament_players,
             key=lambda player: player.starting_rank_sort_key,
         )
-        return {
-            trf_id: player for trf_id, player in enumerate(ordered_players, start=1)
-        }
+        return dict(enumerate(ordered_players, start=1))
 
     @cached_property
     def tournament_players_by_pairing_number(self) -> dict[int, TournamentPlayer]:
@@ -2418,7 +2477,7 @@ class Tournament:
         rank_by_player_id: dict[int, int] = {}
         previous_rank_key: tuple | None = None
         previous_rank: int = 0
-        for rank, player in self.tournament_players_by_rank.items():
+        for player in self.tournament_players_by_rank.values():
             rank_key = player.rank_sort_key_without_pairing_number
             if rank_key != previous_rank_key:
                 previous_rank_key = rank_key
@@ -2551,6 +2610,12 @@ class Tournament:
     def max_ranking_round(self) -> int:
         if not self.started:
             return 0
+        if self.finished:
+            # A tournament that ends before its last reserved round (a double
+            # elimination whose grand final needs no reset) still ranks as of
+            # that last round — it is finished, just never paired, so its
+            # standings are the final ones.
+            return self.rounds
         if self.playing:
             return self.current_round - 1
         return self.current_round
@@ -2560,8 +2625,30 @@ class Tournament:
         return self.current_round != 0
 
     @property
+    def hide_pairing_points(self) -> bool:
+        """Whether the pairing table hides the running points columns. Team
+        systems that pair whole teams keep points on the team block, not the
+        board rows; and a knock-out ranks by the round reached, not points, so
+        its pairing table has no points to show for players or teams."""
+        return (
+            self.event.is_team_event and self.pairing_system.paired_by_team
+        ) or self.pairing_system.eliminates_participants
+
+    @property
+    def hide_team_block_points(self) -> bool:
+        """Whether the team blocks of the pairing table hide the running score
+        of each team. A knock-out ranks by the round reached, not points, so it
+        has no score to show; every other team system does."""
+        return self.pairing_system.eliminates_participants
+
+    @property
     def finished(self) -> bool:
-        return self.current_round == self.rounds and not self.playing
+        if self.current_round == self.rounds and not self.playing:
+            return True
+        # A system may end early: a double elimination whose grand final the
+        # winners' champion wins skips its reserved reset round, so the last
+        # round is played but never reached. The pairing system decides.
+        return self.pairing_system.tournament_is_over(self)
 
     @property
     def boards(self) -> list[Board]:
@@ -2589,21 +2676,19 @@ class Tournament:
 
     @property
     def dependent_screens(self) -> list[Screen]:
-        dependent_screens = []
-        for screen in self.event.basic_screens_by_id.values():
-            if screen.screen_type.depends_on_tournament(screen, self):
-                dependent_screens.append(screen)
-
-        return dependent_screens
+        return [
+            screen
+            for screen in self.event.basic_screens_by_id.values()
+            if screen.screen_type.depends_on_tournament(screen, self)
+        ]
 
     @property
     def related_screens(self) -> list[Screen]:
-        related_screens = []
-        for screen in self.event.basic_screens_by_id.values():
-            if screen.screen_type.relates_to_tournament(screen, self):
-                related_screens.append(screen)
-
-        return related_screens
+        return [
+            screen
+            for screen in self.event.basic_screens_by_id.values()
+            if screen.screen_type.relates_to_tournament(screen, self)
+        ]
 
     def print_real_points(self, round_: int | None = None) -> bool:
         if round_ is None:
@@ -2972,6 +3057,11 @@ class Tournament:
     def get_unpaired_tournament_players(
         self, boards: list[Board]
     ) -> list[TournamentPlayer]:
+        # Knock-out: the bracket seats every player still in, so an
+        # unboarded player is knocked out, not waiting to be paired. There
+        # is nothing to hand-pair, so the "to pair" list stays empty.
+        if self.pairing_system.eliminates_participants:
+            return []
         paired_player_ids: list[int] = []
         for board in boards:
             if board.optional_white_tournament_player:
@@ -2993,7 +3083,7 @@ class Tournament:
         round_: int | None = None,
         *,
         only_players: 'list[TournamentPlayer] | None' = None,
-    ):
+    ) -> None:
         """Prepare a round, optionally limiting point calculation to *only_players*.
 
         A full-page render must recompute the full field after a limited pass.
@@ -3041,7 +3131,7 @@ class Tournament:
             self, at_round, partial_pairings
         )
 
-    def persist_automatic_rounds(self):
+    def persist_automatic_rounds(self) -> None:
         """Write down the round count a system works out for itself.
 
         ``rounds`` already answers with it, but the stored value is what
@@ -3075,7 +3165,13 @@ class Tournament:
         # envelope (real match or any bye) — a team with no envelope is
         # still waiting. Flat systems pair boards without envelopes.
         if self.event.is_team_event:
-            if self.pairing_system.paired_by_team:
+            if (
+                self.pairing_system.paired_by_team
+                and not self.pairing_system.eliminates_participants
+            ):
+                # A knocked-out team plays no more matches, so it has no
+                # envelope this round and must not hold it open — only a
+                # non-elimination system waits on every team being paired.
                 envelope_team_ids: set[int] = set()
                 for tb in self.get_round_team_boards(round_):
                     stb = tb.stored_team_board
@@ -3085,10 +3181,69 @@ class Tournament:
                 if any(team.id not in envelope_team_ids for team in self.teams):
                     return False
             return self.team_round_results_complete(round_)
+        if self.pairing_system.eliminates_participants:
+            # Knock-out: a knocked-out player has no board and no result
+            # this round, and must not hold it open. Only the players
+            # still boarded this round have a game to finish. A drawn game
+            # is still "finished" — an unresolved final simply ends in a
+            # shared title until the arbiter designates a winner, and a
+            # mid-bracket tie is caught separately by the pairing gate.
+            return all(
+                player.pairings[round_].result != Result.NO_RESULT
+                for player in self.tournament_players
+                if player.pairings[round_].exists
+                and player.pairings[round_].stored_pairing.board_id is not None
+            )
         return all(
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.tournament_players
         )
+
+    @cached_property
+    def knockout(self) -> 'KnockoutView':
+        """The knock-out-specific facet of this tournament — advancement, the
+        round-reached standings, the bracket tie-resolution display and the
+        manual-winner writers. See
+        :class:`~data.pairings.knockout_helpers.view.KnockoutView`."""
+        from data.pairings.knockout_helpers.view import KnockoutView
+
+        return KnockoutView(self)
+
+    def round_label(self, round_: int) -> str | None:
+        """The name of a whole round for the round navigation — a knock-out's
+        stage ('Semifinals', 'Upper Bracket Final', …). ``None`` for a system
+        whose rounds have no name of their own."""
+        label = getattr(self.pairing_variation.engine, 'round_label', None)
+        return label(self, round_) if label is not None else None
+
+    def round_sections(self, boards: list) -> list[tuple[str | None, list]]:
+        """Group a round's *boards* (individual boards or team matches) into
+        the sections the pairing tab heads with a title — for a knock-out the
+        round names ('Upper Bracket Semifinals' / 'Final' / 'Grand Final' /
+        …), the engine deciding each board's section. Returns
+        ``[(name, boards)]`` in board order. A system with no sections (Swiss,
+        round-robin, …) returns a single ``(None, boards)`` group, so the
+        caller renders as before."""
+        section_label = getattr(
+            self.pairing_variation.engine, 'board_section_label', None
+        )
+        if section_label is None or not boards:
+            return [(None, boards)]
+        grouped: dict[str | None, list] = {}
+        order: list[str | None] = []
+        for board in boards:
+            label = section_label(self, board)
+            if label not in grouped:
+                grouped[label] = []
+                order.append(label)
+            grouped[label].append(board)
+        return [(label, grouped[label]) for label in order]
+
+    def round_is_locked(self, round_: int) -> bool:
+        """Whether a round's results are read-only. The pairing system owns
+        the rule (a knock-out locks a round once the next is paired from it);
+        most systems never lock."""
+        return self.pairing_system.round_is_locked(self, round_)
 
     def team_round_results_complete(self, round_: int) -> bool:
         """All entered results for the round's real boards (team events).
@@ -3150,14 +3305,19 @@ class Tournament:
         # stays, no unpair button).
         if self.get_round_team_boards(round_):
             return True
+        # A round beyond the current count (e.g. after a double elimination's
+        # reset round is toggled off) has no pairing entry, so read defensively.
         return any(
-            player.pairings[round_].opponent_id is not None
-            or player.pairings[round_].exempt
+            (pairing := player.pairings.get(round_)) is not None
+            and (pairing.opponent_id is not None or pairing.exempt)
             for player in self.tournament_players
         )
 
     def round_has_pab(self, round_: int) -> bool:
-        return any(player.pairings[round_].exempt for player in self.tournament_players)
+        return any(
+            (pairing := player.pairings.get(round_)) is not None and pairing.exempt
+            for player in self.tournament_players
+        )
 
     def is_round_in_tournament(self, round_: int) -> bool:
         return 1 <= round_ <= self.rounds
@@ -3256,7 +3416,7 @@ class Tournament:
         the truth, not the configured-before-relaxation set. Snapshots with
         no cutoff (a hard-only round, or an imported 260 set) emit every
         group whole."""
-        result: list['TrfProhibitedPairing'] = []
+        result: list[TrfProhibitedPairing] = []
         groups_by_round: dict[int, list] = {}
         protect_by_round: dict[int, int] = {}
         for group in self.stored_tournament.stored_prohibited_pairing_groups:
@@ -4222,7 +4382,7 @@ class Tournament:
 
     def set_tournament_player_points(
         self, tournament_player: TournamentPlayer, *, before_round: int
-    ):
+    ) -> None:
         """Sets the points of a player before round *before_round*."""
         if self.pairing_system.id == 'KEIZER':
             # A Keizer total is not a game-point count; it comes from the
@@ -4260,7 +4420,7 @@ class Tournament:
             self, tournament_player, at_round
         )
 
-    def store_illegal_move(self, tournament_player: TournamentPlayer):
+    def store_illegal_move(self, tournament_player: TournamentPlayer) -> None:
         """Store an illegal move for the given `tournament_player`, for the current
         round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
@@ -4269,17 +4429,24 @@ class Tournament:
     def delete_illegal_move(self, tournament_player: TournamentPlayer) -> bool:
         """Deletes one illegal move for the given `tournament_player` for the current round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            deleted = tournament_player.pairings[
-                self.current_round
-            ].delete_illegal_move(database)
-        return deleted
+            return tournament_player.pairings[self.current_round].delete_illegal_move(
+                database
+            )
+
+    @property
+    def ranked_after_round(self) -> int:
+        """The round the standings on this tournament were last computed for.
+        A label read beside those rows (a knock-out result, say) must describe
+        the same round, not the latest one played."""
+        if self._ranks_after_round is None:
+            return self.max_ranking_round
+        return self._ranks_after_round
 
     def correct_ranking_round(self, ranking_round: int | None = None) -> int:
         """Returns a correct round number that corresponds the best to a given round number."""
         if ranking_round is None:
             return self.max_ranking_round
-        else:
-            return max(0, min(ranking_round, self.max_ranking_round))
+        return max(0, min(ranking_round, self.max_ranking_round))
 
     def compute_tournament_player_ranks(
         self, *, after_round: int | None = None
@@ -4297,6 +4464,7 @@ class Tournament:
         return self._tournament_players_by_rank
 
     def _compute_tournament_player_ranks(self, after_round: int) -> None:
+        self._ranks_after_round = after_round
         self._keizer_scorer = None
         for player in self.tournament_players:
             player.clear_compute_caches()
@@ -4309,12 +4477,18 @@ class Tournament:
                 player = self.tournament_players_by_id[player_id]
                 player.tie_break_variables[tie_break.id] = variable
         keizer = self.pairing_system.id == 'KEIZER'
+        knockout = self.pairing_system.eliminates_participants
         for player in self.tournament_players:
-            player.points = (
-                self.keizer_scorer.total(player, after_round=after_round)
-                if keizer
-                else player.standings_points(after_round)
-            )
+            if keizer:
+                player.points = self.keizer_scorer.total(
+                    player, after_round=after_round
+                )
+            elif knockout:
+                player.points = self.knockout.ranking_value(
+                    player, after_round=after_round
+                )
+            else:
+                player.points = player.standings_points(after_round)
             player.compute_tie_break_values(
                 after_round=after_round, tie_breaks=tie_breaks
             )
@@ -4338,10 +4512,9 @@ class Tournament:
             self.tournament_players,
             key=lambda p: (p.is_excluded_from_standings, p.rank_sort_key),
         )
-        self._tournament_players_by_rank = {
-            rank: tournament_player
-            for rank, tournament_player in enumerate(sorted_tournament_players, start=1)
-        }
+        self._tournament_players_by_rank = dict(
+            enumerate(sorted_tournament_players, start=1)
+        )
         for rank, player in self._tournament_players_by_rank.items():
             player.rank = rank
         for tie_break_index, tie_break in enumerate(tie_breaks):
@@ -4372,7 +4545,7 @@ class Tournament:
         if self._tournament_players_by_rank is None:
             self.compute_tournament_player_ranks()
 
-    def add_result(self, board: Board, white_result: Result):
+    def add_result(self, board: Board, white_result: Result) -> None:
         """Stores the given result for the given `board` in the current round.
         Stores the `white_result` directly, and uses the opposite result
         as the black's result.
@@ -4392,6 +4565,8 @@ class Tournament:
 
             board.set_last_result_update(board.white_pairing.result, event_database)
 
+        self.knockout.forget_settled_winners(board)
+
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
@@ -4410,13 +4585,16 @@ class Tournament:
         # Remove the cached 'playing' value so that the pairing tab updates correctly
         self.__dict__.pop('playing', None)
 
-    def delete_result(self, board: Board):
+    def delete_result(self, board: Board) -> None:
         """Deletes the result for the given `board`."""
         assert board.black_tournament_player is not None
         with EventDatabase(self.event.uniq_id, write=True) as event_database:
             board.white_pairing.update_result(event_database, Result.NO_RESULT)
             board.black_pairing.update_result(event_database, Result.NO_RESULT)
             board.set_last_result_update(board.white_pairing.result, event_database)
+
+        self.knockout.forget_settled_winners(board)
+
         logger.info(
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
@@ -4428,19 +4606,19 @@ class Tournament:
         # Remove the cached 'playing' value so that the pairing tab updates correctly
         self.__dict__.pop('playing', None)
 
-    def check_in_player(self, player: Player, check_in: bool):
+    def check_in_player(self, player: Player, check_in: bool) -> None:
         """Stores the `check_in` status for the given `player`."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_player_check_in(player.id, check_in)
         player.stored_player.check_in = check_in
         player.__dict__.pop('check_in_status', None)
 
-    def check_in_team(self, team: 'Team', check_in: bool):
+    def check_in_team(self, team: 'Team', check_in: bool) -> None:
         """Stores the per-team check-in status."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             team.set_check_in(check_in, database)
 
-    def check_in_all_teams(self, check_in: bool):
+    def check_in_all_teams(self, check_in: bool) -> None:
         teams = [team for team in self.teams if team.check_in != check_in]
         if not teams:
             return
@@ -4462,7 +4640,7 @@ class Tournament:
             ] += 1
         return counter
 
-    def check_in_all_players(self, check_in: bool):
+    def check_in_all_players(self, check_in: bool) -> None:
         player_ids = []
         for player in self.players:
             if player.check_in != check_in:
@@ -4475,7 +4653,7 @@ class Tournament:
         self,
         stored_player: StoredPlayer,
         event_database: EventDatabase | None = None,
-    ):
+    ) -> None:
         assert stored_player.id is not None
         current_round = self.current_round
         last_zpb_round = (
@@ -4508,7 +4686,7 @@ class Tournament:
             self, stored_tournament_player
         )
 
-    def register_rostered_player(self, player_id: int):
+    def register_rostered_player(self, player_id: int) -> None:
         """Take note that a player has joined a team of this tournament.
 
         A team tournament stores no ``tournament_player`` rows — the
@@ -4535,7 +4713,7 @@ class Tournament:
         )
         self._reset_player_derived_cache()
 
-    def unregister_rostered_player(self, player_id: int):
+    def unregister_rostered_player(self, player_id: int) -> None:
         """The reverse: a player has left a team of this tournament."""
         if player_id not in self.tournament_players_by_id:
             return
@@ -4549,7 +4727,7 @@ class Tournament:
         ]
         self._reset_player_derived_cache()
 
-    def _reset_player_derived_cache(self):
+    def _reset_player_derived_cache(self) -> None:
         """Drop what is computed from the tournament's player list."""
         Utils.reset_cached_properties(
             self,
@@ -4561,6 +4739,9 @@ class Tournament:
             'sorted_tournament_players',
             'sorted_tournament_players_without_unpaired',
         )
+        # A knock-out resolves its whole match graph from the field's size
+        # and holds on to it.
+        self.knockout.invalidate_engine_cache()
 
     def get_available_board_indexes(self, round_: int) -> list[int]:
         board_indexes = [
@@ -4569,9 +4750,7 @@ class Tournament:
         max_board_count = (
             len(self.tournament_players) // 2 + len(self.tournament_players) % 2
         )
-        return [
-            index for index in range(0, max_board_count) if index not in board_indexes
-        ]
+        return [index for index in range(max_board_count) if index not in board_indexes]
 
     def first_unused_board_index(self, round_: int) -> int:
         """Smallest table index occupied by NO board this round — counting
@@ -4597,12 +4776,12 @@ class Tournament:
             return 0
         return max(board_indexes) + 1
 
-    def set_tournament_players_pairing_numbers(self):
+    def set_tournament_players_pairing_numbers(self) -> None:
         # Set up the cached property, which makes sure the
         # pairing number checking process is not executed twice
         __ = self.tournament_players_by_pairing_number
 
-    def _set_tournament_players_pairing_numbers(self):
+    def _set_tournament_players_pairing_numbers(self) -> None:
         """Set the pairing numbers of all the players in the tournament.
         Returns a list of players sorted by pairing number."""
         inserted_tournament_players: list[TournamentPlayer] = []
@@ -4628,10 +4807,9 @@ class Tournament:
                 self, deleted_pairing_numbers
             )
         )
-        if self.current_round >= 4:
-            # FIDE Handbook C.04.2.B.3: No modification of a pairing number
-            # is allowed after the fourth round has been paired.
-            # --> We keep the numbering only to inserted / deleted players
+        if self.pairing_system.pairing_numbers_are_frozen(self):
+            # The numbering stands: keep it, and number only the players
+            # inserted into it or freed from it.
             if (
                 not inserted_tournament_players
                 and not deleted_pairing_numbers
@@ -4692,9 +4870,8 @@ class Tournament:
             return
         with EventDatabase(self.event.uniq_id, True) as database:
             for (
-                pairing_number,
-                tournament_player,
-            ) in tournament_players_by_updated_pairing_number.items():
+                tournament_player
+            ) in tournament_players_by_updated_pairing_number.values():
                 database.set_tournament_player_pairing_number(
                     tournament_player.stored_tournament_player
                 )
@@ -4829,9 +5006,11 @@ class Tournament:
                 assert pab_stb is not None
                 # Drop the PAB-side individual boards; new ones with
                 # both lineups will be built below.
-                for board in list(self.boards_by_id.values()):
-                    if board.stored_board.team_board_id == pab_stb.id:
-                        boards_to_delete.append(board.identifier)
+                boards_to_delete.extend(
+                    board.identifier
+                    for board in list(self.boards_by_id.values())
+                    if board.stored_board.team_board_id == pab_stb.id
+                )
                 for board_id in boards_to_delete:
                     deleted_board = self.boards_by_id.get(board_id)
                     if deleted_board is None:
@@ -4873,9 +5052,11 @@ class Tournament:
                 stored_boards = engine._team_match_stored_boards(self, new_stb)
         self.clear_team_cache()
         self.create_boards(stored_boards, round_, Result.PAIRING_ALLOCATED_BYE)
-        target_id = pab_stb.id if completing_pair else new_stb.id  # type: ignore[union-attr]
-        assert target_id is not None
-        return self.team_boards_by_id[target_id]
+        # Whichever of the two branches above ran assigned the one read here.
+        target_stb = pab_stb if completing_pair else new_stb
+        assert target_stb is not None
+        assert target_stb.id is not None
+        return self.team_boards_by_id[target_stb.id]
 
     def unpair_team_board(self, team_board: TeamBoard) -> None:
         """Unpair a single team match. Deletes the team_board envelope
@@ -4918,7 +5099,7 @@ class Tournament:
             ]
         self.clear_team_cache()
 
-    def unpair_boards(self, boards: list[Board]):
+    def unpair_boards(self, boards: list[Board]) -> None:
         rounds: set[int] = set()
         with EventDatabase(self.event.uniq_id, True) as database:
             for board in boards:
@@ -4982,7 +5163,7 @@ class Tournament:
 
     def create_boards(
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
-    ):
+    ) -> None:
         with EventDatabase(self.event.uniq_id, True) as database:
             if pab_board := self.get_round_pab_board(round_):
                 pab_board.index = self.get_pab_board_index(
@@ -5039,7 +5220,7 @@ class Tournament:
                 if black_pairing is not None:
                     black_pairing.update(database)
 
-    def toggle_check_in_open(self):
+    def toggle_check_in_open(self) -> None:
         check_in_open = not self.check_in_open
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_tournament_check_in_open(self.id, check_in_open)
@@ -5047,7 +5228,7 @@ class Tournament:
 
     def set_player_participation(
         self, player: TournamentPlayer, withdraw: bool = False
-    ):
+    ) -> None:
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = self.current_round or 1
         if not withdraw and self.round_has_pairings(round_for_participation):
@@ -5067,7 +5248,9 @@ class Tournament:
         player.__dict__.pop('has_withdrawn', None)
         player.__dict__.pop('check_in_status', None)
 
-    def set_player_byes(self, player: TournamentPlayer, byes: dict[int, Result]):
+    def set_player_byes(
+        self, player: TournamentPlayer, byes: dict[int, Result]
+    ) -> None:
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             for round_, result in byes.items():
@@ -5075,6 +5258,6 @@ class Tournament:
                 if pairing.unpaired:
                     pairing.update_result(database, result)
 
-    def set_current_round(self, round_: int):
+    def set_current_round(self, round_: int) -> None:
         with EventDatabase(self.event.uniq_id, True) as database:
             database.set_tournament_current_round(self.id, round_)

@@ -7,7 +7,9 @@ matches and renders coloured rounds as fixed-table rows.
 
 from __future__ import annotations
 
-from functools import lru_cache
+from collections.abc import Iterator
+from functools import cache
+from typing import Any
 
 from data.pairings.fixed_table import TablePairing
 
@@ -17,7 +19,7 @@ _Round = list[_Match]
 _TEAM_LETTERS = tuple(chr(ord('A') + index) for index in range(26))
 
 
-@lru_cache(maxsize=None)
+@cache
 def _letter(team_index: int) -> str:
     if team_index < len(_TEAM_LETTERS):
         return _TEAM_LETTERS[team_index]
@@ -185,8 +187,7 @@ def _one_odd_initial_factors(
     edge_factor = {
         edge: permutation[_one_odd_length_factor(team_count, edge)] for edge in edges
     }
-    for edge, factor in prescribed.items():
-        edge_factor[edge] = factor
+    edge_factor.update(prescribed)
 
     degrees = [[0] * team_count for _factor in range(half)]
     for (first, second), factor in edge_factor.items():
@@ -334,7 +335,7 @@ def _one_odd_repair_factors(
             edge for edge in factor if edge[0] in component and edge[1] in component
         ]
 
-    def candidate_swaps(factor_i: int, limit: int):
+    def candidate_swaps(factor_i: int, limit: int) -> Iterator[Any]:
         components = _one_odd_components(team_count, factors[factor_i])
         prescribed_teams = {team for edge in prescribed[factor_i] for team in edge}
         infos = []
@@ -463,7 +464,7 @@ def _one_odd_repair_factors(
     return None
 
 
-@lru_cache(maxsize=None)
+@cache
 def _one_odd_factorization(
     team_count: int,
 ) -> tuple[tuple[tuple[int, int], ...], ...] | None:
@@ -556,10 +557,14 @@ def _one_odd_cell_matches(
         path = list(reversed(path))
 
     out: list[_Match] = [((path[-1], odd_slot), (path[0], even_slot))]
-    for index in range(0, len(path) - 1, 2):
-        out.append(((path[index], odd_slot), (path[index + 1], odd_slot)))
-    for index in range(1, len(path) - 1, 2):
-        out.append(((path[index], even_slot), (path[index + 1], even_slot)))
+    out.extend(
+        ((path[index], odd_slot), (path[index + 1], odd_slot))
+        for index in range(0, len(path) - 1, 2)
+    )
+    out.extend(
+        ((path[index], even_slot), (path[index + 1], even_slot))
+        for index in range(1, len(path) - 1, 2)
+    )
 
     for component in components:
         if component == dropped_component:
@@ -567,29 +572,28 @@ def _one_odd_cell_matches(
         cycle = _one_odd_cycle_order(component, factor_set)
         if reverse:
             cycle = cycle[1:] + cycle[:1]
-        for index in range(0, len(cycle), 2):
-            out.append(
-                ((cycle[index], odd_slot), (cycle[(index + 1) % len(cycle)], odd_slot))
-            )
-        for index in range(1, len(cycle), 2):
-            out.append(
-                (
-                    (cycle[index], even_slot),
-                    (cycle[(index + 1) % len(cycle)], even_slot),
-                )
-            )
+        out.extend(
+            ((cycle[index], odd_slot), (cycle[(index + 1) % len(cycle)], odd_slot))
+            for index in range(0, len(cycle), 2)
+        )
+        out.extend(
+            ((cycle[index], even_slot), (cycle[(index + 1) % len(cycle)], even_slot))
+            for index in range(1, len(cycle), 2)
+        )
     return out
 
 
-@lru_cache(maxsize=None)
+@cache
 def _one_factorization(team_count: int) -> tuple[tuple[tuple[int, int], ...], ...]:
     pivot = team_count - 1
     ring = team_count - 1
     factors: list[tuple[tuple[int, int], ...]] = []
     for b in range(ring):
         matching: list[tuple[int, int]] = [_team_edge(pivot, b)]
-        for i in range(1, team_count // 2):
-            matching.append(_team_edge((b + i) % ring, (b - i) % ring))
+        matching.extend(
+            _team_edge((b + i) % ring, (b - i) % ring)
+            for i in range(1, team_count // 2)
+        )
         factors.append(tuple(sorted(matching)))
     return tuple(factors)
 

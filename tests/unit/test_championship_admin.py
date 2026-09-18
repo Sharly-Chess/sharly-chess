@@ -81,7 +81,7 @@ def test_results_show_every_ordered_best_n_score():
     ]
 
     brian_row, emilien_row = ChampionshipAdminController._ranking_rows(
-        cast(Any, championship), entries
+        cast(Any, championship), cast(Any, entries)
     )
 
     assert [cell['value'] for cell in brian_row['rule_cells']] == [23, 28, 32]
@@ -138,7 +138,7 @@ def test_direct_encounter_is_displayed_as_rank_progress():
     ]
 
     winner_row, loser_row = ChampionshipAdminController._ranking_rows(
-        cast(Any, championship), entries
+        cast(Any, championship), cast(Any, entries)
     )
 
     assert winner_row['rule_cells'][1] == {

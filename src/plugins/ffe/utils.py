@@ -141,7 +141,7 @@ class FFEUtils:
     def update_tournament_plugin_data(
         tournament: Tournament,
         plugin_data: 'FfeTournamentPluginData',
-    ):
+    ) -> None:
         tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
             plugin_data.to_stored_value()
         )
@@ -157,7 +157,7 @@ class FFEUtils:
     def update_event_plugin_data(
         event: Event,
         plugin_data: 'FfeEventPluginData',
-    ):
+    ) -> None:
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         event.plugin_data[PLUGIN_NAME] = plugin_data
         with EventDatabase(event.uniq_id, True) as database:
@@ -407,8 +407,8 @@ class FfeTournamentPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            ffe_id=stored_value.get('ffe_id', None),
-            password=stored_value.get('password', None),
+            ffe_id=stored_value.get('ffe_id'),
+            password=stored_value.get('password'),
             auto_upload=stored_value.get('auto_upload', False),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
@@ -473,12 +473,12 @@ class FfePlayerPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            ffe_id=stored_value.get('ffe_id', None),
+            ffe_id=stored_value.get('ffe_id'),
             ffe_licence=PlayerFFELicence(
                 stored_value.get('ffe_licence', PlayerFFELicence.NONE)
             ),
-            ffe_licence_number=stored_value.get('ffe_licence_number', None),
-            league=stored_value.get('league', None),
+            ffe_licence_number=stored_value.get('ffe_licence_number'),
+            league=stored_value.get('league'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -527,7 +527,7 @@ class FfeAccountPluginData(AccountPluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            ffe_licence_number=stored_value.get('ffe_licence_number', None),
+            ffe_licence_number=stored_value.get('ffe_licence_number'),
             ffe_arbiter_title=FFEArbiterTitle(
                 stored_value.get('ffe_arbiter_title', FFEArbiterTitle.NONE)
             ),

@@ -12,6 +12,23 @@ from common.logger import print_interactive_error, print_interactive_info  # Noq
 from data.loader import EventBackup, EventBackupLoader  # Noqa: E402
 
 
+def get_target_version() -> Version:
+    if args.version:
+        args_version = Version(args.version)
+        if args_version > SHARLY_CHESS_VERSION:
+            print_interactive_error(
+                f'Impossible to restore: Version selected ({args_version}) is newer'
+                f' than the latest Sharly Chess version {SHARLY_CHESS_VERSION}'
+            )
+            sys.exit(1)
+        return args_version
+    latest_compatible_version = loader.latest_compatible_version(event_id)
+    if not latest_compatible_version:
+        print_interactive_error('No compatible backup to restore')
+        sys.exit(1)
+    return latest_compatible_version
+
+
 if __name__ == '__main__':
     parser = ArgumentParser(
         description=(
@@ -42,19 +59,7 @@ if __name__ == '__main__':
     args = parser.parse_args(arguments)
     loader = EventBackupLoader()
     event_id = args.event
-    if args.version:
-        version = Version(args.version)
-        if version > SHARLY_CHESS_VERSION:
-            print_interactive_error(
-                f'Impossible to restore: Version selected ({version}) is newer'
-                f' than the latest Sharly Chess version {SHARLY_CHESS_VERSION}'
-            )
-            sys.exit(1)
-    else:
-        version = loader.latest_compatible_version(event_id)
-        if not version:
-            print_interactive_error('No compatible backup to restore')
-            sys.exit(1)
+    version: Version = get_target_version()
 
     to_restore: list[EventBackup] = []
     if event_id:

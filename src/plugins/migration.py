@@ -8,6 +8,7 @@ from packaging.version import Version
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.migration import BaseMigration, MigrationManager
 from plugins.utils import Plugin
+import contextlib
 
 
 class BasePluginMigration(BaseMigration, ABC):
@@ -15,7 +16,7 @@ class BasePluginMigration(BaseMigration, ABC):
 
     @override
     @abstractmethod
-    def backward(self):
+    def backward(self) -> None:
         """As plugins are meant to be removable,
         all migrations need to be reversible."""
 
@@ -35,13 +36,13 @@ class PluginMigrationManager(MigrationManager[EventDatabase]):
     def get_migration(self, database: EventDatabase) -> str:
         return database.get_plugin_migration(self.plugin.id)
 
-    def set_migration(self, migration: str, database: EventDatabase):
+    def set_migration(self, migration: str, database: EventDatabase) -> None:
         database.set_plugin_migration(self.plugin.id, migration)
 
     def get_version(self, database: EventDatabase) -> Version:
         return database.get_plugin_version(self.plugin.id)
 
-    def set_version(self, version: Version, database: EventDatabase):
+    def set_version(self, version: Version, database: EventDatabase) -> None:
         database.set_plugin_version(self.plugin.id, version)
 
     @property
@@ -54,7 +55,7 @@ class PluginMigrationManager(MigrationManager[EventDatabase]):
         except OperationalError:
             return False
 
-    def install_metadata(self, database: EventDatabase):
+    def install_metadata(self, database: EventDatabase) -> None:
         database.create_plugin_metadata_table()
         database.insert_plugin_metadata(self.plugin.id, self.plugin.version)
 
@@ -69,13 +70,11 @@ class PluginMigrationManager(MigrationManager[EventDatabase]):
             return None
         return 'm001_retrieve_deprecated_plugin_columns'
 
-    def remove_legacy_version_field(self, database: EventDatabase):
-        try:
+    def remove_legacy_version_field(self, database: EventDatabase) -> None:
+        with contextlib.suppress(OperationalError):
             database.execute(
                 f'ALTER TABLE `info` DROP COLUMN `{self._legacy_version_field}`'
             )
-        except OperationalError:
-            pass
 
     @property
     def _legacy_version_field(self) -> str:

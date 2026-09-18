@@ -1,5 +1,6 @@
 from functools import cached_property, cache
-from typing import TYPE_CHECKING, Optional, Collection
+from typing import TYPE_CHECKING, Optional
+from collections.abc import Collection
 
 from litestar_htmx import HTMXRequest
 
@@ -83,7 +84,7 @@ class Client:
     def __str__(self) -> str:
         return f'{self.__class__.__name__}(account={self.account}, host={self.host})'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'{self.__class__.__name__}(request={self.request!r}, event={self.event!r})'
         )
@@ -478,8 +479,7 @@ class Client:
     ) -> tuple[Result, ...]:
         if self.can_set_special_results(tournament_id):
             return Result.admin_imputable_results()
-        else:
-            return Result.user_imputable_results()
+        return Result.user_imputable_results()
 
     # ---------------------------------------------------------------------------------
     # Screens

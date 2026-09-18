@@ -1,7 +1,7 @@
 """Championship category filtering and reference-date semantics."""
 
 from datetime import date
-from typing import Any, cast
+from typing import Any, cast, ClassVar
 
 from data.championship.category import ChampionshipCategory
 from data.championship.reconciliation import (
@@ -38,8 +38,8 @@ class FakeSource:
 
 
 class FakeEvent:
-    junior_categories = [JuniorCategory(10), JuniorCategory(12)]
-    senior_categories = [SeniorCategory(50)]
+    junior_categories: ClassVar = [JuniorCategory(10), JuniorCategory(12)]
+    senior_categories: ClassVar = [SeniorCategory(50)]
 
 
 class FakeTournamentPlayer:

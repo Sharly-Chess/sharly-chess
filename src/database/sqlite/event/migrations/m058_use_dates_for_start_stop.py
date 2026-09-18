@@ -16,7 +16,7 @@ class Migration(BaseMigration):
             return None
         return datetime.strptime(date, '%Y-%m-%d').timestamp()
 
-    def forward(self):
+    def forward(self) -> None:
         # Event
         self.database.execute('ALTER TABLE `info` ADD `start_date` TEXT')
         self.database.execute('ALTER TABLE `info` ADD `stop_date` TEXT')
@@ -49,7 +49,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `start`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `stop`')
 
-    def backward(self):
+    def backward(self) -> None:
         # Event
         self.database.execute('ALTER TABLE `info` ADD `start` FLOAT')
         self.database.execute('ALTER TABLE `info` ADD `stop` FLOAT')

@@ -1,6 +1,6 @@
 import copy
 from functools import partial
-from typing import Any, Annotated
+from typing import Any, Annotated, ClassVar
 
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
@@ -12,6 +12,7 @@ from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common.exception import OptionError
 from common.i18n import _, ngettext
+from common.i18n.utils import ordinal_integer
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.criteria.managers import PrizePlayerFilterManager, PlayerFilterOptionManager
@@ -140,7 +141,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
                 )
             self.admin_prize = prize_category.prizes_by_id[prize_id]
 
-    def set_default_prize_group(self):
+    def set_default_prize_group(self) -> None:
         if self.admin_tournament and self.admin_tournament.prize_groups:
             self.admin_prize_group = self.admin_tournament.sorted_prize_groups[0]
         else:
@@ -156,7 +157,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
             'admin_prize_category': self.admin_prize_category,
             'admin_prize_criterion': self.admin_prize_criterion,
             'admin_prize': self.admin_prize,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'format_prize_value': partial(
                 Utils.currency_value_str,
                 currency=prize_currency,
@@ -200,11 +201,13 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
 
 
 class PrizeAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         TournamentActionGuard(AuthAction.VIEW_PRIZES_TAB),
     ]
-    manage_guards = [TournamentActionGuard(AuthAction.MANAGE_PRIZES)]
+    manage_guards: ClassVar = [TournamentActionGuard(AuthAction.MANAGE_PRIZES)]
     MAX_PRIZE_PLACES = 8
 
     @classmethod
@@ -669,13 +672,12 @@ class PrizeAdminController(BaseEventAdminController):
                 errors=errors,
                 previous_category=prize_category,
             )
-        else:
-            Message.success(
-                request,
-                _('Prize category [{prize_category}] successfully created.').format(
-                    prize_category=prize_category.name
-                ),
-            )
+        Message.success(
+            request,
+            _('Prize category [{prize_category}] successfully created.').format(
+                prize_category=prize_category.name
+            ),
+        )
         return self._admin_event_prizes_render(web_context)
 
     @patch(
@@ -1132,12 +1134,11 @@ class PrizeAdminController(BaseEventAdminController):
             player.rating for player in tournament.tournament_players if player.rating
         ]
         if not errors and method == 'groups':
+            # No error recorded means the two ratings above are both set.
+            assert rating_min is not None and rating_max is not None
             if not group_count:
                 errors['group_count'] = _('A positive number of groups is expected.')
-            elif not any(
-                rating_min <= r <= rating_max  # type: ignore[operator]
-                for r in ratings
-            ):
+            elif not any(rating_min <= r <= rating_max for r in ratings):
                 errors['group_count'] = _(
                     'No player is rated within this range; '
                     'use the rating step method instead.'
@@ -1149,10 +1150,12 @@ class PrizeAdminController(BaseEventAdminController):
             errors['prizes'] = _('Positive values are expected.')
         if errors:
             return self._render_generate_rating_modal(web_context, data, errors)
+        # Past the guard, so the rating check above passed.
+        assert rating_min is not None and rating_max is not None
         bands = self._compute_rating_bands(
             method,
-            rating_min,  # type: ignore[arg-type]
-            rating_max,  # type: ignore[arg-type]
+            rating_min,
+            rating_max,
             group_count or 0,
             step or 0,
             ratings,

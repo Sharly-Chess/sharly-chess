@@ -19,6 +19,7 @@ from database.sqlite.event.event_store import (
 )
 from tests.test_config import TestUtils
 from utils.enum import EventType
+import contextlib
 
 EVENT_ID = 'test-tournament-delete'
 DOOMED = 'doomed'
@@ -47,10 +48,8 @@ class TournamentDeleteTestCase(TestCase):
         TestUtils.delete_event(EVENT_ID)
 
     def _load_event(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         return EventLoader().load_event(EVENT_ID)
 
     def _tournament_ids(self, database: EventDatabase) -> dict[str, int]:
@@ -192,10 +191,8 @@ class ClearTournamentPlayersTestCase(TestCase):
         TestUtils.delete_event(EVENT_ID)
 
     def _load_event(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         return EventLoader().load_event(EVENT_ID)
 
     def _build(self) -> dict[str, int]:

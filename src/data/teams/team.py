@@ -25,7 +25,7 @@ class TeamGroup:
     from being paired together."""
 
     def __init__(self, event: 'Event', stored_team_group: StoredTeamGroup):
-        self._event_ref: 'weakref.ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: weakref.ReferenceType[Event] = weakref.ref(event)
         self.stored_team_group = stored_team_group
 
     @property
@@ -58,7 +58,7 @@ class Team:
     """A team of players competing as a unit in a team tournament."""
 
     def __init__(self, event: 'Event', stored_team: StoredTeam):
-        self._event_ref: 'weakref.ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: weakref.ReferenceType[Event] = weakref.ref(event)
         self.stored_team = stored_team
 
     @property
@@ -320,7 +320,7 @@ class Team:
     def lineups_by_round(self) -> dict[int, list['Player']]:
         """Per-round lineup as a list of players ordered by board index.
         Missing rounds are absent from the dict."""
-        result: dict[int, list['Player']] = {}
+        result: dict[int, list[Player]] = {}
         players_by_id = self.event.players_by_id
         for round_, entries in self.stored_team.stored_round_lineups.items():
             ordered = sorted(entries, key=lambda e: e.index)
@@ -389,7 +389,7 @@ class Team:
             if tournament is None or tournament.team_player_count is None:
                 return []
             n = tournament.team_player_count
-        slots: list['Player | None'] = [None] * n
+        slots: list[Player | None] = [None] * n
         if self.has_explicit_round_lineup(round_):
             players_by_id = self.event.players_by_id
             for entry in self.stored_team.stored_round_lineups[round_]:
@@ -430,7 +430,7 @@ class Team:
         if team_board is None:
             return None
         n = tournament.team_player_count
-        slots: list['Player | None'] = [None] * n
+        slots: list[Player | None] = [None] * n
         players_by_id = self.event.players_by_id
         # Which lineup slot each board seats this team's player on. A
         # match seats slot i on board i, but a table that rotates one
@@ -475,7 +475,7 @@ class Team:
     # Mutations
     # -------------------------------------------------------------------------
 
-    def update(self, database: EventDatabase):
+    def update(self, database: EventDatabase) -> None:
         database.update_stored_team(self.stored_team)
 
     def _delete_boardless_player_pairings(
@@ -504,7 +504,9 @@ class Team:
             tournament_player.stored_tournament_player.stored_pairings = kept_pairings
             tournament_player.__dict__.pop('pairings_by_round', None)
 
-    def set_tournament(self, tournament_id: int | None, database: EventDatabase):
+    def set_tournament(
+        self, tournament_id: int | None, database: EventDatabase
+    ) -> None:
         old_tournament = self.tournament
         if self.stored_team.tournament_id == tournament_id:
             return
@@ -558,7 +560,9 @@ class Team:
             if new_tournament is not None:
                 new_tournament.clear_team_cache()
 
-    def set_pairing_number(self, pairing_number: int | None, database: EventDatabase):
+    def set_pairing_number(
+        self, pairing_number: int | None, database: EventDatabase
+    ) -> None:
         self.stored_team.pairing_number = pairing_number
         database.set_team_pairing_number(self.id, pairing_number)
 
@@ -567,7 +571,7 @@ class Team:
         captain_id: int | None,
         captain_name: str | None,
         database: EventDatabase,
-    ):
+    ) -> None:
         """Set this team's captain: a playing captain by ``captain_id``
         (must belong to this team's roster — caller enforces), or a
         non-playing one by free-typed ``captain_name``. The two are
@@ -578,11 +582,11 @@ class Team:
         self.stored_team.captain_name = captain_name
         database.set_team_captain(self.id, captain_id, captain_name)
 
-    def set_group(self, group_id: int | None, database: EventDatabase):
+    def set_group(self, group_id: int | None, database: EventDatabase) -> None:
         self.stored_team.group_id = group_id
         database.set_team_group(self.id, group_id)
 
-    def set_check_in(self, check_in: bool, database: EventDatabase):
+    def set_check_in(self, check_in: bool, database: EventDatabase) -> None:
         self.stored_team.check_in = check_in
         database.set_team_check_in(self.id, check_in)
 
@@ -591,7 +595,7 @@ class Team:
         round_: int,
         player_ids: Sequence[int | None],
         database: EventDatabase,
-    ):
+    ) -> None:
         """Replace the team's lineup for the given round. Position in
         *player_ids* determines the board index (0-based). ``None`` at
         index i = hole on board i, stored as a row with no player, so a
@@ -608,7 +612,7 @@ class Team:
         database.replace_team_round_lineup(self.id, round_, entries)
         self.stored_team.stored_round_lineups[round_] = entries
 
-    def delete_round_lineup(self, round_: int, database: EventDatabase):
+    def delete_round_lineup(self, round_: int, database: EventDatabase) -> None:
         database.delete_team_round_lineup(self.id, round_)
         self.stored_team.stored_round_lineups.pop(round_, None)
 
@@ -730,7 +734,7 @@ class Team:
     # Roster
     # -------------------------------------------------------------------------
 
-    def _invalidate_players(self):
+    def _invalidate_players(self) -> None:
         if 'players' in self.__dict__:
             del self.__dict__['players']
         if 'players_by_id' in self.__dict__:
@@ -744,7 +748,7 @@ class Team:
         tournament = self.tournament
         return tournament.roster_max_size if tournament else None
 
-    def add_player(self, player: 'Player', database: EventDatabase):
+    def add_player(self, player: 'Player', database: EventDatabase) -> None:
         """Add a player to the team's roster.
         Removes the player from any previous team (event-wide uniqueness).
         Appends at the end of the roster ordering.
@@ -786,7 +790,7 @@ class Team:
                 ):
                     previous_tournament.unregister_rostered_player(player.id)
 
-    def remove_player(self, player: 'Player', database: EventDatabase):
+    def remove_player(self, player: 'Player', database: EventDatabase) -> None:
         """Remove a player from this team. Compacts remaining indexes."""
         if player.stored_player.team_id != self.id:
             return
@@ -801,7 +805,7 @@ class Team:
             self.tournament.unregister_rostered_player(player.id)
         self._compact_indexes(database)
 
-    def _compact_indexes(self, database: EventDatabase):
+    def _compact_indexes(self, database: EventDatabase) -> None:
         """Renumber remaining players' team_index sequentially from 0."""
         remaining = self.players
         if not remaining:
@@ -812,7 +816,9 @@ class Team:
         database.reorder_team_players(self.id, ids)
         self._invalidate_players()
 
-    def reorder_players(self, ordered_player_ids: list[int], database: EventDatabase):
+    def reorder_players(
+        self, ordered_player_ids: list[int], database: EventDatabase
+    ) -> None:
         """Reorder roster players. Silently ignores ids not on this team."""
         current_ids = {p.id for p in self.players}
         filtered = [pid for pid in ordered_player_ids if pid in current_ids]

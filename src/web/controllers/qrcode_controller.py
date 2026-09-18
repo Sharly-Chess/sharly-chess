@@ -3,6 +3,7 @@ from tempfile import NamedTemporaryFile
 from typing import Any
 
 import qrcode
+from qrcode.image.pil import PilImage
 import PIL.Image
 from litestar import get
 from litestar.params import FromPath, FromQuery
@@ -30,6 +31,7 @@ class QRCodeController(BaseController):
         qr.add_data(url or SharlyChessConfig().web_url)
         qr.make()
         img = qr.make_image(
+            image_factory=PilImage,
             fill_color='black' if logo else 'rgb(223, 226, 230)',
             back_color='white' if logo else 'rgb(34, 37, 41)',
         )
@@ -45,7 +47,7 @@ class QRCodeController(BaseController):
             logo_img = PIL.Image.open(logo_file)
             base_width: int = 360
             width_percent: float = base_width / float(logo_img.size[0])
-            height_size = int((float(logo_img.size[1]) * float(width_percent)))
+            height_size = int(float(logo_img.size[1]) * float(width_percent))
             resized_logo = logo_img.resize(
                 (base_width, height_size), PIL.Image.Resampling.LANCZOS
             )

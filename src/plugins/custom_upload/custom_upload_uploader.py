@@ -1,3 +1,4 @@
+from typing import ClassVar
 import ftplib
 import os.path
 import time
@@ -47,9 +48,9 @@ CUSTOM_UPLOAD_DELAY = 1
 
 
 class CustomUploadUploader:
-    timeout_threads: dict[str, Timer] = {}
-    queued_result_ids: set[str] = set()
-    ongoing_result_ids: set[str] = set()
+    timeout_threads: ClassVar[dict[str, Timer]] = {}
+    queued_result_ids: ClassVar[set[str]] = set()
+    ongoing_result_ids: ClassVar[set[str]] = set()
 
     @classmethod
     def result_id(cls, event_uniq_id: str, document_id: str) -> str:
@@ -88,7 +89,7 @@ class CustomUploadUploader:
         )
 
     @classmethod
-    def publish_upload_event(cls):
+    def publish_upload_event(cls) -> None:
         if channels_plugin:
             channels_plugin.publish(
                 {
@@ -132,7 +133,7 @@ class CustomUploadUploader:
         event_uniq_id: str,
         document_id: str,
         http_client: Client,
-    ):
+    ) -> None:
         """Upload a single configured document to its custom location."""
 
         result_id: str = cls.result_id(event_uniq_id, document_id)
@@ -197,7 +198,9 @@ class CustomUploadUploader:
             target_path = (
                 document.server_path or event_plugin_data.default_server_path or ''
             )
-            base_target_path = os.path.dirname(target_path)
+            # A path on the remote FTP server, not a local one: it is always
+            # POSIX, whatever the machine running the upload.
+            base_target_path = os.path.dirname(target_path)  # noqa: PTH120
             port = port or transfer_protocol.default_port
 
             logger.info(
@@ -258,7 +261,7 @@ class CustomUploadUploader:
         result_id: str,
         temporary_file: BytesIO,
         file_name: str,
-    ):
+    ) -> None:
         failure_status: FailureCustomUploadStatus | None = None
         error_message: str = f'Uploading document to [{host}:{transfer_port}/{target_path}/{file_name}] via [{transfer_protocol.name}] failed: %s.'
 
@@ -333,7 +336,7 @@ class CustomUploadUploader:
         result_id: str,
         temporary_file: BytesIO,
         file_name: str,
-    ):
+    ) -> None:
         failure_status: FailureCustomUploadStatus | None = None
         error_message: str = f'Uploading document to [{host}:{transfer_port}/{target_path}/{file_name}] via [{transfer_protocol.name}] failed: %s.'
 
@@ -396,7 +399,7 @@ class CustomUploadUploader:
         event_uniq_id: str,
         document: ConfiguredDocument,
         failure_status: FailureCustomUploadStatus | None,
-    ):
+    ) -> None:
         now = datetime.now()
         if failure_status:
             document.upload_failure_id = failure_status.id
@@ -420,6 +423,8 @@ class CustomUploadUploader:
             document.document_id,
             document.options or None,
         )
+        # A print document always names its template.
+        assert document_htmx_template.template_name is not None
         html_content = parse_jinja_template(
             document_htmx_template.template_name, document_htmx_template.context
         )
@@ -428,7 +433,7 @@ class CustomUploadUploader:
         return temporary_file, document.upload_filename(event)
 
     @classmethod
-    def remove_scheduled_upload(cls, event_uniq_id: str, document_id: str):
+    def remove_scheduled_upload(cls, event_uniq_id: str, document_id: str) -> None:
         """Cancel a pending scheduled upload for a document, if any."""
         thread = cls.timeout_threads.get(cls.result_id(event_uniq_id, document_id))
         if thread and thread.is_alive():
@@ -458,7 +463,7 @@ class CustomUploadUploader:
         document: ConfiguredDocument,
         http_client: Client,
         force: bool = False,
-    ):
+    ) -> None:
         """Schedule the upload of a single document. Unless ``force`` is set, the
         upload is throttled so a document is not re-uploaded more than once every
         ``CUSTOM_UPLOAD_DELAY`` minutes."""
@@ -478,7 +483,7 @@ class CustomUploadUploader:
             elapsed = (datetime.now() - last_upload).total_seconds()
             wait_time = max(CUSTOM_UPLOAD_DELAY * 60 - elapsed, 0.1)
 
-        def _run():
+        def _run() -> None:
             set_locale(SharlyChessConfig().locale)
             cls.upload_document(event_uniq_id, document.id, http_client)
 
@@ -489,7 +494,7 @@ class CustomUploadUploader:
     @classmethod
     def upload_event_documents(
         cls, event: Event, documents: list[ConfiguredDocument], http_client: Client
-    ):
+    ) -> None:
         """Upload all eligible documents of an event in a background thread."""
         if CustomUploadUtils.event_connection_message(event):
             return
@@ -507,7 +512,7 @@ class CustomUploadUploader:
         for document in updated_documents:
             cls.queued_result_ids.add(cls.result_id(event_uniq_id, document.id))
 
-        def _run():
+        def _run() -> None:
             set_locale(SharlyChessConfig().locale)
             for document in updated_documents:
                 cls.upload_document(event_uniq_id, document.id, http_client)
@@ -543,7 +548,7 @@ class CustomUploadUploader:
                 )
                 sftp_client = client.open_sftp()
             except AuthenticationException as error:
-                raise PermissionError(error)
+                raise PermissionError(error) from error
             except (
                 BadHostKeyException,
                 NoValidConnectionsError,
@@ -551,8 +556,7 @@ class CustomUploadUploader:
                 OSError,
                 TimeoutError,
             ) as error:
-                raise ConnectionError(error)
-
+                raise ConnectionError(error) from error
             if not CustomUploadUploader._does_remote_path_exist_sftp(
                 sftp_client, target_path
             ):
@@ -584,7 +588,7 @@ class CustomUploadUploader:
         port: int,
         target_path: str,
         ftp_client: ftplib.FTP,
-    ):
+    ) -> None:
         try:
             ftp_client.connect(host, port, timeout=5)
             ftp_client.login(username, password)
@@ -595,6 +599,6 @@ class CustomUploadUploader:
         except FileNotFoundError:
             raise
         except ftplib.error_perm as error:
-            raise PermissionError(error)
+            raise PermissionError(error) from error
         except ftplib.all_errors as error:
-            raise ConnectionError(error)
+            raise ConnectionError(error) from error

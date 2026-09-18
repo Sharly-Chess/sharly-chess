@@ -1,6 +1,7 @@
 """Common network code"""
 
 from __future__ import annotations
+from typing import cast
 import ipaddress
 import subprocess
 import socket
@@ -12,7 +13,6 @@ from concurrent.futures import (
 )
 from logging import Logger
 import time
-from typing import Optional
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 import psutil
@@ -79,20 +79,18 @@ def _is_private_ipv4(s: str) -> bool:
         if ip.is_private:  # RFC1918
             return True
 
-        if ip in ipaddress.IPv4Network('100.64.0.0/10'):  # CGNAT/Tailscale
-            return True
-
-        return False
+        # CGNAT/Tailscale
+        return ip in ipaddress.IPv4Network('100.64.0.0/10')
     except Exception:
         return False
 
 
-def _default_route_ip() -> Optional[str]:
+def _default_route_ip() -> str | None:
     """Local IP selected by OS for outbound traffic (no packets sent)."""
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.connect(('8.8.8.8', 80))
-            return s.getsockname()[0]
+            return cast(str | None, s.getsockname()[0])
     except Exception:
         return None
 
@@ -123,7 +121,7 @@ def _mac_hwport_map() -> dict[str, str]:
     return mapping
 
 
-def _mac_want_iface(name: str, hwport: Optional[str]) -> bool:
+def _mac_want_iface(name: str, hwport: str | None) -> bool:
     lname = name.lower()
     if any(tag in lname for tag in _EXCLUDE_IFACE_NAME_SUBSTR):
         return False
@@ -402,7 +400,9 @@ class NetworkMonitor:
                     return False
                 if expected_body is None:
                     return True
-                return resp.read(len(expected_body)).startswith(expected_body)
+                return cast(
+                    bool, resp.read(len(expected_body)).startswith(expected_body)
+                )
         except (URLError, OSError, ValueError):
             return False
 
@@ -435,7 +435,7 @@ class NetworkMonitor:
         return ok
 
     @classmethod
-    def _test_for_internet_connection(cls, confirm: bool = True):
+    def _test_for_internet_connection(cls, confirm: bool = True) -> None:
         from web.server_engine import ServerEngine
 
         ok = cls._run_probes()
@@ -463,7 +463,7 @@ class NetworkMonitor:
     # ---------------------------------------------------------------------------------
 
     @classmethod
-    def start_monitoring(cls):
+    def start_monitoring(cls) -> None:
         """Starts a thread to test for internet connectivity every few seconds"""
         # NOTE(Amaras): The entire Python program exits when only daemon threads
         # are left, and those threads will be stopped abruptly on program shutdown
@@ -472,7 +472,7 @@ class NetworkMonitor:
         #
         # By passing cls as an arg, we can share it with the main thread.
 
-        def _check_connected(cls_) -> None:
+        def _check_connected(cls_: type[NetworkMonitor]) -> None:
             """This function is supposed to be run in a thread or process, or it will
             hog all the caller's time.
             Tries to connect to root DNS servers, as shit has already hit the fan if
@@ -486,7 +486,7 @@ class NetworkMonitor:
         connection_checker.start()
 
     @classmethod
-    def connected(cls, use_cached=True) -> bool:
+    def connected(cls, use_cached: bool = True) -> bool:
         """Checks if the program is connected to the internet.
         This relies on a background thread checking every few seconds,
         and so the returned value isn't 100% sure"""

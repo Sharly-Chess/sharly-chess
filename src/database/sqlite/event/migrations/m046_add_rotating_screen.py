@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `rotating_screen` ('
             '   `id` INTEGER NOT NULL,'
@@ -33,7 +33,7 @@ class Migration(BaseMigration):
                 f'WHERE `id` IN ({", ".join(["?"] * len(screen_ids))}) '
                 'AND `type` != ? '
                 'ORDER BY `uniq_id`',
-                tuple(screen_ids + ['input']),
+                (*screen_ids, 'input'),
             )
             for index, row_ in enumerate(self.database.fetchall()):
                 fields = {
@@ -55,7 +55,7 @@ class Migration(BaseMigration):
                 f'WHERE `id` IN ({", ".join(["?"] * len(family_ids))}) '
                 'AND `type` != ? '
                 'ORDER BY `uniq_id`',
-                tuple(family_ids + ['input']),
+                (*family_ids, 'input'),
             )
             for index, row_ in enumerate(self.database.fetchall()):
                 fields = {
@@ -73,7 +73,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `rotator` DROP COLUMN `screen_ids`')
         self.database.execute('ALTER TABLE `rotator` DROP COLUMN `family_ids`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `rotator` ADD `screen_ids` TEXT')
         self.database.execute('ALTER TABLE `rotator` ADD `family_ids` TEXT')
 
@@ -92,9 +92,8 @@ class Migration(BaseMigration):
                 if screen_id := row_['screen_id']:
                     if screen_id not in screen_ids:
                         screen_ids.append(screen_id)
-                elif family_id := row_['family_id']:
-                    if family_id not in family_ids:
-                        family_ids.append(family_id)
+                elif (family_id := row_['family_id']) and family_id not in family_ids:
+                    family_ids.append(family_id)
 
             self.database.execute(
                 'UPDATE `rotator` SET `screen_ids` = ?, `family_ids` = ? WHERE `id` = ?',

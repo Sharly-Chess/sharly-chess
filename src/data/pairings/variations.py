@@ -154,7 +154,7 @@ class PairingVariation(IdentifiableEntity, ABC):
 
     def update_settings_from_added_pairing_number(
         self, _tournament: 'Tournament', _pairing_number: int
-    ):
+    ) -> bool:
         """Update the settings when a pairing number has been added.
         Return True if the settings have been updated."""
         return False
@@ -349,9 +349,8 @@ class BergerTeamRoundRobinVariation(TeamRoundRobinVariation):
 
     @property
     def settings(self) -> list[PairingSetting]:
-        # Team berger numbers come from each team's pairing_number /
-        # canonical order (handled by ``_teams_for_tournament``).
-        # No per-player ``BergerNumbersSetting`` here.
+        # The berger numbers are each team's pairing_number, in the canonical
+        # order ``_teams_for_tournament`` puts them in.
         return []
 
     @property

@@ -44,7 +44,9 @@ class PluginAdminController(BaseAdminController):
     """The section listing the plugins of the application and allowing
     to enable and disable them."""
 
-    guards = [ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)]  # noqa: RUF012
 
     @staticmethod
     def _get_plugin(plugin_id: str) -> Plugin:
@@ -170,13 +172,13 @@ class PluginAdminController(BaseAdminController):
         return self._render_page(web_context, plugin, bool(embedded))
 
     @classmethod
-    def _enable_plugin(cls, request: HTMXRequest, plugin: Plugin):
+    def _enable_plugin(cls, request: HTMXRequest, plugin: Plugin) -> None:
         # The page displays the plugin and its dependencies as installed, so
         # there is nothing to report when it worked.
         plugin_manager.enable_missing_plugins([plugin.id])
 
     @classmethod
-    def _disable_plugin(cls, request: HTMXRequest, plugin: Plugin):
+    def _disable_plugin(cls, request: HTMXRequest, plugin: Plugin) -> None:
         # The interface hides the button in both cases, the checks are repeated
         # here because disabling a plugin still in use breaks the events using it.
         if blocking_plugins := plugin.required_by_enabled_plugins:

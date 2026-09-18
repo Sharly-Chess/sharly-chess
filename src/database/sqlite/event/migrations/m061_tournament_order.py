@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `tournament` ADD `index` INTEGER NOT NULL DEFAULT 0'
         )
@@ -14,5 +14,5 @@ class Migration(BaseMigration):
                 (idx, row['id']),
             )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `index`')

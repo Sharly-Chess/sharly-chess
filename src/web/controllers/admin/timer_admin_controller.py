@@ -46,7 +46,7 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
             try:
                 self.admin_timer = self.admin_event.timers_by_id[timer_id]
             except KeyError:
-                raise NotFoundException(f'Timer [{timer_id}] not found.')
+                raise NotFoundException(f'Timer [{timer_id}] not found.') from None
 
         if timer_hour_id:
             assert self.admin_timer is not None
@@ -57,7 +57,7 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 raise NotFoundException(
                     f'Hour [{timer_hour_id}] not found for timer [{self.admin_timer.name}].'
-                )
+                ) from None
 
     def get_admin_timer(self) -> Timer:
         assert self.admin_timer is not None
@@ -77,7 +77,9 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
 
 
 class TimerAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.MANAGE_SCREENS),
     ]
@@ -163,8 +165,8 @@ class TimerAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         stored_event = event.stored_event
 
-        timer_colors: dict[int, str | None] = {i: None for i in range(1, 4)}
-        timer_delays: dict[int, int | None] = {i: None for i in range(1, 4)}
+        timer_colors: dict[int, str | None] = dict.fromkeys(range(1, 4))
+        timer_delays: dict[int, int | None] = dict.fromkeys(range(1, 4))
         for i in range(1, 4):
             field = f'color_{i}'
             if not WebContext.form_data_to_bool(data, field + '_checkbox'):
@@ -172,7 +174,7 @@ class TimerAdminController(BaseEventAdminController):
                     timer_colors[i] = WebContext.form_data_to_rgb(data, field)
                 except ValueError:
                     errors[field] = _(
-                        'Invalid color [{color}] ([#RRGGBB] expected).'
+                        'Invalid colour [{color}] ([#RRGGBB] expected).'
                     ).format(color={data[field]})
             field = f'delay_{i}'
             try:
@@ -214,8 +216,8 @@ class TimerAdminController(BaseEventAdminController):
             delays: dict[int, int | None]
             if action == FormAction.CREATE:
                 name = event.get_unused_timer_name()
-                colors = {i: None for i in range(1, 4)}
-                delays = {i: None for i in range(1, 4)}
+                colors = dict.fromkeys(range(1, 4))
+                delays = dict.fromkeys(range(1, 4))
             else:
                 stored_timer = web_context.get_admin_timer().stored_timer
                 colors = stored_timer.colors
@@ -249,11 +251,9 @@ class TimerAdminController(BaseEventAdminController):
     ) -> tuple[StoredTimer | None, dict[str, str]]:
         event = web_context.get_admin_event()
         errors: dict[str, str] = {}
-        if data is None:
-            data = {}
-        colors: dict[int, str | None] = {i: None for i in range(1, 4)}
-        color_checkboxes: dict[int, bool | None] = {i: None for i in range(1, 4)}
-        delays: dict[int, int | None] = {i: None for i in range(1, 4)}
+        colors: dict[int, str | None] = dict.fromkeys(range(1, 4))
+        color_checkboxes: dict[int, bool | None] = dict.fromkeys(range(1, 4))
+        delays: dict[int, int | None] = dict.fromkeys(range(1, 4))
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
             errors[field] = _('This field is required.')
@@ -274,7 +274,7 @@ class TimerAdminController(BaseEventAdminController):
                     colors[i] = WebContext.form_data_to_rgb(data, field)
                 except ValueError:
                     errors[field] = _(
-                        'Invalid color [{color}] ([#RRGGBB] expected).'
+                        'Invalid colour [{color}] ([#RRGGBB] expected).'
                     ).format(color={data[field]})
             field = f'delay_{i}'
             try:

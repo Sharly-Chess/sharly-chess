@@ -2,12 +2,12 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `tournament_player` ADD `manual_tiebreak` INTEGER'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `tournament_player` DROP COLUMN `manual_tiebreak`'
         )

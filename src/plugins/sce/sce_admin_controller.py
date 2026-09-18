@@ -1,7 +1,7 @@
 import copy
 from datetime import datetime, timedelta
 from functools import cached_property
-from typing import Annotated, Any
+from typing import Annotated, Any, ClassVar
 
 from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
@@ -77,13 +77,15 @@ class SCEWebContext(AdminWebContext):
             try:
                 self.tournament = event.tournaments_by_id[tournament_id]
             except KeyError:
-                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+                raise NotFoundException(
+                    f'Tournament [{tournament_id}] not found.'
+                ) from None
         self.player: TournamentPlayer | None = None
         if player_id:
             try:
                 self.player = event.players_by_id[player_id].single_tournament_player
             except KeyError:
-                raise NotFoundException(f'Player [{player_id}] not found.')
+                raise NotFoundException(f'Player [{player_id}] not found.') from None
 
     def get_tournament(self) -> Tournament:
         assert self.tournament is not None
@@ -182,14 +184,14 @@ class SCEWebContext(AdminWebContext):
 
 
 class SCEAdminController(BaseAdminController):
-    OAUTH_CODE_VERIFIER_BY_STATE: dict[str, tuple[str, datetime]] = {}
-    publish_guards = [
+    OAUTH_CODE_VERIFIER_BY_STATE: ClassVar[dict[str, tuple[str, datetime]]] = {}
+    publish_guards: ClassVar = [
         EventGuard(),
         TournamentActionGuard(AuthAction.PUBLISH_RESULTS),
     ]
 
     @staticmethod
-    def _clean_outdated_tournament_conflicts(web_context: SCEWebContext):
+    def _clean_outdated_tournament_conflicts(web_context: SCEWebContext) -> bool:
         """Clean all the outdated tournament conflicts.
         Returns True if all the conflicts have been cleared."""
         event = web_context.get_admin_event()
@@ -215,7 +217,7 @@ class SCEAdminController(BaseAdminController):
         return False
 
     @staticmethod
-    def _clean_outdated_player_conflicts(web_context: SCEWebContext):
+    def _clean_outdated_player_conflicts(web_context: SCEWebContext) -> bool:
         """Clean all the outdated player conflicts.
         Returns True if all the conflicts have been cleared."""
         cleaned = 0
@@ -234,9 +236,7 @@ class SCEAdminController(BaseAdminController):
                 cleaned += 1
             except SharlyChessException:
                 pass
-        if cleaned and cleaned == len(conflict_players):
-            return True
-        return False
+        return bool(cleaned and cleaned == len(conflict_players))
 
     @classmethod
     def trigger_oauth(
@@ -245,7 +245,7 @@ class SCEAdminController(BaseAdminController):
         redirect_action: str,
         sce_event_id: str | None = None,
         event_uniq_id: str | None = None,
-    ):
+    ) -> ClientRedirect:
         state = PKCEUtils.generate_state()
         code_verifier = PKCEUtils.generate_code_verifier()
         code_expires_at = datetime.now() + timedelta(
@@ -974,7 +974,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/toggle-tournament-check-in-open/{event_uniq_id:str}/{tournament_id:int}',
         name='sce-toggle-tournament-check-in-open',
-        guards=publish_guards + [TournamentActionGuard(AuthAction.OPEN_CLOSE_CHECK_IN)],
+        guards=[*publish_guards, TournamentActionGuard(AuthAction.OPEN_CLOSE_CHECK_IN)],
     )
     async def htmx_sce_toggle_tournament_check_in_open(
         self,

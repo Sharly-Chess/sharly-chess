@@ -1,5 +1,5 @@
 import json
-from typing import Literal
+from typing import Literal, ClassVar
 
 from database.sqlite.migration import BaseMigration
 
@@ -8,7 +8,7 @@ class Migration(BaseMigration):
     CRITERION_ID = 'AGE'
     OPTION_ID = 'AGE_CATEGORIES'
 
-    CATEGORY_ID_BY_PREVIOUS_ID: dict[int, str] = {
+    CATEGORY_ID_BY_PREVIOUS_ID: ClassVar[dict[int, str]] = {
         0: 'NONE',
         1: 'U8',
         2: 'U10',
@@ -21,7 +21,7 @@ class Migration(BaseMigration):
         9: 'O50',
         10: 'O65',
     }
-    CATEGORY_PREVIOUS_ID_BY_ID: dict[str, int] = {
+    CATEGORY_PREVIOUS_ID_BY_ID: ClassVar[dict[str, int]] = {
         category_id: previous_id
         for previous_id, category_id in CATEGORY_ID_BY_PREVIOUS_ID.items()
     }
@@ -30,7 +30,7 @@ class Migration(BaseMigration):
         self,
         table: Literal['prize_criterion', 'tournament_criterion'],
         is_forward: bool,
-    ):
+    ) -> None:
         self.database.execute(
             f'SELECT `id`, `options` FROM `{table}` WHERE `type` = ?',
             (self.CRITERION_ID,),
@@ -51,12 +51,12 @@ class Migration(BaseMigration):
                 (json.dumps(options), row['id']),
             )
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `info` ADD `age_categories` TEXT')
         self._rename_category_criterion('tournament_criterion', is_forward=True)
         self._rename_category_criterion('prize_criterion', is_forward=True)
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `info` DROP COLUMN `age_categories`')
         self._rename_category_criterion('tournament_criterion', is_forward=False)
         self._rename_category_criterion('prize_criterion', is_forward=False)

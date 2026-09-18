@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration, PostUpgradeTask
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             "ALTER TABLE `info` ADD `enabled_plugins` TEXT DEFAULT '[]'"
         )
@@ -15,10 +15,10 @@ class Migration(BaseMigration):
         )
         self.post_upgrade_tasks.append(PostUpgradeTask(self.set_enabled_plugins))
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `info` DROP COLUMN `enabled_plugins`')
 
-    def set_enabled_plugins(self):
+    def set_enabled_plugins(self) -> None:
         from database.sqlite.event.event_database import EventDatabase
         from plugins.manager import plugin_manager
         from plugins.utils import Plugin

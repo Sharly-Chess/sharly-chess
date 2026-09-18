@@ -23,7 +23,9 @@ from web.guards import (
 
 
 class ScreenUserController(BaseScreenUserController):
-    guards = [EventGuard()]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [EventGuard()]  # noqa: RUF012
 
     @classmethod
     def _user_screen_refresh_needed(
@@ -34,9 +36,8 @@ class ScreenUserController(BaseScreenUserController):
         date_dt = datetime.fromtimestamp(date)
         screen = web_context.screen
         family = web_context.family
-        if family:
-            if family.last_update > date_dt:
-                return True
+        if family and family.last_update > date_dt:
+            return True
         if screen:
             event = screen.event
             if event.last_update > date_dt:
@@ -59,10 +60,7 @@ class ScreenUserController(BaseScreenUserController):
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
-        else:
-            return Reswap(
-                content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
-            )
+        return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
 
     @head(
         path='/view/screen/{event_uniq_id:str}/{screen_uniq_id:str}',
@@ -129,10 +127,7 @@ class ScreenUserController(BaseScreenUserController):
         )
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
-        else:
-            return Reswap(
-                content=None, method='none', status_code=HTTP_304_NOT_MODIFIED
-            )
+        return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
 
     @head(
         path=[

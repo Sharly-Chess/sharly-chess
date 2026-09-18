@@ -162,5 +162,5 @@ class OdsPlayerExporter(PlayerTabularExporter):
                 if row[cell_index] is None:
                     row[cell_index] = ''
 
-        pyexcel_ods3.save_data(temp_file, [header] + data)
+        pyexcel_ods3.save_data(temp_file, [header, *data])
         return Path(temp_file.name)

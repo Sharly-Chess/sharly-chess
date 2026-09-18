@@ -4,15 +4,18 @@ from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import cached_property, partial
-from typing import Any, Callable, override
+from typing import Any, TYPE_CHECKING, override, cast
+from collections.abc import Callable
 
 from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
-from common.i18n.utils import unicode_normalize
+from common.i18n.utils import ordinal_integer, unicode_normalize
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.board import Board
+from data.pairings.fixed_table import FixedPairingTable
+from data.teams.team_board import TeamBoard
 from data.columns import player_table as columns
 from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
@@ -53,6 +56,7 @@ from data.print_documents.options import (
     TeamGridSortPrintOption,
     ListPlayerSortPrintOption,
     ShowWarningsPrintOption,
+    KnockoutSchedulePrintOption,
     NonMonetaryPrintOption,
     FederationPrintOption,
     ClubThresholdPrintOption,
@@ -89,6 +93,9 @@ from utils.enum import (
 )
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
+
+if TYPE_CHECKING:
+    from data.pairings.knockout_helpers.layout import BracketLayout
 
 logger: logging.Logger = get_logger()
 
@@ -132,13 +139,11 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             and any(t.event.is_team_event for t in allowed_tournaments)
         ):
             return False
-        if (
+        return not (
             cls.hide_for_individual_events
             and allowed_tournaments
             and any(not t.event.is_team_event for t in allowed_tournaments)
-        ):
-            return False
-        return True
+        )
 
     @override
     def default_options(self) -> list[PrintOption]:
@@ -172,16 +177,16 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
 
     @cached_property
     def mandatory_player(self) -> TournamentPlayer:
-        return self.tournament.tournament_players_by_id[
-            self._get_option(MandatoryPlayerPrintOption).value
-        ]
+        player_id = self._get_option(MandatoryPlayerPrintOption).value
+        # A mandatory player option with nobody chosen fails validation.
+        assert player_id is not None
+        return self.tournament.tournament_players_by_id[player_id]
 
     @cached_property
     def optional_player(self) -> TournamentPlayer | None:
         if player_id := self._get_option(OptionalPlayerPrintOption).value:
             return self.tournament.tournament_players_by_id[player_id]
-        else:
-            return None
+        return None
 
     @cached_property
     def optional_players(self) -> list[TournamentPlayer]:
@@ -295,7 +300,7 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return PlayerPrintDocument.available_options() + [ListPlayerSortPrintOption]
+        return [*PlayerPrintDocument.available_options(), ListPlayerSortPrintOption]
 
     @property
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
@@ -372,7 +377,7 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
         return False
 
     @override
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         ranking_round = self._get_option(RoundPrintOption)
         if ranking_round.value is None:
@@ -452,8 +457,9 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return AbstractPlayerRankingPrintDocument.available_options() + [
-            PlayerHistoryOption
+        return [
+            *AbstractPlayerRankingPrintDocument.available_options(),
+            PlayerHistoryOption,
         ]
 
     @property
@@ -462,6 +468,91 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
             'include_player_history': self.include_player_history,
             'max_round': self.ranking_round,
         }
+
+
+class KnockoutBracketPrintDocument(PrintDocument):
+    """A bracket diagram for a knock-out — the upper/lower brackets and the
+    grand final (single elimination is just the one bracket, plus a
+    third-place match when played). Offered only for knock-out tournaments."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'knockout-bracket'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Knock-out Bracket')
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            tournament.pairing_system.eliminates_participants
+            for tournament in allowed_tournaments
+        )
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, KnockoutSchedulePrintOption]
+
+    @property
+    def show_schedule(self) -> bool:
+        return self._get_option(KnockoutSchedulePrintOption).value
+
+    @property
+    def title(self) -> str:
+        return _('Knock-out Schedule') if self.show_schedule else _('Knock-out Bracket')
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/knockout_bracket.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        from data.pairings.knockout_helpers.bracket_svg import build_svg
+
+        layout = self.tournament.knockout.layout()
+        context: dict[str, Any] = {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'show_schedule': self.show_schedule,
+        }
+        if self.show_schedule:
+            context['schedule'] = self._schedule_rounds(layout)
+        else:
+            context['svg'] = build_svg(layout) if layout is not None else None
+        return context
+
+    def _schedule_rounds(self, layout: 'BracketLayout | None') -> list[dict[str, Any]]:
+        """The bracket as a chronological list: one entry per app round, each
+        grouping its matches by bracket round (a round can hold both a
+        winners' and a losers' game), with the round's scheduled date/time when
+        one has been set."""
+        from utils.date_time import format_datetime
+
+        if layout is None:
+            return []
+        round_datetimes = self.tournament.round_datetimes
+        by_round: dict[int, list[dict[str, Any]]] = {}
+        for section in layout.sections:
+            for column in section.columns:
+                for app_round in column.app_rounds or (column.app_round,):
+                    by_round.setdefault(app_round, []).append(
+                        {'name': column.name, 'matches': list(column.matches)}
+                    )
+        return [
+            {
+                'app_round': app_round,
+                'groups': by_round[app_round],
+                'datetime': (
+                    format_datetime(dt)
+                    if (dt := round_datetimes.get(app_round))
+                    else ''
+                ),
+            }
+            for app_round in sorted(by_round)
+        ]
 
 
 class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
@@ -513,7 +604,7 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
         return sorted(results, key=lambda p: -p[3])
 
     @override
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         ranking_round = self._get_option(RoundPrintOption)
         if ranking_round.value is None:
@@ -592,7 +683,7 @@ class BoardPrintDocument(PrintDocument, ABC):
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
     @override
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         at_round = self._get_option(RoundPrintOption)
         if at_round.value is None:
@@ -612,13 +703,12 @@ class BoardPrintDocument(PrintDocument, ABC):
                     ).format(round=self.tournament.current_round),
                     at_round,
                 )
-            else:
-                raise OptionError(
-                    _("This round hasn't started (current round: #{round}).").format(
-                        round=self.tournament.current_round
-                    ),
-                    at_round,
-                )
+            raise OptionError(
+                _("This round hasn't started (current round: #{round}).").format(
+                    round=self.tournament.current_round
+                ),
+                at_round,
+            )
 
 
 class PairingPrintDocument(PrintDocument):
@@ -672,7 +762,8 @@ class BoardPairingPrintDocument(BoardPrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return BoardPrintDocument.available_options() + [
+        return [
+            *BoardPrintDocument.available_options(),
             FixedBoardOrderPrintOption,
             FederationPrintOption,
         ]
@@ -817,7 +908,7 @@ class MatchSheetsPrintDocument(PrintDocument):
         return not self.tournament.pairing_system.paired_by_team
 
     @property
-    def team_boards(self):
+    def team_boards(self) -> list[TeamBoard]:
         if self.flat_mode:
             return []
         self.tournament.set_for_round(self.at_round)
@@ -832,7 +923,7 @@ class MatchSheetsPrintDocument(PrintDocument):
         return [tb for tb in all_boards if tb.id in selected_ids]
 
     @property
-    def flat_boards(self):
+    def flat_boards(self) -> list[Board]:
         if not self.flat_mode:
             return []
         self.tournament.set_for_round(self.at_round)
@@ -906,7 +997,7 @@ class MatchSheetsPrintDocument(PrintDocument):
         return rows
 
     @override
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         at_round = self._get_option(RoundPrintOption)
         if at_round.value is None:
@@ -927,7 +1018,7 @@ class MatchSheetsPrintDocument(PrintDocument):
                 at_round,
             )
 
-    def player_national_id(self, tournament_player) -> str:
+    def player_national_id(self, tournament_player: TournamentPlayer) -> str:
         """The player's national id, when a plugin provides one (via the
         same hook that fills the TRF national records)."""
         from data.input_output.trf.trf_data import TrfNationalPlayer
@@ -1002,7 +1093,7 @@ class TeamRankingPrintDocument(PrintDocument):
         return _('Team ranking after round #{round}').format(round=self.ranking_round)
 
     @override
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         ranking_round = self._get_option(RoundPrintOption)
         if ranking_round.value is None:
@@ -1034,12 +1125,23 @@ class TeamRankingPrintDocument(PrintDocument):
             for row in self.tournament.team_standings(after_round=self.ranking_round)
             if not row['team'].is_excluded_from_standings
         ]
+        # A knock-out ranks by the round reached, shown as a plain-language
+        # result, not match/game points or standings tie-breaks.
+        eliminates = self.tournament.pairing_system.eliminates_participants
         return {
             'tournament': self.tournament,
             'subtitle': self.tournament.name,
             'standings': standings,
             'primary_is_mp': primary_is_mp,
             'team_tie_breaks': team_tie_breaks,
+            'eliminates': eliminates,
+            'knockout_standings': (
+                self.tournament.knockout.team_standing_labels(
+                    after_round=self.ranking_round
+                )
+                if eliminates
+                else {}
+            ),
         }
 
 
@@ -1076,7 +1178,7 @@ class BergerGridPrintDocument(PrintDocument):
             for tournament in allowed_tournaments
         )
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         option = self._get_option(TournamentPrintOption)
         tournament = self.tournament
@@ -1244,7 +1346,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
             for tournament in allowed_tournaments
         )
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         option = self._get_option(TournamentPrintOption)
         if not isinstance(self.tournament.pairing_system, TeamRoundRobinPairingSystem):
@@ -1476,7 +1578,7 @@ class FixedPairingTablePrintDocument(PrintDocument, ABC):
             for tournament in allowed_tournaments
         )
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         option = self._get_option(TournamentPrintOption)
         tournament = self.tournament
@@ -1495,7 +1597,7 @@ class FixedPairingTablePrintDocument(PrintDocument, ABC):
             ),
         )
 
-    def _table(self):
+    def _table(self) -> FixedPairingTable | None:
         tournament = self.tournament
         teams = self._ordered_teams()
         players_per_team = tournament.team_player_count or 0
@@ -1514,7 +1616,7 @@ class FixedPairingTablePrintDocument(PrintDocument, ABC):
         all_rounds = list(table.rounds)
         round_names = [f'{_("R")}{i + 1}' for i in range(table.regular_round_count)]
 
-        def cell(p) -> str:
+        def cell(p: Any) -> str:
             return f'{p.white_team}{p.white_index} – {p.black_team}{p.black_index}'
 
         board_count = len(all_rounds[0]) if all_rounds else 0
@@ -1618,7 +1720,7 @@ class RoundRobinSchedulePrintDocument(PrintDocument):
             return False
         return any(cls._is_round_robin(t) for t in allowed_tournaments)
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         if not self._is_round_robin(self.tournament):
             raise OptionError(
@@ -1769,7 +1871,7 @@ class PrizeListPrintDocument(PrintDocument):
         prize_currency = self.get_event().prize_currency
         return {
             'tournaments': self.tournaments,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
                 Utils.currency_value_str,
@@ -1807,7 +1909,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         return {
             'tournaments': self.tournaments,
             'show_warnings': self._get_option(ShowWarningsPrintOption).value,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
                 Utils.currency_value_str,
@@ -1855,7 +1957,7 @@ class PrizeReceiptsPrintDocument(PrintDocument):
         return {
             'tournaments': self.tournaments,
             'monetary_only': not self._get_option(NonMonetaryPrintOption).value,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
                 Utils.currency_value_str,
@@ -2071,10 +2173,12 @@ class StatisticsPrintDocument(PrintDocument):
             if attr_name == 'tournament' and len(self.tournaments) <= 1:
                 continue  # Skip if there's only one tournament
 
-            for sections in per_plugin_sections:
-                for section in sections:
-                    if section.at == attr_name:
-                        statistics.append(section)
+            statistics.extend(
+                section
+                for sections in per_plugin_sections
+                for section in sections
+                if section.at == attr_name
+            )
 
             section = self.stat_section(
                 attr_name,
@@ -2131,7 +2235,7 @@ class NormReportPrintDocument(PrintDocument):
             for tournament in allowed_tournaments
         )
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         tournament = self.tournament
         if tournament.rating != TournamentRating.STANDARD:
@@ -2157,6 +2261,8 @@ class NormReportPrintDocument(PrintDocument):
         from utils.types import Federation
 
         player_id = self._get_option(MandatoryPlayerPrintOption).value
+        # A mandatory player option with nobody chosen fails validation.
+        assert player_id is not None
         exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
@@ -2240,6 +2346,8 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
         from utils.types import Federation
 
         player_id = self._get_option(MandatoryPlayerPrintOption).value
+        # A mandatory player option with nobody chosen fails validation.
+        assert player_id is not None
         exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
@@ -2262,7 +2370,7 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
         # the norms this player can claim. Falls back to the first
         # available if the picked one isn't in the player's list.
         chosen_norm = next(
-            (tn for tn in norms.keys() if tn.name == norm_choice_value),
+            (tn for tn in norms if tn.name == norm_choice_value),
             next(iter(norms.keys()), None),
         )
         chosen_norm_result = norms.get(chosen_norm) if chosen_norm else None
@@ -2307,7 +2415,9 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
         }
 
     @staticmethod
-    def _build_score_proof_for(norm_result, score) -> dict[str, Any] | None:
+    def _build_score_proof_for(
+        norm_result: Any, score: float | None
+    ) -> dict[str, Any] | None:
         """Spell out the Rp computation for a given score on this norm.
 
         Returns None when there's nothing to show (no result, no score,
@@ -2374,7 +2484,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             for tournament in allowed_tournaments
         )
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         tournament = self.tournament
         if tournament.rating != TournamentRating.STANDARD:
@@ -2453,7 +2563,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
 
         # Stable ordering: highest norm first (GM > IM > WGM > WIM), then by
         # the player's tie-break-aware name key.
-        def _sort_key(entry):
+        def _sort_key(entry: dict[str, Any]) -> tuple:
             top_norm = max(
                 entry['norms'].keys(), key=lambda tn: tn.player_title.sort_index
             )
@@ -2482,7 +2592,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         return best
 
     @staticmethod
-    def _played_games_before(player, round_: int) -> int:
+    def _played_games_before(player: TournamentPlayer, round_: int) -> int:
         """Count of the player's played games in rounds strictly < round_.
         Used to gate forecast eligibility on the 1.4.1 games threshold."""
         return sum(
@@ -2523,18 +2633,13 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 continue
             requirements: dict[TitleNorm, ForecastRequirement | None]
             if forecastable:
-                requirements = {
-                    tn: r
-                    for tn, r in forecaster.chaseable_norms(forecast_round).items()
-                }
+                requirements = dict(forecaster.chaseable_norms(forecast_round).items())
                 achieved = False
             else:
                 # Her game is in even though the round is still open for
                 # others — show the norms she actually clinched rather
                 # than dropping her from the forecast.
-                requirements = {
-                    tn: None for tn in forecaster.decided_norms(forecast_round)
-                }
+                requirements = dict.fromkeys(forecaster.decided_norms())
                 achieved = True
             if not requirements:
                 continue
@@ -2563,12 +2668,12 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         """Order forecast rows per the arbiter's sort choice. Unpaired
         (board-less) players sink to the bottom of a table-number sort."""
 
-        def _highest_norm_key(entry):
+        def _highest_norm_key(entry: dict[str, Any]) -> tuple:
             highest_norm = max(
                 entry['requirements'].keys(),
                 key=lambda tn: tn.player_title.sort_index,
             )
-            return -highest_norm.player_title.sort_index
+            return cast(tuple[Any, ...], -highest_norm.player_title.sort_index)
 
         if sort_mode == 'name':
             candidates.sort(key=lambda e: e['player'].name_sort_key)
@@ -2690,21 +2795,22 @@ class PlaceCardPrintDocument(PrintDocument):
 
     @property
     def template_name(self) -> str:
-        return str(
-            PlaceCardTemplate.load(
-                self._get_option(PlaceCardTemplatePrintOption).value
-            ).template_name
-        )
+        template_id = self._get_option(PlaceCardTemplatePrintOption).value
+        # A template option with nothing chosen fails validation.
+        assert template_id is not None
+        return str(PlaceCardTemplate.load(template_id).template_name)
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         template_option = self._get_option(PlaceCardTemplatePrintOption)
+        # super() validated each option, which rejects one with nothing chosen.
+        assert template_option.value is not None
         try:
             PlaceCardTemplate.load(template_option.value)
         except KeyError:
             raise OptionError(
                 f'Unknown template [{template_option.value}]', template_option
-            )
+            ) from None
 
 
 class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
@@ -2748,7 +2854,9 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
     @cached_property
     def display_incomplete_teams(self) -> bool:
         """Returns True if incomplete teams must be displayed."""
-        return self._get_option(IndividualTeamDisplayIncompletePrintOption).value
+        return cast(
+            bool, self._get_option(IndividualTeamDisplayIncompletePrintOption).value
+        )
 
     @property
     def team_size(self) -> int:
@@ -2761,7 +2869,9 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
 
     @property
     def max_teams_per_entity(self) -> int | None:
-        return self._get_option(IndividualTeamMaxPerEntityPrintOption).value
+        return cast(
+            int | None, self._get_option(IndividualTeamMaxPerEntityPrintOption).value
+        )
 
     @property
     def min_gender_count(self) -> int:
@@ -2792,7 +2902,7 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
             chosen_men = [p for p in men if p not in selected][: self.min_gender_count]
             selected.extend(chosen_men)
         # Fill ANY slots (do NOT compensate missing girl/boy with extra ANY)
-        already = set(p.id for p in selected)
+        already = {p.id for p in selected}
         remainder = [p for p in pool_in_order if p.id not in already]
         if self.team_size > 2 * self.min_gender_count:
             any_fillers = remainder[: self.team_size - 2 * self.min_gender_count]
@@ -2810,7 +2920,7 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
             base.append(-(t.avg_age_years or 0.0))
         return tuple(base)
 
-    def _sort_teams(self, teams: list[IndividualTeam]):
+    def _sort_teams(self, teams: list[IndividualTeam]) -> list[IndividualTeam]:
         """Remove useless team labels and sort the teams."""
         teams_by_entity: dict[str, list[IndividualTeam]] = defaultdict(list)
         for team in teams:
@@ -2880,7 +2990,7 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
         return teams
 
     @override
-    def validate_options(self):
+    def validate_options(self) -> None:
         super().validate_options()
         ranking_round = self._get_option(RoundPrintOption)
         if ranking_round.value is None:
@@ -2914,14 +3024,14 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
             columns.CategoryColumn,
             columns.GenderColumn,
         ]
-        for index in range(len(tournament.team_ranking_tie_breaks)):
-            column_types.append(
-                partial(
-                    columns.TeamRankingTieBreakColumn,
-                    tournament=tournament,
-                    index=index,
-                )
+        column_types.extend(
+            partial(
+                columns.TeamRankingTieBreakColumn,
+                tournament=tournament,
+                index=index,
             )
+            for index in range(len(tournament.team_ranking_tie_breaks))
+        )
         return PlayerColumnHandler(self.get_event(), ColumnUsage.PRINT).get_columns(
             column_types
         )
@@ -2933,7 +3043,7 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
             'subtitle': self.tournament.name,
             'ordered_teams': self.ordered_teams,
             'player_columns': self.player_columns,
-            'ordinal_integer': Utils.ordinal_integer,
+            'ordinal_integer': ordinal_integer,
             'localized_number': Utils.localized_number,
             'points_str': Utils.points_str,
         }

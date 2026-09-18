@@ -137,7 +137,7 @@
                             {{ _('Result') }}
                         </th>
                         <th scope="col" class="text-nowrap text-start">
-                            {{ _('Color') }}
+                            {{ _('Colour') }}
                         </th>
                         <th scope="col" class="text-nowrap text-start">
                             {{ _('Opponent') }}
@@ -233,7 +233,8 @@
                             </th>
                             <td class="text-nowrap text-center align-middle">
                                 {{ score }}
-                                {% if client.can_update_results(tournament.id) %}
+                                {% if client.can_update_results(tournament.id)
+                                    and tournament.pairing_system.supports_point_adjustments %}
                                     {# There is nothing to adjust until the round
                                        is paired: the adjustment belongs to a game
                                        that has not been arranged yet. #}

@@ -33,7 +33,9 @@ logger = get_logger()
 
 
 class CustomUploadAdminEventController(BaseEventAdminController):
-    guards = []
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = []  # noqa: RUF012
 
     @staticmethod
     def _allowed_documents(
@@ -407,7 +409,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         web_context: BaseEventAdminWebContext,
         event: Event,
         documents: list[ConfiguredDocument],
-    ):
+    ) -> None:
         """Schedule or cancel the automatic upload of documents after their
         auto-upload flag changed."""
         for document in documents:
@@ -551,7 +553,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                         log_message,
                     )
         else:
-            message: str = _('No internet connection detected.')
+            message = _('No internet connection detected.')
             errors['ftp_host'] = message
             errors['transfer_protocol'] = message
             errors['transfer_port'] = message

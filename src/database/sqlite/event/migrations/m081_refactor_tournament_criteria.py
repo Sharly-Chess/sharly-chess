@@ -58,7 +58,7 @@ class Migration(BaseMigration):
                     value = leagues[0]
         return new_id, value
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             "ALTER TABLE `tournament` ADD `criteria` TEXT NOT NULL DEFAULT '{}'"
         )
@@ -121,7 +121,7 @@ class Migration(BaseMigration):
                 options = {'ffe-LEAGUES': [value], 'EXCLUDE': False}
         return old_id, options
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'CREATE TABLE `tournament_criterion` ('
             '   `id` INTEGER NOT NULL,'

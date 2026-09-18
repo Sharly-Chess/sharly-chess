@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class Prize:
     def __init__(self, prize_category: 'PrizeCategory', stored_prize: StoredPrize):
-        self._prize_category_ref: 'ReferenceType[PrizeCategory]' = weakref.ref(
+        self._prize_category_ref: ReferenceType[PrizeCategory] = weakref.ref(
             prize_category
         )
         self.stored_prize = stored_prize
@@ -79,7 +79,7 @@ class Prize:
     def get_event_database(self) -> EventDatabase:
         return self.prize_category.get_event_database()
 
-    def update(self):
+    def update(self) -> None:
         with self.get_event_database() as database:
             database.update_stored_prize(self.stored_prize)
         Utils.reset_cached_properties(self, 'type')
@@ -90,8 +90,11 @@ class Prize:
             return NotImplemented
         return self.id == other.id
 
-    def __str__(self):
+    def __hash__(self) -> int:
+        return hash(self.id)
+
+    def __str__(self) -> str:
         return f'{self.__class__.__name__} - {self.stored_prize}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(prize_category={self.prize_category!r}, stored_prize={self.stored_prize!r})'

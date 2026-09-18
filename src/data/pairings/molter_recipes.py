@@ -315,10 +315,10 @@ def _materialize_matches(case: _RecipeCase) -> list[list[_Match]]:
                 f'Odd occurrence recipe has {len(cells)} cells, '
                 f'expected {expected_cells}.'
             )
-        out: list[list[_Match]] = []
+        out = []
         cursor = 0
         for _round_index in range(case.rounds):
-            rnd: list[_Match] = []
+            rnd = []
             for block in range(block_count):
                 entry = cells[cursor]
                 cursor += 1

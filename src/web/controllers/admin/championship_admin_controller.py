@@ -17,6 +17,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _
 from common.exception import FormError, OptionError
+from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.criteria.player_filters import (
@@ -26,6 +27,7 @@ from data.criteria.player_filters import (
 )
 from data.championship.documents import (
     ChampionshipCompetitorListPrintDocument,
+    ChampionshipPrintDocument,
     ChampionshipPrintOption,
     ChampionshipRankingsPrintDocument,
     ChampionshipTournamentListPrintDocument,
@@ -33,7 +35,13 @@ from data.championship.documents import (
     championship_print_document_type,
     championship_print_documents,
 )
-from data.championship.championship import Championship, ChampionshipSource
+from data.championship.championship import (
+    Championship,
+    ChampionshipSource,
+    RankingEntry,
+)
+from data.championship.reconciliation import ReconciledPlayer, ReconciledTeam
+from data.tie_breaks.tie_breaks import TieBreak
 from data.championship.championship_loader import (
     ChampionshipArchiveLoader,
     ChampionshipLoader,
@@ -92,6 +100,8 @@ CHAMPIONSHIP_PLAYER_FILTER_TYPES: tuple[type[PlayerFilter], ...] = (
     GenderPlayerFilter,
 )
 
+logger = get_logger()
+
 
 class ChampionshipAdminController(BaseAdminController):
     """Administration pages for cross-event Championship standings."""
@@ -124,7 +134,10 @@ class ChampionshipAdminController(BaseAdminController):
         for event_uniq_id in event_loader.event_uniq_ids:
             try:
                 event = event_loader.load_event(event_uniq_id)
-            except Exception:
+            except Exception as error:
+                # The picker drops the event rather than failing the page, but
+                # it says which one and why, as the events list does.
+                logger.warning('Could not load event [%s]: %s', event_uniq_id, error)
                 continue
             if event.is_team_event != want_team:
                 continue
@@ -291,7 +304,12 @@ class ChampionshipAdminController(BaseAdminController):
         }
 
     @classmethod
-    def _ranking_rows(cls, championship: Championship, ranking=None, draggable=False):
+    def _ranking_rows(
+        cls,
+        championship: Championship,
+        ranking: list[RankingEntry] | None = None,
+        draggable: bool = False,
+    ) -> list[dict[str, Any]]:
         ranking = championship.ranking if ranking is None else ranking
         primary_rule = championship.rules[0] if championship.rules else None
         ranked_competitors = [entry.competitor for entry in ranking]
@@ -329,18 +347,22 @@ class ChampionshipAdminController(BaseAdminController):
             gender = ''
             federation = ''
             if championship.competitor_type == ChampionshipCompetitorType.TEAM:
-                name = competitor.name
+                team = cast(ReconciledTeam, competitor)
+                name = team.name
                 # Federation has its own column, so it is not repeated inline.
                 secondary = ''
-                federation = competitor.federation
+                federation = team.federation
             else:
-                name = f'{competitor.last_name}, {competitor.first_name}'
-                secondary = str(competitor.fide_id or '')
-                category = championship.player_age_category(competitor)
+                player = cast(ReconciledPlayer, competitor)
+                name = f'{player.last_name}, {player.first_name}'
+                secondary = str(player.fide_id or '')
+                category = championship.player_age_category(player)
                 genders: list[str] = []
                 federations: list[str] = []
-                for participation in competitor.participations:
-                    source_player = getattr(participation, 'tournament_player', None)
+                for player_participation in player.participations:
+                    source_player = getattr(
+                        player_participation, 'tournament_player', None
+                    )
                     gender_name = getattr(
                         getattr(source_player, 'gender', None), 'short_name', ''
                     )
@@ -573,7 +595,9 @@ class ChampionshipAdminController(BaseAdminController):
         return list(options.values())
 
     @classmethod
-    def _tie_break_from_data(cls, championship: Championship, data: dict[str, str]):
+    def _tie_break_from_data(
+        cls, championship: Championship, data: dict[str, str]
+    ) -> TieBreak | None:
         """Rebuild the configured tie-break from the posted type + option fields,
         or ``None`` if no valid type was chosen."""
         types_by_id = {
@@ -588,10 +612,10 @@ class ChampionshipAdminController(BaseAdminController):
         for option in tie_break_class().default_options():
             value = WebContext.form_data_to_value(data, option.id, option.type)
             options.append(type(option)(value))
-        return tie_break_class(options)
+        return cast(TieBreak | None, tie_break_class(options))
 
     @staticmethod
-    def _rule_header(rule) -> dict:
+    def _rule_header(rule: ChampionshipRule) -> dict:
         """Results column header for a rule: the short acronym plus a full
         label/description tooltip (acronyms keep the table narrow)."""
         label = rule.label()
@@ -780,7 +804,7 @@ class ChampionshipAdminController(BaseAdminController):
         option_objects = cls._tie_break_option_objects(tie_breaks)
         source_type_ids = cls._source_tie_break_type_ids(championship)
 
-        def option_for(tie_break) -> SelectOption:
+        def option_for(tie_break: TieBreak) -> SelectOption:
             return SelectOption(
                 name=f'{tie_break.picker_acronym} - {tie_break.name}',
                 tooltip=tie_break.picker_help_text,
@@ -975,7 +999,7 @@ class ChampionshipAdminController(BaseAdminController):
         championship: Championship,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
-        previous_source=None,
+        previous_source: ChampionshipSource | None = None,
     ) -> Template:
         data = data or {'event_uniq_id': '', 'tournament_id': ''}
         source_events = cls._source_events(championship)
@@ -1764,7 +1788,7 @@ class ChampionshipAdminController(BaseAdminController):
         )
 
     @classmethod
-    def _document_context(cls, document) -> dict[str, Any]:
+    def _document_context(cls, document: ChampionshipPrintDocument) -> dict[str, Any]:
         championship = document.championship
         is_team = championship.competitor_type == ChampionshipCompetitorType.TEAM
         if isinstance(document, ChampionshipTournamentListPrintDocument):
@@ -1774,6 +1798,7 @@ class ChampionshipAdminController(BaseAdminController):
                 'is_team': is_team,
                 'competitor_rows': cls._competitor_rows(championship),
             }
+        assert isinstance(document, ChampionshipRankingsPrintDocument)
         ranking_sets = []
         categories_by_id = {
             str(category.id): category for category in championship.categories
@@ -1811,14 +1836,14 @@ class ChampionshipAdminController(BaseAdminController):
         name_mode = document.option_value(TournamentNamePrintOption)
         is_team = championship.competitor_type == ChampionshipCompetitorType.TEAM
 
-        def display_name(source) -> str:
+        def display_name(source: ChampionshipSource) -> str:
             if name_mode == TournamentNamePrintOption.EVENT:
                 return source.event_name
             if name_mode == TournamentNamePrintOption.TOURNAMENT:
                 return source.tournament_name
             return f'{source.event_name} — {source.tournament_name}'
 
-        def competitor_count(source) -> int | None:
+        def competitor_count(source: ChampionshipSource) -> int | None:
             tournament = source.tournament
             if tournament is None:
                 return None

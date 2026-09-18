@@ -9,11 +9,11 @@ This script handles:
 4. Pre-build checks
 """
 
+from typing import ClassVar
 import json
 import sys
 import logging
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('flatpak-builder')
@@ -22,13 +22,20 @@ logger = logging.getLogger('flatpak-builder')
 class FlatpakManifestValidator:
     """Validates Flatpak manifest JSON files."""
 
-    REQUIRED_FIELDS = ['app-id', 'runtime', 'sdk', 'command', 'modules', 'finish-args']
+    REQUIRED_FIELDS: ClassVar = [
+        'app-id',
+        'runtime',
+        'sdk',
+        'command',
+        'modules',
+        'finish-args',
+    ]
 
     def __init__(self, manifest_path: Path):
         self.manifest_path = manifest_path
-        self.manifest: Dict = {}
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.manifest: dict = {}
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def load_manifest(self) -> bool:
         """Load and parse manifest JSON."""
@@ -37,7 +44,7 @@ class FlatpakManifestValidator:
             return False
 
         try:
-            with open(self.manifest_path, 'r') as f:
+            with open(self.manifest_path) as f:
                 self.manifest = json.load(f)
             logger.info(f'Loaded manifest: {self.manifest_path}')
             return True
@@ -123,7 +130,7 @@ class FlatpakManifestValidator:
 
         return True
 
-    def generate_report(self) -> Tuple[bool, str]:
+    def generate_report(self) -> tuple[bool, str]:
         """Generate validation report."""
         report = []
         report.append('\n' + '=' * 60)
@@ -139,14 +146,12 @@ class FlatpakManifestValidator:
         # Errors
         if self.errors:
             report.append(f'\n❌ ERRORS ({len(self.errors)}):')
-            for error in self.errors:
-                report.append(f'  - {error}')
+            report.extend(f'  - {error}' for error in self.errors)
 
         # Warnings
         if self.warnings:
             report.append(f'\n⚠️  WARNINGS ({len(self.warnings)}):')
-            for warning in self.warnings:
-                report.append(f'  - {warning}')
+            report.extend(f'  - {warning}' for warning in self.warnings)
 
         # Result
         status = '✓ VALID' if not self.errors else '✗ INVALID'
@@ -155,7 +160,7 @@ class FlatpakManifestValidator:
 
         return not bool(self.errors), '\n'.join(report)
 
-    def validate(self) -> Tuple[bool, str]:
+    def validate(self) -> tuple[bool, str]:
         """Run full validation."""
         if not self.load_manifest():
             return False, '\n'.join(self.errors)
@@ -183,9 +188,8 @@ def main():
     if manifest_ok:
         logger.info('✓ All validations passed!')
         return 0
-    else:
-        logger.error('✗ Validation failed')
-        return 1
+    logger.error('✗ Validation failed')
+    return 1
 
 
 if __name__ == '__main__':

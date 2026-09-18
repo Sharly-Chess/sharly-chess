@@ -54,7 +54,7 @@ class FakeOpponent:
     id: int
     rating: int
     rating_type: PlayerRatingType = PlayerRatingType.FIDE
-    federation: Federation = Federation('FRA')
+    federation: Federation = field(default_factory=lambda: Federation('FRA'))
     title: PlayerTitle = PlayerTitle.NONE
     women_title: PlayerTitle = PlayerTitle.NONE
     # Set by the tests that need the opponent's own games (1.4.3d).
@@ -265,7 +265,7 @@ class TestCandidateShape:
     def test_tail_loss_only_dropped_with_the_rounds_after_it(self):
         opps = [FakeOpponent(i, 2400) for i in range(1, 12)]
         results = [Result.WIN] * 8 + [Result.LOSS, Result.LOSS, Result.WIN]
-        rounds_data = list(zip(range(1, 12), opps, results))
+        rounds_data = list(zip(range(1, 12), opps, results, strict=True))
         inputs = make_inputs(rounds_data)
         searcher = _make_searcher(rounds=11)  # max_ignores = 11 - 9 = 2
         candidates = list(searcher._candidates(inputs, max_ignores=2))
@@ -314,7 +314,7 @@ class TestDropClassification:
     def _inputs(self):
         opps = [FakeOpponent(i, 2400) for i in range(1, 12)]
         results = [Result.WIN] * 8 + [Result.LOSS, Result.LOSS, Result.WIN]
-        return make_inputs(list(zip(range(1, 12), opps, results)))
+        return make_inputs(list(zip(range(1, 12), opps, results, strict=True)))
 
     def test_whole_tail_is_1_4_1e(self):
         searcher = _make_searcher(rounds=11)
@@ -428,8 +428,7 @@ class TestSearchOne:
 
     @pytest.fixture
     def searcher(self):
-        s = _make_searcher(rounds=11)
-        return s
+        return _make_searcher(rounds=11)
 
     def test_baseline_passes_no_search(self, searcher):
         baseline = make_inputs([])
@@ -725,7 +724,9 @@ class TestWomenTitlesCountTowardsNorms:
         before the open/women split their open `title` was NONE and they
         were silently ignored."""
         opponents = [_wim(i, federation=f'F{i:02d}') for i in range(1, 10)]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.WIN] * 9, strict=True))
+        )
         res = self._evaluator().evaluate_one(inputs, TitleNorm.WIM, False)
         assert res.required_titles_met == 9
         assert not res.not_enough_required_titles
@@ -735,7 +736,9 @@ class TestWomenTitlesCountTowardsNorms:
         """WGM women-only opponents are title-holders (1.4.5a) and satisfy a
         WGM norm's required set (WGM/IM/GM)."""
         opponents = [_wgm(i, federation=f'F{i:02d}') for i in range(1, 10)]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.WIN] * 9, strict=True))
+        )
         res = self._evaluator().evaluate_one(inputs, TitleNorm.WGM, False)
         assert res.num_title_holders == 9
         assert res.required_titles_met == 9
@@ -746,7 +749,9 @@ class TestWomenTitlesCountTowardsNorms:
         they count once as a title-holder, even though the per-title display
         breakdown lists them under both IM and WIM."""
         opponents = [_im_wim(1)] + [_untitled(i) for i in range(2, 10)]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.WIN] * 9, strict=True))
+        )
         res = self._evaluator().evaluate_one(inputs, TitleNorm.GM, False)
         # Counted once as an opponent, not twice.
         assert res.num_title_holders == 1
@@ -780,7 +785,9 @@ class TestWomenTitlesCountTowardsNorms:
             FakeOpponent(4, 2200, title=PlayerTitle.FIDE_MASTER),
             FakeOpponent(5, 2200, women_title=PlayerTitle.WOMAN_FIDE_MASTER),
         ] + [_untitled(i) for i in range(6, 10)]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.WIN] * 9, strict=True))
+        )
         res = self._evaluator().evaluate_one(inputs, TitleNorm.WIM, False)
         # Opponents 1, 2 and 3 qualify; 4 (FM) and 5 (WFM) do not.
         assert res.required_titles_met == 3
@@ -796,7 +803,9 @@ class TestWomenTitlesCountTowardsNorms:
             FakeOpponent(2, 2200, women_title=PlayerTitle.WOMAN_GRANDMASTER),
             FakeOpponent(3, 2200, title=PlayerTitle.INTERNATIONAL_MASTER),
         ] + [_untitled(i) for i in range(4, 10)]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, [Result.WIN] * 9)))
+        inputs = make_inputs(
+            list(zip(range(1, 10), opponents, [Result.WIN] * 9, strict=True))
+        )
         res = self._evaluator().evaluate_one(inputs, TitleNorm.WGM, False)
         # WGM (opp 2) and IM (opp 3) qualify; WIM (opp 1) does not.
         assert res.required_titles_met == 2
@@ -839,7 +848,7 @@ class TestSearcherWithRealEvaluator:
             Result.DRAW,
             Result.LOSS,
         ]
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=11)
         result = searcher._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
         assert result.is_met, (
@@ -886,7 +895,7 @@ class TestSearcherWithRealEvaluator:
             _im(11, rating=2350, federation=feds[10]),
         ]
         results = [Result.WIN] * 7 + [Result.DRAW] * 2 + [Result.LOSS] * 2
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=11)
         baseline = searcher.evaluator.evaluate_one(
             inputs, TitleNorm.GM, meets_gender=True
@@ -922,7 +931,7 @@ class TestSearcherWithRealEvaluator:
             _im(i, rating=2350, federation='FRA') for i in range(5, 12)
         ]
         results = [Result.WIN] * 7 + [Result.DRAW] * 2 + [Result.LOSS] * 2
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
 
         # Without the exemption: the dropped-tail subset clears performance
         # but still fails the all-FRA federation caps → not met, no drop.
@@ -952,12 +961,12 @@ class TestSearcherWithRealEvaluator:
             _im(i, rating=2350, federation='FRA') for i in range(5, 12)
         ]
         results = [Result.WIN] * 7 + [Result.DRAW] * 2 + [Result.LOSS] * 2
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         # Applicant USA, event FRA → 1.4.3b does not apply.
         searcher = _real_searcher(
             rounds=11, federation='USA', rule_143_exemption='1.4.3b'
         )
-        setattr(searcher.player.event, 'federation', 'FRA')
+        setattr(searcher.player.event, 'federation', 'FRA')  # noqa: B010
         # Re-resolve the exemption against the FRA event federation.
         from data.norms.tournament_checks import resolve_143abc_code
 
@@ -976,7 +985,7 @@ class TestSearcherWithRealEvaluator:
         # feds) AND 1.4.4 fails (own count = 11 > floor(3*11/5)=6).
         # Also avg = 1900 < 2380 → Ra fails. No subset can recover.
         results = [Result.WIN] * 11
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=11)
         result = searcher._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
         assert not result.is_met
@@ -999,7 +1008,9 @@ class TestSearcherWithRealEvaluator:
         own_fed_opponents = [
             _im(i, rating=2300, federation='FRA') for i in range(1, 11)
         ]
-        inputs = make_inputs(list(zip(range(1, 11), own_fed_opponents, results)))
+        inputs = make_inputs(
+            list(zip(range(1, 11), own_fed_opponents, results, strict=True))
+        )
         result = searcher._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
         assert not result.is_met  # all-own-fed fails
         # Searcher returned without dropping anything.
@@ -1012,7 +1023,7 @@ class TestSearcherWithRealEvaluator:
         opponents = [_gm(i, rating=2400, federation=feds[i - 1]) for i in range(1, 10)]
         # 8 wins + 1 draw = 8.5 → 0.944 → dp = 444 → Rp = 2844 ✓.
         results = [Result.WIN] * 8 + [Result.DRAW]
-        inputs = make_inputs(list(zip(range(1, 10), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 10), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=9)
         result = searcher._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
         assert result.is_met
@@ -1025,7 +1036,7 @@ class TestSearcherWithRealEvaluator:
         # mark is_met=True.
         opponents = [_im(i, rating=2200) for i in range(1, 12)]
         results = [Result.WIN] * 8 + [Result.DRAW] * 3
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=11)
         result = searcher._search_one(inputs, None, TitleNorm.WIM, meets_gender=False)
         assert not result.is_met
@@ -1054,7 +1065,7 @@ class TestSearcherWithRealEvaluator:
         ]
         opponents = [_gm(i, rating=2400, federation=feds[i - 1]) for i in range(1, 12)]
         results = [Result.WIN] * 9 + [Result.LOSS] * 2
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
         searcher = _real_searcher(rounds=11)
         result = searcher._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
         assert result.is_met
@@ -1074,7 +1085,7 @@ class TestSearcherWholeEvaluate:
         # Tiny baseline scenario where GM fails but IM/WGM/WIM may or may not pass.
         opponents = [_im(i, rating=2300) for i in range(1, 12)]
         results = [Result.WIN] * 8 + [Result.DRAW] * 3
-        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results, strict=True)))
 
         searcher = _real_searcher(rounds=11)
         # Patch the tournament-wide cached values.
@@ -1085,7 +1096,7 @@ class TestSearcherWholeEvaluate:
 
         # Patch collect_inputs to return our hand-built inputs (twice — for
         # baseline and for the 1.4.2c branch, which is None here).
-        setattr(searcher.evaluator, 'collect_inputs', MagicMock(return_value=inputs))
+        setattr(searcher.evaluator, 'collect_inputs', MagicMock(return_value=inputs))  # noqa: B010
         results_dict = searcher.evaluate()
         assert set(results_dict.keys()) == {
             TitleNorm.GM,
@@ -1093,7 +1104,7 @@ class TestSearcherWholeEvaluate:
             TitleNorm.WGM,
             TitleNorm.WIM,
         }
-        for tn, res in results_dict.items():
+        for res in results_dict.values():
             # Every result has tournament-wide flags populated.
             assert res.all_federations_count == 0
             assert res.requirement_156a_met is False

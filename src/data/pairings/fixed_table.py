@@ -25,7 +25,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from typing_extensions import override
+from typing import override
 
 from common.exception import SharlyChessException
 from common.i18n import _
@@ -36,6 +36,7 @@ from utils.enum import Result
 from database.sqlite.event.event_store import StoredBoard
 
 if TYPE_CHECKING:
+    from data.player import Player
     from data.teams.team import Team
     from data.tournament import Tournament
 
@@ -104,7 +105,7 @@ class PairingTableProvider(ABC):
         self,
         team_count: int,
         players_per_team: int,
-        tournament: 'Tournament | None' = None,
+        tournament: Tournament | None = None,
     ) -> FixedPairingTable | None:
         """The table for the given (team_count, players_per_team) combo,
         or ``None`` when this system has none for that shape.
@@ -241,7 +242,7 @@ class FixedTablePairingEngine(PairingEngine):
         # not a bye: the present player wins by forfeit, as in Swiss.
         return Result.FORFEIT_WIN
 
-    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+    def invalid_player_count_message(self, tournament: Tournament) -> str | None:
         teams = self._teams_for_tournament(tournament)
         supported = self.system.supported_team_counts()
         if not supported:
@@ -311,7 +312,7 @@ class FixedTablePairingEngine(PairingEngine):
         return None
 
     def pairings_generation_disabled_message(
-        self, tournament: 'Tournament', at_round: int
+        self, tournament: Tournament, at_round: int
     ) -> str | None:
         if message := super().pairings_generation_disabled_message(
             tournament, at_round
@@ -335,10 +336,10 @@ class FixedTablePairingEngine(PairingEngine):
 
     def _generate_stored_boards(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
-        prohibited_pairing_override: 'list | None' = None,
+        prohibited_pairing_override: list | None = None,
     ) -> list[StoredBoard]:
         teams = self._teams_for_tournament(tournament)
         n = tournament.team_player_count or 0
@@ -346,7 +347,7 @@ class FixedTablePairingEngine(PairingEngine):
             return []
         # Order teams stably: by pairing_number then id. Letter A = first
         # team, B = second, etc.
-        team_by_letter: dict[str, 'Team'] = {
+        team_by_letter: dict[str, Team] = {
             chr(ord('A') + i): team for i, team in enumerate(teams)
         }
         pairings = self._build_combined_pairings(tournament, round_, len(teams), n)
@@ -384,7 +385,7 @@ class FixedTablePairingEngine(PairingEngine):
     @override
     def generate_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         partial_pairings: bool = False,
     ) -> str:
@@ -412,7 +413,7 @@ class FixedTablePairingEngine(PairingEngine):
 
     def _combined_pairings_or_empty(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         team_count: int,
         players_per_team: int,
@@ -434,7 +435,7 @@ class FixedTablePairingEngine(PairingEngine):
         except SharlyChessException:
             return []
 
-    def team_by_letter(self, tournament: 'Tournament') -> dict[str, 'Team']:
+    def team_by_letter(self, tournament: Tournament) -> dict[str, Team]:
         """The table's team-letter assignment (``'A'`` = first team in
         the canonical order, ``'B'`` = second, …)."""
         return {
@@ -443,7 +444,7 @@ class FixedTablePairingEngine(PairingEngine):
         }
 
     def board_references(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> list[tuple[str, str]]:
         """Per board (in board-index order), the table's player
         references for the round — ``(white_ref, black_ref)``, e.g.
@@ -462,8 +463,8 @@ class FixedTablePairingEngine(PairingEngine):
         ]
 
     def round_team_by_letter(
-        self, tournament: 'Tournament', round_: int
-    ) -> dict[str, 'Team']:
+        self, tournament: Tournament, round_: int
+    ) -> dict[str, Team]:
         """The letter assignment actually used when ``round_`` was
         paired, recovered from the stored boards (the canonical team
         order may have changed since). Majority vote across the
@@ -481,6 +482,7 @@ class FixedTablePairingEngine(PairingEngine):
         for board, p in zip(
             boards,
             self._combined_pairings_or_empty(tournament, round_, len(teams), n),
+            strict=False,
         ):
             wtp = board.optional_white_tournament_player
             btp = board.black_tournament_player
@@ -496,7 +498,7 @@ class FixedTablePairingEngine(PairingEngine):
         return letters or self.team_by_letter(tournament)
 
     def round_seats(
-        self, tournament: 'Tournament', round_: int
+        self, tournament: Tournament, round_: int
     ) -> dict[tuple[int, int], tuple[int, str]]:
         """Map ``(team_id, slot)`` (0-based intra-team slot) to
         ``(board_index, side)`` for the given round, straight from the
@@ -507,7 +509,7 @@ class FixedTablePairingEngine(PairingEngine):
         n = tournament.team_player_count or 0
         if not teams or n <= 0:
             return {}
-        team_by_letter: dict[str, 'Team'] = {
+        team_by_letter: dict[str, Team] = {
             chr(ord('A') + i): team for i, team in enumerate(teams)
         }
         seats: dict[tuple[int, int], tuple[int, str]] = {}
@@ -527,7 +529,7 @@ class FixedTablePairingEngine(PairingEngine):
     # -----------------------------------------------------------------------
 
     @staticmethod
-    def _teams_for_tournament(tournament: 'Tournament') -> list['Team']:
+    def _teams_for_tournament(tournament: Tournament) -> list[Team]:
         return sorted(
             (
                 team
@@ -541,7 +543,7 @@ class FixedTablePairingEngine(PairingEngine):
         )
 
     @staticmethod
-    def _team_player(team: 'Team', index_1based: int, round_: int):
+    def _team_player(team: Team, index_1based: int, round_: int) -> Player | None:
         # Hole-aware seat lookup: ``effective_round_slots`` is length
         # team_player_count with ``None`` at each hole. No roster fallback —
         # falling back to ``team.players`` would re-seat a benched player and
@@ -554,7 +556,7 @@ class FixedTablePairingEngine(PairingEngine):
 
     def _build_combined_pairings(
         self,
-        tournament: 'Tournament',
+        tournament: Tournament,
         round_: int,
         team_count: int,
         players_per_team: int,
@@ -602,21 +604,21 @@ class FixedTablePairingEngine(PairingEngine):
                         t=team_count, p=block
                     )
                 )
-            for p in table.round_pairings(round_, tournament.rounds):
-                result.append(
-                    TablePairing(
-                        white_team=p.white_team,
-                        white_index=p.white_index + offset,
-                        black_team=p.black_team,
-                        black_index=p.black_index + offset,
-                    )
+            result.extend(
+                TablePairing(
+                    white_team=p.white_team,
+                    white_index=p.white_index + offset,
+                    black_team=p.black_team,
+                    black_index=p.black_index + offset,
                 )
+                for p in table.round_pairings(round_, tournament.rounds)
+            )
             remaining -= block
             offset += block
         return result
 
     def _candidate_player_counts(
-        self, team_count: int, tournament: 'Tournament | None' = None
+        self, team_count: int, tournament: Tournament | None = None
     ) -> tuple[int, ...]:
         """The set of players_per_team values for which we have base tables
         at ``team_count`` teams. Default: probe common sizes."""
@@ -631,7 +633,7 @@ class FixedTablePairingEngine(PairingEngine):
         return tuple(out)
 
     def _max_candidate_round_count(
-        self, team_count: int, tournament: 'Tournament | None' = None
+        self, team_count: int, tournament: Tournament | None = None
     ) -> int | None:
         max_rounds: int | None = None
         for pc in (4, 6, 8, 10, 12):

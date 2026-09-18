@@ -27,7 +27,6 @@ class PlaceCardType(IdentifiableEntity, ABC):
     def static_singular_name() -> str:
         """Names one card of this type, where static_name() names the document
         ("Player" against "Player Cards")."""
-        pass
 
     @classmethod
     def get_valid_option_ids(cls) -> list[str]:
@@ -148,6 +147,12 @@ class PlaceCardType(IdentifiableEntity, ABC):
         return True
 
     @property
+    def includes_player_data(self) -> bool:
+        """Whether the cards carry information taken from the players'
+        records (name, rating, club, etc.)."""
+        return False
+
+    @property
     def mirror_rotate(self) -> bool:
         return True
 
@@ -165,13 +170,15 @@ class PlayerCardType(PlaceCardType):
     def static_singular_name() -> str:
         return _('Player')
 
+    @property
+    def includes_player_data(self) -> bool:
+        return True
+
     @staticmethod
     def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import OptionalPlayersPrintOption
 
-        return PlaceCardType.get_valid_option_types() + [
-            OptionalPlayersPrintOption,
-        ]
+        return [*PlaceCardType.get_valid_option_types(), OptionalPlayersPrintOption]
 
     @classmethod
     def tournament_players(
@@ -228,7 +235,8 @@ class BoardCardType(PlaceCardType):
             PlaceCardBoardNumbersPrintOption,
         )
 
-        return PlaceCardType.get_valid_option_types() + [
+        return [
+            *PlaceCardType.get_valid_option_types(),
             PlaceCardBoardNumbersPrintOption,
         ]
 
@@ -301,6 +309,10 @@ class PairingCardType(PlaceCardType):
         return _('Pairing')
 
     @property
+    def includes_player_data(self) -> bool:
+        return True
+
+    @property
     def mirror_rotate(self) -> bool:
         return False
 
@@ -311,7 +323,8 @@ class PairingCardType(PlaceCardType):
             PlaceCardBoardNumbersPrintOption,
         )
 
-        return PlaceCardType.get_valid_option_types() + [
+        return [
+            *PlaceCardType.get_valid_option_types(),
             RoundPrintOption,
             PlaceCardBoardNumbersPrintOption,
         ]
@@ -381,6 +394,12 @@ class TeamCardType(PlaceCardType):
     @staticmethod
     def static_singular_name() -> str:
         return _('Team')
+
+    @property
+    def includes_player_data(self) -> bool:
+        """The cards name the captain, which is a player's full name when the
+        captain plays in the team."""
+        return True
 
     @classmethod
     def supports_event_type(cls, is_team_event: bool) -> bool:

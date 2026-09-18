@@ -92,13 +92,15 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             # Try setting each tie-break's options from ``base_acronym``
             # and re-checking.
             for candidate in self.objects():
-                if any(
-                    option.set_value_from_variation_acronym(base_acronym)
-                    for option in candidate.options
+                if (
+                    any(
+                        option.set_value_from_variation_acronym(base_acronym)
+                        for option in candidate.options
+                    )
+                    and candidate.base_acronym.upper() == base_acronym
                 ):
-                    if candidate.base_acronym.upper() == base_acronym:
-                        tie_break = candidate
-                        break
+                    tie_break = candidate
+                    break
         if not tie_break:
             return None
         for variation_acronym in acronym.split('/')[1:]:
@@ -113,7 +115,7 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
 class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):
     @override
     def entity_types(self) -> list[type[TieBreakOption]]:
-        tie_break_option_types = [
+        tie_break_option_types: list[type[TieBreakOption]] = [
             options.CutterTieBreakOption,
             options.CutterWithMedianTieBreakOption,
             options.PlayedModifierTieBreakOption,

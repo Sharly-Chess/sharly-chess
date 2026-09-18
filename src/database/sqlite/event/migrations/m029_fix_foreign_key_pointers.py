@@ -2,11 +2,11 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `tournament` RENAME TO `tournament_copy`')
         self.database.execute('ALTER TABLE `tournament_copy` RENAME TO `tournament`')
 
-    def backward(self):
+    def backward(self) -> None:
         # NOTE(Amaras): The database is in a saner state after the migration, which does not
         # change anything to the behaviour (apart from foreign keys).
         # The best thing to do is to make the backwards migration a no-op.

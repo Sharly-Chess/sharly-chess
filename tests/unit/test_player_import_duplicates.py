@@ -20,6 +20,7 @@ from database.sqlite.event.event_store import StoredPlayer, StoredTeam
 from tests.test_config import TestUtils
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from utils.enum import EventType
+import contextlib
 
 EVENT_ID = 'test-player-import-duplicates'
 TOURNAMENT_NAME = 'team-tournament'
@@ -72,10 +73,8 @@ class TeamImportDuplicateTestCase(TestCase):
         TestUtils.delete_event(EVENT_ID)
 
     def _load_event(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         return EventLoader().load_event(EVENT_ID)
 
     def _add_player(self, *, assigned_to_tournament: bool, fide_id: int) -> None:

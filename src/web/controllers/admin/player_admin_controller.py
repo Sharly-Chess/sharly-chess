@@ -9,7 +9,8 @@ import json
 from logging import Logger
 import math
 from pathlib import Path
-from typing import Annotated, Any, Iterable
+from typing import Annotated, Any, cast, ClassVar
+from collections.abc import Iterable
 
 import chardet
 from litestar.di import NamedDependency
@@ -36,9 +37,17 @@ from data.columns.players_tab import PlayersTabColumn
 from data.event import Event
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
-from data.input_output.data_source import DataSource
+from data.input_output.data_source import DataSource, keep_reliable_k_factors
 from data.input_output.managers import DataSourceManager, PlayerExporterManager
-from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
+from data.player import (
+    Player,
+    PlayerRating,
+    TournamentPlayer,
+    MIN_YOB,
+    MAX_YOB,
+    MIN_K_FACTOR,
+    MAX_K_FACTOR,
+)
 from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,
@@ -47,6 +56,7 @@ from data.teams.team import RosterFullError
 from data.tournament import Tournament
 from data.criteria.managers import SearchFilterManager
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredTeam,
@@ -113,7 +123,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             try:
                 self.admin_player = self.admin_event.players_by_id[player_id]
             except KeyError:
-                raise NotFoundException(f'Player [{player_id}] not found.')
+                raise NotFoundException(f'Player [{player_id}] not found.') from None
 
         self.admin_tournament: Tournament | None = None
         if tournament_id:
@@ -122,14 +132,18 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
                     tournament_id
                 ]
             except KeyError:
-                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+                raise NotFoundException(
+                    f'Tournament [{tournament_id}] not found.'
+                ) from None
 
         self.admin_data_source: DataSource | None = None
         if data_source_id:
             try:
                 self.admin_data_source = DataSourceManager().get_object(data_source_id)
             except KeyError:
-                raise NotFoundException(f'Unknown data source [{data_source_id}].')
+                raise NotFoundException(
+                    f'Unknown data source [{data_source_id}].'
+                ) from None
         self.admin_column: PlayersTabColumn | None = None
         if column_id:
             self.admin_column = self.column_handler.get_column(column_id)
@@ -162,7 +176,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         return self.client.allowed_tournaments_for_action(AuthAction.VIEW_PLAYERS_TAB)
 
     @property
-    def player_addable_tournaments(self):
+    def player_addable_tournaments(self) -> list[Tournament]:
         return [
             tournament
             for tournament in self.allowed_tournaments
@@ -178,7 +192,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
         handler.set_column_states(disabled_column_ids, hidden_column_ids)
         return handler
 
-    def set_column_filter_values(self, override: bool = False):
+    def set_column_filter_values(self, override: bool = False) -> None:
         if override or self._filter_values_set:
             return
         event = self.get_admin_event()
@@ -221,9 +235,11 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
 
 class PlayerAdminController(BaseEventAdminController):
     PAGE_SIZE = 25
-    search_results_by_session: dict[int, list[int]] = {}
+    search_results_by_session: ClassVar[dict[int, list[int]]] = {}
 
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         TournamentActionGuard(AuthAction.VIEW_PLAYERS_TAB),
     ]
@@ -250,7 +266,7 @@ class PlayerAdminController(BaseEventAdminController):
                 )
             ]
         getters_active_keys: list[tuple[Callable[[Player], str], list[str]]] = []
-        for column_id, filter_keys in session_filters.get().items():
+        for column_id in session_filters.get():
             column = handler.get_column(column_id)
             if not column or not column.is_visible:
                 session_filters.set_column_filters(column_id, [])
@@ -273,14 +289,14 @@ class PlayerAdminController(BaseEventAdminController):
         ]
 
     @staticmethod
-    def _matches_string_search(search: str, match: str):
+    def _matches_string_search(search: str, match: str) -> bool:
         search_parts = set(search.split(' '))
         match_str = normalized_key(match)
         return all(search_part in match_str for search_part in search_parts)
 
     @staticmethod
     def _default_player_sort_key_function(_player: Player) -> tuple:
-        return tuple()
+        return ()
 
     @classmethod
     def sorted_player_ids(
@@ -303,7 +319,7 @@ class PlayerAdminController(BaseEventAdminController):
         return [player.id for player in sorted_players]
 
     @classmethod
-    def get_search_results(cls, web_context: PlayerAdminWebContext):
+    def get_search_results(cls, web_context: PlayerAdminWebContext) -> list[int]:
         request = web_context.request
         event = web_context.get_admin_event()
         session_event_uniq_id = SessionPlayersEvent(request).get()
@@ -328,14 +344,14 @@ class PlayerAdminController(BaseEventAdminController):
         search_results = cls.sorted_player_ids(web_context, filtered_players)
         results_session_id = SessionPlayersSearchResultsId(request).get()
         if not results_session_id:
-            results_session_id = max([0] + list(cls.search_results_by_session)) + 1
+            results_session_id = max([0, *list(cls.search_results_by_session)]) + 1
             SessionPlayersSearchResultsId(request).set(results_session_id)
         cls.search_results_by_session[results_session_id] = search_results
         SessionPlayersEvent(request).set(event.uniq_id)
         return search_results
 
     @classmethod
-    def set_disabled_columns(cls, web_context: PlayerAdminWebContext):
+    def set_disabled_columns(cls, web_context: PlayerAdminWebContext) -> None:
         request = web_context.request
         event = web_context.get_admin_event()
         handler = web_context.column_handler
@@ -354,14 +370,12 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @classmethod
-    def delete_from_search_results(cls, request: HTMXRequest, player_id: int):
+    def delete_from_search_results(cls, request: HTMXRequest, player_id: int) -> None:
         results_session_id = SessionPlayersSearchResultsId(request).get()
         if not results_session_id:
             return
-        try:
+        with suppress(ValueError):
             cls.search_results_by_session[results_session_id].remove(player_id)
-        except ValueError:
-            pass
 
     # -------------------------------------------------------------------------
     # Tab
@@ -485,9 +499,8 @@ class PlayerAdminController(BaseEventAdminController):
                 }
             else:
                 deleted_player_id = admin_player.id
-        if deleted_player_id:
-            if deleted_player_id in search_results:
-                cls.set_players_search_results(web_context)
+        if deleted_player_id and deleted_player_id in search_results:
+            cls.set_players_search_results(web_context)
         template_context |= cls._player_table_header_context(web_context)
         template_context |= cls._player_table_row_context(web_context)
         template_context |= {
@@ -673,6 +686,53 @@ class PlayerAdminController(BaseEventAdminController):
             for gender in PlayerGender
         }
 
+    @staticmethod
+    def _get_k_factor_placeholders(
+        data: dict[str, str],
+    ) -> dict[TournamentRating, int]:
+        """The automatic coefficients (k) shown while the fields are left empty."""
+        year_of_birth: int | None = None
+        field = 'date_of_birth'
+        try:
+            date_of_birth = WebContext.form_data_to_date(data, field)
+            year_of_birth = date_of_birth.year if date_of_birth else None
+        except FormError:
+            year_str = data.get(field, '')
+            if year_str.isdigit() and len(year_str) == 4:
+                year_of_birth = int(year_str)
+        placeholders: dict[TournamentRating, int] = {}
+        for tournament_rating in TournamentRating:
+            try:
+                fide_rating = WebContext.form_data_to_int(
+                    data, f'{tournament_rating.form_key}_rating_fide'
+                )
+            except ValueError:
+                fide_rating = None
+            placeholders[tournament_rating] = Player.estimate_fide_rating_coefficient(
+                fide_rating, year_of_birth
+            )
+        return placeholders
+
+    @staticmethod
+    def _k_factor_reference_date(
+        web_context: PlayerAdminWebContext, data: dict[str, str] | None = None
+    ) -> date:
+        """The day whose FIDE rating period the k-factors are read from."""
+        event = web_context.get_admin_event()
+        tournament: Tournament | None = None
+        if data:
+            try:
+                tournament_id = WebContext.form_data_to_int(data, 'tournament_id')
+            except ValueError:
+                tournament_id = None
+            if tournament_id:
+                tournament = event.tournaments_by_id.get(tournament_id)
+        if tournament is None:
+            tournament = web_context.admin_tournament
+        if tournament is None and web_context.admin_player is not None:
+            tournament = web_context.admin_player.optional_single_tournament
+        return tournament.start_date if tournament else event.start_date
+
     @classmethod
     def _render_players_form_modal(
         cls,
@@ -766,6 +826,7 @@ class PlayerAdminController(BaseEventAdminController):
                     f'{key}_rating_fide': rating_.fide or None,
                     f'{key}_rating_national': rating_.national or None,
                     f'{key}_rating_estimated': rating_.estimated or None,
+                    f'{key}_rating_k': rating_.k_factor,
                 }
 
             plugin_form_data: dict[str, str] = {}
@@ -867,6 +928,7 @@ class PlayerAdminController(BaseEventAdminController):
             templates_by_section=plugin_templates_by_section
         )
         search_filter_manager = SearchFilterManager(web_context.get_admin_event())
+        k_factor_placeholders = cls._get_k_factor_placeholders(data)
         template_context |= {
             'gender_options': cls._get_gender_options(),
             'tournament_ratings_strings': {
@@ -892,6 +954,9 @@ class PlayerAdminController(BaseEventAdminController):
             'rating_type_labels': {
                 prt.form_key: prt.short_name for prt in PlayerRatingType
             },
+            'k_factor_placeholders': k_factor_placeholders,
+            'min_k_factor': MIN_K_FACTOR,
+            'max_k_factor': MAX_K_FACTOR,
             'title_options': {
                 str(t.value): f'{t.short_name} - {t.name}'
                 if t.short_name
@@ -951,7 +1016,9 @@ class PlayerAdminController(BaseEventAdminController):
 
     @staticmethod
     async def get_search_stored_player(
-        data_source: DataSource, player_source_id: str
+        data_source: DataSource,
+        player_source_id: str,
+        k_factor_reference_date: date,
     ) -> tuple[StoredPlayer | None, dict[str, str]]:
         errors: dict[str, str] = {}
         stored_player: StoredPlayer | None = None
@@ -961,6 +1028,7 @@ class PlayerAdminController(BaseEventAdminController):
             stored_player = await data_source.fetch_player(
                 player_source_id=player_source_id,
                 with_arbiter_title=False,
+                k_factor_reference_date=k_factor_reference_date,
             )
             if not stored_player:
                 raise NotFoundException(
@@ -993,7 +1061,9 @@ class PlayerAdminController(BaseEventAdminController):
             request, player_id, data_source_id=data_source_id
         )
         stored_player, errors = await self.get_search_stored_player(
-            web_context.get_admin_data_source(), player_source_id
+            web_context.get_admin_data_source(),
+            player_source_id,
+            self._k_factor_reference_date(web_context, data),
         )
         return self._render_players_form_modal(
             web_context,
@@ -1085,12 +1155,10 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> bool:
         if existing.id == current_player_id:
             return False
-        if (
+        return bool(
             stored.first_name == existing.first_name
             and stored.last_name == existing.last_name
-        ):
-            return True
-        return False
+        )
 
     @classmethod
     def _validate_player_form_data(
@@ -1236,6 +1304,22 @@ class PlayerAdminController(BaseEventAdminController):
                         min=prt.min_value,
                         max=prt.max_value,
                     )
+        for tr in TournamentRating:
+            try:
+                WebContext.form_data_to_int(
+                    data,
+                    field := f'{tr.form_key}_rating_k',
+                    minimum=MIN_K_FACTOR,
+                    maximum=MAX_K_FACTOR,
+                )
+            except ValueError:
+                errors[field] = _(
+                    'Invalid coefficient (k) [{k_factor}] (expected in range [{min}-{max}]).'
+                ).format(
+                    k_factor=data[field],
+                    min=MIN_K_FACTOR,
+                    max=MAX_K_FACTOR,
+                )
         plugin_manager.hook_for_event(event, 'validate_player_form_fields')(
             data=data, errors=errors
         )
@@ -1296,6 +1380,9 @@ class PlayerAdminController(BaseEventAdminController):
                     or None,
                     fide=WebContext.form_data_to_int(data, f'{tr.form_key}_rating_fide')
                     or None,
+                    k_factor=WebContext.form_data_to_int(
+                        data, f'{tr.form_key}_rating_k'
+                    ),
                 ).stored_value
                 for tr in TournamentRating
             },
@@ -1768,7 +1855,9 @@ class PlayerAdminController(BaseEventAdminController):
         return self.render_check_in_modal(web_context)
 
     @classmethod
-    def publish_new_checkin(cls, channels: ChannelsPlugin, tournament: Tournament):
+    def publish_new_checkin(
+        cls, channels: ChannelsPlugin, tournament: Tournament
+    ) -> None:
         event = tournament.event
         channels.publish(
             {'event': f'new-checkins|{event.uniq_id}', 'data': ''},
@@ -1979,7 +2068,7 @@ class PlayerAdminController(BaseEventAdminController):
         content_by_column: dict[str, list[str]] = {}
         with open(file_path, 'rb') as raw_file:
             encoding = chardet.detect(raw_file.read())['encoding']
-        with open(file_path, 'r', encoding=encoding) as csvfile:
+        with open(file_path, encoding=encoding) as csvfile:
             try:
                 dialect = csv.Sniffer().sniff(''.join(islice(csvfile, 2)))
             except csv.Error:
@@ -2096,26 +2185,23 @@ class PlayerAdminController(BaseEventAdminController):
                 stored_player.first_name or '',
                 stored_player.date_of_birth,
             )
-            if stored_player.date_of_birth:
-                if name_key in name_keys:
-                    duplicated_indexes.add(index)
-                    message = (
-                        _(
-                            'Player [{player}] already exists in tournament [{tournament}].'
-                        )
-                        if event.allow_multi_tournament_players
-                        else _('Player [{player}] already exists in the event.')
-                    )
-                    import_errors_by_index[index]['last_name'] = message.format(
-                        player=' '.join(
-                            [
-                                stored_player.last_name,
-                                stored_player.first_name or '',
-                                format_date(stored_player.date_of_birth),
-                            ]
-                        ),
-                        tournament=tournament.name if tournament else event.name,
-                    )
+            if stored_player.date_of_birth and name_key in name_keys:
+                duplicated_indexes.add(index)
+                message = (
+                    _('Player [{player}] already exists in tournament [{tournament}].')
+                    if event.allow_multi_tournament_players
+                    else _('Player [{player}] already exists in the event.')
+                )
+                import_errors_by_index[index]['last_name'] = message.format(
+                    player=' '.join(
+                        [
+                            stored_player.last_name,
+                            stored_player.first_name or '',
+                            format_date(stored_player.date_of_birth),
+                        ]
+                    ),
+                    tournament=tournament.name if tournament else event.name,
+                )
             if index in import_errors_by_index:
                 continue
             stored_players_by_index[index] = stored_player
@@ -2129,6 +2215,9 @@ class PlayerAdminController(BaseEventAdminController):
 
         if data_source:
             stored_players_by_index = {}
+            in_rating_period = FideDatabase().covers_rating_period(
+                cls._k_factor_reference_date(web_context)
+            )
             identifier_column = data_source.import_identifier_column
             column_content = content_by_column_id[identifier_column.id]
             identifiers = [
@@ -2156,6 +2245,8 @@ class PlayerAdminController(BaseEventAdminController):
                     column.augment_stored_player_with_tournament(
                         tournament, stored_player, value
                     )
+                if not in_rating_period:
+                    keep_reliable_k_factors(stored_player)
                 stored_players_by_index[index] = stored_player
 
         for index, stored_player in stored_players_by_index.items():
@@ -2259,15 +2350,13 @@ class PlayerAdminController(BaseEventAdminController):
             try:
                 content_by_column_id = self._read_csv_file(file_path)
             except SharlyChessException as error:
-                if isinstance(error, SharlyChessException):
-                    message = str(error)
-                else:
-                    message = _(
-                        'An unexpected error occurred while reading '
-                        'the CSV file. Consult the logs for more details.'
-                    )
-                    logger.exception(error)
-                errors['alert'] = message
+                errors['alert'] = str(error)
+            except Exception as error:
+                errors['alert'] = _(
+                    'An unexpected error occurred while reading '
+                    'the CSV file. Consult the logs for more details.'
+                )
+                logger.exception(error)
         use_data_source = WebContext.form_data_to_bool(
             normalized_data, 'use_data_source'
         )
@@ -2312,7 +2401,7 @@ class PlayerAdminController(BaseEventAdminController):
         stored_players: list[StoredPlayer],
         used_columns: list[DatasheetColumn],
         overwrite_players: bool,
-    ):
+    ) -> HTMXTemplate:
         request = web_context.request
         event = web_context.get_admin_event()
         tournament = web_context.admin_tournament
@@ -2502,7 +2591,7 @@ class PlayerAdminController(BaseEventAdminController):
         player: Player,
         src_tournament: Tournament,
         dst_tournament: Tournament,
-    ):
+    ) -> None:
         """Validate that a player can be moved from its current tournament to *dst_tournament*.
         Raises a ValueError if it is not possible."""
 
@@ -2587,10 +2676,11 @@ class PlayerAdminController(BaseEventAdminController):
             if field.id in field_ids
         ]
         allowed_players_by_id = web_context.client.allowed_players_by_id
-        players: list[Player] = []
-        for player_id in player_ids:
-            if player := allowed_players_by_id.get(player_id, None):
-                players.append(player)
+        players: list[Player] = [
+            player
+            for player_id in player_ids
+            if (player := allowed_players_by_id.get(player_id, None))
+        ]
         player_comparators = await data_source.get_player_comparators(
             players, fields, diff_only=True
         )
@@ -2645,8 +2735,7 @@ class PlayerAdminController(BaseEventAdminController):
         data_source = web_context.get_admin_data_source()
         players: list[Player] = []
         if tournament := web_context.admin_tournament:
-            for tournament_player in tournament.sorted_tournament_players:
-                players.append(tournament_player)
+            players.extend(tournament.sorted_tournament_players)
         else:
             players = web_context.client.sorted_allowed_players
         fields = data_source.player_updater_fields
@@ -2763,7 +2852,7 @@ class PlayerAdminController(BaseEventAdminController):
             filters = json.loads(json_filters)
         except json.decoder.JSONDecodeError:
             return {}
-        if 'category_filter' in filters and filters['category_filter']:
+        if filters.get('category_filter'):
             player_categories = event.player_categories
             junior_categories: list[Any] = event.junior_categories
             senior_categories: list[Any] = event.senior_categories
@@ -2807,7 +2896,7 @@ class PlayerAdminController(BaseEventAdminController):
                 categories_intervals.append((min_year, max_year))
 
             filters['year_of_birth_filter'] = categories_intervals
-        return filters
+        return cast(dict[Any, Any], filters)
 
     @staticmethod
     def _players_export_sort_key(player: Player) -> Any:
@@ -2818,8 +2907,7 @@ class PlayerAdminController(BaseEventAdminController):
                 else '|',  # players with no team at the end
                 player.team_index,
             )
-        else:
-            return player.last_name, player.first_name
+        return player.last_name, player.first_name
 
     @get(
         path=[
@@ -2841,7 +2929,7 @@ class PlayerAdminController(BaseEventAdminController):
             players: list[Player] = list(tournament.tournament_players)
         else:
             search_results = self.get_search_results(web_context)
-            players: list[Player] = [
+            players = [
                 event.players_by_id[player_id]
                 for player_id in search_results
                 if player_id in event.players_by_id
@@ -2850,5 +2938,5 @@ class PlayerAdminController(BaseEventAdminController):
         try:
             exporter = PlayerExporterManager().get_object(exporter_id)
         except KeyError:
-            raise NotFoundException(f'Unknown exporter [{exporter_id}].')
+            raise NotFoundException(f'Unknown exporter [{exporter_id}].') from None
         return exporter.download_players_file(players, event)

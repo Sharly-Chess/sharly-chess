@@ -48,7 +48,7 @@ class Migration(BaseMigration):
         # through and nukes every pairing row.
         return False
 
-    def forward(self):
+    def forward(self) -> None:
         # New tables
         # Event-level reusable team groupings (club / league / etc.).
         # A team references one by ``group_id``; used downstream to keep
@@ -308,7 +308,7 @@ class Migration(BaseMigration):
             "WHERE `type` = 'check-in'"
         )
 
-    def backward(self):
+    def backward(self) -> None:
         # Reverse the check-in column doubling
         self.database.execute(
             "UPDATE `screen` SET `columns` = `columns` / 2 WHERE `type` = 'check-in'"
