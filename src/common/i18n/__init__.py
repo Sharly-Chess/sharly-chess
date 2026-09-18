@@ -1,3 +1,4 @@
+from typing import cast
 import gettext as gettext_lib
 import os
 import plistlib
@@ -106,7 +107,9 @@ for domain in Domain.get_domains():
             if Path(sys.argv[0]).stem == 'i18n_translate':
                 logger.debug('Could not load locale [%s]: %s.', loc, ex)
             else:
-                raise SharlyChessException(f'Could not load locale [{loc}]: {ex}.')
+                raise SharlyChessException(
+                    f'Could not load locale [{loc}]: {ex}.'
+                ) from ex
 
 logger.debug('Locales found: %s', ', '.join(locales))
 
@@ -117,7 +120,7 @@ _thread_local_data = threading.local()
 def get_locale() -> str:
     """Returns the locale of the current thread."""
     try:
-        return _thread_local_data.locale
+        return cast(str, _thread_local_data.locale)
     except AttributeError:
         return DEFAULT_LOCALE
 
@@ -130,9 +133,8 @@ def set_locale(locale: str) -> bool:
         _thread_local_data.locale = locale
         logger.debug('Locale set to [%s].', locale)
         return True
-    else:
-        logger.warning('Unknown locale [%s].', locale)
-        return False
+    logger.warning('Unknown locale [%s].', locale)
+    return False
 
 
 _domain_names: list[str] = [d.name for d in Domain.get_domains()]
@@ -150,8 +152,9 @@ def get_filename_plugin_name(filename: str) -> str:
     return Domain.core_name
 
 
+# A substring to look for inside a module's `__file__`, not a path to open.
 _i18n_pattern: str = (
-    os.sep.join(
+    os.sep.join(  # noqa: PTH118
         [
             'common',
             'i18n',
@@ -177,7 +180,7 @@ def get_i18n_domain() -> str:
     return Domain.core_name
 
 
-def gettext(message: str, locale: str | None = None):
+def gettext(message: str, locale: str | None = None) -> str:
     """Overrides the gettext.gettext() function to use the locale of the current thread."""
     if locales:
         return _all_translations[
@@ -187,23 +190,52 @@ def gettext(message: str, locale: str | None = None):
         ][locale or get_locale()].gettext(
             message,
         )
-    else:
-        return gettext_lib.gettext(message)
+    return gettext_lib.gettext(message)
 
 
-def _(message: str, locale: str | None = None):
+def _(message: str, locale: str | None = None) -> str:
     """An alias for gettext()."""
     return gettext(message, locale)
 
 
-def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
+def ngettext(singular: str, plural: str, n: int, locale: str | None = None) -> str:
     """Overrides the gettext.ngettext() function to use the locale of the current thread."""
     if locales:
         return _all_translations[get_i18n_domain()][locale or get_locale()].ngettext(
             singular, plural, n
         )
-    else:
-        return gettext_lib.ngettext(singular, plural, n)
+    return gettext_lib.ngettext(singular, plural, n)
+
+
+def pgettext(context: str, message: str, locale: str | None = None) -> str:
+    """Overrides the gettext.pgettext() function to use the locale of the current thread.
+
+    The context tells apart strings that read the same in English but do not
+    translate the same, such as the ``B`` of a crosstable and the ``B`` of a
+    place card. It takes part in the lookup, so an untranslated string falls
+    back to ``message`` alone.
+    """
+    if locales:
+        return _all_translations[get_i18n_domain()][locale or get_locale()].pgettext(
+            context,
+            message,
+        )
+    return gettext_lib.pgettext(context, message)
+
+
+def npgettext(
+    context: str,
+    singular: str,
+    plural: str,
+    n: int,
+    locale: str | None = None,
+) -> str:
+    """Overrides the gettext.npgettext() function to use the locale of the current thread."""
+    if locales:
+        return _all_translations[get_i18n_domain()][locale or get_locale()].npgettext(
+            context, singular, plural, n
+        )
+    return gettext_lib.npgettext(context, singular, plural, n)
 
 
 def normalize_bcp47_to_locale(tag: str) -> str:
@@ -226,7 +258,7 @@ def read_macos_global_prefs() -> dict:
     Falls back to `defaults read -g` if needed.
     """
     # Preferred: read the plist directly
-    plist_path = os.path.expanduser('~/Library/Preferences/.GlobalPreferences.plist')
+    plist_path = Path('~/Library/Preferences/.GlobalPreferences.plist').expanduser()
     try:
         with open(plist_path, 'rb') as fp:
             return plistlib.load(fp) or {}

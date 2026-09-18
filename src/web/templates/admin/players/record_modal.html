@@ -137,7 +137,7 @@
                             {{ _('Result') }}
                         </th>
                         <th scope="col" class="text-nowrap text-start">
-                            {{ _('Color') }}
+                            {{ _('Colour') }}
                         </th>
                         <th scope="col" class="text-nowrap text-start">
                             {{ _('Opponent') }}
@@ -233,7 +233,8 @@
                             </th>
                             <td class="text-nowrap text-center align-middle">
                                 {{ score }}
-                                {% if client.can_update_results(tournament.id) %}
+                                {% if client.can_update_results(tournament.id)
+                                    and tournament.pairing_system.supports_point_adjustments %}
                                     {# There is nothing to adjust until the round
                                        is paired: the adjustment belongs to a game
                                        that has not been arranged yet. #}
@@ -250,7 +251,7 @@
                                     >
                                         <button
                                             type="button"
-                                            class="btn btn-sm btn-outline-primary ms-1 px-1 py-0"
+                                            class="btn btn-sm compact-y-padding btn-outline-primary ms-1 px-1"
                                             {% if _round_paired %}
                                                 hx-get="{{ url_for(
                                                     'admin-player-point-adjustment-modal',

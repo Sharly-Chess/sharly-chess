@@ -1,5 +1,6 @@
 from functools import partial
-from typing import Callable, Collection, TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional
+from collections.abc import Callable, Collection
 
 from data.columns import player_table as pt, board_table as bt
 from data.columns.board_table import BoardColumn
@@ -93,17 +94,24 @@ class PlayerColumnHandler:
     def get_player_ranking_columns(
         self, tournament: Tournament
     ) -> list[TournamentPlayerTableColumn]:
+        base = [
+            pt.ExAequoRankColumn,
+            pt.TitleColumn,
+            pt.NameColumn,
+            pt.RatingColumn,
+            pt.CategoryColumn,
+            pt.GenderColumn,
+            pt.FederationColumn,
+            pt.ClubColumn,
+        ]
+        if tournament.pairing_system.eliminates_participants:
+            # A knock-out ranks by the round reached: a plain-language result,
+            # not a score or standings tie-breaks.
+            return self.get_columns(
+                [*base, partial(pt.KnockoutResultColumn, tournament=tournament)]
+            )
         return self.get_columns(
-            [
-                pt.ExAequoRankColumn,
-                pt.TitleColumn,
-                pt.NameColumn,
-                pt.RatingColumn,
-                pt.CategoryColumn,
-                pt.GenderColumn,
-                pt.FederationColumn,
-                pt.ClubColumn,
-            ]
+            base
             + [
                 partial(pt.TieBreakColumn, tournament=tournament, index=index)
                 for index in range(len(tournament.tie_breaks))
@@ -113,25 +121,31 @@ class PlayerColumnHandler:
     def get_player_crosstable_columns(
         self, tournament: Tournament, ranking_round: int
     ) -> list[TournamentPlayerTableColumn]:
-        return self.get_columns(
-            [
-                pt.RankColumn,
-                pt.TitleColumn,
-                pt.NameColumn,
-                pt.RatingColumn,
-                pt.CategoryColumn,
-                pt.GenderColumn,
-                pt.FederationColumn,
-            ]
-            + [
-                partial(pt.RoundColumn, round_=round_)
-                for round_ in range(1, ranking_round + 1)
-            ]
-            + [
+        Column = Callable[[ColumnUsage], TournamentPlayerTableColumn]
+        rounds: list[Column] = [
+            partial(pt.RoundColumn, round_=round_)
+            for round_ in range(1, ranking_round + 1)
+        ]
+        # A knock-out ranks by the round reached: a plain-language result,
+        # not a score or standings tie-breaks.
+        score_columns: list[Column]
+        if tournament.pairing_system.eliminates_participants:
+            score_columns = [partial(pt.KnockoutResultColumn, tournament=tournament)]
+        else:
+            score_columns = [
                 partial(pt.TieBreakColumn, tournament=tournament, index=index)
                 for index in range(len(tournament.tie_breaks))
             ]
-        )
+        column_types: list[Column] = [
+            pt.RankColumn,
+            pt.TitleColumn,
+            pt.NameColumn,
+            pt.RatingColumn,
+            pt.CategoryColumn,
+            pt.GenderColumn,
+            pt.FederationColumn,
+        ]
+        return self.get_columns(column_types + rounds + score_columns)
 
     def get_alpha_board_player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
@@ -258,7 +272,7 @@ class PlayersTabColumnHandler:
         self,
         disabled_column_ids: list[str],
         hidden_column_ids: list[str] | None = None,
-    ):
+    ) -> None:
         for column in self.columns:
             column.is_enabled = column.id not in disabled_column_ids
             column.is_visible = (
@@ -349,11 +363,13 @@ class PlayerDatasheetColumnHandler:
         rating_types: list[PlayerRatingType] | None = None,
     ) -> list[DatasheetColumn]:
         if rating_types is None:
-            rating_types = [rating for rating in PlayerRatingType]
+            rating_types = list(PlayerRatingType)
         columns: list[DatasheetColumn] = [pds.RatingColumn(), pds.RatingTypeColumn()]
-        for tournament_type in TournamentRating:
-            for rating_type in rating_types:
-                columns.append(pds.TypedRatingColumn(tournament_type, rating_type))
+        columns.extend(
+            pds.TypedRatingColumn(tournament_type, rating_type)
+            for tournament_type in TournamentRating
+            for rating_type in rating_types
+        )
         return columns
 
     @property

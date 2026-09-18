@@ -45,7 +45,7 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
             try:
                 self.admin_family = self.admin_event.families_by_id[family_id]
             except KeyError:
-                raise NotFoundException(f'Family [{family_id}] not found.')
+                raise NotFoundException(f'Family [{family_id}] not found.') from None
 
         self.family_type_id: str | None = None
         if self.admin_family:
@@ -80,7 +80,9 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
 
 
 class FamilyAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.MANAGE_SCREENS),
     ]
@@ -133,7 +135,7 @@ class FamilyAdminController(BaseEventAdminController):
                 field = 'tournament_id'
                 try:
                     if len(event.tournaments_by_id) == 1:
-                        tournament_id = list(event.tournaments_by_id.keys())[0]
+                        tournament_id = next(iter(event.tournaments_by_id.keys()))
                         data[field] = WebContext.value_to_form_data(tournament_id)
                     else:
                         tournament_id = WebContext.form_data_to_int(data, field)
@@ -146,35 +148,20 @@ class FamilyAdminController(BaseEventAdminController):
                 except ValueError:
                     errors[field] = _('A positive integer is expected.')
                 field = 'columns'
-                try:
-                    columns = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                columns = WebContext.read_int_field(data, field, errors, minimum=1)
                 field = 'font_size'
-                try:
-                    font_size = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                font_size = WebContext.read_int_field(data, field, errors, minimum=1)
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 field = 'timer_id'
-                try:
-                    timer_id = WebContext.form_data_to_int(data, field)
-                    if timer_id and timer_id not in event.timers_by_id:
-                        errors[field] = _('Timer [{timer_id}] not found.').format(
-                            timer_id=timer_id
-                        )
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                timer_id = WebContext.read_int_field(data, field, errors)
+                if timer_id and timer_id not in event.timers_by_id:
+                    errors[field] = _('Timer [{timer_id}] not found.').format(
+                        timer_id=timer_id
+                    )
                 field = 'first'
-                try:
-                    first = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                first = WebContext.read_int_field(data, field, errors, minimum=1)
                 field = 'last'
-                try:
-                    last = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                last = WebContext.read_int_field(data, field, errors, minimum=1)
                 if first and last and first > last:
                     error: str = _(
                         'Numbers {first} and {last} are not compatible ({first} > {last}).'
@@ -185,15 +172,9 @@ class FamilyAdminController(BaseEventAdminController):
                 assert family_type is not None
                 type_values = family_type.read_form_data(data, errors, event)
                 field = 'parts'
-                try:
-                    parts = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                parts = WebContext.read_int_field(data, field, errors, minimum=1)
                 field = 'number'
-                try:
-                    number = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                number = WebContext.read_int_field(data, field, errors, minimum=1)
                 if parts and number:
                     error = _(
                         'Specifying the number of parts and the number of items per part is not possible.'
@@ -354,7 +335,7 @@ class FamilyAdminController(BaseEventAdminController):
                         case 'create':
                             public = True
                             message_default = True
-                            tournament_id = list(event.tournaments_by_id.keys())[0]
+                            tournament_id = next(iter(event.tournaments_by_id.keys()))
                             create_type = web_context.family_type
                             assert create_type is not None
                             type_values = create_type.create_form_data(event)
@@ -381,10 +362,8 @@ class FamilyAdminController(BaseEventAdminController):
                     }
                     form_values.update(type_values)
                     data = WebContext.values_dict_to_form_data(form_values)
-                    stored_family: StoredFamily = (
-                        cls._admin_validate_family_update_data(
-                            action, web_context, data
-                        )
+                    stored_family = cls._admin_validate_family_update_data(
+                        action, web_context, data
                     )
                     errors = stored_family.errors
                 if errors is None:
@@ -625,7 +604,7 @@ class FamilyAdminController(BaseEventAdminController):
             or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
             or (
                 new_uniq_id != family.uniq_id
-                and new_uniq_id in event.families_by_uniq_id.keys()
+                and new_uniq_id in event.families_by_uniq_id
             )
         ):
             # No precise error (validated in JS)

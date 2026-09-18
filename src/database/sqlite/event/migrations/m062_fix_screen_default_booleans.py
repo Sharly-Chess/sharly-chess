@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'UPDATE `screen` SET `input_exit_button` = 0 '
             'WHERE `type` = ? AND `input_exit_button` IS NULL',
@@ -19,5 +19,5 @@ class Migration(BaseMigration):
             ('players',),
         )
 
-    def backward(self):
+    def backward(self) -> None:
         pass

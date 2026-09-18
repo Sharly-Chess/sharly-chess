@@ -7,14 +7,15 @@ import time
 from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
-from typing import Any
+from types import UnionType
+from typing import Any, cast
 
 from httpdate.httpdate import httpdate_to_unixtime, unixtime_to_httpdate
 from litestar.datastructures import UploadFile
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.controller import Controller
 from litestar.response import Template
-from typing_extensions import TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from common import check_rgb_str, DEVEL_ENV
 from common.exception import FormError
@@ -113,7 +114,7 @@ class WebContext:
         cls,
         data: dict[str, str],
         field: str,
-        expected_type: T,
+        expected_type: type[T] | UnionType,
     ) -> T | None:
         type_functions: dict[type, Callable] = {
             str: cls.form_data_to_str,
@@ -127,7 +128,7 @@ class WebContext:
         }
         for type_, function in type_functions.items():
             if expected_type in (type_, type_ | None):
-                return function(data, field)
+                return cast(T | None, function(data, field))
         raise ValueError(f'Unsupported type: {expected_type}')
 
     @staticmethod
@@ -172,6 +173,29 @@ class WebContext:
         if maximum is not None and int_val > maximum:
             raise ValueError(f'{int_val} > {maximum}')
         return int_val
+
+    @staticmethod
+    def read_int_field(
+        data: dict[str, str] | None,
+        field: str,
+        errors: dict[str, str],
+        *,
+        empty_value: int | None = None,
+        minimum: int | None = None,
+        maximum: int | None = None,
+        message: str | None = None,
+    ) -> int | None:
+        """`form_data_to_int` for a form being validated: a value that does not
+        parse records *message* against `field` in `errors` and reads as empty,
+        so the rest of the form is still checked and every problem is reported
+        at once."""
+        try:
+            return WebContext.form_data_to_int(
+                data, field, empty_value, minimum, maximum
+            )
+        except ValueError:
+            errors[field] = message or _('A positive integer is expected.')
+            return empty_value
 
     @staticmethod
     def form_data_to_float(
@@ -254,7 +278,7 @@ class WebContext:
                 _('Invalid format (expected: {format}).').format(
                     format=formatter.humanized_format
                 )
-            )
+            ) from None
 
     @staticmethod
     def form_data_to_datetime(data: dict[str, str], field: str) -> datetime | None:
@@ -269,7 +293,7 @@ class WebContext:
                 _('Invalid format (expected: {format}).').format(
                     format=formatter.datetime_humanized_format
                 )
-            )
+            ) from None
 
     @staticmethod
     def form_data_to_date_range(
@@ -290,7 +314,7 @@ class WebContext:
                     _('Invalid format (expected: {format}).').format(
                         format=formatter.humanized_format
                     )
-                )
+                ) from None
         start_date_str, stop_date_str = data[field].split(separator, 1)
         try:
             start_date = datetime.strptime(start_date_str, date_format).date()
@@ -300,7 +324,7 @@ class WebContext:
                 _('Invalid format (expected: {format}).').format(
                     format=formatter.range_humanized_format
                 )
-            )
+            ) from None
         if start_date > stop_date:
             return stop_date, start_date
         return start_date, stop_date
@@ -340,7 +364,7 @@ class WebContext:
             return str(value)
         if isinstance(value, Club):
             return str(value)
-        if isinstance(value, list) or isinstance(value, set):
+        if isinstance(value, (list, set)):
             return ';'.join(str(element) for element in value)
         raise ValueError(f'unknown type for value [{value}]')
 
@@ -420,7 +444,16 @@ class WebContext:
             'client': self.client,
             'user_agent': self.request.headers.get('User-Agent', ''),
             'utils': Utils,
+            'has_app_window': self.has_app_window,
         }
+
+    @property
+    def has_app_window(self) -> bool:
+        """Whether the application runs with a window of its own, which is
+        where the settings and the plugins are managed then."""
+        from gui.server_gui_toga import SharlyChessServerToga
+
+        return SharlyChessServerToga.instance is not None
 
 
 class BaseController(Controller):
@@ -504,8 +537,7 @@ class BaseController(Controller):
         try:
             http_modified_since = request.headers[self.IF_MODIFIED_SINCE_HEADER]
             logger.debug('%s=%s', self.IF_MODIFIED_SINCE_HEADER, http_modified_since)
-            if_modified_since = httpdate_to_unixtime(http_modified_since)
-            return if_modified_since
+            return httpdate_to_unixtime(http_modified_since)
         except KeyError:
             return None
         except ValueError:
@@ -517,8 +549,8 @@ class BaseController(Controller):
             return None
 
     @staticmethod
-    def set_locale(request: HTMXRequest, locale: str | None):
-        if locale:
+    def set_locale(request: HTMXRequest, locale: str | None) -> None:
+        if locale:  # noqa: SIM102
             # sets the locale to the current thread and stores it to the session
             if set_locale(locale):
                 from web.session import SessionLocale
@@ -526,10 +558,10 @@ class BaseController(Controller):
                 SessionLocale(request).set(locale)
 
     @staticmethod
-    def get_cycler(items: list[str]):
+    def get_cycler(items: list[str]) -> Callable[..., str]:
         iter_ = cycle(items)
 
-        def cycler(reset: bool = False):
+        def cycler(reset: bool = False) -> str:
             nonlocal iter_
             if reset:
                 iter_ = cycle(items)

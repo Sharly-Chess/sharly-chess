@@ -7,6 +7,7 @@ preventing server blocking on large templates.
 """
 
 import asyncio
+from collections.abc import AsyncGenerator
 from typing import Any
 
 from common.i18n import get_locale, set_locale
@@ -23,10 +24,10 @@ class StreamingHTMXTemplate(HTMXTemplate):
         request: Any,
         **kwargs: Any,
     ) -> Any:
-        async def stream_template():
+        async def stream_template() -> AsyncGenerator[bytes]:
             current_locale = get_locale()
 
-            def render_in_thread():
+            def render_in_thread() -> list[str]:
                 set_locale(current_locale)
 
                 template_engine = request.app.template_engine

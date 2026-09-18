@@ -33,10 +33,9 @@ class Chess960WebContext(AdminWebContext):
 
     def load_data(self) -> Chess960ScreenPluginData:
         assert self.screen.stored_screen is not None
-        data = Chess960ScreenPluginData.from_stored_value(
+        return Chess960ScreenPluginData.from_stored_value(
             self.screen.stored_screen.plugin_data.get(PLUGIN_NAME, {})
         )
-        return data
 
     def save_data(self, data: Chess960ScreenPluginData) -> None:
         assert self.screen.stored_screen is not None

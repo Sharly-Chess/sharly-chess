@@ -133,9 +133,7 @@ class AccessLevel(IdentifiableEntity, ABC):
     @classmethod
     @cache
     def _sub_access_level_types(cls) -> set[type['AccessLevel']]:
-        sub_access_level_types: set[type['AccessLevel']] = (
-            cls.direct_sub_access_levels()
-        )
+        sub_access_level_types: set[type[AccessLevel]] = cls.direct_sub_access_levels()
         for direct_sub_access_level_type in cls.direct_sub_access_levels():
             sub_access_level_types |= (
                 direct_sub_access_level_type._sub_access_level_types()
@@ -146,7 +144,7 @@ class AccessLevel(IdentifiableEntity, ABC):
     @cache
     def sub_access_levels(cls) -> set['AccessLevel']:
         """Set of all the access levels inherited by this access level."""
-        return set(type_() for type_ in cls._sub_access_level_types())
+        return {type_() for type_ in cls._sub_access_level_types()}
 
     @classmethod
     def can_manage_access_levels(cls) -> bool:

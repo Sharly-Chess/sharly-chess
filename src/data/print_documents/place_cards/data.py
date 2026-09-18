@@ -1,7 +1,7 @@
 import logging
 from datetime import date
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.logger import get_logger
 
 from plugins.manager import plugin_manager
@@ -64,11 +64,16 @@ class PlaceCardPlayer:
 
     @property
     def federation_flag(self) -> str:
-        return (
-            f'<img class="federation-flag {self.federation}" />'
-            if self.federation
-            else ''
+        # The flag itself is a CSS background-image on this element; the img needs
+        # a (transparent 1x1) src so the browser does not draw a broken-image
+        # icon over the flag.
+        if not self.federation:
+            return ''
+        blank = (
+            'data:image/gif;base64,'
+            'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
         )
+        return f'<img class="federation-flag {self.federation}" src="{blank}" alt="" />'
 
 
 class PlaceCardBoard:
@@ -127,8 +132,8 @@ class PlaceCardPairing:
                     if white_is_team_a
                     else board.optional_white_tournament_player
                 )
-                white_marker = _('W *** WHITE COLOR FOR PLACE CARDS')
-                black_marker = _('B *** BLACK COLOR FOR PLACE CARDS')
+                white_marker = pgettext('white color for place cards', 'W')
+                black_marker = pgettext('black color for place cards', 'B')
                 self.white_player = PlaceCardPlayer(
                     left_tp,
                     color=white_marker if white_is_team_a else black_marker,
@@ -148,11 +153,11 @@ class PlaceCardPairing:
             else:
                 self.white_player = PlaceCardPlayer(
                     board.optional_white_tournament_player,
-                    color=_('W *** WHITE COLOR FOR PLACE CARDS'),
+                    color=pgettext('white color for place cards', 'W'),
                 )
                 self.black_player = PlaceCardPlayer(
                     board.black_tournament_player,
-                    color=_('B *** BLACK COLOR FOR PLACE CARDS'),
+                    color=pgettext('black color for place cards', 'B'),
                 )
                 self.black_player.color_background = '#000'
                 self.black_player.color_text = '#fff'

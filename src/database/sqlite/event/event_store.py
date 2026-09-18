@@ -125,13 +125,19 @@ class StoredBoard:
     # renumbering rounds they have already played, while first_board_number,
     # board index and the numbering mode stay live.
     fixed_number: int | None = None
+    # The player designated to advance from this board when a knock-out
+    # game is drawn and the advancement tie-breaks reach the play-off
+    # (manual) step. ``None`` otherwise.
+    knockout_winner_player_id: int | None = None
 
 
 @dataclass
 class StoredTeamRoundLineupEntry:
     team_id: int
     round_: int
-    player_id: int
+    # ``None`` for a board the team leaves empty this round, the way a
+    # ``board`` row holds an empty seat.
+    player_id: int | None
     index: int
 
 
@@ -176,6 +182,10 @@ class StoredTeamBoard:
     # ``HPB`` (half-point), ``FPB`` (full-point) or ``ZPB`` (zero-point).
     # NULL on regular paired team_boards.
     bye_type: str | None = None
+    # The team designated to advance from this match when it is level and
+    # the advancement tie-breaks reach the play-off (manual) step. ``None``
+    # otherwise.
+    knockout_winner_team_id: int | None = None
 
 
 @dataclass
@@ -321,6 +331,7 @@ class StoredTournament:
     rule_set_config: dict[str, Any] = field(default_factory=dict[str, Any])
     prohibited_pairing_dimension: str | None = None
     prohibited_pairing_dimension_is_hard: bool = True
+    round_robin_participation_rule: bool = True
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )

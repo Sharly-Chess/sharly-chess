@@ -5,6 +5,7 @@ from typing import Any
 
 from data.tie_breaks.cutters import CutTieBreakCutter, MedianTieBreakCutter
 from data.tie_breaks.options import (
+    BaseCutterTieBreakOption,
     CutterTieBreakOption,
     CutterWithMedianTieBreakOption,
     ForeModifierTieBreakOption,
@@ -68,9 +69,13 @@ def _tiebreak_to_dict(tie_break: TieBreak) -> dict[str, Any]:
     result: dict[str, Any] = {'base': base}
 
     # Cut / Median — CutterWithMedian takes precedence over plain Cutter
-    for option_type in (CutterWithMedianTieBreakOption, CutterTieBreakOption):
+    cutter_option_types: tuple[type[BaseCutterTieBreakOption], ...] = (
+        CutterWithMedianTieBreakOption,
+        CutterTieBreakOption,
+    )
+    for option_type in cutter_option_types:
         if option_type in available:
-            cutter = tie_break._get_option(option_type).cutter  # noqa: SLF001
+            cutter = tie_break._get_option(option_type).cutter
             if isinstance(cutter, CutTieBreakCutter):
                 result['cut'] = cutter.cut_value()
             elif isinstance(cutter, MedianTieBreakCutter):
@@ -78,14 +83,18 @@ def _tiebreak_to_dict(tie_break: TieBreak) -> dict[str, Any]:
             break
 
     # Played modifier
-    if PlayedModifierTieBreakOption in available:
-        if tie_break._get_option(PlayedModifierTieBreakOption).value:  # noqa: SLF001
-            result['played'] = True
+    if (
+        PlayedModifierTieBreakOption in available
+        and tie_break._get_option(PlayedModifierTieBreakOption).value
+    ):
+        result['played'] = True
 
     # Fore modifier (e.g. AOB/F — Average of Opponents' Buchholz with Fore)
-    if ForeModifierTieBreakOption in available:
-        if tie_break._get_option(ForeModifierTieBreakOption).value:  # noqa: SLF001
-            result['fore'] = True
+    if (
+        ForeModifierTieBreakOption in available
+        and tie_break._get_option(ForeModifierTieBreakOption).value
+    ):
+        result['fore'] = True
 
     # Reversed modifier (TPN/R - RTNG/R)
     if ReversedTieBreakOption in available:
@@ -93,7 +102,7 @@ def _tiebreak_to_dict(tie_break: TieBreak) -> dict[str, Any]:
 
     # Koya limit (half-points above/below the 50% threshold)
     if KoyaLimitTieBreakOption in available:
-        limit = tie_break._get_option(KoyaLimitTieBreakOption).value  # noqa: SLF001
+        limit = tie_break._get_option(KoyaLimitTieBreakOption).value
         if limit:
             result['limit'] = limit
 
@@ -110,7 +119,7 @@ class SCEUploadColumn:
     label: str | None = None
     is_custom: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.is_custom and self.label is None:
             raise ValueError('Custom columns require a label')
 
@@ -145,8 +154,9 @@ def _build_display_config(tournament: Tournament) -> dict[str, Any]:
         SCEUploadColumn('club'),
         SCEUploadColumn('points'),
     ]
-    for i in range(len(tournament.tie_breaks)):
-        ranking_columns.append(SCEUploadColumn(f'tb:{i}'))
+    ranking_columns.extend(
+        SCEUploadColumn(f'tb:{i}') for i in range(len(tournament.tie_breaks))
+    )
     plugin_manager.hook_for_event(event, 'alter_sce_upload_ranking_columns')(
         columns=ranking_columns
     )
@@ -204,6 +214,8 @@ def _scoring_system(tournament: Tournament) -> dict[str, float] | None:
 def _build_players(tournament: Tournament) -> list[dict[str, Any]]:
     players = []
     for player in tournament.tournament_players_by_pairing_number.values():
+        if player.is_excluded_from_standings:
+            continue
         p: dict[str, Any] = {
             'pairingNumber': player.pairing_number,
             'lastName': player.last_name,
@@ -251,6 +263,10 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
     for round_ in range(1, tournament.current_round + 1):
         for board in tournament.get_round_boards(round_):
             black = board.black_tournament_player
+            if board.white_tournament_player.is_excluded_from_standings or (
+                black is not None and black.is_excluded_from_standings
+            ):
+                continue
 
             entry: dict[str, Any] = {
                 'round': round_,
@@ -280,6 +296,8 @@ def _build_rankings(tournament: Tournament) -> list[dict[str, Any]]:
     if ranking_round > 0:
         tournament.compute_tournament_player_ranks(after_round=ranking_round)
         for rank, player in tournament.tournament_players_by_rank.items():
+            if player.is_excluded_from_standings:
+                continue
             standings.append(
                 {
                     'rank': rank,

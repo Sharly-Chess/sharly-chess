@@ -1,3 +1,4 @@
+from typing import cast
 import sys
 from logging import Logger
 from pathlib import Path
@@ -28,14 +29,14 @@ class BabelDomainWrapper(Domain):
             argv += [
                 '-q',
             ]
-        argv += [
-            babel_command,
-        ] + list(map(str, babel_args))  # map to ensure all args are passed as strings
+        # Every argument is mapped to a string, so Babel receives no other type.
+        argv += [babel_command, *(str(arg) for arg in babel_args)]
         # logger.debug('Running Babel %s...', f'[{" ".join(argv)}]')
-        return CommandLineInterface().run(argv)
+        # Babel ships no annotations, so its entry point is untyped.
+        return cast(int, CommandLineInterface().run(argv))  # type: ignore[no-untyped-call]
         # logger.debug('Babel returned %d.', return_code or 0)
 
-    def extract_i18n_strings(self):
+    def extract_i18n_strings(self) -> None:
         """Updates the POT file from the source files."""
         self.run_babel_command(
             'extract',
@@ -44,6 +45,7 @@ class BabelDomainWrapper(Domain):
                 f'--output-file={self.pot_file}',
                 '--sort-output',
                 '--add-location=never',
+                '--add-comments=i18n:',
                 '--no-wrap',
                 '--omit-header',
                 '--ignore-dirs="**/static"',
@@ -54,7 +56,7 @@ class BabelDomainWrapper(Domain):
     def update_po_file(
         self,
         locale: str,
-    ):
+    ) -> None:
         """Updates the PO file of the locale from the POT file."""
         po_file: Path = self.locale_po_file(locale)
         if not po_file.is_file():
@@ -77,12 +79,13 @@ class BabelDomainWrapper(Domain):
                 f'--input-file={self.pot_file}',
                 f'--output-file={po_file}',
                 '--no-fuzzy-matching',
+                '--ignore-obsolete',
                 '--no-wrap',
                 '--omit-header',
             ],
         )
 
-    def update_mo_file(self, locale: str):
+    def update_mo_file(self, locale: str) -> None:
         """Compiles the PO file of the locale to the MO file."""
         # logger.debug('Compiling locale %s...', locale)
         self.run_babel_command(

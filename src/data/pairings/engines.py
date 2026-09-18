@@ -13,7 +13,7 @@ from data.pairings.bbp_history import (
     parse_bbp_checklist_text,
     parse_bbp_team_checklist_text,
 )
-from typing_extensions import override
+from typing import override
 
 from common.exception import PairingEngineError, SharlyChessException
 from common.i18n import _
@@ -109,7 +109,7 @@ class PairingEngine(ABC):
         team_board: 'TeamBoard',
         team_id: int,
     ) -> dict[int, int]:
-        """Board index → the line-up slot of *team_id* seated on it.
+        """Board index → the lineup slot of *team_id* seated on it.
 
         A team match seats each team's *i*-th player on board *i*, so
         the two numbers coincide. Systems whose table rotates one team
@@ -293,8 +293,10 @@ class PairingEngine(ABC):
                 or real_black_id != expected_black_id
             ):
                 pairings_diff.append((real, expected))
-        for i in range(len(real_boards), len(expected_boards)):
-            pairings_diff.append((None, expected_boards[i]))
+        pairings_diff.extend(
+            (None, expected_boards[i])
+            for i in range(len(real_boards), len(expected_boards))
+        )
         return pairings_diff
 
 
@@ -503,14 +505,14 @@ class BbpPairings(PairingEngine):
                     bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-output.txt',
                 )
                 shutil.copy(
-                    pairings_file_path,
+                    checklist_file_path,
                     bbp_tmp_dir / f'{tournament.sanitized_name}-checklist-output.txt',
                 )
             except PermissionError as e:
                 logger.exception(
                     'Error logging the BbpPairings input / output files: %s', e
                 )
-            with open(checklist_file_path, 'r', encoding='utf-8') as file:
+            with open(checklist_file_path, encoding='utf-8') as file:
                 text_content = file.read()
                 history_data = parse_bbp_checklist_text(text_content)
 
@@ -628,8 +630,8 @@ class BergerPairingEngine(RoundRobinPairingEngine):
         pab_player_id: int | None = None
         index = 0
         for pairing in pairings:
-            white_player_id = player_id_by_pairing_number.get(pairing[0], None)
-            black_player_id = player_id_by_pairing_number.get(pairing[1], None)
+            white_player_id = player_id_by_pairing_number.get(pairing[0])
+            black_player_id = player_id_by_pairing_number.get(pairing[1])
             if not white_player_id or not black_player_id:
                 pab_player_id = white_player_id or black_player_id
                 continue
@@ -705,6 +707,15 @@ class TeamPairingEngine(PairingEngine, ABC):
 
     BYE_ID = 0
 
+    @property
+    def byes_unpaired_absent_teams(self) -> bool:
+        """Whether a team not paired this round (and not checked in) is given
+        an automatic zero-point-bye envelope. True for the fixed-schedule /
+        Swiss systems where every team is expected each round; False for an
+        elimination bracket, where an unpaired team is knocked out or waiting
+        in the other bracket, not sitting out a round."""
+        return True
+
     def _generate_stored_boards(
         self,
         tournament: 'Tournament',
@@ -735,7 +746,7 @@ class TeamPairingEngine(PairingEngine, ABC):
         round_: int,
         team_pairs: list[tuple[int, int | None]],
         partial_pairings: bool = False,
-    ):
+    ) -> None:
         stored_boards: list[StoredBoard] = []
         with EventDatabase(tournament.event.uniq_id, True) as database:
             existing = tournament.stored_tournament.stored_team_boards_by_round.get(
@@ -899,8 +910,10 @@ class TeamPairingEngine(PairingEngine, ABC):
             # records, so its output won't reference them either. Teams
             # the schedule already paired this round (fixed-schedule
             # systems pair every team, present or not) keep their match —
-            # no spurious ZPB on top of it.
-            for team in tournament.teams:
+            # no spurious ZPB on top of it. An elimination bracket never
+            # byes an unpaired team: it is knocked out or waiting in the
+            # other bracket, not sitting out.
+            for team in tournament.teams if self.byes_unpaired_absent_teams else []:
                 if (
                     team.check_in
                     or team.id in manual_bye_team_ids
@@ -936,7 +949,7 @@ class TeamPairingEngine(PairingEngine, ABC):
         Team_b always gets the opposite color of team_a on each board.
 
         Overridden by systems whose table says who meets whom on each
-        board rather than pairing the line-ups straight across."""
+        board rather than pairing the lineups straight across."""
         team_a = tournament.event.teams_by_id[stb.team_a_id]
         team_b = (
             tournament.event.teams_by_id[stb.team_b_id]
@@ -1397,7 +1410,8 @@ class TeamBergerEngine(TeamRoundRobinPairingEngine):
             if a_id is None:
                 # The phantom slot was berger A; flip so the real team
                 # gets the bye record as team_a.
-                team_pairs.append((b_id, None))  # type: ignore[arg-type]
+                assert b_id is not None  # the both-None case continued above
+                team_pairs.append((b_id, None))
                 continue
             team_pairs.append((a_id, b_id))
         return team_pairs
@@ -1446,7 +1460,8 @@ class TeamDoubleBergerEngine(TeamBergerEngine):
             if a_id is None and b_id is None:
                 continue
             if a_id is None:
-                team_pairs.append((b_id, None))  # type: ignore[arg-type]
+                assert b_id is not None  # the both-None case continued above
+                team_pairs.append((b_id, None))
                 continue
             team_pairs.append((a_id, b_id))
         return team_pairs

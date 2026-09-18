@@ -3,8 +3,8 @@
         name=criterion.form_key,
         label=_('%(string)s:', string=criterion.name),
         select_options=criterion.get_select_options(admin_event),
-        min_placeholder=_('Min *** MINIMUM'),
-        max_placeholder=_('Max *** MAXIMUM'),
+        min_placeholder=pgettext('minimum', 'Min'),
+        max_placeholder=pgettext('maximum', 'Max'),
         data=data,
         errors=errors,
     ) }}

@@ -4,6 +4,7 @@
     <head>
         {% if not request.htmx %}
             <title>{% block title %}Sharly Chess{% endblock %}</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
             <link rel="shortcut icon" type="image/png" href="{{ url_for('static', file_path='/images/sharly-chess.ico') }}?version={{ sharly_chess_config.version }}"/>
             {# https://github.com/twbs/bootstrap/releases #}
             <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ sharly_chess_config.bootstrap_version ~ '-dist/css/bootstrap.min.css') }}" rel="stylesheet">
@@ -46,6 +47,7 @@
                 {% include 'js/time_control.js' %}
             </script>
             <script src="{{ url_for('static', file_path='/js/keyboardShortcutManager.js') }}?version={{ sharly_chess_config.version }}"></script>
+            <script src="{{ url_for('static', file_path='/js/place_card_editor.js') }}?version={{ sharly_chess_config.version }}"></script>
         {% endif %}
     </head>
     <body
@@ -58,20 +60,8 @@
         {% endif %}
     >
         {% set redirect_url = '' %}
-        {% if sharly_chess_config.force_edit %}
-            {% if client.can_manage_application_settings %}
-                {% if request.url.path != '/home' %}
-                    {% set redirect_url = '/home' %}
-                {% endif %}
-            {% else %}
-                {% if request.url.path != '/wait' %}
-                    {% set redirect_url = '/wait' %}
-                {% endif %}
-            {% endif %}
-        {% else %}
-            {% if request.url.path == '/' %}
-                {% set redirect_url = '/home' %}
-            {% endif %}
+        {% if request.url.path == '/' %}
+            {% set redirect_url = '/home' %}
         {% endif %}
         {% if redirect_url %}
             <p>{{ _('Please wait…') }}</p>
@@ -96,7 +86,7 @@
                 </div>
                 {% block header %}
                 {% endblock header %}
-                <div class="sidebar">
+                <div class="sidebar {% block sidebar_class %}{% endblock sidebar_class %}">
                     <div class="sidebar show border-end">
                         <div id="sidebar-nav" class="list-group border-0 rounded-0 text-sm-start">
                             {% block sidebar %}
@@ -107,6 +97,23 @@
                         </button>
                     </div>
                 </div>
+                <button
+                    id="sidebar-drawer-toggle"
+                    type="button"
+                    aria-label="{{ _('Menu') }}"
+                    onclick="toggle_sidebar_drawer(event)"
+                >
+                    <i class="bi bi-list"></i>
+                </button>
+                <div id="sidebar-drawer-backdrop" onclick="close_sidebar_drawer()"></div>
+                <button
+                    id="top-nav-more-toggle"
+                    type="button"
+                    aria-label="{{ _('More') }}"
+                    onclick="toggle_top_nav(event)"
+                >
+                    <i class="bi bi-three-dots"></i>
+                </button>
                 <main
                     id="scroll-wrapper"
                     {# Needed for the sticky copyright footer #}

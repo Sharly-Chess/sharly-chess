@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import IO
+from typing import IO, ClassVar
 
 from common.i18n import _
 from data.input_output import TournamentExporter
@@ -14,7 +14,7 @@ class PapiTournamentExporter(TournamentExporter):
     # too so that a Scheveningen — which flattens to an individual Swiss —
     # can be exported; the other team tournaments are disabled per-tournament
     # by is_unavailable_message.
-    supported_event_types = [EventType.INDIVIDUAL, EventType.TEAM]
+    supported_event_types: ClassVar = [EventType.INDIVIDUAL, EventType.TEAM]
 
     @staticmethod
     def static_id() -> str:
@@ -39,6 +39,6 @@ class PapiTournamentExporter(TournamentExporter):
     def file_extension(self) -> str:
         return 'papi'
 
-    def dump_to_file(self, file: IO, tournament: Tournament):
+    def dump_to_file(self, file: IO, tournament: Tournament) -> None:
         file.close()
         PapiConverter().write_papi_file(tournament, Path(file.name))

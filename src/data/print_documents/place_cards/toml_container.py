@@ -23,6 +23,10 @@ class TOMLContainer:
         ] = {}
         try:
             self.data = toml.load(self.toml_file)
+        except FileNotFoundError:
+            # A missing file is treated as an empty container so the editor can
+            # build a brand new template before it is written to disk.
+            pass
         except TomlDecodeError as tde:
             logger.exception('[%s]: %s.', self.toml_file.name, tde)
 
@@ -57,11 +61,9 @@ class TOMLContainer:
             try:
                 if isinstance(self.data[prop], dict):
                     return default
-                value = self.data[prop]  # type: ignore
+                value = self.data[prop]  # type: ignore[assignment]
             except KeyError:
                 return default
-        if value is None:
-            return default
         if values and value not in values:
             if section:
                 logger.warning(
@@ -83,8 +85,7 @@ class TOMLContainer:
                     default,
                 )
             return default
-        else:
-            return value
+        return value
 
     def get_opt_str(
         self,
@@ -206,9 +207,9 @@ class TOMLContainer:
         except ValueError:
             assert prop is not None
             logger.warning(
-                'Value [%s] not accepted for custom property [%s] (float expected), defaults to [%s].',
+                '[%s]: value [%s] not accepted for custom property [%s] (float expected), defaults to [%s].',
                 self.toml_file.name,
-                self.data[prop],
+                value,
                 prop,
                 default,
             )
@@ -230,21 +231,16 @@ class TOMLContainer:
         if section:
             if section not in self.data:
                 return []
-            if not isinstance(self.data[section], dict):
+            section_data = self.data[section]
+            if not isinstance(section_data, dict):
                 return []
-            return [
-                key
-                for key in self.data[section].keys()  # type: ignore
-            ]
-        else:
-            return [
-                key for key in self.data.keys() if not isinstance(self.data[key], dict)
-            ]
+            return list(section_data.keys())
+        return [key for key in self.data if not isinstance(self.data[key], dict)]
 
     def get_sections(
         self,
     ) -> list[str]:
-        return [key for key in self.data.keys() if isinstance(self.data[key], dict)]
+        return [key for key in self.data if isinstance(self.data[key], dict)]
 
     def set_value(
         self,
@@ -252,12 +248,12 @@ class TOMLContainer:
         *,
         value: str | int | float | bool,
         section: str = '',
-    ):
+    ) -> None:
         if section:
             if section not in self.data:
                 self.data[section] = {}
             if isinstance(self.data[section], dict):
-                self.data[section][prop] = value  # type: ignore
+                self.data[section][prop] = value  # type: ignore[index]
         else:
             self.data[prop] = value
 
@@ -265,7 +261,7 @@ class TOMLContainer:
         self,
         properties: list[str],
         section: str = '',
-    ):
+    ) -> None:
         for prop in properties:
             with suppress(KeyError):
                 if (
@@ -273,6 +269,12 @@ class TOMLContainer:
                     and section in self.data
                     and isinstance(self.data[section], dict)
                 ):
-                    del self.data[section][prop]  # type: ignore
+                    del self.data[section][prop]  # type: ignore[union-attr]
                 else:
                     del self.data[prop]
+
+    def save(self) -> None:
+        """Write the in-memory data back to the TOML file on disk."""
+        self.toml_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.toml_file, 'w', encoding='utf-8') as f:
+            toml.dump(self.data, f)

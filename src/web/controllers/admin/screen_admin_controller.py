@@ -59,7 +59,7 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
             try:
                 self.admin_screen = self.admin_event.basic_screens_by_id[screen_id]
             except KeyError:
-                raise NotFoundException(f'Screen [{screen_id}] not found.')
+                raise NotFoundException(f'Screen [{screen_id}] not found.') from None
 
         if screen_set_id:
             assert self.admin_screen is not None
@@ -70,7 +70,7 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 raise NotFoundException(
                     f'Screen set [{screen_set_id}] not found for screen [{self.admin_screen.uniq_id}]'
-                )
+                ) from None
 
         # The raw type id (a built-in id or a plugin-defined one).
         self.screen_type_id: str | None = None
@@ -105,7 +105,9 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
 
 
 class ScreenAdminRenderer(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
     ]
@@ -222,9 +224,9 @@ class ScreenAdminRenderer(BaseEventAdminController):
                             assert screen_type_obj is not None
                             # Set-based screens open on a first tournament.
                             if screen_type_obj.has_screen_sets:
-                                init_set_tournament_id = list(
-                                    event.tournaments_by_id.keys()
-                                )[0]
+                                init_set_tournament_id = next(
+                                    iter(event.tournaments_by_id.keys())
+                                )
                             # No default name: an unnamed screen is named
                             # automatically from its tournament(s).
                         case 'clone':
@@ -350,7 +352,9 @@ class ScreenAdminRenderer(BaseEventAdminController):
 
 
 class ScreenAdminController(ScreenAdminRenderer):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.VIEW_PUBLIC_SCREENS),
         ManageScreenEntityGuard('screen_id'),
@@ -411,25 +415,16 @@ class ScreenAdminController(ScreenAdminRenderer):
                 name = WebContext.form_data_to_str(data, 'name') or ''
                 public = WebContext.form_data_to_bool(data, 'public')
                 field = 'columns'
-                try:
-                    columns = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                columns = WebContext.read_int_field(data, field, errors, minimum=1)
                 field = 'font_size'
-                try:
-                    font_size = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                font_size = WebContext.read_int_field(data, field, errors, minimum=1)
                 menu_text = WebContext.form_data_to_str(data, 'menu_text', '')
                 field = 'timer_id'
-                try:
-                    timer_id = WebContext.form_data_to_int(data, field)
-                    if timer_id and timer_id not in event.timers_by_id:
-                        errors[field] = _('Timer [{timer_id}] not found.').format(
-                            timer_id=timer_id
-                        )
-                except ValueError:
-                    errors[field] = _('A positive integer is expected.')
+                timer_id = WebContext.read_int_field(data, field, errors)
+                if timer_id and timer_id not in event.timers_by_id:
+                    errors[field] = _('Timer [{timer_id}] not found.').format(
+                        timer_id=timer_id
+                    )
                 screen_type = web_context.screen_type
                 assert screen_type is not None
                 type_values = screen_type.read_form_data(data, errors, event)
@@ -551,7 +546,7 @@ class ScreenAdminController(ScreenAdminRenderer):
         screen = web_context.get_admin_screen()
         try:
             if len(event.tournaments_by_id) == 1:
-                tournament_id = list(event.tournaments_by_id.keys())[0]
+                tournament_id = next(iter(event.tournaments_by_id.keys()))
                 data[field] = WebContext.value_to_form_data(tournament_id)
             else:
                 tournament_id = WebContext.form_data_to_int(data, field)
@@ -592,15 +587,9 @@ class ScreenAdminController(ScreenAdminRenderer):
             # Range by first/last (pairing position or board number); any
             # explicit board list is cleared.
             field = 'first'
-            try:
-                first = WebContext.form_data_to_int(data, field, minimum=1)
-            except ValueError:
-                errors[field] = _('A positive integer is expected.')
+            first = WebContext.read_int_field(data, field, errors, minimum=1)
             field = 'last'
-            try:
-                last = WebContext.form_data_to_int(data, field, minimum=1)
-            except ValueError:
-                errors[field] = _('A positive integer is expected.')
+            last = WebContext.read_int_field(data, field, errors, minimum=1)
             if first and last and first > last:
                 error: str = _(
                     'Numbers {first} and {last} are not compatible ({first} > {last}).'
@@ -898,7 +887,7 @@ class ScreenAdminController(ScreenAdminRenderer):
             or not SharlyChessConfig.uniq_id_regex.match(new_uniq_id)
             or (
                 new_uniq_id != screen.uniq_id
-                and new_uniq_id in event.screens_by_uniq_id.keys()
+                and new_uniq_id in event.screens_by_uniq_id
             )
         ):
             # No precise error (validated in JS)

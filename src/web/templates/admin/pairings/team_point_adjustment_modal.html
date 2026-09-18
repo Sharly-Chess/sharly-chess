@@ -24,7 +24,7 @@
                     <div>
                         <div class="fw-bold">
                             {{ _('%(string)s:', string=_('Rule set applied')) }}
-                            {% if adj.rule_set_mp %}{{ '%+g'|format(adj.rule_set_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if adj.rule_set_mp and adj.rule_set_gp %}, {% endif %}{% if adj.rule_set_gp %}{{ '%+g'|format(adj.rule_set_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}
+                            {% if adj.rule_set_mp %}{{ '%+g'|format(adj.rule_set_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if adj.rule_set_mp and adj.rule_set_gp %}, {% endif %}{% if adj.rule_set_gp %}{{ '%+g'|format(adj.rule_set_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}
                         </div>
                         {% if adj.rule_set_explanation %}
                             <div>{{ adj.rule_set_explanation }}</div>
@@ -56,7 +56,7 @@
                     <div class="row g-2">
                         {% if has_match_points %}
                             <div class="col-3">
-                                <label class="form-label small mb-0">{{ _('MP *** MATCH POINTS') }}</label>
+                                <label class="form-label small mb-0">{{ pgettext('match points', 'MP') }}</label>
                                 <input
                                     class="form-control form-control-sm"
                                     type="number" step="0.5" min="-9.5" max="99.5"
@@ -66,7 +66,7 @@
                             </div>
                         {% endif %}
                         <div class="{{ 'col-3' if has_match_points else 'col-4' }}">
-                            <label class="form-label small mb-0">{{ _('GP *** GAME POINTS') }}</label>
+                            <label class="form-label small mb-0">{{ pgettext('game points', 'GP') }}</label>
                             <input
                                 class="form-control form-control-sm"
                                 type="number" step="0.5" min="-9.5" max="99.5"

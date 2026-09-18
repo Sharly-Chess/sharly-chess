@@ -53,6 +53,30 @@ class HandicapGamesPlugin(Plugin):
         )
 
     @property
+    def keywords(self) -> list[str]:
+        return ['time control', 'odds']
+
+    @property
+    def doc_markdown(self) -> str:
+        return '\n\n'.join(
+            [
+                _(
+                    'In a handicap tournament the two players of a game do not get the '
+                    'same thinking time: the stronger player plays with less time than '
+                    "the weaker one, which which reduces the strongest player's chances of winning."
+                ),
+                _(
+                    '- a rating step, a time penalty per step and a minimum time, '
+                    'configured on the tournament;\n'
+                    '- the time of each player computed for every game of the round '
+                    'from the rating difference between the two players;\n'
+                    '- the times of the two players displayed on the pairings screens '
+                    'and on the printed documents.'
+                ),
+            ]
+        )
+
+    @property
     def version(self) -> Version:
         return Version('1.0.0')
 
@@ -68,12 +92,12 @@ class HandicapGamesPlugin(Plugin):
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> bool:
         handicap_games_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
-        if any(
-            handicap_games_data.get(k)
-            for k in ('penalty_step', 'penalty_value', 'min_time')
-        ):
-            return True
-        return False
+        return bool(
+            any(
+                handicap_games_data.get(k)
+                for k in ('penalty_step', 'penalty_value', 'min_time')
+            )
+        )
 
     # ---------------------------------------------------------------------------------
     # Tournaments
@@ -111,13 +135,13 @@ class HandicapGamesPlugin(Plugin):
     @hookimpl
     def validate_tournament_form_fields(
         self, data: dict[str, str], errors: dict[str, str]
-    ):
+    ) -> None:
         time_control_trf25 = WebContext.form_data_to_str(data, 'time_control_trf25')
         time_control_handicap_penalty_value = WebContext.form_data_to_int(
             data, 'handicap_games_penalty_value'
         )
 
-        initial_time, inc = self._get_handicap_tim_control_options(time_control_trf25)
+        initial_time, _inc = self._get_handicap_tim_control_options(time_control_trf25)
         if initial_time == 0 and time_control_handicap_penalty_value:
             errors['handicap_games_penalty_value'] = _(
                 'Penalties require a time control with a single period.'
@@ -132,7 +156,7 @@ class HandicapGamesPlugin(Plugin):
         return '/handicap_games_tournament_card_time_control.html'
 
     @hookimpl
-    def set_for_round(self, tournament: 'Tournament', round_: int):
+    def set_for_round(self, tournament: 'Tournament', round_: int) -> None:
         plugin_data = HandicapGameUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.penalty_value:
             return
@@ -183,7 +207,7 @@ class HandicapGamesPlugin(Plugin):
         usage: ColumnUsage,
         board_columns: list[BoardColumn],
         tournament: 'Tournament',
-    ):
+    ) -> None:
         plugin_data = HandicapGameUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.penalty_value:
             return

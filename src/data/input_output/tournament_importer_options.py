@@ -11,7 +11,7 @@ from utils.enum import TournamentRating
 from utils.option import Option
 
 
-class TournamentImporterOption(Option, ABC):
+class TournamentImporterOption[V](Option[V], ABC):
     """Parent class of all the options of tournament importers."""
 
     @property
@@ -24,11 +24,11 @@ class TournamentImporterOption(Option, ABC):
         return self.id
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> V:
         return self.get_default_value()
 
     @abstractmethod
-    def get_default_value(self, tournament: Tournament | None = None) -> Any:
+    def get_default_value(self, tournament: Tournament | None = None) -> V:
         """Set the default form value from the event or tournament on the modal."""
 
     @property
@@ -37,7 +37,7 @@ class TournamentImporterOption(Option, ABC):
         return {}
 
 
-class FileOption(TournamentImporterOption):
+class FileOption(TournamentImporterOption[Path | None]):
     @staticmethod
     def static_id() -> str:
         return 'file'
@@ -46,16 +46,16 @@ class FileOption(TournamentImporterOption):
     def type(self) -> type | UnionType:
         return Path | None
 
-    def get_default_value(self, tournament: Tournament | None = None) -> Any:
+    def get_default_value(self, tournament: Tournament | None = None) -> Path | None:
         return None
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value is None:
             raise OptionError(_('A file is expected.'), self)
 
 
-class TournamentRatingOption(TournamentImporterOption):
+class TournamentRatingOption(TournamentImporterOption[int]):
     @staticmethod
     def static_id() -> str:
         return 'tournament_rating'
@@ -64,17 +64,17 @@ class TournamentRatingOption(TournamentImporterOption):
     def type(self) -> type | UnionType:
         return int
 
-    def get_default_value(self, tournament: Tournament | None = None) -> Any:
+    def get_default_value(self, tournament: Tournament | None = None) -> int:
         if tournament:
             return tournament.rating.value
         return TournamentRating.STANDARD.value
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             TournamentRating(self.value)
         except ValueError:
-            raise OptionError(f'Unknown tournament type {self.value}', self)
+            raise OptionError(f'Unknown tournament type {self.value}', self) from None
 
     @property
     def template_context(self) -> dict[str, Any]:

@@ -3,10 +3,10 @@ from functools import cache, lru_cache, cached_property
 from itertools import groupby
 from math import floor
 from types import UnionType
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from common.exception import OptionError
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -120,13 +120,14 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         )
 
     @staticmethod
-    def _points_after(player: TournamentPlayer, after_round: int):
+    def _points_after(player: TournamentPlayer, after_round: int) -> float:
         # NOTE(Amaras): Because EM did not take into account HPB in his code,
         # this function must be used instead of Player.points_after
         return sum(
             pairing.result.points(player.point_values)
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
+            and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
             and (
                 pairing.played
                 or pairing.result in (Result.HALF_POINT_BYE, Result.FULL_POINT_BYE)
@@ -136,7 +137,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
     @staticmethod
     @lru_cache(maxsize=32)
     def _performance_bonus(fractional_score: float) -> int | float:
-        performance_table = Utils.PERFORMANCE_TABLE[:-1] + [677, 677]
+        performance_table = [*Utils.PERFORMANCE_TABLE[:-1], 677, 677]
         percent = 100 * fractional_score
         index = floor(abs(50 - percent))
         percent_int = floor(percent)
@@ -181,7 +182,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         while (current_points := point_keys[-1]) < max_possible_points:
             current_points += tournament.draw_points
             point_keys.append(current_points)
-        level_estimations = {points: 0 for points in point_keys}
+        level_estimations = dict.fromkeys(point_keys, 0)
 
         # NOTE(Amaras): if there are rated players in the score group,
         # use the average of their ratings as the level's estimation.
@@ -244,16 +245,18 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
     def _get_player_estimation(self, player: 'TournamentPlayer') -> int:
         if not player.estimated:
             return player.rating
-        return player.tie_break_variables.get(self.id, player.rating)
+        return cast(int, player.tie_break_variables.get(self.id, player.rating))
 
     def compute_player_value(
         self, player: 'TournamentPlayer', *, after_round: int
     ) -> float:
-        tournament: 'Tournament' = player.tournament
+        tournament: Tournament = player.tournament
         pairings: list[Pairing] = [
             pairing
             for round_index, pairing in player.pairings.items()
-            if round_index <= after_round and pairing.played
+            if round_index <= after_round
+            and pairing.played
+            and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
         ]
         ratings = []
         score = 0.0
@@ -290,6 +293,12 @@ class PapiKashdanTieBreak(BasePapiTieBreak):
     def base_acronym(self) -> str:
         return 'Ka.'
 
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # A weighted restatement of the score, which two participants at the
+        # same bracket depth share.
+        return False
+
     def compute_player_value(
         self, player: 'TournamentPlayer', *, after_round: int
     ) -> float:
@@ -299,6 +308,7 @@ class PapiKashdanTieBreak(BasePapiTieBreak):
             pairing
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
+            and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
         ]
         score_by_result: dict[Result, float] = {
             Result.WIN: 4,
@@ -376,7 +386,7 @@ class CutPapiBuchholzType(PapiBuchholzType):
 
     @staticmethod
     def static_name() -> str:
-        return _('Cut *** TIE BREAK VARIATION')
+        return pgettext('tie break variation', 'Cut')
 
     @property
     def full_name(self) -> str:
@@ -452,7 +462,7 @@ class PapiBuchholzTypeManager(EntityManager[PapiBuchholzType]):
         ]
 
 
-class PapiBuchholzTypeOption(SilentTieBreakOption):
+class PapiBuchholzTypeOption(SilentTieBreakOption[str]):
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-PAPI_BUCHHOLZ_TYPE'
@@ -470,7 +480,7 @@ class PapiBuchholzTypeOption(SilentTieBreakOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return StandardPapiBuchholzType.static_id()
 
     def buchholz_type_options(self, tournament_rounds: int) -> dict[str, SelectOption]:
@@ -485,12 +495,12 @@ class PapiBuchholzTypeOption(SilentTieBreakOption):
     def buchholz_type(self) -> PapiBuchholzType:
         return PapiBuchholzTypeManager().get_object(self.value)
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             __ = self.buchholz_type
         except KeyError:
-            raise OptionError(f'Unknown Buchholz type: {self.value}', self)
+            raise OptionError(f'Unknown Buchholz type: {self.value}', self) from None
 
 
 class PapiBuchholzTieBreak(BasePapiTieBreak):
@@ -515,6 +525,13 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
         return self.type.acronym
 
     @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Two participants who reached the same bracket depth beat the same
+        # shape of field — a first-round loser, a second-round loser, and so
+        # on — so every Buchholz is equal by construction.
+        return False
+
+    @property
     def trf_sub_acronym(self) -> str:
         return f'{self.sub_id()}_{self.type.id}'
 
@@ -529,9 +546,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
         after_round: int,
     ) -> float:
         """Legacy: Unplayed rounds are counted as draws"""
-        tournament: 'Tournament' = player.tournament
-        if after_round is None:
-            after_round = max(player.pairings)
+        tournament: Tournament = player.tournament
         caching = tournament._compute_caching_enabled
         cache_key = ('ffe_papi_adjusted_score', after_round)
         if caching:
@@ -539,7 +554,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
             if cached is not None:
                 return cached
         if tournament.pairing_system == RoundRobinPairingSystem():
-            score = player.points_after(after_round)
+            score = player.standings_points(after_round)  # FIDE 6.6
         else:
             score = 0.0
             for round_index, pairing in player.pairings.items():
@@ -599,14 +614,14 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
     def papi_buchholz_cut(tournament_rounds: int) -> int:
         if tournament_rounds <= 7:
             return 1
-        elif tournament_rounds <= 12:
+        if tournament_rounds <= 12:
             return 2
         return 3
 
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
     ) -> float:
-        tournament: 'Tournament' = player.tournament
+        tournament: Tournament = player.tournament
         cut = self.papi_buchholz_cut(tournament.rounds)
         cut_top = cut if self.type.use_top_cut else 0
         cut_btm = cut if self.type.use_bottom_cut else 0
@@ -626,6 +641,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
                 )
                 for pairing in pairings.values()
                 if pairing.opponent_id is not None
+                and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
             )
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
@@ -649,7 +665,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
                     opponent, after_round=after_round
                 )
             else:
-                opponent_adjusted_score = opponent.points_after(after_round)
+                opponent_adjusted_score = opponent.standings_points(after_round)
             scores.append(opponent_adjusted_score)
         voluntary_unplayed = sorted(voluntary_unplayed)
         scores = sorted(scores)
@@ -673,14 +689,22 @@ class PapiSumOfBuchholzTieBreak(BasePapiTieBreak):
     def base_acronym(self) -> str:
         return 'SBh'
 
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Sums Buchholz scores the bracket already fixes for both participants
+        # of the same depth.
+        return False
+
     def compute_player_value(
         self, player: 'TournamentPlayer', *, after_round: int
     ) -> float:
-        tournament: 'Tournament' = player.tournament
+        tournament: Tournament = player.tournament
         opponents: list[TournamentPlayer | None] = [
             tournament.players_by_id.get(pairing.opponent_id)
             for round_index, pairing in player.pairings.items()
-            if round_index <= after_round and pairing.opponent_id is not None
+            if round_index <= after_round
+            and pairing.opponent_id is not None
+            and player.game_counts_for_tie_breaks(pairing)  # FIDE 6.6
         ]
         tie_break = PapiBuchholzTieBreak()
         return sum(
@@ -854,7 +878,7 @@ class GamePointsForTieBreak(TeamTieBreak):
 
     @staticmethod
     def static_name() -> str:
-        return _('Game points "for"')
+        return _('Game points "for" ')
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:

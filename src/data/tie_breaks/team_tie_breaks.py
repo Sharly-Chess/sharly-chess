@@ -23,7 +23,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 from functools import cached_property
 from types import UnionType
-from typing import Any, Callable, SupportsFloat
+from typing import Any, SupportsFloat
+from collections.abc import Callable
 
 from common.i18n import _
 from data.pairings import PairingSystem
@@ -44,6 +45,8 @@ from data.tie_breaks.options import (
     TeamScoreTieBreakOption,
 )
 from data.tie_breaks.team_records import (
+    TeamMatchRecord,
+    TeamMatchType,
     TeamRecord,
     adjust_opponent_total,
     dummy_opponent_score,
@@ -53,7 +56,7 @@ from data.tie_breaks.tie_breaks import (
     StandardBuchholzTieBreak,
     TieBreak,
 )
-from utils.enum import ScoreType
+from utils.enum import Result, ScoreType
 
 
 # ---------------------------------------------------------------------------
@@ -86,7 +89,7 @@ class ESBVariant(StrEnum):
         )
 
 
-class ESBVariantTieBreakOption(TieBreakOption):
+class ESBVariantTieBreakOption(TieBreakOption[str]):
     """Selects which of the four ESB combinations is computed."""
 
     @staticmethod
@@ -98,7 +101,7 @@ class ESBVariantTieBreakOption(TieBreakOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return ESBVariant.EMMSB.value
 
     @property
@@ -286,6 +289,14 @@ class TeamTieBreakContext:
     # regular matches for the opponent-based tie-breaks, rather than
     # substituting the dummy opponent of Art. 16.
     predetermined_pairings: bool = False
+    # Teams dropped from the final standings (FIDE 6.6 round-robin rule):
+    # their matches don't count towards any other team's tie-breaks.
+    excluded_team_ids: frozenset[int] = frozenset()
+
+    def match_counts_for_tie_breaks(self, match: 'TeamMatchRecord') -> bool:
+        """False when *match* is against a team excluded from the final
+        standings — that match must not feed the opponent's tie-breaks."""
+        return match.opponent_id not in self.excluded_team_ids
 
     @property
     def max_score_per_match(self) -> dict[ScoreType, float]:
@@ -328,14 +339,12 @@ def _dummy_opponent_score(
     score_type: ScoreType,
     context: TeamTieBreakContext,
     *,
-    after_round: int,
     opponent_adjusted: float | None = None,
     legacy: bool = False,
 ) -> float:
     return dummy_opponent_score(
         own_record,
         score_type,
-        after_round=after_round,
         rounds=context.rounds,
         draw_value=(
             context.draw_mp if score_type == ScoreType.MATCH_POINTS else context.draw_gp
@@ -527,6 +536,8 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
         for match in team_record.matches:
             if match.round_ > after_round:
                 continue
+            if not tournament_context.match_counts_for_tie_breaks(match):
+                continue
             if match.unplayed and not (
                 forfeits_are_played and match.opponent_id is not None
             ):
@@ -545,7 +556,6 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
                     team_record,
                     opp_score_type,
                     tournament_context,
-                    after_round=after_round,
                     opponent_adjusted=opponent_adjusted,
                     legacy=self._legacy_march_2026,
                 )
@@ -585,9 +595,7 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
             else:
                 v = vur[0]
                 g = general[0]
-                if v.opp_total <= g.opp_total:
-                    vur.pop(0)
-                elif v.value >= g.value:
+                if v.opp_total <= g.opp_total or v.value >= g.value:
                     vur.pop(0)
                 else:
                     general.pop(0)
@@ -694,12 +702,10 @@ class ScoresAndScheduleStrengthCombinationTieBreak(TeamTieBreak):
         )
         # /Kx override: use the explicit factor when set, else compute.
         override = 0
-        try:
+        with suppress(KeyError):
             override = int(
                 self._get_option(NormalizationFactorOverrideTieBreakOption).value
             )
-        except KeyError:
-            pass
         factor = override if override else self.normalization_factor(tournament_context)
         return secondary + bh / factor
 
@@ -726,7 +732,7 @@ class EDEKnockoutVariant(StrEnum):
         return f'EDE{self.value}'
 
 
-class EDEKnockoutTieBreakOption(TieBreakOption):
+class EDEKnockoutTieBreakOption(TieBreakOption[str]):
     """Selects the Art. 13.3.2 combination applied to the last two tied
     teams."""
 
@@ -739,7 +745,7 @@ class EDEKnockoutTieBreakOption(TieBreakOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return EDEKnockoutVariant.NONE.value
 
     @property
@@ -845,6 +851,14 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
     @property
     def base_acronym(self) -> str:
         return self.knockout_variant.acronym
+
+    @property
+    def usable_as_knockout_advancement(self) -> bool:
+        # Builds a crosstable of the matches between the tied teams — in a
+        # knock-out that is the tied match itself, so there is nothing to
+        # split on. Its Art. 13.3.2 knock-out additions are available on
+        # their own as BC, TBR and BBE.
+        return False
 
     @property
     def acronym(self) -> str:
@@ -1087,7 +1101,7 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
         sorted_items = sorted(min_max_by_id.items(), key=lambda kv: kv[1])
         if not sorted_items:
             return []
-        first_id, (first_min, first_max) = sorted_items[0]
+        first_id, (_first_min, first_max) = sorted_items[0]
         cur_max = first_max
         current: list[TeamRecord] = [team_by_id[first_id]]
         subgroups: list[list[TeamRecord]] = []
@@ -1121,13 +1135,21 @@ def board_totals(
     ``opponent_ids`` restricts the sum to matches against those teams —
     what Art. 13.3.2 needs, since the knock-out tie-breaks it composes
     after EDE judge the tied teams' own encounters rather than their
-    whole tournament (TEC-2023 exercises 46-48).
+    whole tournament (TEC-2023 exercises 46-48). A bye is nobody's
+    encounter, so it stays out of that restricted sum.
     """
     totals = [0.0] * boards
     for match in team_record.matches:
         if match.round_ > after_round:
             continue
         if opponent_ids is not None and match.opponent_id not in opponent_ids:
+            continue
+        if match.match_type == TeamMatchType.PAB:
+            # Art. 12: a pairing-allocated bye counts on every board as
+            # the game points of a standard win, whatever game points
+            # the bye itself scored the team.
+            for board_index in range(boards):
+                totals[board_index] += Result.WIN.point_value
             continue
         if not match.played and not (
             include_forfeits and match.opponent_id is not None
@@ -1299,6 +1321,13 @@ class TopBoardResultsTieBreak(_BoardTieBreak):
         return 'TBR'
 
     @property
+    def display_rank_delta(self) -> bool:
+        # The value packs one board's total after another into a single
+        # number so the comparison reads board by board; as a number it is
+        # astronomical and says nothing. Show what it did to the ranking.
+        return True
+
+    @property
     def base_help_text(self) -> str:
         return _(
             'The game points scored on board 1 over the tournament; if '
@@ -1344,6 +1373,11 @@ class BottomBoardEliminationTieBreak(_BoardTieBreak):
     @property
     def base_acronym(self) -> str:
         return 'BBE'
+
+    @property
+    def display_rank_delta(self) -> bool:
+        # Packed like the top-board comparison, and just as unreadable.
+        return True
 
     @property
     def base_help_text(self) -> str:

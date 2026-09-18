@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Iterable, Any
+from typing import TYPE_CHECKING, Any
+from collections.abc import Iterable
 
 from packaging.version import Version
 
@@ -59,7 +60,7 @@ class SCEPluginHooks:
         self,
         player: 'TournamentPlayer',
         sync_data: SCEPlayerSyncData,
-    ):
+    ) -> None:
         """Augment SCE player shared data from a player."""
 
     @hookspec
@@ -67,7 +68,7 @@ class SCEPluginHooks:
         self,
         sce_data: dict[str, Any],
         sync_data: SCEPlayerSyncData,
-    ):
+    ) -> None:
         """Augment SCE player shared data from SCE API data."""
 
     @hookspec
@@ -77,25 +78,27 @@ class SCEPluginHooks:
         stored_player: 'StoredPlayer',
         sync_data: SCEPlayerSyncData,
         database: EventDatabase | None,
-    ):
+    ) -> None:
         """Augment a stored player from SCE player shared data."""
 
     @hookspec
-    def update_sce_player_diff_field_labels(self, diff_fields: dict[str, str | None]):
+    def update_sce_player_diff_field_labels(
+        self, diff_fields: dict[str, str | None]
+    ) -> None:
         """Update the labels of the fields used for the conflict modal."""
 
     @hookspec
     def add_sce_upload_player_custom_fields(
         self, custom_fields: dict[str, Any], player: 'TournamentPlayer'
-    ):
+    ) -> None:
         """Add custom fields to the SCE uploaded players."""
 
     @hookspec
-    def alter_sce_upload_player_columns(self, columns: list[SCEUploadColumn]):
+    def alter_sce_upload_player_columns(self, columns: list[SCEUploadColumn]) -> None:
         """Alter the player columns of the SCE results upload."""
 
     @hookspec
-    def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]):
+    def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]) -> None:
         """Alter the ranking columns of the SCE results upload."""
 
 
@@ -121,6 +124,28 @@ class SCEPlugin(Plugin):
         return _(
             'Integration with the Sharly-Chess.com platform '
             '(online check-in, results upload, etc.).'
+        )
+
+    @property
+    def keywords(self) -> list[str]:
+        return ['sharly', 'online', 'registration', 'check-in', 'platform']
+
+    @property
+    def doc_markdown(self) -> str:
+        return '\n\n'.join(
+            [
+                _(
+                    'Sharly-Chess.com is the online platform of Sharly Chess, where '
+                    'the players register to your events and follow them live.'
+                ),
+                _(
+                    '- an event of the platform linked to your event, and its players '
+                    'synchronised in both directions;\n'
+                    '- the check-in of the players done online by the players '
+                    'themselves;\n'
+                    '- the pairings and the standings published live on the platform.'
+                ),
+            ]
         )
 
     @property
@@ -161,7 +186,7 @@ class SCEPlugin(Plugin):
         return '/sce_event_create_button.html'
 
     @hookimpl
-    def on_event_duplicated(self, event_database: EventDatabase):
+    def on_event_duplicated(self, event_database: EventDatabase) -> None:
         # Erase all SCE plugin data
         stored_event = event_database.load_stored_event()
         if PLUGIN_NAME not in stored_event.enabled_plugins:
@@ -225,7 +250,7 @@ class SCEPlugin(Plugin):
     @hookimpl
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
-    ):
+    ) -> None:
         # This hook being called for most database writes, it needs to be optimized
         if not should_schedule_auto_upload(stored_event, stored_tournament):
             return
@@ -236,7 +261,7 @@ class SCEPlugin(Plugin):
         schedule_upload(tournament)
 
     @hookimpl
-    def load_tournament_check_in_data(self, tournament: 'Tournament'):
+    def load_tournament_check_in_data(self, tournament: 'Tournament') -> None:
         event = tournament.event
         epd = SCEUtils.get_event_plugin_data(event)
         tpd = SCEUtils.get_tournament_plugin_data(tournament)
@@ -255,7 +280,7 @@ class SCEPlugin(Plugin):
         return self.id, SCEPlayerPluginData
 
     @hookimpl
-    def on_player_deleted(self, player: 'Player'):
+    def on_player_deleted(self, player: 'Player') -> None:
         for tournament in player.event.tournaments:
             t_plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
             if not t_plugin_data.id:
@@ -282,7 +307,7 @@ class SCEPlugin(Plugin):
         return SCECheckInColumn()
 
     @hookimpl
-    def on_before_load_tournaments_check_in_modal(self, event: Event):
+    def on_before_load_tournaments_check_in_modal(self, event: Event) -> None:
         if SCEUtils.get_event_plugin_data(event).id and NetworkMonitor.connected():
             try:
                 SCESession(event).update_event_check_in_schedules()
@@ -292,7 +317,7 @@ class SCEPlugin(Plugin):
     @hookimpl
     def validate_player_tournament_move(
         self, tournament: 'Tournament', player: 'TournamentPlayer'
-    ):
+    ) -> None:
         src_id = SCEUtils.get_tournament_plugin_data(player.tournament).id
         dst_id = SCEUtils.get_tournament_plugin_data(tournament).id
         if src_id and not dst_id:
@@ -350,6 +375,6 @@ class SCEPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl(trylast=True)
-    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]) -> None:
         qrcode_types.insert(1, SCETournamentQRCodeType)
         qrcode_types.insert(1, SCEEventQRCodeType)

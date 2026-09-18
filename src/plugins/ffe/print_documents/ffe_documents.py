@@ -39,9 +39,10 @@ class FFEPrintDocument(PrintDocument):
 
     @property
     def ffe_document_type(self) -> FFEDocumentType:
-        return FFEDocumentTypeManager().get_object(
-            self._get_option(FFEDocumentTypePrintOption).value
-        )
+        document_type_id = self._get_option(FFEDocumentTypePrintOption).value
+        # An unset type is rejected by the option's own validate().
+        assert document_type_id is not None
+        return FFEDocumentTypeManager().get_object(document_type_id)
 
     @property
     def template_name(self) -> str:
@@ -63,7 +64,7 @@ class FFEPrintDocument(PrintDocument):
             FFEArbiterPrintOption,
         ]
 
-    def validate_options(self):
+    def validate_options(self) -> None:
         valid_options_types = self.ffe_document_type.get_valid_option_types()
         for option in self.options:
             if type(option) in valid_options_types:

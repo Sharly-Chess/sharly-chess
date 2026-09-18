@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `local_source_database` ('
             '   `name` TEXT NOT NULL,'
@@ -13,5 +13,5 @@ class Migration(BaseMigration):
             ')'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP TABLE `local_source_database`')

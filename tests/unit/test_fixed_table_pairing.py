@@ -2,7 +2,7 @@
 holes / incomplete rosters.
 
 Two related guarantees:
-  * a team line-up with a *hole* (a benched player) must not double-book the
+  * a team lineup with a *hole* (a benched player) must not double-book the
     promoted player — the bug where ``_team_player`` fell back to the roster
     for high seats and re-seated an already-placed player;
   * an *incomplete* roster (fewer players than ``team_player_count``) must
@@ -27,6 +27,7 @@ from data.loader import EventLoader
 from plugins.ffe.ffe_rule_sets import CoupeJeanClaudeLoubatiereRuleSet
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result
+import contextlib
 
 
 EVENT_ID = 'test-fixed-table-pairing'
@@ -96,10 +97,8 @@ class FixedTablePairingTestCase(TestCase):
                 self.player_ids.append(ids)
 
     def _load(self):
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         self._event = EventLoader().load_event(EVENT_ID)
         return self._event.tournaments_by_name[TOURNAMENT_NAME]
 
@@ -134,7 +133,7 @@ class FixedTablePairingTestCase(TestCase):
         )
 
     def test_partial_lineup_does_not_double_book(self) -> None:
-        """Team 0's line-up promotes its 4th roster player to slot 0 and
+        """Team 0's lineup promotes its 4th roster player to slot 0 and
         leaves slot 3 a hole (the reported ANICET shape). The promoted
         player must be seated once, the benched one not at all."""
         self._seed()
@@ -158,7 +157,7 @@ class FixedTablePairingTestCase(TestCase):
 
     def test_player_round_label_uses_team_letter_and_lineup_slot(self) -> None:
         """The A1/B3 code reflects the player's own team letter + 1-based
-        line-up slot, so it follows the player (not the table cell)."""
+        lineup slot, so it follows the player (not the table cell)."""
         self._seed()
         self._load()
         team0 = self._event.teams_by_id[self.team_ids[0]]
@@ -173,7 +172,7 @@ class FixedTablePairingTestCase(TestCase):
         self.assertEqual(team0.player_round_label(players[p[1]], 1), 'A3')
         # Benched player has no slot this round → no code.
         self.assertIsNone(team0.player_round_label(players[p[2]], 1))
-        # A team with no explicit line-up falls back to roster order, and
+        # A team with no explicit lineup falls back to roster order, and
         # the second team is lettered B.
         team1 = self._event.teams_by_id[self.team_ids[1]]
         q = self.player_ids[1]
@@ -192,7 +191,7 @@ class FixedTablePairingTestCase(TestCase):
         self.assertEqual(board.optional_white_pairing.result, Result.NO_RESULT)
 
     def test_create_flat_manual_board_player_vs_hole(self) -> None:
-        """A player boarded against a hole wins by forfeit; no line-up change."""
+        """A player boarded against a hole wins by forfeit; no lineup change."""
         self._seed()
         tournament = self._load()
         p0 = self.player_ids[0][0]

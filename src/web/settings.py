@@ -1,11 +1,12 @@
 from contextvars import ContextVar
-from functools import partial
+from functools import lru_cache, partial
 import os
+import re
 import posixpath
 import sqlite3
 import typing as t
 from pathlib import Path
-from typing import Sequence
+from collections.abc import Sequence
 
 import aiosqlite
 from aiosqlitepool import SQLiteConnectionPool
@@ -15,6 +16,7 @@ from jinja2 import (
     Template as JinjaTemplate,
     TemplateNotFound,
 )
+from markupsafe import Markup, escape
 from jinja2.runtime import Context as JinjaContext
 from litestar import Router
 from litestar.plugins.jinja import JinjaTemplateEngine
@@ -38,7 +40,8 @@ from litestar.middleware.base import DefineMiddleware
 
 from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.exception import DatabaseInaccessibleException
-from common.i18n import gettext, ngettext
+from common.i18n import gettext, ngettext, npgettext, pgettext
+from common.i18n.utils import ordinal_suffixes
 from data.input_output import OnlineDataSourceManager
 
 from plugins.manager import plugin_manager
@@ -52,7 +55,11 @@ from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.admin.championship_admin_controller import (
     ChampionshipAdminController,
 )
+from web.controllers.admin.place_card_template_admin_controller import (
+    PlaceCardTemplateAdminController,
+)
 from web.controllers.admin.player_admin_controller import PlayerAdminController
+from web.controllers.admin.plugin_admin_controller import PluginAdminController
 from web.controllers.admin.prize_admin_controller import PrizeAdminController
 from web.controllers.admin.prize_config_admin_controller import (
     PrizeConfigAdminController,
@@ -99,6 +106,8 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     ChampionshipAdminController,
     EventAdminController,
     EventDocumentsController,
+    PlaceCardTemplateAdminController,
+    PluginAdminController,
     TournamentAdminController,
     TeamAdminController,
     PairingsAdminController,
@@ -140,7 +149,7 @@ exception_handlers = {
 
 
 @listener('connected')
-async def load_first_online_data_sources_connection_status():
+async def load_first_online_data_sources_connection_status() -> None:
     for data_source in OnlineDataSourceManager().objects():
         if data_source.connection_status is None:
             await data_source.reload_connection_status()
@@ -156,7 +165,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         self,
         environment: Environment,
         template: str,
-    ) -> t.Tuple[str, str, t.Callable[[], bool]]:
+    ) -> tuple[str, str, t.Callable[[], bool]]:
         # pieces = self.split_template_path(template)
         pieces: list[str] = template.split('/')
 
@@ -164,7 +173,7 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
             # Use posixpath even on Windows to avoid "drive:" or UNC
             # segments breaking out of the search directory.
             filename = posixpath.join(searchpath, *pieces)
-            if os.path.isfile(filename):
+            if os.path.isfile(filename):  # noqa: PTH113
                 break
         else:
             plural = 'path' if len(self.searchpath) == 1 else 'paths'
@@ -177,11 +186,11 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         with open(filename, encoding=self.encoding) as f:
             contents = f.read()
 
-        mtime = os.path.getmtime(filename)
+        mtime = os.path.getmtime(filename)  # noqa: PTH204
 
         def uptodate() -> bool:
             try:
-                return os.path.getmtime(filename) == mtime
+                return os.path.getmtime(filename) == mtime  # noqa: PTH204
             except OSError:
                 return False
 
@@ -243,6 +252,44 @@ class ProfiledJinjaTemplate(JinjaTemplate):
                 record_template(self.name, perf_counter() - start)
 
 
+@lru_cache
+def _ordinal_suffix_pattern(suffixes: tuple[str, ...]) -> re.Pattern[str] | None:
+    """The given letters, where they follow a number. Longest first, so 'es'
+    is raised whole rather than leaving its 's' behind."""
+    if not suffixes:
+        return None
+    parts = sorted(map(re.escape, suffixes), key=len, reverse=True)
+    return re.compile(rf'(?<=\d)({"|".join(parts)})\b')
+
+
+def raise_ordinal_suffix(value: str) -> Markup:
+    """Raise the letters an ordinal ends with — '8es de finale', '1st'."""
+    pattern = _ordinal_suffix_pattern(ordinal_suffixes())
+    text = escape(value)
+    if pattern is None:
+        return text
+    return Markup(pattern.sub(r'<sup>\1</sup>', text))
+
+
+def raise_ordinal_suffix_svg(value: str) -> Markup:
+    """The same for a label drawn in SVG text, which has no ``<sup>``: the
+    suffix is lifted off the baseline and the rest of the line put back on
+    it, a shift otherwise carrying over to the glyphs that follow."""
+    pattern = _ordinal_suffix_pattern(ordinal_suffixes())
+    text = escape(value)
+    if pattern is None:
+        return text
+    # The size comes from a class, not an attribute: a stylesheet's word
+    # beats a presentation attribute, and print.css sizes every element.
+    # Both shifts are a third of the line's size, read in the em of the
+    # tspan each sits on — the suffix's own being the smaller.
+    raised, count = pattern.subn(
+        r'<tspan class="ordinal-sup" dy="-0.5em">\1</tspan><tspan dy="0.33em">',
+        text,
+    )
+    return Markup(raised + '</tspan>' * count)
+
+
 class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
@@ -265,10 +312,16 @@ class SharlyChessEnvironment(Environment):
         self.context_class = ReleasableJinjaContext
         self.template_class = ProfiledJinjaTemplate
         self.add_extension('jinja2.ext.i18n')
-        self.install_gettext_callables(  # type: ignore
-            gettext=gettext, ngettext=ngettext, newstyle=True
+        self.install_gettext_callables(  # type: ignore[attr-defined]
+            gettext=gettext,
+            ngettext=ngettext,
+            newstyle=True,
+            pgettext=pgettext,
+            npgettext=npgettext,
         )
         self.add_extension('jinja2.ext.do')
+        self.filters['raise_ordinal_suffix'] = raise_ordinal_suffix
+        self.filters['raise_ordinal_suffix_svg'] = raise_ordinal_suffix_svg
 
     def join_path(self, template: str, parent: str) -> str:
         return str(Path(parent).parent / template)
@@ -276,7 +329,7 @@ class SharlyChessEnvironment(Environment):
 
 template_dirs: list[Path] = [
     BASE_DIR / 'src/web/templates',
-    *[path for path in plugin_manager.templates_paths],
+    *list(plugin_manager.templates_paths),
     # lib files can be included in print view to build self-contained files
     BASE_DIR / 'src/web/static',
 ]
@@ -295,7 +348,7 @@ template_config: TemplateConfig = TemplateConfig(
 sessions_path: Path = TMP_DIR / 'session.db'
 
 
-def create_sessions_database(path: Path):
+def create_sessions_database(path: Path) -> None:
     database = sqlite3.connect(path)
     cursor = database.cursor()
     cursor.execute(
@@ -305,7 +358,7 @@ def create_sessions_database(path: Path):
     database.commit()
     cursor.close()
     database.close()
-    return None
+    return
 
 
 create_sessions_database(sessions_path)

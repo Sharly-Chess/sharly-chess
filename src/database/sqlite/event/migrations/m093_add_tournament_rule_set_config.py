@@ -39,7 +39,7 @@ class Migration(BaseMigration):
     fields a rule set contributes, keyed by field id. Only the rule set
     interprets them."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `tournament` ADD `rule_set_config` TEXT')
         self.database.execute(
             'UPDATE `tournament` SET `rule_set_config` = ? WHERE `rule_set` = ?',
@@ -52,7 +52,7 @@ class Migration(BaseMigration):
                 (rule_set, json.dumps(config), old_rule_set),
             )
 
-    def backward(self):
+    def backward(self) -> None:
         for old_rule_set, rule_set, config in _NO_R3_REPLACEMENTS:
             self.database.execute(
                 'UPDATE `tournament` SET `rule_set` = ? '

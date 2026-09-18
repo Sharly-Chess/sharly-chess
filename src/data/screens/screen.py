@@ -44,9 +44,9 @@ class Screen:
             assert family is None and family_part is None, (
                 f'screen={stored_screen}, family={family}, family_part={family_part}'
             )
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_screen: StoredScreen | None = stored_screen
-        self._family_ref: Optional['ReferenceType[Family]'] = (
+        self._family_ref: ReferenceType[Family] | None = (
             weakref.ref(family) if family else None
         )
         self.family_part: int | None = family_part
@@ -138,10 +138,9 @@ class Screen:
     def columns(self) -> int:
         if self.stored_screen:
             return self.stored_screen.columns or 1
-        else:
-            if self.family is None:
-                raise RuntimeError('Family reference unexpectedly None')
-            return self.family.columns
+        if self.family is None:
+            raise RuntimeError('Family reference unexpectedly None')
+        return self.family.columns
 
     @property
     def font_size(self) -> int | None:
@@ -174,13 +173,10 @@ class Screen:
         if single_tournament:
             if first_last:
                 return _('Boards %f-%l')
-            else:
-                return _('By board')
-        else:
-            if first_last:
-                return _('%t [Boards %f-%l]')
-            else:
-                return _('%t (by board)')
+            return _('By board')
+        if first_last:
+            return _('%t [Boards %f-%l]')
+        return _('%t (by board)')
 
     @staticmethod
     def default_players_screen_menu_text(
@@ -189,13 +185,10 @@ class Screen:
         if single_tournament:
             if first_last:
                 return '%f-%l'
-            else:
-                return _('By player')
-        else:
-            if first_last:
-                return '%t [%f-%l]'
-            else:
-                return _('%t (by player)')
+            return _('By player')
+        if first_last:
+            return '%t [%f-%l]'
+        return _('%t (by player)')
 
     @staticmethod
     def default_check_in_screen_menu_text(
@@ -204,13 +197,10 @@ class Screen:
         if single_tournament:
             if first_last:
                 return '%f-%l'
-            else:
-                return _('Check-in')
-        else:
-            if first_last:
-                return '%t [%f-%l]'
-            else:
-                return _('%t (check-in)')
+            return _('Check-in')
+        if first_last:
+            return '%t [%f-%l]'
+        return _('%t (check-in)')
 
     @staticmethod
     def default_ranking_screen_menu_text(
@@ -222,24 +212,17 @@ class Screen:
             if first_last:
                 if crosstable:
                     return _('Crosstable %f-%l')
-                else:
-                    return _('Ranking %f-%l')
-            else:
-                if crosstable:
-                    return _('Crosstable')
-                else:
-                    return _('Ranking')
-        else:
-            if first_last:
-                if crosstable:
-                    return '%t crosstable [%f-%l]'
-                else:
-                    return '%t ranking [%f-%l]'
-            else:
-                if crosstable:
-                    return '%t crosstable'
-                else:
-                    return _('%t ranking')
+                return _('Ranking %f-%l')
+            if crosstable:
+                return _('Crosstable')
+            return _('Ranking')
+        if first_last:
+            if crosstable:
+                return '%t crosstable [%f-%l]'
+            return '%t ranking [%f-%l]'
+        if crosstable:
+            return '%t crosstable'
+        return _('%t ranking')
 
     def _resolve_menu_label(self, template: str) -> str:
         """Substitute %t (tournament), %f/%l (this screen's first/last, with
@@ -345,10 +328,9 @@ class Screen:
             exit_button = self.stored_screen.input_exit_button
             assert exit_button is not None
             return exit_button
-        else:
-            if self.family is None:
-                raise RuntimeError('Family reference unexpectedly None')
-            return self.family.input_exit_button
+        if self.family is None:
+            raise RuntimeError('Family reference unexpectedly None')
+        return self.family.input_exit_button
 
     @property
     def icon_str(self) -> str:
@@ -380,8 +362,7 @@ class Screen:
     def background_color(self) -> str:
         if self.stored_screen and self.stored_screen.background_color:
             return self.stored_screen.background_color
-        else:
-            return self.event.background_color
+        return self.event.background_color
 
     @property
     def message_default(self) -> bool:
@@ -403,10 +384,7 @@ class Screen:
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, builtins.type[PluginData]]:
-        return {
-            plugin_id: plugin_data_class
-            for plugin_id, plugin_data_class in plugin_manager.hook.get_screen_plugin_data_class()
-        }
+        return dict(plugin_manager.hook.get_screen_plugin_data_class())
 
     @cached_property
     def plugin_data(self) -> dict[str, PluginData]:

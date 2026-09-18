@@ -106,7 +106,7 @@
                                             macros.point_adjustment_tooltip(tournament, admin_team.id, round),
                                             'top'
                                         ) }}
-                                    >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</span>
+                                    >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</span>
                                 {% endif %}
                                 {% if client.can_update_results(tournament.id) %}
                                     {# There is nothing to adjust until the round
@@ -125,7 +125,7 @@
                                     >
                                         <button
                                             type="button"
-                                            class="btn btn-sm btn-outline-primary ms-1 px-1 py-0"
+                                            class="btn btn-sm compact-y-padding btn-outline-primary ms-1 px-1"
                                             {% if _round_paired %}
                                                 hx-get="{{ url_for(
                                                     'admin-team-point-adjustment-modal',

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass, field, replace
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from utils.enum import PlayerTitle, Result, TitleNorm
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from data.player import TournamentPlayer
 
 
-class RoundDecision(str, Enum):
+class RoundDecision(StrEnum):
     """How `collect_inputs` (or the subset search) treated one round."""
 
     INCLUDED = 'included'
@@ -51,7 +51,7 @@ class RoundAuditEntry:
     """
 
     round_: int
-    opponent: 'TournamentPlayer | None'
+    opponent: TournamentPlayer | None
     raw_result: Result
     effective_result: Result | None
     decision: RoundDecision
@@ -84,7 +84,7 @@ class NormInputs:
     # separately only so the audit view can show it with a clarifying note.
     fid_count: int = 0
     titles_counter: Counter[PlayerTitle] = field(default_factory=Counter)
-    opponents: list['TournamentPlayer'] = field(default_factory=list)
+    opponents: list[TournamentPlayer] = field(default_factory=list)
     results_list: list[Result] = field(default_factory=list)
     included_rounds: list[int] = field(default_factory=list)
     forfeits_or_byes: int = 0
@@ -93,7 +93,7 @@ class NormInputs:
     has_last_round_forfeit_against: bool = False
     round_audit: list[RoundAuditEntry] = field(default_factory=list)
 
-    def without_rounds(self, drop: frozenset[int]) -> 'NormInputs':
+    def without_rounds(self, drop: frozenset[int]) -> NormInputs:
         """Return a copy with the specified rounds removed from the mix.
 
         Counters and score are recomputed from the kept entries.

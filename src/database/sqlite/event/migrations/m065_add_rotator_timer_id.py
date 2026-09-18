@@ -6,7 +6,7 @@ class Migration(BaseMigration):
     def are_foreign_keys_enabled() -> bool:
         return False
 
-    def forward(self):
+    def forward(self) -> None:
         # Screen: missing `ON DELETE SET NULL` constraint on the timer FK
         self.database.execute(
             """
@@ -193,7 +193,7 @@ class Migration(BaseMigration):
         self.database.execute('DROP TABLE `rotator`')
         self.database.execute('ALTER TABLE `rotator_copy` RENAME TO `rotator`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             """
             CREATE TABLE `rotator_copy` (

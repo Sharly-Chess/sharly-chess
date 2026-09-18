@@ -1,7 +1,7 @@
 import copy
 from abc import ABC, abstractmethod
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.player import Player
 from database.sqlite.event.event_store import StoredPlayer
 from utils.entity import IdentifiableEntity
@@ -17,7 +17,7 @@ class PlayerUpdaterField(IdentifiableEntity, ABC):
     @abstractmethod
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         """Update the source player from the match player's value."""
 
     @abstractmethod
@@ -72,7 +72,7 @@ class FideIDUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.fide_id = match_stored_player.fide_id
 
     @property
@@ -97,7 +97,7 @@ class TitleUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.title = match_stored_player.title
 
 
@@ -118,7 +118,7 @@ class WomenTitleUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.women_title = match_stored_player.women_title
 
 
@@ -142,7 +142,7 @@ class NameUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.last_name = match_stored_player.last_name
         stored_player.first_name = match_stored_player.first_name
 
@@ -184,7 +184,7 @@ class CategoryUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.year_of_birth = match_stored_player.year_of_birth
         stored_player.date_of_birth = match_stored_player.date_of_birth
 
@@ -203,7 +203,7 @@ class GenderPlayerUpdater(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.gender = match_stored_player.gender
 
     def get_string_value(self, player: Player) -> str:
@@ -230,9 +230,15 @@ class RatingUpdaterField(PlayerUpdaterField, ABC):
     def static_name(cls) -> str:
         return cls.tournament_rating().short_name
 
+    @property
+    def _with_k_factor(self) -> bool:
+        return PlayerRatingType.FIDE in self.rating_types
+
     def is_updated(self, player: Player, match_player: Player) -> bool:
         src_ratings = player.ratings[self.tournament_rating()]
         match_ratings = match_player.ratings[self.tournament_rating()]
+        if self._with_k_factor and src_ratings.k_factor != match_ratings.k_factor:
+            return True
         return any(
             src_ratings.get_type_value(rt) != match_ratings.get_type_value(rt)
             for rt in self.rating_types
@@ -252,7 +258,7 @@ class RatingUpdaterField(PlayerUpdaterField, ABC):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         tr = self.tournament_rating().value
         src_ratings = PlayerRating.from_stored_value(stored_player.ratings.get(tr, {}))
         match_ratings = PlayerRating.from_stored_value(
@@ -262,10 +268,17 @@ class RatingUpdaterField(PlayerUpdaterField, ABC):
             src_ratings.set_value_from_type(
                 match_ratings.get_type_value(rating_type), rating_type
             )
+        if self._with_k_factor:
+            src_ratings.k_factor = match_ratings.k_factor
         stored_player.ratings[tr] = src_ratings.stored_value
 
+    def _format_ratings(self, ratings: PlayerRating) -> str:
+        if self._with_k_factor and ratings.k_factor is not None:
+            return f'{ratings} (K{ratings.k_factor})'
+        return str(ratings)
+
     def get_string_value(self, player: Player) -> str:
-        return str(player.ratings[self.tournament_rating()])
+        return self._format_ratings(player.ratings[self.tournament_rating()])
 
     def get_composed_string_value(self, _player: Player, match_player: Player) -> str:
         ratings = copy.deepcopy(_player.ratings[self.tournament_rating()])
@@ -274,7 +287,9 @@ class RatingUpdaterField(PlayerUpdaterField, ABC):
             ratings.set_value_from_type(
                 match_ratings.get_type_value(rating_type), rating_type
             )
-        return str(ratings)
+        if self._with_k_factor:
+            ratings.k_factor = match_ratings.k_factor
+        return self._format_ratings(ratings)
 
 
 class StandardRatingUpdaterField(RatingUpdaterField):
@@ -302,14 +317,14 @@ class FederationUpdaterField(PlayerUpdaterField):
 
     @staticmethod
     def static_name() -> str:
-        return _('Fed. *** FEDERATION COLUMN HEADER')
+        return pgettext('federation column header', 'Fed.')
 
     def is_updated(self, player: Player, match_player: Player) -> bool:
         return player.federation != match_player.federation
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.federation = match_stored_player.federation
 
     def get_string_value(self, player: Player) -> str:
@@ -330,7 +345,7 @@ class ClubUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.club = match_stored_player.club
 
     def get_string_value(self, player: Player) -> str:

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Iterable
+from collections.abc import Iterable
 
 from common.i18n import _
 from common.i18n.utils import normalized_key

@@ -118,6 +118,13 @@ window.addEventListener("htmx:wsBeforeMessage", function(evt) {
     }
 });
 
+window.addEventListener('htmx:beforeRequest', function (evt) {
+    const path = evt.detail.requestConfig?.path || '';
+    if (path.includes('/pairing/set-result/')) {
+        refreshMessagesIgnored += 1;
+    }
+});
+
 const tooltipSelector = '[data-bs-toggle="tooltip"]';
 
 function closeTooltips () {
@@ -311,6 +318,14 @@ window.addEventListener('show.bs.collapse', e => saveState(e.target, true));
 
 window.addEventListener('hide.bs.collapse', e => saveState(e.target, false));
 
+const restoreTriggersState = (id, isOpen) => {
+    const selector = `[data-bs-toggle="collapse"][data-bs-target="#${id}"], [data-bs-toggle="collapse"][href="#${id}"]`;
+    document.querySelectorAll(selector).forEach(trigger => {
+        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        trigger.classList.toggle('collapsed', !isOpen);
+    });
+};
+
 const restoreState = () => {
   const states = JSON.parse(localStorage.getItem('collapseStates') || '{}');
   Object.entries(states).forEach(([id, isOpen]) => {
@@ -326,6 +341,7 @@ const restoreState = () => {
         el.style.height = '';
         el.setAttribute('aria-expanded', 'false');
     }
+    restoreTriggersState(id, isOpen);
   });
 };
 
@@ -354,6 +370,9 @@ window.addEventListener('htmx:afterRequest', function() {
 
 window.addEventListener('htmx:afterSettle', function(event) {
     restoreState();
+    // The content that has just been swapped in needs its tooltips: it is not
+    // in the page yet when htmx:afterRequest activates them.
+    activateTooltips(event.target);
 });
 
 
@@ -435,6 +454,33 @@ function toggle_sidebar(e) {
     }
 }
 
+// Below the drawer breakpoint the sidebar slides over the content instead of
+// taking a column of its own, so a phone keeps the full width for the page.
+function toggle_sidebar_drawer(e) {
+    e.preventDefault();
+    $('body').toggleClass('sidebar-drawer-open');
+}
+
+function close_sidebar_drawer() {
+    $('body').removeClass('sidebar-drawer-open');
+}
+
+$(document).on('click', '#sidebar-nav a, #sidebar-nav button', function () {
+    // A submenu toggle stays in the drawer; only navigation closes it.
+    const toggle = $(this).attr('data-bs-toggle');
+    if (toggle === 'collapse' || toggle === 'dropdown') {
+        return;
+    }
+    close_sidebar_drawer();
+});
+
+// On a narrow screen a toolbar's secondary controls are folded away behind a
+// "more" button, leaving only the ones the tab marks as worth a permanent row.
+function toggle_top_nav(e) {
+    e.preventDefault();
+    $('body').toggleClass('top-nav-expanded');
+}
+
 function errorBeep() {
     var snd = new Audio("/static/sounds/error-beep.wav");
     snd.play();
@@ -501,23 +547,27 @@ async function downloadFile(el, formId) {
     try {
         const response = await fetch(url, { headers: { 'HX-Request': 'true' } });
         const contentType = response.headers.get('content-type') || '';
+        const disposition = response.headers.get('content-disposition');
 
         // If server returned a file
-        if (contentType.startsWith('application/') || response.headers.get('content-disposition')) {
+        if (contentType.startsWith('application/') || disposition) {
             // Turn it into a blob for download
             const blob = await response.blob();
             const a = document.createElement('a');
             const downloadUrl = URL.createObjectURL(blob);
-            const filename = response.headers
-                .get('content-disposition')
+            const filename = disposition
                 ?.split('filename=')[1]
                 ?.replaceAll('"', '') || 'download';
             a.href = downloadUrl;
             a.download = filename;
             document.body.appendChild(a);
             a.click();
-            a.remove();
-            URL.revokeObjectURL(downloadUrl);
+            // Safari cancels the download if the anchor or the blob URL goes
+            // away before it has taken the file over.
+            setTimeout(() => {
+                a.remove();
+                URL.revokeObjectURL(downloadUrl);
+            }, 30000);
             return;
         }
 

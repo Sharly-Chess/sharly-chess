@@ -25,7 +25,7 @@ class TeamGroup:
     from being paired together."""
 
     def __init__(self, event: 'Event', stored_team_group: StoredTeamGroup):
-        self._event_ref: 'weakref.ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: weakref.ReferenceType[Event] = weakref.ref(event)
         self.stored_team_group = stored_team_group
 
     @property
@@ -58,7 +58,7 @@ class Team:
     """A team of players competing as a unit in a team tournament."""
 
     def __init__(self, event: 'Event', stored_team: StoredTeam):
-        self._event_ref: 'weakref.ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: weakref.ReferenceType[Event] = weakref.ref(event)
         self.stored_team = stored_team
 
     @property
@@ -110,11 +110,11 @@ class Team:
 
     def player_round_label(self, player: 'Player', round_: int) -> str | None:
         """Fixed-table code for ``player`` this round — the team letter plus
-        the player's 1-based line-up slot (e.g. ``A1``, ``B3``). Derived from
+        the player's 1-based lineup slot (e.g. ``A1``, ``B3``). Derived from
         the player's actual seat in :meth:`effective_round_slots`, so it
         follows the player wherever they end up (manual re-pairing included),
         independent of which physical board they sit at. ``None`` when the
-        team has no letter or the player isn't in this round's line-up."""
+        team has no letter or the player isn't in this round's lineup."""
         letter = self.pairing_label
         if letter is None:
             return None
@@ -169,6 +169,52 @@ class Team:
         if captain is not None:
             return captain.full_name
         return self.stored_team.captain_name or None
+
+    @cached_property
+    def is_excluded_from_standings(self) -> bool:
+        """FIDE 6.6 (team analogue): a team round-robin team that completed
+        less than 50% of its matches — every board forfeited, the mark of a
+        withdrawn or expelled team — is kept in the crosstable but dropped
+        from the final standings, and its matches don't count in the other
+        teams' tie-breaks.
+
+        A match counts as not completed when the team forfeited every one of
+        its boards (:meth:`TeamBoard.team_all_forfeit`). Two conditions, both
+        required:
+
+        - The team did not play its *last* scheduled match (it forfeited
+          every board). A team present for its final round was there at the
+          end and so did not withdraw, whatever it missed earlier.
+        - More than half of its scheduled matches were forfeited this way.
+
+        A match still being played, or a bye, is not counted.
+        """
+        tournament = self.tournament
+        if tournament is None:
+            return False
+        if not tournament.round_robin_participation_rule:
+            return False
+        if not tournament.pairing_system.supports_participation_rule:
+            return False
+        scheduled = [
+            team_board
+            for team_board in tournament.team_boards_by_id.values()
+            if team_board.stored_team_board.team_b_id is not None
+            and self.id
+            in (
+                team_board.stored_team_board.team_a_id,
+                team_board.stored_team_board.team_b_id,
+            )
+        ]
+        if not scheduled:
+            return False
+        last_scheduled = max(scheduled, key=lambda team_board: team_board.round)
+        if not last_scheduled.team_all_forfeit(self.id):
+            return False
+        abandoned = sum(
+            1 for team_board in scheduled if team_board.team_all_forfeit(self.id)
+        )
+        return abandoned * 2 > len(scheduled)
 
     @property
     def has_been_paired(self) -> bool:
@@ -274,7 +320,7 @@ class Team:
     def lineups_by_round(self) -> dict[int, list['Player']]:
         """Per-round lineup as a list of players ordered by board index.
         Missing rounds are absent from the dict."""
-        result: dict[int, list['Player']] = {}
+        result: dict[int, list[Player]] = {}
         players_by_id = self.event.players_by_id
         for round_, entries in self.stored_team.stored_round_lineups.items():
             ordered = sorted(entries, key=lambda e: e.index)
@@ -305,11 +351,11 @@ class Team:
             # No tournament yet: the base lineup is the whole roster
             # (the roster size stands in for the board count).
             return list(self.players)
-        if tournament.team_player_count is None:
-            return []
-        if round_ > 1:
-            return self.effective_round_lineup(round_ - 1)
-        return self.players[: tournament.team_player_count]
+        return [
+            player
+            for player in self.effective_round_slots(round_)
+            if player is not None
+        ]
 
     def lineup_source(self, round_: int) -> str:
         """How *round_*'s effective lineup is obtained: ``'explicit'`` when
@@ -343,7 +389,7 @@ class Team:
             if tournament is None or tournament.team_player_count is None:
                 return []
             n = tournament.team_player_count
-        slots: list['Player | None'] = [None] * n
+        slots: list[Player | None] = [None] * n
         if self.has_explicit_round_lineup(round_):
             players_by_id = self.event.players_by_id
             for entry in self.stored_team.stored_round_lineups[round_]:
@@ -355,6 +401,13 @@ class Team:
         # ``board_count`` override is the base-lineup editor for a team not
         # yet in a tournament — that's always round-1 / roster semantics.
         if board_count is None and round_ > 1:
+            # Once the previous round is paired, its boards are its
+            # lineup — the boards the team left empty included. Taking
+            # the previous round's lineup means that one, not the roster
+            # the chain of stored lineups would fall back to.
+            previous_boards = self.round_board_slots(round_ - 1)
+            if previous_boards is not None:
+                return previous_boards
             return self.effective_round_slots(round_ - 1)
         roster = self.players[:n]
         for i, player in enumerate(roster):
@@ -373,25 +426,13 @@ class Team:
         tournament = self.tournament
         if tournament is None or tournament.team_player_count is None:
             return None
-        team_board = next(
-            (
-                tb
-                for tb in tournament.get_round_team_boards(round_)
-                if tb.stored_team_board.team_b_id is not None
-                and self.id
-                in (
-                    tb.stored_team_board.team_a_id,
-                    tb.stored_team_board.team_b_id,
-                )
-            ),
-            None,
-        )
+        team_board = tournament.team_match_by_team_and_round.get((self.id, round_))
         if team_board is None:
             return None
         n = tournament.team_player_count
-        slots: list['Player | None'] = [None] * n
+        slots: list[Player | None] = [None] * n
         players_by_id = self.event.players_by_id
-        # Which line-up slot each board seats this team's player on. A
+        # Which lineup slot each board seats this team's player on. A
         # match seats slot i on board i, but a table that rotates one
         # team around the other does not.
         slot_by_board_index = tournament.pairing_variation.engine.team_board_slots(
@@ -413,11 +454,15 @@ class Team:
 
     def lineup_out_of_roster_order(self, round_: int) -> bool:
         """True iff *round_*'s board players (holes skipped) are not in
-        ascending roster order. Used to warn when a line-up reshuffles
-        players relative to the roster."""
+        ascending roster order. Used to warn when a lineup reshuffles
+        players relative to the roster. Once the round is paired its
+        boards are the source of truth, as in
+        :meth:`round_board_slots`."""
+        slots = self.round_board_slots(round_) or self.effective_round_slots(round_)
+        lineup = [player for player in slots if player is not None]
         roster_index = {player.id: i for i, player in enumerate(self.players)}
         last = -1
-        for player in self.effective_round_lineup(round_):
+        for player in lineup:
             idx = roster_index.get(player.id)
             if idx is None:
                 continue
@@ -430,7 +475,7 @@ class Team:
     # Mutations
     # -------------------------------------------------------------------------
 
-    def update(self, database: EventDatabase):
+    def update(self, database: EventDatabase) -> None:
         database.update_stored_team(self.stored_team)
 
     def _delete_boardless_player_pairings(
@@ -459,7 +504,9 @@ class Team:
             tournament_player.stored_tournament_player.stored_pairings = kept_pairings
             tournament_player.__dict__.pop('pairings_by_round', None)
 
-    def set_tournament(self, tournament_id: int | None, database: EventDatabase):
+    def set_tournament(
+        self, tournament_id: int | None, database: EventDatabase
+    ) -> None:
         old_tournament = self.tournament
         if self.stored_team.tournament_id == tournament_id:
             return
@@ -513,7 +560,9 @@ class Team:
             if new_tournament is not None:
                 new_tournament.clear_team_cache()
 
-    def set_pairing_number(self, pairing_number: int | None, database: EventDatabase):
+    def set_pairing_number(
+        self, pairing_number: int | None, database: EventDatabase
+    ) -> None:
         self.stored_team.pairing_number = pairing_number
         database.set_team_pairing_number(self.id, pairing_number)
 
@@ -522,7 +571,7 @@ class Team:
         captain_id: int | None,
         captain_name: str | None,
         database: EventDatabase,
-    ):
+    ) -> None:
         """Set this team's captain: a playing captain by ``captain_id``
         (must belong to this team's roster — caller enforces), or a
         non-playing one by free-typed ``captain_name``. The two are
@@ -533,11 +582,11 @@ class Team:
         self.stored_team.captain_name = captain_name
         database.set_team_captain(self.id, captain_id, captain_name)
 
-    def set_group(self, group_id: int | None, database: EventDatabase):
+    def set_group(self, group_id: int | None, database: EventDatabase) -> None:
         self.stored_team.group_id = group_id
         database.set_team_group(self.id, group_id)
 
-    def set_check_in(self, check_in: bool, database: EventDatabase):
+    def set_check_in(self, check_in: bool, database: EventDatabase) -> None:
         self.stored_team.check_in = check_in
         database.set_team_check_in(self.id, check_in)
 
@@ -546,11 +595,11 @@ class Team:
         round_: int,
         player_ids: Sequence[int | None],
         database: EventDatabase,
-    ):
+    ) -> None:
         """Replace the team's lineup for the given round. Position in
-        *player_ids* determines the board index (0-based). ``None``
-        at index i = hole on board i (no row stored for that index,
-        producing a gap in the lineup's index sequence)."""
+        *player_ids* determines the board index (0-based). ``None`` at
+        index i = hole on board i, stored as a row with no player, so a
+        lineup that fields nobody is a lineup all the same."""
         entries = [
             StoredTeamRoundLineupEntry(
                 team_id=self.id,
@@ -559,12 +608,11 @@ class Team:
                 index=index,
             )
             for index, player_id in enumerate(player_ids)
-            if player_id is not None
         ]
         database.replace_team_round_lineup(self.id, round_, entries)
         self.stored_team.stored_round_lineups[round_] = entries
 
-    def delete_round_lineup(self, round_: int, database: EventDatabase):
+    def delete_round_lineup(self, round_: int, database: EventDatabase) -> None:
         database.delete_team_round_lineup(self.id, round_)
         self.stored_team.stored_round_lineups.pop(round_, None)
 
@@ -686,7 +734,7 @@ class Team:
     # Roster
     # -------------------------------------------------------------------------
 
-    def _invalidate_players(self):
+    def _invalidate_players(self) -> None:
         if 'players' in self.__dict__:
             del self.__dict__['players']
         if 'players_by_id' in self.__dict__:
@@ -700,7 +748,7 @@ class Team:
         tournament = self.tournament
         return tournament.roster_max_size if tournament else None
 
-    def add_player(self, player: 'Player', database: EventDatabase):
+    def add_player(self, player: 'Player', database: EventDatabase) -> None:
         """Add a player to the team's roster.
         Removes the player from any previous team (event-wide uniqueness).
         Appends at the end of the roster ordering.
@@ -742,7 +790,7 @@ class Team:
                 ):
                     previous_tournament.unregister_rostered_player(player.id)
 
-    def remove_player(self, player: 'Player', database: EventDatabase):
+    def remove_player(self, player: 'Player', database: EventDatabase) -> None:
         """Remove a player from this team. Compacts remaining indexes."""
         if player.stored_player.team_id != self.id:
             return
@@ -757,7 +805,7 @@ class Team:
             self.tournament.unregister_rostered_player(player.id)
         self._compact_indexes(database)
 
-    def _compact_indexes(self, database: EventDatabase):
+    def _compact_indexes(self, database: EventDatabase) -> None:
         """Renumber remaining players' team_index sequentially from 0."""
         remaining = self.players
         if not remaining:
@@ -768,7 +816,9 @@ class Team:
         database.reorder_team_players(self.id, ids)
         self._invalidate_players()
 
-    def reorder_players(self, ordered_player_ids: list[int], database: EventDatabase):
+    def reorder_players(
+        self, ordered_player_ids: list[int], database: EventDatabase
+    ) -> None:
         """Reorder roster players. Silently ignores ids not on this team."""
         current_ids = {p.id for p in self.players}
         filtered = [pid for pid in ordered_player_ids if pid in current_ids]

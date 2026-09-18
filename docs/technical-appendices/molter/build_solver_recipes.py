@@ -22,7 +22,7 @@ import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from functools import lru_cache
+from functools import cache
 from itertools import permutations
 from math import perm
 from pathlib import Path
@@ -630,7 +630,7 @@ def _infer_even_factor_row_schedule(
     return {'kind': 'even_factor_rows', 'rows': rows}
 
 
-@lru_cache(maxsize=None)
+@cache
 def _odd_cell_lookup(
     team_count: int,
     factors: tuple[tuple[tuple[int, int], ...], ...],
@@ -1508,7 +1508,7 @@ def _odd_integrated_cp_sat_occurrence_schedule(
 
     model = cp_model.CpModel()
     variables: dict[tuple[int, int], Any] = {}
-    by_factor = [list() for _factor in range(factor_count)]
+    by_factor = [[] for _factor in range(factor_count)]
     by_round_factor: dict[tuple[int, int], list[Any]] = {}
     by_block_factor: dict[tuple[int, int], list[Any]] = {}
     by_prefix_factor: dict[tuple[int, int], list[Any]] = {}
@@ -1862,7 +1862,7 @@ def _odd_colour_integrated_cp_sat_occurrence_schedule(
     variables: dict[tuple[int, int], Any] = {}
     first_white_variables: dict[tuple[int, int, int], Any] = {}
     second_white_variables: dict[tuple[int, int, int], Any] = {}
-    by_factor = [list() for _factor in range(factor_count)]
+    by_factor = [[] for _factor in range(factor_count)]
     by_round_factor: dict[tuple[int, int], list[Any]] = {}
     by_block_factor: dict[tuple[int, int], list[Any]] = {}
     by_opponent: dict[tuple[int, int], list[Any]] = {}
@@ -2413,7 +2413,7 @@ def _even_integrated_cp_sat_factor_rows(
     factor_count = team_count - 1
     model = cp_model.CpModel()
     variables: dict[tuple[int, int, int], Any] = {}
-    by_factor = [list() for _factor in range(factor_count)]
+    by_factor = [[] for _factor in range(factor_count)]
     by_round_factor: dict[tuple[int, int], list[Any]] = {}
     by_slot_factor: dict[tuple[int, int], list[Any]] = {}
     by_prefix_factor: dict[tuple[int, int], list[Any]] = {}
@@ -2908,7 +2908,7 @@ def _colour_with_cp_sat(
         [None] * len(matches) for _seat_index in range(team_count * players_per_team)
     ]
     team_white_by_round = [
-        [list() for _team in range(team_count)] for _round in range(len(matches))
+        [[] for _team in range(team_count)] for _round in range(len(matches))
     ]
 
     for round_index, rnd in enumerate(matches):
@@ -3604,9 +3604,11 @@ def _grid_cases(
         rounds = set(range(1, min(max_rounds, team_count - 1) + 1))
         if include_full_tables:
             rounds.add(team_count - 1)
-        for players_per_team in players:
-            for round_count in sorted(rounds):
-                cases.append((team_count, players_per_team, round_count))
+        cases.extend(
+            (team_count, players_per_team, round_count)
+            for players_per_team in players
+            for round_count in sorted(rounds)
+        )
     return tuple(cases)
 
 

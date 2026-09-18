@@ -3,6 +3,8 @@
    round-robin): lists every team with a lineup-edit button, persistent
    access to lineups whatever the pairing state.
    Requires: ``teams``, ``title``, ``table_id``. #}
+{% set _collapsed = collapsed is defined and collapsed %}
+{% set _lineup = lineup is not defined or lineup %}
 {% if teams %}
     <table
         id="{{ table_id }}"
@@ -15,10 +17,25 @@
             style="top: var(--header-height);"
         >
             <tr>
-                <th colspan="2">{{ title }} ({{ teams|length }})</th>
+                <th colspan="2">
+                    {% if _collapsed %}
+                        <button
+                            class="btn btn-sm p-0 border-0 bg-transparent text-reset"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#{{ table_id }}-body"
+                            aria-expanded="false"
+                        >
+                            <i class="bi-caret-right-fill"></i>
+                            {{ title }} ({{ teams|length }})
+                        </button>
+                    {% else %}
+                        {{ title }} ({{ teams|length }})
+                    {% endif %}
+                </th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="{{ table_id }}-body" class="{{ 'collapse' if _collapsed }}">
             {% for team in teams %}
                 <tr
                     id="team-row-{{ team.id }}"
@@ -64,11 +81,11 @@
                                     macros.point_adjustment_tooltip(admin_tournament, team.id, admin_round),
                                     'top'
                                 ) }}
-                            >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}</a>
+                            >{% if _mp %}{{ '%+g'|format(_mp) }}&nbsp;{{ pgettext('match points', 'MP') }}{% endif %}{% if _mp and _gp %} {% endif %}{% if _gp %}{{ '%+g'|format(_gp) }}&nbsp;{{ pgettext('game points', 'GP') }}{% endif %}</a>
                         {% endif %}
                     </td>
                     <td class="text-end">
-                        {% if client.can_update_tournaments %}
+                        {% if _lineup and client.can_update_tournaments %}
                             <button
                                 type="button"
                                 class="btn btn-sm btn-outline-primary"

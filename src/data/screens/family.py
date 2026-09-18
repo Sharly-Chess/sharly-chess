@@ -27,7 +27,7 @@ class Family:
         event: 'Event',
         stored_family: StoredFamily,
     ):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_family: StoredFamily = stored_family
         self._calculated_first: int = 0
         self._calculated_last: int = 0
@@ -361,5 +361,5 @@ class Family:
                     f'first={self.first}, last={self.last}, parts={self.parts}, number={self.number}'
                 )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Tournament {self.tournament.name} ({self.numbers_str})'

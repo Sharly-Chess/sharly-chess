@@ -1,7 +1,9 @@
 from abc import ABC
-from typing import Any
+from functools import cached_property
+from typing import Any, override
 
-from common.i18n import _
+from common.i18n import _, pgettext
+from common.i18n.utils import ordinal_integer
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from utils import Utils
@@ -13,6 +15,18 @@ class TournamentPlayerTableColumn(Column[TournamentPlayer], ABC):
 
     def __init__(self, usage: ColumnUsage):
         self.usage = usage
+
+    @property
+    def is_standing(self) -> bool:
+        """Whether the column shows a place in the standings (a rank, the
+        score, a tie-break) rather than a fact about the player or their
+        games. A participant dropped from the standings (FIDE 6.6) keeps
+        its row in the crosstable, with these cells left empty."""
+        return False
+
+    @override
+    def is_cell_blank_for(self, object_: TournamentPlayer) -> bool:
+        return self.is_standing and object_.is_excluded_from_standings
 
 
 class CheckinColumn(TournamentPlayerTableColumn):
@@ -37,7 +51,7 @@ class CheckinColumn(TournamentPlayerTableColumn):
 class NumberColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('No. *** NB COLUMN HEADER')
+        return pgettext('NB column header', 'No.')
 
     @property
     def cell_template(self) -> str | None:
@@ -50,8 +64,13 @@ class NumberColumn(TournamentPlayerTableColumn):
 
 class RankColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def is_standing(self) -> bool:
+        return True
+
+    @property
     def header_content(self) -> str:
-        return _('Rk. *** RANK COLUMN HEADER')
+        return pgettext('rank column header', 'Rk.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.rank
@@ -63,8 +82,13 @@ class RankColumn(TournamentPlayerTableColumn):
 
 class ExAequoRankColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def is_standing(self) -> bool:
+        return True
+
+    @property
     def header_content(self) -> str:
-        return _('Rk. *** RANK COLUMN HEADER')
+        return pgettext('rank column header', 'Rk.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.tournament.ex_aequo_rank_by_player_id[
@@ -78,11 +102,16 @@ class ExAequoRankColumn(TournamentPlayerTableColumn):
 
 class RankOverallColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def is_standing(self) -> bool:
+        return True
+
+    @property
     def header_content(self) -> str:
-        return _('Rk. O. *** RANK OVERALL COLUMN HEADER')
+        return pgettext('rank overall column header', 'Rk. O.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'({Utils.ordinal_integer(tournament_player.rank)})'
+        return f'({ordinal_integer(tournament_player.rank)})'
 
     @property
     def is_cell_content_safe(self) -> bool:
@@ -113,7 +142,7 @@ class NameColumn(TournamentPlayerTableColumn):
 
     @property
     def header_content(self) -> str:
-        return _('Name *** NAME COLUMN HEADER')
+        return pgettext('name column header', 'Name')
 
     @property
     def cell_template(self) -> str | None:
@@ -143,7 +172,7 @@ class RatingColumn(TournamentPlayerTableColumn):
 class CategoryColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Cat. *** CATEGORY COLUMN HEADER')
+        return pgettext('category column header', 'Cat.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.category.name
@@ -156,7 +185,7 @@ class CategoryColumn(TournamentPlayerTableColumn):
 class GenderColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Gen. *** GENDER COLUMN HEADER')
+        return pgettext('gender column header', 'Gen.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.gender.short_name
@@ -169,7 +198,7 @@ class GenderColumn(TournamentPlayerTableColumn):
 class FederationColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Fed. *** FEDERATION COLUMN HEADER')
+        return pgettext('federation column header', 'Fed.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.federation.name
@@ -182,7 +211,7 @@ class FederationColumn(TournamentPlayerTableColumn):
 class ClubColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Club *** CLUB COLUMN HEADER')
+        return pgettext('club column header', 'Club')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.club.name
@@ -194,8 +223,13 @@ class ClubColumn(TournamentPlayerTableColumn):
 
 class PointsColumn(TournamentPlayerTableColumn):
     @property
+    @override
+    def is_standing(self) -> bool:
+        return True
+
+    @property
     def header_content(self) -> str:
-        return _('Pts *** POINTS COLUMN HEADER')
+        return pgettext('points column header', 'Pts')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.points_str
@@ -242,16 +276,23 @@ class RoundColumn(TournamentPlayerTableColumn):
         super().__init__(usage)
         self.round = round_
 
+    @override
+    def is_cell_struck_for(self, object_: TournamentPlayer) -> bool:
+        pairing = object_.pairings_by_round.get(self.round)
+        return pairing is not None and object_.game_is_annulled(pairing)
+
     @property
     def header_content(self) -> str:
-        return _('R {round} *** ROUND COLUMN HEADER').format(round=self.round)
+        return pgettext('round column header', 'R {round}').format(round=self.round)
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         pairing = tournament_player.pairings_by_round[self.round]
         content = pairing.result.to_crosstable
         if opponent := pairing.opponent:
-            content += str(opponent.rank).rjust(3, '\u00a0') + getattr(
-                pairing.color, 'to_crosstable'
+            # A pairing with an opponent has been given a colour.
+            assert pairing.color is not None
+            content += (
+                str(opponent.rank).rjust(3, '\u00a0') + pairing.color.to_crosstable
             )
         return content
 
@@ -263,7 +304,7 @@ class RoundColumn(TournamentPlayerTableColumn):
 class TournamentColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS')
+        return pgettext('tournament for players columns', 'Tournament')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.tournament.name
@@ -285,6 +326,11 @@ class TieBreakColumn(TournamentPlayerTableColumn):
         self.index = index
 
     @property
+    @override
+    def is_standing(self) -> bool:
+        return True
+
+    @property
     def header_content(self) -> str:
         return self.tournament.tie_breaks[self.index].acronym
 
@@ -295,6 +341,31 @@ class TieBreakColumn(TournamentPlayerTableColumn):
     def shared_classes(self) -> str:
         emphasis = 'fw-bold ' if self.index == 0 else ''
         return f'{emphasis}text-center'
+
+
+class KnockoutResultColumn(TournamentPlayerTableColumn):
+    """A knock-out's ranking result — 'Winner', 'Runner-up', 'Out — round N'
+    or 'Still in' — shown in place of a points / tie-break column, which a
+    knock-out (ranked by the round reached) does not have."""
+
+    def __init__(self, usage: ColumnUsage, tournament: Tournament):
+        super().__init__(usage)
+        self.tournament = tournament
+
+    @cached_property
+    def _labels(self) -> dict[int, str]:
+        return self.tournament.knockout.standing_labels()
+
+    @property
+    def header_content(self) -> str:
+        return pgettext('knock-out result column', 'Result')
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return self._labels.get(tournament_player.id, '')
+
+    @property
+    def shared_classes(self) -> str:
+        return 'fw-bold text-center'
 
 
 class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
@@ -324,7 +395,7 @@ class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
 class PaidColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Paid *** PAID COLUMN HEADER')
+        return pgettext('paid column header', 'Paid')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return Utils.currency_value_str(
@@ -345,7 +416,7 @@ class PaidColumn(TournamentPlayerTableColumn):
 class OwedColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Owed *** OWED COLUMN HEADER')
+        return pgettext('owed column header', 'Owed')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return Utils.currency_value_str(
@@ -366,7 +437,7 @@ class OwedColumn(TournamentPlayerTableColumn):
 class CommentsColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Comments *** COMMENTS COLUMN HEADER')
+        return pgettext('comments column header', 'Comments')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.comment or ''

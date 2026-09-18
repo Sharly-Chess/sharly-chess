@@ -1,16 +1,27 @@
+from typing import overload
+
+
 def float_display(value: float | None, width: int) -> str:
     if value is None:
         return ' ' * width
     return f'{value:.1f}'.rjust(width)
 
 
-def int_or_default(string, default=None):
+@overload
+def int_or_default(string: str, default: int) -> int: ...
+
+
+@overload
+def int_or_default(string: str, default: None = None) -> int | None: ...
+
+
+def int_or_default(string: str, default: int | None = None) -> int | None:
     if string == '' or string.isspace():
         return default
     return int(string)
 
 
-def float_or_default(string, default=None):
+def float_or_default(string: str, default: float | None = None) -> float | None:
     if string == '' or string.isspace():
         return default
     return float(string)

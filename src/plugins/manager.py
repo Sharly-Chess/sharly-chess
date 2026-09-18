@@ -3,7 +3,7 @@ from functools import cached_property
 from pathlib import Path
 from typing import Any, TypeVar, TYPE_CHECKING, Optional
 
-from apluggy import PluginManager  # type: ignore
+from apluggy import PluginManager
 
 from common import APP_NAME
 from plugins.hookspec import AppHookSpecs
@@ -61,9 +61,11 @@ class AppPluginManager(PluginManager):
             if plugin in plugins_with_dependencies:
                 continue
             plugins_with_dependencies.append(plugin)
-            for dependency in plugin.depends_on_plugins:
-                if dependency not in plugins_with_dependencies:
-                    plugins.append(dependency)
+            plugins.extend(
+                dependency
+                for dependency in plugin.depends_on_plugins
+                if dependency not in plugins_with_dependencies
+            )
         return plugins_with_dependencies
 
     def get_event_enablable_plugins(self, federation: str) -> list[Plugin]:
@@ -97,11 +99,11 @@ class AppPluginManager(PluginManager):
             if plugin.static_path.exists()
         ]
 
-    def load_register(self):
+    def load_register(self) -> None:
         for plugin in self.enabled_plugins:
             self.register(plugin, plugin.id)
 
-    def reload_register(self):
+    def reload_register(self) -> None:
         for plugin in self.all_plugins:
             was_enabled = plugin.is_enabled
             plugin.reload_context()
@@ -112,7 +114,7 @@ class AppPluginManager(PluginManager):
             elif not is_enabled and was_enabled:
                 self.unregister(plugin, plugin.id)
 
-    def enable_dependencies(self):
+    def enable_dependencies(self) -> None:
         from database.sqlite.config.config_database import ConfigDatabase
 
         enabled_with_dependencies = self.get_plugins_with_dependencies(
@@ -150,7 +152,27 @@ class AppPluginManager(PluginManager):
         self.reload_register()
         return plugins_to_enable
 
-    def hook_for_event(self, event: Optional['Event'], hook_name: str):
+    def disable_plugin(self, plugin: Plugin) -> None:
+        from database.sqlite.config.config_database import ConfigDatabase
+
+        if not plugin.is_enabled:
+            return
+        with ConfigDatabase(True) as database:
+            stored_plugin = copy.copy(plugin.context.stored_plugin)
+            stored_plugin.is_enabled = False
+            database.update_stored_plugin(stored_plugin)
+        self.reload_register()
+
+    def set_event_is_enabled_by_default(self, plugin: Plugin, is_enabled: bool) -> None:
+        from database.sqlite.config.config_database import ConfigDatabase
+
+        with ConfigDatabase(True) as database:
+            stored_plugin = copy.copy(plugin.context.stored_plugin)
+            stored_plugin.default_event_is_enabled = is_enabled
+            database.update_stored_plugin(stored_plugin)
+        plugin.reload_context()
+
+    def hook_for_event(self, event: Optional['Event'], hook_name: str) -> Any:
         remove_plugins = []
         if event:
             # event.enabled_plugins (not the raw stored list) so plugins
@@ -163,7 +185,7 @@ class AppPluginManager(PluginManager):
             ]
         return self.subset_hook_caller(hook_name, remove_plugins)
 
-    def hook_for_plugins(self, hook_name: str, plugins: list['Plugin']):
+    def hook_for_plugins(self, hook_name: str, plugins: list['Plugin']) -> Any:
         return self.subset_hook_caller(
             hook_name,
             remove_plugins=[
@@ -191,7 +213,7 @@ def get_plugin_manager() -> AppPluginManager:
 # Create a lazy proxy object
 # This is to avoid circular imports
 class LazyPluginManager:
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> Any:
         return getattr(get_plugin_manager(), name)
 
 

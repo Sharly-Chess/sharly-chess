@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from utils.enum import PlayerRatingType, Result, TitleNorm
-from utils.types import BigTournamentExemption, Federation
+from utils.types import BigTournamentExemption, Federation, NormCheckResult
 
 if TYPE_CHECKING:
     from data.player import TournamentPlayer
@@ -46,7 +46,7 @@ class HighLevelRoundCounts:
     top_40_average: float  # 0.0 when fewer than 40 players are present
 
 
-def _is_present_at_round(player: 'TournamentPlayer', round_: int) -> bool:
+def _is_present_at_round(player: TournamentPlayer, round_: int) -> bool:
     """A player counts as present this round if they played a real game
     OR received a Pairing-Allocated Bye / Rest Game. PAB is excluded from
     "missing a round" by the spec, so it's included here for consistency.
@@ -60,7 +60,7 @@ def _is_present_at_round(player: 'TournamentPlayer', round_: int) -> bool:
     )
 
 
-def _missed_rounds(player: 'TournamentPlayer') -> int:
+def _missed_rounds(player: TournamentPlayer) -> int:
     """Count of rounds the player neither played nor received a PAB / RG /
     forfeit-win for. ≤ 1 keeps the player eligible for both 1.4.3d and
     1.5.6a tournament-wide checks.
@@ -83,7 +83,7 @@ def _missed_rounds(player: 'TournamentPlayer') -> int:
     return missed
 
 
-def _eligible_for_143d(tournament: 'Tournament') -> list['TournamentPlayer']:
+def _eligible_for_143d(tournament: Tournament) -> list[TournamentPlayer]:
     """FIDE-rated, not NON-fed, not host-fed, ≤ 1 missed round."""
     host_fed = Federation(tournament.event.federation)
     return [
@@ -95,7 +95,7 @@ def _eligible_for_143d(tournament: 'Tournament') -> list['TournamentPlayer']:
     ]
 
 
-def _eligible_for_156a(tournament: 'Tournament') -> list['TournamentPlayer']:
+def _eligible_for_156a(tournament: Tournament) -> list[TournamentPlayer]:
     """FIDE-rated, not NON-fed, ≤ 1 missed round. Host federation is NOT
     excluded (differs from 1.4.3d)."""
     return [
@@ -108,7 +108,7 @@ def _eligible_for_156a(tournament: 'Tournament') -> list['TournamentPlayer']:
 
 
 def _round_counts_143d(
-    eligible: list['TournamentPlayer'], round_: int
+    eligible: list[TournamentPlayer], round_: int
 ) -> BigTournamentRoundCounts:
     """Foreign FIDE-rated present this round, distinct non-FID feds, and
     GM/IM/WGM/WIM holders within that set. FID is filtered out here
@@ -128,7 +128,7 @@ def _round_counts_143d(
 
 
 def _round_counts_156a(
-    eligible: list['TournamentPlayer'], round_: int
+    eligible: list[TournamentPlayer], round_: int
 ) -> HighLevelRoundCounts:
     """FIDE-rated present this round, plus the top-40 rating average. The
     average is 0.0 when fewer than 40 are present (insufficient data)."""
@@ -143,7 +143,7 @@ def _round_counts_156a(
 
 
 def compute_big_tournament_exemption(
-    tournament: 'Tournament',
+    tournament: Tournament,
 ) -> BigTournamentExemption:
     """FIDE 1.4.3d — Swiss exemption inputs.
 
@@ -170,7 +170,7 @@ def compute_big_tournament_exemption(
 
 
 def compute_big_tournament_exemption_trail(
-    tournament: 'Tournament',
+    tournament: Tournament,
 ) -> list[BigTournamentRoundCounts]:
     """Per-round 1.4.3d breakdown for the calculation-details view.
 
@@ -183,7 +183,7 @@ def compute_big_tournament_exemption_trail(
     ]
 
 
-def compute_high_level_tournament(tournament: 'Tournament') -> bool:
+def compute_high_level_tournament(tournament: Tournament) -> bool:
     """FIDE 1.5.6a — Swiss-only. Every round must have at least 40 FIDE-rated
     players whose average rating is at least 2000.
 
@@ -211,7 +211,7 @@ def compute_high_level_tournament(tournament: 'Tournament') -> bool:
 
 
 def compute_high_level_tournament_trail(
-    tournament: 'Tournament',
+    tournament: Tournament,
 ) -> list[HighLevelRoundCounts]:
     """Per-round 1.5.6a breakdown for the calculation-details view.
 
@@ -226,10 +226,10 @@ def compute_high_level_tournament_trail(
 
 
 def apply_143abc_exemption(
-    results: dict,  # dict[TitleNorm, NormCheckResult]
+    results: dict[TitleNorm, NormCheckResult],
     exemption_code: str,
-    applicant_federation: 'Federation',
-    event_federation: 'Federation',
+    applicant_federation: Federation,
+    event_federation: Federation,
 ) -> None:
     """Mutate `results` to apply the 1.4.3a/b/c exemption, if any.
 
@@ -257,8 +257,8 @@ def apply_143abc_exemption(
 
 def resolve_143abc_code(
     exemption_code: str,
-    applicant_federation: 'Federation',
-    event_federation: 'Federation',
+    applicant_federation: Federation,
+    event_federation: Federation,
 ) -> str | None:
     """Resolve the arbiter's print-option selection to the stored
     exemption letter ('a' / 'b' / 'c'), or ``None`` when no exemption
@@ -266,7 +266,9 @@ def resolve_143abc_code(
 
     a and b are player-scoped: only the registering federation's players
     are exempt. c is tournament-scoped (applies to everyone)."""
-    if exemption_code in ('1.4.3a', '1.4.3b'):
-        if applicant_federation != event_federation:
-            return None
+    if (
+        exemption_code in ('1.4.3a', '1.4.3b')
+        and applicant_federation != event_federation
+    ):
+        return None
     return {'1.4.3a': 'a', '1.4.3b': 'b', '1.4.3c': 'c'}.get(exemption_code)

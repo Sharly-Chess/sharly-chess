@@ -32,7 +32,7 @@ class PrizeCategory:
     def __init__(
         self, prize_group: 'PrizeGroup', stored_prize_category: StoredPrizeCategory
     ):
-        self._prize_group_ref: 'ReferenceType[PrizeGroup]' = weakref.ref(prize_group)
+        self._prize_group_ref: ReferenceType[PrizeGroup] = weakref.ref(prize_group)
         self.stored_prize_category = stored_prize_category
 
     @cached_property
@@ -152,7 +152,8 @@ class PrizeCategory:
         return [
             tournament_player
             for tournament_player in self.prize_group.tournament.tournament_players
-            if self.player_matches_criteria(tournament_player)
+            if not tournament_player.is_excluded_from_standings
+            and self.player_matches_criteria(tournament_player)
         ]
 
     def ranking_metric(self, tournament_player: TournamentPlayer) -> float | None:
@@ -193,7 +194,7 @@ class PrizeCategory:
         return self.prize_sharing != NoPrizeSharing()
 
     @property
-    def has_non_monetary_prizes(self):
+    def has_non_monetary_prizes(self) -> bool:
         return any(not prize.is_monetary for prize in self.prizes)
 
     @property
@@ -213,7 +214,7 @@ class PrizeCategory:
     def get_event_database(self) -> EventDatabase:
         return self.prize_group.get_event_database()
 
-    def update(self):
+    def update(self) -> None:
         with self.get_event_database() as database:
             database.update_stored_prize_category(self.stored_prize_category)
 
@@ -225,7 +226,7 @@ class PrizeCategory:
         self.criteria_by_id[object_id] = prize_criterion
         return prize_criterion
 
-    def delete_criterion(self, criterion_id: int):
+    def delete_criterion(self, criterion_id: int) -> None:
         with self.get_event_database() as database:
             database.delete_stored_prize_criterion(criterion_id)
         if criterion_id in self.criteria_by_id:
@@ -239,14 +240,14 @@ class PrizeCategory:
         self.prizes_by_id[object_id] = prize
         return prize
 
-    def delete_prize(self, prize_id: int):
+    def delete_prize(self, prize_id: int) -> None:
         with self.get_event_database() as database:
             database.delete_stored_prize(prize_id)
         if prize_id in self.prizes_by_id:
             del self.prizes_by_id[prize_id]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.__class__.__name__} - {self.id}/{self.name}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(prize_group={self.prize_group!r}, stored_prize_category={self.stored_prize_category!r})'

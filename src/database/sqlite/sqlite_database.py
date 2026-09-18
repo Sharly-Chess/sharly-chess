@@ -3,10 +3,10 @@ import sqlite3
 from time import perf_counter
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
-from datetime import date, datetime, timezone
+from datetime import date, datetime, UTC
 from pathlib import Path
 from sqlite3 import Connection, Cursor, connect, OperationalError
-from typing import Self, Any
+from typing import Self, Any, cast
 
 from common.logger import get_logger
 
@@ -39,11 +39,13 @@ class SQLiteDatabase:
         """Checks if the database file exists."""
         return self.file.exists()
 
-    def delete(self):
-        """Deletes the database if it exists."""
+    def delete(self) -> Path | None:
+        """Deletes the database if it exists, and returns where it was archived
+        to for the databases that archive instead of dropping the file."""
         self.file.unlink(missing_ok=True)
+        return None
 
-    def _create(self, script: str | None = None):
+    def _create(self, script: str | None = None) -> None:
         database: Connection | None = None
         try:
             Path(self.file).parent.mkdir(parents=True, exist_ok=True)
@@ -93,7 +95,7 @@ class SQLiteDatabase:
             )
             raise
 
-    def __exit__(self, exc_type, exc_value, tb):
+    def __exit__(self, exc_type: Any, exc_value: Any, tb: Any) -> None:
         try:
             if self.database and self.write:
                 if exc_type is None:
@@ -118,7 +120,7 @@ class SQLiteDatabase:
                     del self.database
                     self.database = None
 
-    def execute(self, query: str, params: tuple | dict[str, Any] = ()):
+    def execute(self, query: str, params: tuple | dict[str, Any] = ()) -> None:
         assert self.cursor is not None
         from web.performance import current_request_performance, record_sql
 
@@ -131,7 +133,9 @@ class SQLiteDatabase:
         finally:
             record_sql(query, perf_counter() - start)
 
-    def executemany(self, query: str, params: Iterable[tuple | dict[str, Any]] = ()):
+    def executemany(
+        self, query: str, params: Iterable[tuple | dict[str, Any]] = ()
+    ) -> None:
         assert self.cursor is not None
         from web.performance import current_request_performance, record_sql
 
@@ -144,7 +148,7 @@ class SQLiteDatabase:
         finally:
             record_sql(query, perf_counter() - start)
 
-    def executescript(self, sql: str):
+    def executescript(self, sql: str) -> None:
         assert self.cursor is not None
         self.cursor.executescript(sql)
 
@@ -152,15 +156,15 @@ class SQLiteDatabase:
         assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         for row in self.cursor.fetchall():
-            yield dict(zip(columns, row))
+            yield dict(zip(columns, row, strict=True))
 
     def fetchone(self) -> dict[str, Any]:
         assert self.cursor is not None
         columns = [column[0] for column in self.cursor.description]
         result = self.cursor.fetchone()
-        return {} if result is None else dict(zip(columns, result))
+        return {} if result is None else dict(zip(columns, result, strict=True))
 
-    def commit(self):
+    def commit(self) -> None:
         assert self.database is not None
         self.database.commit()
 
@@ -170,7 +174,7 @@ class SQLiteDatabase:
 
     def _get_table_count(self, table_name: str) -> int:
         self.execute(f'SELECT COUNT(*) as `count` FROM `{table_name}`')
-        return self.fetchone()['count']
+        return cast(int, self.fetchone()['count'])
 
     @staticmethod
     def load_bool_or_none_from_database_field(
@@ -208,7 +212,7 @@ class SQLiteDatabase:
     @staticmethod
     def now_as_database_timestamp() -> str:
         """Returns current time as UTC ISO 8601 string for DB storage (e.g. '2026-02-20 08:07:52.662+00:00')."""
-        return datetime.now(timezone.utc).isoformat(sep=' ', timespec='milliseconds')
+        return datetime.now(UTC).isoformat(sep=' ', timespec='milliseconds')
 
     @staticmethod
     def load_optional_timestamp_from_database_field(
@@ -225,21 +229,19 @@ class SQLiteDatabase:
     ) -> str | None:
         """Dump local naive datetime to UTC ISO TEXT for DB storage."""
         return (
-            datetime_.astimezone(timezone.utc).isoformat(
-                sep=' ', timespec='milliseconds'
-            )
+            datetime_.astimezone(UTC).isoformat(sep=' ', timespec='milliseconds')
             if datetime_
             else None
         )
 
     @staticmethod
     def dump_datetime_to_database_field(datetime_: datetime) -> str:
-        return datetime_.astimezone(timezone.utc).isoformat(
-            sep=' ', timespec='milliseconds'
-        )
+        return datetime_.astimezone(UTC).isoformat(sep=' ', timespec='milliseconds')
 
     @staticmethod
-    def load_json_from_database_field(json_data: str | None, if_none=None) -> Any:
+    def load_json_from_database_field(
+        json_data: str | None, if_none: Any = None
+    ) -> Any:
         """Decodes the JSON data `json_data` and returns the result.
         If `json_data` is None, returns `if_none`."""
         return json.loads(json_data) if json_data is not None else if_none
@@ -252,7 +254,7 @@ class SQLiteDatabase:
         return {int(k): v for k, v in string_dict.items()}
 
     @staticmethod
-    def dump_to_json_database_field(obj: Any, if_none=None) -> str | None:
+    def dump_to_json_database_field(obj: Any, if_none: Any = None) -> str | None:
         """Serializes the given object `obj` to JSON.
         Returns the JSON serialization of `if_none` otherwise (may be None)."""
         if obj is not None:

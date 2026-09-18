@@ -1,7 +1,7 @@
 from litestar import get, patch
 from litestar.params import FromQuery, FromPath
 from litestar.response import Template
-from litestar_htmx import HTMXRequest
+from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common import SharlyChessException
 from common.exception import ImporterError
@@ -32,7 +32,9 @@ logger = get_logger()
 
 
 class ChessEventController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         TournamentActionGuard(AuthAction.UPDATE_PLAYERS),
     ]
@@ -51,7 +53,7 @@ class ChessEventController(BaseEventAdminController):
         tournament: Tournament | None = None,
         message: str | None = None,
         message_type: str | None = None,
-    ):
+    ) -> HTMXTemplate:
         template_context = {
             'chessevent_utils': ChessEventUtils,
             'format_datetime': format_datetime,

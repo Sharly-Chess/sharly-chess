@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from functools import cached_property
 
 from common import hexa_to_rgb
-from common.i18n import _
+from common.i18n import _, pgettext
 
 DEFAULT_TAG_COLOR: str = '#6C757D'
 
@@ -72,9 +72,9 @@ def default_tag_sets() -> list[TagSet]:
             id='participants',
             name=_('Participants'),
             tags=[
-                Tag(id=0, name=_('Open *** EVENT TAG NAME'), color='#008000'),
-                Tag(id=0, name=_('Women *** EVENT TAG NAME'), color='#3E7F3E'),
-                Tag(id=0, name=_('Youth *** EVENT TAG NAME'), color='#558255'),
+                Tag(id=0, name=pgettext('event tag name', 'Open'), color='#008000'),
+                Tag(id=0, name=pgettext('event tag name', 'Women'), color='#3E7F3E'),
+                Tag(id=0, name=pgettext('event tag name', 'Youth'), color='#558255'),
             ],
         ),
         TagSet(
@@ -82,8 +82,10 @@ def default_tag_sets() -> list[TagSet]:
             name=_('Organiser'),
             tags=[
                 Tag(id=0, name=_('Federation'), color='#0000FF'),
-                Tag(id=0, name=_('League *** EVENT TAG NAME'), color='#4545FF'),
-                Tag(id=0, name=_('Department *** EVENT TAG NAME'), color='#7D7DFF'),
+                Tag(id=0, name=pgettext('event tag name', 'League'), color='#4545FF'),
+                Tag(
+                    id=0, name=pgettext('event tag name', 'Department'), color='#7D7DFF'
+                ),
                 Tag(id=0, name=_('Club'), color='#B8B8FF'),
             ],
         ),

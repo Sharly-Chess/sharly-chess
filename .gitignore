@@ -118,3 +118,8 @@ init-credentials-local.py
 
 # Claude Code settings
 /.claude/
+
+# Coverage data and reports
+/.coverage
+/htmlcov/
+/coverage.xml

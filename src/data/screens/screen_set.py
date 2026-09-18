@@ -47,9 +47,9 @@ class ScreenSet:
             assert family is None and family_part is None, (
                 f'screen_set={stored_screen_set}, family={family}, family_part={family_part}'
             )
-        self._screen_ref: 'ReferenceType[Screen]' = weakref.ref(screen)
+        self._screen_ref: ReferenceType[Screen] = weakref.ref(screen)
         self.stored_screen_set: StoredScreenSet | None = stored_screen_set
-        self._family_ref: 'ReferenceType[Family] | None' = (
+        self._family_ref: ReferenceType[Family] | None = (
             weakref.ref(family) if family else None
         )
         self.family_part: int | None = family_part
@@ -247,8 +247,7 @@ class ScreenSet:
                     else '-',
                 )
             return name
-        else:
-            return self.name_for_players
+        return self.name_for_players
 
     def _name_for_team_matches(self) -> str:
         """Set title in team mode: ``%f``/``%l`` are the first and last
@@ -261,10 +260,7 @@ class ScreenSet:
                 raise RuntimeError('Family reference unexpectedly None')
             name = self.family.name
         if name is None:
-            if self.first or self.last:
-                name = _('Matches %f-%l')
-            else:
-                name = '%t'
+            name = _('Matches %f-%l') if self.first or self.last else '%t'
         name = name.replace('%t', str(self.tournament.name))
         first_match = self._team_first_item
         last_match = self._team_last_item
@@ -293,10 +289,7 @@ class ScreenSet:
             assert self.family is not None
             name = self.family.name
         if name is None:
-            if self.first or self.last:
-                name = _('%f to %l')
-            else:
-                name = '%t'
+            name = _('%f to %l') if self.first or self.last else '%t'
         name = name.replace('%t', str(self.tournament.name))
         if self.first_tournament_player_by_name is not None:
             name = name.replace(
@@ -344,10 +337,7 @@ class ScreenSet:
             assert self.family is not None
             name = self.family.name
         if name is None:
-            if self.first or self.last:
-                name = _('Ranking %f to %l')
-            else:
-                name = _('%t ranking')
+            name = _('Ranking %f to %l') if self.first or self.last else _('%t ranking')
         name = name.replace('%t', str(self.tournament.name))
         if self._team_first_item is not None:
             name = name.replace(r'%f', str(self._team_first_item['rank']))
@@ -355,7 +345,7 @@ class ScreenSet:
             name = name.replace(r'%l', str(self._team_last_item['rank']))
         return name
 
-    def _extract_team_data(self, items: list[Any]):
+    def _extract_team_data(self, items: list[Any]) -> None:
         """Slice ``items`` by ``first``/``last`` and split across the
         screen columns, caching into the team-mode fields (kept apart
         from the player/board cache — see ``__init__``)."""
@@ -364,10 +354,7 @@ class ScreenSet:
                 [],
             ] * self.columns
             return
-        if self.first:
-            first = max(1, min(self.first, len(items))) - 1
-        else:
-            first = 0
+        first = max(1, min(self.first, len(items))) - 1 if self.first else 0
         if self.last:
             last = max(first, min(self.last, len(items)) - 1)
         else:
@@ -395,17 +382,14 @@ class ScreenSet:
     def _slice_items_by_position(self, items: list[Any]) -> list[Any]:
         """Select a contiguous slice of ``items``, treating ``first``/``last``
         as 1-based positions in the list."""
-        if self.first:
-            first = max(1, min(self.first, len(items))) - 1
-        else:
-            first = 0
+        first = max(1, min(self.first, len(items))) - 1 if self.first else 0
         if self.last:
             last = max(first, min(self.last, len(items)) - 1)
         else:
             last = len(items) - 1
         return items[first : last + 1]
 
-    def _extract_data(self, items: list[Any], extract_boards: bool):
+    def _extract_data(self, items: list[Any], extract_boards: bool) -> None:
         if not items:
             self.items_lists = [
                 [],
@@ -464,7 +448,7 @@ class ScreenSet:
             self.items_lists.append(selected_items[first_index:last_index])
             first_index = last_index
 
-    def _extract_boards(self):
+    def _extract_boards(self) -> None:
         if self.items_lists is None:
             self._extract_data(items=self.tournament.boards, extract_boards=True)
 
@@ -479,7 +463,7 @@ class ScreenSet:
             )
         return self.items_lists
 
-    def _extract_team_matches(self):
+    def _extract_team_matches(self) -> None:
         """Team-tournament counterpart of :meth:`_extract_boards`: the
         screen items are the round's numbered team matches (hidden byes
         carry no table) — ``first``/``last`` and the column split count
@@ -536,7 +520,7 @@ class ScreenSet:
         the fuller ``name_for_*`` forms are used."""
         return self.screen_type.range_bounds(self, abbreviated)
 
-    def _extract_players_by_name(self):
+    def _extract_players_by_name(self) -> None:
         if self.items_lists is None:
             if self.screen.screen_type.shows_unpaired_players(self.screen):
                 self._extract_data(
@@ -602,7 +586,7 @@ class ScreenSet:
             )
         return self.last_item
 
-    def _extract_teams_by_name(self):
+    def _extract_teams_by_name(self) -> None:
         """Team-tournament counterpart of :meth:`_extract_players_by_name`
         for the check-in screen: the items are the tournament's teams in
         name order."""
@@ -672,10 +656,7 @@ class ScreenSet:
             assert self.family is not None
             name = self.family.name
         if name is None:
-            if self.first or self.last:
-                name = _('%f to %l')
-            else:
-                name = '%t'
+            name = _('%f to %l') if self.first or self.last else '%t'
         name = name.replace('%t', str(self.tournament.name))
         if self._team_first_item is not None:
             name = name.replace('%f', self._team_first_item.name[:12])
@@ -683,7 +664,7 @@ class ScreenSet:
             name = name.replace('%l', self._team_last_item.name[:12])
         return name
 
-    def _extract_team_standings(self):
+    def _extract_team_standings(self) -> None:
         """Team-tournament counterpart of :meth:`_extract_players_by_rank`:
         the items are the team-standings rows (already ranked). The
         min/max-points window filters on the primary score (MP or GP,
@@ -705,7 +686,8 @@ class ScreenSet:
                 items=[
                     row
                     for row in self.tournament.team_standings(after_round=ranking_round)
-                    if (min_points is None or row[score_key] >= min_points)
+                    if not row['team'].is_excluded_from_standings
+                    and (min_points is None or row[score_key] >= min_points)
                     and (max_points is None or row[score_key] <= max_points)
                 ]
             )
@@ -717,7 +699,7 @@ class ScreenSet:
             assert isinstance(self._team_items_lists, list)
         return self._team_items_lists
 
-    def _extract_players_by_rank(self):
+    def _extract_players_by_rank(self) -> None:
         if self.items_lists is None:
             self.tournament.ensure_tournament_player_ranks_computed()
             min_points = self._config.ranking_min_points
@@ -726,7 +708,8 @@ class ScreenSet:
                 items=[
                     player
                     for player in self.tournament.tournament_players_by_rank.values()
-                    if (min_points is None or (player.points or 0) >= min_points)
+                    if not player.is_excluded_from_standings
+                    and (min_points is None or (player.points or 0) >= min_points)
                     and (max_points is None or (player.points or 0) <= max_points)
                 ],
                 extract_boards=False,
@@ -768,15 +751,14 @@ class ScreenSet:
     def last_update(self) -> datetime:
         if self.stored_screen_set:
             return self.stored_screen_set.last_update
-        else:
-            assert self.family is not None
-            return self.family.last_update
+        assert self.family is not None
+        return self.family.last_update
 
     @property
     def numbers_str(self) -> str:
         return self.screen_type.numbers_str(self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return _('Tournament {tournament} ({numbers_str})').format(
             tournament=self.tournament.name, numbers_str=self.numbers_str
         )

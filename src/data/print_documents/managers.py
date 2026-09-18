@@ -44,6 +44,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PlayerListPrintDocument,
             documents.PlayerCheckinListPrintDocument,
             documents.PairingPrintDocument,
+            documents.KnockoutBracketPrintDocument,
             documents.RoundRobinSchedulePrintDocument,
             documents.MolterTablePrintDocument,
             documents.ScheveningenTablePrintDocument,
@@ -75,7 +76,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
 class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
     @override
     def entity_types(self) -> list[type[options.PrintOption]]:
-        print_options = [
+        print_options: list[type[options.PrintOption]] = [
             options.QRCodePrintOption,
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,
@@ -95,6 +96,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.TeamGridSortPrintOption,
             options.ListPlayerSortPrintOption,
             options.ShowWarningsPrintOption,
+            options.KnockoutSchedulePrintOption,
             options.NonMonetaryPrintOption,
             options.FederationPrintOption,
             options.ClubThresholdPrintOption,
@@ -193,8 +195,8 @@ class PrintPlaceCardTypeManager(EntityManager[PlaceCardType]):
     def entity_types(self) -> list[type[PlaceCardType]]:
         return [
             PlayerCardType,
-            BoardCardType,
             PairingCardType,
+            BoardCardType,
             TeamCardType,
         ]
 

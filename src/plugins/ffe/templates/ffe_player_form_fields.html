@@ -5,7 +5,7 @@
     <div class="col-12 col-md-6">
         {{ admin_macros.text_input(
             name='ffe_licence_number',
-            label=_('%(string)s:', string=_('Licence no. *** LICENCE NUMBER')),
+            label=_('%(string)s:', string=pgettext('licence number', 'Licence no.')),
             placeholder=_('E.g.: %(string)s', string='R08943'),
             disabled=action == 'update' or data['ffe_id'] != '',
             input_tooltip=_(

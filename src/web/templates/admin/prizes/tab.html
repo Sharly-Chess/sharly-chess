@@ -19,12 +19,12 @@
     </script>
 {% endblock %}
 
-{% block right_buttons_classes %}d-flex gap-2 ms-auto align-items-end{% endblock %}
+{% block right_buttons_classes %}d-flex flex-wrap gap-2 ms-auto align-items-end{% endblock %}
 {% block top_right_nav %}
+    {% if admin_prize_group %}
+        {% include '/admin/common/collection_controls.html' %}
+    {% endif %}
     <div class="d-flex align-items-center gap-2">
-        {% if admin_prize_group %}
-            {% include '/admin/common/collection_controls.html' %}
-        {% endif %}
         <span {{ macros.tooltip_attributes('info', _('Prize settings'), 'bottom') }}
             <button
                 class="btn btn-outline-primary text-nowrap"

@@ -2,13 +2,13 @@ from plugins.migration import BasePluginMigration
 
 
 class Migration(BasePluginMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `tournament` ADD `chessevent_status` TEXT')
         self.database.execute(
             'ALTER TABLE `tournament` ADD `chessevent_last_sync` FLOAT'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `chessevent_last_sync`'
         )

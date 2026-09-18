@@ -17,7 +17,7 @@ class TeamPairingBlock:
         tournament: 'Tournament',
         stored_block: StoredTeamPairingBlock,
     ):
-        self._tournament_ref: 'weakref.ReferenceType[Tournament]' = weakref.ref(
+        self._tournament_ref: weakref.ReferenceType[Tournament] = weakref.ref(
             tournament
         )
         self.stored_block = stored_block

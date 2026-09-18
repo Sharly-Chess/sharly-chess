@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import Counter
 from types import UnionType
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from common.exception import OptionError
 from common.i18n import _
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from web.utils import SelectOption
 
 
-class PlayerFilterOption(Option, ABC):
+class PlayerFilterOption[V](Option[V], ABC):
     """Parent class of all the options of player filters."""
 
     @property
@@ -30,7 +30,7 @@ class PlayerFilterOption(Option, ABC):
         return self.id.lower()
 
 
-class ExcludeFilterOption(PlayerFilterOption):
+class ExcludeFilterOption(PlayerFilterOption[bool]):
     @staticmethod
     def static_id() -> str:
         return 'EXCLUDE'
@@ -40,11 +40,16 @@ class ExcludeFilterOption(PlayerFilterOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
 
-class SelectPlayerFilterOption[T](PlayerFilterOption):
+class SelectPlayerFilterOption[V, T](PlayerFilterOption[V]):
+    """Option whose value is picked from a select built over objects of type
+    ``T``. ``V`` stays the type of the value itself, usually the list of keys
+    of the selected objects.
+    """
+
     @abstractmethod
     def get_all_known_values(self, tournament: 'Tournament') -> list[T]:
         """All the known values of type [T] for the tournament."""
@@ -125,7 +130,7 @@ class SelectPlayerFilterOption[T](PlayerFilterOption):
         return all_options
 
 
-class GenderOption(SelectPlayerFilterOption[PlayerGender]):
+class GenderOption(SelectPlayerFilterOption[str, PlayerGender]):
     @staticmethod
     def static_id() -> str:
         return 'GENDER_VALUE'
@@ -135,7 +140,7 @@ class GenderOption(SelectPlayerFilterOption[PlayerGender]):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return PlayerGender.WOMAN.value
 
     @property
@@ -156,24 +161,24 @@ class GenderOption(SelectPlayerFilterOption[PlayerGender]):
     def get_name(self, object_: PlayerGender) -> str:
         return object_.name
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         try:
             PlayerGender(self.value)
         except ValueError:
-            raise OptionError(f'Invalid gender value: {self.value}', self)
+            raise OptionError(f'Invalid gender value: {self.value}', self) from None
 
 
-class RatingPlayerFilterOption(PlayerFilterOption, ABC):
+class RatingPlayerFilterOption(PlayerFilterOption[int | None], ABC):
     @property
     def type(self) -> type | UnionType:
         return int | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> int | None:
         return None
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value and self.value < 0:
             raise OptionError(_('A positive integer is expected.'), self)
@@ -191,13 +196,13 @@ class MaxRatingOption(RatingPlayerFilterOption):
         return 'MAX_RATING'
 
 
-class AgeCategoryOption(SelectPlayerFilterOption[PlayerCategory], ABC):
+class AgeCategoryOption(SelectPlayerFilterOption[str | None, PlayerCategory], ABC):
     @property
     def type(self) -> type | UnionType:
         return str | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str | None:
         return None
 
     def get_tournament_player_counter(
@@ -215,7 +220,7 @@ class AgeCategoryOption(SelectPlayerFilterOption[PlayerCategory], ABC):
         from web.utils import SelectOption
 
         options = super().select_options(tournament, False, False)
-        return {'': SelectOption('-')} | options  # type: ignore
+        return {'': SelectOption('-')} | options  # type: ignore[operator]
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerCategory]:
         categories = tournament.event.player_categories.copy()
@@ -228,13 +233,13 @@ class AgeCategoryOption(SelectPlayerFilterOption[PlayerCategory], ABC):
     def get_name(self, object_: PlayerCategory) -> str:
         return object_.name
 
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         if self.value:
             try:
                 PlayerCategory.from_id(self.value)
             except ValueError:
-                raise OptionError(f'Unknown category [{self.value}]', self)
+                raise OptionError(f'Unknown category [{self.value}]', self) from None
 
 
 class MinAgeCategoryOption(AgeCategoryOption):
@@ -249,7 +254,7 @@ class MaxAgeCategoryOption(AgeCategoryOption):
         return 'MAX_AGE_CATEGORY'
 
 
-class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
+class RatingTypesFilterOption(SelectPlayerFilterOption[list[int], PlayerRatingType]):
     @staticmethod
     def static_id() -> str:
         return 'RATING_TYPES'
@@ -259,7 +264,7 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
         return list[int]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[int]:
         return []
 
     def get_tournament_player_counter(
@@ -268,7 +273,7 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
         return tournament.rating_type_counts
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerRatingType]:
-        return [rating_type for rating_type in PlayerRatingType]
+        return list(PlayerRatingType)
 
     def get_key(self, object_: PlayerRatingType) -> str:
         return str(object_.value)
@@ -276,7 +281,7 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
     def get_name(self, object_: PlayerRatingType) -> str:
         return object_.name
 
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(int)
         if not self.value:
             raise OptionError(_('At least one value is expected.'), self)
@@ -284,10 +289,12 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
             try:
                 PlayerRatingType(rating_type)
             except ValueError:
-                raise OptionError(f'Unknown rating_type [{rating_type}]', self)
+                raise OptionError(
+                    f'Unknown rating_type [{rating_type}]', self
+                ) from None
 
 
-class ClubsFilterOption(SelectPlayerFilterOption[str]):
+class ClubsFilterOption(SelectPlayerFilterOption[list[str], str]):
     @staticmethod
     def static_id() -> str:
         return 'CLUBS'
@@ -297,7 +304,7 @@ class ClubsFilterOption(SelectPlayerFilterOption[str]):
         return list[str]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[str]:
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
@@ -313,13 +320,13 @@ class ClubsFilterOption(SelectPlayerFilterOption[str]):
     def get_name(self, object_: str) -> str:
         return object_
 
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(str)
         if not self.value:
             raise OptionError(_('At least one value is expected.'), self)
 
 
-class FederationsFilterOption(SelectPlayerFilterOption[str]):
+class FederationsFilterOption(SelectPlayerFilterOption[list[str], str]):
     @staticmethod
     def static_id() -> str:
         return 'FEDERATIONS'
@@ -329,7 +336,7 @@ class FederationsFilterOption(SelectPlayerFilterOption[str]):
         return list[str]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[str]:
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
@@ -348,13 +355,13 @@ class FederationsFilterOption(SelectPlayerFilterOption[str]):
             return code
         return f'{code} - {federations[code]}'
 
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(str)
         if not self.value:
             raise OptionError(_('At least one value is expected.'), self)
 
 
-class CommentsFilterOption(SelectPlayerFilterOption[str]):
+class CommentsFilterOption(SelectPlayerFilterOption[list[str], str]):
     @staticmethod
     def static_id() -> str:
         return 'COMMENTS'
@@ -364,7 +371,7 @@ class CommentsFilterOption(SelectPlayerFilterOption[str]):
         return list[str]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[str]:
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
@@ -385,13 +392,13 @@ class CommentsFilterOption(SelectPlayerFilterOption[str]):
     def get_name(self, object_: str) -> str:
         return object_
 
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(str)
         if not self.value:
             raise OptionError(_('At least one value is expected.'), self)
 
 
-class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
+class PlayersFilterOption(SelectPlayerFilterOption[list[int], TournamentPlayer]):
     @staticmethod
     def static_id() -> str:
         return 'PLAYERS'
@@ -401,7 +408,7 @@ class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
         return list[int]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[int]:
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[TournamentPlayer]:
@@ -418,7 +425,7 @@ class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
     def get_name(self, object_: TournamentPlayer) -> str:
         return object_.full_name
 
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(int)
         if not self.value:
             raise OptionError(_('At least one player is expected.'), self)

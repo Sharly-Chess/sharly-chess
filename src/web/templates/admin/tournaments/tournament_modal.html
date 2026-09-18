@@ -242,9 +242,17 @@
                     <script>
                         // Some systems decide the round count (a round-robin
                         // from the entrants, a Scheveningen from the boards),
-                        // so the field is re-read whenever those change.
+                        // so the field is re-read whenever those change. The
+                        // field is already server-rendered for the current
+                        // system, so the modal's init triggers (which fire this
+                        // handler on swap) must NOT re-read it — that would wipe
+                        // a server-set validation error. Only genuine user
+                        // changes, after the modal has settled, reload it.
                         (function () {
+                            let ready = false;
+                            setTimeout(() => { ready = true; }, 250);
                             function reloadRoundsField() {
+                                if (!ready) return;
                                 const field = document.getElementById('rounds-field');
                                 if (field) htmx.trigger(field, 'rounds-params-updated');
                             }
@@ -252,6 +260,21 @@
                             $('[name$="_pairing_variation"]').on('change', reloadRoundsField);
                             $('#team-player-count').on('change', reloadRoundsField);
                         })();
+                    </script>
+                    <script>
+                        // Send the round count exactly as shown, even when the
+                        // field was just cleared and the form submitted before it
+                        // lost focus (some browsers don't commit an emptied number
+                        // input to the serialised form until then). Namespaced so
+                        // re-rendering the modal doesn't stack duplicate handlers.
+                        $('#modal-form')
+                            .off('htmx:configRequest.rounds')
+                            .on('htmx:configRequest.rounds', function (evt) {
+                                const rounds = document.getElementById('rounds');
+                                if (rounds && !rounds.disabled) {
+                                    evt.detail.parameters['rounds'] = rounds.value;
+                                }
+                            });
                     </script>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -287,16 +310,19 @@
                     </div>
                     <script>
                         (function () {
-                            const PREDETERMINED = {{
+                            // Byes are only offered where the system lets the
+                            // arbiter define one (a Swiss / Keizer). Fixed-table
+                            // systems and knock-outs have no sit-out bye.
+                            const NO_BYES = {{
                                 pairing_systems
-                                | selectattr('predetermined_pairings')
+                                | rejectattr('allow_bye_definition')
                                 | map(attribute='id')
                                 | list
                                 | tojson
                             }};
                             function syncByeOptions() {
                                 const id = $('#pairing-system').val() || '';
-                                $('.bye-option').toggle(!PREDETERMINED.includes(id));
+                                $('.bye-option').toggle(!NO_BYES.includes(id));
                             }
                             $('#pairing-system').on('change', syncByeOptions);
                             syncByeOptions();
@@ -317,6 +343,53 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div class="col-12 participation-rule-option">
+                        {{ admin_macros.switch_input(
+                            name='round_robin_participation_rule',
+                            placeholder=(
+                                _('Drop teams that completed less than 50%% of their matches (FIDE 6.6)')
+                                if is_team_event else
+                                _('Drop players that completed less than 50%% of their games (FIDE 6.6)')
+                            ),
+                            tooltip_text=(
+                                _(
+                                    'A team that withdrew or was expelled having '
+                                    'completed less than half of its matches is not '
+                                    'ranked, and its matches are annulled: they no '
+                                    'longer count in the other teams\' scores and '
+                                    'tie-breaks.'
+                                )
+                                if is_team_event else
+                                _(
+                                    'A player that withdrew or was expelled having '
+                                    'completed less than half of their games is not '
+                                    'ranked, and their games are annulled: they no '
+                                    'longer count in the opponents\' scores and '
+                                    'tie-breaks.'
+                                )
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <script>
+                        (function () {
+                            // The rule is defined for an all-play-all.
+                            const PARTICIPATION_RULE = {{
+                                pairing_systems
+                                | selectattr('supports_participation_rule')
+                                | map(attribute='id')
+                                | list
+                                | tojson
+                            }};
+                            function syncParticipationRule() {
+                                const id = $('#pairing-system').val() || '';
+                                $('.participation-rule-option')
+                                    .toggle(PARTICIPATION_RULE.includes(id));
+                            }
+                            $('#pairing-system').on('change', syncParticipationRule);
+                            syncParticipationRule();
+                        })();
+                    </script>
                 </div>
 
                 {% if is_team_event %}
@@ -508,12 +581,12 @@
                         <div class="col-12 col-md-6">
                             {{ admin_macros.switch_input(
                                 name='enforce_roster_order',
-                                placeholder=_('Warn on line-up out of roster order'),
+                                placeholder=_('Warn on lineup out of roster order'),
                                 tooltip_text=_(
                                     'When enabled, a warning is shown if a '
-                                    'per-round line-up places players in a '
+                                    'per-round lineup places players in a '
                                     'different order than the team roster. '
-                                    'The line-up can still be reordered freely.'
+                                    'The lineup can still be reordered freely.'
                                 ),
                                 data=data, errors=errors
                             ) }}
@@ -684,6 +757,8 @@
                                 const $teamPlayerCount = $('#team-player-count');
                                 const $mpWin = $('#mp-win');
                                 const $mpDraw = $('#mp-draw');
+                                const $mpLoss = $('#mp-loss');
+                                const $mpZpb = $('#mp-zpb');
                                 const $mpPab = $('#mp-pab');
                                 function formatNumber(n) {
                                     return Number.isFinite(n)
@@ -696,6 +771,9 @@
                                 }
                                 function syncDerived() {
                                     $gpZpb.attr('placeholder', effectiveValue($gpLoss, '0'));
+                                    $mpZpb.attr(
+                                        'placeholder', effectiveValue($mpLoss, '0')
+                                    );
                                     // PABs only exist in Swiss pairings (other
                                     // systems give rest games) — hide the PAB
                                     // fields elsewhere. Team Swiss PAB defaults
@@ -736,11 +814,13 @@
                                 $teamPlayerCount.on('input change', syncDerived);
                                 $mpWin.on('input change', syncDerived);
                                 $mpDraw.on('input change', syncDerived);
+                                $mpLoss.on('input change', syncDerived);
                                 $('[name=pairing_system]').on('change', syncDerived);
                                 syncDerived();
                             })();
                         </script>
                         {% if is_team_event %}
+                            <div id="match-points-section">
                             <h6 class="mt-4 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
                                 {{ _('Match points') }}
                             </h6>
@@ -774,6 +854,21 @@
                                 </div>
                             </div>
                             <div class="row gy-2 gx-3 mt-1">
+                                <div class="col-6 col-md-6">
+                                    {{ admin_macros.number_input(
+                                        name='mp_zpb',
+                                        label=_('Absence:'),
+                                        placeholder='0',
+                                        tooltip_text=_(
+                                            'Match points scored by an absent '
+                                            'team — one left unpaired as absent, '
+                                            'or one that forfeited its whole '
+                                            'match. Defaults to the Loss value.'
+                                        ),
+                                        step='any',
+                                        data=data, errors=errors
+                                    ) }}
+                                </div>
                                 <div class="col-6 col-md-6" id="mp-pab-field">
                                     {{ admin_macros.number_input(
                                         name='mp_pab',
@@ -787,6 +882,7 @@
                                         data=data, errors=errors
                                     ) }}
                                 </div>
+                            </div>
                             </div>
                         {% endif %}
                     </div>
@@ -803,10 +899,22 @@
                             | list
                             | tojson
                         }};
+                        // Systems that aggregate game points only, with no
+                        // match-points side to the score (a flat fixed table).
+                        const NO_MATCH_POINTS = {{
+                            pairing_systems
+                            | rejectattr('supports_match_points')
+                            | map(attribute='id')
+                            | list
+                            | tojson
+                        }};
                         function syncPointAttribution() {
                             const id = $('#pairing-system').val() || '';
                             $('#points-attribution-section').toggle(
                                 !NO_GAME_POINTS.includes(id)
+                            );
+                            $('#match-points-section').toggle(
+                                !NO_MATCH_POINTS.includes(id)
                             );
                         }
                         $('#pairing-system').on('change', syncPointAttribution);

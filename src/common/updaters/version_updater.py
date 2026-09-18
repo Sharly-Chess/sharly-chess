@@ -4,7 +4,7 @@ import sys
 import os
 import platform
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 from packaging.version import Version
 from requests import get
@@ -43,13 +43,13 @@ class VersionUpdater:
             response.status_code,
         )
         try:
-            return json.loads(data)
+            return cast(list[dict[str, Any]] | None, json.loads(data))
         except json.JSONDecodeError as ex:
             logger.warning('Invalid response from GitHub: [%s].', ex)
             return None
 
     @classmethod
-    def search_for_latest_version(cls, check_beta: bool):
+    def search_for_latest_version(cls, check_beta: bool) -> None:
         """Retrieves the latest version from the GitHub repository."""
 
         # Test override: pretend a given version is the latest, skipping the
@@ -119,10 +119,7 @@ class VersionUpdater:
             # Detect architecture for Linux
             # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
             build_arch = os.environ.get('BUILD_ARCH')
-            if build_arch:
-                machine = build_arch.lower()
-            else:
-                machine = platform.machine().lower()
+            machine = build_arch.lower() if build_arch else platform.machine().lower()
             if machine in ('aarch64', 'arm64'):
                 suffix = 'linux-arm64.flatpak'
             elif machine in ('x86_64', 'amd64'):

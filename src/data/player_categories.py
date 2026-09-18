@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from functools import total_ordering
 from typing import TYPE_CHECKING
 
-from common.i18n import _
+from common.i18n import pgettext
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -57,8 +57,7 @@ class PlayerCategory(ABC):
         age_limit = int(category_id[1:])
         if category_id[0] == 'U':
             return JuniorCategory(age_limit)
-        else:
-            return SeniorCategory(age_limit)
+        return SeniorCategory(age_limit)
 
     @staticmethod
     def _reference_year(
@@ -163,10 +162,10 @@ class PlayerCategory(ABC):
         ref_year = self._reference_year(event, tournament_start, tournament_stop)
         return ref_year - self._representative_age
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.id)
 
-    def __lt__(self, other):
+    def __lt__(self, other: object) -> bool:
         if not isinstance(other, PlayerCategory):
             return NotImplemented
         is_senior = isinstance(self, SeniorCategory)
@@ -177,17 +176,17 @@ class PlayerCategory(ABC):
             return True
         return self.age_limit < other.age_limit
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, PlayerCategory):
             return NotImplemented
         return self.id == other.id
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}({self.age_limit})'
 
 
 class NoCategory(PlayerCategory):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(0)
 
     @property
@@ -210,7 +209,9 @@ class JuniorCategory(PlayerCategory):
 
     @property
     def name(self) -> str:
-        return _('U{age_limit} *** YOUTH AGE CATEGORY').format(age_limit=self.age_limit)
+        return pgettext('youth age category', 'U{age_limit}').format(
+            age_limit=self.age_limit
+        )
 
     @property
     def _representative_age(self) -> int:
@@ -224,7 +225,7 @@ class SeniorCategory(PlayerCategory):
 
     @property
     def name(self) -> str:
-        return _('{age_limit}+ *** SENIOR AGE CATEGORY').format(
+        return pgettext('senior age category', '{age_limit}+').format(
             age_limit=self.age_limit
         )
 

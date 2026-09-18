@@ -20,7 +20,7 @@
             >
                 <thead>
                     <tr>
-                        <th scope="col" class="text-start compact-col">{{ _('TPN *** TOURNAMENT PAIRING NUMBER') }}</th>
+                        <th scope="col" class="text-start compact-col">{{ pgettext('tournament pairing number', 'TPN') }}</th>
                         <th scope="col" class="text-start">{{ _('Team') }}</th>
                         {# The secondary score is only reported when the
                            pairing consults it for colours (C.04.6 §4.2.2),
@@ -31,7 +31,7 @@
                                 {{ macros.tooltip_attributes('info', _(
                                     'Secondary score, used to allocate colours.'
                                 ), 'top') }}
-                            >{{ _('MP *** MATCH POINTS') if primary_is_game_points else _('GP *** GAME POINTS') }}</th>
+                            >{{ pgettext('match points', 'MP') if primary_is_game_points else pgettext('game points', 'GP') }}</th>
                         {% endif %}
                         <th scope="col" class="text-center compact-col">{{ _('Colour') }}</th>
                         <th
@@ -40,7 +40,7 @@
                                 'C2: whether the team may take the pairing-allocated '
                                 'bye — a team can only ever receive one.'
                             )) }}
-                        >{{ _('C2 *** BYE ELIGIBILITY CRITERION') }}</th>
+                        >{{ pgettext('bye eligibility criterion', 'C2') }}</th>
                         <th scope="col" class="text-start compact-col">{{ _('Pairing') }}</th>
                         {% if history_columns %}
                             <th colspan="{{ history_columns }}" scope="col" class="text-start compact-col">
@@ -60,7 +60,7 @@
                                     '%(num).1f %(unit)s group',
                                     '%(num).1f %(unit)s group',
                                     mp,
-                                    unit=_('GP *** GAME POINTS') if primary_is_game_points else _('MP *** MATCH POINTS'),
+                                    unit=pgettext('game points', 'GP') if primary_is_game_points else pgettext('match points', 'MP'),
                                 ) }}
                                 -
                                 {{ ngettext(

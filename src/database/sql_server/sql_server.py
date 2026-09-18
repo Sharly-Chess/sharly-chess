@@ -26,7 +26,7 @@ class SqlServerCredentials:
         self.password: str
         self.database: str
         try:
-            with open(file, 'r') as f:
+            with open(file) as f:
                 (self.host, self.user, self.password, self.database) = json.loads(
                     base64.b64decode(f.read().encode('ascii')).decode('ascii')
                 )
@@ -36,10 +36,9 @@ class SqlServerCredentials:
                     f'Could not read SQL server credentials ({e}), '
                     'please run generate_xxx_sql_server_credentials.py.'
                 ) from e
-            else:
-                raise SharlyChessException(
-                    'Could not read SQL server credentials.'
-                ) from None
+            raise SharlyChessException(
+                'Could not read SQL server credentials.'
+            ) from None
 
     @staticmethod
     def dump(
@@ -48,7 +47,7 @@ class SqlServerCredentials:
         user: str,
         password: str,
         database: str,
-    ):
+    ) -> None:
         """Dumps credentials to the given file.
         The credentials can be read by `creds = SqlServerCredentials(file)`."""
         credentials_file.parent.mkdir(exist_ok=True, parents=True)
@@ -110,7 +109,7 @@ class SqlServer:
             raise SharlyChessException(message) from exception
         return self
 
-    async def __aexit__(self, exc_type, exc_value, tb):
+    async def __aexit__(self, exc_type: Any, exc_value: Any, tb: Any) -> None:
         """Closes the database connection."""
         if self.database:
             if self.cursor:
@@ -119,7 +118,7 @@ class SqlServer:
             await asyncio.to_thread(self.database.close)
             self.database = None
 
-    def _check_cursor(self):
+    def _check_cursor(self) -> None:
         """Check that the cursor is available."""
         if not self.cursor:
             raise RuntimeError('Database connection not established')
@@ -159,7 +158,7 @@ class SqlServer:
             # Fetch all rows and convert to dictionaries
             rows = await asyncio.to_thread(self.cursor.fetchall)
             for row in rows:
-                yield dict(zip(columns, row))
+                yield dict(zip(columns, row, strict=True))
         except (pytds.Error, TimeoutError) as e:
             self._handle_database_error(e)
 
@@ -177,7 +176,7 @@ class SqlServer:
 
             # Fetch one row
             row = await asyncio.to_thread(self.cursor.fetchone)
-            return dict(zip(columns, row)) if row else None
+            return dict(zip(columns, row, strict=True)) if row else None
         except (pytds.Error, TimeoutError) as e:
             self._handle_database_error(e)
 
@@ -191,7 +190,7 @@ class SqlServer:
         except (pytds.Error, TimeoutError) as e:
             self._handle_database_error(e)
 
-    async def commit(self):
+    async def commit(self) -> None:
         """Commits the pending transaction."""
         if self.database:
             await asyncio.to_thread(self.database.commit)

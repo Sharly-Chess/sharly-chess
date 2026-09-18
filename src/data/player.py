@@ -2,11 +2,11 @@ import weakref
 from dataclasses import dataclass
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast, ClassVar
 
 from babel.lists import format_list
 
-from common.i18n import _, get_locale
+from common.i18n import _, get_locale, pgettext
 from common.i18n.utils import normalized_key
 from data.pairing import Pairing
 from data.player_categories import PlayerCategory
@@ -50,6 +50,8 @@ if TYPE_CHECKING:
 
 MIN_YOB = 1900
 MAX_YOB = date.today().year
+MIN_K_FACTOR = 0
+MAX_K_FACTOR = 40
 
 
 @dataclass
@@ -71,17 +73,14 @@ class Player:
         event: 'Event',
         stored_player: StoredPlayer,
     ):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_player = stored_player
         self.ratings = self._get_ratings()
         self.plugin_data = self._get_plugin_data()
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
-        return {
-            plugin_id: plugin_data_class
-            for plugin_id, plugin_data_class in plugin_manager.hook.get_player_plugin_data_class()
-        }
+        return dict(plugin_manager.hook.get_player_plugin_data_class())
 
     @property
     def event(self) -> 'Event':
@@ -377,7 +376,7 @@ class Player:
             return None
         return tournament.tournament_players_by_id.get(self.id)
 
-    def invalidate_team_derived_cache(self):
+    def invalidate_team_derived_cache(self) -> None:
         """Forget what was worked out from this player's team.
 
         In a team event the player's tournament comes from their team, and
@@ -385,7 +384,7 @@ class Player:
         """
         Utils.reset_cached_properties(self, 'optional_single_tournament_id')
 
-    def replace_stored_player(self, stored_player: StoredPlayer):
+    def replace_stored_player(self, stored_player: StoredPlayer) -> None:
         self.stored_player = stored_player
         self.plugin_data = self._get_plugin_data()
         self.ratings = self._get_ratings()
@@ -431,7 +430,7 @@ class Player:
                 category=category,
             )
             if rating_and_type:
-                return rating_and_type
+                return cast(PlayerRatingAndType, rating_and_type)
             if player_ratings.estimated:
                 return PlayerRatingAndType(
                     player_ratings.estimated, PlayerRatingType.ESTIMATED
@@ -445,6 +444,29 @@ class Player:
             rating.fide is not None or rating.national is not None
             for rating in self.ratings.values()
         )
+
+    @staticmethod
+    def estimate_fide_rating_coefficient(
+        fide_rating: int | None, year_of_birth: int | None
+    ) -> int:
+        """Best guess of the coefficient (k) of a player, according to
+        Section B-02-8.3.3 of the FIDE handbook."""
+        if fide_rating is None:
+            return 40
+        if fide_rating > 2400:
+            return 10
+        if year_of_birth:
+            age = date.today().year - year_of_birth
+            if age <= 18 and fide_rating < 2300:
+                return 40
+        return 20
+
+    @property
+    def fide_k_factor_reference_date(self) -> date:
+        """The day whose FIDE rating period the k-factors of the player
+        are read from."""
+        tournament = self.optional_single_tournament
+        return tournament.start_date if tournament else self.event.start_date
 
     @property
     def first_real_rating_str(self) -> str:
@@ -460,7 +482,7 @@ class Player:
                 return f'{rating_and_type} ({tournament_rating.acronym})'
         raise ValueError('Player expected to have a real rating')
 
-    def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]):
+    def update_ratings(self, ratings: dict[TournamentRating, PlayerRating]) -> None:
         for tournament_rating, player_rating in ratings.items():
             self.stored_player.ratings[tournament_rating.value] = (
                 player_rating.stored_value
@@ -470,22 +492,24 @@ class Player:
     @property
     def not_paired_str(self) -> str:
         return (
-            _('Unpaired *** WOMAN')
+            pgettext('said of a woman', 'Unpaired')
             if self.gender == PlayerGender.WOMAN
-            else _('Unpaired *** MAN')
+            else pgettext('said of a man', 'Unpaired')
         )
 
     @property
     def exempt_str(self) -> str:
         return (
-            _('Exempt *** WOMAN')
+            pgettext('said of a woman', 'Exempt')
             if self.gender == PlayerGender.WOMAN
-            else _('Exempt *** MAN')
+            else pgettext('said of a man', 'Exempt')
         )
 
 
 @total_ordering
-class TournamentPlayer(Player):
+# Equality is by seat, not by player, so hashing would make two players on the
+# same board collide. Left unhashable on purpose.
+class TournamentPlayer(Player):  # noqa: PLW1641
     def __init__(
         self,
         tournament: 'Tournament',
@@ -494,7 +518,7 @@ class TournamentPlayer(Player):
         player_id = stored_tournament_player.player_id
         stored_player = tournament.event.players_by_id[player_id].stored_player
         super().__init__(tournament.event, stored_player)
-        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        self._tournament_ref: ReferenceType[Tournament] = weakref.ref(tournament)
         self.stored_tournament_player = stored_tournament_player
 
         self.points: float | None = None
@@ -556,7 +580,7 @@ class TournamentPlayer(Player):
             for round_ in range(1, self.tournament.rounds + 1)
         }
 
-    def delete_pairing(self, round_: int, event_database: EventDatabase):
+    def delete_pairing(self, round_: int, event_database: EventDatabase) -> None:
         event_database.delete_stored_pairing(
             self.pairings_by_round[round_].stored_pairing
         )
@@ -679,27 +703,41 @@ class TournamentPlayer(Player):
 
     @property
     def fide_rating_coefficient(self) -> tuple[int, bool]:
-        """Returns the player's coefficient (k), or the best guess."""
-        from database.sqlite.fide.fide_database import FideDatabase
+        """Returns the player's coefficient (k), and whether it is a guess."""
+        rating = self.tournament.rating
+        if self.tournament_rating_is_overridden:
+            rating = TournamentRating.STANDARD
+        k_factor = self.ratings[rating].k_factor
+        if k_factor is not None:
+            return k_factor, False
+        rating_used_by_fide = self.rating_used_by_fide
+        return Player.estimate_fide_rating_coefficient(
+            rating_used_by_fide.value
+            if rating_used_by_fide.type == PlayerRatingType.FIDE
+            else None,
+            self.year_of_birth,
+        ), True
 
-        if self.fide_id and FideDatabase().exists():
-            with FideDatabase() as db:
-                k = (db.get_k_factors_by_fide_id(self.fide_id) or {}).get(
-                    self.tournament.rating
-                )
-                if k is not None:
-                    return k, False
+    @property
+    def fide_rating_change(self) -> int | None:
+        """The FIDE rating change of the player over the tournament.
 
-        # Make the best guess according to Section B-02-8.3.3 of the FIDE handbook
-        if self.rating_used_by_fide.type != PlayerRatingType.FIDE:
-            return 40, True
-        if self.rating_used_by_fide.value > 2400:
-            return 10, True
-        if self.year_of_birth:
-            age = date.today().year - self.year_of_birth
-            if age <= 18 and self.rating_used_by_fide.value < 2300:
-                return 40, True
-        return 20, True
+        `None` when it cannot be stated: the tournament is not played on
+        FIDE ratings, the coefficient (k) of the player is only an estimate,
+        or no game of theirs counts for the FIDE ratings."""
+        if self.tournament.player_rating_type != PlayerRatingType.FIDE:
+            return None
+        k_factor, k_factor_is_estimated = self.fide_rating_coefficient
+        if k_factor_is_estimated:
+            return None
+        deltas: list[float] = [
+            rating_change.delta
+            for pairing in self.pairings.values()
+            if (rating_change := pairing.fide_rating_change(k_factor)).delta is not None
+        ]
+        if not deltas:
+            return None
+        return round(sum(deltas))
 
     @property
     def first_fide_rating(self) -> tuple[int | None, str | None]:
@@ -794,7 +832,7 @@ class TournamentPlayer(Player):
     # Standard W/D/L values for the TRF26 team-mode "standard score".
     # Tournament-level ``game_points`` overrides intentionally don't apply
     # here — the spec defines this as an informative over-the-board sum.
-    _TEAM_TRF_STANDARD_POINTS: 'dict[Result, float]' = {
+    _TEAM_TRF_STANDARD_POINTS: ClassVar[dict[Result, float]] = {
         Result.WIN: 1.0,
         Result.DRAW: 0.5,
         Result.LOSS: 0.0,
@@ -813,6 +851,30 @@ class TournamentPlayer(Player):
             and (not pairing.result.is_unplayed or pairing.result == Result.FORFEIT_WIN)
         )
 
+    def standings_points(self, after_round: int) -> float:
+        """The score that counts towards the final standings after
+        *after_round*. Identical to :meth:`points_after`, except games
+        against a player excluded from the standings (FIDE 6.6) are not
+        counted — for the standings those games did not happen (the leaver's
+        results stay in the crosstable for rating/history only). With no
+        excluded players this equals :meth:`points_after`."""
+        caching = self.tournament._compute_caching_enabled
+        key = ('standings_points', after_round)
+        if caching:
+            cached = self._compute_cache.get(key)
+            if cached is not None:
+                return cached
+        value = sum(
+            pairing.result.points(self.point_values)
+            for round_, pairing in self.pairings.items()
+            if round_ <= after_round and self.game_counts_for_tie_breaks(pairing)
+        )
+        value += self.tournament.player_point_adjustment_total(self.id, after_round)
+        value = max(0.0, value)
+        if caching:
+            self._compute_cache[key] = value
+        return value
+
     def total_points(self, only_played: bool = False) -> float:
         return sum(
             pairing.result.points(self.point_values)
@@ -820,7 +882,7 @@ class TournamentPlayer(Player):
             if pairing.played or not only_played
         )
 
-    def compute_points(self, *, before_round: int):
+    def compute_points(self, *, before_round: int) -> None:
         """Computes and stores the points scored by the player before round `before_round` (returns None)"""
         self.points = self.points_before(before_round)
 
@@ -830,7 +892,7 @@ class TournamentPlayer(Player):
             for pairing in self.pairings.values()
         )
 
-    def add_points(self, points: float):
+    def add_points(self, points: float) -> None:
         """If `self.points` is set, add `points` to it.
         Otherwise, leave `self.points` as None."""
         if self.points is not None:
@@ -840,7 +902,7 @@ class TournamentPlayer(Player):
     def points_str(self) -> str:
         return Utils.points_str(self.points)
 
-    def add_vpoints(self, vpoints: float):
+    def add_vpoints(self, vpoints: float) -> None:
         """If `self.vpoints` is set, add `vpoints` to it.
         Otherwise, leave `self.vpoints` as None."""
         if self.vpoints is not None:
@@ -928,13 +990,13 @@ class TournamentPlayer(Player):
         return trf_player
 
     # FIXME(Amaras): this should not be in the Player class
-    def reset_board(self):
+    def reset_board(self) -> None:
         self.board_id = None
         self.board_number = None
         self.color = None
 
     # FIXME(Amaras): this should not be in the Player class
-    def set_board(self, board_id: int, board_number: int, color: BoardColor):
+    def set_board(self, board_id: int, board_number: int, color: BoardColor) -> None:
         self.board_id = board_id
         self.board_number = board_number
         self.color = color
@@ -1077,7 +1139,7 @@ class TournamentPlayer(Player):
         *,
         after_round: int,
         tie_breaks: list['TieBreak'] | None = None,
-    ):
+    ) -> None:
         if tie_breaks is None:
             tie_breaks = self.tournament.tie_breaks
         self._tie_break_values = [
@@ -1098,7 +1160,7 @@ class TournamentPlayer(Player):
         return self._rank
 
     @rank.setter
-    def rank(self, rank: int):
+    def rank(self, rank: int) -> None:
         self._rank = rank
 
     @cached_property
@@ -1117,7 +1179,7 @@ class TournamentPlayer(Player):
 
     @property
     def starting_rank_sort_key(self) -> tuple:
-        return (-self.rating, -self.title.sort_index) + self.name_sort_key
+        return (-self.rating, -self.title.sort_index, *self.name_sort_key)
 
     @property
     def board_number_sort_key(self) -> tuple:
@@ -1163,11 +1225,14 @@ class TournamentPlayer(Player):
         """Returns a rank sort key as if the tie-break of type *tie_break_type* was not set."""
         elements = self._rank_key_elements()
         assert self.pairing_number is not None
-        return tuple(
-            element
-            for index, element in enumerate(elements)
-            if index != tie_break_index
-        ) + (self.pairing_number,)
+        return (
+            *tuple(
+                element
+                for index, element in enumerate(elements)
+                if index != tie_break_index
+            ),
+            self.pairing_number,
+        )
 
     @property
     def rank_sort_key_without_pairing_number(self) -> tuple:
@@ -1175,7 +1240,7 @@ class TournamentPlayer(Player):
 
     @property
     def rank_sort_key(self) -> tuple:
-        return self.rank_sort_key_without_pairing_number + (self.pairing_number,)
+        return (*self.rank_sort_key_without_pairing_number, self.pairing_number)
 
     def __le__(self, other: 'TournamentPlayer') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
@@ -1183,20 +1248,20 @@ class TournamentPlayer(Player):
             return NotImplemented
         return self.board_number_sort_key > other.board_number_sort_key
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         # p1 == p2 calls p1.__eq__(p2)
         if not isinstance(other, TournamentPlayer):
             return NotImplemented
         return self.board_number_sort_key == other.board_number_sort_key
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f'(#{self.id} rank={self._rank} ratings={self.ratings_str} '
             f'title={self.title.value} gender={self.gender.value} '
             f'name={self.last_name} {self.first_name} points={self.points})'
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(tournament={self.tournament!r}, stored_tournament_player={self.stored_tournament_player!r})'
 
     # --------------------------------------------------------------------------
@@ -1210,6 +1275,69 @@ class TournamentPlayer(Player):
     @property
     def has_played_games(self) -> bool:
         return any(pairing.played for pairing in self.pairings.values())
+
+    @cached_property
+    def is_excluded_from_standings(self) -> bool:
+        """FIDE 6.6: in a round-robin, a player who completed less than 50%
+        of their games is kept in the crosstable but dropped from the final
+        standings, and their games are not counted in opponents' tie-breaks.
+
+        The red flag for a leaver (withdrawn or expelled) is a voluntarily
+        unplayed game — a forfeit loss or a requested bye. Two conditions,
+        both required:
+
+        - The player did not play their *last* scheduled game. Withdrawing
+          or being expelled means they were gone by the end; a player who
+          played their final round was present at the end and therefore did
+          not leave, however many earlier games they missed.
+        - More than half of their scheduled games are voluntarily unplayed
+          (equivalently, they completed fewer than half).
+
+        A forfeit *win* or a game still to be played counts as completed.
+        """
+        tournament = self.tournament
+        if not tournament.round_robin_participation_rule:
+            return False
+        if not tournament.pairing_system.supports_participation_rule:
+            return False
+        if tournament.is_team_tournament:
+            # A team tournament applies the rule to the teams, which is
+            # what the standings rank: a player of a dropped team is
+            # dropped with it.
+            team = self.team
+            return team is not None and team.is_excluded_from_standings
+        scheduled = [
+            pairing
+            for pairing in self.pairings.values()
+            if pairing.opponent_id is not None
+        ]
+        if not scheduled:
+            return False
+        last_scheduled = max(scheduled, key=lambda pairing: pairing.round)
+        if not last_scheduled.voluntary_unplayed:
+            return False
+        voluntarily_unplayed = sum(
+            1 for pairing in scheduled if pairing.voluntary_unplayed
+        )
+        return voluntarily_unplayed * 2 > len(scheduled)
+
+    def game_counts_for_tie_breaks(self, pairing: 'Pairing') -> bool:
+        """False when *pairing* is against a player excluded from the final
+        standings — that game must not feed any of this player's tie-breaks
+        or opponent points (FIDE 6.6). Byes and holes (no opponent) are left
+        for each tie-break to handle as before."""
+        if pairing.opponent_id is None:
+            return True
+        opponent = self.tournament.tournament_players_by_id.get(pairing.opponent_id)
+        return opponent is None or not opponent.is_excluded_from_standings
+
+    def game_is_annulled(self, pairing: 'Pairing') -> bool:
+        """Whether *pairing* no longer counts towards the standings (FIDE
+        6.6) because either side was dropped from them. It stays in the
+        tournament table, crossed out, and out of both players' totals."""
+        return self.is_excluded_from_standings or not self.game_counts_for_tie_breaks(
+            pairing
+        )
 
     def round_performance(self, round_index: int) -> float | None:
         """Single-round performance indicator: the Elo rating change (K=20)

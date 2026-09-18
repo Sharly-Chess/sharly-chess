@@ -14,7 +14,6 @@ import json
 import sys
 import logging
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 pytest_plugins = ['pytest']
 
@@ -30,35 +29,35 @@ class FlatpakTestSuite:
         self.manifest_path = (
             flatpak_dir / 'configuration' / 'com.sharlychess.SharlyChess.json'
         )
-        self.manifest: Dict = {}
-        self.test_results: List[Tuple[str, bool, str]] = []
+        self.manifest: dict = {}
+        self.test_results: list[tuple[str, bool, str]] = []
 
     def load_manifest(self) -> bool:
         """Load manifest JSON."""
         try:
-            with open(self.manifest_path, 'r') as f:
+            with open(self.manifest_path) as f:
                 self.manifest = json.load(f)
             return True
         except Exception as e:
             logger.error(f'Failed to load manifest: {e}')
             return False
 
-    def test_manifest_exists(self) -> Tuple[bool, str]:
+    def test_manifest_exists(self) -> tuple[bool, str]:
         """Test 1: Manifest file exists."""
         if self.manifest_path.exists():
             return True, f'✓ Manifest exists: {self.manifest_path}'
         return False, f'✗ Manifest not found: {self.manifest_path}'
 
-    def test_manifest_valid_json(self) -> Tuple[bool, str]:
+    def test_manifest_valid_json(self) -> tuple[bool, str]:
         """Test 2: Manifest is valid JSON."""
         try:
-            with open(self.manifest_path, 'r') as f:
+            with open(self.manifest_path) as f:
                 json.load(f)
             return True, '✓ Manifest is valid JSON'
         except json.JSONDecodeError as e:
             return False, f'✗ Invalid JSON: {e}'
 
-    def test_manifest_required_fields(self) -> Tuple[bool, str]:
+    def test_manifest_required_fields(self) -> tuple[bool, str]:
         """Test 3: Manifest has all required fields."""
         required = ['app-id', 'runtime', 'sdk', 'command', 'modules', 'finish-args']
         missing = [f for f in required if f not in self.manifest]
@@ -67,14 +66,14 @@ class FlatpakTestSuite:
             return True, f'✓ All required fields present: {", ".join(required)}'
         return False, f'✗ Missing fields: {", ".join(missing)}'
 
-    def test_app_id_format(self) -> Tuple[bool, str]:
+    def test_app_id_format(self) -> tuple[bool, str]:
         """Test 4: App ID follows reverse domain naming."""
         app_id = self.manifest.get('app-id', '')
         if app_id.startswith('com.') and '.' in app_id[4:]:
             return True, f'✓ App ID format valid: {app_id}'
         return False, f'✗ App ID format invalid: {app_id}'
 
-    def test_runtime_specified(self) -> Tuple[bool, str]:
+    def test_runtime_specified(self) -> tuple[bool, str]:
         """Test 5: Runtime is properly configured."""
         runtime = self.manifest.get('runtime')
         runtime_version = self.manifest.get('runtime-version')
@@ -84,7 +83,7 @@ class FlatpakTestSuite:
             return True, status
         return False, f'✗ Invalid runtime: {runtime}'
 
-    def test_modules_defined(self) -> Tuple[bool, str]:
+    def test_modules_defined(self) -> tuple[bool, str]:
         """Test 6: Modules are defined."""
         modules = self.manifest.get('modules', [])
         if not modules:
@@ -93,7 +92,7 @@ class FlatpakTestSuite:
         module_names = [m.get('name', 'unknown') for m in modules]
         return True, f'✓ {len(modules)} modules defined: {", ".join(module_names)}'
 
-    def test_finish_args_present(self) -> Tuple[bool, str]:
+    def test_finish_args_present(self) -> tuple[bool, str]:
         """Test 7: Finish args (permissions) defined."""
         finish_args = self.manifest.get('finish-args', [])
         if not finish_args:
@@ -109,7 +108,7 @@ class FlatpakTestSuite:
         status = f'✓ Permissions defined: {len(found)}/{len(essential_perms)}'
         return len(found) >= 2, status
 
-    def test_display_socket(self) -> Tuple[bool, str]:
+    def test_display_socket(self) -> tuple[bool, str]:
         """Test 8: Display socket available (X11 or Wayland)."""
         finish_args = self.manifest.get('finish-args', [])
         has_display = '--socket=wayland' in finish_args or '--socket=x11' in finish_args
@@ -118,7 +117,7 @@ class FlatpakTestSuite:
             return True, '✓ Display socket available'
         return False, '✗ No display socket (X11/Wayland)'
 
-    def test_network_permission(self) -> Tuple[bool, str]:
+    def test_network_permission(self) -> tuple[bool, str]:
         """Test 9: Network permission available."""
         finish_args = self.manifest.get('finish-args', [])
         has_network = '--share=network' in finish_args
@@ -130,21 +129,21 @@ class FlatpakTestSuite:
             '⚠ Network permission not explicitly set (may be OK for GUI-only app)',
         )
 
-    def test_command_exists(self) -> Tuple[bool, str]:
+    def test_command_exists(self) -> tuple[bool, str]:
         """Test 10: Command entry point defined."""
         command = self.manifest.get('command')
         if command:
             return True, f'✓ Command defined: {command}'
         return False, '✗ No command entry point'
 
-    def test_pyproject_toml_exists(self) -> Tuple[bool, str]:
+    def test_pyproject_toml_exists(self) -> tuple[bool, str]:
         """Test 11: pyproject.toml exists (source of dependencies)."""
         pyproject = self.flatpak_dir.parents[3] / 'pyproject.toml'
         if pyproject.exists():
             return True, f'✓ pyproject.toml exists: {pyproject}'
         return False, f'✗ pyproject.toml not found: {pyproject}'
 
-    def test_appdata_file_exists(self) -> Tuple[bool, str]:
+    def test_appdata_file_exists(self) -> tuple[bool, str]:
         """Test 13: AppData XML file exists."""
         appdata_file = (
             self.flatpak_dir
@@ -155,7 +154,7 @@ class FlatpakTestSuite:
             return True, f'✓ AppData file exists: {appdata_file}'
         return False, f'✗ AppData file not found: {appdata_file}'
 
-    def test_desktop_file_exists(self) -> Tuple[bool, str]:
+    def test_desktop_file_exists(self) -> tuple[bool, str]:
         """Test 14: Desktop file exists."""
         desktop_file = (
             self.flatpak_dir / 'configuration' / 'com.sharlychess.SharlyChess.desktop'
@@ -164,7 +163,7 @@ class FlatpakTestSuite:
             return True, f'✓ Desktop file exists: {desktop_file}'
         return False, f'✗ Desktop file not found: {desktop_file}'
 
-    def test_launcher_script_exists(self) -> Tuple[bool, str]:
+    def test_launcher_script_exists(self) -> tuple[bool, str]:
         """Test 15: Launcher script exists."""
         launcher = self.flatpak_dir / 'scripts' / 'launcher.py'
         if launcher.exists():

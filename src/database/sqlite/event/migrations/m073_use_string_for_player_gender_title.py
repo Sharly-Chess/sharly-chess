@@ -1,13 +1,14 @@
+from typing import ClassVar
 from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    GENDER_MAPPING: dict[int, str] = {
+    GENDER_MAPPING: ClassVar[dict[int, str]] = {
         0: '',
         1: 'F',
         2: 'M',
     }
-    TITLE_MAPPING: dict[int, str] = {
+    TITLE_MAPPING: ClassVar[dict[int, str]] = {
         0: '',
         1: 'WCM',
         2: 'CM',
@@ -18,12 +19,12 @@ class Migration(BaseMigration):
         7: 'WGM',
         8: 'GM',
     }
-    MAPPING_BY_PLAYER_COLUMN: dict[str, dict[int, str]] = {
+    MAPPING_BY_PLAYER_COLUMN: ClassVar[dict[str, dict[int, str]]] = {
         'gender': GENDER_MAPPING,
         'title': TITLE_MAPPING,
     }
 
-    def forward(self):
+    def forward(self) -> None:
         for column, mapping in self.MAPPING_BY_PLAYER_COLUMN.items():
             self.database.execute(
                 f'ALTER TABLE `player` RENAME COLUMN `{column}` TO `{column}_int`'
@@ -45,7 +46,7 @@ class Migration(BaseMigration):
                     (str_value, int_value),
                 )
 
-    def backward(self):
+    def backward(self) -> None:
         for column, mapping in self.MAPPING_BY_PLAYER_COLUMN.items():
             self.database.execute(
                 f'ALTER TABLE `player` RENAME COLUMN `{column}` TO `{column}_str`'

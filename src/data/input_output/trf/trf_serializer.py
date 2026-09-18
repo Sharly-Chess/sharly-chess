@@ -3,11 +3,12 @@ from .trf_data import TrfTournament
 from .trf_entry import ENTRIES, NationalPlayerEntry
 
 import io
+from typing import TextIO
 
 
 class TrfSerializer:
     @classmethod
-    def dump(cls, fp, tournament: TrfTournament):
+    def dump(cls, fp: TextIO, tournament: TrfTournament) -> None:
         """Dumps the tournament and saves the trf in the file fp points to"""
 
         cls._dump_tournament(fp, tournament)
@@ -21,7 +22,7 @@ class TrfSerializer:
         return fp.getvalue()
 
     @classmethod
-    def load(cls, fp) -> TrfTournament:
+    def load(cls, fp: TextIO) -> TrfTournament:
         """Parses the trf file fp points to and returns it as a tournament"""
 
         return cls._parse_tournament(fp.readlines())
@@ -33,14 +34,11 @@ class TrfSerializer:
         return cls._parse_tournament(s.split('\n'))
 
     @classmethod
-    def _dump_tournament(cls, fp, tournament):
+    def _dump_tournament(cls, fp: TextIO, tournament: TrfTournament) -> None:
         for entry_ in ENTRIES:
             entry_.dump(fp, tournament)
 
-        for (
-            federation,
-            national_players,
-        ) in tournament.national_players_by_federation.items():
+        for federation in tournament.national_players_by_federation:
             NationalPlayerEntry(federation).dump(fp, tournament)
 
         for field, value in tournament.xx_fields.items():
@@ -50,7 +48,7 @@ class TrfSerializer:
             fp.write(f'{field} {value}\n')
 
     @classmethod
-    def _parse_tournament(cls, lines):
+    def _parse_tournament(cls, lines: list[str]) -> TrfTournament:
         tournament = TrfTournament()
         federation_codes = [
             code

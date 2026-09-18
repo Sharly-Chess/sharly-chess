@@ -20,13 +20,11 @@ class IdentifiableEntity(ABC):
     def static_id() -> str:
         """Represents the entity in forms, databases and query params.
         Should be unique amongst entities from the same parent class."""
-        pass
 
     @staticmethod
     @abstractmethod
     def static_name() -> str:
         """Represents the entity in the UI."""
-        pass
 
     @property
     def id(self) -> str:
@@ -41,7 +39,7 @@ class IdentifiableEntity(ABC):
             return NotImplemented
         return self.id == other.id
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.id)
 
 

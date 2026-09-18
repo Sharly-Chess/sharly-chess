@@ -1,8 +1,9 @@
 from collections import defaultdict
 from collections.abc import Iterable
-from typing import Any, Hashable, TYPE_CHECKING, Optional
+from typing import Any, TYPE_CHECKING, Optional
+from collections.abc import Hashable
 
-import apluggy as pluggy  # type: ignore
+import apluggy as pluggy
 
 from common import APP_NAME
 
@@ -53,10 +54,8 @@ if TYPE_CHECKING:
         IndividualTeamType,
     )
     from data.print_documents.place_cards.data import PlaceCardPlayer
-    from data.prohibited_pairings import (
-        ProhibitedPairingDimension,
-        RoundProhibitedPairingGroup,
-    )
+    from data.pairing_dimensions import PairingDimension
+    from data.prohibited_pairings import RoundProhibitedPairingGroup
     from data.rule_sets import RuleSet
     from data.screens.screen_types import ScreenType
     from data.teams.team_affiliation import TeamAffiliationSource
@@ -103,7 +102,7 @@ class AppHookSpecs:
         collection_key: str,
         collection_spec: 'AdminCollectionSpec',
         event: Optional['Event'],
-    ):
+    ) -> None:
         """Extend a request-scoped admin card/list collection."""
 
     # ---------------------------------------------------------------------------------
@@ -111,21 +110,25 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def insert_data_sources(self, data_sources: list[type['DataSource']]):
+    def insert_data_sources(self, data_sources: list[type['DataSource']]) -> None:
         """Provide extra data sources."""
 
     @hookspec
     def insert_local_source_databases(
         self, databases: list[type['LocalSourceDatabase']]
-    ):
+    ) -> None:
         """Provide extra local source databases."""
 
     @hookspec
-    def insert_tournament_exporters(self, exporters: list[type['TournamentExporter']]):
+    def insert_tournament_exporters(
+        self, exporters: list[type['TournamentExporter']]
+    ) -> None:
         """Provide extra tournament export options."""
 
     @hookspec
-    def insert_tournament_importers(self, importers: list[type['TournamentImporter']]):
+    def insert_tournament_importers(
+        self, importers: list[type['TournamentImporter']]
+    ) -> None:
         """Provide extra tournament import options."""
 
     # ---------------------------------------------------------------------------------
@@ -133,7 +136,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def on_player_deleted(self, player: 'Player'):
+    def on_player_deleted(self, player: 'Player') -> None:
         """Called when a player is deleted."""
 
     @hookspec
@@ -148,14 +151,14 @@ class AppHookSpecs:
         """Provide additional template context for rendering the player form."""
 
     @hookspec
-    def insert_player_form_carry_over_field(self, fields: list[str]):
+    def insert_player_form_carry_over_field(self, fields: list[str]) -> None:
         """Insert fields that are carried over in the player form. These fields
         are saved after the player search and when clicking using the 'Add other' button."""
 
     @hookspec
     def insert_player_form_fields_template(
         self, templates_by_section: defaultdict[str, list[str]]
-    ):
+    ) -> None:
         """Provide paths of templates of fields to insert into the player form,
         organised by the section at which to add the fields."""
 
@@ -164,7 +167,7 @@ class AppHookSpecs:
         self,
         data: dict[str, str],
         errors: dict[str, str],
-    ):
+    ) -> None:
         """Validate the additional player form fields. Add the errors to the *errors* dict."""
 
     @hookspec
@@ -182,7 +185,7 @@ class AppHookSpecs:
         stored_player: 'StoredPlayer',
         data_source: 'DataSource',
         with_arbiter_title: bool,
-    ):
+    ) -> None:
         """Add plugin specific data to a player after a successful player search"""
 
     @hookspec
@@ -190,15 +193,22 @@ class AppHookSpecs:
         self,
         tournament_player: 'TournamentPlayer',
         place_card_player: 'PlaceCardPlayer',
-    ):
+    ) -> None:
         """Add plugin specific data to a player before printing place cards."""
+
+    @hookspec
+    def place_card_field_tokens(self) -> list[dict[str, str]]:
+        """Return the place card field tokens the plugin adds (matching the data
+        it sets in ``augment_place_card_player``). Each is a dict with keys
+        ``group`` (e.g. a federation code), ``label`` (localized) and ``expr``
+        (the Jinja expression). Surfaced in the visual editor's field picker."""
 
     @hookspec
     def insert_player_profile_links(
         self,
         player: 'Player',
         links: list['PlayerProfileLink'],
-    ):
+    ) -> None:
         """Add federation identifiers to the identity line of a player's"""
 
     @hookspec(firstresult=True)
@@ -214,14 +224,14 @@ class AppHookSpecs:
     @hookspec
     def validate_player_tournament_move(
         self, tournament: 'Tournament', player: 'TournamentPlayer'
-    ):
+    ) -> None:
         """Test if a player can be moved to a tournament.
         Raises a translated ValueError if so."""
 
     @hookspec
     def augment_trf_national_player(
         self, player: 'Player', trf_national_player: 'TrfNationalPlayer'
-    ):
+    ) -> None:
         """Augment a TRF national player from a player."""
 
     @hookspec
@@ -229,7 +239,7 @@ class AppHookSpecs:
         self,
         stored_player: 'StoredPlayer',
         trf_national_player: 'TrfNationalPlayer',
-    ):
+    ) -> None:
         """Augment a stored player from a TRF national player."""
 
     @hookspec(firstresult=True)
@@ -237,13 +247,13 @@ class AppHookSpecs:
         """Get an error message disabling the player distribution."""
 
     @hookspec
-    def alter_players_tab_columns(self, columns: list['PlayersTabColumn']):
+    def alter_players_tab_columns(self, columns: list['PlayersTabColumn']) -> None:
         """Add, modify or delete columns of the player tab."""
 
     @hookspec
     def insert_player_datasheet_columns(
         self, datasheet_columns: list['DatasheetColumn']
-    ):
+    ) -> None:
         """Provide extra columns for the player download datasheets"""
 
     @hookspec
@@ -251,15 +261,29 @@ class AppHookSpecs:
         """Get a column to insert into the check-in table."""
 
     @hookspec
-    def on_before_load_tournaments_check_in_modal(self, event: 'Event'):
+    def on_before_load_tournaments_check_in_modal(self, event: 'Event') -> None:
         """Executed before the check-in modal is loaded."""
+
+    @hookspec
+    def insert_search_filter_types(self, filters: dict) -> None:
+        """Add plugin-specific filters for the player search."""
+
+    @hookspec
+    def insert_search_filter_for_datasource(self, datasource_mapping: dict) -> None:
+        """Map filters with datasources."""
+
+    @hookspec
+    def map_filter_to_tournament_criteria(
+        self, filter_list: list, criterion: Any
+    ) -> None:
+        """Map filters to TournamentCriteria."""
 
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def on_event_duplicated(self, event_database: 'EventDatabase'):
+    def on_event_duplicated(self, event_database: 'EventDatabase') -> None:
         """Called after an event is duplicated"""
 
     @hookspec
@@ -278,7 +302,7 @@ class AppHookSpecs:
         event: Optional['Event'],
         data: dict[str, str],
         errors: dict[str, str],
-    ):
+    ) -> None:
         """Validate the additional event form fields"""
 
     @hookspec(firstresult=True)
@@ -298,7 +322,7 @@ class AppHookSpecs:
     @hookspec
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
-    ):
+    ) -> None:
         """Called when the (publishable) data of a tournament is updated"""
 
     @hookspec
@@ -310,7 +334,7 @@ class AppHookSpecs:
     @hookspec
     def validate_tournament_form_fields(
         self, data: dict[str, str], errors: dict[str, str]
-    ):
+    ) -> None:
         """Validate the additional tournament form fields"""
 
     @hookspec
@@ -343,7 +367,7 @@ class AppHookSpecs:
         """Path to the template to be added to the 'Actions' menu of the tournament tab."""
 
     @hookspec
-    def set_for_round(self, tournament: 'Tournament', round_: int):
+    def set_for_round(self, tournament: 'Tournament', round_: int) -> None:
         """Called to initialise the tournament for the given round."""
 
     @hookspec(firstresult=True)
@@ -368,7 +392,7 @@ class AppHookSpecs:
     @hookspec
     def get_prohibited_pairing_dimensions(
         self,
-    ) -> list['ProhibitedPairingDimension']:
+    ) -> list['PairingDimension']:
         """Extra prohibited-pairing grouping dimensions a plugin
         contributes (e.g. a federation "ligue", a school). Each buckets
         a tournament's members so that members sharing a key must not be
@@ -407,13 +431,13 @@ class AppHookSpecs:
         """A signal sent when a special result is set. Returns a string to be displayed to the user"""
 
     @hookspec
-    def load_tournament_check_in_data(self, tournament: 'Tournament'):
+    def load_tournament_check_in_data(self, tournament: 'Tournament') -> None:
         """Load the check-in data of a tournament."""
 
     @hookspec
     def insert_tournament_criteria_types(
         self, criteria_types: list[type['TournamentCriterion']]
-    ):
+    ) -> None:
         """Provide additional tournament criteria types."""
 
     # ---------------------------------------------------------------------------------
@@ -447,7 +471,7 @@ class AppHookSpecs:
         """Return default number of columns of the Players Screens."""
 
     @hookspec
-    def insert_screen_types(self, screen_types: list[type['ScreenType']]):
+    def insert_screen_types(self, screen_types: list[type['ScreenType']]) -> None:
         """Provide extra screen types."""
 
     @hookspec
@@ -459,11 +483,13 @@ class AppHookSpecs:
     # Printing
     # ---------------------------------------------------------------------------------
     @hookspec
-    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+    def insert_print_document(
+        self, print_documents: list[type['PrintDocument']]
+    ) -> None:
         """Provide extra print documents"""
 
     @hookspec
-    def insert_print_option(self, print_options: list[type['PrintOption']]):
+    def insert_print_option(self, print_options: list[type['PrintOption']]) -> None:
         """Provide extra print options"""
 
     @hookspec
@@ -471,7 +497,7 @@ class AppHookSpecs:
         self,
         usage: 'ColumnUsage',
         player_columns: list['TournamentPlayerTableColumn'],
-    ):
+    ) -> None:
         """Alter the player columns of print documents and screens."""
 
     @hookspec
@@ -480,23 +506,23 @@ class AppHookSpecs:
         usage: 'ColumnUsage',
         board_columns: list['BoardColumn'],
         tournament: 'Tournament',
-    ):
+    ) -> None:
         """Alter the board columns of a print documents and screens."""
 
     @hookspec
     def insert_print_player_splitter_types(
         self, player_splitter_types: list[type['PlayerSplitter']]
-    ):
+    ) -> None:
         """Provide print player splitting options"""
 
     @hookspec
-    def insert_print_qrcode_types(self, qrcode_types: list[type['QRCodeType']]):
+    def insert_print_qrcode_types(self, qrcode_types: list[type['QRCodeType']]) -> None:
         """Provide QR Code options"""
 
     @hookspec
     def insert_print_individual_team_types(
         self, individual_team_types: list[type['IndividualTeamType']]
-    ):
+    ) -> None:
         """Provide print team type options"""
 
     @hookspec
@@ -510,37 +536,37 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]):
+    def insert_tie_break_types(self, tie_break_types: list[type['TieBreak']]) -> None:
         """Provide extra tournament tie-breaks."""
 
     @hookspec
     def insert_tie_break_option_types(
         self, tie_break_option_types: list[type['TieBreakOption']]
-    ):
+    ) -> None:
         """Provide extra tournament tie-break options."""
 
     @hookspec
     def insert_swiss_system_tie_break_sets(
         self, system_sets: list['SystemTieBreakSet']
-    ):
+    ) -> None:
         """Provide extra system tie-break sets for the swiss pairing system."""
 
     @hookspec
     def insert_team_swiss_system_tie_break_sets(
         self, system_sets: list['SystemTieBreakSet']
-    ):
+    ) -> None:
         """Provide extra system tie-break sets for the team swiss pairing system."""
 
     @hookspec
     def insert_team_round_robin_system_tie_break_sets(
         self, system_sets: list['SystemTieBreakSet']
-    ):
+    ) -> None:
         """Provide extra system tie-break sets for the team round-robin pairing system."""
 
     @hookspec
     def add_tie_breaks_to_trf_acronym_mapping(
         self, tie_break_by_acronym: dict[str, 'TieBreak']
-    ):
+    ) -> None:
         """AAdd tie-breaks whose base acronym does not necessarily match to a manual acronym mapping."""
 
     # ---------------------------------------------------------------------------------
@@ -548,7 +574,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]) -> None:
         """Provide extra official rule sets (federation cups etc.) that
         an arbiter can pick when creating a tournament. The picker in
         the tournament modal filters by ``RuleSet.event_type``."""
@@ -560,17 +586,19 @@ class AppHookSpecs:
     @hookspec
     def insert_swiss_pairing_variation_types(
         self, variation_types: list[type['SwissVariation']]
-    ):
+    ) -> None:
         """Provide extra swiss pairing variations."""
 
     @hookspec
-    def insert_team_pairing_systems(self, pairing_systems: list[type['PairingSystem']]):
+    def insert_team_pairing_systems(
+        self, pairing_systems: list[type['PairingSystem']]
+    ) -> None:
         """Provide extra team-event pairing systems"""
 
     @hookspec
     def insert_team_pairing_variations(
         self, variations: list[type['PairingVariation']]
-    ):
+    ) -> None:
         """Provide extra team-event pairing variations to expose alongside
         the core Team Swiss / Team Round-Robin variations."""
 
@@ -581,13 +609,13 @@ class AppHookSpecs:
     @hookspec
     def insert_player_filter_types(
         self, player_filter_types: list[type['PlayerFilter']]
-    ):
+    ) -> None:
         """Provide extra player filters for prizes."""
 
     @hookspec
     def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
-    ):
+    ) -> None:
         """Provide the options of the added prize player filters."""
 
     # ---------------------------------------------------------------------------------
@@ -608,7 +636,7 @@ class AppHookSpecs:
         self,
         data: dict[str, str],
         errors: dict[str, str],
-    ):
+    ) -> None:
         """Validate the additional account form fields"""
 
     @hookspec

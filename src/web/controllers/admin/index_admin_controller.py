@@ -1,6 +1,5 @@
 import shutil
 from collections import defaultdict
-from copy import copy
 from datetime import date
 from logging import Logger
 from pathlib import Path
@@ -22,11 +21,8 @@ from common import (
     is_valid_email,
 )
 from common.exception import FormError, SharlyChessException
-from common.i18n import (
-    _,
-    locales,
-)
-from common.i18n.utils import by, locale_localized_name
+from common.i18n import _, locales, pgettext
+from common.i18n.utils import by
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -35,6 +31,7 @@ from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.event_metadata import EventMetadata
+from data.championship.championship import Championship
 from data.championship.championship_loader import (
     ChampionshipArchiveLoader,
     ChampionshipLoader,
@@ -50,7 +47,6 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
     StoredPlayerCategorySet,
-    StoredPlugin,
     StoredTag,
 )
 from database.sqlite.event.event_database import EventDatabase
@@ -70,10 +66,9 @@ from database.sqlite.local_source_database.delays import (
     OutdatedDelay,
 )
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins.manager import Plugin, plugin_manager
+from plugins.manager import plugin_manager
 from utils import Utils
 from utils.date_time import (
-    DateFormatterManager,
     format_date,
     format_date_range,
 )
@@ -99,73 +94,13 @@ logger: Logger = get_logger()
 
 class IndexAdminController(BaseAdminController):
     @classmethod
-    def _admin_validate_config_update_data(
-        cls,
-        data: dict[str, str] | None = None,
-    ) -> StoredConfig:
-        config = SharlyChessConfig()
-        if data is None:
-            data = {}
-        errors: dict[str, str] = {}
-        experimental = WebContext.form_data_to_bool(data, 'experimental')
-        federation = WebContext.form_data_to_str(data, field := 'federation')
-        if federation:
-            if federation not in config.federations:
-                errors[field] = f'Invalid federation [{federation}].'
-                data[field] = ''
-                federation = None
-        else:
-            errors[field] = _('Please choose a federation.')
-        locale = WebContext.form_data_to_str(data, field := 'locale')
-        if locale and locale not in locales:
-            errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
-            data[field] = ''
-        date_formatter_id = (
-            WebContext.form_data_to_str(data, field := 'date_formatter') or ''
-        )
-        try:
-            DateFormatterManager().get_object(date_formatter_id)
-        except KeyError:
-            errors[field] = f'invalid date formatter [{date_formatter_id}].'
-        stored_config = copy(config.stored_config)
-        stored_config.force_edit = False
-        stored_config.experimental = experimental
-        stored_config.federation = federation
-        stored_config.locale = locale
-        stored_config.date_formatter = date_formatter_id
-        stored_config.errors = errors
-        return stored_config
-
-    @classmethod
-    def _admin_validate_plugins_update_data(
-        cls, data: dict[str, str] | None = None
-    ) -> list[StoredPlugin]:
-        if data is None:
-            data = {}
-        stored_plugins: list[StoredPlugin] = []
-        enabled_plugins = plugin_manager.get_plugins_with_dependencies(
-            [
-                plugin
-                for plugin in plugin_manager.all_plugins
-                if WebContext.form_data_to_bool(data, plugin.form_key)
-            ]
-        )
-        for plugin in plugin_manager.all_plugins:
-            stored_plugins.append(
-                StoredPlugin(
-                    name=plugin.id,
-                    is_enabled=plugin in enabled_plugins,
-                )
-            )
-        return stored_plugins
-
-    @classmethod
-    def _admin_render(
+    def admin_shell_context(
         cls,
         web_context: AdminWebContext,
         template_context: dict[str, Any] | None = None,
-        keep_modal_open: bool | None = None,
-    ) -> Template:
+    ) -> dict[str, Any]:
+        """Build the full admin-shell context (sidebar nav_tabs, logo, etc.).
+        Reused by other controllers that render inside the admin shell."""
         sorted_archives = ArchiveLoader.get_sorted_archives()
         public_only: bool = not web_context.client.can_view_private_events
         events_metadata = EventLoader.get_events_metadata(public_only=public_only)
@@ -229,17 +164,8 @@ class IndexAdminController(BaseAdminController):
             },
         }
         if web_context.client.can_view_passed_events:
-            nav_tabs |= {
+            event_submenu: dict[str, dict[str, Any]] = {
                 'current_events': {
-                    'section_title': _('Events'),
-                    'section_create_modal_url': (
-                        web_context.request.app.route_reverse(
-                            'admin-event-modal', admin_tab='home', action='create'
-                        )
-                        if web_context.client.can_create_events
-                        else None
-                    ),
-                    'section_create_label': _('Create an event'),
                     'title': _('Current ({num})').format(
                         num=len(current_events) or '-'
                     ),
@@ -252,7 +178,6 @@ class IndexAdminController(BaseAdminController):
                     else _('No current events.'),
                     'icon_class': 'bi-calendar indented',
                     'page_title': _('Current events'),
-                    'divider': True,
                 },
                 'coming_events': {
                     'title': _('Upcoming ({num})').format(
@@ -290,6 +215,25 @@ class IndexAdminController(BaseAdminController):
                     'empty_str': _('No archived events.'),
                     'icon_class': 'bi-archive indented',
                     'page_title': _('Archived events'),
+                },
+            }
+            create_event_modal_url = (
+                web_context.request.app.route_reverse(
+                    'admin-event-modal', admin_tab='home', action='create'
+                )
+                if web_context.client.can_create_events
+                else None
+            )
+            nav_tabs |= {
+                'events-group': {
+                    'title': _('Events'),
+                    'icon_class': 'bi-calendar-event-fill',
+                    'disabled': not create_event_modal_url
+                    and all(tab['disabled'] for tab in event_submenu.values()),
+                    'divider': True,
+                    'create_modal_url': create_event_modal_url,
+                    'create_label': _('Create an event'),
+                    'submenu': event_submenu,
                 },
             }
         else:
@@ -338,7 +282,7 @@ class IndexAdminController(BaseAdminController):
                 item for item in championships if id(item) not in dated_championship_ids
             ]
 
-            def championship_sort_key(item):
+            def championship_sort_key(item: Championship) -> tuple[date, date, str]:
                 return (
                     item.stop_date or date.max,
                     item.start_date or date.min,
@@ -354,15 +298,8 @@ class IndexAdminController(BaseAdminController):
                     item.name.casefold(),
                 )
             )
-            nav_tabs |= {
+            championship_submenu: dict[str, dict[str, Any]] = {
                 'championships': {
-                    'section_title': _('Championships'),
-                    'section_create_modal_url': (
-                        web_context.request.app.route_reverse(
-                            'admin-championship-create-modal'
-                        )
-                    ),
-                    'section_create_label': _('Create a championship'),
                     'title': _('Current ({num})').format(
                         num=len(current_championships) or '-'
                     ),
@@ -372,7 +309,6 @@ class IndexAdminController(BaseAdminController):
                     'empty_str': _('No current championships.'),
                     'icon_class': 'bi-calendar indented',
                     'page_title': _('Current championships'),
-                    'divider': True,
                 },
                 'coming_championships': {
                     'title': _('Upcoming ({num})').format(
@@ -408,19 +344,41 @@ class IndexAdminController(BaseAdminController):
                     'page_title': _('Archived championships'),
                 },
             }
+            nav_tabs |= {
+                'championships-group': {
+                    'title': _('Championships'),
+                    'icon_class': 'bi-trophy-fill',
+                    'disabled': False,
+                    'divider': True,
+                    'create_modal_url': web_context.request.app.route_reverse(
+                        'admin-championship-create-modal'
+                    ),
+                    'create_label': _('Create a championship'),
+                    'submenu': championship_submenu,
+                },
+            }
+        # The grouped entries are navigation containers, not tabs, and a submenu
+        # also holds modal entries: the panes and the selected tab are keyed on
+        # the leaves that carry a template.
+        nav_tab_panes: dict[str, dict[str, Any]] = {
+            leaf_id: leaf
+            for nav_id, nav_tab in nav_tabs.items()
+            for leaf_id, leaf in (nav_tab.get('submenu') or {nav_id: nav_tab}).items()
+            if 'template' in leaf
+        }
         admin_tab = web_context.admin_tab
         if (not template_context or 'modal' not in template_context) and (
-            admin_tab not in nav_tabs or nav_tabs[admin_tab]['disabled']
+            admin_tab not in nav_tab_panes or nav_tab_panes[admin_tab]['disabled']
         ):
-            nav_ids = list(nav_tabs)
-            start_index = nav_ids.index(admin_tab) if admin_tab in nav_tabs else -1
+            nav_ids = list(nav_tab_panes)
+            start_index = nav_ids.index(admin_tab) if admin_tab in nav_tab_panes else -1
             web_context.admin_tab = next(
                 (
                     nav_ids[(start_index + offset) % len(nav_ids)]
                     for offset in range(1, len(nav_ids) + 1)
-                    if not nav_tabs[nav_ids[(start_index + offset) % len(nav_ids)]][
-                        'disabled'
-                    ]
+                    if not nav_tab_panes[
+                        nav_ids[(start_index + offset) % len(nav_ids)]
+                    ]['disabled']
                 ),
                 nav_ids[0],
             )
@@ -429,13 +387,14 @@ class IndexAdminController(BaseAdminController):
             encoding='utf-8'
         )
         request = web_context.request
-        context = (
+        return (
             web_context.template_context
             | {
                 'messages': Message.messages(request),
                 'format_date_range': format_date_range,
                 'format_date': format_date,
                 'nav_tabs': nav_tabs,
+                'nav_tab_panes': nav_tab_panes,
                 'svg_logo': svg_logo,
                 'all_tags': all_tags,
                 'admin_events_tag_filter': tag_filter,
@@ -447,6 +406,14 @@ class IndexAdminController(BaseAdminController):
             | (template_context or {})
         )
 
+    @classmethod
+    def _admin_render(
+        cls,
+        web_context: AdminWebContext,
+        template_context: dict[str, Any] | None = None,
+        keep_modal_open: bool | None = None,
+    ) -> Template:
+        context = cls.admin_shell_context(web_context, template_context)
         if 'modal' in context:
             return cls._render_modal(
                 'admin/modals.html', context, bool(keep_modal_open)
@@ -584,7 +551,7 @@ class IndexAdminController(BaseAdminController):
             event_enabled_plugins = [
                 plugin
                 for plugin in plugin_manager.enabled_plugins
-                if plugin.default_event_is_enabled
+                if plugin.event_is_enabled_by_default
             ]
         else:
             assert admin_event is not None
@@ -801,8 +768,8 @@ class IndexAdminController(BaseAdminController):
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # Defaults edited in other tabs
-            timer_colors=config.default_timer_colors,  # type: ignore
-            timer_delays=config.default_timer_delays,  # type: ignore
+            timer_colors=config.default_timer_colors,  # type: ignore[arg-type]
+            timer_delays=config.default_timer_delays,  # type: ignore[arg-type]
             background_color=config.default_background_color,
             message_background_color=config.default_message_background_color,
             message_color=config.default_message_color,
@@ -851,8 +818,8 @@ class IndexAdminController(BaseAdminController):
             'event_type_locked': event_type_locked,
             'player_rating_type_options': {
                 str(PlayerRatingType.FIDE.value): _('FIDE'),
-                str(PlayerRatingType.NATIONAL.value): _(
-                    'National *** NAME FOR RATING TYPE NATIONAL'
+                str(PlayerRatingType.NATIONAL.value): pgettext(
+                    'name for rating type national', 'National'
                 ),
             },
             'has_multi_tournament_players': event
@@ -981,7 +948,7 @@ class IndexAdminController(BaseAdminController):
         try:
             arch = EventDatabase(event.uniq_id).delete()
         except PermissionError as ex:
-            raise ClientException(f'Archiving the database failed: {ex}')
+            raise ClientException(f'Archiving the database failed: {ex}') from ex
 
         Message.success(
             request,
@@ -1028,10 +995,9 @@ class IndexAdminController(BaseAdminController):
             database.update_stored_event(stored_event)
             if not clone_players:
                 database.delete_all_stored_players()
-            elif not clone_pairings:
-                database.delete_all_stored_pairings()
 
             if not (clone_pairings and clone_players):
+                database.delete_all_stored_pairings()
                 for tournament in event.tournaments:
                     database.set_tournament_pairing_settings(tournament.id, {})
                     database.set_tournament_current_round(tournament.id, None)
@@ -1145,7 +1111,7 @@ class IndexAdminController(BaseAdminController):
             try:
                 EventDatabase(event.uniq_id).rename(new_uniq_id)
             except PermissionError as ex:
-                raise ClientException(f'Renaming the database failed: {ex}.')
+                raise ClientException(f'Renaming the database failed: {ex}.') from ex
             ChampionshipLoader.rename_event_references(event.uniq_id, new_uniq_id)
             Message.success(
                 request,
@@ -1603,7 +1569,7 @@ class IndexAdminController(BaseAdminController):
         return self._render_tags_modal(web_context, flat_data)
 
     @classmethod
-    def _enable_missing_plugins(cls, request: HTMXRequest, event_uniq_id: str):
+    def _enable_missing_plugins(cls, request: HTMXRequest, event_uniq_id: str) -> None:
         with EventDatabase(event_uniq_id) as database:
             stored_event = database.load_stored_event_metadata()
         for plugin in plugin_manager.enable_missing_plugins(
@@ -1719,6 +1685,7 @@ class IndexAdminController(BaseAdminController):
             tmp_event_database.delete_all_tags()
             if include_players != 'on':
                 tmp_event_database.delete_all_stored_players()
+                tmp_event_database.delete_all_stored_pairings()
             elif include_private_player_data != 'on':
                 tmp_event_database.delete_players_personal_data()
             if include_connection_data != 'on':
@@ -1814,119 +1781,6 @@ class IndexAdminController(BaseAdminController):
             sharly_chess_config.load_and_set_env()
         return self._admin_render(web_context=web_context)
 
-    def _config_modal_context(
-        self,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
-    ) -> dict[str, Any]:
-        config = SharlyChessConfig()
-        if data is None:
-            data = WebContext.values_dict_to_form_data(
-                {
-                    'console_log_level': config.console_log_level,
-                    'console_color': config.console_color,
-                    'console_show_date': config.console_show_date,
-                    'console_show_level': config.console_show_level,
-                    'experimental': config.experimental,
-                    'launch_browser': config.launch_browser,
-                    'federation': config.stored_config.federation,
-                    'locale': config.locale,
-                    'date_formatter': config.date_formatter.id,
-                }
-            )
-
-        for plugin in plugin_manager.all_plugins:
-            if plugin.form_key not in data:
-                data[plugin.form_key] = WebContext.value_to_form_data(plugin.is_enabled)
-
-        if errors is None:
-            errors = {}
-
-        locale_options: dict[str, str] = {
-            locale: locale_localized_name(locale) for locale in locales
-        }
-
-        global_plugins: list[Plugin] = []
-        plugins_by_federation: dict[str | None, list[Plugin]] = defaultdict(list)
-
-        for plugin in plugin_manager.all_plugins:
-            federation = plugin.federation
-            if federation:
-                plugins_by_federation[federation].append(plugin)
-            else:
-                global_plugins.append(plugin)
-
-        template_context = {
-            'events_metadata': EventLoader.get_events_metadata(),
-            'locale_options': locale_options,
-            'global_plugins': global_plugins,
-            'federation_plugins': plugins_by_federation,
-            'federation_options': (
-                {} if data['federation'] else {'': _('Please choose a federation')}
-            )
-            | self._get_federation_options(),
-            'date_formatter_options': DateFormatterManager().options(),
-            'modal': 'config',
-            'data': data,
-            'errors': errors,
-        }
-
-        return template_context
-
-    @get(
-        path='/config-modal',
-        name='admin-config-modal',
-        guards=[ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)],
-    )
-    async def htmx_admin_config_modal(self, request: HTMXRequest) -> Template:
-        config = SharlyChessConfig()
-        web_context = AdminWebContext(request)
-        template_context = self._config_modal_context()
-        return self._admin_render(
-            web_context=web_context,
-            template_context=template_context,
-            keep_modal_open=config.force_edit,
-        )
-
-    @patch(
-        path='/config-update',
-        name='admin-config-update',
-        guards=[ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)],
-    )
-    async def htmx_admin_config_update(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template:
-        web_context = AdminWebContext(request)
-        stored_config: StoredConfig = self._admin_validate_config_update_data(data)
-        stored_plugins: list[StoredPlugin] = self._admin_validate_plugins_update_data(
-            data
-        )
-        errors = stored_config.errors
-        if errors:
-            template_context = self._config_modal_context(data, errors)
-            sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
-            return self._admin_render(
-                web_context=web_context,
-                template_context=template_context,
-                keep_modal_open=sharly_chess_config.force_edit,
-            )
-        with ConfigDatabase(write=True) as config_database:
-            stored_config.force_edit = False
-            config_database.update_stored_config(stored_config)
-            for stored_plugin in stored_plugins:
-                config_database.update_stored_plugin(stored_plugin)
-        config = SharlyChessConfig()
-        if config.locale != stored_config.locale:
-            self.set_locale(request, stored_config.locale)
-        config.load_and_set_env()
-        Message.success(request, _('Sharly Chess settings have been updated.'))
-        return self._render_empty_modal_and_messages(request, after_receive=True)
-
     @get(
         path='/database-status-badge',
         name='admin-database-status-badge',
@@ -1958,9 +1812,9 @@ class IndexAdminController(BaseAdminController):
                     )
                 database.__class__.update_status = None
 
-        if any([database.is_updating for database in source_databases]):
+        if any(database.is_updating for database in source_databases):
             template_name = '/admin/common/database/updating_badge.html'
-        elif any([database.outdated_warning for database in source_databases]):
+        elif any(database.outdated_warning for database in source_databases):
             template_name = '/admin/common/database/out_of_date_badge.html'
         else:
             template_name = '/admin/common/database/settings_badge.html'
@@ -2060,7 +1914,7 @@ class IndexAdminController(BaseAdminController):
             database = LocalSourceDatabaseManager().get_object(database_id)
             database.delete()
         except KeyError:
-            raise NotFoundException(f'Unknown database [{database_id}].')
+            raise NotFoundException(f'Unknown database [{database_id}].') from None
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
             context={'database': database},
@@ -2081,7 +1935,9 @@ class IndexAdminController(BaseAdminController):
             data_source = OnlineDataSourceManager().get_object(data_source_id)
             await data_source.reload_connection_status()
         except KeyError:
-            raise NotFoundException(f'Unknown data source [{data_source_id}].')
+            raise NotFoundException(
+                f'Unknown data source [{data_source_id}].'
+            ) from None
         template_context = self._database_modal_context()
         return self._admin_render(
             web_context=web_context,

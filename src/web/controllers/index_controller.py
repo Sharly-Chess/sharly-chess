@@ -1,5 +1,6 @@
+from typing import ClassVar
 import json
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from litestar import Response, get, route, HttpMethod, status_codes, websocket_stream
 from litestar.channels import ChannelsPlugin
@@ -16,12 +17,11 @@ from common.sharly_chess_config import SharlyChessConfig
 from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.base_controller import BaseController, WebContext
-from web.messages import Message
 from web.session import SessionEventsShowDetails
 
 
 class IndexController(BaseController):
-    ALL_HTTP_METHODS: list[HttpMethod] = [
+    ALL_HTTP_METHODS: ClassVar[list[HttpMethod]] = [
         HttpMethod.GET,
         HttpMethod.POST,
         HttpMethod.PATCH,
@@ -45,23 +45,6 @@ class IndexController(BaseController):
         if show_details is not None:
             SessionEventsShowDetails(request).set(show_details)
         return IndexAdminController._admin_render(web_context)
-
-    @get(
-        path='/wait',
-        name='wait',
-    )
-    async def wait(
-        self,
-        request: HTMXRequest,
-    ) -> Template:
-        web_context: WebContext = WebContext(request)
-        return HTMXTemplate(
-            template_name='wait.html',
-            context=web_context.template_context
-            | {
-                'messages': Message.messages(request),
-            },
-        )
 
     @get(
         path='/empty-modal',
@@ -196,7 +179,7 @@ class IndexController(BaseController):
     @websocket_stream('/ws')
     async def ws_handler(
         self, channels: NamedDependency[ChannelsPlugin]
-    ) -> AsyncGenerator[dict, None]:
+    ) -> AsyncGenerator[dict]:
         async with channels.start_subscription(['ws']) as subscriber:
             async for raw_event in subscriber.iter_events():
                 event = (

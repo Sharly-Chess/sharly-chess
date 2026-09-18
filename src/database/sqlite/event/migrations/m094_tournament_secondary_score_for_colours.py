@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 class Migration(BaseMigration):
     """Replaces the tournament's `secondary_score` with a boolean."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `tournament` ADD `secondary_score_for_colours` '
             'INTEGER NOT NULL DEFAULT 1'
@@ -16,7 +16,7 @@ class Migration(BaseMigration):
         )
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `secondary_score`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `tournament` ADD `secondary_score` TEXT')
         # Restore the old shape: the secondary is the other score, or the
         # primary itself when it was turned off.

@@ -1,9 +1,9 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 import random
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.player import Player
@@ -22,6 +22,12 @@ if TYPE_CHECKING:
 
 
 class PlaceCardType(IdentifiableEntity, ABC):
+    @staticmethod
+    @abstractmethod
+    def static_singular_name() -> str:
+        """Names one card of this type, where static_name() names the document
+        ("Player" against "Player Cards")."""
+
     @classmethod
     def get_valid_option_ids(cls) -> list[str]:
         return [option.static_id() for option in cls.get_valid_option_types()]
@@ -141,6 +147,12 @@ class PlaceCardType(IdentifiableEntity, ABC):
         return True
 
     @property
+    def includes_player_data(self) -> bool:
+        """Whether the cards carry information taken from the players'
+        records (name, rating, club, etc.)."""
+        return False
+
+    @property
     def mirror_rotate(self) -> bool:
         return True
 
@@ -155,12 +167,18 @@ class PlayerCardType(PlaceCardType):
         return _('Player Cards')
 
     @staticmethod
+    def static_singular_name() -> str:
+        return _('Player')
+
+    @property
+    def includes_player_data(self) -> bool:
+        return True
+
+    @staticmethod
     def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import OptionalPlayersPrintOption
 
-        return PlaceCardType.get_valid_option_types() + [
-            OptionalPlayersPrintOption,
-        ]
+        return [*PlaceCardType.get_valid_option_types(), OptionalPlayersPrintOption]
 
     @classmethod
     def tournament_players(
@@ -208,12 +226,17 @@ class BoardCardType(PlaceCardType):
         return _('Board Cards')
 
     @staticmethod
+    def static_singular_name() -> str:
+        return _('Board')
+
+    @staticmethod
     def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import (
             PlaceCardBoardNumbersPrintOption,
         )
 
-        return PlaceCardType.get_valid_option_types() + [
+        return [
+            *PlaceCardType.get_valid_option_types(),
             PlaceCardBoardNumbersPrintOption,
         ]
 
@@ -281,6 +304,14 @@ class PairingCardType(PlaceCardType):
     def static_name() -> str:
         return _('Pairing Cards')
 
+    @staticmethod
+    def static_singular_name() -> str:
+        return _('Pairing')
+
+    @property
+    def includes_player_data(self) -> bool:
+        return True
+
     @property
     def mirror_rotate(self) -> bool:
         return False
@@ -292,7 +323,8 @@ class PairingCardType(PlaceCardType):
             PlaceCardBoardNumbersPrintOption,
         )
 
-        return PlaceCardType.get_valid_option_types() + [
+        return [
+            *PlaceCardType.get_valid_option_types(),
             RoundPrintOption,
             PlaceCardBoardNumbersPrintOption,
         ]
@@ -305,12 +337,16 @@ class PairingCardType(PlaceCardType):
         place_card_pairing.number = random.randint(1, 99)
         place_card_pairing.white_player = cls.get_random_player(
             last_name=_('WHITE PLAYER'),
-            color=_('W *** WHITE COLOR FOR PLACE CARDS'),
+            color=pgettext('white color for place cards', 'W'),
         )
+        place_card_pairing.white_player.color_background = '#fff'
+        place_card_pairing.white_player.color_text = '#000'
         place_card_pairing.black_player = cls.get_random_player(
             last_name=_('BLACK PLAYER'),
-            color=_('B *** BLACK COLOR FOR PLACE CARDS'),
+            color=pgettext('black color for place cards', 'B'),
         )
+        place_card_pairing.black_player.color_background = '#000'
+        place_card_pairing.black_player.color_text = '#fff'
         return place_card_pairing
 
     @classmethod
@@ -354,6 +390,16 @@ class TeamCardType(PlaceCardType):
     @staticmethod
     def static_name() -> str:
         return _('Team Cards')
+
+    @staticmethod
+    def static_singular_name() -> str:
+        return _('Team')
+
+    @property
+    def includes_player_data(self) -> bool:
+        """The cards name the captain, which is a player's full name when the
+        captain plays in the team."""
+        return True
 
     @classmethod
     def supports_event_type(cls, is_team_event: bool) -> bool:

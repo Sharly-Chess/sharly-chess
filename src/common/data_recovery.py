@@ -1,3 +1,4 @@
+from typing import ClassVar
 import re
 import shutil
 from pathlib import Path
@@ -34,10 +35,14 @@ logger = get_logger()
 
 
 class DataRecovery:
-    RECOVERABLE_VERSIONS: list[Version] = []
+    RECOVERABLE_VERSIONS: ClassVar[list[Version]] = []
+
+    #: Whether the example events are installed on a new installation. None to
+    #: ask the question, which the command line answers when it is set.
+    install_example_events: bool | None = None
 
     @classmethod
-    def setup(cls):
+    def setup(cls) -> None:
         """Setup the Data recovery class. Recovers a version if necessary."""
         recovered = False
 
@@ -99,13 +104,17 @@ class DataRecovery:
         if DEVEL_ENV and IS_NEW_INSTALL and not recovered:
             if (Path() / 'events' / '.scc').exists():
                 cls._recover_legacy_version(Version('4'), Path())
-            elif input_interactive_yn(
-                title='Setup',
-                question='Do you want to install example event databases',
-                yes_is_default=True,
-            ):
-                for file in EXAMPLE_EVENTS_DIR.glob(f'*.{Extension.EVENT_DB}'):
-                    shutil.copy(file, EVENTS_DIR / file.name)
+            else:
+                install_example_events = cls.install_example_events
+                if install_example_events is None:
+                    install_example_events = input_interactive_yn(
+                        title='Setup',
+                        question='Do you want to install example event databases',
+                        yes_is_default=True,
+                    )
+                if install_example_events:
+                    for file in EXAMPLE_EVENTS_DIR.glob(f'*.{Extension.EVENT_DB}'):
+                        shutil.copy(file, EVENTS_DIR / file.name)
 
         cls._recover_legacy_event_db()
         cls._clean_unsupported_version()
@@ -141,17 +150,21 @@ class DataRecovery:
             except InvalidVersion:
                 logger.warning('invalid version dir [%s]', version_dir.absolute())
         if FLATPAK_ID:
-            for version_dir in DATA_DIR.glob('*'):
-                if matches := re.match(
-                    r'^sharly-chess-(\d+\.\d+\.\d+(?:a\d+|b\d+|rc\d+)?)$',
-                    version_dir.name,
-                ):
-                    versions.append(Version(matches.group(1)))
+            versions.extend(
+                Version(matches.group(1))
+                for version_dir in DATA_DIR.glob('*')
+                if (
+                    matches := re.match(
+                        r'^sharly-chess-(\d+\.\d+\.\d+(?:a\d+|b\d+|rc\d+)?)$',
+                        version_dir.name,
+                    )
+                )
+            )
 
         return sorted(versions, reverse=True)
 
     @classmethod
-    def _clean_unsupported_version(cls):
+    def _clean_unsupported_version(cls) -> None:
         """supported versions are 2 minor releases prior to the current version.
         All the data of versions prior to that can be deleted.
         At least one previous version should be kept."""
@@ -213,7 +226,7 @@ class DataRecovery:
         return True
 
     @classmethod
-    def _recover_config_file(cls, old_config_file: Path):
+    def _recover_config_file(cls, old_config_file: Path) -> None:
         from gui.server_gui_toga import SharlyChessServerToga
 
         if not old_config_file.is_file():
@@ -267,7 +280,7 @@ class DataRecovery:
         )
 
     @classmethod
-    def _recover_legacy_version(cls, version: Version, version_dir: Path):
+    def _recover_legacy_version(cls, version: Version, version_dir: Path) -> None:
         """Recover all the data of a previous version (configuration, events, Papi files and customization files)."""
 
         logger.info('Recovering version %s at [%s]...', version, version_dir)
@@ -327,7 +340,7 @@ class DataRecovery:
                 logger.debug('- Archive [%s] recovered', relative_file)
 
     @staticmethod
-    def _recover_legacy_event_db():
+    def _recover_legacy_event_db() -> None:
         files: list[Path] = list(EVENTS_DIR.glob(f'*.{Extension.LEGACY_EVENT_DB}'))
         loader = EventLoader()
         for file in files:

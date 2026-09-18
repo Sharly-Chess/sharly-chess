@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 from datetime import date
+from typing import cast
 
 from text_unidecode import unidecode
 
 from common import SharlyChessException
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -60,7 +61,7 @@ class FfePlayerUpdaterField(PlayerUpdaterField, ABC):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         src_pd = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
@@ -73,7 +74,7 @@ class FfePlayerUpdaterField(PlayerUpdaterField, ABC):
     @abstractmethod
     def _update_ffe_plugin_data(
         self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
-    ):
+    ) -> None:
         """Update the FFE plugin data from the match player's FFE plugin data."""
 
     def get_string_value(self, player: Player) -> str:
@@ -100,7 +101,7 @@ class FfeLicenceNumberUpdaterField(FfePlayerUpdaterField):
 
     def _update_ffe_plugin_data(
         self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
-    ):
+    ) -> None:
         src_pd.ffe_licence_number = match_pd.ffe_licence_number
 
     def _get_ffe_string_value(self, plugin_data: FfePlayerPluginData) -> str:
@@ -114,7 +115,7 @@ class FfeLicenceUpdaterField(FfePlayerUpdaterField):
 
     @staticmethod
     def static_name() -> str:
-        return _('Lic. *** LICENCE COLUMN HEADER')
+        return pgettext('licence column header', 'Lic.')
 
     def _is_ffe_plugin_data_updated(
         self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
@@ -123,7 +124,7 @@ class FfeLicenceUpdaterField(FfePlayerUpdaterField):
 
     def _update_ffe_plugin_data(
         self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
-    ):
+    ) -> None:
         src_pd.ffe_licence = match_pd.ffe_licence
 
     @property
@@ -150,7 +151,7 @@ class FfeLeagueUpdaterField(FfePlayerUpdaterField):
 
     def _update_ffe_plugin_data(
         self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
-    ):
+    ) -> None:
         src_pd.league = match_pd.league
 
     def _get_ffe_string_value(self, plugin_data: FfePlayerPluginData) -> str:
@@ -188,7 +189,9 @@ class _FfeDataSource(ABC):
 
     @staticmethod
     def _get_licence_number(stored_player: StoredPlayer) -> str | None:
-        return get_data(stored_player.plugin_data, 'ffe_licence_number', None)
+        return cast(
+            str | None, get_data(stored_player.plugin_data, 'ffe_licence_number', None)
+        )
 
     @staticmethod
     def _get_name_key(stored_player: StoredPlayer) -> tuple[str, str, date] | None:
@@ -442,11 +445,16 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
             )
 
     async def _search_player(
-        self, string: str, federation: str, page: int = 0, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         async with FFESqlServer() as ffe_sql_server:
             return await ffe_sql_server.search_player(
-                unicode_normalize(string), federation, page, limit
+                unicode_normalize(string), federation, page, limit, filters
             )
 
     @property

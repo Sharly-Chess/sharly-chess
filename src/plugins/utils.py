@@ -33,7 +33,7 @@ class PluginUtils:
         plugin_data: dict[str, dict] | None,
         field: str,
         default: Any = None,
-    ):
+    ) -> Any:
         return (plugin_data or {}).get(plugin_id, {}).get(field, default)
 
     @staticmethod
@@ -42,7 +42,7 @@ class PluginUtils:
         element: T,
         condition: Callable[[T], bool],
         after: bool = True,
-    ):
+    ) -> None:
         """Inserts *element* into the list *source_list*. The insert in made at
         the position of the first element matching *condition*.
         If *after* is True, element is inserted after the matched element,
@@ -60,7 +60,7 @@ class PluginUtils:
         element: T,
         match_element: T,
         after: bool = True,
-    ):
+    ) -> None:
         """Wrapper on insert_on_condition where the condition
         is an element being equal to *match_element*"""
         cls._insert_on_condition(
@@ -74,7 +74,7 @@ class PluginUtils:
         element: T,
         match_type: type[T],
         after: bool = True,
-    ):
+    ) -> None:
         """Wrapper on insert_on_condition where the condition
         is an element being an instance of *insert_type*"""
         cls._insert_on_condition(
@@ -89,7 +89,7 @@ class PluginUtils:
         attr_name: str,
         attr_value: Any,
         after: bool = True,
-    ):
+    ) -> None:
         """Wrapper on insert_on_condition where the condition
         is an element being an attribute of the element matching a value."""
         cls._insert_on_condition(
@@ -104,7 +104,7 @@ class PluginUtils:
         source_list: list[T],
         element: T,
         condition: Callable[[T], bool],
-    ):
+    ) -> None:
         """Replace with *element* first element of the
         list *source_list* matching the condition *condition*."""
         for index, match_element in enumerate(source_list):
@@ -118,7 +118,7 @@ class PluginUtils:
         source_list: list[T],
         element: T,
         match_element: T,
-    ):
+    ) -> None:
         cls._replace_on_condition(
             source_list, element, lambda elem: elem == match_element
         )
@@ -129,7 +129,7 @@ class PluginUtils:
         source_list: list[T],
         element: T,
         match_type: type[T],
-    ):
+    ) -> None:
         cls._replace_on_condition(
             source_list, element, lambda elem: isinstance(elem, match_type)
         )
@@ -191,7 +191,7 @@ class AccountPluginData(PluginData, ABC):
 class Plugin[PD: PluginData](IdentifiableEntity, ABC):
     data_class: type[PD] | None = None
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.context: PluginContext = PluginContext(self)
 
     @property
@@ -203,6 +203,37 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
     @abstractmethod
     def description(self) -> str:
         """Briefly describes the features of the plugin."""
+
+    @property
+    def doc_markdown(self) -> str | None:
+        """Markdown detailing the features of the plugin, displayed on its page.
+        None to only display *description*."""
+        return None
+
+    @property
+    def doc_html(self) -> str | None:
+        """*doc_markdown* rendered as HTML."""
+        from utils.markdown import markdown_to_html
+
+        markdown = self.doc_markdown
+        return markdown_to_html(markdown) if markdown else None
+
+    @property
+    def doc_slug(self) -> str | None:
+        """Slug of the page of the plugin on the documentation website,
+        None when the plugin has no page there."""
+        return None
+
+    @property
+    def keywords(self) -> list[str]:
+        """Extra terms matched when searching for the plugin, on top of its
+        name and description."""
+        return []
+
+    @property
+    def search_text(self) -> str:
+        """The text searched when filtering the list of plugins."""
+        return ' '.join([self.name, self.description, *self.keywords]).casefold()
 
     @property
     @abstractmethod
@@ -224,6 +255,13 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
     def default_event_is_enabled(self) -> bool:
         """Defines if the plugin is enabled by default at event level."""
         return False
+
+    @property
+    def event_is_enabled_by_default(self) -> bool:
+        """Whether new events enable the plugin. The choice made in the Plugins
+        section prevails over the default the plugin declares."""
+        stored = self.context.stored_plugin.default_event_is_enabled
+        return self.default_event_is_enabled if stored is None else stored
 
     @property
     def federation(self) -> str | None:
@@ -268,8 +306,19 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
             if self.__class__ in plugin.dependencies
         ]
 
+    @property
+    def required_by_enabled_plugins(self) -> list['Plugin']:
+        """List of the enabled plugins that have this plugin as dependency,
+        which prevent it from being disabled."""
+        return [plugin for plugin in self.required_by_plugins if plugin.is_enabled]
+
+    def used_by_events(
+        self, events_metadata: list['EventMetadata']
+    ) -> list['EventMetadata']:
+        return [event for event in events_metadata if self.id in event.enabled_plugins]
+
     def used_by_events_count(self, events_metadata: list['EventMetadata']) -> int:
-        return sum([self.id in event.enabled_plugins for event in events_metadata])
+        return len(self.used_by_events(events_metadata))
 
     @abstractmethod
     def used_by_stored_tournament(
@@ -345,12 +394,12 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         assert self.base_migration_module is not None
         return PluginMigrationManager(database, self.base_migration_module, self)
 
-    def on_enable(self):
+    def on_enable(self) -> None:
         """Method called when the plugin is enabled."""
         if self.base_migration_module is not None:
             self._migrate_all_events()
 
-    def _migrate_all_events(self, target_migration: str | None = None):
+    def _migrate_all_events(self, target_migration: str | None = None) -> None:
         """Migrates all the event databases to migration."""
         from data.loader import EventLoader
         from database.sqlite.event.event_database import EventDatabase
@@ -360,7 +409,7 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
             if migration_manager := self.get_migration_manager(database):
                 migration_manager.migrate(target_migration)
 
-    def reload_context(self):
+    def reload_context(self) -> None:
         self.context = PluginContext(self)
 
     def get_data(

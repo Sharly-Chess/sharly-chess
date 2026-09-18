@@ -61,7 +61,7 @@ def is_upload_queued(tournament: Tournament) -> bool:
     return key in _GROUP_UPLOAD_WAIT_QUEUE
 
 
-def _publish_upload_event(start: bool = False):
+def _publish_upload_event(start: bool = False) -> None:
     if channels_plugin:
         channels_plugin.publish(
             {'event': f'upload-event{"-start" if start else ""}', 'data': ''}, ['ws']
@@ -71,7 +71,7 @@ def _publish_upload_event(start: bool = False):
 def upload_tournament(
     event_uniq_id: str,
     tournament_id: int,
-):
+) -> None:
     """Upload a tournament's results to the SCE platform. Runs in a background thread."""
     set_locale(SharlyChessConfig().locale)
 
@@ -140,9 +140,8 @@ def upload_tournament(
             )
     except Exception as e:
         failure_status = UnexpectedFailureSCETournamentStatus()
-        if event and not SCEUtils.get_event_plugin_data(event).tokens:
-            if tournament:
-                failure_status = AuthFailureSCETournamentStatus()
+        if event and not SCEUtils.get_event_plugin_data(event).tokens and tournament:
+            failure_status = AuthFailureSCETournamentStatus()
         logger.exception(
             'Unexpected error uploading tournament [%s] to SC.com: %s',
             key,
@@ -179,20 +178,22 @@ def should_schedule_auto_upload(
     if thread and thread.is_alive():
         # There's already a thread running for this tournament
         return False
-    if not SCEUtils.tournament_modified_since_last_upload(stored_tournament):
+    # Last of a chain of guard clauses; collapsing it would break the shape
+    # the ones above it read in.
+    if not SCEUtils.tournament_modified_since_last_upload(stored_tournament):  # noqa: SIM103
         # Latest version already uploaded
         return False
     return True
 
 
-def remove_scheduled_upload(tournament: Tournament):
+def remove_scheduled_upload(tournament: Tournament) -> None:
     key = _tournament_result_key(tournament)
     thread = _TIMEOUT_THREADS.get(key)
     if thread and thread.is_alive():
         thread.cancel()
 
 
-def schedule_upload(tournament: Tournament, force: bool = False):
+def schedule_upload(tournament: Tournament, force: bool = False) -> None:
     """Launch a background thread to upload this tournament's results."""
     if not tournament.started:
         return

@@ -1,5 +1,5 @@
 {% set collection_url = collection_url|default(request.url.path, true) %}
-<div class="collection-controls">
+<div class="collection-controls top-nav-keep">
     {% if
         collection_view_mode.value == 'cards'
         and collection_card_controls_template|default('')
@@ -7,7 +7,7 @@
         {% include collection_card_controls_template %}
     {% elif collection.card.details or collection.list.details %}
         <div
-            class="form-check form-switch collection-details-toggle mb-0"
+            class="d-inline-flex align-items-center gap-2  form-switch collection-details-toggle mb-0"
             {{ macros.tooltip_attributes('info', _('Expand or collapse the details of every item.'), 'top') }}
         >
             <input

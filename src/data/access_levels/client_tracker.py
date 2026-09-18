@@ -1,3 +1,4 @@
+from typing import ClassVar
 import time
 from dataclasses import dataclass
 
@@ -15,14 +16,14 @@ class ClientRecord:
 class ClientTracker(metaclass=Singleton):
     """The class that allows the memory-storage of the client connections."""
 
-    client_records_by_host: dict[str, ClientRecord] = {}
+    client_records_by_host: ClassVar[dict[str, ClientRecord]] = {}
 
     def track_client(
         self,
         host: str,
         event_uniq_id: str | None = None,
         account_id: int | None = None,
-    ):
+    ) -> None:
         """Adds a record if the host was not known or just updates the connection time."""
         self.client_records_by_host[host] = ClientRecord(
             host, event_uniq_id, account_id, time.time()

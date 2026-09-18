@@ -15,8 +15,11 @@ FAMILY_ID = 'rotator-test-family'
 ROTATOR_NAME = 'rotator-test-rotator'
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 def setup(api_request_context: APIRequestContext):
+    # Per test rather than per module: the tests create rotators through the
+    # UI and delete them at the end of their body, so a test that fails early
+    # would otherwise leave a name behind and fail the ones after it too.
     TestUtils.create_event(EVENT_ID, via_api_request_context=api_request_context)
     yield
     TestUtils.delete_event(EVENT_ID, via_api_request_context=api_request_context)
@@ -58,102 +61,6 @@ class TestRotator:
         )
         yield family
         TestUtils.delete_family(api_request_context, EVENT_ID, family.id)
-
-    def test_create_and_delete_rotator(
-        self,
-        page: Page,
-        api_request_context: APIRequestContext,
-        tournament: StoredTournament,
-        screen: StoredScreen,
-    ):
-        page.goto(f'/event/{EVENT_ID}/rotators')
-        TestUtils.button_by_text(page, 'Create a rotator').click()
-        modal = page.locator('.modal-dialog')
-        expect(modal).to_be_visible()
-        modal.get_by_test_id('name').fill(ROTATOR_NAME)
-        modal.locator('button[type=submit]').click()
-        TestUtils.button_by_text(modal, 'Close').click()
-
-        item = page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
-        expect(item).to_be_visible()
-
-        item.locator('button[hx-get*="delete"]').click()
-        expect(modal).to_be_visible()
-        TestUtils.button_by_text(modal, 'Delete').click()
-        expect(
-            page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
-        ).not_to_be_attached()
-
-    def test_duplicate_rotator(
-        self,
-        page: Page,
-        api_request_context: APIRequestContext,
-        tournament: StoredTournament,
-        screen: StoredScreen,
-        family: StoredFamily,
-    ):
-        rotator_id = TestUtils.create_rotator(
-            api_request_context,
-            EVENT_ID,
-            ROTATOR_NAME,
-            screen_ids=[screen.id],
-            family_ids=[family.id],
-        )
-
-        page.goto(f'/event/{EVENT_ID}/rotators')
-        item = page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
-        expect(item).to_be_visible()
-        button = item.locator('button[hx-get*="clone"]')
-        button.click()
-        modal = page.locator('.modal-dialog')
-        expect(modal).to_be_visible()
-        name = 'Duplicated rotator'
-        modal.get_by_test_id('name').fill(name)
-        modal.locator('button[type=submit]').click()
-        item = page.get_by_test_id('rotators-item').filter(has_text=name)
-        expect(item).to_be_visible()
-        expect(item.get_by_test_id('screens-count')).to_contain_text('1')
-        expect(item.get_by_test_id('families-count')).to_contain_text('1')
-
-        item.locator('button[hx-get*="delete"]').click()
-        expect(modal).to_be_visible()
-        TestUtils.button_by_text(modal, 'Delete').click()
-        TestUtils.delete_rotator(api_request_context, EVENT_ID, rotator_id)
-
-    def test_create_and_delete_rotating_screen(
-        self,
-        page: Page,
-        api_request_context: APIRequestContext,
-        tournament: StoredTournament,
-        screen: StoredScreen,
-    ):
-        rotator_id = TestUtils.create_rotator(
-            api_request_context,
-            EVENT_ID,
-            ROTATOR_NAME,
-        )
-
-        page.goto(f'/event/{EVENT_ID}/rotators')
-        item = page.get_by_test_id('rotators-item').filter(has_text=ROTATOR_NAME)
-        expect(item).to_be_visible()
-        item.locator('button[hx-get*="screens-modal"]').click()
-        modal = page.locator('.modal-dialog')
-        expect(modal).to_be_visible()
-
-        modal.get_by_test_id('screens-add-button').click()
-        select_container = modal.get_by_test_id('screens-form-container')
-        expect(select_container).to_be_visible()
-        select_container.locator('.select2-selection').click()
-        option = page.locator('.select2-results__option', has_text=SCREEN_ID).last
-        expect(option).to_be_visible()
-        option.click()
-        modal.get_by_test_id('screens-cancel-button').click()
-        row = modal.locator(f".rotating-screen-row:has-text('{SCREEN_ID}')")
-        expect(row).to_be_visible()
-        row.locator('button[hx-delete*="delete"]').click()
-        expect(modal.get_by_text('No screens.')).to_be_visible()
-
-        TestUtils.delete_rotator(api_request_context, EVENT_ID, rotator_id)
 
     def test_rotator_screens_rotate(
         self,

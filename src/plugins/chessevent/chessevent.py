@@ -48,7 +48,7 @@ class ChessEventPluginHooks:
         importer: TournamentImporter,
         stored_player: StoredPlayer,
         chessevent_player: ChessEventPlayer,
-    ):
+    ) -> None:
         """Augment player data when fetched from ChessEvent."""
 
 
@@ -74,6 +74,33 @@ class ChessEventPlugin(Plugin):
         return _(
             'Support for the ChessEvent platform used '
             'for organising tournaments in France.'
+        )
+
+    @property
+    def keywords(self) -> list[str]:
+        return ['chessevent', 'registration', 'import', 'france']
+
+    @property
+    def doc_slug(self) -> str:
+        return 'chessevent'
+
+    @property
+    def doc_markdown(self) -> str:
+        return '\n\n'.join(
+            [
+                _(
+                    'ChessEvent handles the online registration of the '
+                    'players for tournaments organised in France.'
+                ),
+                _(
+                    '- the credentials of your ChessEvent account configured on the '
+                    'event;\n'
+                    '- the players of a tournament imported from the platform, with '
+                    'their registration and their check-in;\n'
+                    '- the import replayed at any time to pick up the late '
+                    'registrations.'
+                ),
+            ]
         )
 
     @property
@@ -121,7 +148,9 @@ class ChessEventPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_tournament_importers(self, importers: list[type[TournamentImporter]]):
+    def insert_tournament_importers(
+        self, importers: list[type[TournamentImporter]]
+    ) -> None:
         importers.append(ChessEventTournamentImporter)
 
     # ---------------------------------------------------------------------------------
@@ -129,7 +158,7 @@ class ChessEventPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def on_event_duplicated(self, event_database: EventDatabase):
+    def on_event_duplicated(self, event_database: EventDatabase) -> None:
         stored_event = event_database.load_stored_event()
 
         stored_event.plugin_data[PLUGIN_NAME] = (
@@ -156,7 +185,7 @@ class ChessEventPlugin(Plugin):
         event: 'Event | None',
         data: dict[str, str],
         errors: dict[str, str],
-    ):
+    ) -> None:
         federation = WebContext.form_data_to_str(data, field := 'federation')
         if federation != 'FRA':
             # We only validate FFE fields for the FRA federation

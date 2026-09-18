@@ -2,7 +2,7 @@ import base64
 import hashlib
 import secrets
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 from anyio import run
 from litestar.exceptions import (
@@ -51,7 +51,7 @@ class RequestUtils:
                 return int(value)
             return value
         if search_form:
-            form_data = run(lambda: request.form())
+            form_data = run(request.form)
             if value := form_data.get(param, None):
                 if isinstance(value, str) and value.isdigit():
                     return int(value)
@@ -64,7 +64,7 @@ class RequestUtils:
     @classmethod
     def get_event(cls, request: HTMXRequest, reload: bool = False) -> Event:
         if cls.REQUEST_EVENT_ATTR in request.state and not reload:
-            return request.state[cls.REQUEST_EVENT_ATTR]
+            return cast(Event, request.state[cls.REQUEST_EVENT_ATTR])
         event_uniq_id = cls._get_request_param(request, cls.EVENT_UNIQ_ID_PARAM)
         try:
             event = EventLoader.get(request).load_event(event_uniq_id)
@@ -108,7 +108,7 @@ class RequestUtils:
             request.state[cls.REQUEST_CLIENT_ATTR] = Client(
                 request, cls.get_optional_event(request)
             )
-        return request.state[cls.REQUEST_CLIENT_ATTR]
+        return cast(Client, request.state[cls.REQUEST_CLIENT_ATTR])
 
     REQUEST_SCREEN_ATTR: str = 'sharly_chess_screen'
     SCREEN_UNIQ_ID_PARAM: str = 'screen_uniq_id'
@@ -116,12 +116,12 @@ class RequestUtils:
     @classmethod
     def get_screen(cls, request: HTMXRequest) -> Screen:
         if cls.REQUEST_SCREEN_ATTR in request.state:
-            return request.state[cls.REQUEST_SCREEN_ATTR]
+            return cast(Screen, request.state[cls.REQUEST_SCREEN_ATTR])
         screen_uniq_id = cls._get_request_param(request, cls.SCREEN_UNIQ_ID_PARAM)
         try:
             screen = cls.get_event(request).screens_by_uniq_id[screen_uniq_id]
         except KeyError:
-            raise NotFoundException(f'Screen [{screen_uniq_id}] not found.')
+            raise NotFoundException(f'Screen [{screen_uniq_id}] not found.') from None
         request.state[cls.REQUEST_SCREEN_ATTR] = screen
         return screen
 
@@ -138,12 +138,12 @@ class RequestUtils:
     @classmethod
     def get_rotator(cls, request: HTMXRequest) -> Rotator:
         if cls.REQUEST_ROTATOR_ATTR in request.state:
-            return request.state[cls.REQUEST_ROTATOR_ATTR]
+            return cast(Rotator, request.state[cls.REQUEST_ROTATOR_ATTR])
         rotator_id = cls._get_request_param(request, cls.ROTATOR_ID_PARAM)
         try:
             rotator = cls.get_event(request).rotators_by_id[rotator_id]
         except KeyError:
-            raise NotFoundException(f'Rotator [{rotator_id}] not found.')
+            raise NotFoundException(f'Rotator [{rotator_id}] not found.') from None
         request.state[cls.REQUEST_ROTATOR_ATTR] = rotator
         return rotator
 
@@ -160,12 +160,12 @@ class RequestUtils:
     @classmethod
     def get_menu(cls, request: HTMXRequest) -> Menu:
         if cls.REQUEST_MENU_ATTR in request.state:
-            return request.state[cls.REQUEST_MENU_ATTR]
+            return cast(Menu, request.state[cls.REQUEST_MENU_ATTR])
         menu_id = cls._get_request_param(request, cls.MENU_ID_PARAM)
         try:
             menu = cls.get_event(request).menus_by_id[menu_id]
         except KeyError:
-            raise NotFoundException(f'Menu [{menu_id}] not found.')
+            raise NotFoundException(f'Menu [{menu_id}] not found.') from None
         request.state[cls.REQUEST_MENU_ATTR] = menu
         return menu
 
@@ -182,7 +182,9 @@ class RequestUtils:
     @classmethod
     def get_display_controller(cls, request: HTMXRequest) -> DisplayController:
         if cls.REQUEST_DISPLAY_CONTROLLER_ATTR in request.state:
-            return request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR]
+            return cast(
+                DisplayController, request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR]
+            )
         display_controller_id = cls._get_request_param(
             request, cls.DISPLAY_CONTROLLER_ID_PARAM
         )
@@ -193,7 +195,7 @@ class RequestUtils:
         except KeyError:
             raise NotFoundException(
                 f'Display controller [{display_controller_id}] not found.'
-            )
+            ) from None
         request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR] = display_controller
         return display_controller
 
@@ -212,12 +214,12 @@ class RequestUtils:
     @classmethod
     def get_team(cls, request: HTMXRequest) -> Team:
         if cls.REQUEST_TEAM_ATTR in request.state:
-            return request.state[cls.REQUEST_TEAM_ATTR]
+            return cast(Team, request.state[cls.REQUEST_TEAM_ATTR])
         team_id = cls._get_request_param(request, cls.TEAM_ID_PARAM)
         try:
             team = cls.get_event(request).teams_by_id[team_id]
         except KeyError:
-            raise NotFoundException(f'Team [{team_id}] not found.')
+            raise NotFoundException(f'Team [{team_id}] not found.') from None
         request.state[cls.REQUEST_TEAM_ATTR] = team
         return team
 
@@ -236,14 +238,16 @@ class RequestUtils:
         cls, request: HTMXRequest, search_form: bool = False
     ) -> Tournament:
         if cls.REQUEST_TOURNAMENT_ATTR in request.state:
-            return request.state[cls.REQUEST_TOURNAMENT_ATTR]
+            return cast(Tournament, request.state[cls.REQUEST_TOURNAMENT_ATTR])
         tournament_id = cls._get_request_param(
             request, cls.TOURNAMENT_ID_PARAM, search_form
         )
         try:
             tournament = cls.get_event(request).tournaments_by_id[tournament_id]
         except KeyError:
-            raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+            raise NotFoundException(
+                f'Tournament [{tournament_id}] not found.'
+            ) from None
         request.state[cls.REQUEST_TOURNAMENT_ATTR] = tournament
         return tournament
 
@@ -267,7 +271,7 @@ class RequestUtils:
         # display id (index + 1). Team events require the DB identifier
         # because the legacy id collides across team blocks.
         if cls.REQUEST_BOARD_ATTR in request.state:
-            return request.state[cls.REQUEST_BOARD_ATTR]
+            return cast(Board, request.state[cls.REQUEST_BOARD_ATTR])
         tournament: Tournament = cls.get_tournament(request)
         board_id_param = cls._get_request_param(request, cls.BOARD_INDEX_PARAM)
         round_ = request.path_params.get(cls.ROUND_PARAM, tournament.current_round)
@@ -297,13 +301,13 @@ class RequestUtils:
         request: HTMXRequest,
     ) -> Result:
         if cls.REQUEST_RESULT_ATTR in request.state:
-            return request.state[cls.REQUEST_RESULT_ATTR]
+            return cast(Result, request.state[cls.REQUEST_RESULT_ATTR])
         result_value = request.path_params.get(cls.RESULT_PARAM, None)
         if result_value is not None:
             try:
                 result = Result(result_value)
             except ValueError:
-                raise NotFoundException(f'Unknown result [{result_value}].')
+                raise NotFoundException(f'Unknown result [{result_value}].') from None
         else:
             result = Result.NO_RESULT
         request.state[cls.REQUEST_RESULT_ATTR] = result
@@ -316,20 +320,20 @@ class RequestUtils:
     @classmethod
     def get_player(cls, request: HTMXRequest) -> Player:
         if cls.REQUEST_PLAYER_ATTR in request.state:
-            return request.state[cls.REQUEST_PLAYER_ATTR]
+            return cast(Player, request.state[cls.REQUEST_PLAYER_ATTR])
         player_id = cls._get_request_param(request, cls.PLAYER_ID_PARAM)
         try:
             request.state[cls.REQUEST_PLAYER_ATTR] = cls.get_event(
                 request
             ).players_by_id[player_id]
         except KeyError:
-            raise NotFoundException(f'Player [{player_id}] not found.')
-        return request.state[cls.REQUEST_PLAYER_ATTR]
+            raise NotFoundException(f'Player [{player_id}] not found.') from None
+        return cast(Player, request.state[cls.REQUEST_PLAYER_ATTR])
 
     @classmethod
     def get_tournament_player(cls, request: HTMXRequest) -> TournamentPlayer:
         if cls.REQUEST_PLAYER_ATTR in request.state:
-            return request.state[cls.REQUEST_PLAYER_ATTR]
+            return cast(TournamentPlayer, request.state[cls.REQUEST_PLAYER_ATTR])
         player_id = cls._get_request_param(request, cls.PLAYER_ID_PARAM)
         tournament = cls.get_tournament(request)
         try:
@@ -339,8 +343,8 @@ class RequestUtils:
         except KeyError:
             raise NotFoundException(
                 f'Player [{player_id}] not found in tournament [{tournament.name}].'
-            )
-        return request.state[cls.REQUEST_PLAYER_ATTR]
+            ) from None
+        return cast(TournamentPlayer, request.state[cls.REQUEST_PLAYER_ATTR])
 
     REQUEST_ACCOUNT_ATTR: str = 'sharly_chess_account'
     ACCOUNT_ID_PARAM: str = 'account_id'
@@ -348,12 +352,12 @@ class RequestUtils:
     @classmethod
     def get_account(cls, request: HTMXRequest) -> Account:
         if cls.REQUEST_ACCOUNT_ATTR in request.state:
-            return request.state[cls.REQUEST_ACCOUNT_ATTR]
+            return cast(Account, request.state[cls.REQUEST_ACCOUNT_ATTR])
         account_id = cls._get_request_param(request, cls.ACCOUNT_ID_PARAM)
         try:
             account = cls.get_event(request).accounts_by_id[account_id]
         except KeyError:
-            raise NotFoundException(f'Account [{account_id}] not found.')
+            raise NotFoundException(f'Account [{account_id}] not found.') from None
         request.state[cls.REQUEST_ACCOUNT_ATTR] = account
         return account
 
@@ -370,12 +374,14 @@ class RequestUtils:
     @classmethod
     def get_access_level(cls, request: HTMXRequest) -> AccessLevel:
         if cls.REQUEST_ACCESS_LEVEL_ATTR in request.state:
-            return request.state[cls.REQUEST_ACCESS_LEVEL_ATTR]
+            return cast(AccessLevel, request.state[cls.REQUEST_ACCESS_LEVEL_ATTR])
         access_level_id = cls._get_request_param(request, cls.ACCESS_LEVEL_PARAM)
         try:
             access_level = AccessLevelManager().get_object(access_level_id)
         except KeyError:
-            raise NotFoundException(f'Unknown access level [{access_level_id}].')
+            raise NotFoundException(
+                f'Unknown access level [{access_level_id}].'
+            ) from None
         request.state[cls.REQUEST_ACCESS_LEVEL_ATTR] = access_level
         return access_level
 

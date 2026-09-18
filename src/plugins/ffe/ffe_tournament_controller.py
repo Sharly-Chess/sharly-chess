@@ -1,3 +1,4 @@
+import asyncio
 from functools import partial
 from pathlib import Path
 from typing import Annotated, Any
@@ -9,7 +10,7 @@ from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
 from common import SharlyChessException
-from common.i18n import _
+from common.i18n import _, get_locale, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
@@ -27,6 +28,7 @@ from web.controllers.admin.tournament_admin_controller import TournamentAdminWeb
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard, TournamentActionGuard
 from web.messages import Message
+import contextlib
 
 logger = get_logger()
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -35,10 +37,21 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 class FfeTournamentController(BaseEventAdminController):
     """Controller for all the FFE endpoints used on the tournaments page."""
 
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
     ]
+
+    @staticmethod
+    def _test_auth(ffe_id: int, ffe_password: str, locale: str) -> bool | None:
+        """Check the FFE credentials. Runs in a worker thread, hence the locale
+        which is thread-local."""
+        set_locale(locale)
+        return FFESession(tournament=None).test_auth(
+            ffe_id=ffe_id, ffe_password=ffe_password
+        )
 
     @post(
         path='/ffe/test-auth/{event_uniq_id:str}',
@@ -56,15 +69,13 @@ class FfeTournamentController(BaseEventAdminController):
 
         if NetworkMonitor.connected():
             ffe_id: int = 0
-            try:
+            with contextlib.suppress(ValueError):
                 ffe_id = WebContext.form_data_to_int(data, 'ffe_id') or 0
-            except ValueError:
-                pass
             ffe_password: str = WebContext.form_data_to_str(data, 'ffe_password') or ''
 
             if ffe_id and ffe_password:
-                ffe_auth_valid = FFESession(tournament=None).test_auth(
-                    ffe_id=ffe_id, ffe_password=ffe_password
+                ffe_auth_valid = await asyncio.to_thread(
+                    self._test_auth, ffe_id, ffe_password, get_locale()
                 )
 
         errors = {}
@@ -106,8 +117,8 @@ class FfeTournamentController(BaseEventAdminController):
             Message.error(
                 request,
                 _(
-                    'Tournament visibility could not be set, '
-                    'consult the FFE modal for more details.'
+                    'Tournament visibility could not be set, consult '
+                    'Menu > Data Transfer > FFE for more details.'
                 ),
             )
         else:
@@ -131,7 +142,10 @@ class FfeTournamentController(BaseEventAdminController):
         if FFEUtils.get_tournament_plugin_data(tournament).upload_failure_id:
             Message.error(
                 request,
-                _('Tournament upload failed, consult the FFE modal for more details.'),
+                _(
+                    'Tournament upload failed, consult Menu > '
+                    'Data Transfer > FFE for more details.'
+                ),
             )
         else:
             Message.success(request, _('Tournament successfully uploaded.'))
@@ -143,6 +157,18 @@ class FfeTournamentController(BaseEventAdminController):
         return (
             ffe.TMP_DIR / 'fees' / tournament.event.uniq_id / f'{tournament.name}.html'
         )
+
+    @classmethod
+    def _extract_fees(cls, tournament: Tournament, locale: str) -> str | None:
+        """Download the fees of *tournament* and write them to their file.
+        Runs in a worker thread, hence the locale which is thread-local."""
+        set_locale(locale)
+        html = FFESession(tournament).get_fees()
+        if html:
+            fees_file = cls.tournament_fees_file(tournament)
+            fees_file.parent.mkdir(parents=True, exist_ok=True)
+            fees_file.write_text(html)
+        return html
 
     @get(
         path='/ffe/extract-fees/{event_uniq_id:str}/{tournament_id:int}',
@@ -158,11 +184,7 @@ class FfeTournamentController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
         try:
-            if html := FFESession(tournament).get_fees():
-                fees_file = self.tournament_fees_file(tournament)
-                fees_file.parent.mkdir(parents=True, exist_ok=True)
-                with open(fees_file, 'w') as f:
-                    f.write(html)
+            if await asyncio.to_thread(self._extract_fees, tournament, get_locale()):
                 url: str = request.app.route_reverse(
                     'ffe-download-fees',
                     event_uniq_id=event_uniq_id,
@@ -170,15 +192,14 @@ class FfeTournamentController(BaseEventAdminController):
                 )
                 logger.debug(
                     'Fees written to [%s], redirecting to [%s].',
-                    fees_file,
+                    self.tournament_fees_file(tournament),
                     url,
                 )
                 response: ClientRedirect = ClientRedirect(redirect_to=url)
                 # cf https://github.com/bigskysoftware/htmx/issues/3189
                 response.set_header('HX-Trigger', 'download_ready')
                 return response
-            else:
-                Message.info(request, _('Tournament exempt from registration fees.'))
+            Message.info(request, _('Tournament exempt from registration fees.'))
         except SharlyChessException as e:
             Message.error(request, str(e))
         return self.render_messages(request)

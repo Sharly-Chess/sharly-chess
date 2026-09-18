@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from utils.entity import IdentifiableEntity
 
 
@@ -59,7 +59,9 @@ class CutTieBreakCutter(TieBreakCutter, ABC):
 
     @classmethod
     def static_name(cls) -> str:
-        return _('Cut {value} *** CUT TIE BREAK NAME').format(value=cls.cut_value())
+        return pgettext('cut tie break name', 'Cut {value}').format(
+            value=cls.cut_value()
+        )
 
     @staticmethod
     @abstractmethod

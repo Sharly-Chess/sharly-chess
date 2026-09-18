@@ -62,10 +62,10 @@
                     <th class="num">{{ _('Rk.') }}</th>
                     <th>{{ _('Competitor') }}</th>
                     {% if not is_team %}
-                        <th>{{ _('Cat. *** CATEGORY COLUMN HEADER') }}</th>
-                        <th>{{ _('Gen. *** GENDER COLUMN HEADER') }}</th>
+                        <th>{{ pgettext('category column header', 'Cat.') }}</th>
+                        <th>{{ pgettext('gender column header', 'Gen.') }}</th>
                     {% endif %}
-                    <th>{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                    <th>{{ pgettext('federation column header', 'Fed.') }}</th>
                     {% for header in rule_headers %}
                         <th class="num" title="{{ header.title }}">{{ header.acronym }}</th>
                     {% endfor %}
@@ -89,7 +89,7 @@
                         {% endif %}
                         <td>{{ row.federation or '—' }}</td>
                         {% for cell in row.rule_cells %}
-                            <td class="num">{% if cell.value is not none %}{{ score(cell.value) }}{% else %}—{% endif %}</td>
+                            <td class="num">{% if cell.rank_progress is not none and cell.rank_progress > 0 %}▲&nbsp;{{ cell.rank_progress }}{% elif cell.rank_progress is not none and cell.rank_progress < 0 %}▼&nbsp;{{ -cell.rank_progress }}{% elif cell.value is none %}—{% else %}{{ score(cell.value) }}{% endif %}</td>
                         {% endfor %}
                     </tr>
                 {% endfor %}

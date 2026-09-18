@@ -1,8 +1,10 @@
 import re
 from contextlib import suppress
+from datetime import date
 from logging import Logger
 from pathlib import Path
-from typing import Iterator, Any, override
+from typing import Any, override
+from collections.abc import Iterator
 
 from packaging.version import Version
 
@@ -76,20 +78,21 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'SELECT DISTINCT federation FROM `player` ORDER BY `federation`',
             (),
         )
-        yield from map(lambda row: row['federation'], self.fetchall())
+        yield from (row['federation'] for row in self.fetchall())
 
     @staticmethod
     def _get_player_from_row(row: dict[str, Any]) -> StoredPlayer:
         rating_keys = {
-            TournamentRating.STANDARD: 'standard_rating',
-            TournamentRating.RAPID: 'rapid_rating',
-            TournamentRating.BLITZ: 'blitz_rating',
+            TournamentRating.STANDARD: ('standard_rating', 'k_standard'),
+            TournamentRating.RAPID: ('rapid_rating', 'k_rapid'),
+            TournamentRating.BLITZ: ('blitz_rating', 'k_blitz'),
         }
         ratings = {
             tournament_rating.value: PlayerRating(
-                fide=row[key] or None,
+                fide=row[rating_key] or None,
+                k_factor=row.get(k_key) or None,
             ).stored_value
-            for tournament_rating, key in rating_keys.items()
+            for tournament_rating, (rating_key, k_key) in rating_keys.items()
         }
         return StoredPlayer(
             id=None,
@@ -111,6 +114,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
         federation: str,
         page: int = 0,
         limit: int | None = None,
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         tokens: list[str] = [
             unicode_normalize(token) for token in re.split(r'\s+', string)
@@ -120,8 +124,9 @@ class FideDatabase(LocalSourcePlayerDatabase):
             ('first_name', '%', '%'),
         )
         int_fields: tuple[str, ...] = ('fide_id',)
+        filter_conditions, filter_params = self._process_filters(filters or {})
         token_conditions: dict[str, str] = {}
-        params: list[Any] = []
+        params: list[Any] = list(filter_params)
         for token in tokens:
             expressions = [f'({field[0]} LIKE ?)' for field in str_fields]
             params += [f'{field[1]}{token}{field[2]}' for field in str_fields]
@@ -134,7 +139,8 @@ class FideDatabase(LocalSourcePlayerDatabase):
                 ] * len(int_fields)
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
-            map(lambda condition: f'({condition})', token_conditions.values())
+            filter_conditions
+            + [f'({condition})' for condition in token_conditions.values()]
         )
 
         # We build one CASE block that sorts best → worst
@@ -190,17 +196,18 @@ class FideDatabase(LocalSourcePlayerDatabase):
             return self._get_player_from_row(player_row)
         return None
 
-    def get_k_factors_by_fide_id(
-        self, player_fide_id: int
-    ) -> dict[TournamentRating, int | None] | None:
-        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
-        if player_row := self.fetchone():
-            return {
-                TournamentRating.STANDARD: player_row.get('k_standard') or None,
-                TournamentRating.RAPID: player_row.get('k_rapid') or None,
-                TournamentRating.BLITZ: player_row.get('k_blitz') or None,
-            }
-        return None
+    def covers_rating_period(self, day: date) -> bool:
+        """Whether the installed database is the rating list of *day*'s period.
+
+        FIDE publishes a rating list on the 1st of every month, so the list
+        installed during a given month is the one that applies to the
+        tournaments of that month."""
+        if not self.exists():
+            return False
+        updated_at = self.updated_at
+        if updated_at is None:
+            return False
+        return (updated_at.year, updated_at.month) == (day.year, day.month)
 
     def get_stored_players_by_fide_id(
         self, player_fide_ids: list[int]
@@ -211,6 +218,35 @@ class FideDatabase(LocalSourcePlayerDatabase):
             tuple(player_fide_ids),
         )
         return [self._get_player_from_row(row) for row in self.fetchall()]
+
+    @staticmethod
+    def _process_filters(filters: dict) -> tuple[list[str], list[Any]]:
+        conditions: list[str] = []
+        params: list[Any] = []
+        if 'federation_filter' in filters:
+            conditions.append('federation = ?')
+            params.append(filters['federation_filter'])
+        if 'gender_filter' in filters:
+            conditions.append('gender = ?')
+            params.append(filters['gender_filter'])
+        if filters.get('year_of_birth_filter'):
+            age_conditions: list[str] = []
+            for min_year, max_year in filters['year_of_birth_filter']:
+                match min_year, max_year:
+                    case None, None:
+                        continue
+                    case None, _:
+                        age_conditions.append('year_of_birth <= ?')
+                        params.append(str(max_year))
+                    case _, None:
+                        age_conditions.append('year_of_birth >= ?')
+                        params.append(str(min_year))
+                    case _, _:
+                        age_conditions.append('year_of_birth BETWEEN ? AND ?')
+                        params += [str(min_year), str(max_year)]
+            if age_conditions:
+                conditions.append(f'({" OR ".join(age_conditions)})')
+        return conditions, params
 
     # ---------------------------------------------------------------------------------
     # Legacy

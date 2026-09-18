@@ -1,9 +1,11 @@
 import asyncio
 from abc import ABC, abstractmethod
-from datetime import datetime
+from dataclasses import replace
+from datetime import date, datetime
 from functools import cached_property
 from logging import Logger
-from typing import override, ClassVar, Collection
+from typing import override, ClassVar
+from collections.abc import Collection
 
 from common import SharlyChessException
 from common.i18n import _
@@ -36,6 +38,37 @@ from utils.entity import IdentifiableEntity
 from utils.enum import TournamentRating, PlayerRatingType
 
 logger: Logger = get_logger()
+
+
+def reliable_k_factor(
+    k_factor: int | None, fide_rating: int | None, year_of_birth: int | None
+) -> int | None:
+    """What can still be trusted of a k-factor read from a FIDE database of
+    an earlier rating period.
+
+    A coefficient only ever goes down (40 once the player has played their
+    30 games or turned 19, then 10 once their published rating has reached
+    2400, for good). An outdated one is therefore an upper bound, and the
+    lower of it and the estimate never overshoots: a 10 survives whatever
+    the estimate says, while a 20 gives way to the 10 of a player who has
+    reached 2400 since."""
+    if k_factor is None:
+        return None
+    return min(
+        k_factor, Player.estimate_fide_rating_coefficient(fide_rating, year_of_birth)
+    )
+
+
+def keep_reliable_k_factors(stored_player: StoredPlayer) -> None:
+    """Reduce the k-factors of a player read from a FIDE database of an
+    earlier rating period to what can still be trusted."""
+    year_of_birth = stored_player.year_of_birth or (
+        stored_player.date_of_birth.year if stored_player.date_of_birth else None
+    )
+    for tr_value, stored_rating in stored_player.ratings.items():
+        rating = PlayerRating.from_stored_value(stored_rating)
+        rating.k_factor = reliable_k_factor(rating.k_factor, rating.fide, year_of_birth)
+        stored_player.ratings[tr_value] = rating.stored_value
 
 
 class PlayerComparator:
@@ -83,7 +116,7 @@ class DataSource(IdentifiableEntity, ABC):
     def is_available(self) -> bool:
         """Determines if the data source is available."""
 
-    def on_app_init(self):
+    def on_app_init(self) -> None:
         """Function to execute at the start of the server to initialize the data source."""
 
     @property
@@ -123,6 +156,15 @@ class DataSource(IdentifiableEntity, ABC):
         match_stored_players = await self.get_match_stored_players(players)
         if match_stored_players is None:
             return None
+        k_factors_by_fide_id = self._fide_k_factors_by_fide_id(match_stored_players)
+        database = FideDatabase()
+        covered_dates = {
+            reference_date
+            for reference_date in {
+                player.fide_k_factor_reference_date for player in players
+            }
+            if database.covers_rating_period(reference_date)
+        }
         player_comparators: list[PlayerComparator] = []
         for player in players:
             match_player = next(
@@ -135,10 +177,86 @@ class DataSource(IdentifiableEntity, ABC):
                 ),
                 None,
             )
+            if match_player is not None:
+                match_player = self._with_k_factors(
+                    match_player,
+                    self._k_factors_for_player(
+                        player,
+                        k_factors_by_fide_id.get(match_player.fide_id or 0, {}),
+                        player.fide_k_factor_reference_date in covered_dates,
+                    ),
+                )
             player_comparator = PlayerComparator(fields, player, match_player)
             if not diff_only or player_comparator.diff_field_ids:
                 player_comparators.append(player_comparator)
         return player_comparators
+
+    @staticmethod
+    def _k_factors_for_player(
+        player: Player,
+        database_k_factors: dict[int, int | None],
+        in_rating_period: bool,
+    ) -> dict[int, int | None]:
+        """The k-factors the update proposes for a player: the ones of the
+        database inside its rating period, and outside of it what remains
+        trustworthy of them, the player keeping their own where nothing
+        does."""
+        if in_rating_period:
+            return database_k_factors
+        k_factors: dict[int, int | None] = {}
+        for tournament_rating in TournamentRating:
+            tr_value = tournament_rating.value
+            k_factor = reliable_k_factor(
+                database_k_factors.get(tr_value),
+                player.ratings[tournament_rating].fide,
+                player.year_of_birth,
+            )
+            k_factors[tr_value] = (
+                k_factor
+                if k_factor is not None
+                else player.ratings[tournament_rating].k_factor
+            )
+        return k_factors
+
+    @staticmethod
+    def _fide_k_factors_by_fide_id(
+        match_stored_players: list[StoredPlayer],
+    ) -> dict[int, dict[int, int | None]]:
+        """Read the k-factors of the matched players in the FIDE database,
+        so that they are brought over whatever the data source is."""
+        database = FideDatabase()
+        fide_ids = [
+            match_stored_player.fide_id
+            for match_stored_player in match_stored_players
+            if match_stored_player.fide_id
+        ]
+        if not fide_ids or not database.exists():
+            return {}
+        with database:
+            fide_stored_players = database.get_stored_players_by_fide_id(fide_ids)
+        return {
+            fide_stored_player.fide_id: {
+                tr_value: PlayerRating.from_stored_value(stored_rating).k_factor
+                for tr_value, stored_rating in fide_stored_player.ratings.items()
+            }
+            for fide_stored_player in fide_stored_players
+            if fide_stored_player.fide_id
+        }
+
+    @staticmethod
+    def _with_k_factors(
+        match_stored_player: StoredPlayer,
+        k_factors: dict[int, int | None],
+    ) -> StoredPlayer:
+        ratings: dict[int, dict[str, int | None]] = {}
+        for tournament_rating in TournamentRating:
+            tr_value = tournament_rating.value
+            rating = PlayerRating.from_stored_value(
+                match_stored_player.ratings.get(tr_value, {})
+            )
+            rating.k_factor = k_factors.get(tr_value)
+            ratings[tr_value] = rating.stored_value
+        return replace(match_stored_player, ratings=ratings)
 
     # --------------------------------------------------------------------------
     # Player search
@@ -167,7 +285,12 @@ class DataSource(IdentifiableEntity, ABC):
 
     @abstractmethod
     async def search_player(
-        self, string: str, federation: str, page: int = 0, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
@@ -187,10 +310,13 @@ class DataSource(IdentifiableEntity, ABC):
         self,
         player_source_id: str,
         with_arbiter_title: bool,
+        k_factor_reference_date: date,
     ) -> StoredPlayer | None:
         stored_player = await self.get_stored_player_by_source_id(player_source_id)
         if stored_player:
-            self._adjust_player_from_fide_database(stored_player)
+            self._adjust_player_from_fide_database(
+                stored_player, k_factor_reference_date
+            )
             await plugin_manager.ahook.augment_player_after_search(
                 stored_player=stored_player,
                 data_source=self,
@@ -201,13 +327,20 @@ class DataSource(IdentifiableEntity, ABC):
     @staticmethod
     def _adjust_player_from_fide_database(
         src_stored_player: StoredPlayer,
-    ):
+        k_factor_reference_date: date,
+    ) -> None:
         """Cross-references the player with the FIDE Database.
         Override this method to disable this behavior."""
         fide_id = src_stored_player.fide_id
         database = FideDatabase()
         if not fide_id or not database.exists():
             return
+        in_rating_period = database.covers_rating_period(k_factor_reference_date)
+        year_of_birth = src_stored_player.year_of_birth or (
+            src_stored_player.date_of_birth.year
+            if src_stored_player.date_of_birth
+            else None
+        )
         with database:
             fide_stored_player = database.get_stored_player_by_fide_id(
                 player_fide_id=fide_id,
@@ -226,24 +359,26 @@ class DataSource(IdentifiableEntity, ABC):
                 )
                 if not stored_fide_rating:
                     continue
-                fide_rating = PlayerRating.from_stored_value(stored_fide_rating).fide
-                if not fide_rating:
+                fide_player_rating = PlayerRating.from_stored_value(stored_fide_rating)
+                if not fide_player_rating.fide:
                     continue
-                stored_source_rating = src_stored_player.ratings.get(
-                    rating_type.value, None
+                source_rating = PlayerRating.from_stored_value(
+                    src_stored_player.ratings.get(rating_type.value, None) or {}
                 )
-                if not stored_source_rating:
-                    src_stored_player.ratings[rating_type.value] = PlayerRating(
-                        fide=fide_rating
-                    ).stored_value
-                    continue
-                source_rating = PlayerRating.from_stored_value(stored_source_rating)
                 if source_rating.fide is None:
-                    src_stored_player.ratings[rating_type.value] = PlayerRating(
-                        fide=fide_rating,
-                        national=source_rating.national,
-                        estimated=source_rating.estimated,
-                    ).stored_value
+                    source_rating.fide = fide_player_rating.fide
+                source_rating.k_factor = (
+                    fide_player_rating.k_factor
+                    if in_rating_period
+                    else reliable_k_factor(
+                        fide_player_rating.k_factor,
+                        source_rating.fide,
+                        year_of_birth,
+                    )
+                )
+                src_stored_player.ratings[rating_type.value] = (
+                    source_rating.stored_value
+                )
 
     # --------------------------------------------------------------------------
     # Player Import
@@ -298,7 +433,7 @@ class LocalDataSource(DataSource, ABC):
     def is_available(self) -> bool:
         return self.local_database_type.file_path().exists()
 
-    def on_app_init(self):
+    def on_app_init(self) -> None:
         self.database.check()
 
     @property
@@ -306,7 +441,12 @@ class LocalDataSource(DataSource, ABC):
         return 'bi-database-fill-dash'
 
     async def search_player(
-        self, string: str, federation: str, page: int = 0, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         if not self.is_available:
             raise SharlyChessException(
@@ -316,12 +456,13 @@ class LocalDataSource(DataSource, ABC):
                 )
             )
         with self.local_database_type() as database:
-            return database.search_player(string, federation, page, limit)
+            return database.search_player(string, federation, page, limit, filters)
 
 
 class OnlineDataSource(DataSource, ABC):
     connection_status: ClassVar[bool | None] = None
     _connection_last_checked_at: ClassVar[datetime | None] = None
+    _background_tasks: ClassVar[set[asyncio.Task]] = set()
 
     @classmethod
     @abstractmethod
@@ -329,18 +470,21 @@ class OnlineDataSource(DataSource, ABC):
         """Check the connection to the data source.
         If it fails, log the error."""
 
-    def on_app_init(self):
+    def on_app_init(self) -> None:
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:
             # No running loop yet — safe fallback if someone calls too early
             loop = asyncio.get_event_loop()
 
-        # Schedule background task
-        loop.create_task(self.reload_connection_status())
+        # The loop only holds a weak reference, so the task is kept here until
+        # it is done or it can be collected before it has run.
+        task = loop.create_task(self.reload_connection_status())
+        OnlineDataSource._background_tasks.add(task)
+        task.add_done_callback(OnlineDataSource._background_tasks.discard)
 
     @classmethod
-    async def reload_connection_status(cls):
+    async def reload_connection_status(cls) -> None:
         cls._connection_last_checked_at = datetime.now()
         if not NetworkMonitor.connected():
             cls.connection_status = None
@@ -362,7 +506,12 @@ class OnlineDataSource(DataSource, ABC):
         return 'bi-cloud-fill-dash'
 
     async def search_player(
-        self, string: str, federation: str, page: int = 0, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         cls = self.__class__
         cls._connection_last_checked_at = datetime.now()
@@ -370,7 +519,9 @@ class OnlineDataSource(DataSource, ABC):
             cls.connection_status = None
             raise SharlyChessException(_('No internet connection'))
         try:
-            players = await self._search_player(string, federation, page, limit)
+            players = await self._search_player(
+                string, federation, page, limit, filters
+            )
             cls.connection_status = True
             return players
         except SharlyChessException as exception:
@@ -379,7 +530,12 @@ class OnlineDataSource(DataSource, ABC):
 
     @abstractmethod
     async def _search_player(
-        self, string: str, federation: str, page: int = 0, limit: int | None = None
+        self,
+        string: str,
+        federation: str,
+        page: int = 0,
+        limit: int | None = None,
+        filters: dict | None = None,
     ) -> list[StoredPlayer]:
         """Search a player in the data source from a string.
         Returns maximum *limit* results (no limit if *limit* is None)."""
@@ -417,8 +573,10 @@ class FideDataSource(LocalDataSource):
     @override
     def _adjust_player_from_fide_database(
         src_stored_player: StoredPlayer,
-    ):
-        pass
+        k_factor_reference_date: date,
+    ) -> None:
+        if not FideDatabase().covers_rating_period(k_factor_reference_date):
+            keep_reliable_k_factors(src_stored_player)
 
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
         return bool(player1.fide_id) and player1.fide_id == player2.fide_id

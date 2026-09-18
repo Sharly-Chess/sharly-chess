@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `player_category_set` ('
             '   `id` INTEGER NOT NULL,'
@@ -12,5 +12,5 @@ class Migration(BaseMigration):
             ')'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP TABLE `player_category_set`')

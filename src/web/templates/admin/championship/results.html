@@ -112,13 +112,13 @@
     >
         <thead class="position-sticky z-2" style="top: var(--header-height);">
             <tr class="player-header">
-                <th class="rank text-end compact-col">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+                <th class="rank text-end compact-col">{{ pgettext('rank column header', 'Rk.') }}</th>
                 <th class="name text-start">{{ _('Competitor') }}</th>
                 {% if championship.competitor_type == competitor_type_individual %}
-                    <th class="text-center compact-col">{{ _('Cat. *** CATEGORY COLUMN HEADER') }}</th>
-                    <th class="text-center compact-col">{{ _('Gen. *** GENDER COLUMN HEADER') }}</th>
+                    <th class="text-center compact-col">{{ pgettext('category column header', 'Cat.') }}</th>
+                    <th class="text-center compact-col">{{ pgettext('gender column header', 'Gen.') }}</th>
                 {% endif %}
-                <th class="text-center compact-col">{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                <th class="text-center compact-col">{{ pgettext('federation column header', 'Fed.') }}</th>
                 <th class="p-0" style="width: 0.75rem"></th>
                 {% for header in ranking_rule_labels %}
                     <th

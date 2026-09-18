@@ -1,6 +1,9 @@
 import base64
 import hashlib
+from collections.abc import Callable
+from contextlib import suppress
 from pathlib import Path
+from typing import Any
 
 
 def file_fingerprint(file: Path) -> bytes:
@@ -12,7 +15,7 @@ def file_fingerprint(file: Path) -> bytes:
                 hash_md5.update(chunk)
         return hash_md5.digest()
     except FileNotFoundError:
-        return bytes()
+        return b''
 
 
 def files_fingerprint(files: list[Path]) -> bytes:
@@ -32,12 +35,12 @@ def text_file_fingerprint(file: Path) -> bytes:
     """Returns a digest of a text file (returns the same digest for files that differ only on CR/LF)."""
     try:
         hash_md5 = hashlib.md5()
-        with open(file, 'r', encoding='utf-8') as f:
+        with open(file, encoding='utf-8') as f:
             for line in f.readlines():
                 hash_md5.update(bytes(line, 'utf-8'))
         return hash_md5.digest()
     except FileNotFoundError:
-        return bytes()
+        return b''
 
 
 def text_files_fingerprint(files: list[Path]) -> bytes:
@@ -45,7 +48,7 @@ def text_files_fingerprint(files: list[Path]) -> bytes:
     hash_md5 = hashlib.md5()
     for file in files:
         try:
-            with open(file, 'r', encoding='utf-8') as f:
+            with open(file, encoding='utf-8') as f:
                 for line in f.readlines():
                     hash_md5.update(bytes(line, 'utf-8'))
         except FileNotFoundError:
@@ -53,28 +56,27 @@ def text_files_fingerprint(files: list[Path]) -> bytes:
     return hash_md5.digest()
 
 
-def shutil_delete_onerror(func, path, exc_info):
+def shutil_delete_onexc(
+    func: Callable[[str], Any], path: str, error: BaseException
+) -> None:
     """
     This method is used as a workaround for ``PermissionError: access denied``
     errors happening on some Windows systems.
-    Usage : ``shutil.rmtree(path, onerror=shutil_delete_onerror)``
+    Usage : ``shutil.rmtree(path, onexc=shutil_delete_onexc)``
     """
     import stat
-    import os
 
     # The whole of the owner's permissions, not write alone: a directory
     # left without read and execute cannot be listed or entered, so the
     # workaround would make every later attempt on that tree fail too.
-    os.chmod(path, stat.S_IRWXU)
-    try:
+    Path(path).chmod(stat.S_IRWXU)
+    # On POSIX ``rmtree`` walks by file descriptor, so the call that failed
+    # may be ``os.open`` or ``os.scandir``, neither of which takes a path on
+    # its own. Nothing more to retry there — the permissions are mended,
+    # which is what the workaround is for, and the deletion succeeds the
+    # next time round.
+    with suppress(TypeError):
         func(path)
-    except TypeError:
-        # On POSIX ``rmtree`` walks by file descriptor, so the call that
-        # failed may be ``os.open`` or ``os.scandir``, neither of which
-        # takes a path on its own. Nothing more to retry here — the
-        # permissions are mended, which is what the workaround is for,
-        # and the deletion succeeds the next time round.
-        pass
 
 
 def base64_encode_file(

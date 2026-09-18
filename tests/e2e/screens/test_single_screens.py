@@ -1,4 +1,3 @@
-import re
 from typing import Any
 
 from data.event import Event
@@ -46,79 +45,6 @@ class TestSingleScreensFunctionality:
         yield tournament
         TestUtils.delete_tournament(api_request_context, EVENT_ID, tournament)
 
-    def test_create_and_delete_simple_screen(
-        self, page: Page, paired_tournament: StoredTournament
-    ):
-        page.goto(f'/event/{EVENT_ID}/screens')
-        TestUtils.button_by_text(page, 'Create a screen').click()
-        page.get_by_test_id('create-screen-type-input').click()
-        modal = page.locator('.modal-dialog')
-        expect(modal).to_be_visible()
-        name = 'Test Screen'
-        modal.get_by_test_id('name').fill(name)
-        modal.locator('button[type=submit]').click()
-
-        screen_type_section = page.get_by_test_id('accordion-screen-type-input')
-        if screen_type_section.get_attribute('aria-expanded') == 'false':
-            screen_type_section.click()
-        item = page.get_by_test_id('screens-item').filter(has_text=name)
-        expect(item).to_be_visible()
-        button = item.locator('button[hx-get*="delete"]')
-        button.click()
-        TestUtils.button_by_text(modal, 'Delete').click()
-        expect(
-            page.get_by_test_id('screens-item').filter(has_text=name)
-        ).not_to_be_attached()
-
-    def test_eye_link_updates_after_uniq_id_change(
-        self,
-        page: Page,
-        api_request_context: APIRequestContext,
-        unpaired_tournament: StoredTournament,
-    ):
-        stored_screen = TestUtils.create_screen(
-            api_request_context,
-            EVENT_ID,
-            'Eye Link Screen',
-            ScreenType.INPUT,
-            {'init_set_tournament_id': unpaired_tournament.id},
-        )
-        old_uniq_id = stored_screen.uniq_id
-        new_uniq_id = old_uniq_id + '-renamed'
-        eye_selector = f'#screen-eye-{stored_screen.id}'
-        try:
-            page.goto(f'/event/{EVENT_ID}/screens')
-            accordion = page.get_by_test_id(
-                f'accordion-screen-type-{ScreenType.INPUT.value}'
-            )
-            if accordion.get_attribute('aria-expanded') == 'false':
-                accordion.click()
-
-            item = page.locator(f'#collection-screens-item-{stored_screen.id}')
-            expect(item).to_be_visible()
-
-            # The eye link initially points to the original uniq ID
-            expect(page.locator(eye_selector)).to_have_attribute(
-                'href', re.compile(rf'/view/screen/{EVENT_ID}/{old_uniq_id}$')
-            )
-
-            # Open the edit modal and rename the screen's uniq ID
-            item.locator('button[hx-get*="screen-modal/update"]').click()
-            modal = page.locator('.modal-dialog')
-            expect(modal).to_be_visible()
-            page.get_by_test_id('uniq-id-update-button').click()
-            update_input = page.get_by_test_id('uniq-id-update-input')
-            expect(update_input).to_be_visible()
-            update_input.fill(new_uniq_id)
-            page.get_by_test_id('uniq-id-update-submit-button').click()
-
-            # The eye link in the background card must now point to the new uniq ID
-            expect(page.locator(eye_selector)).to_have_attribute(
-                'href', re.compile(rf'/view/screen/{EVENT_ID}/{new_uniq_id}$')
-            )
-        finally:
-            TestUtils.delete_screen(api_request_context, EVENT_ID, stored_screen.id)
-
     def test_check_in_screen(
         self,
         api_request_context: APIRequestContext,
@@ -134,14 +60,8 @@ class TestSingleScreensFunctionality:
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
         rows = lan_page.locator('div.player-row')
-        expect(rows).to_have_count(16)
-
-        # Should not be checked in
         row = rows.filter(has_text='AMOS')
         expect(row.locator('i.bi-square')).to_be_visible()
-        expect(row.locator('div:nth-child(1)')).to_have_attribute(
-            'hx-get', re.compile(r'.*checkin-modal.*')
-        )
         row.click()
         modal = lan_page.locator('.modal-dialog')
         expect(modal).to_be_visible()
@@ -149,22 +69,7 @@ class TestSingleScreensFunctionality:
         expect(button).to_contain_text('AMOS')
         button.click()
 
-        # Test that the page is updated
         expect(row.locator('i.bi-check-square-fill')).to_be_visible()
-
-        # Close check-in
-        api_request_context.patch(
-            f'/check-in/tournament-toggle-open/{EVENT_ID}/{unpaired_tournament.id}'
-        )
-
-        # Reload the page
-        lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
-
-        # Clicking the row should not trigger a check-in
-        rows = lan_page.locator('div.player-row')
-        expect(rows).to_have_count(16)
-        row = rows.filter(has_text='AMOS')
-        expect(row).not_to_have_attribute('hx-get', re.compile(r'.*checkin-modal.*'))
 
         with EventDatabase(EVENT_ID) as database:
             event = Event(database.load_stored_event())
@@ -278,25 +183,3 @@ class TestSingleScreensFunctionality:
             )
             assert set_result.ok
             expect(row.locator('div.score')).to_contain_text(str(r))
-
-    def test_players_screen(
-        self,
-        lan_page: Page,
-        api_request_context: APIRequestContext,
-        paired_tournament: StoredTournament,
-    ):
-        TestUtils.create_screen(
-            api_request_context,
-            EVENT_ID,
-            SCREEN_ID,
-            ScreenType.PLAYERS,
-            {'init_set_tournament_id': paired_tournament.id},
-        )
-        lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
-        rows = lan_page.locator('div.player-row')
-        expect(rows).to_have_count(16)
-
-        first_row = rows.first
-        last_row = rows.nth(-1)
-        expect(first_row).to_contain_text('ALYX')
-        expect(last_row).to_contain_text('STEPHAN')

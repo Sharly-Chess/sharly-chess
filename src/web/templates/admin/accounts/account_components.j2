@@ -70,12 +70,12 @@
         <span
             class="text-success text-nowrap"
             {{ macros.tooltip_attributes('info', _('This account is active, anonymous users can log in to it.'), 'top') }}
-        ><i class="bi-person-fill-check pe-1"></i>{{ _('Active *** ACTIVE ACCOUNT') }}</span>
+        ><i class="bi-person-fill-check pe-1"></i>{{ pgettext('active account', 'Active') }}</span>
     {% else %}
         <span
             class="text-danger text-nowrap"
             {{ macros.tooltip_attributes('info', _('This account is not active, anonymous users can not log in to it.'), 'top') }}
-        ><i class="bi-person-fill-x pe-1"></i>{{ _('Inactive *** INACTIVE ACCOUNT') }}</span>
+        ><i class="bi-person-fill-x pe-1"></i>{{ pgettext('inactive account', 'Inactive') }}</span>
     {% endif %}
 {% endmacro %}
 

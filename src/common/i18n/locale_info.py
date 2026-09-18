@@ -12,6 +12,19 @@ from common.logger import get_logger
 
 logger: Logger = get_logger()
 
+# The note a message used to carry inside its own text.
+LEGACY_NOTE: str = '***'
+
+# The contexts of the messages every locale has to translate.
+SHORTCUT_CONTEXTS: set[str] = {'with shortcut indication'}
+SHORTCUT_KEY_CONTEXT_PREFIX: str = 'keyboard shortcut for'
+
+# What a translation may add to the length of the message it translates, on top
+# of the room the ratio gives it. A short label carries the whole of its meaning
+# in a word English abbreviates and another language may spell out.
+LENGTH_RATIO: int = 5
+LENGTH_ALLOWANCE: int = 30
+
 
 class DomainLocaleInfo(Domain):
     def __init__(
@@ -44,45 +57,45 @@ class DomainLocaleInfo(Domain):
         return string.replace('*', r'\*')
 
     @staticmethod
-    def message_is_empty(msg: Message):
+    def message_is_empty(msg: Message) -> bool:
         if isinstance(msg.id, str):
             assert isinstance(msg.string, str)
             return not msg.string
-        else:
-            assert isinstance(msg.string, tuple)
-            return any(not s for s in msg.string)
+        assert isinstance(msg.string, tuple)
+        return any(not s for s in msg.string)
 
     @staticmethod
-    def message_is_mandatory(msg: Message):
-        if isinstance(msg.id, str):
-            return msg.id.__contains__('***')
-        else:
-            assert isinstance(msg.string, tuple)
-            return any(s.__contains__('***') for s in msg.id)
+    def message_is_mandatory(msg: Message) -> bool:
+        """Whether a locale has to translate a message rather than fall back to
+        the English one. A shortcut is the case: the letter a locale underlines
+        and the key it answers to have to be picked together, and the English
+        pair suits no other language."""
+        context = msg.context or ''
+        return context in SHORTCUT_CONTEXTS or context.startswith(
+            SHORTCUT_KEY_CONTEXT_PREFIX
+        )
+
+    @staticmethod
+    def message_uses_legacy_note(msg: Message) -> bool:
+        """Whether a message carries a note inside its text, the way the
+        catalogs used to tell apart two strings reading the same. A context
+        does that now: it stays out of the text, so an untranslated string
+        still reads as English rather than showing the note."""
+        ids = (msg.id,) if isinstance(msg.id, str) else msg.id
+        return any(LEGACY_NOTE in id_ for id_ in ids)
 
     @staticmethod
     def sorted_tokens(string: str) -> list[str]:
         """Returns the sorted tokens of a string."""
         tokens: list[str] = []
-        # ignore everything after *** (mandatory strings with instructions for the translators)
-        if matches := re.match(r'^(.*)\s+\*\*\*\s+.*$', string):
-            string = matches.group(1)
-        # now really extract the tokens
         while True:
             token: str | None = None
-            if match := re.search(r'{[^}]*}', string):  # Looking for {name}
-                token = match.group()
-            elif match := re.search(
-                r'%%[sflt]', string
-            ):  # Looking for %%s, %%f, %%l and %%t
-                token = match.group()
-            elif match := re.search(
-                r'%[sflt]', string
-            ):  # Looking for %s, %f, %l and %t
-                token = match.group()
-            elif match := re.search(
-                r'%\([^)]*\)[ds]', string
-            ):  # Looking for %(name)s or %(name)d
+            if (
+                (match := re.search(r'{[^}]*}', string))
+                or (match := re.search(r'%%[sflt]', string))
+                or (match := re.search(r'%[sflt]', string))
+                or (match := re.search(r'%\([^)]*\)[ds]', string))
+            ):  # Looking for {name}
                 token = match.group()
             if token:
                 # string = string.replace(token, f'{self.token_replacement}_{len(tokens)}', 1)
@@ -92,11 +105,34 @@ class DomainLocaleInfo(Domain):
                 break
         return sorted(tokens)
 
+    @classmethod
+    def offered_tokens(cls, msg: Message) -> list[str]:
+        """The tokens the code passes on top of the ones the source wording
+        uses, declared in an ``i18n:`` comment next to the string. A language
+        that counts something else than English does — 'Round of 16' against
+        '8es de finale' — reaches for one of these instead."""
+        tokens: list[str] = []
+        for comment in msg.auto_comments:
+            tokens += cls.sorted_tokens(comment)
+        return tokens
+
+    @classmethod
+    def message_tokens_match(cls, id_: str, string: str, offered: list[str]) -> bool:
+        """Whether a translation uses the tokens it is allowed to. Without an
+        offer it has to use exactly the ones the source does; with one, any of
+        those it names, since the wording decides which apply."""
+        id_tokens = cls.sorted_tokens(id_)
+        string_tokens = cls.sorted_tokens(string)
+        if not offered:
+            return id_tokens == string_tokens
+        return set(string_tokens) <= set(id_tokens) | set(offered)
+
     def compare_message_tokens(self, msg: Message) -> bool:
         error: bool = False
+        offered = self.offered_tokens(msg)
         if isinstance(msg.string, str):
             assert isinstance(msg.id, str)
-            if self.sorted_tokens(msg.id) != self.sorted_tokens(msg.string):
+            if not self.message_tokens_match(msg.id, msg.string, offered):
                 msg.user_comments = [
                     f'Error: tokens differ between [{msg.id}] and [{msg.string}]',
                 ]
@@ -105,7 +141,7 @@ class DomainLocaleInfo(Domain):
             assert isinstance(msg.id, tuple)
             assert isinstance(msg.string, tuple)
             for i in reversed(range(len(msg.id))):
-                if self.sorted_tokens(msg.id[i]) != self.sorted_tokens(msg.string[i]):
+                if not self.message_tokens_match(msg.id[i], msg.string[i], offered):
                     msg.user_comments = [
                         f'Error: tokens differ between [{msg.id[i]}] and [{msg.string[i]}]',
                     ]
@@ -114,11 +150,15 @@ class DomainLocaleInfo(Domain):
         return not error
 
     @staticmethod
-    def check_message_length(msg: Message) -> bool:
+    def length_limit(id_: str) -> int:
+        return LENGTH_RATIO * len(id_) + LENGTH_ALLOWANCE
+
+    @classmethod
+    def check_message_length(cls, msg: Message) -> bool:
         error: bool = False
         if isinstance(msg.id, str):
             assert isinstance(msg.string, str)
-            if len(msg.string) > 5 * len(msg.id):
+            if len(msg.string) > cls.length_limit(msg.id):
                 msg.user_comments = [
                     f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
                 ]
@@ -127,7 +167,7 @@ class DomainLocaleInfo(Domain):
             assert isinstance(msg.id, tuple)
             assert isinstance(msg.string, tuple)
             for i in reversed(range(len(msg.id))):
-                if len(msg.string[i]) > 5 * len(msg.id[i]):
+                if len(msg.string[i]) > cls.length_limit(msg.id[i]):
                     msg.user_comments = [
                         f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
                     ]
@@ -135,7 +175,7 @@ class DomainLocaleInfo(Domain):
                     break
         return not error
 
-    def control(self):
+    def control(self) -> bool:
         # Read the catalog.
         with open(self.po_file, 'rb') as f:
             catalog: Catalog = read_po(f)
@@ -153,6 +193,13 @@ class DomainLocaleInfo(Domain):
                     assert isinstance(msg.id, tuple)
                     msg_key = str(msg.id)
                 self.messages[msg_key] = msg
+                if self.message_uses_legacy_note(msg):
+                    msg.user_comments = [
+                        f'Error: [{msg_key}] carries a [{LEGACY_NOTE}] note in its '
+                        f'text; pass what it says to pgettext() as a context instead',
+                    ]
+                    self.error_messages[msg_key] = msg
+                    continue
                 if self.message_is_mandatory(msg):
                     self.mandatory_messages[msg_key] = msg
                     if self.message_is_empty(msg):
@@ -179,12 +226,12 @@ class DomainLocaleInfo(Domain):
                         self.flagged_messages[flag][msg_key] = msg
         tmp_file: Path = self.po_file.with_suffix('.tmp')
         with open(tmp_file, 'wb') as f:
-            write_po(f, catalog, width=0, omit_header=True)  # type: ignore
+            write_po(f, catalog, width=0, omit_header=True)
         # compare line by line because files differ on CR/LF
         changed: bool = False
         with (
-            open(self.po_file, 'r', encoding='utf-8') as before_f,
-            open(tmp_file, 'r', encoding='utf-8') as after_f,
+            open(self.po_file, encoding='utf-8') as before_f,
+            open(tmp_file, encoding='utf-8') as after_f,
         ):
             for before_line, after_line in zip_longest(
                 before_f.readlines(), after_f.readlines()
@@ -198,7 +245,7 @@ class DomainLocaleInfo(Domain):
             tmp_file.unlink()
         return changed
 
-    def print_summary(self):
+    def print_summary(self) -> None:
         """print a summary of the locale."""
         errors: bool = bool(
             self.error_messages

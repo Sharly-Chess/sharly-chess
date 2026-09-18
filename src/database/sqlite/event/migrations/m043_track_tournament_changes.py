@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         # Track that "something relevant" on a tournament changed
         # (last_pairing_update, last_player_update, or last_update)
         self.database.execute('ALTER TABLE `tournament` ADD `dirty` BOOLEAN DEFAULT 0')
@@ -23,7 +23,7 @@ class Migration(BaseMigration):
             """
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'DROP TRIGGER IF EXISTS `mark_tournament_dirty_on_relevant_update`'
         )

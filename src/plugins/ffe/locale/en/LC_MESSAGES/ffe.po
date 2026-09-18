@@ -15,10 +15,25 @@ msgstr ""
 msgid "%(string)s:"
 msgstr ""
 
-msgid "A - Competition *** FFE licence"
+msgid ""
+"- the players searched in the federation database, with their licence, their club and their league;\n"
+"- the tournaments imported from and exported to the Papi format;\n"
+"- the results uploaded to the website of the federation;\n"
+"- the tie-breaks and the pairing variations used in France;\n"
+"- the clubs and the leagues available as columns, filters and groupings on the players, the documents and the screens."
+msgstr ""
+
+msgctxt "FFE licence"
+msgid "A - Competition"
 msgstr "A - Competition"
 
 msgid "A non-empty string is expected"
+msgstr ""
+
+msgid "A only"
+msgstr ""
+
+msgid "A or B"
 msgstr ""
 
 msgid "A positive integer is expected."
@@ -56,7 +71,8 @@ msgstr ""
 msgid "Auto-upload enabled"
 msgstr ""
 
-msgid "B - Leisure *** FFE licence"
+msgctxt "FFE licence"
+msgid "B - Leisure"
 msgstr "B - Leisure"
 
 msgid "Back"
@@ -118,7 +134,8 @@ msgstr ""
 msgid "Could not download [{url}]: {error}."
 msgstr ""
 
-msgid "Cut *** TIE BREAK VARIATION"
+msgctxt "tie break variation"
+msgid "Cut"
 msgstr "Cut"
 
 msgid "DD/MM/YYYY"
@@ -156,6 +173,9 @@ msgstr ""
 msgid "Elite Arbiter (level 2)"
 msgstr ""
 
+msgid "Everything specific to the French Chess Federation, for the events it rates."
+msgstr ""
+
 #, python-brace-format
 msgid "Exclude: {values}"
 msgstr ""
@@ -175,7 +195,8 @@ msgstr ""
 msgid "FFE Licence"
 msgstr ""
 
-msgid "FFE Licence no. *** LICENCE NUMBER"
+msgctxt "licence number"
+msgid "FFE Licence no."
 msgstr "FFE Licence no."
 
 msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team matches, mixed Suisse / Molter / round-robin schedule. Roster must consist of women players only."
@@ -288,7 +309,7 @@ msgstr ""
 msgid "Fédération Française des Échecs"
 msgstr ""
 
-msgid "Game points \"for\""
+msgid "Game points \"for\" "
 msgstr ""
 
 msgid "Game points differential"
@@ -347,7 +368,8 @@ msgstr ""
 msgid "League"
 msgstr ""
 
-msgid "League *** LEAGUE COLUMN HEADER"
+msgctxt "league column header"
+msgid "League"
 msgstr "League"
 
 msgid "League not specified"
@@ -365,10 +387,15 @@ msgstr ""
 msgid "Leave empty tables for fixed boards"
 msgstr ""
 
-msgid "Lic. *** LICENCE COLUMN HEADER"
+msgctxt "licence column header"
+msgid "Lic."
 msgstr "Lic."
 
-msgid "Licence no. *** LICENCE NUMBER"
+msgid "Licence"
+msgstr ""
+
+msgctxt "licence number"
+msgid "Licence no."
 msgstr "Licence no."
 
 msgid "Licence number"
@@ -384,9 +411,6 @@ msgid "Lowest own average rating"
 msgstr ""
 
 msgid "Make visible on FFE site"
-msgstr ""
-
-msgid "Match lost by forfeit, counted as 0 match points."
 msgstr ""
 
 msgid "Max. teams per league:"
@@ -407,7 +431,8 @@ msgstr ""
 msgid "Modified"
 msgstr ""
 
-msgid "N - Expired *** FFE licence"
+msgctxt "FFE licence"
+msgid "N - Expired"
 msgstr "N - Expired"
 
 msgid "Name"
@@ -453,7 +478,8 @@ msgstr ""
 msgid "No tournament configured for FFE upload."
 msgstr ""
 
-msgid "None *** FFE licence"
+msgctxt "FFE licence"
+msgid "None"
 msgstr "None"
 
 msgid "Not configured"
@@ -646,6 +672,9 @@ msgstr ""
 msgid "The team's own players' average rating, weighted by their per-round board appearances. The team with the lowest average wins the tie-break (lower is better)."
 msgstr ""
 
+msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence not required)."
+msgstr ""
+
 msgid "This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
 msgstr ""
 
@@ -674,13 +703,13 @@ msgstr ""
 msgid "Tournament successfully uploaded."
 msgstr ""
 
-msgid "Tournament upload failed, consult the FFE modal for more details."
+msgid "Tournament upload failed, consult Menu > Data Transfer > FFE for more details."
 msgstr ""
 
 msgid "Tournament upload has been planned."
 msgstr ""
 
-msgid "Tournament visibility could not be set, consult the FFE modal for more details."
+msgid "Tournament visibility could not be set, consult Menu > Data Transfer > FFE for more details."
 msgstr ""
 
 msgid "Tournament visibility could not be set."
@@ -710,7 +739,8 @@ msgstr ""
 msgid "Unknown value [{value}]"
 msgstr ""
 
-msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
+msgctxt "singular for unrated player"
+msgid "Unrated"
 msgstr "Unrated"
 
 msgid "Up to date"

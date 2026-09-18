@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             """
             UPDATE `prize_category` SET `prize_sharing` = 'NONE' WHERE (
@@ -23,7 +23,7 @@ class Migration(BaseMigration):
         )
         self.database.execute('ALTER TABLE `prize` DROP COLUMN `is_monetary`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('ALTER TABLE `prize` ADD `is_monetary` INTEGER')
         self.database.execute(
             """

@@ -33,5 +33,4 @@ def inline_image_url(image: str | None) -> str:
     image_type = file.suffix.lower().replace('.', '').replace('\\n', '')
     if image_type == 'svg':
         return f'data:image/{image_type}+xml;base64,{encoded_data}'
-    else:
-        return f'data:image/{image_type};base64,{encoded_data}'
+    return f'data:image/{image_type};base64,{encoded_data}'

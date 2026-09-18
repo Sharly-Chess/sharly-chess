@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 class Migration(BaseMigration):
     """Add indexes used by tournament pairing and board queries."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE INDEX IF NOT EXISTS `ix_pairing_board_id` ON `pairing`(`board_id`)'
         )
@@ -26,7 +26,7 @@ class Migration(BaseMigration):
             'ON `team_board`(`tournament_id`)'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP INDEX IF EXISTS `ix_pairing_board_id`')
         self.database.execute(
             'DROP INDEX IF EXISTS `ix_pairing_tournament_player_round`'

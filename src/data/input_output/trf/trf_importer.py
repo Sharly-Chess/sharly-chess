@@ -1,7 +1,7 @@
 import re
 from collections import defaultdict
 from datetime import datetime, date
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from common.exception import ImporterError
 from common.i18n import _
@@ -63,7 +63,7 @@ class TrfTournamentImporter(FileTournamentImporter):
     #: tournament here would be set to. ``HBFN`` / ``LBFN`` (highest /
     #: lowest of the two) and ``OTHER`` have no equivalent and are
     #: reported instead.
-    STARTING_RANK_RATING_TYPES: dict[str, PlayerRatingType] = {
+    STARTING_RANK_RATING_TYPES: ClassVar[dict[str, PlayerRatingType]] = {
         'FIDE': PlayerRatingType.FIDE,
         'FIDON': PlayerRatingType.FIDE,
         'NRO': PlayerRatingType.NATIONAL,
@@ -138,14 +138,16 @@ class TrfTournamentImporter(FileTournamentImporter):
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        (file_path, tournament_rating) = self.get_option_values()
-        with open(file_path, 'r', encoding='utf-8') as file:
+        file_path = self._get_option(FileOption).value
+        assert file_path is not None
+        tournament_rating = self._get_option(TournamentRatingOption).value
+        with open(file_path, encoding='utf-8') as file:
             trf_tournament = TrfSerializer.load(file)
         self._check_team_event_compatibility(event, trf_tournament)
         stored_tournament = self._read_trf_tournament(
             event, trf_tournament, stored_tournament
         )
-        self._populate_acceleration(event, stored_tournament, trf_tournament)
+        self._populate_acceleration(stored_tournament, trf_tournament)
         stored_tournament.rating = tournament_rating
         self._pending_teams = self._read_trf_teams(trf_tournament)
         # OOdO records (TRF26 300) carry the per-round team lineups in
@@ -215,7 +217,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                         player_id=player_id,
                         error=exception,
                     )
-                )
+                ) from exception
             stored_player = self._read_trf_player(
                 trf_player, TournamentRating(tournament_rating), event
             )
@@ -236,7 +238,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                             round=round_nb,
                         )
                         + str(exception)
-                    )
+                    ) from exception
                 # In a team TRF, 240 is authoritative for team F/H/Z byes.
                 # A no-opponent 001 block is player-level information:
                 # 0000 / "-" / blank (equivalent to Z) is also the
@@ -278,7 +280,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             # total round count; we just need to make sure it covers
             # any actually-played rounds we found above.
             stored_tournament.rounds = max(
-                stored_tournament.rounds, max(stored_boards_by_round)
+                stored_tournament.rounds, *stored_boards_by_round
             )
         return stored_tournament, stored_players
 
@@ -315,8 +317,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                     )
 
     def get_not_importable_features(self, event: Event) -> list[str]:
-        file_path = self.get_option_values()[0]
-        with open(file_path, 'r', encoding='utf-8') as file:
+        file_path = self._get_option(FileOption).value
+        assert file_path is not None
+        with open(file_path, encoding='utf-8') as file:
             tournament = TrfSerializer.load(file)
         features: list[str] = []
         if tournament.teams and not event.is_team_event:
@@ -361,7 +364,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 )
             )
         tie_breaks = tournament.standings_tie_breaks
-        standard_tie_breaks = ['PTS'] + tournament.tie_breaks
+        standard_tie_breaks = ['PTS', *tournament.tie_breaks]
         if tie_breaks and tournament.tie_breaks and tie_breaks != standard_tie_breaks:
             features.append(_('202 and 212 tie-breaks (212 used)'))
             tie_breaks = standard_tie_breaks
@@ -412,16 +415,15 @@ class TrfTournamentImporter(FileTournamentImporter):
         variation = TrfEncodedType.get_supported_pairing_variation(
             trf_tournament.encoded_type or 'FIDE_DUTCH_2026'
         )
-        if variation is None or variation.id != StandardSwissVariation.static_id():
-            return False
-        return True
+        return not (
+            variation is None or variation.id != StandardSwissVariation.static_id()
+        )
 
     def _populate_acceleration(
         self,
-        event: Event,
         stored_tournament: StoredTournament,
         trf_tournament: TrfTournament,
-    ):
+    ) -> None:
         """Import the 250 records as the rules of the custom accelerated
         system."""
         from data.pairings.settings import AccelerationRule
@@ -654,7 +656,9 @@ class TrfTournamentImporter(FileTournamentImporter):
         )
         internal_by_external = {
             external_id: player.id
-            for external_id, player in zip(external_player_ids, stored_players)
+            for external_id, player in zip(
+                external_player_ids, stored_players, strict=True
+            )
             if external_id is not None and player.id is not None
         }
         if not self._pending_teams:
@@ -754,7 +758,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         oodo_orientation: dict[tuple[int, frozenset[int]], tuple[int, int]] = {}
         for (
             round_,
-            tpn_pair,
+            _tpn_pair,
         ), (a_tpn, b_tpn) in self._pending_oodo_orientation.items():
             a_team = team_id_by_tpn.get(a_tpn)
             b_team = team_id_by_tpn.get(b_tpn)
@@ -1155,16 +1159,24 @@ class TrfTournamentImporter(FileTournamentImporter):
                 if oodo_round != round_:
                     continue
                 lineup_by_team.setdefault(team_id, slot_map)
+            # A lineup holds a row per board, with no player on the ones
+            # the team left empty — so a team that fielded nobody has a
+            # lineup of its own rather than one taken from the round
+            # before.
+            boards_per_match = stored_tournament.team_player_count or 0
             for team_id, slot_map in lineup_by_team.items():
-                ordered = sorted(slot_map.items(), key=lambda item: item[1])
+                slots: list[int | None] = [None] * boards_per_match
+                for player_id, slot in slot_map.items():
+                    if 0 <= slot < boards_per_match:
+                        slots[slot] = player_id
                 lineup_entries = [
                     StoredTeamRoundLineupEntry(
                         team_id=team_id,
                         round_=round_,
                         player_id=player_id,
-                        index=slot,
+                        index=index,
                     )
-                    for player_id, slot in ordered
+                    for index, player_id in enumerate(slots)
                 ]
                 database.replace_team_round_lineup(team_id, round_, lineup_entries)
 
@@ -1187,19 +1199,19 @@ class TrfTournamentImporter(FileTournamentImporter):
         return tie_breaks, unknown_acronyms
 
     @staticmethod
-    def _validate_trf_player(trf_player: TrfPlayer):
+    def _validate_trf_player(trf_player: TrfPlayer) -> None:
         try:
             TrfPlayerGender.get_core_object(trf_player.gender)
         except KeyError:
             raise ImporterError(
                 _('Unknown gender [{gender}].').format(gender=trf_player.gender)
-            )
+            ) from None
         try:
             TrfPlayerTitle.get_core_object(trf_player.title)
         except KeyError:
             raise ImporterError(
                 _('Unknown title [{title}].').format(title=trf_player.title)
-            )
+            ) from None
         if (
             trf_player.federation
             and trf_player.federation.upper() not in SharlyChessConfig().federations
@@ -1218,16 +1230,16 @@ class TrfTournamentImporter(FileTournamentImporter):
                         _('Invalid date format [{date}] (expected: {format}).').format(
                             date=trf_player.birth_date, format=_('YYYY/MM/DD')
                         )
-                    )
+                    ) from None
 
     @staticmethod
-    def _validate_trf_game(trf_game: TrfGame):
+    def _validate_trf_game(trf_game: TrfGame) -> None:
         try:
             color = TrfColor.get_core_object(trf_game.color)
         except KeyError:
             raise ImporterError(
-                _('Unknown color [{color}].').format(color=trf_game.color)
-            )
+                _('Unknown colour [{color}].').format(color=trf_game.color)
+            ) from None
         try:
             result = TrfResult.get_core_object(
                 trf_game.result, has_opponent=bool(trf_game.opponent_id)
@@ -1235,7 +1247,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         except KeyError:
             raise ImporterError(
                 _('Unknown result [{result}].').format(result=trf_game.result)
-            )
+            ) from None
 
         if trf_game.opponent_id and result.is_bye:
             raise ImporterError(
@@ -1260,7 +1272,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
         if trf_game.opponent_id and not color:
             raise ImporterError(
-                _("Color [{color}] can't be used with an opponent.").format(
+                _("Colour [{color}] can't be used with an opponent.").format(
                     color=trf_game.color
                 )
             )
@@ -1275,7 +1287,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
         ):
             raise ImporterError(
-                _("Color [{color}] can't be used without an opponent.").format(
+                _("Colour [{color}] can't be used without an opponent.").format(
                     color=trf_game.color
                 )
             )
@@ -1305,7 +1317,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     _('Invalid date format [{date}] (expected: {format}).').format(
                         date=trf_tournament.start_date, format=_('YYYY/MM/DD')
                     )
-                )
+                ) from None
         if trf_tournament.end_date:
             try:
                 stored_tournament.stop_date = datetime.strptime(
@@ -1316,7 +1328,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     _('Invalid date format [{date}] (expected: {format}).').format(
                         date=trf_tournament.end_date, format=_('YYYY/MM/DD')
                     )
-                )
+                ) from None
         last_date_count = 0
         last_date: date | None = None
         for round_, trf_date in enumerate(trf_tournament.round_dates, start=1):
@@ -1339,7 +1351,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                 ).format(date=trf_date, format=_('YY/MM/DD'))
                 raise ImporterError(
                     _('{string}: {value}').format(string='132', value=message)
-                )
+                ) from None
         stored_tournament.rounds = trf_tournament.num_rounds_estimation
         initial_color = trf_tournament.initial_color
         if initial_color:
@@ -1349,10 +1361,10 @@ class TrfTournamentImporter(FileTournamentImporter):
                     initial_color
                 )
             except ValueError:
-                message = _('Unknown color [{color}].').format(color=initial_color)
+                message = _('Unknown colour [{color}].').format(color=initial_color)
                 raise ImporterError(
                     _('{string}: {value}').format(string='152', value=message)
-                )
+                ) from None
         rating_type = cls.STARTING_RANK_RATING_TYPES.get(
             trf_tournament.starting_rank_method
         )
@@ -1379,9 +1391,10 @@ class TrfTournamentImporter(FileTournamentImporter):
         ).id
         cls._populate_game_points(stored_tournament, trf_tournament)
         cls._populate_team_fields(stored_tournament, trf_tournament)
-        trf_tie_breaks = (
-            trf_tournament.standings_tie_breaks or ['PTS'] + trf_tournament.tie_breaks
-        )
+        trf_tie_breaks = trf_tournament.standings_tie_breaks or [
+            'PTS',
+            *trf_tournament.tie_breaks,
+        ]
         tie_breaks = cls._read_tie_breaks(trf_tie_breaks, event)[0]
         stored_tournament.stored_tie_breaks = [
             tie_break.to_stored_value() for tie_break in tie_breaks
@@ -1396,7 +1409,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     _('Invalid time control format [{time_control}].').format(
                         time_control=time_control
                     )
-                )
+                ) from None
         return stored_tournament
 
     @staticmethod

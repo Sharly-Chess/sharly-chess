@@ -1,8 +1,6 @@
 from dataclasses import replace
-from logging import Logger
 from typing import Annotated, Any
 
-from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.event import Event
 
@@ -26,16 +24,15 @@ from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard
 from web.messages import Message
 
-logger: Logger = get_logger()
-
 
 class PrizeConfigAdminController(BaseEventAdminController):
-    guards = [EventGuard(), ActionGuard(AuthAction.MANAGE_PRIZES)]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [EventGuard(), ActionGuard(AuthAction.MANAGE_PRIZES)]  # noqa: RUF012
 
     @classmethod
     def _prepare_modal_data(
         cls,
-        request: HTMXRequest,
         admin_event: Event,
     ) -> dict[str, Any]:
         stored_event = admin_event.stored_event
@@ -69,7 +66,6 @@ class PrizeConfigAdminController(BaseEventAdminController):
 
     def _modal_context(
         self,
-        event: Event,
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
@@ -88,9 +84,8 @@ class PrizeConfigAdminController(BaseEventAdminController):
         request: HTMXRequest,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        event = web_context.get_admin_event()
-        data = self._prepare_modal_data(request, web_context.get_admin_event())
-        template_context = self._modal_context(event, data)
+        data = self._prepare_modal_data(web_context.get_admin_event())
+        template_context = self._modal_context(data)
 
         return self._admin_base_event_render(
             web_context.template_context | template_context,
@@ -110,10 +105,9 @@ class PrizeConfigAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        event = web_context.get_admin_event()
         stored_event, errors = self._read_form_data(web_context.get_admin_event(), data)
         if not stored_event:
-            template_context = self._modal_context(event, data, errors=errors)
+            template_context = self._modal_context(data, errors=errors)
             return self._admin_base_event_render(
                 web_context.template_context | template_context,
             )
@@ -124,6 +118,6 @@ class PrizeConfigAdminController(BaseEventAdminController):
 
         Message.success(
             request,
-            _('Prize defaults have been updated.').format(uniq_id=uniq_id),
+            _('Prize defaults have been updated.'),
         )
         return self._render_empty_modal_and_messages(request)

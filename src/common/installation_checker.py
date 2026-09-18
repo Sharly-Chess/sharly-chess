@@ -1,3 +1,4 @@
+from typing import ClassVar
 from common.i18n import _
 from common.logger import print_interactive_error
 from common.sharly_chess_config import SharlyChessConfig
@@ -14,7 +15,7 @@ from common.tool_installer import (
 class InstallationChecker:
     """A class to check the installation of all the needed tools and libs."""
 
-    web_lib_installers: list[WebLibInstaller] = [
+    web_lib_installers: ClassVar[list[WebLibInstaller]] = [
         WebLibArchiveInstaller(
             'Bootstrap',
             SharlyChessConfig.bootstrap_version,
@@ -180,7 +181,7 @@ class InstallationChecker:
         ),
     ]
 
-    executable_installers: list[ExecutableInstaller] = [
+    executable_installers: ClassVar[list[ExecutableInstaller]] = [
         BbpPairingsInstaller(),
         PapiConverterInstaller(),
     ]

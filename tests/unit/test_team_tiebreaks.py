@@ -373,7 +373,7 @@ class TecTeamTieBreakTestCase(TestCase):
     # ----- Exercise 35: Sistema Buchholz (BH) with MP primary --------------
 
     # PDF Ex 35 p.55 final table (BH values, MP primary).
-    EX35_BH_MP = {
+    EX35_BH_MP: ClassVar = {
         1: 64,
         2: 57,
         3: 58,
@@ -403,7 +403,7 @@ class TecTeamTieBreakTestCase(TestCase):
 
     # ----- Exercise 36: BH-C1 with MP primary -------------------------------
 
-    EX36_BH_C1_MP = {
+    EX36_BH_C1_MP: ClassVar = {
         1: 57,
         2: 52,
         3: 53,
@@ -434,7 +434,7 @@ class TecTeamTieBreakTestCase(TestCase):
     # ----- Exercise 37: BH-C1 with GP primary -------------------------------
 
     # From the PDF Ex 37 table (BH-C1 with GP-primary scoring).
-    EX37_BH_C1_GP = {
+    EX37_BH_C1_GP: ClassVar = {
         1: 100.5,
         2: 96.0,
         3: 97.0,
@@ -476,8 +476,8 @@ class TecTeamTieBreakTestCase(TestCase):
 
     # ----- Exercise 38: EMMSB-C1 for 10-MP teams ----------------------------
 
-    EX38_EMMSB_TOTAL = {1: 88, 2: 74, 3: 76, 4: 72, 5: 70}
-    EX38_EMMSB_C1 = {1: 74, 2: 64, 3: 66, 4: 64, 5: 66}
+    EX38_EMMSB_TOTAL: ClassVar = {1: 88, 2: 74, 3: 76, 4: 72, 5: 70}
+    EX38_EMMSB_C1: ClassVar = {1: 74, 2: 64, 3: 66, 4: 64, 5: 66}
 
     def _esb(self, variant: ESBVariant, cut1: bool = False):
         opts: list = [
@@ -515,7 +515,7 @@ class TecTeamTieBreakTestCase(TestCase):
     # ----- Exercise 39: EGMSB (no cut) --------------------------------------
 
     # PDF Ex 39 p.59 — opponent GP × own MP.
-    EX39_EGMSB = {1: 158.0, 2: 144.0, 3: 150.0, 4: 146.0, 5: 132.0}
+    EX39_EGMSB: ClassVar = {1: 158.0, 2: 144.0, 3: 150.0, 4: 146.0, 5: 132.0}
 
     def test_ex39_egmsb_for_tied_teams(self):
         tb = self._esb(ESBVariant.EGMSB)
@@ -533,7 +533,7 @@ class TecTeamTieBreakTestCase(TestCase):
     # ----- Exercise 40: EMGSB for 6-MP teams --------------------------------
 
     # PDF Ex 40 p.60 — opponent MP × own GP. Worked examples for #7, #9, #13.
-    EX40_EMGSB = {7: 68.5, 9: 83.0, 13: 73.0}
+    EX40_EMGSB: ClassVar = {7: 68.5, 9: 83.0, 13: 73.0}
 
     def test_ex40_emgsb_for_six_mp_teams(self):
         tb = self._esb(ESBVariant.EMGSB)
@@ -551,7 +551,7 @@ class TecTeamTieBreakTestCase(TestCase):
     # ----- Exercise 41: EGGSB for 7-MP teams --------------------------------
 
     # PDF Ex 41 p.60 — opponent GP × own GP. Worked examples for #6 and #8.
-    EX41_EGGSB = {6: 157.5, 8: 181.5}
+    EX41_EGGSB: ClassVar = {6: 157.5, 8: 181.5}
 
     def test_ex41_eggsb_for_seven_mp_teams(self):
         tb = self._esb(ESBVariant.EGGSB)
@@ -575,7 +575,7 @@ class TecTeamTieBreakTestCase(TestCase):
     # rule confirmed by every other team and by Falcons' EGM/EMG/EGG
     # values, which all match the summary), so the printed 33 is a
     # transcription error in that single cell.
-    EX_SUMMARY = {
+    EX_SUMMARY: ClassVar = {
         # team_id: (EMMSB, EGMSB, EMGSB, EGGSB)
         1: (88, 158.0, 158.5, 283.0),
         2: (74, 144.0, 131.0, 249.75),
@@ -659,7 +659,7 @@ class TecTeamTieBreakTestCase(TestCase):
 
     # ----- Exercise 45: EDE on 10-MP tied {1..5} ---------------------------
 
-    EX45_EDE_RANK = {  # final rank, 0 = best
+    EX45_EDE_RANK: ClassVar = {  # final rank, 0 = best
         4: 0,
         2: 1,
         1: 2,
@@ -696,7 +696,7 @@ class TecTeamTieBreakTestCase(TestCase):
 
     # ----- Exercise 49: SSSC values for every team -------------------------
 
-    EX49_SSSC = {
+    EX49_SSSC: ClassVar = {
         1: 38.83,
         2: 36.00,
         3: 35.33,
@@ -1341,7 +1341,7 @@ _BOARD_CONTEXT = _board_context()
 class TecBoardTieBreakTestCase(TestCase):
     """TEC-2023 Exercises 46-48: BC, TBR and BBE applied to the round-3
     match between teams #11 (Koalas) and #14 (Narwhals), which the
-    exercises resolve from the published line-up
+    exercises resolve from the published lineup
 
         board 1  1-0    board 2  ½-½    board 3  ½-½    board 4  0-1
 
@@ -1441,6 +1441,28 @@ class BoardTieBreakTestCase(TestCase):
         self.assertEqual(self._value(tb, 1), -8.5)
         self.assertEqual(self._value(tb, 2), -11.0)
         self.assertEqual(self._value(tb, 3), -10.5)
+
+    def test_a_pairing_allocated_bye_counts_a_win_on_every_board(self):
+        # Art. 12: "if the team received a pairing-allocated bye, the game
+        # points considered for each board are the same as those assigned to
+        # a standard win" — whatever game points the bye scored the team.
+        tb = BoardCountTieBreak()
+        byed = TeamRecord(
+            team_id=4,
+            name='Team 4',
+            total_mp=2.0,
+            total_gp=2.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=None,
+                    own_mp=2.0,
+                    own_gp=2.0,
+                    match_type=TeamMatchType.PAB,
+                )
+            ],
+        )
+        assert tb._board_totals(byed, 4, 1, _BOARD_CONTEXT) == [1.0, 1.0, 1.0, 1.0]
 
     def test_board_count_ranks_the_lower_sum_first(self):
         tb = BoardCountTieBreak()
@@ -1656,7 +1678,7 @@ class EDEKnockoutVariantTestCase(TestCase):
     a single criterion, "EDE system with board count [13.3.2]", whose
     knock-out part reads the two tied teams' own encounter.
 
-    Teams #11 and #14 drew their round-3 match 2-2 with the line-up
+    Teams #11 and #14 drew their round-3 match 2-2 with the lineup
 
         board 1  1-0    board 2  ½-½    board 3  ½-½    board 4  0-1
 
@@ -1666,12 +1688,12 @@ class EDEKnockoutVariantTestCase(TestCase):
     from listing BC / TBR / BBE as tie-breaks of their own.
     """
 
-    ENCOUNTER = {11: (1.0, 0.5, 0.5, 0.0), 14: (0.0, 0.5, 0.5, 1.0)}
+    ENCOUNTER: ClassVar = {11: (1.0, 0.5, 0.5, 0.0), 14: (0.0, 0.5, 0.5, 1.0)}
     # Elsewhere #11 scores on the bottom board and #14 on the top one,
     # which is the expensive way round for board count: over the whole
     # tournament #11 reaches 7.5 against #14's 7.0 and so ranks second,
     # the opposite of the encounter-only verdict.
-    ELSEWHERE = {11: (0.0, 0.0, 0.0, 1.0), 14: (0.5, 0.0, 0.0, 0.0)}
+    ELSEWHERE: ClassVar = {11: (0.0, 0.0, 0.0, 1.0), 14: (0.5, 0.0, 0.0, 0.0)}
 
     records: ClassVar[dict[int, TeamRecord]]
     context: ClassVar[TeamTieBreakContext]
@@ -1807,7 +1829,6 @@ class DummyOpponentCapTestCase(TestCase):
         value = dummy_opponent_score(
             own,
             ScoreType.MATCH_POINTS,
-            after_round=4,
             rounds=4,
             draw_value=1.0,
             opponent_adjusted=opponent.total_mp,
@@ -1826,7 +1847,6 @@ class DummyOpponentCapTestCase(TestCase):
         value = dummy_opponent_score(
             own,
             ScoreType.MATCH_POINTS,
-            after_round=3,
             rounds=3,
             draw_value=1.0,
         )
@@ -1846,7 +1866,6 @@ class DummyOpponentCapTestCase(TestCase):
         value = dummy_opponent_score(
             own,
             ScoreType.GAME_POINTS,
-            after_round=2,
             rounds=2,
             draw_value=2.0,
         )
@@ -1863,7 +1882,6 @@ class DummyOpponentCapTestCase(TestCase):
         value = dummy_opponent_score(
             own,
             ScoreType.MATCH_POINTS,
-            after_round=2,
             rounds=2,
             draw_value=1.0,
             legacy=True,

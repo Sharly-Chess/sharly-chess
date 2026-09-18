@@ -45,7 +45,7 @@ class AdminWebContext(WebContext):
             return RequestUtils.get_event(self.request)
         return self.admin_event
 
-    def check_admin_tab(self):
+    def check_admin_tab(self) -> None:
         if self.admin_tab not in [
             None,
             'home',
@@ -145,10 +145,10 @@ class BaseAdminController(BaseController):
     def _get_timer_color_texts(delays: dict[int, int]) -> dict[int, str]:
         return {
             1: _(
-                'Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).'
+                'Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the colour then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds).'
             ).format(delay_1=delays[1], delay_2=delays[2]),
             2: _(
-                'Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds).'
+                'Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the colour then changes gradually until colour #3 (at the start of the rounds).'
             ).format(delay_2=delays[2]),
             3: _(
                 'Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3).'
@@ -210,6 +210,6 @@ class BaseAdminController(BaseController):
                 background_color = WebContext.form_data_to_rgb(data, field)
             except ValueError:
                 errors[field] = _(
-                    'Invalid color [{color}] ([#RRGGBB] expected).'
+                    'Invalid colour [{color}] ([#RRGGBB] expected).'
                 ).format(color={data[field]})
         return background_color

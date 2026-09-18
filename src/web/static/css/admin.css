@@ -13,6 +13,11 @@
     opacity: 0.3;
 }
 
+.rankings-table tr.excluded-from-standings > td {
+    text-decoration: line-through;
+    color: var(--bs-secondary-color);
+}
+
 .nav-icon-badge {
     bottom: 4px;
     display: flex;
@@ -153,6 +158,317 @@
   width: max-content;   /* shrink to fit table */
 }
 
+/* The home page keeps its language picker in the top-right corner, over the
+   page; on a phone that corner is where the logo is. Take it into the flow
+   above the logo instead, on its own row, level with the drawer button. */
+@media (max-width: 991.98px) {
+    .home-locale-picker {
+        position: static !important;
+        display: flex;
+        justify-content: flex-end;
+        /* The empty toolbar above still has its bottom padding; taking it
+           back puts the picker level with the drawer button. The toolbar is
+           sticky and opaque, so the picker has to paint above it or that
+           padding covers the top of the button. */
+        margin: -.75rem 0 1rem !important;
+        padding: 0 1rem;
+        position: relative !important;
+        z-index: 5;
+    }
+}
+
+/* The players table pins its name column so it stays in view while the table
+   is scrolled sideways. On a phone the column is most of the screen, leaving
+   too narrow a window on the columns being scrolled to, so let it scroll away
+   with the rest. */
+@media (max-width: 767.98px) {
+    #players-table .table-sticky-border {
+        position: static !important;
+        border-right: 0;
+    }
+}
+
+/* Pairings on a phone: one card per board rather than a table too wide to
+   read, so an arbiter walking the hall can find a board and tap its result
+   without scrolling sideways. The markup stays a table — the rows are
+   swapped out of band by id — and only its display changes. */
+@media (max-width: 767.98px) {
+    .pairings-table {
+        table-layout: auto !important;
+    }
+
+    .pairings-table colgroup {
+        display: none;
+    }
+
+    .pairings-table,
+    .pairings-table > tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .pairings-table > tbody > tr {
+        display: grid;
+        /* Board number down the left, players in the middle, result on the
+           right — the number no longer costs a row of its own. */
+        grid-template-columns: auto auto minmax(0, 1fr) auto;
+        grid-template-areas:
+            "board wflag wname result"
+            "board bflag bname result";
+        align-items: center;
+        column-gap: .5rem;
+        row-gap: 0;
+        padding: .5rem .75rem;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    /* The stripe moves from the cells to the card, so that it covers the
+       card's padding and the gaps between its columns too. */
+    .pairings-table > tbody > tr:nth-of-type(odd) {
+        background-color: rgba(var(--bs-emphasis-color-rgb), .05);
+    }
+
+    .pairings-table > tbody > tr > td {
+        --bs-table-bg: transparent !important;
+        --bs-table-bg-type: transparent !important;
+        /* Hover paints a cell at a time, which as a card is a patchwork of
+           lit rectangles; and a touch screen holds the hover after a tap,
+           for a row whose only click is the keyboard cursor. */
+        --bs-table-bg-state: transparent !important;
+        border: 0;
+        /* The table gives every cell a fixed height, which a name wrapping
+           onto a second line overflows — spilling over the card's padding
+           instead of making the card taller. !important because that rule
+           is the more specific of the two. */
+        height: auto !important;
+        padding: .1rem 0;
+    }
+
+    .pairings-table > tbody > tr > td[colspan] {
+        grid-column: 1 / -1;
+    }
+
+    .pairing-cell-board {
+        grid-area: board;
+        align-self: center;
+        font-weight: 600;
+        padding-right: .5rem !important;
+    }
+
+    .pairing-cell-result {
+        grid-area: result;
+        width: auto !important;
+        justify-self: end;
+        align-self: center;
+    }
+
+    .pairing-cell-result .btn {
+        width: 5rem !important;
+        min-height: 2.75rem;
+        font-size: 1.1rem;
+    }
+
+    .pairing-cell-name-white { grid-area: wname; }
+    .pairing-cell-name-black { grid-area: bname; }
+    /* Aligned to the top of the row, so the flags sit on the first line of a
+       name that wraps rather than drifting to the middle of the two. */
+    .pairing-cell-illegal-white {
+        grid-area: wflag;
+        align-self: start;
+    }
+
+    .pairing-cell-illegal-black {
+        grid-area: bflag;
+        align-self: start;
+    }
+    /* The result button says how the game went; the players' running scores
+       beside their names only read as a second result. */
+    .pairing-cell-points-white,
+    .pairing-cell-points-black {
+        display: none;
+    }
+
+    /* Flex rather than inline so that a name wrapping onto a second line
+       stays indented past its colour chip. */
+    .pairing-cell-name-white,
+    .pairing-cell-name-black {
+        display: flex;
+        align-items: baseline;
+        gap: .5em;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+    }
+
+    .pairing-cell-name-white > *,
+    .pairing-cell-name-black > * {
+        min-width: 0;
+    }
+
+    /* The columns no longer say which side is which, so each name carries
+       its own colour chip. */
+    .pairing-cell-name-white::before,
+    .pairing-cell-name-black::before {
+        content: "";
+        flex: 0 0 auto;
+        /* Sits on the first line of a name that wraps, rather than centred
+           against the block as a whole. */
+        align-self: start;
+        margin-top: .3em;
+        width: 0.9em;
+        height: 0.9em;
+        border: 1px solid #555;
+        background-color: #fff;
+    }
+
+    .pairing-cell-name-black::before {
+        background-color: #000;
+    }
+
+    .pairing-cell-real-points {
+        display: none;
+    }
+
+    /* The header collapses to the single cell worth keeping: the board
+       count and its sort control. */
+    .pairings-table > thead {
+        display: block;
+    }
+
+    .pairings-table > thead > tr {
+        display: block;
+    }
+
+    .pairings-table > thead > tr > th:not(:first-child) {
+        display: none;
+    }
+
+    .pairings-table > thead > tr > th:first-child {
+        display: block;
+        width: 100%;
+    }
+
+    /* Team matches: the board rows already carry their own colour chips and
+       side classes, so they only need placing in the card grid. */
+    .lineup-side-a { grid-area: wname; }
+    .lineup-side-b { grid-area: bname; }
+
+    .lineup-side-a .lineup-view,
+    .lineup-side-b .lineup-view {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+    }
+
+    /* The match header takes the board card's shape: the match number down
+       the left and the match score down the right, both spanning the two
+       rows, with a team per row between them and its lineup button at the
+       end of its own row. */
+    .pairings-table > tbody > tr.team-block-header {
+        grid-template-columns: auto minmax(0, 1fr) auto auto;
+        grid-template-areas:
+            "num ta la score"
+            "num tb lb score";
+        row-gap: .4rem;
+        /* The header colour lives on the cells; as a card it has to cover the
+           card's padding and column gaps as well. */
+        background-color: var(--bs-primary);
+        color: var(--pw-contrast-text);
+    }
+
+    /* The table separates matches with a thick rule under every header cell;
+       stacked, that draws a bar between each line of the card. */
+    .pairings-table > tbody > tr.team-block-header > td {
+        border-bottom: 0 !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
+
+    .team-header-cell-number {
+        grid-area: num;
+        text-align: start !important;
+    }
+
+    .team-header-cell-score {
+        grid-area: score;
+        align-self: center;
+    }
+
+    .team-header-cell-number {
+        align-self: center;
+        padding-right: .25rem !important;
+    }
+
+    /* The lineup buttons sit inside their team's cell, which is the wrong
+       side of it for the outside edges: let the parts through to the grid so
+       each can be placed on its own. */
+    .team-header-cell-team-a,
+    .team-header-cell-team-b,
+    .team-header-cell-team-a > div,
+    .team-header-cell-team-b > div {
+        /* !important: the wrappers carry .d-flex, which is itself important. */
+        display: contents !important;
+    }
+
+    .team-header-name-a,
+    .team-header-name-b {
+        min-width: 0;
+    }
+
+    /* Stacked, the two teams read the same way; the table's mirrored
+       right-alignment for team B belongs to the two-sided layout. */
+    .team-header-name-a { grid-area: ta; }
+    .team-header-name-b { grid-area: tb; text-align: start !important; }
+    .team-header-lineup-a { grid-area: la; }
+    .team-header-lineup-b { grid-area: lb; }
+
+    .team-header-lineup-a,
+    .team-header-lineup-b {
+        margin: 0 !important;
+        align-self: center;
+    }
+
+    /* The standing before the round is reference, not part of the match; the
+       point adjustment beside it is not, and stays. */
+    .team-header-standing-score {
+        display: none;
+    }
+
+    /* The pairings toolbar: right-aligned rows of nowrap controls leave a
+       phone with a ragged left edge and a row per control. */
+    .pairings-player-search {
+        width: 100%;
+        padding-right: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #round-controls {
+        width: 100%;
+        margin-left: 0 !important;
+        justify-content: space-between;
+    }
+
+    #round-controls > div {
+        flex-grow: 1;
+    }
+
+    #round-controls select {
+        flex-grow: 1;
+        width: auto !important;
+    }
+
+    .pairings-action-buttons,
+    #pairing-buttons {
+        justify-content: flex-end !important;
+    }
+
+    /* A long unbreakable label ("Système accéléré dégressif (SAD)") is wider
+       than the screen and drags the whole page out with it. */
+    #pairing-buttons .btn {
+        white-space: normal !important;
+    }
+}
+
 /* Championship rule rows: a shared grid template so the handle, order, acronym,
    name, details and actions line up across every (independent) row card. */
 .championship-rule-grid {
@@ -198,6 +514,15 @@
 
 /* Select2 */
 
+/* Group (optgroup) labels: keep them a block with a left padding that applies
+   to every wrapped line, so a long section title stays indented when it wraps
+   (and lines up with the options below it). */
+.select2-container--bootstrap-5 .select2-results__group {
+    display: block;
+    white-space: normal;
+    padding-left: .75rem;
+}
+
 [data-bs-theme=dark] .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--highlighted {
     color: white;
     background-color: var(--pw-nav-bg);
@@ -239,8 +564,10 @@
     display: inline-flex;
 }
 [data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection {
-    padding: .375rem .375rem;
     border-radius: var(--bs-border-radius);
+}
+[data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple {
+    padding: .375rem .375rem;
 }
 [data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered {
     display: inline-flex;
@@ -254,6 +581,9 @@
 [data-bs-theme=dark] .select2-container--bootstrap-5 .select2-selection[aria-disabled=true] {
     background-color: var(--bs-secondary-bg) !important;
     opacity: 1;
+}
+.input-group .select2-container--bootstrap-5 {
+    height: 100%;
 }
 .select2-border-radius-0-left .select2-selection {
     border-top-left-radius: 0 !important;
@@ -357,6 +687,30 @@
 
 .screens-collection-list-sections .admin-collection-list-scroll {
     display: contents;
+}
+
+/* A section heading spans every column of a grid that is as wide as its
+   widest row, which on a phone is wider than the screen — so the title ran
+   off the side. Hold it to the screen and let it wrap, and keep it there
+   while the cards beneath it are scrolled sideways. */
+@media (max-width: 767.98px) {
+    .screens-collection-section-heading {
+        position: sticky;
+        left: 0;
+        max-width: calc(var(--vw, 100vw) - 2rem);
+    }
+
+    /* The title is held on one line for the table-shaped layout, where the
+       row is as wide as it needs to be. */
+    .screens-collection-section-heading .text-nowrap {
+        white-space: normal !important;
+    }
+
+    .screens-collection-section-heading .collapse-button,
+    .screens-collection-section-heading .form-check-label {
+        min-width: 0;
+        text-align: start;
+    }
 }
 
 .dropdown-item-lg {

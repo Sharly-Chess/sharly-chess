@@ -9,7 +9,7 @@ class Migration(BaseMigration):
     database file) never loses its tags. `index` is the rank the user
     arranged them in, the order they are listed in everywhere."""
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `tag` ('
             '   `id` INTEGER NOT NULL,'
@@ -21,5 +21,5 @@ class Migration(BaseMigration):
             ')'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP TABLE `tag`')

@@ -1,0 +1,18 @@
+<div class="row gy-2 gx-3">
+    {{ admin_macros.switch_input(
+        name=setting.id,
+        placeholder=setting.name,
+        tooltip_text=pgettext(
+            'team knock-out',
+            'The winners-bracket champion reaches the grand final unbeaten. '
+            'If the losers-bracket champion wins it, play a deciding second '
+            'game (they must be beaten twice).'
+        ) if admin_tournament.is_team_tournament else pgettext(
+            'individual knock-out',
+            'The winners-bracket champion reaches the grand final unbeaten. '
+            'If the losers-bracket champion wins it, play a deciding second '
+            'game (they must be beaten twice).'
+        ),
+        data=data, errors=errors
+    ) }}
+</div>

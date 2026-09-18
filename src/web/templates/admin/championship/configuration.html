@@ -208,7 +208,7 @@
                                             {% if category_criteria_labels[category.id] %}
                                                 {{ category_criteria_labels[category.id]|join(', ') }}
                                             {% else %}
-                                                <span class="text-secondary fst-italic">{{ _('Undefined *** PLURAL') }}</span>
+                                                <span class="text-secondary fst-italic">{{ pgettext('said of several things', 'Undefined') }}</span>
                                             {% endif %}
                                         </span>
                                         <div class="d-flex align-items-center gap-1">

@@ -17,13 +17,19 @@
         style="top: var(--header-height);"
     >
         <tr class="player-header">
-            <th class="rank text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+            <th class="rank text-end">{{ pgettext('rank column header', 'Rk.') }}</th>
             <th class="name text-start">{{ _('Team') }}</th>
-            <th class="text-center">{{ _('Played *** TEAM RANKING HEADER PLAYED') }}</th>
+            <th class="text-center">{{ pgettext('team ranking header played', 'Played') }}</th>
             {% if primary_is_mp %}
-                <th class="text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</th>
-                <th class="text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</th>
-                <th class="text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</th>
+                <th class="text-center">{{ pgettext('team ranking header win', 'W') }}</th>
+                <th class="text-center">{{ pgettext('team ranking header draw', 'D') }}</th>
+                <th class="text-center">{{ pgettext('team ranking header loss', 'L') }}</th>
+                <th
+                    class="text-center"
+                    {{ macros.tooltip_attributes(
+                        '', _('Matches lost by forfeit.'), 'top'
+                    ) }}
+                >{{ pgettext('team ranking header forfeit', 'F') }}</th>
             {% endif %}
             {% for tie_break in team_tie_breaks %}
                 <th
@@ -37,8 +43,14 @@
     </thead>
     <tbody>
         {% for row in standings %}
-            <tr class="player-row {{ 'even' if loop.index is even else 'odd' }}">
-                <td class="rank text-end">{{ row.rank }}</td>
+            {% set is_excluded = row.team.is_excluded_from_standings %}
+            <tr
+                class="player-row {{ 'even' if loop.index is even else 'odd' }} {% if is_excluded %}excluded-from-standings{% endif %}"
+                {% if is_excluded %}
+                    {{ macros.tooltip_attributes('warning', _('Not counted in the final standings: withdrew or was expelled having completed less than 50%% of the matches (FIDE 6.6). The result stays in the crosstable.'), 'top') }}
+                {% endif %}
+            >
+                <td class="rank text-end">{{ '—' if is_excluded else row.rank }}</td>
                 <td class="name text-start">
                     <strong>{{ row.team.name }}</strong>
                 </td>
@@ -47,6 +59,7 @@
                     <td class="text-center">{{ row.wins }}</td>
                     <td class="text-center">{{ row.draws }}</td>
                     <td class="text-center">{{ row.losses }}</td>
+                    <td class="text-center">{{ row.forfeits }}</td>
                 {% endif %}
                 {% for tie_break in team_tie_breaks %}
                     {% set value = row.tie_break_values[loop.index0] %}

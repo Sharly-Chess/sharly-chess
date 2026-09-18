@@ -39,6 +39,29 @@ class Chess960Plugin(Plugin):
         return _('Adds a screen showing the Chess960 start position.')
 
     @property
+    def keywords(self) -> list[str]:
+        return ['fischer random', '960']
+
+    @property
+    def doc_markdown(self) -> str:
+        return '\n\n'.join(
+            [
+                _(
+                    'Chess960 (also called Fischer random chess) starts the games '
+                    'from one of the 960 possible shuffles of the pieces on the first '
+                    'rank (with the King between the two Rooks and the Bishops on '
+                    'opposite-colored squares).'
+                ),
+                _(
+                    '- a **Chess960** screen type, holding the start position of the '
+                    'round so that it can be displayed to the players;\n'
+                    '- an **All Chess960 positions** document, listing every start '
+                    'position with its number.'
+                ),
+            ]
+        )
+
+    @property
     def version(self) -> Version:
         return Version('1.0.0')
 
@@ -75,7 +98,7 @@ class Chess960Plugin(Plugin):
         return self.id, Chess960ScreenPluginData
 
     @hookimpl
-    def insert_screen_types(self, screen_types: list[type['ScreenType']]):
+    def insert_screen_types(self, screen_types: list[type['ScreenType']]) -> None:
         screen_types.append(Chess960ScreenType)
 
     # ---------------------------------------------------------------------------------
@@ -83,5 +106,7 @@ class Chess960Plugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+    def insert_print_document(
+        self, print_documents: list[type['PrintDocument']]
+    ) -> None:
         print_documents.append(Chess960PrintDocument)

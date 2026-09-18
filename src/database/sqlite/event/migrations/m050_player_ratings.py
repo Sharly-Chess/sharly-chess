@@ -3,7 +3,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `info` ADD `player_rating_type` INTEGER NOT NULL DEFAULT 3'
         )
@@ -33,7 +33,7 @@ class Migration(BaseMigration):
                 (json.dumps(new_ratings), player_id),
             )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('SELECT `id`, `ratings` FROM `player`')
         for row in self.database.fetchall():
             player_id = row['id']

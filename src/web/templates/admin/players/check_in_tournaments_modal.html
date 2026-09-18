@@ -59,7 +59,8 @@
                             'round and will therefore not be paired.'
                         )) }}
                     >
-                        {{ _('Byes *** ZPB, HPB or FPB') }}
+                        {# i18n: a round a player sits out, of any kind: zero-, half- or full-point #}
+                        {{ pgettext('byes column header', 'Byes') }}
                     </th>
                     <th class="text-nowrap text-center">
                         {{ _('Total') }}

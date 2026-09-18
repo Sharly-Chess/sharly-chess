@@ -1,3 +1,4 @@
+from typing import cast
 import os
 import random
 import xml.etree.ElementTree as ET
@@ -8,6 +9,7 @@ import requests
 from requests import Session
 
 from common.logger import get_logger
+from data.event import Event
 from data.tournament import Tournament
 from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
@@ -61,7 +63,7 @@ def _forfeit_code(result: Result) -> str:
             return ''
 
 
-def _upload_federation(event) -> str:
+def _upload_federation(event: Event) -> str:
     """The federation sent to Chess-Results. Setting the
     ``CHESS_RESULTS_TEST`` environment variable forces the ``XXX`` test
     federation, which keeps the upload out of the real country listings."""
@@ -129,8 +131,7 @@ class ChessResultsSession(Session):
         result = root.find('result')
         if result is not None and result.attrib.get('status') == 'OK':
             return result.attrib['key']
-        else:
-            raise RuntimeError('GETKEY failed: ' + resp.text)
+        raise RuntimeError('GETKEY failed: ' + resp.text)
 
     def build_tournament_xml(
         self,
@@ -275,13 +276,17 @@ class ChessResultsSession(Session):
             self._append_team_sections(root, tournament)
             self._append_security(root, sid, tnr, creator_id)
             xml_bytes = ET.tostring(root, encoding='utf-8', xml_declaration=True)
-            return xml_bytes.decode('utf-8')
+            return cast(str, xml_bytes.decode('utf-8'))
 
         # --- Player list ---
         pdata = ET.SubElement(root, 'players')
         prev_tb_values: list[str] | None = None
         tournament.compute_tournament_player_ranks()
+        # Chess-Results publishes the standings, so a player dropped from
+        # them (FIDE 6.6) is not uploaded at all, games included.
         for p in tournament.tournament_players_by_pairing_number.values():
+            if p.is_excluded_from_standings:
+                continue
             # Get up to `MAX_TIE_BREAKS` tiebreak keys (pad with zeros if fewer)
             tb_values: list[str] = []
             for tbv in p.tie_break_values[:MAX_TIE_BREAKS]:
@@ -298,6 +303,8 @@ class ChessResultsSession(Session):
             prev_tb_values = tb_values
 
             ratings = p.ratings.get(tournament.rating)
+            k_factor, k_factor_is_estimated = p.fide_rating_coefficient
+            rating_change = p.fide_rating_change
             ET.SubElement(
                 pdata,
                 'player',
@@ -324,7 +331,12 @@ class ChessResultsSession(Session):
                     'rank': str(p.rank),
                     'pts': str(p.points or 0),
                     'equal': 'J' if same_as_previous else 'N',
-                    'kfaktor': '',
+                    # Only the official coefficient is uploaded: an estimate
+                    # would make Chess-Results show wrong rating changes.
+                    'kfaktor': '' if k_factor_is_estimated else str(k_factor),
+                    'rtgdifference': str(rating_change)
+                    if rating_change is not None
+                    else '',
                     'state': '',
                 }
                 | {f'tb{i + 1}': tb_values[i] for i in range(MAX_TIE_BREAKS)},
@@ -345,6 +357,14 @@ class ChessResultsSession(Session):
             # the positional id there.
             compact_numbering = not tournament.leave_fixed_board_holes
             for board in boards:
+                if any(
+                    player is not None and player.is_excluded_from_standings
+                    for player in (
+                        board.optional_white_tournament_player,
+                        board.black_tournament_player,
+                    )
+                ):
+                    continue
                 table_number = board.number if compact_numbering else board.board_id
                 ET.SubElement(
                     ppair,
@@ -373,6 +393,8 @@ class ChessResultsSession(Session):
                 last_board_id = max(last_board_id, table_number)
 
             for player in tournament.get_unpaired_tournament_players(boards):
+                if player.is_excluded_from_standings:
+                    continue
                 last_board_id += 1
                 result = player.pairings_by_round[round_].result
                 ET.SubElement(
@@ -394,10 +416,10 @@ class ChessResultsSession(Session):
 
         # Return as UTF-8 XML
         xml_bytes = ET.tostring(root, encoding='utf-8', xml_declaration=True)
-        return xml_bytes.decode('utf-8')
+        return cast(str, xml_bytes.decode('utf-8'))
 
     @staticmethod
-    def _append_security(root: ET.Element, sid: str, tnr: str, creator_id: str):
+    def _append_security(root: ET.Element, sid: str, tnr: str, creator_id: str) -> None:
         security = ET.SubElement(root, 'security')
         ET.SubElement(
             security,
@@ -410,7 +432,7 @@ class ChessResultsSession(Session):
             },
         )
 
-    def _append_team_sections(self, root: ET.Element, tournament: Tournament):
+    def _append_team_sections(self, root: ET.Element, tournament: Tournament) -> None:
         """Players, teams, team pairings and per-board player pairings of
         a team-vs-team tournament (Chess-Results types 2/3). Players are
         numbered sequentially grouped by team in roster order — the
@@ -418,11 +440,14 @@ class ChessResultsSession(Session):
         from utils.enum import ScoreType
 
         event = tournament.event
+        # Chess-Results publishes the standings, so a team dropped from
+        # them (FIDE 6.6) is not uploaded at all, matches included.
         teams = sorted(
             (
                 team
                 for team in event.teams_by_id.values()
                 if team.tournament_id == tournament.id
+                and not team.is_excluded_from_standings
             ),
             key=lambda team: (team.pairing_number or 0, team.name.lower()),
         )
@@ -434,8 +459,13 @@ class ChessResultsSession(Session):
 
         # Dense individual ranks by points (the player tie-breaks are team
         # tie-breaks here, meaningless per player — left empty).
+        uploaded_player_ids = {player.id for team in teams for player in team.players}
         ranked = sorted(
-            tournament_players_by_id.values(),
+            (
+                tp
+                for tp in tournament_players_by_id.values()
+                if tp.id in uploaded_player_ids
+            ),
             key=lambda tp: -(tp.points or 0),
         )
         rank_by_id: dict[int, int] = {}
@@ -460,6 +490,10 @@ class ChessResultsSession(Session):
                 ratings = (
                     member_tp.ratings.get(tournament.rating) if member_tp else None
                 )
+                k_factor, k_factor_is_estimated = (
+                    member_tp.fide_rating_coefficient if member_tp else (0, True)
+                )
+                rating_change = member_tp.fide_rating_change if member_tp else None
                 ET.SubElement(
                     pdata,
                     'player',
@@ -485,7 +519,10 @@ class ChessResultsSession(Session):
                         'rank': str(rank_by_id.get(player.id, '')),
                         'pts': str((member_tp.points if member_tp else 0) or 0),
                         'equal': 'N',
-                        'kfaktor': '',
+                        'kfaktor': '' if k_factor_is_estimated else str(k_factor),
+                        'rtgdifference': str(rating_change)
+                        if rating_change is not None
+                        else '',
                         'state': '',
                     }
                     | {f'tb{i + 1}': '' for i in range(MAX_TIE_BREAKS)},
@@ -502,8 +539,10 @@ class ChessResultsSession(Session):
             row = standings_by_team_id.get(team.id)
             tb_values: list[str] = []
             if row:
-                for tbv in row.get('tie_break_values', [])[:MAX_TIE_BREAKS]:
-                    tb_values.append(f'{tbv.value:g}')
+                tb_values.extend(
+                    f'{tbv.value:g}'
+                    for tbv in row.get('tie_break_values', [])[:MAX_TIE_BREAKS]
+                )
             while len(tb_values) < MAX_TIE_BREAKS:
                 tb_values.append('')
             same_as_previous = (
@@ -548,6 +587,10 @@ class ChessResultsSession(Session):
             for team_board in visible_matches:
                 pairing_no = team_board.display_number
                 stb = team_board.stored_team_board
+                if stb.team_a_id not in team_no or (
+                    stb.team_b_id is not None and stb.team_b_id not in team_no
+                ):
+                    continue
                 gp_a, gp_b = team_board.game_points
                 if stb.team_b_id is None:
                     # PAB: full game points to the bye team, no boards

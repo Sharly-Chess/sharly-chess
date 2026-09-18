@@ -8,7 +8,7 @@ from datetime import date, datetime
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Self, cast, ClassVar
 from urllib.parse import quote
 
 from litestar.plugins.htmx import HTMXRequest
@@ -35,29 +35,31 @@ logger: Logger = get_logger()
 
 
 class EventLoader:
-    _valid_event_ids: set[str] = set()
-    _invalid_uniq_ids: set[str] = set()
+    _valid_event_ids: ClassVar[set[str]] = set()
+    _invalid_uniq_ids: ClassVar[set[str]] = set()
     # Event files present on disk but that could not be opened (locked by another
     # program, file sync such as OneDrive, permissions…). Kept apart from
     # _invalid_uniq_ids so they are retried on each scan and recover once the file
     # becomes accessible again.
-    _inaccessible_uniq_ids: set[str] = set()
+    _inaccessible_uniq_ids: ClassVar[set[str]] = set()
     # Last metadata successfully read for each event, reused to display an event
     # that has become inaccessible with its real name and dates.
-    _last_known_metadata: dict[str, EventMetadata] = {}
+    _last_known_metadata: ClassVar[dict[str, EventMetadata]] = {}
 
     @classmethod
-    def get(cls, request: HTMXRequest | None):
+    def get(cls, request: HTMXRequest | None) -> Self:
         if not request:
             return cls()
         event_loader: EventLoader = request.state.get('event_loader', None)
         if not event_loader:
             request.state['event_loader'] = cls()
-        return request.state['event_loader']
+        return cast(Self, request.state['event_loader'])
 
     @classmethod
-    def unload_event(cls, uniq_id: str):
-        cls._valid_event_ids.remove(uniq_id)
+    def unload_event(cls, uniq_id: str) -> None:
+        # An event that was never scanned as valid, or that is held as invalid
+        # or inaccessible, still has to be unloadable.
+        cls._valid_event_ids.discard(uniq_id)
         cls.load_event_ids()
 
     @classmethod
@@ -168,7 +170,7 @@ class EventLoader:
         return EventDatabase.event_database_path(uniq_id)
 
     @classmethod
-    def _clean_not_existing_event_database_files(cls, event_uniq_ids: set[str]):
+    def _clean_not_existing_event_database_files(cls, event_uniq_ids: set[str]) -> None:
         to_remove = [
             uniq_id
             for uniq_id in event_uniq_ids
@@ -225,16 +227,14 @@ class EventLoader:
         try:
             self.load_event_ids(uniq_id)
             with EventDatabase(uniq_id) as event_database:
-                event = Event(event_database.load_stored_event())
-            return event
+                return Event(event_database.load_stored_event())
         finally:
             record_event_load(perf_counter() - start)
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
         with EventDatabase(uniq_id) as database:
-            event_metadata = database.load_stored_event_metadata()
-        return event_metadata
+            return database.load_stored_event_metadata()
 
     @classmethod
     def get_events_metadata(
@@ -325,7 +325,7 @@ class Archive:
     date: datetime
 
     @property
-    def date_str(self):
+    def date_str(self) -> str:
         return format_datetime(self.date)
 
     @property
@@ -353,7 +353,9 @@ class ArchiveLoader:
     def get_sorted_archives() -> list[Archive]:
         return sorted(
             [
-                Archive(file, file.stem, datetime.fromtimestamp(file.lstat().st_ctime))
+                Archive(
+                    file, file.stem, datetime.fromtimestamp(file.lstat().st_birthtime)
+                )
                 for file in ARCHIVES_DIR.glob(f'*.{Extension.ARCHIVE}')
             ],
             key=lambda archive: archive.date,
@@ -391,7 +393,7 @@ class EventBackup:
     def exists(self) -> bool:
         return self.file.exists()
 
-    def restore(self):
+    def restore(self) -> None:
         """Restores the backup of the event. If another event
         with the same name exists, overwrites it"""
         assert self.exists
@@ -401,7 +403,7 @@ class EventBackup:
 class EventBackupLoader:
     """This class helps loading backups (copied events)."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         BACKUP_BASE_DIR.mkdir(exist_ok=True, parents=True)
 
     @staticmethod

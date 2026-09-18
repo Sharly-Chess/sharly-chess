@@ -46,9 +46,9 @@ class HandicapGamesTournamentPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            penalty_step=stored_value.get('penalty_step', None),
-            penalty_value=stored_value.get('penalty_value', None),
-            min_time=stored_value.get('min_time', None),
+            penalty_step=stored_value.get('penalty_step'),
+            penalty_value=stored_value.get('penalty_value'),
+            min_time=stored_value.get('min_time'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:

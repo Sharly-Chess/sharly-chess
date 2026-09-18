@@ -161,7 +161,7 @@ class RuleSet(IdentifiableEntity, ABC):
         if not fields:
             return []
         return [
-            dict(zip((f.id for f in fields), values))
+            dict(zip((f.id for f in fields), values, strict=True))
             for values in product(*(f.values() for f in fields))
         ]
 
