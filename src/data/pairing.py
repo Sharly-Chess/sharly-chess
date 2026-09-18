@@ -32,7 +32,7 @@ class Pairing:
         stored_pairing: StoredPairing,
         exists: bool = True,
     ):
-        self._tournament_player_ref: 'ReferenceType[TournamentPlayer]' = weakref.ref(
+        self._tournament_player_ref: ReferenceType[TournamentPlayer] = weakref.ref(
             tournament_player
         )
         self.stored_pairing = stored_pairing
@@ -80,18 +80,18 @@ class Pairing:
     def illegal_moves(self) -> int:
         return self.stored_pairing.illegal_moves
 
-    def update_result(self, event_database: EventDatabase, result: Result):
+    def update_result(self, event_database: EventDatabase, result: Result) -> None:
         self.stored_pairing.result = result.value
         self.update(event_database)
 
-    def update(self, event_database: EventDatabase):
+    def update(self, event_database: EventDatabase) -> None:
         if self.exists:
             event_database.update_stored_pairing(self.stored_pairing)
         else:
             event_database.add_stored_pairing(self.stored_pairing)
             self.exists = True
 
-    def add_illegal_move(self, event_database: EventDatabase):
+    def add_illegal_move(self, event_database: EventDatabase) -> bool:
         if self.illegal_moves < self.tournament_player.tournament.record_illegal_moves:
             self.stored_pairing.illegal_moves += 1
             self.update(event_database)
@@ -102,7 +102,7 @@ class Pairing:
             return True
         return False
 
-    def delete_illegal_move(self, event_database: EventDatabase):
+    def delete_illegal_move(self, event_database: EventDatabase) -> bool:
         if self.illegal_moves > 0:
             self.stored_pairing.illegal_moves -= 1
             self.update(event_database)
@@ -111,12 +111,11 @@ class Pairing:
                 self.tournament_player.id,
             )
             return True
-        else:
-            logger.info(
-                'No illegal move found for player [%s].',
-                self.tournament_player.id,
-            )
-            return False
+        logger.info(
+            'No illegal move found for player [%s].',
+            self.tournament_player.id,
+        )
+        return False
 
     @property
     def zero_point_bye(self) -> bool:
@@ -273,7 +272,7 @@ class Pairing:
             return board.black_tournament_player
         return board.optional_white_tournament_player
 
-    def fide_rating_change(self, k_factor: int):
+    def fide_rating_change(self, k_factor: int) -> 'RatingChange':
         tournament_player = self.tournament_player
         opponent = self.opponent
         if self.unplayed:
@@ -357,8 +356,8 @@ class Pairing:
             return board.stored_board.black_player_id
         return board.stored_board.white_player_id
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(player={self.tournament_player!r}, stored_pairing={self.stored_pairing!r}, exists={self.exists!r})'

@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from database.sqlite.migration import BaseMigration
 
@@ -32,11 +32,11 @@ _PLUGIN_TIMESTAMP_KEYS = [
 # - Ensures backward migration correctness: SQLite strftime('%s') treats text as UTC
 # - Allows datetime.fromisoformat() to parse as UTC-aware datetime
 class Migration(BaseMigration):
-    def _drop_all_triggers(self):
-        for trigger in _TIMESTAMP_TRIGGERS + [_DIRTY_FLAG_TRIGGER]:
+    def _drop_all_triggers(self) -> None:
+        for trigger in [*_TIMESTAMP_TRIGGERS, _DIRTY_FLAG_TRIGGER]:
             self.database.execute(f'DROP TRIGGER IF EXISTS `{trigger}`')
 
-    def _convert_column_to_text(self, table: str, column: str, nullable: bool):
+    def _convert_column_to_text(self, table: str, column: str, nullable: bool) -> None:
         """Rename FLOAT column → _old, add TEXT column, copy converted data, drop _old."""
         old = f'_{column}_old'
         self.database.execute(
@@ -55,7 +55,7 @@ class Migration(BaseMigration):
         )
         self.database.execute(f'ALTER TABLE `{table}` DROP COLUMN `{old}`')
 
-    def _convert_column_to_float(self, table: str, column: str, nullable: bool):
+    def _convert_column_to_float(self, table: str, column: str, nullable: bool) -> None:
         """Rename TEXT column → _old, add FLOAT column, copy converted data, drop _old."""
         old = f'_{column}_old'
         self.database.execute(
@@ -76,7 +76,7 @@ class Migration(BaseMigration):
         )
         self.database.execute(f'ALTER TABLE `{table}` DROP COLUMN `{old}`')
 
-    def _recreate_timestamp_triggers_iso(self):
+    def _recreate_timestamp_triggers_iso(self) -> None:
         self.database.execute(
             """
             CREATE TRIGGER IF NOT EXISTS
@@ -181,7 +181,7 @@ class Migration(BaseMigration):
             """
         )
 
-    def _recreate_timestamp_triggers_float(self):
+    def _recreate_timestamp_triggers_float(self) -> None:
         self.database.execute(
             """
             CREATE TRIGGER IF NOT EXISTS
@@ -278,7 +278,7 @@ class Migration(BaseMigration):
             """
         )
 
-    def _recreate_dirty_flag_trigger(self):
+    def _recreate_dirty_flag_trigger(self) -> None:
         self.database.execute(
             """
             CREATE TRIGGER IF NOT EXISTS
@@ -295,7 +295,7 @@ class Migration(BaseMigration):
             """
         )
 
-    def _convert_timer_hour_triggered_at_to_iso(self):
+    def _convert_timer_hour_triggered_at_to_iso(self) -> None:
         """Convert timer_hour.triggered_at from local %Y-%m-%dT%H:%M TEXT to UTC ISO TEXT."""
         self.database.execute('SELECT `id`, `triggered_at` FROM `timer_hour`')
         rows = list(self.database.fetchall())
@@ -305,7 +305,7 @@ class Migration(BaseMigration):
                 continue
             try:
                 local_dt = datetime.strptime(value, '%Y-%m-%dT%H:%M')
-                iso = local_dt.astimezone(timezone.utc).isoformat(
+                iso = local_dt.astimezone(UTC).isoformat(
                     sep=' ', timespec='milliseconds'
                 )
                 self.database.execute(
@@ -315,7 +315,7 @@ class Migration(BaseMigration):
             except ValueError:
                 pass
 
-    def _convert_timer_hour_triggered_at_to_local_text(self):
+    def _convert_timer_hour_triggered_at_to_local_text(self) -> None:
         """Convert timer_hour.triggered_at from UTC ISO TEXT back to local %Y-%m-%dT%H:%M TEXT."""
         self.database.execute('SELECT `id`, `triggered_at` FROM `timer_hour`')
         rows = list(self.database.fetchall())
@@ -334,7 +334,7 @@ class Migration(BaseMigration):
             except ValueError:
                 pass
 
-    def _convert_plugin_timestamps_to_iso(self):
+    def _convert_plugin_timestamps_to_iso(self) -> None:
         """Convert epoch floats to UTC ISO TEXT in plugin_data JSON timestamps."""
         self.database.execute('SELECT `id`, `plugin_data` FROM `tournament`')
         rows = self.database.fetchall()
@@ -348,9 +348,9 @@ class Migration(BaseMigration):
                     continue
                 value = plugin.get(ts_key)
                 if isinstance(value, (int, float)) and value > 0:
-                    plugin[ts_key] = datetime.fromtimestamp(
-                        value, tz=timezone.utc
-                    ).isoformat(sep=' ', timespec='milliseconds')
+                    plugin[ts_key] = datetime.fromtimestamp(value, tz=UTC).isoformat(
+                        sep=' ', timespec='milliseconds'
+                    )
                     changed = True
             if changed:
                 self.database.execute(
@@ -358,7 +358,7 @@ class Migration(BaseMigration):
                     (json.dumps(plugin_data), tournament_id),
                 )
 
-    def _convert_plugin_timestamps_to_float(self):
+    def _convert_plugin_timestamps_to_float(self) -> None:
         """Convert UTC ISO TEXT back to epoch floats in plugin_data JSON timestamps."""
         self.database.execute('SELECT `id`, `plugin_data` FROM `tournament`')
         rows = self.database.fetchall()
@@ -383,7 +383,7 @@ class Migration(BaseMigration):
                     (json.dumps(plugin_data), tournament_id),
                 )
 
-    def forward(self):
+    def forward(self) -> None:
         # Drop all triggers (required before renaming columns they reference)
         self._drop_all_triggers()
 
@@ -409,7 +409,7 @@ class Migration(BaseMigration):
         self._recreate_timestamp_triggers_iso()
         self._recreate_dirty_flag_trigger()
 
-    def backward(self):
+    def backward(self) -> None:
         # Drop all triggers
         self._drop_all_triggers()
 

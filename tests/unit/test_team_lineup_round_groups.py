@@ -24,6 +24,7 @@ from database.sqlite.event.event_store import (
 from tests.test_config import TestUtils
 from utils.enum import EventType, Result
 from web.controllers.admin.team_admin_controller import TeamAdminController
+import contextlib
 
 
 EVENT_ID = 'test-team-lineup-round-groups'
@@ -105,10 +106,8 @@ class TeamLineupRoundGroupsTestCase(TestCase):
                 self.player_ids.append(ids)
 
     def _load(self) -> Tournament:
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         # A Tournament holds its event weakly, so the event has to
         # outlive this call.
         self._event = EventLoader().load_event(EVENT_ID)

@@ -45,7 +45,7 @@ faithful re-implementation in any language can reproduce exactly.
 
 from __future__ import annotations
 
-from functools import lru_cache
+from functools import lru_cache, cache
 from heapq import heappop, heappush
 from itertools import combinations, permutations, product
 
@@ -77,7 +77,7 @@ class MolterGenerationError(Exception):
     requested shape."""
 
 
-@lru_cache(maxsize=None)
+@cache
 def _letter(team_index: int) -> str:
     if team_index < len(_TEAM_LETTERS):
         return _TEAM_LETTERS[team_index]
@@ -336,7 +336,7 @@ def _pair_flip_colour_relaxed_s5(
         )
         next_states: dict[int, tuple[int, int]] = {}
         for state in states:
-            for flip, (packed, sparse) in enumerate(packed_choices):
+            for flip, (packed, _sparse) in enumerate(packed_choices):
                 next_state = state + packed
                 feasible = True
                 for team in range(team_count):
@@ -495,7 +495,7 @@ def _sequence_with_colour(
 ) -> tuple[int, ...]:
     if sequence[round_index] == colour:
         return sequence
-    return sequence[:round_index] + (colour,) + sequence[round_index + 1 :]
+    return (*sequence[:round_index], colour, *sequence[round_index + 1 :])
 
 
 def _colour_choice_cost(
@@ -962,7 +962,7 @@ def _pair_flip_round_order(
     if round_count > 16:
         return greedy_order()
 
-    @lru_cache(maxsize=None)
+    @cache
     def search(remaining: tuple[int, ...]) -> tuple[int, ...] | None:
         if len(remaining) <= 1:
             return remaining
@@ -1781,8 +1781,7 @@ def _one_odd_initial_factors(
     edge_factor = {
         edge: permutation[_one_odd_length_factor(team_count, edge)] for edge in edges
     }
-    for edge, factor in prescribed.items():
-        edge_factor[edge] = factor
+    edge_factor.update(prescribed)
 
     degrees = [[0] * team_count for _factor in range(half)]
     for (first, second), factor in edge_factor.items():
@@ -2060,7 +2059,7 @@ def _one_odd_repair_factors(
     return None
 
 
-@lru_cache(maxsize=None)
+@cache
 def _one_odd_factorization(
     team_count: int,
 ) -> tuple[tuple[tuple[int, int], ...], ...] | None:
@@ -2166,10 +2165,14 @@ def _one_odd_cell_matches(
         path = list(reversed(path))
 
     out: list[_Match] = [((path[-1], odd_slot), (path[0], even_slot))]
-    for index in range(0, len(path) - 1, 2):
-        out.append(((path[index], odd_slot), (path[index + 1], odd_slot)))
-    for index in range(1, len(path) - 1, 2):
-        out.append(((path[index], even_slot), (path[index + 1], even_slot)))
+    out.extend(
+        ((path[index], odd_slot), (path[index + 1], odd_slot))
+        for index in range(0, len(path) - 1, 2)
+    )
+    out.extend(
+        ((path[index], even_slot), (path[index + 1], even_slot))
+        for index in range(1, len(path) - 1, 2)
+    )
 
     for component in components:
         if component == dropped_component:
@@ -2179,17 +2182,14 @@ def _one_odd_cell_matches(
             # Shift parity so round two uses the alternate matching on each
             # adjacent board; reversing alone preserves parity on even cycles.
             cycle = cycle[1:] + cycle[:1]
-        for index in range(0, len(cycle), 2):
-            out.append(
-                ((cycle[index], odd_slot), (cycle[(index + 1) % len(cycle)], odd_slot))
-            )
-        for index in range(1, len(cycle), 2):
-            out.append(
-                (
-                    (cycle[index], even_slot),
-                    (cycle[(index + 1) % len(cycle)], even_slot),
-                )
-            )
+        out.extend(
+            ((cycle[index], odd_slot), (cycle[(index + 1) % len(cycle)], odd_slot))
+            for index in range(0, len(cycle), 2)
+        )
+        out.extend(
+            ((cycle[index], even_slot), (cycle[(index + 1) % len(cycle)], even_slot))
+            for index in range(1, len(cycle), 2)
+        )
     return out
 
 
@@ -2959,11 +2959,12 @@ def _one_odd_spread_partial_block_options(
                 search_passes=2,
             )
             score = (
-                (_floater_role_excess(matches),)
-                + _match_prefix_spread_score(
+                _floater_role_excess(matches),
+                *_match_prefix_spread_score(
                     matches, team_count, layer_players_per_team
-                )
-                + (offsets, salt)
+                ),
+                offsets,
+                salt,
             )
             scored.append((score, matches))
     scored.sort(key=lambda item: item[0])
@@ -3013,7 +3014,7 @@ def _combine_shifted_layers(
     rounds: int,
 ) -> list[list[_Match]]:
     out: list[list[_Match]] = [[] for _round in range(rounds)]
-    for matches, shift in zip(layer_matches, shifts):
+    for matches, shift in zip(layer_matches, shifts, strict=False):
         shifted_matches = _shift_layer_teams(matches, team_count, shift)
         for round_index, rnd in enumerate(shifted_matches):
             out[round_index].extend(rnd)
@@ -3060,7 +3061,7 @@ def _best_layer_shift(
         final_up = [
             initial_up[team] + shifted_up[team] for team in range(len(down_incidence))
         ]
-        score = _floater_balance_score(final_down, final_up) + (shift,)
+        score = (*_floater_balance_score(final_down, final_up), shift)
         if best is None or score < best[0]:
             best = score, shift, shifted_down, shifted_up
     assert best is not None
@@ -3091,7 +3092,7 @@ def _optimise_layer_shifts(
     ) -> tuple[int, int, int, int, int, tuple[int, ...], tuple[int, ...]]:
         down_counts = [0] * team_count
         up_counts = [0] * team_count
-        for incidence, shift in zip(incidences, shifts):
+        for incidence, shift in zip(incidences, shifts, strict=False):
             down_incidence, up_incidence = incidence
             shifted_down = _shift_team_counts(down_incidence, shift)
             shifted_up = _shift_team_counts(up_incidence, shift)
@@ -3235,9 +3236,10 @@ def _select_odd_layer_matches(
             )
             if _floater_role_excess(matches):
                 continue
-            score = _match_prefix_spread_score(
-                matches, team_count, players_per_team
-            ) + (shifts,)
+            score = (
+                *_match_prefix_spread_score(matches, team_count, players_per_team),
+                shifts,
+            )
             scored.append((score, matches, option_indices))
     scored.sort(key=lambda item: item[0])
 
@@ -3460,7 +3462,7 @@ def _colour_complete_i1_matches(
 # ---------- complete even tables (P = k × (N - 1), per-round I1) ----------
 
 
-@lru_cache(maxsize=None)
+@cache
 def _one_factorization(team_count: int) -> tuple[tuple[tuple[int, int], ...], ...]:
     """1-factorization of ``K_N`` for even ``N`` (circle method): ``N - 1``
     perfect matchings whose edge sets partition every team pair. Team
@@ -3470,13 +3472,15 @@ def _one_factorization(team_count: int) -> tuple[tuple[tuple[int, int], ...], ..
     factors: list[tuple[tuple[int, int], ...]] = []
     for b in range(ring):
         matching: list[tuple[int, int]] = [_team_edge(pivot, b)]
-        for i in range(1, team_count // 2):
-            matching.append(_team_edge((b + i) % ring, (b - i) % ring))
+        matching.extend(
+            _team_edge((b + i) % ring, (b - i) % ring)
+            for i in range(1, team_count // 2)
+        )
         factors.append(tuple(sorted(matching)))
     return tuple(factors)
 
 
-@lru_cache(maxsize=None)
+@cache
 def _even_factor_rows(
     factor_count: int, players_per_team: int, rounds: int
 ) -> tuple[tuple[int, ...], ...]:
@@ -3514,7 +3518,7 @@ def _even_factor_rows(
     return tuple(rows)
 
 
-@lru_cache(maxsize=None)
+@cache
 def _even_partial_factor_plan(
     factor_count: int, slot_count: int, rounds: int
 ) -> tuple[tuple[int, ...], ...]:
@@ -3591,7 +3595,7 @@ def _even_partial_factor_plan(
     return tuple(tuple(row) for row in rows)
 
 
-@lru_cache(maxsize=None)
+@cache
 def _even_prefix_balanced_factor_rows(
     factor_count: int, players_per_team: int, rounds: int
 ) -> tuple[tuple[int, ...], ...]:
@@ -3610,7 +3614,7 @@ def _even_prefix_balanced_factor_rows(
     return tuple(rows)
 
 
-@lru_cache(maxsize=None)
+@cache
 def _even_pair_balanced_factor_rows(
     factor_count: int, players_per_team: int, rounds: int
 ) -> tuple[tuple[int, ...], ...]:
@@ -3792,7 +3796,7 @@ def _even_i1_first_rows_from_salt(
     return tuple(tuple(row) for row in rows)
 
 
-@lru_cache(maxsize=None)
+@cache
 def _even_i1_first_factor_row_candidates(
     factor_count: int, players_per_team: int, rounds: int
 ) -> tuple[tuple[tuple[int, ...], ...], ...]:
@@ -4013,7 +4017,7 @@ def default_molter_rounds(team_count: int) -> int:
     return min(2, team_count - 1)
 
 
-@lru_cache(maxsize=None)
+@cache
 def generate_molter_table(
     team_count: int,
     players_per_team: int,

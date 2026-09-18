@@ -18,7 +18,7 @@ future phases.
 """
 
 from abc import ABC
-from typing import override, TYPE_CHECKING
+from typing import override, TYPE_CHECKING, cast
 
 from common.i18n import _, ngettext
 from data.pairings.fixed_table import FixedPairingTable, TablePairing as P
@@ -587,7 +587,7 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
 
     @property
     def phase(self) -> str:
-        return self.config_value('phase')
+        return cast(str, self.config_value('phase'))
 
     @property
     @override
@@ -700,7 +700,7 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
 
     @property
     def division(self) -> str:
-        return self.config_value('division')
+        return cast(str, self.config_value('division'))
 
     @property
     def is_nationale_2(self) -> bool:
@@ -825,7 +825,7 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
 
     @property
     def phase(self) -> str:
-        return self.config_value('phase')
+        return cast(str, self.config_value('phase'))
 
     @property
     @override

@@ -147,7 +147,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             filter_conditions
-            + list(map(lambda condition: f'({condition})', token_conditions.values()))
+            + [f'({condition})' for condition in token_conditions.values()]
         )
 
         # We build one CASE block that sorts best → worst
@@ -205,8 +205,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         self.execute(f'SELECT * FROM `player` WHERE {field} = ?', (id_,))
         if row := self.fetchone():
             return self.get_stored_player_from_row(row)
-        else:
-            return None
+        return None
 
     def get_stored_player_by_ffe_id(
         self,
@@ -278,7 +277,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             club: str = filters['club_filter']
             conditions.append('LOWER(club) LIKE LOWER(?)')
             params.append(f'%{club}%')
-        if filters.get('year_of_birth_filter', None):
+        if filters.get('year_of_birth_filter'):
             age_conditions: list[str] = []
             for min_year, max_year in filters['year_of_birth_filter']:
                 match min_year, max_year:

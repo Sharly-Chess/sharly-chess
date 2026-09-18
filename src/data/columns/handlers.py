@@ -1,5 +1,6 @@
 from functools import partial
-from typing import Callable, Collection, TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional
+from collections.abc import Callable, Collection
 
 from data.columns import player_table as pt, board_table as bt
 from data.columns.board_table import BoardColumn
@@ -258,7 +259,7 @@ class PlayersTabColumnHandler:
         self,
         disabled_column_ids: list[str],
         hidden_column_ids: list[str] | None = None,
-    ):
+    ) -> None:
         for column in self.columns:
             column.is_enabled = column.id not in disabled_column_ids
             column.is_visible = (
@@ -349,11 +350,13 @@ class PlayerDatasheetColumnHandler:
         rating_types: list[PlayerRatingType] | None = None,
     ) -> list[DatasheetColumn]:
         if rating_types is None:
-            rating_types = [rating for rating in PlayerRatingType]
+            rating_types = list(PlayerRatingType)
         columns: list[DatasheetColumn] = [pds.RatingColumn(), pds.RatingTypeColumn()]
-        for tournament_type in TournamentRating:
-            for rating_type in rating_types:
-                columns.append(pds.TypedRatingColumn(tournament_type, rating_type))
+        columns.extend(
+            pds.TypedRatingColumn(tournament_type, rating_type)
+            for tournament_type in TournamentRating
+            for rating_type in rating_types
+        )
         return columns
 
     @property

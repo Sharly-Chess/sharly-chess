@@ -2,7 +2,8 @@ import re
 from contextlib import suppress
 from logging import Logger
 from pathlib import Path
-from typing import Iterator, Any, override
+from typing import Any, override
+from collections.abc import Iterator
 
 from packaging.version import Version
 
@@ -76,7 +77,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'SELECT DISTINCT federation FROM `player` ORDER BY `federation`',
             (),
         )
-        yield from map(lambda row: row['federation'], self.fetchall())
+        yield from (row['federation'] for row in self.fetchall())
 
     @staticmethod
     def _get_player_from_row(row: dict[str, Any]) -> StoredPlayer:
@@ -137,7 +138,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             token_conditions[token] = ' OR '.join(expressions)
         conditions: str = ' AND '.join(
             filter_conditions
-            + list(map(lambda condition: f'({condition})', token_conditions.values()))
+            + [f'({condition})' for condition in token_conditions.values()]
         )
 
         # We build one CASE block that sorts best → worst
@@ -225,7 +226,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
         if 'gender_filter' in filters:
             conditions.append('gender = ?')
             params.append(filters['gender_filter'])
-        if filters.get('year_of_birth_filter', None):
+        if filters.get('year_of_birth_filter'):
             age_conditions: list[str] = []
             for min_year, max_year in filters['year_of_birth_filter']:
                 match min_year, max_year:

@@ -35,7 +35,9 @@ class ProfileWebContext(BaseEventAdminWebContext):
 
 
 class ProfileController(BaseController):
-    guards = [EventGuard()]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [EventGuard()]  # noqa: RUF012
 
     @classmethod
     def _render_profile_modal(
@@ -98,8 +100,6 @@ class ProfileController(BaseController):
         web_context = ProfileWebContext(request)
 
         errors: dict[str, str] = {}
-        if data is None:
-            data = {}
         field: str
         account_id: int | None = WebContext.form_data_to_int(
             data, field := 'account_id'

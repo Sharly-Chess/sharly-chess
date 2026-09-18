@@ -3,7 +3,9 @@ from enum import Enum, auto
 from typing import Any
 
 
-class Column[T](ABC):
+# The methods all have a default, so there is nothing to declare abstract; ABC
+# marks the class as a base that is not meant to be instantiated on its own.
+class Column[T](ABC):  # noqa: B024
     @property
     def grid_column_template(self) -> str:
         """The width definition of the content as used by grid-template-columns"""

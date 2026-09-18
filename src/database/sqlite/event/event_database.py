@@ -5,7 +5,8 @@ from collections.abc import Iterator
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
-from typing import Any, TYPE_CHECKING, Sequence, override, cast
+from typing import Any, TYPE_CHECKING, override, cast
+from collections.abc import Sequence
 
 from packaging.version import Version
 
@@ -90,7 +91,7 @@ class EventDatabase(MigrationDatabase):
             file_path = self.event_database_path(self.uniq_id)
         super().__init__(file_path, write, enable_foreign_keys=enable_foreign_keys)
 
-    def __exit__(self, exc_type, exc_value, tb):
+    def __exit__(self, exc_type: Any, exc_value: Any, tb: Any) -> None:
         dirty_tournaments: list[StoredTournament] = []
         stored_event: StoredEvent | None = None
 
@@ -137,8 +138,12 @@ class EventDatabase(MigrationDatabase):
     def migration_managers(self) -> list['DatabaseMigrationManager']:
         from database.sqlite.migration import DatabaseMigrationManager
 
-        return [DatabaseMigrationManager(self, migrations)] + (
-            plugin_manager.hook.get_event_migration_manager(event_database=self)
+        return cast(
+            list[DatabaseMigrationManager],
+            [
+                DatabaseMigrationManager(self, migrations),
+                *plugin_manager.hook.get_event_migration_manager(event_database=self),
+            ],
         )
 
     @property
@@ -174,7 +179,7 @@ class EventDatabase(MigrationDatabase):
         return f'Database [{self.uniq_id}] - '
 
     @override
-    def upgrade(self):
+    def upgrade(self) -> None:
         if DEVEL_ENV:
             with self.get_migration_instance() as database:
                 if database.is_metadata_table_installed():
@@ -204,7 +209,7 @@ class EventDatabase(MigrationDatabase):
         EventLoader.unload_event(self.uniq_id)
         return arch_file
 
-    def rename(self, new_uniq_id: str):
+    def rename(self, new_uniq_id: str) -> None:
         """Changes the event file database to the one associated to the
         provided `new_uniq_id`."""
 
@@ -213,7 +218,7 @@ class EventDatabase(MigrationDatabase):
         self.file.rename(EventDatabase(new_uniq_id).file)
         EventLoader.unload_event(self.uniq_id)
 
-    def clone(self, new_uniq_id: str):
+    def clone(self, new_uniq_id: str) -> None:
         """Create a copy of the event database file corresponding to an event
         with name `new_uniq_id`."""
 
@@ -234,22 +239,22 @@ class EventDatabase(MigrationDatabase):
     # ---------------------------------------------------------------------------------
 
     @classmethod
-    def dump_to_json_database_timer_colors(cls, colors) -> str | None:
+    def dump_to_json_database_timer_colors(cls, colors: Any) -> str | None:
         """Serializes the timer colors into JSON.
         By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
-        return cls.dump_to_json_database_field(colors, {i: None for i in range(1, 4)})
+        return cls.dump_to_json_database_field(colors, dict.fromkeys(range(1, 4)))
 
     @classmethod
-    def dump_to_json_database_timer_delays(cls, delays) -> str | None:
+    def dump_to_json_database_timer_delays(cls, delays: Any) -> str | None:
         """Serializes the timer delays into JSON.
         By default, returns a serialization of {i: None} (i in (1, 2, 3))."""
-        return cls.dump_to_json_database_field(delays, {i: None for i in range(1, 4)})
+        return cls.dump_to_json_database_field(delays, dict.fromkeys(range(1, 4)))
 
     # ---------------------------------------------------------------------------------
     # Plugin metadata
     # ---------------------------------------------------------------------------------
 
-    def create_plugin_metadata_table(self):
+    def create_plugin_metadata_table(self) -> None:
         self.execute(
             'CREATE TABLE IF NOT EXISTS `plugin_metadata` ('
             '   `name` TEXT NOT NULL,'
@@ -263,7 +268,7 @@ class EventDatabase(MigrationDatabase):
         self.execute('SELECT 1 FROM `plugin_metadata` WHERE `name` = ?', (plugin_id,))
         return '1' in self.fetchone()
 
-    def insert_plugin_metadata(self, plugin_id: str, version: Version):
+    def insert_plugin_metadata(self, plugin_id: str, version: Version) -> None:
         self.execute(
             'INSERT INTO `plugin_metadata` (`name`, `version`) VALUES (?, ?)',
             (plugin_id, str(version)),
@@ -273,9 +278,9 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'SELECT `migration` FROM `plugin_metadata` WHERE `name` = ?', (plugin_id,)
         )
-        return self.fetchone()['migration']
+        return cast(str, self.fetchone()['migration'])
 
-    def set_plugin_migration(self, plugin_id: str, migration: str):
+    def set_plugin_migration(self, plugin_id: str, migration: str) -> None:
         self.execute(
             'UPDATE `plugin_metadata` SET `migration` = ? WHERE `name` = ?',
             (migration, plugin_id),
@@ -287,7 +292,7 @@ class EventDatabase(MigrationDatabase):
         )
         return Version(self.fetchone()['version'])
 
-    def set_plugin_version(self, plugin_id: str, version: Version):
+    def set_plugin_version(self, plugin_id: str, version: Version) -> None:
         self.execute(
             'UPDATE `plugin_metadata` SET `version` = ? WHERE `name` = ?',
             (str(version), plugin_id),
@@ -386,7 +391,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_event(
         self,
         stored_event: StoredEvent,
-    ):
+    ) -> None:
         """Updates the event database with the information in the provided `stored_event`."""
         fields = self._get_fields_dict(
             stored_event,
@@ -431,12 +436,12 @@ class EventDatabase(MigrationDatabase):
             'tag_ids': self.dump_to_json_database_field(stored_event.tag_ids, []),
         }
 
-        field_sets = (f'`{f}` = ?' for f in fields.keys())
+        field_sets = (f'`{f}` = ?' for f in fields)
         self.execute(
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(fields.values())
         )
 
-    def delete_all_tags(self):
+    def delete_all_tags(self) -> None:
         """Drops the tags of the event. Tag ids only mean something within
         the installation that defined them, so they are stripped whenever
         the event database leaves it (export) or enters it (import)."""
@@ -492,13 +497,13 @@ class EventDatabase(MigrationDatabase):
             ),
         }
 
-    def update_stored_timer_hour(self, stored_timer_hour: StoredTimerHour):
+    def update_stored_timer_hour(self, stored_timer_hour: StoredTimerHour) -> None:
         fields = self._get_stored_timer_hour_fields(stored_timer_hour)
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_timer_hour.id is not None
         self.execute(
             f'UPDATE `timer_hour` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_timer_hour.id,),
+            (*tuple(fields.values()), stored_timer_hour.id),
         )
 
     def add_stored_timer_hour(self, stored_timer_hour: StoredTimerHour) -> int:
@@ -514,7 +519,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Timer hour insertion failed')
         return id_
 
-    def delete_stored_timer_hour(self, timer_hour_id: int):
+    def delete_stored_timer_hour(self, timer_hour_id: int) -> None:
         self.execute('DELETE FROM `timer_hour` WHERE `id` = ?', (timer_hour_id,))
 
     # ---------------------------------------------------------------------------------
@@ -575,7 +580,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Timer insertion failed')
         return timer_id
 
-    def update_stored_timer(self, stored_timer: StoredTimer):
+    def update_stored_timer(self, stored_timer: StoredTimer) -> None:
         fields = {
             'name': stored_timer.name,
             'colors': self.dump_to_json_database_timer_colors(stored_timer.colors),
@@ -585,10 +590,10 @@ class EventDatabase(MigrationDatabase):
         assert stored_timer.id is not None
         self.execute(
             f'UPDATE `timer` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_timer.id,),
+            (*tuple(fields.values()), stored_timer.id),
         )
 
-    def delete_stored_timer(self, timer_id: int):
+    def delete_stored_timer(self, timer_id: int) -> None:
         self.execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
 
     # ---------------------------------------------------------------------------------
@@ -621,7 +626,7 @@ class EventDatabase(MigrationDatabase):
 
     @classmethod
     def _row_to_stored_tournament(cls, row: dict[str, Any]) -> StoredTournament:
-        stored_tournament = StoredTournament(
+        return StoredTournament(
             id=row['id'],
             name=row['name'],
             index=row['index'],
@@ -684,8 +689,6 @@ class EventDatabase(MigrationDatabase):
                 row['round_robin_participation_rule']
             ),
         )
-
-        return stored_tournament
 
     @staticmethod
     def _load_int_keyed_float_dict_from_db(
@@ -826,16 +829,16 @@ class EventDatabase(MigrationDatabase):
         )
         return tournament_id
 
-    def update_stored_tournament(self, stored_tournament: StoredTournament):
+    def update_stored_tournament(self, stored_tournament: StoredTournament) -> None:
         fields = self._get_tournament_fields_dict(stored_tournament)
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_tournament.id is not None
         self.execute(
             f'UPDATE `tournament` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_tournament.id,),
+            (*tuple(fields.values()), stored_tournament.id),
         )
 
-    def _delete_exclusive_players(self, tournament_id: int):
+    def _delete_exclusive_players(self, tournament_id: int) -> None:
         """Delete the players a tournament holds that no other tournament
         holds too. Players belong to the event, so one entered in several
         tournaments has to survive losing this one.
@@ -864,14 +867,16 @@ class EventDatabase(MigrationDatabase):
             (tournament_id, tournament_id, tournament_id, tournament_id),
         )
 
-    def delete_stored_tournament(self, tournament_id: int):
+    def delete_stored_tournament(self, tournament_id: int) -> None:
         # Teams cascade with the tournament (see the `team` foreign key).
         # The players have to be found first, while the rows tying them
         # to the tournament still exist.
         self._delete_exclusive_players(tournament_id)
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
-    def set_tournament_check_in_open(self, tournament_id: int, check_in_open: bool):
+    def set_tournament_check_in_open(
+        self, tournament_id: int, check_in_open: bool
+    ) -> None:
         self.execute(
             'UPDATE `tournament` SET `check_in_open` = ? WHERE `id` = ?',
             (check_in_open, tournament_id),
@@ -879,7 +884,7 @@ class EventDatabase(MigrationDatabase):
 
     def set_tournament_pairing_settings(
         self, tournament_id: int, pairing_settings: dict[str, Any]
-    ):
+    ) -> None:
         self.execute(
             'UPDATE `tournament` SET '
             '`pairing_settings` = ?, `last_update` = ? '
@@ -893,7 +898,7 @@ class EventDatabase(MigrationDatabase):
 
     def set_tournament_current_round(
         self, tournament_id: int, current_round: int | None
-    ):
+    ) -> None:
         self.execute(
             'UPDATE `tournament` SET '
             '`current_round` = ?, `last_update` = ? '
@@ -948,7 +953,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_tie_break(
         self,
         stored_tie_break: StoredTieBreak,
-    ):
+    ) -> None:
         fields = self._get_fields_dict(
             stored_tie_break, ['tournament_id', 'type', 'index']
         ) | {'options': self.dump_to_json_database_field(stored_tie_break.options)}
@@ -956,16 +961,16 @@ class EventDatabase(MigrationDatabase):
         assert stored_tie_break.id is not None
         self.execute(
             f'UPDATE `tie_break` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_tie_break.id,),
+            (*tuple(fields.values()), stored_tie_break.id),
         )
 
-    def delete_stored_tie_break(self, tie_break_id: int):
+    def delete_stored_tie_break(self, tie_break_id: int) -> None:
         self.execute(
             'DELETE FROM `tie_break` WHERE `id` = ?;',
             (tie_break_id,),
         )
 
-    def delete_all_tournament_stored_tie_breaks(self, tournament_id: int):
+    def delete_all_tournament_stored_tie_breaks(self, tournament_id: int) -> None:
         self.execute(
             'DELETE FROM `tie_break` WHERE `tournament_id` = ?;',
             (tournament_id,),
@@ -1088,32 +1093,32 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Player insertion failed')
         return player_id
 
-    def update_stored_player(self, stored_player: StoredPlayer):
+    def update_stored_player(self, stored_player: StoredPlayer) -> None:
         fields = self._get_player_fields_dict(stored_player)
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_player.id is not None
         self.execute(
             f'UPDATE `player` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_player.id,),
+            (*tuple(fields.values()), stored_player.id),
         )
 
-    def delete_stored_player(self, player_id: int):
+    def delete_stored_player(self, player_id: int) -> None:
         self.execute('DELETE FROM `player` WHERE `id` = ?;', (player_id,))
 
-    def set_player_check_in(self, player_id: int, check_in: bool):
+    def set_player_check_in(self, player_id: int, check_in: bool) -> None:
         self.execute(
             'UPDATE `player` SET `check_in` = ? WHERE `id` = ?',
             (check_in, player_id),
         )
 
-    def set_players_check_in(self, player_ids: list[int], check_in: bool):
+    def set_players_check_in(self, player_ids: list[int], check_in: bool) -> None:
         list_set = ', '.join(['?'] * len(player_ids))
         self.execute(
             f'UPDATE `player` SET `check_in` = ? WHERE `id` IN ({list_set})',
-            (check_in,) + tuple(player_ids),
+            (check_in, *tuple(player_ids)),
         )
 
-    def delete_players_personal_data(self):
+    def delete_players_personal_data(self) -> None:
         """Delete all personal data (email and phone number) from the database."""
         self.execute(
             'UPDATE `player` SET `phone` = ?, `mail`= ?',
@@ -1123,7 +1128,7 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
-    def delete_all_stored_players(self):
+    def delete_all_stored_players(self) -> None:
         self.execute('DELETE FROM `player`')
 
     # ---------------------------------------------------------------------------------
@@ -1194,7 +1199,7 @@ class EventDatabase(MigrationDatabase):
         self,
         stored_tournament_player: StoredTournamentPlayer,
         persist_player_row: bool = True,
-    ):
+    ) -> None:
         """Persist a tournament player's pairings, and (unless
         *persist_player_row* is False) its ``tournament_player`` row.
 
@@ -1219,7 +1224,7 @@ class EventDatabase(MigrationDatabase):
 
     def set_tournament_player_pairing_number(
         self, stored_tournament_player: StoredTournamentPlayer
-    ):
+    ) -> None:
         self.execute(
             (
                 'UPDATE `tournament_player` SET `pairing_number` = ? '
@@ -1236,14 +1241,13 @@ class EventDatabase(MigrationDatabase):
         self,
         tournament_id: int,
         updates: dict[int, int | None],
-    ) -> int:
+    ) -> None:
         """
         Bulk-update manual_tiebreak for many players in a tournament.
         updates: { player_id: int | None }  (None -> set NULL)
-        Returns total rows updated.
         """
         if not updates:
-            return 0
+            return
 
         params = [(mtb, tournament_id, pid) for pid, mtb in updates.items()]
         sql = (
@@ -1252,9 +1256,11 @@ class EventDatabase(MigrationDatabase):
             'WHERE `tournament_id` = ? AND `player_id` = ?'
         )
 
-        return self.executemany(sql, params)
+        self.executemany(sql, params)
 
-    def delete_stored_tournament_player(self, tournament_id: int, player_id: int):
+    def delete_stored_tournament_player(
+        self, tournament_id: int, player_id: int
+    ) -> None:
         self.execute(
             (
                 'DELETE FROM `tournament_player` '
@@ -1267,7 +1273,7 @@ class EventDatabase(MigrationDatabase):
             (tournament_id, player_id),
         )
 
-    def delete_players_in_tournament(self, tournament_id: int):
+    def delete_players_in_tournament(self, tournament_id: int) -> None:
         """Empty a tournament of its players, keeping its teams — what
         importing "and delete the existing players" asks for.
 
@@ -1328,7 +1334,7 @@ class EventDatabase(MigrationDatabase):
     def add_stored_pairing(
         self,
         stored_pairing: StoredPairing,
-    ):
+    ) -> None:
         fields = self._get_fields_dict(
             stored_pairing,
             [
@@ -1347,7 +1353,7 @@ class EventDatabase(MigrationDatabase):
             tuple(fields.values()),
         )
 
-    def update_stored_pairing(self, stored_pairing: StoredPairing):
+    def update_stored_pairing(self, stored_pairing: StoredPairing) -> None:
         fields = self._get_fields_dict(
             stored_pairing,
             ['result', 'board_id', 'illegal_moves', 'effective_points'],
@@ -1358,15 +1364,15 @@ class EventDatabase(MigrationDatabase):
                 f'UPDATE `pairing` SET {field_sets} '
                 'WHERE `tournament_id` = ? AND `player_id` = ? AND `round` = ?'
             ),
-            tuple(fields.values())
-            + (
+            (
+                *tuple(fields.values()),
                 stored_pairing.tournament_id,
                 stored_pairing.player_id,
                 stored_pairing.round_,
             ),
         )
 
-    def delete_stored_pairing(self, stored_pairing: StoredPairing):
+    def delete_stored_pairing(self, stored_pairing: StoredPairing) -> None:
         self.execute(
             (
                 'DELETE FROM `pairing` '
@@ -1379,13 +1385,15 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
-    def delete_stored_pairings_after_round(self, tournament_id: int, round_: int):
+    def delete_stored_pairings_after_round(
+        self, tournament_id: int, round_: int
+    ) -> None:
         self.execute(
             'DELETE FROM `pairing` WHERE `tournament_id` = ? and `round` > ?',
             (tournament_id, round_),
         )
 
-    def delete_all_stored_pairings(self):
+    def delete_all_stored_pairings(self) -> None:
         self.execute('DELETE FROM `pairing`')
 
     # ---------------------------------------------------------------------------------
@@ -1476,7 +1484,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Board insertion failed')
         return board_id
 
-    def update_stored_board(self, stored_board: StoredBoard):
+    def update_stored_board(self, stored_board: StoredBoard) -> None:
         fields = self._get_fields_dict(
             stored_board,
             [
@@ -1491,10 +1499,10 @@ class EventDatabase(MigrationDatabase):
         assert stored_board.id is not None
         self.execute(
             f'UPDATE `board` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_board.id,),
+            (*tuple(fields.values()), stored_board.id),
         )
 
-    def delete_stored_board(self, board_id: int):
+    def delete_stored_board(self, board_id: int) -> None:
         self.execute('DELETE FROM `board` WHERE `id` = ?;', (board_id,))
 
     def update_board_last_result_update(
@@ -1508,13 +1516,12 @@ class EventDatabase(MigrationDatabase):
                 (board_id,),
             )
             return None
-        else:
-            now = datetime.now()
-            self.execute(
-                'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
-                (self.dump_optional_datetime_to_timestamp_field(now), board_id),
-            )
-            return now
+        now = datetime.now()
+        self.execute(
+            'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
+            (self.dump_optional_datetime_to_timestamp_field(now), board_id),
+        )
+        return now
 
     # ---------------------------------------------------------------------------------
     # StoredTeam
@@ -1585,7 +1592,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Team insertion failed')
         return team_id
 
-    def update_stored_team(self, stored_team: StoredTeam):
+    def update_stored_team(self, stored_team: StoredTeam) -> None:
         fields = self._get_fields_dict(
             stored_team,
             [
@@ -1603,45 +1610,47 @@ class EventDatabase(MigrationDatabase):
         assert stored_team.id is not None
         self.execute(
             f'UPDATE `team` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_team.id,),
+            (*tuple(fields.values()), stored_team.id),
         )
 
     def set_team_captain(
         self, team_id: int, captain_id: int | None, captain_name: str | None
-    ):
+    ) -> None:
         self.execute(
             'UPDATE `team` SET `captain_id` = ?, `captain_name` = ? WHERE `id` = ?',
             (captain_id, captain_name, team_id),
         )
 
-    def set_team_check_in(self, team_id: int, check_in: bool):
+    def set_team_check_in(self, team_id: int, check_in: bool) -> None:
         self.execute(
             'UPDATE `team` SET `check_in` = ? WHERE `id` = ?',
             (check_in, team_id),
         )
 
-    def set_team_check_in_for_tournament(self, tournament_id: int, check_in: bool):
+    def set_team_check_in_for_tournament(
+        self, tournament_id: int, check_in: bool
+    ) -> None:
         self.execute(
             'UPDATE `team` SET `check_in` = ? WHERE `tournament_id` = ?',
             (check_in, tournament_id),
         )
 
-    def delete_stored_team(self, team_id: int):
+    def delete_stored_team(self, team_id: int) -> None:
         self.execute('DELETE FROM `team` WHERE `id` = ?', (team_id,))
 
-    def set_team_tournament(self, team_id: int, tournament_id: int | None):
+    def set_team_tournament(self, team_id: int, tournament_id: int | None) -> None:
         self.execute(
             'UPDATE `team` SET `tournament_id` = ? WHERE `id` = ?',
             (tournament_id, team_id),
         )
 
-    def set_team_pairing_number(self, team_id: int, pairing_number: int | None):
+    def set_team_pairing_number(self, team_id: int, pairing_number: int | None) -> None:
         self.execute(
             'UPDATE `team` SET `pairing_number` = ? WHERE `id` = ?',
             (pairing_number, team_id),
         )
 
-    def set_team_group(self, team_id: int, group_id: int | None):
+    def set_team_group(self, team_id: int, group_id: int | None) -> None:
         self.execute(
             'UPDATE `team` SET `group_id` = ? WHERE `id` = ?',
             (group_id, team_id),
@@ -1661,13 +1670,13 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Team group insertion failed')
         return group_id
 
-    def update_stored_team_group(self, group_id: int, name: str):
+    def update_stored_team_group(self, group_id: int, name: str) -> None:
         self.execute(
             'UPDATE `team_group` SET `name` = ? WHERE `id` = ?',
             (name, group_id),
         )
 
-    def delete_stored_team_group(self, group_id: int):
+    def delete_stored_team_group(self, group_id: int) -> None:
         # Detach the group from any team first, so deletion is correct
         # even on databases whose ``team.group_id`` FK isn't enforced
         # (e.g. manually-migrated files without the ON DELETE SET NULL).
@@ -1679,14 +1688,14 @@ class EventDatabase(MigrationDatabase):
 
     def set_player_team(
         self, player_id: int, team_id: int | None, team_index: int | None
-    ):
+    ) -> None:
         """Set a player's team membership and within-team order index."""
         self.execute(
             'UPDATE `player` SET `team_id` = ?, `team_index` = ? WHERE `id` = ?',
             (team_id, team_index, player_id),
         )
 
-    def reorder_team_players(self, team_id: int, ordered_player_ids: list[int]):
+    def reorder_team_players(self, team_id: int, ordered_player_ids: list[int]) -> None:
         """Renumber team_index for the given team's players in supplied order."""
         rows = [
             (team_id, index, player_id)
@@ -1706,7 +1715,7 @@ class EventDatabase(MigrationDatabase):
         team_id: int,
         round_: int,
         entries: list[StoredTeamRoundLineupEntry],
-    ):
+    ) -> None:
         """Replace the entire lineup of a team for a round."""
         self.execute(
             'DELETE FROM `team_round_lineup` WHERE `team_id` = ? AND `round` = ?',
@@ -1720,7 +1729,7 @@ class EventDatabase(MigrationDatabase):
             [(team_id, round_, entry.player_id, entry.index) for entry in entries],
         )
 
-    def delete_team_round_lineup(self, team_id: int, round_: int):
+    def delete_team_round_lineup(self, team_id: int, round_: int) -> None:
         self.execute(
             'DELETE FROM `team_round_lineup` WHERE `team_id` = ? AND `round` = ?',
             (team_id, round_),
@@ -1774,7 +1783,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Team board insertion failed')
         return team_board_id
 
-    def update_stored_team_board(self, stored_team_board: StoredTeamBoard):
+    def update_stored_team_board(self, stored_team_board: StoredTeamBoard) -> None:
         fields = self._get_fields_dict(
             stored_team_board,
             ['tournament_id', 'team_a_id', 'team_b_id', 'index', 'bye_type'],
@@ -1783,10 +1792,10 @@ class EventDatabase(MigrationDatabase):
         assert stored_team_board.id is not None
         self.execute(
             f'UPDATE `team_board` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_team_board.id,),
+            (*tuple(fields.values()), stored_team_board.id),
         )
 
-    def delete_stored_team_board(self, team_board_id: int):
+    def delete_stored_team_board(self, team_board_id: int) -> None:
         self.execute('DELETE FROM `team_board` WHERE `id` = ?', (team_board_id,))
 
     def find_stored_team_bye(self, team_id: int, round_: int) -> StoredTeamBoard | None:
@@ -1801,7 +1810,9 @@ class EventDatabase(MigrationDatabase):
         row = self.fetchone()
         return self._row_to_stored_team_board(row) if row else None
 
-    def delete_stored_team_boards_for_round(self, tournament_id: int, round_: int):
+    def delete_stored_team_boards_for_round(
+        self, tournament_id: int, round_: int
+    ) -> None:
         self.execute(
             'DELETE FROM `team_board` WHERE `tournament_id` = ? AND `round` = ?',
             (tournament_id, round_),
@@ -1866,12 +1877,12 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Team pairing block insertion failed')
         return block_id
 
-    def delete_stored_team_pairing_block(self, block_id: int):
+    def delete_stored_team_pairing_block(self, block_id: int) -> None:
         self.execute('DELETE FROM `team_pairing_block` WHERE `id` = ?', (block_id,))
 
     def delete_tournament_stored_team_pairing_blocks(
         self, tournament_id: int, round_: int | None = None
-    ):
+    ) -> None:
         if round_ is None:
             self.execute(
                 'DELETE FROM `team_pairing_block` WHERE `tournament_id` = ?',
@@ -1921,7 +1932,7 @@ class EventDatabase(MigrationDatabase):
         mp_delta: float,
         gp_delta: float,
         reason: str | None,
-    ):
+    ) -> None:
         """Upsert a (team, round) manual adjustment. A row with nothing
         to record (both deltas zero and no reason) is removed."""
         if not mp_delta and not gp_delta and not reason:
@@ -1973,7 +1984,7 @@ class EventDatabase(MigrationDatabase):
         round_: int,
         delta: float,
         reason: str | None,
-    ):
+    ) -> None:
         """Upsert a (player, round) manual adjustment. A row with nothing
         to record (no delta and no reason) is removed."""
         if not delta and not reason:
@@ -2058,7 +2069,7 @@ class EventDatabase(MigrationDatabase):
         self,
         tournament_id: int,
         groups: list[tuple[bool, list[int]]],
-    ):
+    ) -> None:
         """Replace the tournament's manual template groups (``round``
         NULL). Each group is ``(is_hard, member_ids)``."""
         self.execute(
@@ -2077,7 +2088,7 @@ class EventDatabase(MigrationDatabase):
         round_: int,
         groups: list[tuple[bool, list[int]]],
         protect_rank: int | None = None,
-    ):
+    ) -> None:
         """Replace the immutable per-round snapshot for ``round_``.
         ``protect_rank`` is the soft-relaxation cutoff for the round,
         stored on every row so the export can regenerate the applied set."""
@@ -2087,7 +2098,9 @@ class EventDatabase(MigrationDatabase):
                 tournament_id, round_, is_hard, member_ids, protect_rank
             )
 
-    def delete_round_prohibited_pairing_snapshot(self, tournament_id: int, round_: int):
+    def delete_round_prohibited_pairing_snapshot(
+        self, tournament_id: int, round_: int
+    ) -> None:
         self.execute(
             'DELETE FROM `prohibited_pairing_group` '
             'WHERE `tournament_id` = ? AND `round` = ?',
@@ -2113,9 +2126,9 @@ class EventDatabase(MigrationDatabase):
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
-            players_player_format=row.get('players_player_format', None),
-            players_board_format=row.get('players_board_format', None),
-            players_opponent_format=row.get('players_opponent_format', None),
+            players_player_format=row.get('players_player_format'),
+            players_board_format=row.get('players_board_format'),
+            players_opponent_format=row.get('players_opponent_format'),
             ranking_crosstable=cls.load_bool_from_database_field(
                 row['ranking_crosstable']
             ),
@@ -2249,7 +2262,7 @@ class EventDatabase(MigrationDatabase):
         assert stored_family.id is not None
         return self._write_stored_family(stored_family)
 
-    def delete_stored_family(self, family_id: int):
+    def delete_stored_family(self, family_id: int) -> None:
         self.execute('DELETE FROM `family` WHERE `id` = ?;', (family_id,))
 
     # ---------------------------------------------------------------------------------
@@ -2332,7 +2345,7 @@ class EventDatabase(MigrationDatabase):
             )
             yield stored_screen
 
-    def _set_stored_screen_last_update(self, screen_id: int):
+    def _set_stored_screen_last_update(self, screen_id: int) -> None:
         self.execute(
             'UPDATE `screen` SET `last_update` = ? WHERE `id` = ?',
             (
@@ -2455,7 +2468,7 @@ class EventDatabase(MigrationDatabase):
         assert stored_screen.id is not None
         return self._write_stored_screen(stored_screen)
 
-    def delete_stored_screen(self, screen_id: int):
+    def delete_stored_screen(self, screen_id: int) -> None:
         self.execute('DELETE FROM `screen` WHERE `id` = ?;', (screen_id,))
 
     # ---------------------------------------------------------------------------------
@@ -2506,7 +2519,7 @@ class EventDatabase(MigrationDatabase):
         self,
         screen_id: int,
         screen_set_ids: list[int],
-    ):
+    ) -> None:
         order: int = 1
         for screen_set_id in screen_set_ids:
             self.execute(
@@ -2613,7 +2626,7 @@ class EventDatabase(MigrationDatabase):
         assert stored_screen_set.id is not None
         return self._write_stored_screen_set(stored_screen_set)
 
-    def delete_stored_screen_set(self, screen_set_id: int, screen_id: int):
+    def delete_stored_screen_set(self, screen_set_id: int, screen_id: int) -> None:
         order: int = 1
         for stored_screen_set in self.load_stored_screen_sets(screen_id):
             self.execute(
@@ -2677,7 +2690,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Insertion failed')
         return rotator_id
 
-    def update_stored_rotator(self, stored_rotator: StoredRotator):
+    def update_stored_rotator(self, stored_rotator: StoredRotator) -> None:
         fields: dict[str, Any] = self._get_fields_dict(
             stored_rotator,
             [
@@ -2693,10 +2706,10 @@ class EventDatabase(MigrationDatabase):
         assert stored_rotator.id is not None
         self.execute(
             f'UPDATE `rotator` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_rotator.id,),
+            (*tuple(fields.values()), stored_rotator.id),
         )
 
-    def delete_stored_rotator(self, rotator_id: int):
+    def delete_stored_rotator(self, rotator_id: int) -> None:
         self.execute('DELETE FROM `rotator` WHERE `id` = ?;', (rotator_id,))
 
     # ---------------------------------------------------------------------------------
@@ -2727,7 +2740,7 @@ class EventDatabase(MigrationDatabase):
     def add_stored_rotating_screen(
         self,
         stored_rotating_screen: StoredRotatingScreen,
-    ):
+    ) -> int:
         fields = self._get_fields_dict(
             stored_rotating_screen,
             [
@@ -2749,13 +2762,13 @@ class EventDatabase(MigrationDatabase):
 
     def update_stored_rotating_screen(
         self, stored_rotating_screen: StoredRotatingScreen
-    ):
+    ) -> None:
         self.execute(
             'UPDATE `rotating_screen` SET `index` = ? WHERE `id` = ?',
             (stored_rotating_screen.index, stored_rotating_screen.id),
         )
 
-    def delete_stored_rotating_screen(self, rotating_screen_id: int):
+    def delete_stored_rotating_screen(self, rotating_screen_id: int) -> None:
         self.execute(
             'DELETE FROM `rotating_screen` WHERE `id` = ?',
             (rotating_screen_id,),
@@ -2798,7 +2811,7 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Insertion failed')
         return menu_id
 
-    def update_stored_menu(self, stored_menu: StoredMenu):
+    def update_stored_menu(self, stored_menu: StoredMenu) -> None:
         fields: dict[str, Any] = self._get_fields_dict(
             stored_menu,
             ['name', 'default_type', 'submenu_mode'],
@@ -2807,10 +2820,10 @@ class EventDatabase(MigrationDatabase):
         assert stored_menu.id is not None
         self.execute(
             f'UPDATE `menu` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_menu.id,),
+            (*tuple(fields.values()), stored_menu.id),
         )
 
-    def delete_stored_menu(self, menu_id: int):
+    def delete_stored_menu(self, menu_id: int) -> None:
         self.execute('DELETE FROM `menu` WHERE `id` = ?;', (menu_id,))
 
     # ---------------------------------------------------------------------------------
@@ -2835,7 +2848,7 @@ class EventDatabase(MigrationDatabase):
         )
         return [self._row_to_stored_menu_item(row) for row in self.fetchall()]
 
-    def add_stored_menu_item(self, stored_menu_item: StoredMenuItem):
+    def add_stored_menu_item(self, stored_menu_item: StoredMenuItem) -> int:
         fields = self._get_fields_dict(
             stored_menu_item,
             ['menu_id', 'screen_id', 'family_id', 'screen_type', 'index'],
@@ -2850,13 +2863,13 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Insertion failed')
         return menu_item_id
 
-    def update_stored_menu_item(self, stored_menu_item: StoredMenuItem):
+    def update_stored_menu_item(self, stored_menu_item: StoredMenuItem) -> None:
         self.execute(
             'UPDATE `menu_item` SET `index` = ? WHERE `id` = ?',
             (stored_menu_item.index, stored_menu_item.id),
         )
 
-    def delete_stored_menu_item(self, menu_item_id: int):
+    def delete_stored_menu_item(self, menu_item_id: int) -> None:
         self.execute(
             'DELETE FROM `menu_item` WHERE `id` = ?',
             (menu_item_id,),
@@ -2957,7 +2970,7 @@ class EventDatabase(MigrationDatabase):
         assert stored_display_controller.id is not None
         return self._write_stored_display_controller(stored_display_controller)
 
-    def delete_stored_display_controller(self, display_controller_id: int):
+    def delete_stored_display_controller(self, display_controller_id: int) -> None:
         self.execute(
             'DELETE FROM `display_controller` WHERE `id` = ?;', (display_controller_id,)
         )
@@ -3057,16 +3070,16 @@ class EventDatabase(MigrationDatabase):
             raise RuntimeError('Prize group insertion failed')
         return prize_group_id
 
-    def update_stored_prize_group(self, stored_prize_group: StoredPrizeGroup):
+    def update_stored_prize_group(self, stored_prize_group: StoredPrizeGroup) -> None:
         fields = self._get_fields_dict(stored_prize_group, ['tournament_id', 'name'])
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_prize_group.id is not None
         self.execute(
             f'UPDATE `prize_group` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_prize_group.id,),
+            (*tuple(fields.values()), stored_prize_group.id),
         )
 
-    def delete_stored_prize_group(self, prize_group_id: int):
+    def delete_stored_prize_group(self, prize_group_id: int) -> None:
         self.execute('DELETE FROM `prize_group` WHERE `id` = ?;', (prize_group_id,))
 
     # ---------------------------------------------------------------------------------
@@ -3135,7 +3148,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_prize_category(
         self,
         stored_prize_category: StoredPrizeCategory,
-    ):
+    ) -> None:
         fields = self._get_fields_dict(
             stored_prize_category,
             [
@@ -3151,16 +3164,18 @@ class EventDatabase(MigrationDatabase):
         assert stored_prize_category.id is not None
         self.execute(
             f'UPDATE `prize_category` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_prize_category.id,),
+            (*tuple(fields.values()), stored_prize_category.id),
         )
 
-    def update_stored_prize_category_index(self, prize_category_id: int, index: int):
+    def update_stored_prize_category_index(
+        self, prize_category_id: int, index: int
+    ) -> None:
         self.execute(
             'UPDATE `prize_category` SET `index` = ? WHERE `id` = ?',
             (index, prize_category_id),
         )
 
-    def delete_stored_prize_category(self, prize_category_id: int):
+    def delete_stored_prize_category(self, prize_category_id: int) -> None:
         self.execute(
             'DELETE FROM `prize_category` WHERE `id` = ?;', (prize_category_id,)
         )
@@ -3211,7 +3226,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_prize_criterion(
         self,
         stored_prize_criterion: StoredPrizeCriterion,
-    ):
+    ) -> None:
         fields = self._get_fields_dict(
             stored_prize_criterion, ['prize_category_id', 'type']
         ) | {
@@ -3221,10 +3236,10 @@ class EventDatabase(MigrationDatabase):
         assert stored_prize_criterion.id is not None
         self.execute(
             f'UPDATE `prize_criterion` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_prize_criterion.id,),
+            (*tuple(fields.values()), stored_prize_criterion.id),
         )
 
-    def delete_stored_prize_criterion(self, prize_criterion_id: int):
+    def delete_stored_prize_criterion(self, prize_criterion_id: int) -> None:
         self.execute(
             'DELETE FROM `prize_criterion` WHERE `id` = ?;', (prize_criterion_id,)
         )
@@ -3280,7 +3295,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_prize(
         self,
         stored_prize: StoredPrize,
-    ):
+    ) -> None:
         fields = self._get_fields_dict(
             stored_prize,
             [
@@ -3295,10 +3310,10 @@ class EventDatabase(MigrationDatabase):
         assert stored_prize.id is not None
         self.execute(
             f'UPDATE `prize` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_prize.id,),
+            (*tuple(fields.values()), stored_prize.id),
         )
 
-    def delete_stored_prize(self, prize_id: int):
+    def delete_stored_prize(self, prize_id: int) -> None:
         self.execute('DELETE FROM `prize` WHERE `id` = ?;', (prize_id,))
 
     # ---------------------------------------------------------------------------------
@@ -3431,14 +3446,14 @@ class EventDatabase(MigrationDatabase):
         assert stored_account.id is not None
         self.execute(
             f'UPDATE `account` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_account.id,),
+            (*tuple(fields.values()), stored_account.id),
         )
         fetched_stored_account = self.get_stored_account(account_id=stored_account.id)
         if fetched_stored_account is None:
             raise RuntimeError('Account write failed')
         return fetched_stored_account
 
-    def delete_stored_account(self, account_id: int):
+    def delete_stored_account(self, account_id: int) -> None:
         self.execute('DELETE FROM `account` WHERE `id` = ?;', (account_id,))
 
     # ---------------------------------------------------------------------------------
@@ -3498,10 +3513,7 @@ class EventDatabase(MigrationDatabase):
     ) -> None:
         # For roles that aren't bound to a tournament
         ids: Sequence[int | None]
-        if tournament_ids is None:
-            ids = [None]
-        else:
-            ids = tournament_ids
+        ids = [None] if tournament_ids is None else tournament_ids
 
         rows = [(account_id, role, tid) for tid in ids]
         self.executemany(
@@ -3534,19 +3546,16 @@ class EventDatabase(MigrationDatabase):
             for access_level, tournament_ids in tournament_ids_by_access_level.items()
         ]
 
-    def delete_stored_permission(self, stored_permission: StoredPermission):
+    def delete_stored_permission(self, stored_permission: StoredPermission) -> None:
         self.execute(
             'DELETE FROM `account_permission` '
             'WHERE `account_id` = ? AND `access_level` = ?',
             (stored_permission.account_id, stored_permission.access_level),
         )
 
-    def add_stored_permission(self, stored_permission: StoredPermission):
+    def add_stored_permission(self, stored_permission: StoredPermission) -> None:
         inserted_values: list[int] | list[None]
-        if stored_permission.tournament_ids:
-            inserted_values = stored_permission.tournament_ids
-        else:
-            inserted_values = [None]
+        inserted_values = stored_permission.tournament_ids or [None]
         for tournament_id in inserted_values:
             fields = {
                 'account_id': stored_permission.account_id,

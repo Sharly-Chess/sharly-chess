@@ -45,7 +45,7 @@ class AdminWebContext(WebContext):
             return RequestUtils.get_event(self.request)
         return self.admin_event
 
-    def check_admin_tab(self):
+    def check_admin_tab(self) -> None:
         if self.admin_tab not in [
             None,
             'home',

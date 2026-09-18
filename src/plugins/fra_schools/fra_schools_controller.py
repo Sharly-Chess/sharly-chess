@@ -50,7 +50,9 @@ class FraSchoolsWebContext(BaseEventAdminWebContext):
 
 
 class FRASchoolsController(BaseEventAdminController):
-    guards = []
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = []  # noqa: RUF012
     SEARCH_LIMIT = 25
 
     @classmethod

@@ -13,16 +13,15 @@ from data.columns.handlers import PlayersTabColumnHandler
 from data.loader import EventLoader
 from tests.test_config import TestUtils
 from utils.enum import EventType
+import contextlib
 
 TEAM_EVENT_ID = 'test-players-tab-columns-team'
 INDIVIDUAL_EVENT_ID = 'test-players-tab-columns-individual'
 
 
 def _enabled_column_ids(event_id: str) -> set[str]:
-    try:
+    with contextlib.suppress(KeyError):
         EventLoader.unload_event(event_id)
-    except KeyError:
-        pass
     event = EventLoader().load_event(event_id)
     handler = PlayersTabColumnHandler(event)
     tournaments = list(event.tournaments)
@@ -37,10 +36,8 @@ def _enabled_column_ids(event_id: str) -> set[str]:
 class PlayersTabColumnsTestCase(TestCase):
     def tearDown(self) -> None:
         for event_id in (TEAM_EVENT_ID, INDIVIDUAL_EVENT_ID):
-            try:
+            with contextlib.suppress(Exception):
                 TestUtils.delete_event(event_id)
-            except Exception:
-                pass
 
     def test_team_column_without_any_tournament(self):
         TestUtils.create_event(TEAM_EVENT_ID, overrides={'event_type': EventType.TEAM})

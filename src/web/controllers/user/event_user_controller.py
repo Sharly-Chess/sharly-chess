@@ -25,7 +25,7 @@ class EventUserWebContext(UserWebContext):
             self.client.account.id,
         )
 
-    def check_user_tab(self):
+    def check_user_tab(self) -> None:
         pass
 
     @property

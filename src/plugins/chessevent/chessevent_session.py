@@ -59,7 +59,7 @@ class ChessEventSession(Session):
             raise ChessEventStatusError(
                 _('Connection to the ChessEvent server failed.'),
                 ConnectionErrorChessEventStatus(),
-            )
+            ) from ex
         data: str = response.content.decode()
         if response.status_code == 200:
             return data

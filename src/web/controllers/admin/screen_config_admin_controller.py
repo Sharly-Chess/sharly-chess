@@ -1,8 +1,6 @@
 from dataclasses import replace
-from logging import Logger
 from typing import Annotated, Any
 
-from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.event import Event
 
@@ -26,16 +24,15 @@ from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard
 from web.messages import Message
 
-logger: Logger = get_logger()
-
 
 class ScreenConfigAdminController(BaseEventAdminController):
-    guards = [EventGuard(), ActionGuard(AuthAction.MANAGE_SCREENS)]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [EventGuard(), ActionGuard(AuthAction.MANAGE_SCREENS)]  # noqa: RUF012
 
     @classmethod
     def _prepare_modal_data(
         cls,
-        request: HTMXRequest,
         admin_event: Event,
     ) -> dict[str, Any]:
         stored_event = admin_event.stored_event
@@ -115,7 +112,7 @@ class ScreenConfigAdminController(BaseEventAdminController):
         request: HTMXRequest,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        data = self._prepare_modal_data(request, web_context.get_admin_event())
+        data = self._prepare_modal_data(web_context.get_admin_event())
         template_context = self._modal_context(
             data,
         )
@@ -129,7 +126,7 @@ class ScreenConfigAdminController(BaseEventAdminController):
         name='admin-screen-update-config',
         guards=[ActionGuard(AuthAction.UPDATE_EVENT)],
     )
-    async def htmx_admin_event_update(
+    async def htmx_admin_screen_config_update(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -151,6 +148,6 @@ class ScreenConfigAdminController(BaseEventAdminController):
 
         Message.success(
             request,
-            _('Screen configuration has been updated.').format(uniq_id=uniq_id),
+            _('Screen configuration has been updated.'),
         )
         return self._render_empty_modal_and_messages(request)

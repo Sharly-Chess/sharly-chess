@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         # A bug that has been corrected in version 3.1.4 led to a situation where databases older than migration 10 would lose
         # all the screen set data when updated by a version of the app > 2.8 (when PRAGMA foreign_keys was turned on).
         # This leaves the database in a state where it's impossible to access the screens page.
@@ -18,5 +18,5 @@ class Migration(BaseMigration):
             """
         )
 
-    def backward(self):
+    def backward(self) -> None:
         pass

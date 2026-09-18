@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 from packaging.version import Version
 
 from common.exception import SharlyChessException
-from utils.file import shutil_delete_onerror
+from utils.file import shutil_delete_onexc
 from utils.program_variables import MACOS_SUPPORT_DIR, ProgramVar
 
 
@@ -43,13 +43,12 @@ TEST_ENV: bool = (
 _EXPERIMENTAL_FEATURES_ENABLED: bool = False
 
 
-def enable_experimental_features(enabled: bool):
+def enable_experimental_features(enabled: bool) -> None:
     global _EXPERIMENTAL_FEATURES_ENABLED
     _EXPERIMENTAL_FEATURES_ENABLED = enabled
 
 
 def experimental_features_enabled() -> bool:
-    global _EXPERIMENTAL_FEATURES_ENABLED
     return _EXPERIMENTAL_FEATURES_ENABLED
 
 
@@ -194,38 +193,42 @@ if TEST_ENV and DATA_DIR.exists() and not MANUAL_PATH_USED:
     # Clear the test data directory when the test run (not in server mode).
     # DATA_DIR rather than TEST_DATA_DIR: under pytest-xdist that is the
     # worker's own subtree, and a worker must only empty its own.
-    shutil.rmtree(DATA_DIR, onerror=shutil_delete_onerror)
+    shutil.rmtree(DATA_DIR, onexc=shutil_delete_onexc)
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 if not os.access(DATA_DIR, os.W_OK):
     raise SharlyChessException(f'Data path [{DATA_DIR.absolute()}] is not writable.')
 
 previous_dir = ProgramVar.PREVIOUS_DATA_DIR.read_path_value()
-if previous_dir and not MANUAL_PATH_USED:
-    if previous_dir.exists() and not any(DATA_DIR.iterdir()):
-        # The data dir changed: move the previous content over
-        try:
-            # Remove the dir so it's copied at the location instead of in a subfolder
-            DATA_DIR.rmdir()
-            shutil.move(previous_dir, DATA_DIR)
-            # Only load the logger after the move (active logger fails the move)
-            from common.logger import get_logger
+if (
+    previous_dir
+    and not MANUAL_PATH_USED
+    and previous_dir.exists()
+    and not any(DATA_DIR.iterdir())
+):
+    # The data dir changed: move the previous content over
+    try:
+        # Remove the dir so it's copied at the location instead of in a subfolder
+        DATA_DIR.rmdir()
+        shutil.move(previous_dir, DATA_DIR)
+        # Only load the logger after the move (active logger fails the move)
+        from common.logger import get_logger
 
-            logger = get_logger()
-            logger.info(
-                'Data directory moved from "%s" to "%s"',
-                previous_dir,
-                DATA_DIR,
-            )
-            ProgramVar.PREVIOUS_DATA_DIR.clear_value()
-        except OSError as e:
-            ProgramVar.DATA_DIR.write_value(str(previous_dir))
-            ProgramVar.PREVIOUS_DATA_DIR.clear_value()
-            raise SharlyChessException(
-                'An error occurred while moving the data directory '
-                f'from "{previous_dir}" to "{DATA_DIR}". '
-                f'The move has been canceled.\n\nError: {e}',
-            )
+        logger = get_logger()
+        logger.info(
+            'Data directory moved from "%s" to "%s"',
+            previous_dir,
+            DATA_DIR,
+        )
+        ProgramVar.PREVIOUS_DATA_DIR.clear_value()
+    except OSError as e:
+        ProgramVar.DATA_DIR.write_value(str(previous_dir))
+        ProgramVar.PREVIOUS_DATA_DIR.clear_value()
+        raise SharlyChessException(
+            'An error occurred while moving the data directory '
+            f'from "{previous_dir}" to "{DATA_DIR}". '
+            f'The move has been canceled.\n\nError: {e}',
+        ) from e
 
 _VERSION_DATA_DIR_CREATED = not VERSION_DATA_DIR.exists()
 
@@ -256,7 +259,7 @@ try:
 except OSError as error:
     raise SharlyChessException(
         f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}'
-    )
+    ) from error
 
 if DEVEL_ENV:
     import tomllib

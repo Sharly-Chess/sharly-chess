@@ -6657,6 +6657,9 @@ msgstr ""
 msgid "Please choose a name for the set."
 msgstr ""
 
+msgid "Please choose a network."
+msgstr ""
+
 msgid "Please choose a player."
 msgstr ""
 
@@ -11194,3 +11197,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+

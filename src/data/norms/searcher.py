@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from itertools import combinations
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
+from collections.abc import Iterable
 
 from data.norms.evaluator import TitleNormEvaluator, _resolve_min_games
 from data.norms.inputs import NormInputs
@@ -12,6 +13,7 @@ from utils.types import NormCheckResult
 
 if TYPE_CHECKING:
     from data.player import TournamentPlayer
+    from data.tournament import Tournament
 
 
 class TitleNormSubsetSearcher:
@@ -35,7 +37,7 @@ class TitleNormSubsetSearcher:
 
     def __init__(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         min_games_override: int | None = None,
         rule_143_exemption: str = 'none',
     ):
@@ -63,7 +65,7 @@ class TitleNormSubsetSearcher:
         )
 
     def _evaluate(
-        self, inputs: 'NormInputs', tn: TitleNorm, meets_gender: bool
+        self, inputs: NormInputs, tn: TitleNorm, meets_gender: bool
     ) -> NormCheckResult:
         """Evaluate one subset and stamp the resolved 1.4.3a/b/c
         exemption so ``is_met`` reflects the waiver during the search."""
@@ -72,7 +74,7 @@ class TitleNormSubsetSearcher:
         return result
 
     @property
-    def tournament(self):
+    def tournament(self) -> Tournament:
         return self.player.tournament
 
     # ---------- top-level orchestration ----------
@@ -240,10 +242,14 @@ class TitleNormSubsetSearcher:
         if not ordered or max_ignores <= 0:
             return
 
-        opponent_by_round = dict(zip(inputs.included_rounds, inputs.opponents))
+        opponent_by_round = dict(
+            zip(inputs.included_rounds, inputs.opponents, strict=True)
+        )
         won = {
             rnd
-            for rnd, result in zip(inputs.included_rounds, inputs.results_list)
+            for rnd, result in zip(
+                inputs.included_rounds, inputs.results_list, strict=True
+            )
             if result in (Result.WIN, Result.UNRATED_WIN)
         }
 

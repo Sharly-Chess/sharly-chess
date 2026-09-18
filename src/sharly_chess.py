@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 import warnings
+from contextlib import suppress
 from pathlib import Path
 
 from pathvalidate import validate_filepath, ValidationError
@@ -69,7 +70,7 @@ try:
                         'already requires version' in error_str
                         or 'already loaded' in error_str
                     ):
-                        return
+                        return None
                     # Otherwise, re-raise the error
                     raise
 
@@ -77,13 +78,9 @@ try:
             # Note: We don't force GTK4 here because Toga's WebView requires GTK3
             # Toga will automatically use the appropriate GTK version based on what's available
             # We only require GObject to ensure it's available
-            try:
+            # gi not available or already required is fine.
+            with suppress(ImportError, ValueError):
                 gi.require_version('GObject', '2.0')
-                # Don't force GTK4 - let Toga choose (it needs GTK3 for WebView)
-                # gi.require_version('Gtk', '4.0')  # Commented out - Toga needs GTK3 for WebView
-            except (ImportError, ValueError):
-                # gi not available or already required, that's fine
-                pass
         except ImportError:
             # gi not available, skip patching
             pass
@@ -207,11 +204,10 @@ try:
                 )
                 sys.exit(1)
             trf_input_file_path = Path(args.output_file)
-            if args.check_tournament:
-                if args.input_file:
-                    print_interactive_error(
-                        'Input file not needed with argument --generate-tournament, ignored.'
-                    )
+            if args.check_tournament and args.input_file:
+                print_interactive_error(
+                    'Input file not needed with argument --generate-tournament, ignored.'
+                )
         else:
             if not args.input_file:
                 print_interactive_error('Input file is required, exiting.')

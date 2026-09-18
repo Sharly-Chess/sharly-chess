@@ -369,4 +369,4 @@ class TestPerformanceRatingFormula(TestCase):
         # Minimum GM Ra = 2380. To hit Rp >= 2600, need dp >= 220.
         # 0.78 corresponds to dp = 220 per FIDE 1.4.9.
         assert Utils.performance_bonus(0.78) == 220
-        assert 2380 + 220 >= TitleNorm.GM.minimum_performance
+        assert TitleNorm.GM.minimum_performance <= 2380 + 220

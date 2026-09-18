@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         for table in ('screen', 'family'):
             self.database.execute(
                 f'ALTER TABLE `{table}` ADD `players_player_format` INT'
@@ -35,7 +35,7 @@ class Migration(BaseMigration):
                 f'ALTER TABLE `{table}` DROP COLUMN `players_show_opponent`'
             )
 
-    def backward(self):
+    def backward(self) -> None:
         for table in ('family', 'screen'):
             self.database.execute(
                 f'ALTER TABLE `{table}` ADD `players_show_opponent` INT'

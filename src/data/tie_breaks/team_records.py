@@ -141,9 +141,9 @@ def adjust_opponent_total(
         reverse=True,
     ):
         own = opponent.own_against(match, score_type)
-        if adjust_fore and match.round_ == after_round:
-            total += draw_val
-        elif match.match_type == TeamMatchType.ZPB and not seen_played_or_pab:
+        if (adjust_fore and match.round_ == after_round) or (
+            match.match_type == TeamMatchType.ZPB and not seen_played_or_pab
+        ):
             total += draw_val
         else:
             total += own
@@ -156,7 +156,6 @@ def dummy_opponent_score(
     own_record: 'TeamRecord',
     score_type: ScoreType,
     *,
-    after_round: int,
     rounds: int,
     draw_value: float,
     opponent_adjusted: float | None = None,

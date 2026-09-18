@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         min_yob = 1900
         max_yob = date.today().year
         self.database.execute(
@@ -20,5 +20,5 @@ class Migration(BaseMigration):
             (min_yob, max_yob),
         )
 
-    def backward(self):
+    def backward(self) -> None:
         pass

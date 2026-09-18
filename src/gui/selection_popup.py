@@ -16,7 +16,7 @@ import sys
 import toga
 
 if sys.platform == 'darwin':
-    from rubicon.objc import objc_method, objc_property
+    from rubicon.objc import ObjCInstance, objc_method, objc_property
 
     # From the backend, which is what loads AppKit.
     from toga_cocoa.libs import NSMenu, NSObject, NSPoint, NSRect, NSScreen, NSSize
@@ -43,12 +43,14 @@ if sys.platform == 'darwin':
             _menu_chrome_height = heights[0] - item_height
         return _menu_chrome_height
 
-    class SelectionMenuDelegate(NSObject):  # type: ignore[misc, valid-type]
+    class SelectionMenuDelegate(NSObject):
         button = objc_property(object, weak=True)
         max_visible_items = objc_property(object)
 
         @objc_method
-        def confinementRectForMenu_onScreen_(self, menu, screen) -> NSRect:
+        def confinementRectForMenu_onScreen_(
+            self, menu: ObjCInstance, screen: ObjCInstance
+        ) -> NSRect:
             """The region the list is displayed in. A zero rectangle leaves it
             to macOS, which uses the whole screen."""
             no_confinement = NSRect(NSPoint(0, 0), NSSize(0, 0))
@@ -233,7 +235,7 @@ elif sys.platform == 'linux':
             scrolled_window.set_policy(horizontal_policy, Gtk.PolicyType.AUTOMATIC)
 
 
-def limit_popup_height(selection: toga.Selection, max_visible_items: int):
+def limit_popup_height(selection: toga.Selection, max_visible_items: int) -> None:
     """Displays at most *max_visible_items* items in the list of *selection*,
     which is scrolled to reach the others. Platforms whose list is bounded
     already are left alone."""

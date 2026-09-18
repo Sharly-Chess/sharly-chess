@@ -313,7 +313,7 @@ class PapiRound:
         )
 
     @staticmethod
-    def _result_to_papi_result(result: Result, pab_value: Result):
+    def _result_to_papi_result(result: Result, pab_value: Result) -> 'PapiResult':
         match result:
             case Result.WIN:
                 return PapiResult.WIN

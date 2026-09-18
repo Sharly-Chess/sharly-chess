@@ -1,5 +1,5 @@
 from copy import copy
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
 from argon2 import PasswordHasher
 from litestar import post, get, delete, patch
@@ -83,7 +83,9 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
 
 
 class AccountAdminController(BaseEventAdminController):
-    guards = [
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [  # noqa: RUF012
         EventGuard(),
         ActionGuard(AuthAction.MANAGE_ACCOUNTS),
         ManageAccountGuard(),
@@ -217,7 +219,9 @@ class AccountAdminController(BaseEventAdminController):
         try:
             data_source = DataSourceManager().get_object(data_source_id)
         except KeyError:
-            raise NotFoundException(f'Unknown data source [{data_source_id}].')
+            raise NotFoundException(
+                f'Unknown data source [{data_source_id}].'
+            ) from None
 
         stored_player, errors = await PlayerAdminController.get_search_stored_player(
             data_source, player_source_id
@@ -608,9 +612,12 @@ class AccountAdminController(BaseEventAdminController):
     def _selectable_access_levels(
         cls, web_context: AccountAdminWebContext
     ) -> list[AccessLevel]:
-        return cls._permission_form_modal_context(web_context, FormAction.CREATE)[
-            'selectable_access_levels'
-        ]
+        return cast(
+            list[AccessLevel],
+            cls._permission_form_modal_context(web_context, FormAction.CREATE)[
+                'selectable_access_levels'
+            ],
+        )
 
     @staticmethod
     def _permission_form_modal_context(
@@ -658,13 +665,13 @@ class AccountAdminController(BaseEventAdminController):
             if access_level in current_access_levels:
                 tooltip = _('Access level already defined for the account.')
             if access_level in inherited_permissions_by_access_level:
+                inherited_by = inherited_permissions_by_access_level[
+                    access_level
+                ].inherited_by
+                # An inherited permission names what it came from.
+                assert inherited_by is not None
                 tooltip = _('Inherited by permission [{permission}].').format(
-                    permission=getattr(
-                        inherited_permissions_by_access_level[
-                            access_level
-                        ].inherited_by,
-                        'name',
-                    )
+                    permission=inherited_by.name
                 )
             access_level_options[access_level.id] = SelectOption(
                 name=access_level.name,

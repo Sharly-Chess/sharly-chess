@@ -3,7 +3,7 @@ import plistlib
 import sys
 from enum import StrEnum
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 
 if sys.platform == 'win32':
@@ -58,7 +58,7 @@ class ProgramVar(StrEnum):
             case 'win32':
                 try:
                     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, WIN_REG_PATH) as key:
-                        value, reg_type = winreg.QueryValueEx(key, name)
+                        value, _reg_type = winreg.QueryValueEx(key, name)
                         return str(value) if value else None
                 except FileNotFoundError:
                     return None
@@ -78,7 +78,7 @@ class ProgramVar(StrEnum):
             value = str(os.path.expandvars(value))
         return Path(value)
 
-    def clear_value(self):
+    def clear_value(self) -> None:
         name = self.stored_name
         match sys.platform:
             case 'win32':
@@ -91,11 +91,11 @@ class ProgramVar(StrEnum):
             case 'linux':
                 self.write_value('')
 
-    def write_value(self, value: str):
+    def write_value(self, value: str) -> None:
         self.write_variables({self: value})
 
     @classmethod
-    def write_variables(cls, value_by_var: dict['ProgramVar', str]):
+    def write_variables(cls, value_by_var: dict['ProgramVar', str]) -> None:
         match sys.platform:
             case 'win32':  # Use windows registries
                 with winreg.CreateKey(winreg.HKEY_CURRENT_USER, WIN_REG_PATH) as key:
@@ -115,11 +115,11 @@ class ProgramVar(StrEnum):
 def _read_macos_data_plist() -> dict:
     try:
         with open(MACOS_DATA_PLIST, 'rb') as plist_file:
-            return plistlib.load(plist_file)
+            return cast(dict[Any, Any], plistlib.load(plist_file))
     except (FileNotFoundError, OSError, plistlib.InvalidFileException):
         return {}
 
 
-def _write_macos_data_plist(data: dict):
+def _write_macos_data_plist(data: dict) -> None:
     with open(MACOS_DATA_PLIST, 'wb') as plist_file:
         plistlib.dump(data, plist_file)

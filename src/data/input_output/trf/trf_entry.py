@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, TextIO
 
 from common.exception import ImporterError
 from common.i18n import _
@@ -34,11 +34,11 @@ class TrfEntry(ABC):
         self.din = din
 
     @abstractmethod
-    def dump(self, fp, tournament: TrfTournament):
+    def dump(self, fp: TextIO, tournament: TrfTournament) -> None:
         pass
 
     @abstractmethod
-    def load(self, tournament: TrfTournament, data: str):
+    def load(self, tournament: TrfTournament, data: str) -> None:
         pass
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -56,7 +56,7 @@ class SingleLineEntry(TrfEntry):
         super().__init__(din)
         self.field_name = field_name
 
-    def dump(self, fp, tournament: TrfTournament):
+    def dump(self, fp: TextIO, tournament: TrfTournament) -> None:
         value = tournament.__dict__[self.field_name]
         if not value:
             return
@@ -68,7 +68,7 @@ class SingleLineEntry(TrfEntry):
     def format(self, value: Any) -> str:
         return str(value)
 
-    def load(self, tournament: TrfTournament, data: str):
+    def load(self, tournament: TrfTournament, data: str) -> None:
         value = self.parse(data)
         tournament.__dict__[self.field_name] = value
 
@@ -77,11 +77,11 @@ class SingleLineEntry(TrfEntry):
 
 
 class MultipleLinesEntry(TrfEntry):
-    def __init__(self, din, field_name):
+    def __init__(self, din: str, field_name: str) -> None:
         super().__init__(din)
         self.field_name = field_name
 
-    def dump(self, fp, tournament: TrfTournament):
+    def dump(self, fp: TextIO, tournament: TrfTournament) -> None:
         value = tournament.__dict__[self.field_name]
         if not value:
             return
@@ -94,7 +94,7 @@ class MultipleLinesEntry(TrfEntry):
     def format(self, value: Any) -> str:
         return str(value)
 
-    def load(self, tournament: TrfTournament, data: str):
+    def load(self, tournament: TrfTournament, data: str) -> None:
         value = self.parse(data)
         tournament.__dict__[self.field_name].append(value)
 
@@ -108,7 +108,7 @@ class SingleLineIntEntry(SingleLineEntry):
 
 
 class SingleLineListEntry(SingleLineEntry):
-    def __init__(self, din, field_name, separator=','):
+    def __init__(self, din: str, field_name: str, separator: str = ',') -> None:
         super().__init__(din, field_name)
         self.separator = separator
 
@@ -120,7 +120,7 @@ class SingleLineListEntry(SingleLineEntry):
 
 
 class RoundDatesEntry(SingleLineEntry):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('132', 'round_dates')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -148,10 +148,10 @@ class StartingRankMethodEntry(TrfEntry):
     FEDERATION_POSITION = 5
     METHOD_POSITION = 9
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('172')
 
-    def dump(self, fp, tournament: TrfTournament):
+    def dump(self, fp: TextIO, tournament: TrfTournament) -> None:
         if not tournament.starting_rank_method:
             return
         fp.write(
@@ -159,7 +159,7 @@ class StartingRankMethodEntry(TrfEntry):
             f'{tournament.starting_rank_method}\n'
         )
 
-    def load(self, tournament: TrfTournament, data: str):
+    def load(self, tournament: TrfTournament, data: str) -> None:
         # Read as tokens rather than by column: files written before the
         # federation was added (ours included) carry the bare method.
         parts = data.split()
@@ -196,7 +196,7 @@ class PlayerEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('001', 'players')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -259,7 +259,7 @@ class PlayerEntry(MultipleLinesEntry):
             games=self.parse_games(match.group('games')[2:]),
         )
 
-    def parse_games(self, string) -> list[TrfGame]:
+    def parse_games(self, string: str) -> list[TrfGame]:
         round_ = 1
         games: list[TrfGame] = []
         while len(string) >= 8:
@@ -284,7 +284,7 @@ class NationalPlayerEntry(TrfEntry):
         re.IGNORECASE,
     )
 
-    def dump(self, fp, tournament: TrfTournament):
+    def dump(self, fp: TextIO, tournament: TrfTournament) -> None:
         players = tournament.national_players_by_federation.get(self.din, [])
         if not players:
             return
@@ -306,7 +306,7 @@ class NationalPlayerEntry(TrfEntry):
             f' {player.birth_date:>10}'
         )
 
-    def load(self, tournament: TrfTournament, data: str):
+    def load(self, tournament: TrfTournament, data: str) -> None:
         match = self.LINE_PATTERN.fullmatch(data.ljust(80))
         if match is None:
             raise self.line_exception(data)
@@ -335,7 +335,7 @@ class NationalPlayerEntry(TrfEntry):
 
 
 class DeprecatedTeamEntry(MultipleLinesEntry):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('013', 'deprecated_teams')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -365,7 +365,7 @@ class TeamEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('310', 'teams')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -415,7 +415,7 @@ class AcceleratedRoundEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('250', 'accelerated_rounds')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -453,7 +453,7 @@ class ProhibitedPairingEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('260', 'prohibited_pairings')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -490,7 +490,7 @@ class RoundByeEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('240', 'round_byes')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -525,7 +525,7 @@ class TeamPABsEntry(SingleLineEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('320', 'team_pabs')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -554,10 +554,11 @@ class TeamPABsEntry(SingleLineEntry):
             raise self.line_exception(data)
 
         teams_ids = split_optional_ints(match.group('team_ids'), 4)
-        team_id_by_round: dict[int, int] = {}
-        for round_, team_id in enumerate(teams_ids, start=1):
-            if team_id:
-                team_id_by_round[round_] = team_id
+        team_id_by_round: dict[int, int] = {
+            round_: team_id
+            for round_, team_id in enumerate(teams_ids, start=1)
+            if team_id
+        }
         return TrfTeamPABs(
             match_points=float(match.group('match_points')),
             game_points=float(match.group('game_points')),
@@ -572,7 +573,7 @@ class TeamForfeitedMatchEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('330', 'team_forfeited_matches')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -605,7 +606,7 @@ class OOdOTeamPairingEntry(MultipleLinesEntry):
         re.IGNORECASE,
     )
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('300', 'oodo_team_pairings')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -653,7 +654,7 @@ class AbnormalPointsAssignmentEntry(MultipleLinesEntry):
     ID_WIDTH = 4
     ID_STRIDE = 5
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('299', 'abnormal_points_assignments')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -712,7 +713,7 @@ class AbnormalPointsAssignmentEntry(MultipleLinesEntry):
 class InformativeTeamPairingsEntry(MultipleLinesEntry):
     """This entry is informative, it does not require being read."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('801', 'informative_team_pairings_records')
 
     def get_header(self, tournament: TrfTournament) -> str | None:
@@ -722,7 +723,7 @@ class InformativeTeamPairingsEntry(MultipleLinesEntry):
 class InformativeTeamResultsEntry(MultipleLinesEntry):
     """This entry is informative, it does not require being read."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('802', 'informative_team_results_records')
 
     def get_header(self, tournament: TrfTournament) -> str | None:

@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         default_fields = {
             'launch_browser': True,
             'console_color': True,
@@ -10,12 +10,10 @@ class Migration(BaseMigration):
             'console_show_level': False,
             'experimental': False,
         }
-        field_sets = [
-            f'`{field}` = COALESCE(`{field}`, ?)' for field in default_fields.keys()
-        ]
+        field_sets = [f'`{field}` = COALESCE(`{field}`, ?)' for field in default_fields]
         self.database.execute(
             f'UPDATE `info` SET {", ".join(field_sets)}', tuple(default_fields.values())
         )
 
-    def backward(self):
+    def backward(self) -> None:
         pass

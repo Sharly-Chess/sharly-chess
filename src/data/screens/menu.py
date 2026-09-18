@@ -147,7 +147,7 @@ class MenuItem:
         event: 'Event',
         stored_menu_item: StoredMenuItem,
     ):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_menu_item = stored_menu_item
 
     @property
@@ -224,7 +224,7 @@ class Menu:
         event: 'Event',
         stored_menu: StoredMenu,
     ):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_menu = stored_menu
         self.menu_items_by_id = self._get_menu_items_by_id()
 
@@ -354,7 +354,7 @@ class Menu:
             )
         return menu_items_by_id
 
-    def delete_menu_item(self, menu_item_id: int):
+    def delete_menu_item(self, menu_item_id: int) -> None:
         if menu_item_id not in self.menu_items_by_id:
             raise ValueError(
                 f'Menu item [{menu_item_id}] not part of menu [{self.id}].'
@@ -365,7 +365,7 @@ class Menu:
             ordered_ids = [item.id for item in self.sorted_menu_items]
             self._set_menu_item_indexes(database, ordered_ids)
 
-    def reorder_menu_items(self, ordered_ids: list[int]):
+    def reorder_menu_items(self, ordered_ids: list[int]) -> None:
         if len(ordered_ids) != len(self.menu_items_by_id):
             raise ValueError(f'{ordered_ids=}')
         for menu_item in self.menu_items_by_id.values():
@@ -374,7 +374,9 @@ class Menu:
         with EventDatabase(self.event.uniq_id, True) as database:
             self._set_menu_item_indexes(database, ordered_ids)
 
-    def _set_menu_item_indexes(self, database: EventDatabase, ordered_ids: list[int]):
+    def _set_menu_item_indexes(
+        self, database: EventDatabase, ordered_ids: list[int]
+    ) -> None:
         for index, menu_item_id in enumerate(ordered_ids):
             stored_menu_item = self.menu_items_by_id[menu_item_id].stored_menu_item
             stored_menu_item.index = index
@@ -385,7 +387,7 @@ class Menu:
         screen_id: int | None = None,
         family_id: int | None = None,
         screen_type: str | None = None,
-    ):
+    ) -> None:
         stored_menu_item = StoredMenuItem(
             id=None,
             menu_id=self.id,

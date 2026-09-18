@@ -1,11 +1,12 @@
 import locale
 import logging
+from contextlib import suppress
 import os
 import re
 import subprocess
 import sys
 from copy import copy
-from typing import Optional, overload, TYPE_CHECKING
+from typing import Optional, overload, TYPE_CHECKING, ClassVar
 
 import jinja2
 import litestar
@@ -49,7 +50,7 @@ logger: logging.Logger = get_logger()
 class SharlyChessConfig(metaclass=Singleton):
     """The configuration for the application, read from the database."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.web_port: int | None = None
         self._stored_config: StoredConfig | None = None
         self._date_formatter: DateFormatter | None = None
@@ -112,11 +113,9 @@ class SharlyChessConfig(metaclass=Singleton):
                 logger.debug('macOS defaults fallback failed: %s', e)
 
         # Linux / other: rely on locale module / env
-        try:
-            # Ensure LC_CTYPE is initialized from environment
+        # Ensure LC_CTYPE is initialized from environment
+        with suppress(Exception):
             locale.setlocale(locale.LC_CTYPE, '')
-        except Exception:
-            pass
 
         lang = (
             os.environ.get('LC_ALL')
@@ -158,7 +157,7 @@ class SharlyChessConfig(metaclass=Singleton):
             )
         return DEFAULT_LOCALE
 
-    def load_and_set_env(self):
+    def load_and_set_env(self) -> None:
         with ConfigDatabase() as config_database:
             stored_config: StoredConfig = config_database.load_stored_config()
         if not stored_config.locale:
@@ -243,8 +242,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
         if self.stored_config.federation is not None:
             return Federation(self.stored_config.federation)
-        else:
-            return None
+        return None
 
     @property
     def locale(self) -> str:
@@ -321,7 +319,7 @@ class SharlyChessConfig(metaclass=Singleton):
         from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
         from database.sqlite.event.event_store import StoredTieBreak
 
-        sets: list['TieBreakSet'] = []
+        sets: list[TieBreakSet] = []
         for stored_set in self.stored_config.stored_tie_break_sets:
             stored_tie_breaks = [
                 StoredTieBreak(
@@ -356,7 +354,7 @@ class SharlyChessConfig(metaclass=Singleton):
     )
 
     """ The accepted console log levels. """
-    console_log_levels: dict[int, str] = {
+    console_log_levels: ClassVar[dict[int, str]] = {
         logging.DEBUG: 'DEBUG',
         logging.INFO: 'INFO',
         logging.WARNING: 'WARNING',
@@ -474,14 +472,14 @@ class SharlyChessConfig(metaclass=Singleton):
     default_record_illegal_moves: int = 0
 
     # The default colors for the timers.
-    default_timer_colors: dict[int, str] = {
+    default_timer_colors: ClassVar[dict[int, str]] = {
         1: '#00FF00',
         2: '#FF7700',
         3: '#FF0000',
     }
 
     # The default delays for the timers.
-    default_timer_delays: dict[int, int] = {
+    default_timer_delays: ClassVar[dict[int, int]] = {
         1: 15,
         2: 5,
         3: 10,

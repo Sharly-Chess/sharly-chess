@@ -71,12 +71,12 @@ def get_error(
     """Returns the error that has been found for the tournament, if any."""
     error_file_path: Path = get_terminated_error_file_path(tournament_ffe_id)
     if error_file_path.exists():
-        with open(error_file_path, 'r') as f:
+        with open(error_file_path) as f:
             return f.read()
-    error_file_path: Path = get_error_file_path(tournament_ffe_id)
+    error_file_path = get_error_file_path(tournament_ffe_id)
     if error_file_path.exists():
         if time() - error_file_path.lstat().st_mtime < cache_tll:
-            with open(error_file_path, 'r') as f:
+            with open(error_file_path) as f:
                 return f.read()
         error_file_path.unlink()
     return None
@@ -131,7 +131,7 @@ def download_papi_file_if_needed(
                 set_error(tournament_ffe_id, f'Download HTTP exception: {he}')
             return False
     except BaseException as be:
-        set_error(tournament_ffe_id, f'Download exception: {str(be)}')
+        set_error(tournament_ffe_id, f'Download exception: {be!s}')
         papi_file_path.unlink(missing_ok=True)
         return False
 
@@ -214,7 +214,7 @@ def check_pairings_if_needed(
         check_file_path.unlink()
     try:
         if event := create_event(tournament_ffe_id):
-            tournament = list(event.tournaments)[0]
+            tournament = next(iter(event.tournaments))
             if not tournament.finished:
                 set_error(tournament_ffe_id, 'Tournament is not terminated.')
                 EventDatabase(event.uniq_id).file.unlink()
@@ -258,7 +258,7 @@ def check_pairings_if_needed(
             except BaseException as be:
                 set_terminated_error(
                     tournament_ffe_id,
-                    f'Exception while checking the pairings: {str(be)}.',
+                    f'Exception while checking the pairings: {be!s}.',
                 )
                 EventDatabase(event.uniq_id).file.unlink()
                 return None
@@ -292,7 +292,7 @@ def print_tournament_checks(
     t_ko: int = t_total - t_ok
     t_ok_pc: float = t_ok / t_total * 100
     t_ko_pc: float = 100 - t_ok_pc
-    t_ok: int = len(
+    t_ok = len(
         [
             tournament_check
             for tournament_check in tournament_checks
@@ -326,15 +326,11 @@ def print_tournament_checks(
 def main():
     """Runs the checks."""
     tournament_checks: list[TournamentCheck] = []
+    # Ids to leave out of a run, e.g. 68724 (5 players over 15 rounds, raises
+    # a KeyError) or 68203 and 68202 (2 players).
+    skipped_ffe_ids: list[int] = []
     for tournament_ffe_id in range(first_tournament_id, 0, -1):
-        if (
-            tournament_ffe_id
-            not in [
-                # 68724,  # 5 players, 15 rounds => KeyError
-                # 68203,  # 2 players
-                # 68202,  # 2 players
-            ]
-        ):
+        if tournament_ffe_id not in skipped_ffe_ids:
             print_interactive_info(f'Tournament #{tournament_ffe_id}:')
             if tournament_check := check_pairings_if_needed(tournament_ffe_id):
                 tournament_check.print()

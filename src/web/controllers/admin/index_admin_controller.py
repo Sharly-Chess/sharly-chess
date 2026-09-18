@@ -34,6 +34,7 @@ from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.event_metadata import EventMetadata
+from data.championship.championship import Championship
 from data.championship.championship_loader import (
     ChampionshipArchiveLoader,
     ChampionshipLoader,
@@ -284,7 +285,7 @@ class IndexAdminController(BaseAdminController):
                 item for item in championships if id(item) not in dated_championship_ids
             ]
 
-            def championship_sort_key(item):
+            def championship_sort_key(item: Championship) -> tuple[date, date, str]:
                 return (
                     item.stop_date or date.max,
                     item.start_date or date.min,
@@ -362,11 +363,12 @@ class IndexAdminController(BaseAdminController):
         # The grouped entries are navigation containers, not tabs, and a submenu
         # also holds modal entries: the panes and the selected tab are keyed on
         # the leaves that carry a template.
-        nav_tab_panes: dict[str, dict[str, Any]] = {}
-        for nav_id, nav_tab in nav_tabs.items():
-            for leaf_id, leaf in (nav_tab.get('submenu') or {nav_id: nav_tab}).items():
-                if 'template' in leaf:
-                    nav_tab_panes[leaf_id] = leaf
+        nav_tab_panes: dict[str, dict[str, Any]] = {
+            leaf_id: leaf
+            for nav_id, nav_tab in nav_tabs.items()
+            for leaf_id, leaf in (nav_tab.get('submenu') or {nav_id: nav_tab}).items()
+            if 'template' in leaf
+        }
         admin_tab = web_context.admin_tab
         if (not template_context or 'modal' not in template_context) and (
             admin_tab not in nav_tab_panes or nav_tab_panes[admin_tab]['disabled']
@@ -388,7 +390,7 @@ class IndexAdminController(BaseAdminController):
             encoding='utf-8'
         )
         request = web_context.request
-        context = (
+        return (
             web_context.template_context
             | {
                 'messages': Message.messages(request),
@@ -406,8 +408,6 @@ class IndexAdminController(BaseAdminController):
             }
             | (template_context or {})
         )
-
-        return context
 
     @classmethod
     def _admin_render(
@@ -771,8 +771,8 @@ class IndexAdminController(BaseAdminController):
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # Defaults edited in other tabs
-            timer_colors=config.default_timer_colors,  # type: ignore
-            timer_delays=config.default_timer_delays,  # type: ignore
+            timer_colors=config.default_timer_colors,  # type: ignore[arg-type]
+            timer_delays=config.default_timer_delays,  # type: ignore[arg-type]
             background_color=config.default_background_color,
             message_background_color=config.default_message_background_color,
             message_color=config.default_message_color,
@@ -951,7 +951,7 @@ class IndexAdminController(BaseAdminController):
         try:
             arch = EventDatabase(event.uniq_id).delete()
         except PermissionError as ex:
-            raise ClientException(f'Archiving the database failed: {ex}')
+            raise ClientException(f'Archiving the database failed: {ex}') from ex
 
         Message.success(
             request,
@@ -1115,7 +1115,7 @@ class IndexAdminController(BaseAdminController):
             try:
                 EventDatabase(event.uniq_id).rename(new_uniq_id)
             except PermissionError as ex:
-                raise ClientException(f'Renaming the database failed: {ex}.')
+                raise ClientException(f'Renaming the database failed: {ex}.') from ex
             ChampionshipLoader.rename_event_references(event.uniq_id, new_uniq_id)
             Message.success(
                 request,
@@ -1573,7 +1573,7 @@ class IndexAdminController(BaseAdminController):
         return self._render_tags_modal(web_context, flat_data)
 
     @classmethod
-    def _enable_missing_plugins(cls, request: HTMXRequest, event_uniq_id: str):
+    def _enable_missing_plugins(cls, request: HTMXRequest, event_uniq_id: str) -> None:
         with EventDatabase(event_uniq_id) as database:
             stored_event = database.load_stored_event_metadata()
         for plugin in plugin_manager.enable_missing_plugins(
@@ -1815,9 +1815,9 @@ class IndexAdminController(BaseAdminController):
                     )
                 database.__class__.update_status = None
 
-        if any([database.is_updating for database in source_databases]):
+        if any(database.is_updating for database in source_databases):
             template_name = '/admin/common/database/updating_badge.html'
-        elif any([database.outdated_warning for database in source_databases]):
+        elif any(database.outdated_warning for database in source_databases):
             template_name = '/admin/common/database/out_of_date_badge.html'
         else:
             template_name = '/admin/common/database/settings_badge.html'
@@ -1917,7 +1917,7 @@ class IndexAdminController(BaseAdminController):
             database = LocalSourceDatabaseManager().get_object(database_id)
             database.delete()
         except KeyError:
-            raise NotFoundException(f'Unknown database [{database_id}].')
+            raise NotFoundException(f'Unknown database [{database_id}].') from None
         return HTMXTemplate(
             template_name='/admin/common/database/database_update_buttons.html',
             context={'database': database},
@@ -1938,7 +1938,9 @@ class IndexAdminController(BaseAdminController):
             data_source = OnlineDataSourceManager().get_object(data_source_id)
             await data_source.reload_connection_status()
         except KeyError:
-            raise NotFoundException(f'Unknown data source [{data_source_id}].')
+            raise NotFoundException(
+                f'Unknown data source [{data_source_id}].'
+            ) from None
         template_context = self._database_modal_context()
         return self._admin_render(
             web_context=web_context,

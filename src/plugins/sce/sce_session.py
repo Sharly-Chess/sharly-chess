@@ -5,7 +5,8 @@ from functools import partial
 from json import JSONDecodeError
 from logging import Logger
 from threading import Lock
-from typing import Any, Callable
+from typing import Any, cast
+from collections.abc import Callable
 from weakref import WeakValueDictionary
 
 import requests
@@ -65,6 +66,7 @@ from utils.enum import Result
 from web.channels import channels_plugin
 from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.urls import build_get_url
+import contextlib
 
 logger: Logger = get_logger()
 
@@ -148,7 +150,7 @@ class SCESession(Session):
     def registrations_batch_url(self) -> str:
         return self.base_event_url + '/registrations/batch'
 
-    def _log_sync_operation(self, message: str, is_info: bool = False):
+    def _log_sync_operation(self, message: str, is_info: bool = False) -> None:
         full_message = (
             f'Sharly-Chess.com sync - Event [{self.event.uniq_id}] - {message}'
         )
@@ -157,7 +159,9 @@ class SCESession(Session):
         else:
             logger.debug(full_message)
 
-    def _log_player_sync_operation(self, player: TournamentPlayer, message: str):
+    def _log_player_sync_operation(
+        self, player: TournamentPlayer, message: str
+    ) -> None:
         log_name = player.last_name
         if player.first_name:
             log_name += f' {player.first_name}'
@@ -167,7 +171,7 @@ class SCESession(Session):
     # Auth
     # -------------------------------------------------------------------------
 
-    def _update_event_tokens(self, tokens: SCETokens | None):
+    def _update_event_tokens(self, tokens: SCETokens | None) -> None:
         plugin_data = SCEUtils.get_event_plugin_data(self.event)
         plugin_data.tokens = tokens
         SCEUtils.update_event_plugin_data(self.event, plugin_data)
@@ -196,7 +200,7 @@ class SCESession(Session):
         return build_get_url(SCE_BASE_URL, '/api/oauth/authorize', params)
 
     @staticmethod
-    def validate_api_response(response: Response):
+    def validate_api_response(response: Response) -> None:
         """Validate a response, raising a SharlyChessException if invalid and logging the error."""
         request_log = f'{response.request.method} {response.url} {response.status_code}'
         try:
@@ -204,11 +208,9 @@ class SCESession(Session):
             logger.debug(request_log)
         except HTTPError as e:
             logger.exception(request_log)
-            try:
+            with contextlib.suppress(JSONDecodeError):
                 logger.exception(response.json())
-            except JSONDecodeError:
-                pass
-            raise SharlyChessException(str(e))
+            raise SharlyChessException(str(e)) from e
 
     @classmethod
     def get_tokens_from_code(
@@ -234,7 +236,7 @@ class SCESession(Session):
             expires_at=datetime.now() + timedelta(seconds=data['expires_in']),
         )
 
-    def refresh_tokens(self, force: bool = False):
+    def refresh_tokens(self, force: bool = False) -> None:
         lock = _get_refresh_lock(self.event.uniq_id)
         with lock:
             # Re-read from DB: another thread may have already refreshed while we waited.
@@ -325,7 +327,7 @@ class SCESession(Session):
             plugin_data = SCEUtils.get_event_plugin_data(self.event)
             plugin_data.status = NotReachableSCEEventStatus().id
             SCEUtils.update_event_plugin_data(self.event, plugin_data)
-            raise SharlyChessException(str(e))
+            raise SharlyChessException(str(e)) from e
         return response
 
     # -------------------------------------------------------------------------
@@ -337,7 +339,7 @@ class SCESession(Session):
         data: SCEPlayerSyncData,
         sce_tournament_id: str,
         sce_player_id: str,
-    ):
+    ) -> requests.Response:
         return requests.patch(
             self.registration_url(sce_tournament_id, sce_player_id),
             headers=self.api_headers,
@@ -350,7 +352,7 @@ class SCESession(Session):
         data: SCEPlayerSyncData,
         sce_tournament_id: str,
         sce_player_id: str,
-    ):
+    ) -> None:
         self._run_with_token_validation(
             partial(
                 self._update_registration_request,
@@ -360,7 +362,9 @@ class SCESession(Session):
             )
         )
 
-    def _delete_registration_request(self, sce_tournament_id: str, sce_player_id: str):
+    def _delete_registration_request(
+        self, sce_tournament_id: str, sce_player_id: str
+    ) -> requests.Response:
         return requests.delete(
             self.registration_url(sce_tournament_id, sce_player_id),
             headers=self.api_headers,
@@ -371,7 +375,7 @@ class SCESession(Session):
         self,
         sce_tournament_id: str,
         sce_player_id: str,
-    ):
+    ) -> None:
         self._run_with_token_validation(
             partial(
                 self._delete_registration_request,
@@ -380,7 +384,7 @@ class SCESession(Session):
             )
         )
 
-    def _delete_local_player(self, player: TournamentPlayer):
+    def _delete_local_player(self, player: TournamentPlayer) -> None:
         tournament = player.tournament
         plugin_data = SCEUtils.get_player_plugin_data(player)
         sce_id = plugin_data.id
@@ -446,7 +450,7 @@ class SCESession(Session):
         """Create a local player from SC.com data.
         Return False if it already exists, True if it succeeds."""
 
-        def log_operation(message):
+        def log_operation(message: str) -> None:
             self._log_player_data_operation(sync_data, message)
 
         sce_tournament_id = SCEUtils.get_tournament_plugin_data(tournament).id
@@ -486,20 +490,21 @@ class SCESession(Session):
             )
             log_operation('Already existed on both ends, connection created')
             return True
-        else:
-            t_plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
-            t_plugin_data.duplicated_players_by_id[sce_id] = SCEDuplicatedPlayer(
-                last_name=stored_player.last_name,
-                first_name=stored_player.first_name,
-                duplicate_player_id=duplicate_player.id,
-            )
-            SCEUtils.update_tournament_plugin_data_from_database(
-                tournament, t_plugin_data, database
-            )
-            log_operation('Local creation failed, already exists locally')
+        t_plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+        t_plugin_data.duplicated_players_by_id[sce_id] = SCEDuplicatedPlayer(
+            last_name=stored_player.last_name,
+            first_name=stored_player.first_name,
+            duplicate_player_id=duplicate_player.id,
+        )
+        SCEUtils.update_tournament_plugin_data_from_database(
+            tournament, t_plugin_data, database
+        )
+        log_operation('Local creation failed, already exists locally')
         return False
 
-    def update_local_player(self, player: TournamentPlayer, data: SCEPlayerSyncData):
+    def update_local_player(
+        self, player: TournamentPlayer, data: SCEPlayerSyncData
+    ) -> None:
         data.augment_stored_player(
             player.stored_player,
             player.tournament,
@@ -700,7 +705,7 @@ class SCESession(Session):
     # Tournament
     # -------------------------------------------------------------------------
 
-    def import_tournaments(self, sce_tournament_ids: list[str]):
+    def import_tournaments(self, sce_tournament_ids: list[str]) -> None:
         data = self._get_event_data(with_active_registrations=True)
         with EventDatabase(self.event.uniq_id, True) as database:
             for tournament_data in data['tournaments']:
@@ -709,7 +714,7 @@ class SCESession(Session):
 
     def _create_local_tournament(
         self, raw_data: dict[str, Any], database: EventDatabase
-    ):
+    ) -> None:
         sce_id = raw_data['id']
         stored_tournament = StoredTournament(
             id=None,
@@ -738,7 +743,9 @@ class SCESession(Session):
                 database,
             )
 
-    def _create_tournament_request(self, data: SCETournamentSyncData):
+    def _create_tournament_request(
+        self, data: SCETournamentSyncData
+    ) -> requests.Response:
         return requests.post(
             self.base_event_url + '/tournaments',
             headers=self.api_headers,
@@ -776,7 +783,7 @@ class SCESession(Session):
 
     def _update_tournament_request(
         self, data: SCETournamentSyncData, sce_tournament_id: str
-    ):
+    ) -> requests.Response:
         return requests.patch(
             self.tournament_url(sce_tournament_id),
             headers=self.api_headers,
@@ -786,7 +793,7 @@ class SCESession(Session):
 
     def update_sce_tournament(
         self, data: SCETournamentSyncData, sce_tournament_id: str
-    ):
+    ) -> None:
         self._run_with_token_validation(
             partial(
                 self._update_tournament_request,
@@ -795,7 +802,9 @@ class SCESession(Session):
             )
         )
 
-    def resolve_tournament_conflict(self, tournament: Tournament, accept_local: bool):
+    def resolve_tournament_conflict(
+        self, tournament: Tournament, accept_local: bool
+    ) -> None:
         plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.id or not plugin_data.conflict_sync_data:
             return
@@ -812,11 +821,11 @@ class SCESession(Session):
 
     def _sync_tournament(
         self, tournament: Tournament, tournament_data_by_id: dict[str, dict[str, Any]]
-    ):
+    ) -> bool:
         """Synchronize a tournament with its SC.com equivalent.
         Returns a status boolean indicating False if it has conflicts."""
 
-        def log_operation(message: str):
+        def log_operation(message: str) -> None:
             self._log_sync_operation(f'Tournament [{tournament.name}] - {message}')
 
         plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
@@ -932,14 +941,14 @@ class SCESession(Session):
             )
             SCEUtils.update_event_plugin_data(self.event, plugin_data)
             self.validate_api_response(response)
-        return response.json()['data']
+        return cast(dict[str, Any], response.json()['data'])
 
     def update_event_from_sce_event(
         self,
         is_create: bool = False,
         update_tournament_conflicts: bool = False,
         update_player_conflicts: bool = False,
-    ):
+    ) -> None:
         from plugins.ffe.ffe import FfePlugin
         from plugins.sce.sce import SCEPlugin
 
@@ -970,8 +979,8 @@ class SCESession(Session):
             stored_event.organiser_name = data['organizer']['name']
             stored_event.prize_currency = data['currency']
             stored_event.location = data['city']
-            stored_event.timer_delays = SharlyChessConfig.default_timer_delays  # type: ignore
-            stored_event.timer_colors = SharlyChessConfig.default_timer_colors  # type: ignore
+            stored_event.timer_delays = SharlyChessConfig.default_timer_delays  # type: ignore[assignment]
+            stored_event.timer_colors = SharlyChessConfig.default_timer_colors  # type: ignore[assignment]
 
         plugin_data.slug = data['slug']
         plugin_data.organiser_slug = data['organizer']['slug']
@@ -1030,7 +1039,7 @@ class SCESession(Session):
         tournament_data_by_id: dict[str, dict[str, Any]],
         update_tournament_conflicts: bool,
         update_player_conflicts: bool,
-    ):
+    ) -> None:
         sce_player_sync_data_by_id: dict[str, SCEPlayerSyncData] = {}
         if update_player_conflicts:
             sce_tournament_ids = {
@@ -1082,7 +1091,7 @@ class SCESession(Session):
                     player_plugin_data.conflict_sync_data = sce_player_sync_data
                     SCEUtils.update_player_plugin_data(player, player_plugin_data)
 
-    def _log_player_data_operation(self, data: SCEPlayerSyncData, message: str):
+    def _log_player_data_operation(self, data: SCEPlayerSyncData, message: str) -> None:
         log_name = data.last_name
         if data.first_name:
             log_name += f' {data.first_name}'
@@ -1256,9 +1265,9 @@ class SCESession(Session):
         self._log_sync_operation(message, is_info=True)
         if conflict_count and duplicate_count:
             return PlayerDuplicatesAndConflictsSCESyncStatus()
-        elif conflict_count:
+        if conflict_count:
             return PlayerConflictsSCESyncStatus()
-        elif duplicate_count:
+        if duplicate_count:
             return PlayerDuplicatesSCESyncStatus()
         return SuccessSCESyncStatus()
 
@@ -1295,7 +1304,7 @@ class SCESession(Session):
             timeout=SCE_TIMEOUT,
         )
 
-    def update_event_check_in_schedules(self):
+    def update_event_check_in_schedules(self) -> None:
         response = self._run_with_token_validation(
             self._get_event_check_in_schedules_request
         )
@@ -1349,7 +1358,7 @@ class SCESession(Session):
             timeout=SCE_TIMEOUT,
         )
 
-    def toggle_tournament_check_in(self, tournament: Tournament):
+    def toggle_tournament_check_in(self, tournament: Tournament) -> None:
         plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
         sce_id = plugin_data.id
         if not sce_id:

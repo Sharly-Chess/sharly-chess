@@ -8,6 +8,7 @@ competitor to a named group, adding an extra identity key so the organiser can f
 matches the automatic pass missed."""
 
 from datetime import date
+from collections.abc import Iterator
 from typing import Any, TYPE_CHECKING
 
 from common.i18n.utils import normalized_key
@@ -26,8 +27,8 @@ class ReconciledParticipation:
     def __init__(
         self, source: 'ChampionshipSource', tournament_player: 'TournamentPlayer'
     ):
-        self.source: 'ChampionshipSource' = source
-        self.tournament_player: 'TournamentPlayer' = tournament_player
+        self.source: ChampionshipSource = source
+        self.tournament_player: TournamentPlayer = tournament_player
 
     @property
     def event_uniq_id(self) -> str:
@@ -84,7 +85,9 @@ class ReconciledParticipation:
     #: to fall back on (the extended direct encounter is a team-only rule).
     has_secondary_score = False
 
-    def encounters(self, _team_score_basis: TeamScoreBasis, secondary: bool = False):
+    def encounters(
+        self, _team_score_basis: TeamScoreBasis, secondary: bool = False
+    ) -> Iterator[tuple[int, float]]:
         # Only games actually played over the board count for the direct
         # encounter: forfeit wins/losses (and games with no result yet) are
         # excluded, so a walkover does not decide a shared ranking.
@@ -93,7 +96,7 @@ class ReconciledParticipation:
                 yield pairing.opponent_id, pairing.points
 
 
-def _competitor_key(participations) -> str:
+def _competitor_key(participations: list[Any]) -> str:
     """A stable identifier for a reconciled competitor, derived from the sorted
     set of its source participations. Survives a recompute as long as the same
     participations reconcile together (a manual order is intentionally dropped
@@ -236,7 +239,9 @@ class ReconciledTeamParticipation:
     #: score to the secondary one.
     has_secondary_score = True
 
-    def encounters(self, team_score_basis: TeamScoreBasis, secondary: bool = False):
+    def encounters(
+        self, team_score_basis: TeamScoreBasis, secondary: bool = False
+    ) -> Iterator[tuple[int, float]]:
         tournament = self.source.tournament
         assert tournament is not None
         team_id = self.team.id
@@ -310,7 +315,7 @@ class _UnionFind:
             index = self._parent[index]
         return index
 
-    def union(self, left: int, right: int):
+    def union(self, left: int, right: int) -> None:
         left_root, right_root = self.find(left), self.find(right)
         if left_root != right_root:
             self._parent[right_root] = left_root

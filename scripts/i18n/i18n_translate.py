@@ -126,9 +126,9 @@ class I18nTranslator:
                     f'Adding missing translations to [{po_file}]...'
                 )
                 error: bool = False
-                i: int = 0
-                for message_id in domain_message_ids_to_translate[domain.name]:
-                    i += 1
+                for i, message_id in enumerate(
+                    domain_message_ids_to_translate[domain.name], start=1
+                ):
                     percent = int(
                         100 * i / len(domain_message_ids_to_translate[domain.name])
                     )
@@ -219,19 +219,12 @@ class I18nTranslator:
         # now really extract the tokens
         while True:
             token: str | None = None
-            if match := re.search(r'{[^}]*}', string):  # Looking for {name}
-                token = match.group()
-            elif match := re.search(
-                r'%%[sflt]', string
-            ):  # Looking for %%s, %%f, %%l and %%t
-                token = match.group()
-            elif match := re.search(
-                r'%[sflt]', string
-            ):  # Looking for %s, %f, %l and %t
-                token = match.group()
-            elif match := re.search(
-                r'%\([^)]*\)[ds]', string
-            ):  # Looking for %(name)s or %(name)d
+            if (
+                (match := re.search(r'{[^}]*}', string))
+                or (match := re.search(r'%%[sflt]', string))
+                or (match := re.search(r'%[sflt]', string))
+                or (match := re.search(r'%\([^)]*\)[ds]', string))
+            ):  # Looking for {name}
                 token = match.group()
             if token:
                 string = string.replace(token, f'({len(tokens)})', 1)
@@ -304,14 +297,12 @@ class I18nTranslator:
                 message.string = message.id[:index]
                 self.flag_message(message, 'fuzzy')
                 return True
-            else:
-                message.string = self.translate_string(message.id, percent)
-                if message.string:
-                    self.flag_message(message, 'ai_translation')
-                    return True
-                else:
-                    return False
-        elif isinstance(message.id, tuple):
+            message.string = self.translate_string(message.id, percent)
+            if message.string:
+                self.flag_message(message, 'ai_translation')
+                return True
+            return False
+        if isinstance(message.id, tuple):
             assert len(message.id) == 2, f'{message.id=}'
             message.string = (
                 self.translate_string(message.id[0], percent),
@@ -320,15 +311,13 @@ class I18nTranslator:
             if message.string[0] and message.string[1]:
                 self.flag_message(message, 'ai_translation')
                 return True
-            else:
-                return False
-        else:
-            logger.warning(
-                'Can not translate message [%s] (type: [%s])',
-                message.id,
-                type(message.id),
-            )
             return False
+        logger.warning(
+            'Can not translate message [%s] (type: [%s])',
+            message.id,
+            type(message.id),
+        )
+        return False
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `info` ('
             "    `name` TEXT NOT NULL DEFAULT '?',"

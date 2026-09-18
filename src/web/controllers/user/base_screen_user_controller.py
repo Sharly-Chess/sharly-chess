@@ -53,19 +53,20 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
             try:
                 return self.user_event.families_by_uniq_id[family_uniq_id]
             except KeyError:
-                raise NotFoundException(f'Family [{family_uniq_id}] not found.')
+                raise NotFoundException(
+                    f'Family [{family_uniq_id}] not found.'
+                ) from None
         return None
 
     @property
     def background_color(self) -> str:
         if self.screen:
             return self.screen.background_color
-        elif self.rotator:
+        if self.rotator:
             return self.rotator.event.background_color
-        elif self.display_controller:
+        if self.display_controller:
             return self.display_controller.event.background_color
-        else:
-            return SharlyChessConfig.default_background_color
+        return SharlyChessConfig.default_background_color
 
     @property
     def template_context(self) -> dict[str, Any]:

@@ -19,7 +19,7 @@ class AuthActionCategory(StrEnum):
 
     @classmethod
     def categories(cls) -> list[Self]:
-        return list(cls(c) for c in cls)
+        return [cls(c) for c in cls]
 
     @property
     def name(self) -> str:
@@ -127,7 +127,7 @@ class AuthAction(StrEnum):
 
     @classmethod
     def actions(cls) -> list[Self]:
-        return list(cls(a) for a in cls)
+        return [cls(a) for a in cls]
 
     @property
     def category(self) -> AuthActionCategory:

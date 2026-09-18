@@ -91,7 +91,6 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
     @abstractmethod
     def type(self) -> str:
         """Returns a string corresponding to the type of the item."""
-        pass
 
     def allowed_properties(
         self,
@@ -145,7 +144,6 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         editor: bool = False,
     ) -> str:
         """Returns the inner HTML of the item."""
-        pass
 
     def _wrapper_css_properties(
         self,
@@ -231,9 +229,9 @@ class PlaceCardItem(PlaceCardItemStyle, ABC):
         """Returns the CSS to print for the item."""
         return (
             f'.{template_css_class} .card-item-wrapper.{self.css_class} {{\n{";\n".join(f"{key}: {value};" for key, value in self._wrapper_css_properties().items())}\n}}\n'
-            + f'.{template_css_class} .{self.css_class} .card-item {{\n{";\n".join(f"{key}: {value};" for key, value in self._item_css_properties(unit, preview).items())}\n}}\n'
-            + f'.{template_css_class} .{self.css_class} .card-item * {{\n{";\n".join(f"{key}: {value};" for key, value in self._inner_css_properties(unit).items())}\n}}\n'
-            + f'.{template_css_class} .{self.css_class} .card-item {{\n{self.css}\n}}\n'
+            f'.{template_css_class} .{self.css_class} .card-item {{\n{";\n".join(f"{key}: {value};" for key, value in self._item_css_properties(unit, preview).items())}\n}}\n'
+            f'.{template_css_class} .{self.css_class} .card-item * {{\n{";\n".join(f"{key}: {value};" for key, value in self._inner_css_properties(unit).items())}\n}}\n'
+            f'.{template_css_class} .{self.css_class} .card-item {{\n{self.css}\n}}\n'
         )
 
     def mirror(
@@ -447,7 +445,7 @@ class PlaceCardImage(PlaceCardItem):
             return image.size[0] / image.size[1]
         except UnidentifiedImageError:
             # try to get the dimensions or view box of SVG files
-            with open(image_file, 'rt') as f:
+            with open(image_file) as f:
                 svg_tree: ElementTree = ET.ElementTree(ET.fromstring(f.read()))
             if not svg_tree:
                 return 0.0

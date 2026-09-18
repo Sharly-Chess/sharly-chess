@@ -22,6 +22,7 @@ from database.sqlite.event.event_store import (
 from tests.test_config import TestUtils
 from data.tie_breaks.team_records import TeamMatchType
 from utils.enum import EventType, Result, TeamByeType
+import contextlib
 
 
 EVENT_ID = 'test-team-empty-lineup'
@@ -88,10 +89,8 @@ class _TeamLineupHarness(TestCase):
         TestUtils.delete_event(EVENT_ID)
 
     def _load(self) -> Tournament:
-        try:
+        with contextlib.suppress(KeyError):
             EventLoader.unload_event(EVENT_ID)
-        except KeyError:
-            pass
         # A Tournament holds its event weakly, so the event has to
         # outlive this call.
         self._event = EventLoader().load_event(EVENT_ID)

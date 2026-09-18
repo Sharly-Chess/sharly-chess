@@ -154,7 +154,7 @@ class PairingVariation(IdentifiableEntity, ABC):
 
     def update_settings_from_added_pairing_number(
         self, _tournament: 'Tournament', _pairing_number: int
-    ):
+    ) -> bool:
         """Update the settings when a pairing number has been added.
         Return True if the settings have been updated."""
         return False

@@ -38,12 +38,14 @@ from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
 from plugins.manager import plugin_manager
 from scripts.export.windows.generate_setup_files import DIST_DIR
-from utils.file import shutil_delete_onerror
+from utils.file import shutil_delete_onexc
 
 logger: Logger = get_logger()
 
 
-class ProjectBuilder(ABC):
+# A base that is not meant to be instantiated, although every method it
+# declares has a default.
+class ProjectBuilder(ABC):  # noqa: B024
     """OS-agnostic class to export the project."""
 
     def __init__(self):
@@ -61,12 +63,11 @@ class ProjectBuilder(ABC):
         args: Namespace = parser.parse_args()
         if args.github_version:
             gh_version = Version(args.github_version)
-            if SHARLY_CHESS_VERSION != gh_version:
+            if gh_version != SHARLY_CHESS_VERSION:
                 raise InvalidVersion(
                     f'Version [{gh_version}] does not match (expected [{SHARLY_CHESS_VERSION}]).'
                 )
-            else:
-                logger.info('Version [%s] is valid.', gh_version)
+            logger.info('Version [%s] is valid.', gh_version)
         else:
             logger.info('The version is not verified (not running on GitHub).')
         self.hook_check_params(args)
@@ -101,7 +102,7 @@ class ProjectBuilder(ABC):
     ):
         if folder.is_dir():
             logger.info('Deleting folder [%s]...', folder)
-            shutil.rmtree(folder, onerror=shutil_delete_onerror)
+            shutil.rmtree(folder, onexc=shutil_delete_onexc)
 
     @staticmethod
     def _delete_file(
@@ -149,9 +150,7 @@ class ProjectBuilder(ABC):
         self._rename_executable_file()
         if not self._generate_license_files():
             return False
-        if not self.hook_post_build_project():
-            return False
-        return True
+        return self.hook_post_build_project()
 
     def _generate_license_files(self) -> bool:
         """Generate third-party license files using pip-licenses.
@@ -200,8 +199,8 @@ class ProjectBuilder(ABC):
                     '--format=json',
                     '--with-license-file',
                     '--ignore-packages',
-                ]
-                + ignored_packages,
+                    *ignored_packages,
+                ],
                 capture_output=True,
                 text=True,
                 check=True,
@@ -230,7 +229,7 @@ class ProjectBuilder(ABC):
 
                     package_error: bool = False
                     # Add license file content if available
-                    if 'LicenseFile' in package and package['LicenseFile']:
+                    if package.get('LicenseFile'):
                         license_file_path = package['LicenseFile'].strip()
 
                         try:
@@ -238,7 +237,6 @@ class ProjectBuilder(ABC):
                             if license_path.exists() and license_path.is_file():
                                 with open(
                                     license_path,
-                                    'r',
                                     encoding='utf-8',
                                     errors='replace',
                                 ) as license_file:
@@ -354,7 +352,6 @@ class ProjectBuilder(ABC):
                                     try:
                                         with open(
                                             licence_file,
-                                            'r',
                                             encoding='utf-8',
                                             errors='replace',
                                         ) as licence_content_file:
@@ -418,7 +415,7 @@ class ProjectBuilder(ABC):
                             try:
                                 if template_file.exists():
                                     with open(
-                                        template_file, 'r', encoding='utf-8'
+                                        template_file, encoding='utf-8'
                                     ) as template_content_file:
                                         template_content = template_content_file.read()
                                     f_.write(template_content)
@@ -470,9 +467,11 @@ class ProjectBuilder(ABC):
                     )
 
         # Process WebLibArchiveInstaller instances
-        for installer in InstallationChecker.web_lib_installers:
+        for lib_installer in InstallationChecker.web_lib_installers:
             process_installer(
-                installer, installer.version_install_dir, 'WebLibArchiveInstaller'
+                lib_installer,
+                lib_installer.version_install_dir,
+                'WebLibArchiveInstaller',
             )
 
         # Process ExecutableInstaller instances
@@ -689,7 +688,7 @@ class ProjectBuilder(ABC):
             iso4217parse_path / 'data.json',
             iso4217parse_path / 'symbols.json',
         ]:
-            pyinstaller_params.append(
+            pyinstaller_params.append(  # noqa: PERF401
                 f'--add-data={file}{data_separator}{file.parent.relative_to(venv_lib_path)}'
             )
         pyinstaller_params += self.hook_pyinstaller_additional_params()

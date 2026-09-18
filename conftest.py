@@ -8,7 +8,8 @@ import sys
 import time
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Generator, cast
+from typing import cast
+from collections.abc import Generator
 
 import pytest
 import requests
@@ -22,6 +23,7 @@ from playwright.sync_api import (
 from common import DATA_DIR
 from common.sharly_chess_config import SharlyChessConfig
 from tests.test_config import TestConfig
+import contextlib
 
 # Note: Keeping default event loop policy for Windows (ProactorEventLoop)
 # The WindowsSelectorEventLoop doesn't support subprocess operations
@@ -53,6 +55,14 @@ def pytest_collection_modifyitems(config, items):
 
     # Store this information for fixtures to use
     config._has_e2e_tests = has_e2e_tests
+
+
+def _coverage_is_running() -> bool:
+    try:
+        import coverage
+    except ImportError:
+        return False
+    return coverage.Coverage.current() is not None
 
 
 class BackendServer:
@@ -105,6 +115,15 @@ class BackendServer:
             str(DATA_DIR),
         ]
 
+        # coverage measures the process it is started in, and the server is
+        # not it. The variable has to be set here rather than at import time
+        # because pytest-cov starts measuring after the module is loaded.
+        if _coverage_is_running():
+            env['COVERAGE_PROCESS_START'] = str(project_root / 'pyproject.toml')
+            env['COVERAGE_FILE'] = os.environ.get(
+                'COVERAGE_FILE', str(project_root / '.coverage')
+            )
+
         # Create log file for server output - use unique name to avoid conflicts
         import time
 
@@ -147,10 +166,8 @@ class BackendServer:
         """Stop the backend server and everything it forked."""
         if self.process:
             self._signal_group(force=False)
-            try:
+            with contextlib.suppress(subprocess.TimeoutExpired):
                 self.process.wait(timeout=self.STOP_TIMEOUT)
-            except subprocess.TimeoutExpired:
-                pass
             # Unconditionally, not only when the parent outstays its
             # welcome: the parent exiting says nothing about the child it
             # forked, which is left holding open handles on a data
@@ -196,6 +213,7 @@ class BackendServer:
             subprocess.run(
                 ['taskkill', '/F', '/T', '/PID', str(self.process.pid)],
                 capture_output=True,
+                check=False,
             )
         else:
             self.process.terminate()
@@ -351,7 +369,7 @@ class RetryingAPIRequestContext:
 @pytest.fixture(scope='session')
 def api_request_context(
     playwright: Playwright,
-) -> Generator[APIRequestContext, None, None]:
+) -> Generator[APIRequestContext]:
     request_context = playwright.request.new_context(base_url='http://127.0.0.1:9000')
     yield cast(APIRequestContext, RetryingAPIRequestContext(request_context))
     request_context.dispose()

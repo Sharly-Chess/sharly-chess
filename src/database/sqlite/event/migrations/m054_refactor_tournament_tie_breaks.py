@@ -5,7 +5,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'CREATE TABLE `tie_break` ('
             '   `id` INTEGER NOT NULL,'
@@ -59,7 +59,7 @@ class Migration(BaseMigration):
                 )
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `tie_breaks`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             "ALTER TABLE `tournament` ADD `tie_breaks` TEXT NOT NULL DEFAULT '[]'"
         )
@@ -70,14 +70,13 @@ class Migration(BaseMigration):
                 'SELECT * FROM `tie_break` WHERE `tournament_id` = ? ORDER BY `index`',
                 (tournament_id,),
             )
-            tie_breaks: list[dict[str, Any]] = []
-            for row_ in self.database.fetchall():
-                tie_breaks.append(
-                    {
-                        'type': row_['type'],
-                        'options': json.loads(row_['options']),
-                    }
-                )
+            tie_breaks: list[dict[str, Any]] = [
+                {
+                    'type': row_['type'],
+                    'options': json.loads(row_['options']),
+                }
+                for row_ in self.database.fetchall()
+            ]
             self.database.execute(
                 'UPDATE `tournament` SET `tie_breaks` = ? WHERE `id` = ?',
                 (json.dumps(tie_breaks), tournament_id),

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import StrEnum
-from functools import cache
 
 from common.exception import SharlyChessException
 
@@ -32,7 +31,7 @@ class RoundStatus(StrEnum):
     FUTURE = 'FUTURE'
 
     @classmethod
-    def from_round(cls, round_: int, current_round: int):
+    def from_round(cls, round_: int, current_round: int) -> 'RoundStatus':
         if round_ == current_round:
             return cls.CURRENT
         if round_ == current_round - 1:
@@ -70,7 +69,6 @@ class PermissionHandler[Action: StrEnum]:
     def __init__(self, permissions: list[Permission[Action]]):
         self.permissions = permissions
 
-    @cache
     def existing_actions(self, round_status: RoundStatus) -> list[Action]:
         """List of all the actions that are possible for *round_status*
         regardless of the security mode"""
@@ -80,7 +78,6 @@ class PermissionHandler[Action: StrEnum]:
             if round_status in permission.rules
         ]
 
-    @cache
     def allowed_actions(
         self, round_status: RoundStatus, safety_mode: SafetyMode
     ) -> list[Action]:
@@ -91,7 +88,6 @@ class PermissionHandler[Action: StrEnum]:
             if permission.is_allowed(round_status, safety_mode)
         ]
 
-    @cache
     def unsafe_actions(self, round_status: RoundStatus) -> list[Action]:
         return [
             permission.action
@@ -100,7 +96,6 @@ class PermissionHandler[Action: StrEnum]:
             and permission.rules[round_status] == SafetyMode.UNSAFE
         ]
 
-    @cache
     def fide_incompatible_actions(self, round_status: RoundStatus) -> list[Action]:
         return [
             permission.action
@@ -109,7 +104,6 @@ class PermissionHandler[Action: StrEnum]:
             and permission.rules[round_status] == SafetyMode.FIDE_INCOMPATIBLE
         ]
 
-    @cache
     def required_mode(self, round_status: RoundStatus, action: Action) -> SafetyMode:
         permission = next(
             permission for permission in self.permissions if permission.action == action

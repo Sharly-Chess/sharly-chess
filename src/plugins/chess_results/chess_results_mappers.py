@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Self
+from typing import Any, Self, cast
 
 from data.pairings import PairingSystem
 from data.pairings.systems import (
@@ -108,7 +108,9 @@ class ChessResultsTieBreak:
                     param5='-',
                 )
             case ffe_tb.PapiBuchholzTieBreak:
-                buchholz_type: PapiBuchholzType = getattr(tie_break, 'type')
+                buchholz_type: PapiBuchholzType = cast(
+                    ffe_tb.PapiBuchholzTieBreak, tie_break
+                ).type
                 cut = str(
                     ffe_tb.PapiBuchholzTieBreak.papi_buchholz_cut(tournament.rounds)
                 )
@@ -133,7 +135,8 @@ class ChessResultsTieBreak:
             case ffe_tb.PapiSumOfBuchholzTieBreak:
                 return cls(25)
             case tb.AverageOfBuchholzTieBreak:
-                return cls(77, 'F' if getattr(tie_break, 'fore_modifier') else '-')
+                fore = cast(tb.AverageOfBuchholzTieBreak, tie_break).fore_modifier
+                return cls(77, 'F' if fore else '-')
             case tb.SonnebornBergerTieBreak:
                 return cls(
                     85,
@@ -185,7 +188,7 @@ class ChessResultsTieBreak:
                     ESBVariant.EMGSB: '1',
                     ESBVariant.EGMSB: '2',
                     ESBVariant.EGGSB: '3',
-                }[getattr(tie_break, 'variant')]
+                }[cast(ttb.ExtendedSonnebornBergerTeamTieBreak, tie_break).variant]
                 return cls(
                     82,
                     param1=variant_index,
@@ -230,7 +233,8 @@ class ChessResultsTieBreak:
 
     @staticmethod
     def cutter_params(tie_break: TieBreak) -> dict[str, str]:
-        cutter: TieBreakCutter = getattr(tie_break, 'cutter')
+        # Every tie-break routed here declares a cutter; the base type does not.
+        cutter: TieBreakCutter = cast(Any, tie_break).cutter
         return {
             'param2': str(cutter.top_cut),
             'param3': str(cutter.bottom_cut),

@@ -26,7 +26,7 @@ team A, and team B rotates around it.
 """
 
 from abc import ABC
-from functools import cached_property, lru_cache
+from functools import cached_property, cache
 from typing import TYPE_CHECKING, override
 
 from common.i18n import _
@@ -186,7 +186,7 @@ def _reversed_colours(pairing: TablePairing) -> TablePairing:
     )
 
 
-@lru_cache(maxsize=None)
+@cache
 def scheveningen_table(players_per_team: int, double_round: bool) -> FixedPairingTable:
     """The Scheveningen table for a match on *players_per_team* boards."""
     rounds: list[tuple[TablePairing, ...]] = [
@@ -442,7 +442,7 @@ class ScheveningenEngine(TeamPairingEngine):
             else None
         )
         n = tournament.team_player_count or 0
-        slots_by_letter: dict[str, list['Player | None']] = {
+        slots_by_letter: dict[str, list[Player | None]] = {
             'A': list(team_a.effective_round_slots(stb.round_)),
             'B': list(team_b.effective_round_slots(stb.round_))
             if team_b is not None

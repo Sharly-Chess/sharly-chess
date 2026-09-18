@@ -97,13 +97,15 @@ class TournamentExporterTestCase(TestCase):
         assert self.tournament.arbiters == [account_by_role[RoleType.ARBITER]]
 
         simple_arbiter = account_by_role[RoleType.ARBITER]
-        with EventDatabase(EVENT_ID, write=True) as database:
-            with self.assertRaises(IntegrityError):
-                database.add_stored_roles(
-                    simple_arbiter.id,
-                    RoleType.DEPUTY_ARBITER.value,
-                    [self.tournament.id],
-                )
+        with (
+            EventDatabase(EVENT_ID, write=True) as database,
+            self.assertRaises(IntegrityError),
+        ):
+            database.add_stored_roles(
+                simple_arbiter.id,
+                RoleType.DEPUTY_ARBITER.value,
+                [self.tournament.id],
+            )
 
     def test_chess_results_getkey_escapes_tournament_name(self):
         """A tournament name with XML metacharacters (e.g. ``R&B``) must be
@@ -156,7 +158,7 @@ class TournamentExporterTestCase(TestCase):
     def _set_tie_breaks(self, tie_breaks: list[TieBreak]):
         """Rank on the points, then on *tie_breaks* — the points being a
         criterion of their own now, they are stated rather than implied."""
-        ordered = [PointsTieBreak()] + tie_breaks
+        ordered = [PointsTieBreak(), *tie_breaks]
         self.tournament.tie_breaks_by_id = {
             index + 1: tie_break for index, tie_break in enumerate(ordered)
         }

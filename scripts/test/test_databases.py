@@ -47,85 +47,85 @@ def test_fide_local_database():
         start: float = time.perf_counter()
         print('Creating the FIDE database... ')
         duration: float = time.perf_counter() - start
-        if FideDatabase().update():
-            print(f'Done in {duration:.2f} seconds.')
-            if sql_commands:
-                print(f'Adding indices ({", ".join(sql_commands.keys())})... ', end='')
-                start: float = time.perf_counter()
-                for sql_command in sql_commands.values():
-                    with FideDatabase(write=True) as fide_database:
-                        fide_database.execute(sql_command)
-                duration: float = time.perf_counter() - start
-                print(f'{duration:.2f} seconds.')
+        FideDatabase().update()
+        print(f'Done in {duration:.2f} seconds.')
+        if sql_commands:
+            print(f'Adding indices ({", ".join(sql_commands.keys())})... ', end='')
+            start = time.perf_counter()
+            for sql_command in sql_commands.values():
+                with FideDatabase(write=True) as fide_database:
+                    fide_database.execute(sql_command)
+            duration = time.perf_counter() - start
+            print(f'{duration:.2f} seconds.')
+        print(
+            f'Database size: {int(FideDatabase().file.lstat().st_size / 1024 / 1024)}Mb'
+        )
+        if test_names:
             print(
-                f'Database size: {int(FideDatabase().file.lstat().st_size / 1024 / 1024)}Mb'
+                f'Performing {searches} name searches on the FIDE database (opening and closing each time)... ',
+                end='',
             )
-            if test_names:
-                print(
-                    f'Performing {searches} name searches on the FIDE database (opening and closing each time)... ',
-                    end='',
-                )
-                start: float = time.perf_counter()
-                for _ in range(searches):
-                    with FideDatabase() as fide_database:
-                        # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
-                        fide_database.search_player(
-                            random_search_token(),
-                            federation='FRA',
-                            page=0,
-                            limit=search_limit,
-                        )
-                duration: float = time.perf_counter() - start
-                print(f'{duration:.2f} seconds.')
-                start: float = time.perf_counter()
+            start = time.perf_counter()
+            for _ in range(searches):
                 with FideDatabase() as fide_database:
-                    print(
-                        f'Performing {searches} name searches on the FIDE database (opening and closing once)... ',
-                        end='',
+                    # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
+                    fide_database.search_player(
+                        random_search_token(),
+                        federation='FRA',
+                        page=0,
+                        limit=search_limit,
                     )
-                    for _ in range(searches):
-                        # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
-                        fide_database.search_player(
-                            random_search_token(),
-                            federation='FRA',
-                            page=0,
-                            limit=search_limit,
-                        )
-                duration: float = time.perf_counter() - start
-                print(f'{duration:.2f} seconds.')
-            if test_ids:
+            duration = time.perf_counter() - start
+            print(f'{duration:.2f} seconds.')
+            start = time.perf_counter()
+            with FideDatabase() as fide_database:
                 print(
-                    f'Performing {searches} integer searches on the FIDE database (opening and closing each time)... ',
+                    f'Performing {searches} name searches on the FIDE database (opening and closing once)... ',
                     end='',
                 )
-                start: float = time.perf_counter()
                 for _ in range(searches):
-                    with FideDatabase() as fide_database:
-                        # print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
-                        fide_database.search_player(
-                            random_search_id(),
-                            federation='FRA',
-                            page=0,
-                            limit=search_limit,
-                        )
-                duration: float = time.perf_counter() - start
-                print(f'{duration:.2f} seconds.')
-                print(
-                    f'Performing {searches} integer searches on the FIDE database (opening and closing once)... ',
-                    end='',
-                )
-                start: float = time.perf_counter()
+                    # print(f'Token [{token}]: {len(list(fide_database.search_player(random_search_token(), limit=limit)))}')
+                    fide_database.search_player(
+                        random_search_token(),
+                        federation='FRA',
+                        page=0,
+                        limit=search_limit,
+                    )
+            duration = time.perf_counter() - start
+            print(f'{duration:.2f} seconds.')
+        if test_ids:
+            print(
+                f'Performing {searches} integer searches on the FIDE database (opening and closing each time)... ',
+                end='',
+            )
+            start = time.perf_counter()
+            for _ in range(searches):
                 with FideDatabase() as fide_database:
-                    for _ in range(searches):
-                        # print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
-                        fide_database.search_player(
-                            random_search_id(),
-                            federation='FRA',
-                            page=0,
-                            limit=search_limit,
-                        )
-                duration: float = time.perf_counter() - start
-                print(f'{duration:.2f} seconds.')
+                    # print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
+                    fide_database.search_player(
+                        random_search_id(),
+                        federation='FRA',
+                        page=0,
+                        limit=search_limit,
+                    )
+            duration = time.perf_counter() - start
+            print(f'{duration:.2f} seconds.')
+            print(
+                f'Performing {searches} integer searches on the FIDE database (opening and closing once)... ',
+                end='',
+            )
+            start = time.perf_counter()
+            with FideDatabase() as fide_database:
+                for _ in range(searches):
+                    # print(f'Id [{id}]: {len(list(fide_database.search_player(str(id), limit=limit)))}')
+                    fide_database.search_player(
+                        random_search_id(),
+                        federation='FRA',
+                        page=0,
+                        limit=search_limit,
+                    )
+            duration = time.perf_counter() - start
+            print(f'{duration:.2f} seconds.')
 
 
 def test_ffe_local_database():
@@ -135,19 +135,19 @@ def test_ffe_local_database():
     duration: float = time.perf_counter() - start
     print(f'Done in {duration:.2f} seconds.')
     print('Creating the FFE database...')
-    start: float = time.perf_counter()
-    if FfeDatabase().update():
-        duration: float = time.perf_counter() - start
-        print(f'Done in {duration} seconds.')
-        print(f'Performing {searches} searches on the FFE database...')
-        start: float = time.perf_counter()
-        for _ in range(searches):
-            with FfeDatabase() as ffe_database:
-                ffe_database.search_player(
-                    random_search_token(), federation='FRA', page=0, limit=search_limit
-                )
-        duration: float = time.perf_counter() - start
-        print(f'Done in {duration:.2f} seconds.')
+    start = time.perf_counter()
+    FfeDatabase().update()
+    duration = time.perf_counter() - start
+    print(f'Done in {duration} seconds.')
+    print(f'Performing {searches} searches on the FFE database...')
+    start = time.perf_counter()
+    for _ in range(searches):
+        with FfeDatabase() as ffe_database:
+            ffe_database.search_player(
+                random_search_token(), federation='FRA', page=0, limit=search_limit
+            )
+    duration = time.perf_counter() - start
+    print(f'Done in {duration:.2f} seconds.')
 
 
 async def search_ffe_sql_server_token(token: str, limit: int = 0) -> list[StoredPlayer]:
@@ -198,6 +198,7 @@ async def test_ffe_sql_server():
         '--------------------------------------------------------------------------------------------------------------------------------------------------------'
     )
     for player in players:
+        assert player.fide_id is not None
         await search_ffe_sql_server_fide_id(player.fide_id)
 
 

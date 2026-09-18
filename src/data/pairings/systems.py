@@ -387,7 +387,7 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
             ),
             Permission(
                 PairingAction.COLOR_PERMUTE,
-                {status: SafetyMode.FIDE_INCOMPATIBLE for status in RoundStatus},
+                dict.fromkeys(RoundStatus, SafetyMode.FIDE_INCOMPATIBLE),
             ),
         ]
         return PermissionHandler(permissions)

@@ -17,7 +17,7 @@ class PlayerUpdaterField(IdentifiableEntity, ABC):
     @abstractmethod
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         """Update the source player from the match player's value."""
 
     @abstractmethod
@@ -72,7 +72,7 @@ class FideIDUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.fide_id = match_stored_player.fide_id
 
     @property
@@ -97,7 +97,7 @@ class TitleUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.title = match_stored_player.title
 
 
@@ -118,7 +118,7 @@ class WomenTitleUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.women_title = match_stored_player.women_title
 
 
@@ -142,7 +142,7 @@ class NameUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.last_name = match_stored_player.last_name
         stored_player.first_name = match_stored_player.first_name
 
@@ -184,7 +184,7 @@ class CategoryUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.year_of_birth = match_stored_player.year_of_birth
         stored_player.date_of_birth = match_stored_player.date_of_birth
 
@@ -203,7 +203,7 @@ class GenderPlayerUpdater(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.gender = match_stored_player.gender
 
     def get_string_value(self, player: Player) -> str:
@@ -252,7 +252,7 @@ class RatingUpdaterField(PlayerUpdaterField, ABC):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         tr = self.tournament_rating().value
         src_ratings = PlayerRating.from_stored_value(stored_player.ratings.get(tr, {}))
         match_ratings = PlayerRating.from_stored_value(
@@ -309,7 +309,7 @@ class FederationUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.federation = match_stored_player.federation
 
     def get_string_value(self, player: Player) -> str:
@@ -330,7 +330,7 @@ class ClubUpdaterField(PlayerUpdaterField):
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
-    ):
+    ) -> None:
         stored_player.club = match_stored_player.club
 
     def get_string_value(self, player: Player) -> str:

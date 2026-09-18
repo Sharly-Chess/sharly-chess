@@ -9,12 +9,12 @@ class Migration(BaseMigration):
     has to be written for the installations that already exist.
     """
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'ALTER TABLE `plugin` ADD `default_event_is_enabled` INTEGER'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `plugin` DROP COLUMN `default_event_is_enabled`'
         )

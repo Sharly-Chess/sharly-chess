@@ -164,14 +164,16 @@ class CustomUploadUtils:
     @staticmethod
     def save_event_plugin_data(
         event: Event, plugin_data: 'CustomUploadEventPluginData'
-    ):
+    ) -> None:
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         event.plugin_data[PLUGIN_NAME] = plugin_data
         with EventDatabase(event.uniq_id, write=True) as database:
             database.update_stored_event(event.stored_event)
 
     @classmethod
-    def update_document_state(cls, event_uniq_id: str, document: 'ConfiguredDocument'):
+    def update_document_state(
+        cls, event_uniq_id: str, document: 'ConfiguredDocument'
+    ) -> None:
         """Persist the upload state of a single document, reloading the event's
         plugin data first so concurrent uploads of other documents aren't lost."""
         with EventDatabase(event_uniq_id, write=True) as database:
@@ -350,14 +352,14 @@ class CustomUploadEventPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            ftp_host=stored_value.get('ftp_host', None),
-            default_server_path=stored_value.get('default_server_path', None),
-            ftp_username=stored_value.get('ftp_username', None),
-            ftp_password=stored_value.get('ftp_password', None),
+            ftp_host=stored_value.get('ftp_host'),
+            default_server_path=stored_value.get('default_server_path'),
+            ftp_username=stored_value.get('ftp_username'),
+            ftp_password=stored_value.get('ftp_password'),
             transfer_protocol=TransferProtocol.parse(
                 stored_value.get('transfer_protocol')
             ),
-            transfer_port=stored_value.get('transfer_port', None),
+            transfer_port=stored_value.get('transfer_port'),
             documents=[
                 ConfiguredDocument.from_stored_value(document)
                 for document in stored_value.get('documents', [])

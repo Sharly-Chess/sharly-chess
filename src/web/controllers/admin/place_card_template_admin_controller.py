@@ -48,7 +48,9 @@ _SKIP = object()
 class PlaceCardTemplateAdminController(BaseAdminController):
     """Global (non-event) editor for custom place card templates."""
 
-    guards = [ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)]
+    # Litestar declares `guards` on `Controller` as an instance variable, so
+    # it cannot be narrowed to a class variable here.
+    guards = [ActionGuard(AuthAction.MANAGE_APPLICATION_SETTINGS)]  # noqa: RUF012
 
     @staticmethod
     def _type_options() -> dict[str, str]:

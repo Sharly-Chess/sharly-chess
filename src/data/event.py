@@ -7,7 +7,8 @@ from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
 from types import NotImplementedType
-from typing import Collection, TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
+from collections.abc import Collection
 
 from common.i18n import _
 from common.i18n.utils import by, normalized_key
@@ -70,10 +71,7 @@ class Event:
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
-        return {
-            plugin_id: plugin_data_class
-            for plugin_id, plugin_data_class in plugin_manager.hook.get_event_plugin_data_class()
-        }
+        return dict(plugin_manager.hook.get_event_plugin_data_class())
 
     @property
     def uniq_id(self) -> str:
@@ -162,7 +160,7 @@ class Event:
         if plugin := plugin_manager.hook_for_event(
             self, 'get_default_prize_currency'
         )():
-            return plugin
+            return cast(str, plugin)
         return SharlyChessConfig.default_prize_currency
 
     @cached_property
@@ -391,7 +389,7 @@ class Event:
         self.timers_by_id[timer.id] = timer
         return timer
 
-    def delete_timer(self, timer: Timer):
+    def delete_timer(self, timer: Timer) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_timer(timer.id)
         with suppress(ValueError):
@@ -455,7 +453,7 @@ class Event:
         if error_message := plugin_manager.hook_for_event(
             self, 'player_distribution_error_message'
         )(event=self):
-            return error_message
+            return cast(str | None, error_message)
         return None
 
     @cached_property
@@ -471,7 +469,7 @@ class Event:
     # Players
     # --------------------------------------------------------------------------
 
-    def clear_player_cache(self):
+    def clear_player_cache(self) -> None:
         Utils.reset_cached_properties(
             self,
             'player_count',
@@ -491,7 +489,7 @@ class Event:
         assert stored_player.id is not None
         return stored_player.id
 
-    def delete_player(self, player: Player):
+    def delete_player(self, player: Player) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_player(player.id)
         del self.players_by_id[player.id]
@@ -500,19 +498,21 @@ class Event:
             del tournament.tournament_players_by_id[player.id]
         plugin_manager.hook_for_event(self, 'on_player_deleted')(player=player)
 
-    def update_player(self, player: Player, new_stored_player: StoredPlayer):
+    def update_player(self, player: Player, new_stored_player: StoredPlayer) -> None:
         new_stored_player.id = player.id
         new_stored_player.check_in = player.check_in
         player.replace_stored_player(new_stored_player)
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_player(player.stored_player)
 
-    def update_players(self, players: list[Player]):
+    def update_players(self, players: list[Player]) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             for player in players:
                 database.update_stored_player(player.stored_player)
 
-    def _are_player_duplicates(self, stored_player: StoredPlayer, player: Player):
+    def _are_player_duplicates(
+        self, stored_player: StoredPlayer, player: Player
+    ) -> bool:
         if player.id == stored_player.id:
             return False
         if stored_player.date_of_birth and (
@@ -660,7 +660,7 @@ class Event:
 
     def move_player_to_tournament(
         self, player: Player, destination_tournament: Tournament
-    ):
+    ) -> None:
         """Moves the given player from its current tournament to *destination_tournament*."""
         source_tournament = player.single_tournament
         with EventDatabase(self.uniq_id, write=True) as database:
@@ -692,7 +692,7 @@ class Event:
     def sorted_teams(self) -> list[Team]:
         return sorted(self.teams, key=attrgetter('name'))
 
-    def clear_team_cache(self):
+    def clear_team_cache(self) -> None:
         Utils.reset_cached_properties(
             self, 'teams_by_id', 'sorted_teams', 'team_groups_by_id'
         )
@@ -748,7 +748,7 @@ class Event:
                 sources.extend(plugin_result)
         return sources
 
-    def update_team_group(self, group_id: int, name: str):
+    def update_team_group(self, group_id: int, name: str) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_team_group(group_id, name)
         for stored_team_group in self.stored_event.stored_team_groups:
@@ -756,7 +756,7 @@ class Event:
                 stored_team_group.name = name
         self.clear_team_cache()
 
-    def delete_team_group(self, group_id: int):
+    def delete_team_group(self, group_id: int) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_team_group(group_id)
         self.stored_event.stored_team_groups = [
@@ -780,7 +780,7 @@ class Event:
             tournament.clear_team_cache()
         return self.teams_by_id[stored_team.id]
 
-    def delete_team(self, team: Team):
+    def delete_team(self, team: Team) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_team(team.id)
         self.stored_event.stored_teams = [
@@ -986,11 +986,11 @@ class Event:
         self.rotators_by_id[rotator.id] = rotator
         return rotator
 
-    def update_rotator(self, stored_rotator: StoredRotator):
+    def update_rotator(self, stored_rotator: StoredRotator) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_rotator(stored_rotator)
 
-    def delete_rotator(self, rotator: Rotator):
+    def delete_rotator(self, rotator: Rotator) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_rotator(rotator.id)
         with suppress(ValueError):
@@ -1033,11 +1033,11 @@ class Event:
         self.menus_by_id[menu.id] = menu
         return menu
 
-    def update_menu(self, stored_menu: StoredMenu):
+    def update_menu(self, stored_menu: StoredMenu) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_menu(stored_menu)
 
-    def delete_menu(self, menu: Menu):
+    def delete_menu(self, menu: Menu) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_menu(menu.id)
         with suppress(ValueError):
@@ -1136,18 +1136,17 @@ class Event:
                     Account.predefined_anonymous_account(),
                 ]
             }
-        else:
-            return {
-                stored_account.id: Account(stored_account)
-                for stored_account in self.stored_event.stored_accounts
-                if stored_account.id is not None
-            }
+        return {
+            stored_account.id: Account(stored_account)
+            for stored_account in self.stored_event.stored_accounts
+            if stored_account.id is not None
+        }
 
     @property
     def accounts(self) -> Collection[Account]:
         return self.accounts_by_id.values()
 
-    def create_predefined_accounts(self):
+    def create_predefined_accounts(self) -> None:
         """Sets own accounts if not already done"""
         if not self.predefined_accounts:
             raise ValueError('Default accounts already exist.')
@@ -1176,7 +1175,7 @@ class Event:
         self.accounts_by_id[account.id] = account
         return account
 
-    def update_account(self, stored_account: StoredAccount):
+    def update_account(self, stored_account: StoredAccount) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_account(stored_account)
             database.delete_stored_roles(account_id=stored_account.id)
@@ -1184,7 +1183,7 @@ class Event:
                 stored_role.account_id = stored_account.id
                 self.set_account_role(database, stored_role)
 
-    def delete_account(self, account: Account):
+    def delete_account(self, account: Account) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_account(account.id)
             database.commit()
@@ -1197,7 +1196,7 @@ class Event:
         self,
         database: EventDatabase,
         stored_role: StoredRole,
-    ):
+    ) -> None:
         assert stored_role.account_id is not None
         if stored_role.role == RoleType.CHIEF_ARBITER.value:
             # Delete any previous chief arbiter roles for these tournaments
@@ -1212,7 +1211,7 @@ class Event:
     @staticmethod
     def _delete_redundant_account_permissions(
         account: Account, database: EventDatabase
-    ):
+    ) -> None:
         redundant_stored_permissions = [
             permission.stored_permission
             for permission in account.permissions
@@ -1224,7 +1223,7 @@ class Event:
 
     def add_account_permission(
         self, account: Account, stored_permission: StoredPermission
-    ):
+    ) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.add_stored_permission(stored_permission)
             account.stored_account.stored_permissions.append(stored_permission)
@@ -1235,7 +1234,7 @@ class Event:
         account: Account,
         permission: Permission,
         stored_permission: StoredPermission,
-    ):
+    ) -> None:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_permission(permission.stored_permission)
             database.add_stored_permission(stored_permission)
@@ -1244,7 +1243,9 @@ class Event:
             stored_permissions.append(stored_permission)
             self._delete_redundant_account_permissions(account, database)
 
-    def delete_account_permission(self, account: Account, permission: Permission):
+    def delete_account_permission(
+        self, account: Account, permission: Permission
+    ) -> None:
         stored_permission = permission.stored_permission
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_permission(stored_permission)
@@ -1317,7 +1318,7 @@ class Event:
     # Plugins
     # -------------------------------------------------------------------------
 
-    def __lt__(self, other: 'Event'):
+    def __lt__(self, other: 'Event') -> bool:
         # p1 < p2 calls p1.__lt__(p2)
         return self.uniq_id > other.uniq_id
 
@@ -1326,3 +1327,6 @@ class Event:
         if not isinstance(other, self.__class__):
             return NotImplemented
         return self.uniq_id == other.uniq_id
+
+    def __hash__(self) -> int:
+        return hash(self.uniq_id)

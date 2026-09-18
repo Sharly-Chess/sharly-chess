@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class Federation:
     name: str = ''
 
-    def __le__(self, other: Self):
+    def __le__(self, other: Self) -> bool:
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
             f'Can not compare [{type(other)}] and [{self.__class__}]'
@@ -38,7 +38,7 @@ class Federation:
 class Club:
     name: str = ''
 
-    def __le__(self, other: Self):
+    def __le__(self, other: Self) -> bool:
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
             f'Can not compare [{type(other)}] and [{self.__class__}]'
@@ -58,9 +58,9 @@ class PlayerRating:
     @classmethod
     def from_stored_value(cls, dict_rating: dict[str, int | None]) -> Self:
         return cls(
-            estimated=dict_rating.get('estimated', None),
-            national=dict_rating.get('national', None),
-            fide=dict_rating.get('fide', None),
+            estimated=dict_rating.get('estimated'),
+            national=dict_rating.get('national'),
+            fide=dict_rating.get('fide'),
         )
 
     @classmethod
@@ -78,12 +78,13 @@ class PlayerRating:
     def get_type_value(self, rating_type: PlayerRatingType) -> int | None:
         if rating_type == PlayerRatingType.FIDE:
             return self.fide
-        elif rating_type == PlayerRatingType.NATIONAL:
+        if rating_type == PlayerRatingType.NATIONAL:
             return self.national
-        else:
-            return self.estimated
+        return self.estimated
 
-    def set_value_from_type(self, value: int | None, rating_type: PlayerRatingType):
+    def set_value_from_type(
+        self, value: int | None, rating_type: PlayerRatingType
+    ) -> None:
         if rating_type == PlayerRatingType.FIDE:
             self.fide = value
         elif rating_type == PlayerRatingType.NATIONAL:
@@ -176,15 +177,15 @@ class NormCheckResult:
     # enter the federation mix (1.4.2a). Shown in the audit histogram.
     fid_count: int = 0
     num_title_holders: int = 0
-    title_counts: Optional[Counter[PlayerTitle]] = None
-    federations_counter: Optional[Counter['Federation']] = None
+    title_counts: Counter[PlayerTitle] | None = None
+    federations_counter: Counter['Federation'] | None = None
     required_titles: list[PlayerTitle] = field(default_factory=list)
     required_titles_met: int = 0
     num_rated_players: int = 0
     score: float = 0
     average_rating: float = 0
     adjusted_player: Optional['TournamentPlayer'] = None
-    adjusted_player_rating: Optional[int] = None
+    adjusted_player_rating: int | None = None
     performance: float = 0
     performance_diff: float | None = None
     ignored_opponents_ids: set[int] = field(default_factory=set)
@@ -196,7 +197,7 @@ class NormCheckResult:
     not_enough_games: str | None = None
     not_enough_federations: str | None = None
     too_many_own_federation: str | None = None
-    too_many_one_federation: Optional[tuple[Federation, str]] = None
+    too_many_one_federation: tuple[Federation, str] | None = None
     not_enough_title_holders: str | None = None
     not_enough_required_titles: str | None = None
     score_too_low: str | None = None
@@ -283,7 +284,7 @@ class NormCheckResult:
 
 class TieBreakValue:
     def __init__(self, tie_break: 'TieBreak', value: SupportsFloat):
-        self._tie_break_ref: 'ReferenceType[TieBreak]' = weakref.ref(tie_break)
+        self._tie_break_ref: ReferenceType[TieBreak] = weakref.ref(tie_break)
         self.value = value
         self.rank_progress: int | None = None
 

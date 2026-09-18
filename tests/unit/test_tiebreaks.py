@@ -1,6 +1,7 @@
 from abc import abstractmethod, ABC
 from decimal import Decimal
-from typing import Callable, Any
+from typing import Any
+from collections.abc import Callable
 from unittest import TestCase
 
 from data.event import Event

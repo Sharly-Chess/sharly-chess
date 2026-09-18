@@ -16,18 +16,18 @@ sys.path.extend(
     )
 )
 
-from common.i18n import update_i18n_files  # noqa: E402
+from common.i18n import update_i18n_files
 
-from common import enable_experimental_features  # noqa: E402
+from common import enable_experimental_features
 
-from common.logger import get_logger  # noqa: E402
-from common.installation_checker import (  # noqa: E402
+from common.logger import get_logger
+from common.installation_checker import (
     InstallationChecker,
 )
 
-from project_builder import ProjectBuilder  # type: ignore  # noqa: E402
-from macos.mac_project_builder import MacProjectBuilder  # type: ignore  # noqa: E402
-from windows.win_project_builder import WinProjectBuilder  # type: ignore  # noqa: E402
+from project_builder import ProjectBuilder  # type: ignore
+from macos.mac_project_builder import MacProjectBuilder  # type: ignore
+from windows.win_project_builder import WinProjectBuilder  # type: ignore
 
 # Enable experimental features to force the installation of the experimental tools and libs before exporting
 enable_experimental_features(True)

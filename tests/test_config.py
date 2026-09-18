@@ -5,7 +5,8 @@ import shutil
 import time
 from enum import StrEnum
 from pathlib import Path
-from typing import Callable, Dict, Optional, Any
+from typing import Any, ClassVar
+from collections.abc import Callable
 from urllib import parse
 
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
@@ -65,7 +66,7 @@ class TestConfig:
     expect.set_options(timeout=10_000)
 
     @classmethod
-    def get_test_env_vars(cls) -> Dict[str, str]:
+    def get_test_env_vars(cls) -> dict[str, str]:
         """Get environment variables for test environment."""
         return {
             'TEST_ENV': 'true',
@@ -75,7 +76,7 @@ class TestConfig:
 class TestUtils:
     """Utility functions for tests."""
 
-    event_defaults = {
+    event_defaults: ClassVar = {
         'federation': 'FRA',
         'public': True,
         'location': 'Paris',
@@ -85,8 +86,8 @@ class TestUtils:
         'message_color': '#000000',
         'message_background_color': '#ffffff',
         'prize_currency': 'EUR',
-        'timer_colors': {i: None for i in range(1, 4)},
-        'timer_delays': {i: None for i in range(1, 4)},
+        'timer_colors': dict.fromkeys(range(1, 4)),
+        'timer_delays': dict.fromkeys(range(1, 4)),
         'plugin_data': {},
     }
 
@@ -260,7 +261,7 @@ class TestUtils:
         cls,
         uniq_id: str,
         via_api_request_context: APIRequestContext | None = None,
-        overrides: Optional[dict] = None,
+        overrides: dict | None = None,
     ):
         overrides = overrides or {}
 
@@ -410,7 +411,7 @@ class TestUtils:
         event_uniq_id: str,
         name: str,
         screen_type: ScreenType,
-        overrides: Optional[dict] = None,
+        overrides: dict | None = None,
     ):
         overrides = overrides or {}
 
@@ -463,8 +464,7 @@ class TestUtils:
 
         with EventDatabase(event_uniq_id) as event_database:
             stored_screens = event_database.load_stored_screens()
-            stored_screen = next(s for s in stored_screens if s.name == name)
-            return stored_screen
+            return next(s for s in stored_screens if s.name == name)
 
     @classmethod
     def delete_screen(
@@ -484,7 +484,7 @@ class TestUtils:
         tournament: StoredTournament,
         uniq_id: str,
         family_type: ScreenType,
-        overrides: Optional[dict] = None,
+        overrides: dict | None = None,
     ):
         overrides = overrides or {}
 
@@ -596,7 +596,7 @@ class TestUtils:
         api_request_context: APIRequestContext,
         event_uniq_id: str,
         name: str,
-        overrides: Optional[dict] = None,
+        overrides: dict | None = None,
         screen_ids: list | None = None,
         family_ids: list | None = None,
     ) -> int:
@@ -661,7 +661,7 @@ class TestUtils:
         api_request_context: APIRequestContext,
         event_uniq_id: str,
         name: str,
-        overrides: Optional[dict] = None,
+        overrides: dict | None = None,
         screen_uniq_id: str | None = None,
         rotator_name: str | None = None,
     ) -> StoredDisplayController:

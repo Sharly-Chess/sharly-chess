@@ -1,6 +1,6 @@
 import urllib
 from abc import ABC, abstractmethod
-from typing import cast
+from typing import Protocol, cast
 
 from litestar.connection.base import ASGIConnection
 from litestar.exceptions import (
@@ -35,20 +35,20 @@ class BaseGuard(ABC):
         async def endpoint_example():...
     """
 
-    def __call__(self, connection: ASGIConnection, _: BaseRouteHandler):
+    def __call__(self, connection: ASGIConnection, _: BaseRouteHandler) -> None:
         request = cast(HTMXRequest, connection)
         client = RequestUtils.get_client(request)
         self.authorize_client(client, request)
 
     @abstractmethod
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         """Validate that the client is authorized by the guard.
         Should fetch the necessary request data using RequestUtils,
         then raises a PermissionDeniedException if the client is not authorized.
         """
 
     @staticmethod
-    def _authorize_action(action: AuthAction, client: Client):
+    def _authorize_action(action: AuthAction, client: Client) -> None:
         if action not in client.allowed_actions:
             raise PermissionDeniedException(
                 f'Client [{client.account.full_name}] is not allowed '
@@ -62,7 +62,7 @@ class BaseGuard(ABC):
         request: HTMXRequest,
         search_form: bool = False,
         tournament: Tournament | None = None,
-    ):
+    ) -> None:
         if not tournament:
             tournament = RequestUtils.get_tournament(request, search_form)
         if not client.action_allowed_for_tournament(action, tournament.id):
@@ -79,7 +79,7 @@ class ActionGuard(BaseGuard):
     def __init__(self, action: AuthAction):
         self.action = action
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         self._authorize_action(self.action, client)
 
 
@@ -92,7 +92,7 @@ class TournamentActionGuard(ActionGuard):
         super().__init__(action)
         self.search_form = search_form
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         if RequestUtils.get_optional_tournament(request, self.search_form):
             self._authorize_tournament_action(self.action, client, request)
         else:
@@ -104,7 +104,7 @@ class PlayerTournamentActionGuard(ActionGuard):
     one of the tournaments of the player.
     Required: event_uniq_id, player_id."""
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         player = RequestUtils.get_player(request)
         if not client.action_allowed_for_player(self.action, player):
             raise PermissionDeniedException(
@@ -118,7 +118,7 @@ class EventGuard(BaseGuard):
     """Guard validating if the client can access an event.
     requires: event_uniq_id"""
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         event = RequestUtils.get_event(request)
         if not event.public:
             self._authorize_action(AuthAction.VIEW_PRIVATE_EVENTS, client)
@@ -130,7 +130,7 @@ class SetResultGuard(BaseGuard):
     """Guard validating if a client can set a result on a board.
     requires: event_uniq_id, tournament_id, board_id, result."""
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         board = RequestUtils.get_board(request)
         result = RequestUtils.get_result(request)
         self._authorize_tournament_action(AuthAction.ENTER_RESULTS, client, request)
@@ -148,7 +148,7 @@ class SetByeGuard(BaseGuard):
     """Guard validating if a client can set a bye for a player.
     requires: event_uniq_id, result."""
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         result = RequestUtils.get_result(request)
         if result == Result.HALF_POINT_BYE:
             action = AuthAction.SET_HPB
@@ -161,7 +161,14 @@ class SetByeGuard(BaseGuard):
         self._authorize_action(action, client)
 
 
-class ViewScreenEntityGuard[T](BaseGuard, ABC):
+class SupportsPublic(Protocol):
+    """What a screen entity has to expose for the guard below to read it."""
+
+    @property
+    def public(self) -> bool: ...
+
+
+class ViewScreenEntityGuard[T: SupportsPublic](BaseGuard, ABC):
     @staticmethod
     @abstractmethod
     def get_entity(request: HTMXRequest) -> T | None:
@@ -169,9 +176,9 @@ class ViewScreenEntityGuard[T](BaseGuard, ABC):
 
     @staticmethod
     def is_entity_public(entity: T) -> bool:
-        return getattr(entity, 'public')
+        return entity.public
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         entity = self.get_entity(request)
         if not entity:
             return
@@ -220,7 +227,7 @@ class ManageScreenEntityGuard(BaseGuard):
     def __init__(self, path_param: str):
         self.path_param = path_param
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         if self.path_param in request.path_params:
             self._authorize_action(AuthAction.MANAGE_SCREENS, client)
 
@@ -229,7 +236,7 @@ class ManageAccountGuard(BaseGuard):
     """Guard validating if an account can be managed by the client.
     optional: account_id, access_level"""
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         account = RequestUtils.get_optional_account(request)
         if not account:
             return
@@ -249,7 +256,7 @@ class ManageAccountGuard(BaseGuard):
 class PrintGuard(BaseGuard):
     """Guard validating if the client is allowed to generate a print view."""
 
-    def authorize_client(self, client: Client, request: HTMXRequest):
+    def authorize_client(self, client: Client, request: HTMXRequest) -> None:
         options = request.query_params.get('options', None)
         if not options:
             return
@@ -259,8 +266,7 @@ class PrintGuard(BaseGuard):
             if key == 'tournament':
                 tournament_ids.append(int(raw_value))
             if key == 'tournaments':
-                for item in raw_value.split(';'):
-                    tournament_ids.append(int(item))
+                tournament_ids.extend(int(item) for item in raw_value.split(';'))
         event = RequestUtils.get_event(request)
         for tournament_id in tournament_ids:
             if tournament_id not in event.tournaments_by_id:

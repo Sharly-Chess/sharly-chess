@@ -42,7 +42,9 @@ class NoPrizeSharing(PrizeSharing):
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
         resolved: list[AssignedPrize] = []
-        for place, (player, prize) in enumerate(zip(tournament_players, prizes)):
+        for place, (player, prize) in enumerate(
+            zip(tournament_players, prizes, strict=False)
+        ):
             resolved.append(
                 AssignedPrize(
                     prize=prize,
@@ -80,7 +82,7 @@ class AveragePrizeSharing(PrizeSharing):
         # separate on their leading criterion — the points in the usual
         # layout, whatever ranks first otherwise (TRF26 lets the Points
         # tie-break sit anywhere).
-        for score, group in groupby(
+        for _score, group in groupby(
             tournament_players, key=lambda p: p.rank_sort_key_before_tie_break(1)
         ):
             players_in_tie = list(group)
@@ -150,7 +152,7 @@ class HortSystemPrizeSharing(PrizeSharing):
         # separate on their leading criterion — the points in the usual
         # layout, whatever ranks first otherwise (TRF26 lets the Points
         # tie-break sit anywhere).
-        for score, group in groupby(
+        for _score, group in groupby(
             tournament_players, key=lambda p: p.rank_sort_key_before_tie_break(1)
         ):
             players_in_tie = list(group)

@@ -273,7 +273,7 @@ def colour_by_alternation(
         signs, peak = _choose_flips(vectors, team_count)
         worst = max(worst, peak)
         out = ([None] * len(first_round), [None] * len(second_round))
-        for cycle, sign in zip(cycles, signs):
+        for cycle, sign in zip(cycles, signs, strict=False):
             for offset, match_index, oriented in cycle:
                 keep = oriented if sign == 1 else not oriented
                 source = (first_round if offset == 0 else second_round)[match_index]
@@ -778,8 +778,7 @@ def _grid_cases(args) -> list[tuple[int, int, int]]:
             rounds_list = list(range(1, max_rounds + 1))
             if args.include_full_tables and team_count - 1 > args.max_short_rounds:
                 rounds_list.append(team_count - 1)
-            for rounds in rounds_list:
-                cases.append((team_count, players, rounds))
+            cases.extend((team_count, players, rounds) for rounds in rounds_list)
     return cases
 
 

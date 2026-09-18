@@ -20,7 +20,7 @@ class Migration(BaseMigration):
     def _points_entry() -> dict[str, object]:
         return {'type': POINTS_TYPE, 'options': {}}
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('SELECT `id`, `stored_tie_breaks` FROM `tie_break_set`')
         for row in self.database.fetchall():
             tie_breaks = json.loads(row['stored_tie_breaks'])
@@ -31,7 +31,7 @@ class Migration(BaseMigration):
                 (json.dumps([self._points_entry(), *tie_breaks]), row['id']),
             )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('SELECT `id`, `stored_tie_breaks` FROM `tie_break_set`')
         for row in self.database.fetchall():
             tie_breaks = json.loads(row['stored_tie_breaks'])

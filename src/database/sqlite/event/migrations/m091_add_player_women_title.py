@@ -8,7 +8,7 @@ class Migration(BaseMigration):
 
     WOMEN_TITLES: tuple[str, ...] = ('WCM', 'WFM', 'WIM', 'WGM')
 
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             "ALTER TABLE `player` ADD `women_title` TEXT NOT NULL DEFAULT ''"
         )
@@ -19,7 +19,7 @@ class Migration(BaseMigration):
             self.WOMEN_TITLES,
         )
 
-    def backward(self):
+    def backward(self) -> None:
         # Restore the women title into `title` only when no open title is set.
         self.database.execute(
             'UPDATE `player` SET `title` = `women_title` '

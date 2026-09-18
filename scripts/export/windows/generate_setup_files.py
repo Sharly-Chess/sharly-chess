@@ -20,13 +20,11 @@ PROJECT_DIR = DIST_DIR / f'sharly-chess-{SHARLY_CHESS_VERSION}'
 
 
 def _compact_cmd_output(output: str) -> str:
-    return '\n'.join(
-        line for line in map(lambda s: s.rstrip(), output.split('\n')) if line
-    )
+    return '\n'.join(line for line in (s.rstrip() for s in output.split('\n')) if line)
 
 
 def check_available() -> bool:
-    if not sys.platform == 'win32':
+    if sys.platform != 'win32':
         logger.error('You are not using Windows.')
         return False
     if not ISCC_EXE.exists():
@@ -64,6 +62,7 @@ def run_iscc(dst_file: Path, is_update: bool):
         text=True,
         bufsize=1,
     )
+    assert process.stdout is not None
     for line in process.stdout:
         print(line, end='')
     process.wait()
@@ -71,6 +70,7 @@ def run_iscc(dst_file: Path, is_update: bool):
     logger.info('Command returned [%d].', process.returncode)
     logger.debug(process.stdout)
     if process.returncode != 0:
+        assert process.stderr is not None
         logger.warning(process.stderr.read())
         logger.error('Inno Setup Compiler failed.')
         return False

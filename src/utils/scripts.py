@@ -28,8 +28,7 @@ def default_workdir() -> Path:
                 return exe.parent.parent.parent.parent  # -> parent of the .app bundle
             # Case: onefile or frozen onedir (not .app)
             return exe.parent
-        else:
-            return exe.parent
+        return exe.parent
 
     # Dev/unfrozen
     return Path.cwd()
@@ -57,7 +56,7 @@ def init_script() -> list[str]:
     return remaining_args
 
 
-def check_windows_defender_exception(arguments: list[str]):
+def check_windows_defender_exception(arguments: list[str]) -> list[str]:
     # Intended to be used while the program is already running, so has to run before any log import
     if sys.platform != 'win32':
         return arguments

@@ -47,12 +47,11 @@ class RankGridPlayerSorter(GridPlayerSorter):
     def sorted_tournament_players(
         self, tournament: Tournament
     ) -> list[TournamentPlayer]:
-        return [
-            tournament_player
-            for tournament_player in tournament.compute_tournament_player_ranks(
+        return list(
+            tournament.compute_tournament_player_ranks(
                 after_round=tournament.rounds
             ).values()
-        ]
+        )
 
 
 class StartingRankGridPlayerSorter(GridPlayerSorter):
@@ -67,10 +66,7 @@ class StartingRankGridPlayerSorter(GridPlayerSorter):
     def sorted_tournament_players(
         self, tournament: Tournament
     ) -> list[TournamentPlayer]:
-        return [
-            tournament_player
-            for tournament_player in tournament.tournament_players_by_starting_rank.values()
-        ]
+        return list(tournament.tournament_players_by_starting_rank.values())
 
 
 class PairingNumberGridPlayerSorter(GridPlayerSorter):

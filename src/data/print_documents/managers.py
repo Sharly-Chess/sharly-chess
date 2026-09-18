@@ -75,7 +75,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
 class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
     @override
     def entity_types(self) -> list[type[options.PrintOption]]:
-        print_options = [
+        print_options: list[type[options.PrintOption]] = [
             options.QRCodePrintOption,
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,

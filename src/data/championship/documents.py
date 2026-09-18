@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from data.championship.championship import Championship
 
 
-class ChampionshipPrintOption(Option, ABC):
+class ChampionshipPrintOption[V](Option[V], ABC):
     """An option of a championship print document. Mirrors the event
     ``PrintOption`` but is bound to a ``Championship`` (its value or default may
     depend on the sources) rather than an ``Event``."""
@@ -39,7 +39,7 @@ class ChampionshipPrintOption(Option, ABC):
         """Stem of the option's form fragment."""
 
 
-class RankingSetsPrintOption(ChampionshipPrintOption):
+class RankingSetsPrintOption(ChampionshipPrintOption[list[str]]):
     """Which rankings to print — the overall ranking and/or specific category
     rankings. An empty value means every set."""
 
@@ -60,14 +60,14 @@ class RankingSetsPrintOption(ChampionshipPrintOption):
         return list[str]
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> list[str]:
         return []
 
-    def validate(self):
+    def validate(self) -> None:
         self._validate_list_type(str)
 
 
-class TournamentNamePrintOption(ChampionshipPrintOption):
+class TournamentNamePrintOption(ChampionshipPrintOption[str]):
     """How each source is named in the tournament list: by its event, by its
     tournament, or both."""
 
@@ -92,7 +92,7 @@ class TournamentNamePrintOption(ChampionshipPrintOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         """Auto: the event name when every event contributes a single
         tournament, the tournament name when every source is from one event,
         otherwise both."""
@@ -105,7 +105,7 @@ class TournamentNamePrintOption(ChampionshipPrintOption):
         return self.BOTH
 
 
-class IncludePlayerPopoverPrintOption(ChampionshipPrintOption):
+class IncludePlayerPopoverPrintOption(ChampionshipPrintOption[bool]):
     """Whether each competitor's row carries a hover popover with the per-stage
     breakdown (as shown on the standings tab)."""
 
@@ -126,7 +126,7 @@ class IncludePlayerPopoverPrintOption(ChampionshipPrintOption):
         return bool
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> bool:
         return False
 
 

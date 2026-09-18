@@ -1,7 +1,9 @@
 import re
 from dataclasses import dataclass, asdict
 from functools import partial, cached_property
-from typing import Self, Any, Counter, Collection
+from typing import Self, Any
+from collections import Counter
+from collections.abc import Collection
 
 from common import SharlyChessException
 from common.i18n.utils import normalized_key
@@ -27,11 +29,11 @@ class FRASchool(PluginData):
     def from_stored_value(cls, stored_value: dict[str, Any], id_: int = 0) -> Self:
         return cls(
             id=id_,
-            code=stored_value.get('code', None),
+            code=stored_value.get('code'),
             name=stored_value.get('name', ''),
-            department=stored_value.get('department', None),
-            postal_code=stored_value.get('postal_code', None),
-            city=stored_value.get('city', None),
+            department=stored_value.get('department'),
+            postal_code=stored_value.get('postal_code'),
+            city=stored_value.get('city'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -135,17 +137,17 @@ class FRASchool(PluginData):
             self.code or '',
         )
 
-    def __lt__(self, other):
+    def __lt__(self, other: 'FRASchool') -> bool:
         if not isinstance(other, FRASchool):
             return NotImplemented
         return self.sort_key > other.sort_key
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, FRASchool):
             return NotImplemented
         return self.id == other.id
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.id)
 
 
@@ -214,7 +216,7 @@ class FRASchoolsPlayerPluginData(PluginData):
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            fra_school_id=stored_value.get('fra_school_id', None),
+            fra_school_id=stored_value.get('fra_school_id'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -324,7 +326,7 @@ class FRASchoolsUtils:
         return school_id
 
     @classmethod
-    def update_event_school(cls, event: Event, school: FRASchool):
+    def update_event_school(cls, event: Event, school: FRASchool) -> None:
         plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
         plugin_data.fra_schools_by_id[school.id] = school
         stored_event = event.stored_event
@@ -334,7 +336,7 @@ class FRASchoolsUtils:
             database.update_stored_event(stored_event)
 
     @classmethod
-    def delete_event_school(cls, event: Event, fra_school_id: int):
+    def delete_event_school(cls, event: Event, fra_school_id: int) -> None:
         plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
         if fra_school_id in plugin_data.fra_schools_by_id:
             del plugin_data.fra_schools_by_id[fra_school_id]

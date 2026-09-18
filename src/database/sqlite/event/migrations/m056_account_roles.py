@@ -2,7 +2,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `account` ADD `fide_id` INTEGER')
 
         # Create account_role table
@@ -35,7 +35,7 @@ class Migration(BaseMigration):
             'WHERE `role` IN ("chief_arbiter", "deputy_arbiter")'
         )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute('DROP INDEX IF EXISTS `ux_no_dual_arbiter_role`')
         self.database.execute('DROP INDEX IF EXISTS `ux_one_organiser_per_account`')
         self.database.execute('DROP INDEX IF EXISTS `ux_one_chief_per_tournament`')

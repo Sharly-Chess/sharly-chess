@@ -6,7 +6,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def _replace_list_values(self, replace_function: Callable[[str], str]):
+    def _replace_list_values(self, replace_function: Callable[[str], str]) -> None:
         for prefix in ('tournament', 'prize'):
             for filter_id in ('CLUB', 'FEDERATION'):
                 option_id = f'{filter_id}S'
@@ -27,10 +27,10 @@ class Migration(BaseMigration):
                         (json.dumps(options), row['id']),
                     )
 
-    def forward(self):
+    def forward(self) -> None:
         self._replace_list_values(lambda item: base64.b64decode(item).decode('utf-8'))
 
-    def backward(self):
+    def backward(self) -> None:
         self._replace_list_values(
             lambda item: base64.b64encode(item.encode('utf-8')).decode('utf-8')
         )

@@ -11,6 +11,7 @@ from utils.types import NormCheckResult
 
 if TYPE_CHECKING:
     from data.player import TournamentPlayer
+    from data.tournament import Tournament
 
 
 # Outcomes the forecaster enumerates, in worst-to-best order. The summariser
@@ -52,7 +53,7 @@ class TitleNormForecaster:
 
     def __init__(
         self,
-        player: 'TournamentPlayer',
+        player: TournamentPlayer,
         min_games_override: int | None = None,
         rule_143_exemption: str = 'none',
     ):
@@ -65,7 +66,7 @@ class TitleNormForecaster:
         self.rule_143_exemption = rule_143_exemption
 
     @property
-    def tournament(self):
+    def tournament(self) -> Tournament:
         return self.player.tournament
 
     def _current_ladder_title(self, tn: TitleNorm) -> PlayerTitle:
@@ -90,11 +91,11 @@ class TitleNormForecaster:
             return False
         return pairing.result != Result.NO_RESULT
 
-    def decided_norms(self, round_: int) -> dict[TitleNorm, NormCheckResult]:
-        """Norms (above the applicant's current title) actually achieved
-        with the result already entered in `round_` — used to keep a
-        player who has finished the in-progress round visible in the
-        forecast instead of dropping out. Empty when none are achieved."""
+    def decided_norms(self) -> dict[TitleNorm, NormCheckResult]:
+        """Norms (above the applicant's current title) the results already
+        entered achieve — used to keep a player who has finished the
+        in-progress round visible in the forecast instead of dropping out.
+        Empty when none are achieved."""
         results = self.player.achieves_any_title_norm(
             min_games_override=self.min_games_override,
             rule_143_exemption=self.rule_143_exemption,

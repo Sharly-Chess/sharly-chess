@@ -71,7 +71,7 @@ class CheckerPlayer:
             'points': self.points,
         }
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'({self.id}) {self.last_name} {self.first_name} {self.rating} [{self.points:.1f}]'
 
 
@@ -201,7 +201,7 @@ class TournamentCheck:
         cls,
         input_file: Path,
     ) -> 'TournamentCheck':
-        with open(input_file, 'r', encoding='utf-8') as file:
+        with open(input_file, encoding='utf-8') as file:
             return TournamentCheck.from_dict(json.load(file))
 
     @property
@@ -221,7 +221,7 @@ class TournamentCheck:
     def dump_to_file(
         self,
         output_file: Path,
-    ):
+    ) -> None:
         with open(output_file, 'w', encoding='utf-8') as file:
             json.dump(self.to_dict, file, ensure_ascii=False, indent=2)
 
@@ -235,13 +235,13 @@ class TournamentCheck:
         """Returns the number of boards with errors."""
         return sum(len(round_board_diffs) for round_board_diffs in self.diff.values())
 
-    def print(self):
+    def print(self) -> None:
         if self.diff:
             print_interactive_error(
                 f'Tournament [{self.name}]: {self.board_error_count} error(s) found on {self.round_error_count} round(s) (rounds: {self.rounds}, players: {self.player_count}).'
             )
             player_len: int = 0
-            for round_, round_diff in self.diff.items():
+            for round_diff in self.diff.values():
                 for board_diff in round_diff:
                     for board in (board_diff.read_board, board_diff.expected_board):
                         if board:

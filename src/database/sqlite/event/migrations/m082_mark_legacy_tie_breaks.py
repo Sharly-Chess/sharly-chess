@@ -1,8 +1,9 @@
+from typing import ClassVar
 from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    LEGACY_TIE_BREAKS = [
+    LEGACY_TIE_BREAKS: ClassVar = [
         'SONNEBORN_BERGER',
         'AVERAGE_OF_BUCHHOLZ',
         'SUM_OF_BUCHHOLZ',
@@ -10,7 +11,7 @@ class Migration(BaseMigration):
         'BUCHHOLZ',
     ]
 
-    def forward(self):
+    def forward(self) -> None:
         query_list = ', '.join(['?'] * len(self.LEGACY_TIE_BREAKS))
         self.database.execute(
             'UPDATE `tie_break` SET `options` = '
@@ -19,5 +20,5 @@ class Migration(BaseMigration):
             tuple(self.LEGACY_TIE_BREAKS),
         )
 
-    def backward(self):
+    def backward(self) -> None:
         pass

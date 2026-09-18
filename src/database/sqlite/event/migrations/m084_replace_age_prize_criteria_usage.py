@@ -4,7 +4,7 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute(
             'SELECT `id`, `options` FROM `prize_criterion` WHERE `type` = ?',
             ('AGE',),
@@ -33,7 +33,7 @@ class Migration(BaseMigration):
                 (json.dumps(new_options), row['id']),
             )
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'SELECT `id`, `options` FROM `prize_criterion` WHERE `type` = ?',
             ('AGE',),

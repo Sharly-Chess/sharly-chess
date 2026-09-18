@@ -2,7 +2,7 @@ import random
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from common.i18n import _
 from utils.entity import IdentifiableEntity
@@ -99,7 +99,7 @@ class PairingSetting[T](IdentifiableEntity, ABC):
     @classmethod
     def from_stored_value(cls, value: Any) -> T:
         """Initialize a T object from the stored value."""
-        return value
+        return cast(T, value)
 
     @classmethod
     def to_stored_value(cls, object_: T) -> Any:
@@ -122,7 +122,7 @@ class PairingSetting[T](IdentifiableEntity, ABC):
         return True
 
     @classmethod
-    def is_set(cls, tournament: 'Tournament'):
+    def is_set(cls, tournament: 'Tournament') -> bool:
         """Check if the value is set in the stored settings."""
         return cls.static_id() in tournament.stored_pairing_settings
 
@@ -302,10 +302,8 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         of a player. The player ID is supposed to be concatenated to the base."""
         return 'berger_number_'
 
-    def _berger_number_fields(self, data: dict[str, str]):
-        return [
-            field for field in data.keys() if field.startswith(self.player_field_base)
-        ]
+    def _berger_number_fields(self, data: dict[str, str]) -> list[str]:
+        return [field for field in data if field.startswith(self.player_field_base)]
 
 
 class KeizerRounding(StrEnum):

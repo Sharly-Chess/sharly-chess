@@ -2,11 +2,11 @@ from database.sqlite.migration import BaseMigration
 
 
 class Migration(BaseMigration):
-    def forward(self):
+    def forward(self) -> None:
         self.database.execute('ALTER TABLE `prize` DROP COLUMN `index`')
         self.database.execute('ALTER TABLE `prize_criterion` DROP COLUMN `index`')
 
-    def backward(self):
+    def backward(self) -> None:
         self.database.execute(
             'ALTER TABLE `prize` ADD `index` INTEGER NOT NULL DEFAULT 0'
         )

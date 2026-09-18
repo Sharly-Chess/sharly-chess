@@ -26,7 +26,7 @@ class TimerHour:
         timer: 'Timer',
         stored_timer_hour: StoredTimerHour,
     ):
-        self._timer_ref: 'ReferenceType[Timer]' = weakref.ref(timer)
+        self._timer_ref: ReferenceType[Timer] = weakref.ref(timer)
         self.stored_timer_hour: StoredTimerHour = stored_timer_hour
 
     @property
@@ -78,15 +78,14 @@ class TimerHour:
         except ValueError:
             return 0
 
-    def _format_stored_text(self, text, round_default_text) -> str:
+    def _format_stored_text(self, text: str | None, round_default_text: str) -> str:
         if self.round:
             return (
                 text.format(self.round)
                 if text
                 else round_default_text.format(self.round)
             )
-        else:
-            return text if text else ''
+        return text if text else ''
 
     @cached_property
     def text_before(self) -> str:
@@ -118,20 +117,20 @@ class TimerHour:
     def timestamp_next(self) -> int:
         return self.timestamp + self.timer.delays[3] * 60
 
-    def update(self, stored_timer_hour: StoredTimerHour):
+    def update(self, stored_timer_hour: StoredTimerHour) -> None:
         stored_timer_hour.id = self.id
         with EventDatabase(self.timer.event.uniq_id, True) as database:
             database.update_stored_timer_hour(stored_timer_hour)
         self.stored_timer_hour = stored_timer_hour
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f'{self.__class__.__name__}(id={self.id} uniq_id={self.uniq_id} '
             f'triggered_at={format_datetime(self.triggered_at)} '
             f'texts=[{self.text_before}]/[{self.text_after}])'
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(timer={self.timer!r}, stored_timer_hour={self.stored_timer_hour!r})'
 
 
@@ -139,7 +138,7 @@ class Timer:
     """A data wrapper around a stored timer."""
 
     def __init__(self, event: 'Event', stored_timer: StoredTimer):
-        self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
+        self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_timer: StoredTimer = stored_timer
         self.timer_hours_by_id: dict[int, TimerHour] = self._get_timer_hours_by_id()
         self.valid: bool = True
@@ -235,7 +234,7 @@ class Timer:
     def get_unused_hour_name(self, base_name: str) -> str:
         return Utils.get_unused_item_name(base_name, self.timer_hour_uniq_ids)
 
-    def update(self, stored_timer: StoredTimer):
+    def update(self, stored_timer: StoredTimer) -> None:
         stored_timer.id = self.id
         stored_timer.stored_timer_hours = self.stored_timer.stored_timer_hours
         with EventDatabase(self.event.uniq_id, True) as database:
@@ -250,20 +249,20 @@ class Timer:
         self.timer_hours_by_id[id_] = timer_hour
         return timer_hour
 
-    def delete_timer_hour(self, timer_hour_id: int):
+    def delete_timer_hour(self, timer_hour_id: int) -> None:
         with EventDatabase(self.event.uniq_id, True) as database:
             database.delete_stored_timer_hour(timer_hour_id)
         if timer_hour_id in self.timer_hours_by_id:
             del self.timer_hours_by_id[timer_hour_id]
 
-    def delete_all_timer_hours(self):
+    def delete_all_timer_hours(self) -> None:
         """Delete every timer hour for this timer in one pass."""
         with EventDatabase(self.event.uniq_id, True) as database:
             for timer_hour_id in list(self.timer_hours_by_id):
                 database.delete_stored_timer_hour(timer_hour_id)
         self.timer_hours_by_id.clear()
 
-    def update_timer_hours_date(self, previous_date: date, new_date: date):
+    def update_timer_hours_date(self, previous_date: date, new_date: date) -> None:
         hours_by_date_str = self.timer_hours_by_date_str
         new_date_hours_triggered_at = [
             hour.triggered_at
@@ -280,8 +279,8 @@ class Timer:
                 stored_hour.triggered_at = triggered_at
                 database.update_stored_timer_hour(stored_hour)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{type(self).__name__}({self.colors} {self.delays} {self.timer_hours_by_id})'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'{self.__class__.__name__}(event={self.event!r}, stored_timer={self.stored_timer!r})'

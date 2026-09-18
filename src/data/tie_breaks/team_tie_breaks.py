@@ -23,7 +23,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 from functools import cached_property
 from types import UnionType
-from typing import Any, Callable, SupportsFloat
+from typing import Any, SupportsFloat
+from collections.abc import Callable
 
 from common.i18n import _
 from data.pairings import PairingSystem
@@ -87,7 +88,7 @@ class ESBVariant(StrEnum):
         )
 
 
-class ESBVariantTieBreakOption(TieBreakOption):
+class ESBVariantTieBreakOption(TieBreakOption[str]):
     """Selects which of the four ESB combinations is computed."""
 
     @staticmethod
@@ -99,7 +100,7 @@ class ESBVariantTieBreakOption(TieBreakOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return ESBVariant.EMMSB.value
 
     @property
@@ -337,14 +338,12 @@ def _dummy_opponent_score(
     score_type: ScoreType,
     context: TeamTieBreakContext,
     *,
-    after_round: int,
     opponent_adjusted: float | None = None,
     legacy: bool = False,
 ) -> float:
     return dummy_opponent_score(
         own_record,
         score_type,
-        after_round=after_round,
         rounds=context.rounds,
         draw_value=(
             context.draw_mp if score_type == ScoreType.MATCH_POINTS else context.draw_gp
@@ -556,7 +555,6 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
                     team_record,
                     opp_score_type,
                     tournament_context,
-                    after_round=after_round,
                     opponent_adjusted=opponent_adjusted,
                     legacy=self._legacy_march_2026,
                 )
@@ -596,9 +594,7 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
             else:
                 v = vur[0]
                 g = general[0]
-                if v.opp_total <= g.opp_total:
-                    vur.pop(0)
-                elif v.value >= g.value:
+                if v.opp_total <= g.opp_total or v.value >= g.value:
                     vur.pop(0)
                 else:
                     general.pop(0)
@@ -705,12 +701,10 @@ class ScoresAndScheduleStrengthCombinationTieBreak(TeamTieBreak):
         )
         # /Kx override: use the explicit factor when set, else compute.
         override = 0
-        try:
+        with suppress(KeyError):
             override = int(
                 self._get_option(NormalizationFactorOverrideTieBreakOption).value
             )
-        except KeyError:
-            pass
         factor = override if override else self.normalization_factor(tournament_context)
         return secondary + bh / factor
 
@@ -737,7 +731,7 @@ class EDEKnockoutVariant(StrEnum):
         return f'EDE{self.value}'
 
 
-class EDEKnockoutTieBreakOption(TieBreakOption):
+class EDEKnockoutTieBreakOption(TieBreakOption[str]):
     """Selects the Art. 13.3.2 combination applied to the last two tied
     teams."""
 
@@ -750,7 +744,7 @@ class EDEKnockoutTieBreakOption(TieBreakOption):
         return str
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str:
         return EDEKnockoutVariant.NONE.value
 
     @property
@@ -1098,7 +1092,7 @@ class ExtendedDirectEncounterTieBreak(TeamTieBreak):
         sorted_items = sorted(min_max_by_id.items(), key=lambda kv: kv[1])
         if not sorted_items:
             return []
-        first_id, (first_min, first_max) = sorted_items[0]
+        first_id, (_first_min, first_max) = sorted_items[0]
         cur_max = first_max
         current: list[TeamRecord] = [team_by_id[first_id]]
         subgroups: list[list[TeamRecord]] = []

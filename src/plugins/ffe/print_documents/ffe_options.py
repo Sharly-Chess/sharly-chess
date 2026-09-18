@@ -11,7 +11,7 @@ from data.tournament import Tournament
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 
 
-class FFEPrintOption(PrintOption, ABC):
+class FFEPrintOption[V](PrintOption[V], ABC):
     @property
     def template_name(self) -> str:
         return f'/print_options/{self.template_stem}.html'
@@ -22,17 +22,17 @@ class FFEPrintOption(PrintOption, ABC):
         return self.static_id().replace('-', '_')
 
 
-class FFEDocumentTypePrintOption(FFEPrintOption):
+class FFEDocumentTypePrintOption(FFEPrintOption[str | None]):
     @staticmethod
     def static_id() -> str:
         return 'ffe-document-type'
 
     @property
     def type(self) -> type | UnionType:
-        return str
+        return str | None
 
     @property
-    def default_value(self) -> Any:
+    def default_value(self) -> str | None:
         return None
 
     @property
@@ -61,14 +61,14 @@ class FFEDocumentTypePrintOption(FFEPrintOption):
         }
 
     @override
-    def validate(self):
+    def validate(self) -> None:
         super().validate()
         from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
 
-        if self.value not in (
+        if self.value not in {
             ffe_document_type.static_id()
             for ffe_document_type in FFEDocumentTypeManager().objects()
-        ):
+        }:
             # Untranslated, should not happen
             raise OptionError(f'Unknown FFE document type: {self.value}', self)
 
