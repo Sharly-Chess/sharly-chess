@@ -40,7 +40,7 @@ from litestar.middleware.base import DefineMiddleware
 
 from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.exception import DatabaseInaccessibleException
-from common.i18n import gettext, ngettext
+from common.i18n import gettext, ngettext, npgettext, pgettext
 from common.i18n.utils import ordinal_suffixes
 from data.input_output import OnlineDataSourceManager
 
@@ -313,7 +313,11 @@ class SharlyChessEnvironment(Environment):
         self.template_class = ProfiledJinjaTemplate
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore[attr-defined]
-            gettext=gettext, ngettext=ngettext, newstyle=True
+            gettext=gettext,
+            ngettext=ngettext,
+            newstyle=True,
+            pgettext=pgettext,
+            npgettext=npgettext,
         )
         self.add_extension('jinja2.ext.do')
         self.filters['raise_ordinal_suffix'] = raise_ordinal_suffix

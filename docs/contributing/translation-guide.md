@@ -60,13 +60,32 @@ msgstr[0] "{locales_number} langue est actuellement disponible."
 msgstr[1] "{locales_number} langues sont actuellement disponibles."
 ```
 
-### Mandatory translations
+### Contexts
 
-Some strings require special attention : they are mandatory. They contain the sub-string ``***`` and all the text from the three asterisks must be deleted from the translations:
+Two strings that read the same in English do not always translate the same. Such a string comes with a context, on a ``msgctxt`` line, saying which of its meanings is being translated. The context is never displayed, it is only there to be read:
 
 ```
-msgid "Unpaired *** WOMAN"
+msgctxt "woman"
+msgid "Unpaired"
 msgstr "Non appariée"
+
+msgctxt "man"
+msgid "Unpaired"
+msgstr "Non apparié"
+```
+
+### Mandatory translations
+
+Most strings fall back to English when they are left untranslated. The ones giving a keyboard shortcut do not: the letter underlined in a menu entry and the key it answers to have to be picked together, and the English pair suits no other language. They are reported as mandatory until the locale translates them:
+
+```
+msgctxt "with shortcut indication"
+msgid "Configuration"
+msgstr "<u>C</u>onfiguration"
+
+msgctxt "keyboard shortcut for the configuration tab"
+msgid "SC_C"
+msgstr "SC_C"
 ```
 
 ### Flags

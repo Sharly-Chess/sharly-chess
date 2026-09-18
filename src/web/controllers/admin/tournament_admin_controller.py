@@ -15,7 +15,7 @@ from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
@@ -516,8 +516,8 @@ class TournamentAdminController(BaseEventAdminController):
         player_rating_type_options: dict[str, str] = {
             '': '',
             str(PlayerRatingType.FIDE.value): _('FIDE'),
-            str(PlayerRatingType.NATIONAL.value): _(
-                'National *** NAME FOR RATING TYPE NATIONAL'
+            str(PlayerRatingType.NATIONAL.value): pgettext(
+                'name for rating type national', 'National'
             ),
         }
         player_rating_type_options[''] = _('Use default - {option}').format(

@@ -117,9 +117,9 @@
                 </div>
                 <button type="button" class="btn btn-sm p-0 mt-1 pc-affix-toggle {% if prefix or suffix %}active{% endif %}" title="{{ _('Prefix / suffix (shown only when the field has a value)') }}"><i class="bi-chevron-right pc-affix-caret"></i>{{ _('Prefix / suffix') }}</button>
                 <div class="input-group input-group-sm mt-1 pc-affixes {% if not prefix and not suffix %}d-none{% endif %}">
-                    <span class="input-group-text">{{ _('Pre *** PREFIX') }}</span>
+                    <span class="input-group-text">{{ pgettext('prefix', 'Pre') }}</span>
                     <input type="text" class="form-control pc-part-prefix" value="{{ prefix }}">
-                    <span class="input-group-text">{{ _('Suf *** SUFFIX') }}</span>
+                    <span class="input-group-text">{{ pgettext('suffix', 'Suf') }}</span>
                     <input type="text" class="form-control pc-part-suffix" value="{{ suffix }}">
                 </div>
             </div>

@@ -21,20 +21,20 @@
                 class="d-grid grid-striped"
                 style="grid-template-columns: max-content 1fr repeat({{ numeric_count }}, minmax(3em, max-content));"
             >
-                <div class="grid-header fw-bold text-end pe-2">{{ _('Rk. *** RANK COLUMN HEADER') }}</div>
+                <div class="grid-header fw-bold text-end pe-2">{{ pgettext('rank column header', 'Rk.') }}</div>
                 <div class="grid-header fw-bold text-start">{{ _('Team') }}</div>
                 {% if eliminates %}
-                    <div class="grid-header fw-bold text-end pe-2">{{ _('Result *** KNOCK-OUT RESULT COLUMN') }}</div>
+                    <div class="grid-header fw-bold text-end pe-2">{{ pgettext('knock-out result column', 'Result') }}</div>
                 {% else %}
                     <div class="grid-header fw-bold text-center">{{ _('Played') }}</div>
                     {% if primary_is_mp %}
-                        <div class="grid-header fw-bold text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</div>
-                        <div class="grid-header fw-bold text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</div>
-                        <div class="grid-header fw-bold text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</div>
-                        <div class="grid-header fw-bold text-center">{{ _('F *** TEAM RANKING HEADER FORFEIT') }}</div>
-                        <div class="grid-header fw-bold text-center">{{ _('MP *** MATCH POINTS') }}</div>
+                        <div class="grid-header fw-bold text-center">{{ pgettext('team ranking header win', 'W') }}</div>
+                        <div class="grid-header fw-bold text-center">{{ pgettext('team ranking header draw', 'D') }}</div>
+                        <div class="grid-header fw-bold text-center">{{ pgettext('team ranking header loss', 'L') }}</div>
+                        <div class="grid-header fw-bold text-center">{{ pgettext('team ranking header forfeit', 'F') }}</div>
+                        <div class="grid-header fw-bold text-center">{{ pgettext('match points', 'MP') }}</div>
                     {% else %}
-                        <div class="grid-header fw-bold text-center">{{ _('GP *** GAME POINTS') }}</div>
+                        <div class="grid-header fw-bold text-center">{{ pgettext('game points', 'GP') }}</div>
                     {% endif %}
                     {% for tie_break in team_tie_breaks %}
                         <div class="grid-header fw-bold text-center">{{ tie_break.acronym }}</div>

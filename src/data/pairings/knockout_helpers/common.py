@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, Any
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from utils.enum import Result
 
 if TYPE_CHECKING:
@@ -45,18 +45,20 @@ def tie_resolution_message(tournament: 'Tournament', round_: int) -> str:
             'Resolve the tied match(es) of round {round} before pairing the next round.'
         ).format(round=round_)
     return (
-        _(
+        pgettext(
+            'team knock-out',
             'Round {round} has tied match(es) that the advancement tie-breaks '
             'cannot decide. Add the "Manual" tie-break in the tie-break settings '
             'to designate the winner of a play-off — or add other advancement '
-            'tie-breaks. *** TEAM'
+            'tie-breaks.',
         ).format(round=round_)
         if tournament.is_team_tournament
-        else _(
+        else pgettext(
+            'individual knock-out',
             'Round {round} has tied match(es) that the advancement tie-breaks '
             'cannot decide. Add the "Manual" tie-break in the tie-break settings '
             'to designate the winner of a play-off — or add other advancement '
-            'tie-breaks. *** PLAYER'
+            'tie-breaks.',
         ).format(round=round_)
     )
 

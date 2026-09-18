@@ -149,7 +149,8 @@ msgstr "Enregistrer"
 msgid "School"
 msgstr "Établissement"
 
-msgid "School *** SCHOOL COLUMN HEADER"
+msgctxt "school column header"
+msgid "School"
 msgstr "Établissement"
 
 msgid "School not specified"

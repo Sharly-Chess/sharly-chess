@@ -12,7 +12,7 @@
             style="grid-template-columns: repeat({{ tournament.team_ranking_tie_breaks|length + 2 }}, max-content);"
         >
             <div class="overall-header text-end fw-bold">
-                {{ _('Rk. *** RANK COLUMN HEADER') }}
+                {{ pgettext('rank column header', 'Rk.') }}
             </div>
             <div class="overall-header">
                 {{ document.overall_table_header }}
@@ -33,7 +33,7 @@
                 >
                     {{ team.name | safe }}
                     {% if not team.is_complete %}
-                        <i>({{ _('incomplete *** INCOMPLETE TEAM') }})</i>
+                        <i>({{ pgettext('incomplete team', 'incomplete') }})</i>
                     {% endif %}
                 </div>
                 {% for tb_sum in team.tie_break_sums %}

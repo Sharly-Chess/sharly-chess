@@ -145,7 +145,8 @@ msgstr ""
 msgid "School"
 msgstr ""
 
-msgid "School *** SCHOOL COLUMN HEADER"
+msgctxt "school column header"
+msgid "School"
 msgstr "School"
 
 msgid "School not specified"

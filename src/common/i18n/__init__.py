@@ -207,6 +207,37 @@ def ngettext(singular: str, plural: str, n: int, locale: str | None = None) -> s
     return gettext_lib.ngettext(singular, plural, n)
 
 
+def pgettext(context: str, message: str, locale: str | None = None) -> str:
+    """Overrides the gettext.pgettext() function to use the locale of the current thread.
+
+    The context tells apart strings that read the same in English but do not
+    translate the same, such as the ``B`` of a crosstable and the ``B`` of a
+    place card. It takes part in the lookup, so an untranslated string falls
+    back to ``message`` alone.
+    """
+    if locales:
+        return _all_translations[get_i18n_domain()][locale or get_locale()].pgettext(
+            context,
+            message,
+        )
+    return gettext_lib.pgettext(context, message)
+
+
+def npgettext(
+    context: str,
+    singular: str,
+    plural: str,
+    n: int,
+    locale: str | None = None,
+) -> str:
+    """Overrides the gettext.npgettext() function to use the locale of the current thread."""
+    if locales:
+        return _all_translations[get_i18n_domain()][locale or get_locale()].npgettext(
+            context, singular, plural, n
+        )
+    return gettext_lib.npgettext(context, singular, plural, n)
+
+
 def normalize_bcp47_to_locale(tag: str) -> str:
     """
     Convert a BCP47-like tag (e.g. 'en-US', 'pt-BR', 'zh-Hans-CN') to a

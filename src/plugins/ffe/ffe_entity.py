@@ -5,7 +5,7 @@ from types import UnionType
 from typing import Any, cast
 
 from common.exception import OptionError, SharlyChessException
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
 from data.columns.players_tab import FilterPlayersTabColumn
@@ -491,7 +491,7 @@ class FfeLicencePlayersTabColumn(FilterPlayersTabColumn):
 class FfeLeagueTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('League *** LEAGUE COLUMN HEADER')
+        return pgettext('league column header', 'League')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return FFEUtils.get_player_plugin_data(tournament_player).league or ''
@@ -504,7 +504,7 @@ class FfeLeagueTableColumn(TournamentPlayerTableColumn):
 class FfeLicenceTypeTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Lic. *** LICENCE COLUMN HEADER')
+        return pgettext('licence column header', 'Lic.')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return FFEUtils.get_player_plugin_data(tournament_player).ffe_licence.short_name

@@ -28,7 +28,8 @@ msgstr ""
 "- les départages et les variantes d’appariement utilisés en France ;\n"
 "- les clubs et les ligues disponibles comme colonnes, filtres et regroupements sur les joueur·euses, les documents et les écrans."
 
-msgid "A - Competition *** FFE licence"
+msgctxt "FFE licence"
+msgid "A - Competition"
 msgstr "A - Compétition"
 
 msgid "A non-empty string is expected"
@@ -75,7 +76,8 @@ msgstr "Mise en ligne automatique désactivée"
 msgid "Auto-upload enabled"
 msgstr "Mise en ligne automatique activée"
 
-msgid "B - Leisure *** FFE licence"
+msgctxt "FFE licence"
+msgid "B - Leisure"
 msgstr "B - Loisir"
 
 msgid "Back"
@@ -137,7 +139,8 @@ msgstr "Impossible de télécharger [{url}], code d'erreur {code}."
 msgid "Could not download [{url}]: {error}."
 msgstr "Impossible de télécharger [{url}] : {error}."
 
-msgid "Cut *** TIE BREAK VARIATION"
+msgctxt "tie break variation"
+msgid "Cut"
 msgstr "Tronqué"
 
 msgid "DD/MM/YYYY"
@@ -197,7 +200,8 @@ msgstr "Formulaire FFE :"
 msgid "FFE Licence"
 msgstr "Licence FFE"
 
-msgid "FFE Licence no. *** LICENCE NUMBER"
+msgctxt "licence number"
+msgid "FFE Licence no."
 msgstr "N° licence FFE"
 
 msgid "FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, 4-board team matches, mixed Suisse / Molter / round-robin schedule. Roster must consist of women players only."
@@ -369,7 +373,8 @@ msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date
 msgid "League"
 msgstr "Ligue"
 
-msgid "League *** LEAGUE COLUMN HEADER"
+msgctxt "league column header"
+msgid "League"
 msgstr "Ligue"
 
 msgid "League not specified"
@@ -387,13 +392,15 @@ msgstr "Ligues (FFE)"
 msgid "Leave empty tables for fixed boards"
 msgstr "Laisser des tables vides pour les échiquiers fixes"
 
-msgid "Lic. *** LICENCE COLUMN HEADER"
+msgctxt "licence column header"
+msgid "Lic."
 msgstr "Lic."
 
 msgid "Licence"
 msgstr "Licence"
 
-msgid "Licence no. *** LICENCE NUMBER"
+msgctxt "licence number"
+msgid "Licence no."
 msgstr "N° licence"
 
 msgid "Licence number"
@@ -429,7 +436,8 @@ msgstr "Coupe de la Parité"
 msgid "Modified"
 msgstr "Modifié"
 
-msgid "N - Expired *** FFE licence"
+msgctxt "FFE licence"
+msgid "N - Expired"
 msgstr "N - Expirée"
 
 msgid "Name"
@@ -475,7 +483,8 @@ msgstr "Aucun composition de {n} joueur·euses légale: plus faible somme {sum} 
 msgid "No tournament configured for FFE upload."
 msgstr "Aucun tournoi configuré pour la mise en ligne FFE."
 
-msgid "None *** FFE licence"
+msgctxt "FFE licence"
+msgid "None"
 msgstr "Aucune"
 
 msgid "Not configured"
@@ -732,7 +741,8 @@ msgstr "Valeur inconnue (attendu : {expected})."
 msgid "Unknown value [{value}]"
 msgstr "Valeur [{value}] inconnue."
 
-msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
+msgctxt "singular for unrated player"
+msgid "Unrated"
 msgstr "Non-classé·e"
 
 msgid "Up to date"

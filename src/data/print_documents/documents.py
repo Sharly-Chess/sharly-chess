@@ -8,7 +8,7 @@ from typing import Any, TYPE_CHECKING, override, cast
 from collections.abc import Callable
 
 from common.exception import SharlyChessException, OptionError
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from common.i18n.utils import ordinal_integer, unicode_normalize
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
@@ -2068,7 +2068,7 @@ class StatisticsPrintDocument(PrintDocument):
         }
 
         if estimated_count:
-            rows[_('Unrated *** PLURAL FOR UNRATED PLAYERS')] = estimated_count
+            rows[pgettext('plural for unrated players', 'Unrated')] = estimated_count
 
         non_estimated_players = [
             player

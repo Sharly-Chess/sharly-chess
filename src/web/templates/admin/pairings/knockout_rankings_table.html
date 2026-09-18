@@ -14,11 +14,11 @@
 >
     <thead class="position-sticky z-2" style="top: var(--header-height);">
         <tr class="player-header">
-            <th class="rank text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+            <th class="rank text-end">{{ pgettext('rank column header', 'Rk.') }}</th>
             <th class="title text-end">&nbsp;</th>
-            <th class="name text-start">{{ _('Name *** NAME COLUMN HEADER') }}</th>
+            <th class="name text-start">{{ pgettext('name column header', 'Name') }}</th>
             <th class="rating text-end">{{ admin_tournament.rating.print_view_header }}</th>
-            <th class="result text-end">{{ _('Result *** KNOCK-OUT RESULT COLUMN') }}</th>
+            <th class="result text-end">{{ pgettext('knock-out result column', 'Result') }}</th>
         </tr>
     </thead>
     <tbody>

@@ -5,7 +5,7 @@ from math import ceil
 from typing import Self, TYPE_CHECKING
 from collections.abc import Iterator
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from utils import Utils
 
 if TYPE_CHECKING:
@@ -575,11 +575,11 @@ class TournamentRating(IntEnum):
     def print_view_header(self) -> str:
         match self:
             case TournamentRating.STANDARD:
-                return _('Elo *** STD ELO COLUMN HEADER')
+                return pgettext('std Elo column header', 'Elo')
             case TournamentRating.RAPID:
-                return _('Rapid *** RAPID ELO COLUMN HEADER')
+                return pgettext('rapid Elo column header', 'Rapid')
             case TournamentRating.BLITZ:
-                return _('Blitz *** BLITZ ELO COLUMN HEADER')
+                return pgettext('blitz Elo column header', 'Blitz')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -611,11 +611,11 @@ class TournamentRating(IntEnum):
     def acronym(self) -> str:
         match self:
             case TournamentRating.STANDARD:
-                return _('Std *** STANDARD RATING ACRONYM')
+                return pgettext('standard rating acronym', 'Std')
             case TournamentRating.RAPID:
-                return _('Rpd *** RAPID RATING ACRONYM')
+                return pgettext('rapid rating acronym', 'Rpd')
             case TournamentRating.BLITZ:
-                return _('Blz *** BLITZ RATING ACRONYM')
+                return pgettext('blitz rating acronym', 'Blz')
             case _:
                 raise ValueError(f'Unknown rating: {self}')
 
@@ -660,11 +660,11 @@ class PlayerGender(StrEnum):
     def name(self) -> str:
         match self:
             case PlayerGender.NONE:
-                return _('- *** NAME FOR GENDER NONE')
+                return pgettext('name for gender none', '-')
             case PlayerGender.WOMAN:
-                return _('Woman *** NAME FOR GENDER WOMAN')
+                return pgettext('name for gender woman', 'Woman')
             case PlayerGender.MAN:
-                return _('Man *** NAME FOR GENDER MAN')
+                return pgettext('name for gender man', 'Man')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -672,11 +672,11 @@ class PlayerGender(StrEnum):
     def short_name(self) -> str:
         match self:
             case PlayerGender.NONE:
-                return _('- *** SHORT NAME FOR GENDER NONE')
+                return pgettext('short name for gender none', '-')
             case PlayerGender.WOMAN:
-                return _('W *** SHORT NAME FOR GENDER WOMAN')
+                return pgettext('short name for gender woman', 'W')
             case PlayerGender.MAN:
-                return _('M *** SHORT NAME FOR GENDER MAN')
+                return pgettext('short name for gender man', 'M')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -690,11 +690,11 @@ class PlayerRatingType(IntEnum):
     def name(self) -> str:
         match self:
             case PlayerRatingType.ESTIMATED:
-                return _('Estimated *** NAME FOR RATING TYPE ESTIMATED')
+                return pgettext('name for rating type estimated', 'Estimated')
             case PlayerRatingType.NATIONAL:
-                return _('National *** NAME FOR RATING TYPE NATIONAL')
+                return pgettext('name for rating type national', 'National')
             case PlayerRatingType.FIDE:
-                return _('FIDE *** NAME FOR RATING TYPE FIDE')
+                return pgettext('name for rating type FIDE', 'FIDE')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -702,11 +702,11 @@ class PlayerRatingType(IntEnum):
     def short_name(self) -> str:
         match self:
             case PlayerRatingType.ESTIMATED:
-                return _('E *** SHORT NAME FOR RATING TYPE ESTIMATED')
+                return pgettext('short name for rating type estimated', 'E')
             case PlayerRatingType.NATIONAL:
-                return _('N *** SHORT NAME FOR RATING TYPE NATIONAL')
+                return pgettext('short name for rating type national', 'N')
             case PlayerRatingType.FIDE:
-                return _('F *** SHORT NAME FOR RATING TYPE FIDE')
+                return pgettext('short name for rating type FIDE', 'F')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -869,21 +869,21 @@ class PlayerTitle(StrEnum):
             case PlayerTitle.NONE:
                 return ''
             case PlayerTitle.WOMAN_CANDIDATE_MASTER:
-                return _('WCM *** SHORT NAME FOR Woman Candidate Master')
+                return pgettext('short name for Woman Candidate Master', 'WCM')
             case PlayerTitle.CANDIDATE_MASTER:
-                return _('CM *** SHORT NAME FOR Candidate Master')
+                return pgettext('short name for Candidate Master', 'CM')
             case PlayerTitle.WOMAN_FIDE_MASTER:
-                return _('WFM *** SHORT NAME FOR Woman Fide Master')
+                return pgettext('short name for Woman Fide Master', 'WFM')
             case PlayerTitle.FIDE_MASTER:
-                return _('FM *** SHORT NAME FOR Fide Master')
+                return pgettext('short name for Fide Master', 'FM')
             case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
-                return _('WIM *** SHORT NAME FOR Woman International Master')
+                return pgettext('short name for Woman International Master', 'WIM')
             case PlayerTitle.INTERNATIONAL_MASTER:
-                return _('IM *** SHORT NAME FOR International Master')
+                return pgettext('short name for International Master', 'IM')
             case PlayerTitle.WOMAN_GRANDMASTER:
-                return _('WGM *** SHORT NAME FOR Woman Grand Master')
+                return pgettext('short name for Woman Grand Master', 'WGM')
             case PlayerTitle.GRANDMASTER:
-                return _('GM *** SHORT NAME FOR Grand Master')
+                return pgettext('short name for Grand Master', 'GM')
             case _:
                 raise ValueError(f'Unknown title: {self}')
 
@@ -951,11 +951,11 @@ class FideArbiterTitle(StrEnum):
             case FideArbiterTitle.NONE:
                 return ''
             case FideArbiterTitle.NATIONAL:
-                return _('NA *** SHORT NAME FOR National Arbiter')
+                return pgettext('short name for National Arbiter', 'NA')
             case FideArbiterTitle.FIDE:
-                return _('FA *** SHORT NAME FOR FIDE Arbiter')
+                return pgettext('short name for FIDE Arbiter', 'FA')
             case FideArbiterTitle.INTERNATIONAL:
-                return _('IA *** SHORT NAME FOR International Arbiter')
+                return pgettext('short name for International Arbiter', 'IA')
             case _:
                 raise ValueError(f'Unknown title: {self}')
 
@@ -1255,9 +1255,9 @@ class BoardColor(StrEnum):
     def to_crosstable(self) -> str:
         match self:
             case BoardColor.WHITE:
-                return _('W *** WHITE COLOR FOR CROSSTABLE')
+                return pgettext('white color for crosstable', 'W')
             case BoardColor.BLACK:
-                return _('B *** BLACK COLOR FOR CROSSTABLE')
+                return pgettext('black color for crosstable', 'B')
             case _:
                 raise ValueError(f'Unknown value:  {self}')
 

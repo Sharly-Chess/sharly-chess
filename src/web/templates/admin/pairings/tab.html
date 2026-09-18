@@ -237,7 +237,7 @@
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3">
                         {% if is_team_paired_mode %}
-                            {% with title=_('Byes *** ZPB, HPB or FPB'), teams=admin_team_bye, table_id='bye-teams-table' %}
+                            {% with title=pgettext('byes column header', 'Byes'), teams=admin_team_bye, table_id='bye-teams-table' %}
                                 {% include '/admin/pairings/team_unpaired_table.html' %}
                             {% endwith %}
                             {% with title=_('Absents'), teams=admin_team_absent, table_id='absent-teams-table' %}
@@ -278,7 +278,7 @@
                                 {% include '/admin/pairings/team_lineup_table.html' %}
                             {% endwith %}
                         {% else %}
-                            {% with title=_('Byes *** ZPB, HPB or FPB'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
+                            {% with title=pgettext('byes column header', 'Byes'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
                                 {% include '/admin/pairings/unpaired_table.html' %}
                             {% endwith %}
                             {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}

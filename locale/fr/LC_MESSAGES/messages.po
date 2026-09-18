@@ -104,9 +104,11 @@ msgid_plural "%(num)d events"
 msgstr[0] "%(num)d évènement"
 msgstr[1] "%(num)d évènements"
 
+#. counts columns; the noun is in the 'Columns:' label this follows
 #, python-format
-msgid "%(num)d informative *** COLUMNS, SINGULAR"
-msgid_plural "%(num)d informative *** COLUMNS, PLURAL"
+msgctxt "columns"
+msgid "%(num)d informative"
+msgid_plural "%(num)d informative"
 msgstr[0] "%(num)d informative"
 msgstr[1] "%(num)d informatives"
 
@@ -122,9 +124,11 @@ msgid_plural "%(num)d multi-screens"
 msgstr[0] "%(num)d écran multiple"
 msgstr[1] "%(num)d écrans multiples"
 
+#. counts columns; the noun is in the 'Columns:' label this follows
 #, python-format
-msgid "%(num)d optional *** COLUMNS, SINGULAR"
-msgid_plural "%(num)d optional *** COLUMNS, PLURAL"
+msgctxt "columns"
+msgid "%(num)d optional"
+msgid_plural "%(num)d optional"
 msgstr[0] "%(num)d facultative"
 msgstr[1] "%(num)d facultatives"
 
@@ -176,9 +180,11 @@ msgid_plural "%(num)d prohibited-pairing groups are configured for this round."
 msgstr[0] "%(num)d groupe de protection est configuré pour cette ronde."
 msgstr[1] "%(num)d groupes de protection sont configurés pour cette ronde."
 
+#. counts columns; the noun is in the 'Columns:' label this follows
 #, python-format
-msgid "%(num)d required *** COLUMNS, SINGULAR"
-msgid_plural "%(num)d required *** COLUMNS, PLURAL"
+msgctxt "columns"
+msgid "%(num)d required"
+msgid_plural "%(num)d required"
 msgstr[0] "%(num)d obligatoire"
 msgstr[1] "%(num)d obligatoires"
 
@@ -351,50 +357,16 @@ msgstr "(écran multiple)"
 msgid "(replace [%(object_uniq_id)s])"
 msgstr "(remplace [%(object_uniq_id)s])"
 
-msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
-msgstr "SC_C"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
-msgstr "SC_I"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
-msgstr "SC_D"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE MULTI-SCREENS TAB"
-msgstr "SC_M"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
-msgstr "SC_A"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
-msgstr "SC_J"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
-msgstr "SC_X"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE RANKINGS TAB"
-msgstr "SC_L"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
-msgstr "SC_R"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
-msgstr "SC_S"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE SOURCES TAB"
-msgstr "SC_S"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
-msgstr "SC_T"
-
 #, python-brace-format
 msgid "+{winner:g}% bonus for competitors in the top {share:g}%"
 msgstr "+{winner:g}% de bonus pour les compétiteurs dans le top {share:g}%"
 
-msgid "- *** NAME FOR GENDER NONE"
+msgctxt "name for gender none"
+msgid "-"
 msgstr "-"
 
-msgid "- *** SHORT NAME FOR GENDER NONE"
+msgctxt "short name for gender none"
+msgid "-"
 msgstr "-"
 
 msgid "/<moves>"
@@ -800,7 +772,8 @@ msgstr "Actions"
 msgid "Actions / Access levels"
 msgstr "Actions / Niveaux d'accès"
 
-msgid "Active *** ACTIVE ACCOUNT"
+msgctxt "active account"
+msgid "Active"
 msgstr "Actif"
 
 msgid "Actual"
@@ -987,7 +960,8 @@ msgstr "Tous les Grands Prix"
 msgid "All Events"
 msgstr "Évènements"
 
-msgid "All absent *** ALL TEAMS ABSENT"
+msgctxt "all teams absent"
+msgid "All absent"
 msgstr "Toutes présentes"
 
 msgid "All caps"
@@ -1005,7 +979,8 @@ msgstr "Tou·tes les joueur·euses sont apparié·es."
 msgid "All players marked as \"Present\"."
 msgstr "Tou·tes les joueur·euses ont été marqué·es « Présent·e »."
 
-msgid "All present *** ALL TEAMS PRESENT"
+msgctxt "all teams present"
+msgid "All present"
 msgstr "Toutes présentes"
 
 msgid "All rankings"
@@ -1142,7 +1117,8 @@ msgstr "Appliquer à tout·es"
 msgid "Apply tournament’s coefficient"
 msgstr "Appliquer le coefficient des tournois"
 
-msgid "Apr *** APRIL"
+msgctxt "april"
+msgid "Apr"
 msgstr "Avr"
 
 msgid "April"
@@ -1247,7 +1223,8 @@ msgstr[1] "Au plus %(num)d coups illégaux sont enregistrés."
 msgid "At most one decimal is expected."
 msgstr "Une seule décimale au maximum est attendue."
 
-msgid "Aug *** AUGUST"
+msgctxt "august"
+msgid "Aug"
 msgstr "Août"
 
 msgid "August"
@@ -1326,7 +1303,8 @@ msgstr "Elo moyen : %(rating)d"
 msgid "Average rating: {rating}"
 msgstr "Classement moyen : {rating}"
 
-msgid "Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER"
+msgctxt "average performance column header"
+msgid "Avg. perf."
 msgstr "Perf. moy."
 
 msgid "Avoid pairing by"
@@ -1338,10 +1316,12 @@ msgstr "En attente d'adversaire"
 msgid "Azerbaijan"
 msgstr "Azerbaïdjan"
 
-msgid "B *** BLACK COLOR FOR CROSSTABLE"
+msgctxt "black color for crosstable"
+msgid "B"
 msgstr "N"
 
-msgid "B *** BLACK COLOR FOR PLACE CARDS"
+msgctxt "black color for place cards"
+msgid "B"
 msgstr "N"
 
 msgid "BB fields"
@@ -1405,7 +1385,8 @@ msgstr "Simple"
 msgid "Bd"
 msgstr "Éch"
 
-msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
+msgctxt "board number column header"
+msgid "Bd."
 msgstr "Éch."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
@@ -1450,7 +1431,8 @@ msgstr "Victoire Noirs"
 msgid "Blitz"
 msgstr "Blitz"
 
-msgid "Blitz *** BLITZ ELO COLUMN HEADER"
+msgctxt "blitz Elo column header"
+msgid "Blitz"
 msgstr "Blitz"
 
 msgid "Blitz rating"
@@ -1459,7 +1441,8 @@ msgstr "Classement blitz"
 msgid "Blitz:"
 msgstr "Blitz :"
 
-msgid "Blz *** BLITZ RATING ACRONYM"
+msgctxt "blitz rating acronym"
+msgid "Blz"
 msgstr "Blz"
 
 msgid "Board"
@@ -1665,7 +1648,9 @@ msgstr "Exempte"
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de byes (%(limit)d) est déjà atteinte pour ce tournoi."
 
-msgid "Byes *** ZPB, HPB or FPB"
+#. a round a player sits out, of any kind: zero-, half- or full-point
+msgctxt "byes column header"
+msgid "Byes"
 msgstr "Forfaits ou byes"
 
 #, python-brace-format
@@ -1680,7 +1665,8 @@ msgstr "Les byes des rondes précédentes peuvent être modifiés depuis la page
 msgid "Byes will not be impacted."
 msgstr "Les forfaits et les byes ne seront pas impactés."
 
-msgid "C2 *** BYE ELIGIBILITY CRITERION"
+msgctxt "bye eligibility criterion"
+msgid "C2"
 msgstr "C2"
 
 msgid "C2: whether the player may take the pairing-allocated bye — a player can only ever receive one."
@@ -1704,7 +1690,8 @@ msgstr "Dépointer"
 msgid "CLEAR THE RESULT"
 msgstr "EFFACER LE RÉSULTAT"
 
-msgid "CM *** SHORT NAME FOR Candidate Master"
+msgctxt "short name for Candidate Master"
+msgid "CM"
 msgstr "CM"
 
 msgid "CSV file"
@@ -1783,7 +1770,8 @@ msgstr "Affichage en cartes"
 msgid "Cash"
 msgstr "Espèces"
 
-msgid "Cat. *** CATEGORY COLUMN HEADER"
+msgctxt "category column header"
+msgid "Cat."
 msgstr "Cat."
 
 msgid "Categories"
@@ -1986,7 +1974,8 @@ msgstr "Fermer"
 msgid "Club"
 msgstr "Club"
 
-msgid "Club *** CLUB COLUMN HEADER"
+msgctxt "club column header"
+msgid "Club"
 msgstr "Club"
 
 msgid "Club not specified"
@@ -2082,7 +2071,8 @@ msgstr "Commentaire :"
 msgid "Comments"
 msgstr "Commentaires"
 
-msgid "Comments *** COMMENTS COLUMN HEADER"
+msgctxt "comments column header"
+msgid "Comments"
 msgstr "Commentaires"
 
 msgid "Comoros Islands"
@@ -2121,7 +2111,8 @@ msgstr "Équipe complète"
 msgid "Configuration"
 msgstr "Configuration"
 
-msgid "Configuration *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Configuration"
 msgstr "<u>C</u>onfiguration"
 
 msgid "Configure prohibited pairings for this round."
@@ -2478,7 +2469,8 @@ msgid "Cut values"
 msgstr "Élaguer des valeurs"
 
 #, python-brace-format
-msgid "Cut {value} *** CUT TIE BREAK NAME"
+msgctxt "cut tie break name"
+msgid "Cut {value}"
 msgstr "Tronqué {value}"
 
 msgid "Cyprus"
@@ -2487,7 +2479,8 @@ msgstr "Chypre"
 msgid "Czech Republic"
 msgstr "République tchèque"
 
-msgid "D *** TEAM RANKING HEADER DRAW"
+msgctxt "team ranking header draw"
+msgid "D"
 msgstr "N"
 
 msgid "DCA"
@@ -2496,7 +2489,8 @@ msgstr "ADJ"
 msgid "DD/MM/YYYY"
 msgstr "JJ/MM/AAAA"
 
-msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
+msgctxt "date-of-birth column header"
+msgid "DOB"
 msgstr "DdN"
 
 msgid "DOUBLE"
@@ -2555,7 +2549,8 @@ msgstr "Date de naissance :"
 msgid "Dates"
 msgstr "Dates"
 
-msgid "Dec *** DECEMBER"
+msgctxt "december"
+msgid "Dec"
 msgstr "Dec"
 
 msgid "December"
@@ -2771,7 +2766,8 @@ msgstr "République démocratique du Congo"
 msgid "Denmark"
 msgstr "Danemark"
 
-msgid "Department *** EVENT TAG NAME"
+msgctxt "event tag name"
+msgid "Department"
 msgstr "Département"
 
 msgid "Dependencies"
@@ -2842,7 +2838,8 @@ msgid "Display controllers ({num})"
 msgstr "Pilotes d'afficheur ({num})"
 
 #, python-brace-format
-msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Display controllers ({num})"
 msgstr "P<u>i</u>lotes d'afficheur ({num})"
 
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
@@ -2936,7 +2933,8 @@ msgstr "Documentation"
 msgid "Documents"
 msgstr "Documents"
 
-msgid "Documents *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Documents"
 msgstr "<u>D</u>ocuments"
 
 msgid "Does not match criteria"
@@ -3065,7 +3063,8 @@ msgstr "Durée (min) :"
 msgid "Duration (sec):"
 msgstr "Durée (sec) :"
 
-msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
+msgctxt "short name for rating type estimated"
+msgid "E"
 msgstr "E"
 
 #, python-format
@@ -3369,16 +3368,20 @@ msgstr "Égypte"
 msgid "El Salvador"
 msgstr "El Salvador"
 
-msgid "Eliminated *** PLAYERS"
+msgctxt "individual knock-out"
+msgid "Eliminated"
 msgstr "Éliminé·es"
 
-msgid "Eliminated *** TEAMS"
+msgctxt "team knock-out"
+msgid "Eliminated"
 msgstr "Éliminées"
 
-msgid "Elo *** ELO RATING"
+msgctxt "Elo rating"
+msgid "Elo"
 msgstr "Elo"
 
-msgid "Elo *** STD ELO COLUMN HEADER"
+msgctxt "std Elo column header"
+msgid "Elo"
 msgstr "Elo"
 
 msgid "Email address"
@@ -3440,7 +3443,8 @@ msgstr "Erreur"
 msgid "Error when updating database [{database}]."
 msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 
-msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
+msgctxt "name for rating type estimated"
+msgid "Estimated"
 msgstr "Estimé"
 
 msgid "Estonia"
@@ -3530,10 +3534,12 @@ msgstr "Exclu·e du classement final : moins de 50 %% des parties disputées (FI
 msgid "Excluded from the final standings: completed less than 50%% of the matches (FIDE 6.6)."
 msgstr "Exclue du classement final : moins de 50 %% des matchs disputés (FIDE 6.6)."
 
-msgid "Exempt *** MAN"
+msgctxt "said of a man"
+msgid "Exempt"
 msgstr "Exempt"
 
-msgid "Exempt *** WOMAN"
+msgctxt "said of a woman"
+msgid "Exempt"
 msgstr "Exempte"
 
 msgid "Existing players"
@@ -3585,13 +3591,16 @@ msgstr "Confrontation directe étendue"
 msgid "Extended Sonneborn-Berger"
 msgstr "Sonneborn-Berger étendu"
 
-msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
+msgctxt "short name for rating type FIDE"
+msgid "F"
 msgstr "F"
 
-msgid "F *** TEAM RANKING HEADER FORFEIT"
+msgctxt "team ranking header forfeit"
+msgid "F"
 msgstr "F"
 
-msgid "FA *** SHORT NAME FOR FIDE Arbiter"
+msgctxt "short name for FIDE Arbiter"
+msgid "FA"
 msgstr "AF"
 
 msgid "FAIL"
@@ -3600,12 +3609,13 @@ msgstr "ÉCHEC"
 msgid "FIDE"
 msgstr "FIDE"
 
+msgctxt "name for rating type FIDE"
+msgid "FIDE"
+msgstr "Fide"
+
 #, python-format
 msgid "FIDE %(fide_id)s"
 msgstr "FIDE %(fide_id)s"
-
-msgid "FIDE *** NAME FOR RATING TYPE FIDE"
-msgstr "Fide"
 
 msgid "FIDE Arbiter"
 msgstr "Arbitre FIDE"
@@ -3613,7 +3623,8 @@ msgstr "Arbitre FIDE"
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 
-msgid "FIDE ID *** FIDE ID COLUMN HEADER"
+msgctxt "FIDE ID column header"
+msgid "FIDE ID"
 msgstr "Identi. FIDE"
 
 msgid "FIDE ID:"
@@ -3644,7 +3655,8 @@ msgstr "FIDE {id}"
 msgid "FIDE-rated present"
 msgstr "Joueur·euses classé·es FIDE présent·es"
 
-msgid "FM *** SHORT NAME FOR Fide Master"
+msgctxt "short name for Fide Master"
+msgid "FM"
 msgstr "MF"
 
 msgid "FORFEIT"
@@ -3653,7 +3665,8 @@ msgstr "FORFAIT"
 msgid "Faroe Islands"
 msgstr "Îles Féroé"
 
-msgid "Feb *** FEBRUARY"
+msgctxt "february"
+msgid "Feb"
 msgstr "Fev"
 
 msgid "February"
@@ -3662,7 +3675,8 @@ msgstr "Février"
 msgid "Fed"
 msgstr "Féd."
 
-msgid "Fed. *** FEDERATION COLUMN HEADER"
+msgctxt "federation column header"
+msgid "Fed."
 msgstr "Féd."
 
 msgid "Federation"
@@ -3853,7 +3867,8 @@ msgstr "Afficher en calendrier"
 msgid "Fourth place"
 msgstr "Quatrième place"
 
-msgid "Fr *** FRIDAY"
+msgctxt "friday"
+msgid "Fr"
 msgstr "Ve"
 
 msgid "France"
@@ -3893,13 +3908,16 @@ msgstr "Bye point entier (obsolète)"
 msgid "Full-Point Bye attributed to team [{team}]."
 msgstr "Bye à point entier attribué à l’équipe [{team}]"
 
-msgid "GM *** SHORT NAME FOR Grand Master"
+msgctxt "short name for Grand Master"
+msgid "GM"
 msgstr "GMI"
 
-msgid "GP *** GAME POINTS"
+msgctxt "game points"
+msgid "GP"
 msgstr "PP"
 
-msgid "GP *** TEAM RANKING HEADER GAME POINTS"
+msgctxt "team ranking header game points"
+msgid "GP"
 msgstr "PP"
 
 msgid "Gabon"
@@ -3923,7 +3941,8 @@ msgstr "Nombre de parties jouées avec les Noirs"
 msgid "Games won with Black"
 msgstr "Nombre de parties gagnées avec les Noirs"
 
-msgid "Gen. *** GENDER COLUMN HEADER"
+msgctxt "gender column header"
+msgid "Gen."
 msgstr "Gen."
 
 msgid "Gender"
@@ -4181,10 +4200,12 @@ msgstr "Je confirme vouloir supprimer ce tournoi."
 msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr "Je confirme vouloir écraser les données des joueur·euses de ce tournoi."
 
-msgid "IA *** SHORT NAME FOR International Arbiter"
+msgctxt "short name for International Arbiter"
+msgid "IA"
 msgstr "AI"
 
-msgid "IM *** SHORT NAME FOR International Master"
+msgctxt "short name for International Master"
+msgid "IM"
 msgstr "MI"
 
 msgid "Iceland"
@@ -4275,7 +4296,8 @@ msgstr "Dals les évènements par équipes, le départage est calculé en utilis
 msgid "In-tournament"
 msgstr "Dans le tournoi"
 
-msgid "Inactive *** INACTIVE ACCOUNT"
+msgctxt "inactive account"
+msgid "Inactive"
 msgstr "Inactif"
 
 msgid "Include IDs and passwords for uploading results"
@@ -4556,7 +4578,8 @@ msgstr "Élément [{id}] introuvable."
 msgid "Jamaica"
 msgstr "Jamaïque"
 
-msgid "Jan *** JANUARY"
+msgctxt "january"
+msgid "Jan"
 msgstr "Jan"
 
 msgid "January"
@@ -4571,13 +4594,15 @@ msgstr "Jersey"
 msgid "Jordan"
 msgstr "Jordanie"
 
-msgid "Jul *** JULY"
+msgctxt "july"
+msgid "Jul"
 msgstr "Juil"
 
 msgid "July"
 msgstr "Juillet"
 
-msgid "Jun *** JUNE"
+msgctxt "june"
+msgid "Jun"
 msgstr "Juin"
 
 msgid "June"
@@ -4586,7 +4611,8 @@ msgstr "Juin"
 msgid "Junior categories"
 msgstr "Catégories jeunes"
 
-msgid "K *** FIDE RATING COEFFICIENT"
+msgctxt "FIDE rating coefficient"
+msgid "K"
 msgstr "K"
 
 msgid "Kashdan"
@@ -4631,7 +4657,8 @@ msgstr "Koweït"
 msgid "Kyrgyzstan"
 msgstr "Kirghizistan"
 
-msgid "L *** TEAM RANKING HEADER LOSS"
+msgctxt "team ranking header loss"
+msgid "L"
 msgstr "D"
 
 msgid "Language:"
@@ -4693,7 +4720,8 @@ msgstr "Lancer un navigateur web au démarrage"
 msgid "Layout"
 msgstr "Présentation"
 
-msgid "League *** EVENT TAG NAME"
+msgctxt "event tag name"
+msgid "League"
 msgstr "Ligue"
 
 msgid "Leave all unchecked to print every match."
@@ -4839,16 +4867,19 @@ msgstr "Tableau inférieur"
 msgid "Luxembourg"
 msgstr "Luxembourg"
 
-msgid "M *** SHORT NAME FOR GENDER MAN"
+msgctxt "short name for gender man"
+msgid "M"
 msgstr "H"
 
 msgid "MM/DD/YYYY"
 msgstr "MM/JJ/AAAA"
 
-msgid "MP *** MATCH POINTS"
+msgctxt "match points"
+msgid "MP"
 msgstr "PM"
 
-msgid "MP *** TEAM RANKING HEADER MATCH POINTS"
+msgctxt "team ranking header match points"
+msgid "MP"
 msgstr "PM"
 
 msgid "Macau, China"
@@ -4881,7 +4912,8 @@ msgstr "Mali"
 msgid "Malta"
 msgstr "Malte"
 
-msgid "Man *** NAME FOR GENDER MAN"
+msgctxt "name for gender man"
+msgid "Man"
 msgstr "Homme"
 
 msgid "Manage accounts"
@@ -4938,7 +4970,8 @@ msgstr "Départage manuel"
 msgid "Manually pair players"
 msgstr "Appairer des joueur·euses manuellement"
 
-msgid "Mar *** MARCH"
+msgctxt "march"
+msgid "Mar"
 msgstr "Mars"
 
 msgid "March"
@@ -4961,10 +4994,12 @@ msgstr "Marquer « %(status)s » "
 msgid "Mark as \"Present\" (recommended)"
 msgstr "Marquer « Présent·e » (recommandé)"
 
-msgid "Mark as winner *** PLAYER"
+msgctxt "individual knock-out"
+msgid "Mark as winner"
 msgstr "Désigner comme vainqueur·e"
 
-msgid "Mark as winner *** TEAM"
+msgctxt "team knock-out"
+msgid "Mark as winner"
 msgstr "Désigner comme vainqueure"
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -5031,7 +5066,8 @@ msgstr "Mauritanie"
 msgid "Mauritius"
 msgstr "Maurice"
 
-msgid "Max *** MAXIMUM"
+msgctxt "maximum"
+msgid "Max"
 msgstr "Max"
 
 #, python-format
@@ -5087,7 +5123,8 @@ msgstr "La valeur maximale doit être supérieure à la valeur minimale."
 msgid "May"
 msgstr "Mai"
 
-msgid "May *** MAY ACRONYM"
+msgctxt "may acronym"
+msgid "May"
 msgstr "Mai"
 
 msgid "May be overridden on a per-tournament basis."
@@ -5156,7 +5193,8 @@ msgstr "Fusionner les équipes sélectionnées"
 msgid "Mexico"
 msgstr "Mexique"
 
-msgid "Min *** MINIMUM"
+msgctxt "minimum"
+msgid "Min"
 msgstr "Min"
 
 msgid "Min. age category"
@@ -5204,7 +5242,8 @@ msgstr "Champ requis manquant [{field}]."
 msgid "Missing women"
 msgstr "Femmes manquantes"
 
-msgid "Mo *** MONDAY"
+msgctxt "monday"
+msgid "Mo"
 msgstr "Lu"
 
 msgid "Moldova"
@@ -5278,7 +5317,8 @@ msgid "Multi-Screens"
 msgstr "Écrans multiples"
 
 #, python-brace-format
-msgid "Multi-Screens ({num}) *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Multi-Screens ({num})"
 msgstr "Écrans&nbsp;<u>M</u>ultiples ({num})"
 
 msgid "Multi-Screens are used to split a large amount of information across multiple screens."
@@ -5321,16 +5361,19 @@ msgstr "Mon chronomètre"
 msgid "Myanmar"
 msgstr "Myanmar"
 
-msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
+msgctxt "short name for rating type national"
+msgid "N"
 msgstr "N"
 
-msgid "N *** THE LETTER TO ANSWER NO"
+msgctxt "the letter to answer no"
+msgid "N"
 msgstr "N"
 
 msgid "N/A"
 msgstr "S/O"
 
-msgid "NA *** SHORT NAME FOR National Arbiter"
+msgctxt "short name for National Arbiter"
+msgid "NA"
 msgstr "AN"
 
 msgid "NORM ACHIEVED"
@@ -5342,7 +5385,8 @@ msgstr "NON OBTENUE"
 msgid "Name"
 msgstr "Nom"
 
-msgid "Name *** NAME COLUMN HEADER"
+msgctxt "name column header"
+msgid "Name"
 msgstr "Nom"
 
 msgid "Name:"
@@ -5364,7 +5408,8 @@ msgstr "Nom affiché"
 msgid "Naming:"
 msgstr "Nom affiché :"
 
-msgid "National *** NAME FOR RATING TYPE NATIONAL"
+msgctxt "name for rating type national"
+msgid "National"
 msgstr "National"
 
 msgid "National Arbiter"
@@ -5396,7 +5441,8 @@ msgstr "Besoin d’un plugin sur mesure ?"
 msgid "Need help?"
 msgstr "Besoin d'aide ?"
 
-msgid "Needs *** NORM REQUIREMENT COLUMN HEADER"
+msgctxt "norm requirement column header"
+msgid "Needs"
 msgstr "Requis"
 
 msgid "Nepal"
@@ -5746,10 +5792,12 @@ msgstr "Aucun classement n'est encore disponible."
 msgid "No ranking rules configured"
 msgstr "Aucune règle de classement configurée"
 
-msgid "No reset game is needed: the winners-bracket champion won the grand final. *** PLAYER"
+msgctxt "individual knock-out"
+msgid "No reset game is needed: the winners-bracket champion won the grand final."
 msgstr "Aucune belle n'est nécessaire : le·la champion·ne du tableau supérieur a remporté la grande finale."
 
-msgid "No reset game is needed: the winners-bracket champion won the grand final. *** TEAM"
+msgctxt "team knock-out"
+msgid "No reset game is needed: the winners-bracket champion won the grand final."
 msgstr "Aucune belle n'est nécessaire : l'équipe championne du tableau supérieur a remporté la grande finale."
 
 msgid "No result"
@@ -5863,7 +5911,8 @@ msgstr "Aucun changement détecté."
 msgid "No usable table for {t} teams of {p} players."
 msgstr "Aucune table utilisable pour {t} équipes de {p} joueur·euses."
 
-msgid "No. *** NB COLUMN HEADER"
+msgctxt "NB column header"
+msgid "No."
 msgstr "N°"
 
 msgid "No. final rounds without byes:"
@@ -5884,13 +5933,15 @@ msgstr "Capitaine non joueur·euse."
 msgid "None"
 msgstr "Aucun"
 
+msgctxt "federation"
+msgid "None"
+msgstr "Aucune"
+
 msgid "None (no colour preferences)"
 msgstr "Aucune (pas de préférences de couleur)"
 
-msgid "None *** FEDERATION"
-msgstr "Aucune"
-
-msgid "Norm *** NORM COLUMN HEADER"
+msgctxt "norm column header"
+msgid "Norm"
 msgstr "Norme"
 
 msgid "Norm Calculation Details"
@@ -5903,7 +5954,8 @@ msgstr "Détail du calcul de la norme — %(norm)s"
 msgid "Norm Report"
 msgstr "Rapport de norme"
 
-msgid "Norm(s) Achieved *** NORMS ACHIEVED COLUMN HEADER"
+msgctxt "norms achieved column header"
+msgid "Norm(s) Achieved"
 msgstr "Norme(s) réalisée(s)"
 
 msgid "Normalisation factor"
@@ -5961,7 +6013,8 @@ msgstr "Remarque"
 msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
 
-msgid "Notes *** NOTES COLUMN HEADER"
+msgctxt "notes column header"
+msgid "Notes"
 msgstr "Notes"
 
 msgid "Nothing further — leave the teams tied"
@@ -5970,7 +6023,8 @@ msgstr "Rien de plus — laisser les équipes à égalité"
 msgid "Notification"
 msgstr "Notification"
 
-msgid "Nov *** NOVEMBER"
+msgctxt "november"
+msgid "Nov"
 msgstr "Nov"
 
 msgid "November"
@@ -6068,7 +6122,8 @@ msgstr "OK"
 msgid "ORG"
 msgstr "ORG"
 
-msgid "Oct *** OCTOBER"
+msgctxt "october"
+msgid "Oct"
 msgstr "Oct"
 
 msgid "October"
@@ -6137,7 +6192,8 @@ msgstr "Opacité"
 msgid "Open"
 msgstr "Ouvrir"
 
-msgid "Open *** EVENT TAG NAME"
+msgctxt "event tag name"
+msgid "Open"
 msgstr "Open"
 
 msgid "Open IT1 certificate for this norm"
@@ -6165,7 +6221,8 @@ msgid "Opponent"
 msgstr "Adversaire"
 
 #, python-brace-format
-msgid "Opponent (R{round}) *** OPPONENT COLUMN HEADER"
+msgctxt "opponent column header"
+msgid "Opponent (R{round})"
 msgstr "Adversaire (R{round})"
 
 msgid "Opponent Elo"
@@ -6243,11 +6300,13 @@ msgid "Others"
 msgstr "Autres"
 
 #, python-brace-format
-msgid "Out — round {round} *** PLAYER KNOCK-OUT"
+msgctxt "individual knock-out"
+msgid "Out — round {round}"
 msgstr "Éliminé·e — tour {round}"
 
 #, python-brace-format
-msgid "Out — round {round} *** TEAM KNOCK-OUT"
+msgctxt "team knock-out"
+msgid "Out — round {round}"
 msgstr "Éliminée — tour {round}"
 
 msgid "Overall"
@@ -6269,7 +6328,8 @@ msgstr "Remplacement"
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
 
-msgid "Owed *** OWED COLUMN HEADER"
+msgctxt "owed column header"
+msgid "Owed"
 msgstr "Du"
 
 msgid "Owed:"
@@ -6302,7 +6362,8 @@ msgstr "Marge"
 msgid "Page break between matches (one match per page)."
 msgstr "Saut de page entre les matchs (un match par page)."
 
-msgid "Paid *** PAID COLUMN HEADER"
+msgctxt "paid column header"
+msgid "Paid"
 msgstr "Payé"
 
 msgid "Paid:"
@@ -6411,12 +6472,13 @@ msgstr "Exemption assignée à l'équipe [{team}]."
 msgid "Pairings"
 msgstr "Appariements"
 
+msgctxt "with shortcut indication"
+msgid "Pairings"
+msgstr "<u>A</u>ppariements"
+
 #, python-format
 msgid "Pairings %f-%l"
 msgstr "App. %f-%l"
-
-msgid "Pairings *** WITH_SHORTCUT_INDICATION"
-msgstr "<u>A</u>ppariements"
 
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
@@ -6503,7 +6565,8 @@ msgstr "Mot de passe :"
 msgid "Payment"
 msgstr "Paiement"
 
-msgid "Peak perf. *** PEAK PERFORMANCE COLUMN HEADER"
+msgctxt "peak performance column header"
+msgid "Peak perf."
 msgstr "Perf. max."
 
 msgid "Penalty"
@@ -6591,10 +6654,12 @@ msgstr "Disputer un match pour la troisième place entre les deux demi-finaliste
 msgid "Played"
 msgstr "Parties"
 
-msgid "Played *** GAMES PLAYED COLUMN HEADER"
+msgctxt "games played column header"
+msgid "Played"
 msgstr "Parties"
 
-msgid "Played *** TEAM RANKING HEADER PLAYED"
+msgctxt "team ranking header played"
+msgid "Played"
 msgstr "J"
 
 msgid "Played games"
@@ -6728,7 +6793,8 @@ msgid "Players ({num})"
 msgstr "Joueur·euses ({num})"
 
 #, python-brace-format
-msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Players ({num})"
 msgstr "<u>J</u>oueur·euses ({num})"
 
 msgid "Players can't be overwritten once a tournament has started."
@@ -7007,10 +7073,12 @@ msgstr "Score positionnel"
 msgid "Positive values are expected."
 msgstr "Des valeurs positives sont attendues."
 
-msgid "Pre *** PREFIX"
+msgctxt "prefix"
+msgid "Pre"
 msgstr "Préf"
 
-msgid "Pref. *** PREFERENCE"
+msgctxt "colour preference column header"
+msgid "Pref."
 msgstr "Préf."
 
 msgid "Prefix / suffix"
@@ -7040,7 +7108,8 @@ msgstr "Score principal :"
 msgid "Private"
 msgstr "Privé"
 
-msgid "Prize *** PRIZE COLUMN HEADER"
+msgctxt "prize column header"
+msgid "Prize"
 msgstr "Prix"
 
 msgid "Prize Brackets"
@@ -7090,7 +7159,8 @@ msgstr "Partage des prix"
 msgid "Prizes"
 msgstr "Prix"
 
-msgid "Prizes *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Prizes"
 msgstr "Pri<u>x</u>"
 
 msgid "Prizes can only be shared for the main category."
@@ -7132,7 +7202,8 @@ msgstr "Édition d'appariements protégés"
 msgid "Proxy (if any):"
 msgstr "Mandataire (le cas échéant) :"
 
-msgid "Pts *** POINTS COLUMN HEADER"
+msgctxt "points column header"
+msgid "Pts"
 msgstr "Pts"
 
 msgid "Public"
@@ -7175,11 +7246,13 @@ msgid "R"
 msgstr "R"
 
 #, python-format
-msgid "R %(round)d *** ROUND COLUMN HEADER"
+msgctxt "round column header"
+msgid "R %(round)d"
 msgstr "R %(round)d"
 
 #, python-brace-format
-msgid "R {round} *** ROUND COLUMN HEADER"
+msgctxt "round column header"
+msgid "R {round}"
 msgstr "R {round}"
 
 msgid "RES"
@@ -7188,7 +7261,8 @@ msgstr "RÉS"
 msgid "Ra"
 msgstr "Ra"
 
-msgid "Ra *** AVERAGE OPPONENT RATING COLUMN HEADER"
+msgctxt "average opponent rating column header"
+msgid "Ra"
 msgstr "Ra"
 
 msgid "Random"
@@ -7254,7 +7328,8 @@ msgstr "Les écrans d'affichage de classement présentent les joueur·euses par 
 msgid "Rankings"
 msgstr "Classements"
 
-msgid "Rankings *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Rankings"
 msgstr "C<u>l</u>assements"
 
 msgid "Rankings to print"
@@ -7266,7 +7341,8 @@ msgstr "Classements à imprimer :"
 msgid "Rapid"
 msgstr "Rapide"
 
-msgid "Rapid *** RAPID ELO COLUMN HEADER"
+msgctxt "rapid Elo column header"
+msgid "Rapid"
 msgstr "Rapide"
 
 msgid "Rapid rating"
@@ -7444,7 +7520,8 @@ msgstr "Requis par le plug-in <b>%(plugin)s</b>."
 msgid "Requirements"
 msgstr "Prérequis"
 
-msgid "Res. *** RESULT COLUMN HEADER"
+msgctxt "result column header"
+msgid "Res."
 msgstr "Rés."
 
 msgid "Reset"
@@ -7481,7 +7558,8 @@ msgstr "Restaurer"
 msgid "Result"
 msgstr "Résultat"
 
-msgid "Result *** KNOCK-OUT RESULT COLUMN"
+msgctxt "knock-out result column"
+msgid "Result"
 msgstr "Résultat"
 
 #, python-brace-format
@@ -7551,10 +7629,12 @@ msgstr "Victoire droite"
 msgid "Rk."
 msgstr "Rg."
 
-msgid "Rk. *** RANK COLUMN HEADER"
+msgctxt "rank column header"
+msgid "Rk."
 msgstr "Pl."
 
-msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
+msgctxt "rank overall column header"
+msgid "Rk. O."
 msgstr "Pl. Gén."
 
 msgid "Rnd.Brd"
@@ -7620,7 +7700,8 @@ msgid "Rotators ({num})"
 msgstr "Écrans rotatifs ({num})"
 
 #, python-brace-format
-msgid "Rotators ({num}) *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Rotators ({num})"
 msgstr "Écrans&nbsp<u>R</u>otatifs ({num})"
 
 msgid "Rotators allow you to rotate through multiple screens, or multi-screens, to display plenty of information at your event."
@@ -7702,11 +7783,13 @@ msgid "Round {round}"
 msgstr "Ronde {round}"
 
 #, python-brace-format
-msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks. *** PLAYER"
+msgctxt "individual knock-out"
+msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
 msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner le·la vainqueur·e d'un barrage — ou ajoutez d'autres départages de qualification."
 
 #, python-brace-format
-msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks. *** TEAM"
+msgctxt "team knock-out"
+msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
 msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner l'équipe vainqueure d'un barrage — ou ajoutez d'autres départages de qualification."
 
 #, python-brace-format
@@ -7759,10 +7842,12 @@ msgstr "Lignes par écran :"
 msgid "Rp"
 msgstr "Rp"
 
-msgid "Rp *** PERFORMANCE RATING COLUMN HEADER"
+msgctxt "performance rating column header"
+msgid "Rp"
 msgstr "Rp"
 
-msgid "Rpd *** RAPID RATING ACRONYM"
+msgctxt "rapid rating acronym"
+msgid "Rpd"
 msgstr "Rpd"
 
 msgid "Rule"
@@ -7799,13 +7884,62 @@ msgstr "Rwanda"
 msgid "SCR"
 msgstr "ÉCR"
 
+msgctxt "keyboard shortcut for the pairings tab"
+msgid "SC_A"
+msgstr "SC_A"
+
+msgctxt "keyboard shortcut for the configuration tab"
+msgid "SC_C"
+msgstr "SC_C"
+
+msgctxt "keyboard shortcut for the documents tab"
+msgid "SC_D"
+msgstr "SC_D"
+
+msgctxt "keyboard shortcut for the display controllers tab"
+msgid "SC_I"
+msgstr "SC_I"
+
+msgctxt "keyboard shortcut for the multi-screens tab"
+msgid "SC_M"
+msgstr "SC_M"
+
+msgctxt "keyboard shortcut for the players tab"
+msgid "SC_P"
+msgstr "SC_J"
+
+msgctxt "keyboard shortcut for the rankings tab"
+msgid "SC_R"
+msgstr "SC_L"
+
+msgctxt "keyboard shortcut for the rotators tab"
+msgid "SC_R"
+msgstr "SC_R"
+
+msgctxt "keyboard shortcut for the single screens tab"
+msgid "SC_S"
+msgstr "SC_S"
+
+msgctxt "keyboard shortcut for the sources tab"
+msgid "SC_S"
+msgstr "SC_S"
+
+msgctxt "keyboard shortcut for the tournaments tab"
+msgid "SC_T"
+msgstr "SC_T"
+
+msgctxt "keyboard shortcut for the prizes tab"
+msgid "SC_Z"
+msgstr "SC_X"
+
 msgid "SEC"
 msgstr "SEC"
 
 msgid "SPE"
 msgstr "SPE"
 
-msgid "Sa *** SATURDAY"
+msgctxt "saturday"
+msgid "Sa"
 msgstr "Sa"
 
 msgid "Saint Kitts and Nevis"
@@ -7859,10 +7993,12 @@ msgstr "Périmètre"
 msgid "Score"
 msgstr "Score"
 
-msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
+msgctxt "performance indicator column header"
+msgid "Score"
 msgstr "Score"
 
-msgid "Score *** SCORE COLUMN HEADER"
+msgctxt "score column header"
+msgid "Score"
 msgstr "Score"
 
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
@@ -7927,7 +8063,8 @@ msgstr "Écrans : %(num)d"
 msgid "Scroll down to review all the norms…"
 msgstr "Faites défiler vers le bas pour consulter toutes les normes…"
 
-msgid "Search *** SECTION TITLE"
+msgctxt "player search section title"
+msgid "Search"
 msgstr "Recherche"
 
 msgid "Search a plugin…"
@@ -8068,7 +8205,8 @@ msgstr "Sénégal"
 msgid "Senior categories"
 msgstr "Catégories Séniors"
 
-msgid "Sep *** SEPTEMBER"
+msgctxt "september"
+msgid "Sep"
 msgstr "Sep"
 
 msgid "September"
@@ -8254,7 +8392,8 @@ msgid "Single Screens"
 msgstr "Écrans simples"
 
 #, python-brace-format
-msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Single Screens ({num})"
 msgstr "Écrans&nbsp;<u>S</u>imples ({num})"
 
 msgid "Single elimination"
@@ -8355,7 +8494,8 @@ msgstr "Source"
 msgid "Sources"
 msgstr "Sources"
 
-msgid "Sources *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Sources"
 msgstr "<u>S</u>ources"
 
 msgid "South Africa"
@@ -8480,7 +8620,8 @@ msgstr "Statistiques"
 msgid "Status"
 msgstr "Statut"
 
-msgid "Std *** STANDARD RATING ACRONYM"
+msgctxt "standard rating acronym"
+msgid "Std"
 msgstr "Std"
 
 msgid "Still in"
@@ -8495,7 +8636,8 @@ msgstr "Préférence forte"
 msgid "Style"
 msgstr "Style"
 
-msgid "Su *** SUNDAY"
+msgctxt "sunday"
+msgid "Su"
 msgstr "Di"
 
 msgid "Substitutes Bench"
@@ -8511,7 +8653,8 @@ msgstr "Déconnexion réussie."
 msgid "Sudan"
 msgstr "Soudan"
 
-msgid "Suf *** SUFFIX"
+msgctxt "suffix"
+msgid "Suf"
 msgstr "Suf"
 
 msgid "Sum of Buchholz"
@@ -8556,7 +8699,8 @@ msgstr "Système"
 msgid "TEAM'S NAME"
 msgstr "NOM DE L'ÉQUIPE"
 
-msgid "TPN *** TOURNAMENT PAIRING NUMBER"
+msgctxt "tournament pairing number"
+msgid "TPN"
 msgstr "NA"
 
 msgid "TRF file"
@@ -8778,7 +8922,8 @@ msgstr "Couleur du texte :"
 msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
 msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour les numéros de rondes, obligatoires sinon."
 
-msgid "Th *** THURSDAY"
+msgctxt "thursday"
+msgid "Th"
 msgstr "Je"
 
 msgid "Thailand"
@@ -9350,10 +9495,12 @@ msgstr "La manière de constituer les équipes."
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueur·euses ayant le même nombre de points."
 
-msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice). *** PLAYER"
+msgctxt "individual knock-out"
+msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice)."
 msgstr "Le·la champion·ne du tableau supérieur atteint la grande finale invaincu·e. Si le·la champion·ne du tableau inférieur la remporte, disputez une seconde partie décisive (il faut le·la battre deux fois)."
 
-msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice). *** TEAM"
+msgctxt "team knock-out"
+msgid "The winners-bracket champion reaches the grand final unbeaten. If the losers-bracket champion wins it, play a deciding second game (they must be beaten twice)."
 msgstr "L'équipe championne du tableau supérieur atteint la grande finale invaincu·e. Si l'équipe championne du tableau inférieur la remporte, disputez une seconde partie décisive (il faut la battre deux fois)."
 
 msgid "There already is an hour defined at this time."
@@ -9789,7 +9936,8 @@ msgstr "Timor-Leste"
 msgid "Title"
 msgstr "Titre"
 
-msgid "Title *** TITLE COLUMN HEADER"
+msgctxt "title column header"
+msgid "Title"
 msgstr "Titre"
 
 msgid "Title Norms"
@@ -9879,7 +10027,8 @@ msgstr "Valeur totale"
 msgid "Tournament"
 msgstr "Tournoi"
 
-msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
+msgctxt "tournament for players columns"
+msgid "Tournament"
 msgstr "Tournoi"
 
 msgid "Tournament Norms Summary"
@@ -9962,7 +10111,8 @@ msgid "Tournaments"
 msgstr "Tournois"
 
 #, python-brace-format
-msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
+msgctxt "with shortcut indication"
+msgid "Tournaments ({num})"
 msgstr "<u>T</u>ournois ({num})"
 
 msgid "Tournaments are finished, you can not add players any longer."
@@ -9986,7 +10136,8 @@ msgstr "Trinité-et-Tobago"
 msgid "Trophy, medal"
 msgstr "Trophée, médaille"
 
-msgid "Tu *** TUESDAY"
+msgctxt "tuesday"
+msgid "Tu"
 msgstr "Ma"
 
 msgid "Tunisia"
@@ -10046,11 +10197,13 @@ msgstr "Ukraine"
 msgid "Unaffiliated"
 msgstr "Sans affiliation"
 
-msgid "Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT"
-msgstr "Non assignée"
-
-msgid "Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT"
+msgctxt "group of the teams with no tournament"
+msgid "Unassigned"
 msgstr "Non assignées"
+
+msgctxt "no tournament chosen for a team"
+msgid "Unassigned"
+msgstr "Non assignée"
 
 msgid "Unavailable before the tournament start."
 msgstr "Non disponible avant le début du tournoi."
@@ -10061,11 +10214,13 @@ msgstr "Non disponible une fois le tournoi démarré."
 msgid "Undefined"
 msgstr "Non défini"
 
-msgid "Undefined *** PLURAL"
-msgstr "Non définis"
-
-msgid "Undefined *** SINGULAR"
+msgctxt "said of one thing"
+msgid "Undefined"
 msgstr "Non défini"
+
+msgctxt "said of several things"
+msgid "Undefined"
+msgstr "Non définis"
 
 msgid "Underline"
 msgstr "Souligné"
@@ -10150,10 +10305,12 @@ msgstr "Valeur inconnue (attendu : {expected})."
 msgid "Unlike single Screens, multi-screens can only be used to display information about a single tournament."
 msgstr "Contrairement aux écrans simples, les écrans multiples ne peuvent être utilisés que pour afficher les informations d'un seul tournoi."
 
-msgid "Unmark winner *** PLAYER"
+msgctxt "individual knock-out"
+msgid "Unmark winner"
 msgstr "Annuler la désignation"
 
-msgid "Unmark winner *** TEAM"
+msgctxt "team knock-out"
+msgid "Unmark winner"
 msgstr "Annuler la désignation"
 
 msgid "Unmerge"
@@ -10183,10 +10340,12 @@ msgstr "Désappariez le tournoi avant de changer son système d'appariement."
 msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
 
-msgid "Unpaired *** MAN"
+msgctxt "said of a man"
+msgid "Unpaired"
 msgstr "Non apparié"
 
-msgid "Unpaired *** WOMAN"
+msgctxt "said of a woman"
+msgid "Unpaired"
 msgstr "Non appariée"
 
 msgid "Unpaired: displayed"
@@ -10201,14 +10360,17 @@ msgstr "Désapparier une ronde publiée peut être très désagréable pour les 
 msgid "Unplayed (no result recorded)."
 msgstr "Non jouée (aucun résultat enregistré)."
 
-msgid "Unrated *** FOR GAMES"
-msgstr "Non comptabilisés pour le classement Elo"
-
-msgid "Unrated *** PLURAL FOR UNRATED PLAYERS"
+msgctxt "plural for unrated players"
+msgid "Unrated"
 msgstr "Non-classé·es"
 
-msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
+msgctxt "singular for unrated player"
+msgid "Unrated"
 msgstr "Non-classé·e"
+
+msgctxt "unrated game"
+msgid "Unrated"
+msgstr "Non comptabilisés pour le classement Elo"
 
 msgid "Unrated Draw"
 msgstr "Nulle non comptabilisée pour le classement Elo"
@@ -10389,7 +10551,8 @@ msgid "Uzbekistan"
 msgstr "Ouzbékistan"
 
 #, python-brace-format
-msgid "U{age_limit} *** YOUTH AGE CATEGORY"
+msgctxt "youth age category"
+msgid "U{age_limit}"
 msgstr "U{age_limit}"
 
 msgid "Valid rows"
@@ -10483,25 +10646,32 @@ msgstr "Des points virtuels sont accordés aux joueur·euses selon leur groupe. 
 msgid "Visibility:"
 msgstr "Visibilité :"
 
-msgid "W *** SHORT NAME FOR GENDER WOMAN"
+msgctxt "short name for gender woman"
+msgid "W"
 msgstr "F"
 
-msgid "W *** TEAM RANKING HEADER WIN"
+msgctxt "team ranking header win"
+msgid "W"
 msgstr "V"
 
-msgid "W *** WHITE COLOR FOR CROSSTABLE"
+msgctxt "white color for crosstable"
+msgid "W"
 msgstr "B"
 
-msgid "W *** WHITE COLOR FOR PLACE CARDS"
+msgctxt "white color for place cards"
+msgid "W"
 msgstr "B"
 
-msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
+msgctxt "short name for Woman Candidate Master"
+msgid "WCM"
 msgstr "CMF"
 
-msgid "WFM *** SHORT NAME FOR Woman Fide Master"
+msgctxt "short name for Woman Fide Master"
+msgid "WFM"
 msgstr "MFF"
 
-msgid "WGM *** SHORT NAME FOR Woman Grand Master"
+msgctxt "short name for Woman Grand Master"
+msgid "WGM"
 msgstr "GMF"
 
 msgid "WHITE PLAYER"
@@ -10510,7 +10680,8 @@ msgstr "JOUEUR·EUSE BLANCS"
 msgid "WHITE WINS"
 msgstr "VICTOIRE BLANCS"
 
-msgid "WIM *** SHORT NAME FOR Woman International Master"
+msgctxt "short name for Woman International Master"
+msgid "WIM"
 msgstr "MIF"
 
 msgid "Wales"
@@ -10557,7 +10728,8 @@ msgstr "Attention : trop de joueur·euses sélectionné·es."
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
 
-msgid "We *** WEDNESDAY"
+msgctxt "wednesday"
+msgid "We"
 msgstr "Me"
 
 msgid "Weak"
@@ -10639,10 +10811,12 @@ msgstr "Victoire"
 msgid "Win:"
 msgstr "Victoire :"
 
-msgid "Winner *** PLAYER KNOCK-OUT"
+msgctxt "individual knock-out"
+msgid "Winner"
 msgstr "Vainqueur·e"
 
-msgid "Winner *** TEAM KNOCK-OUT"
+msgctxt "team knock-out"
+msgid "Winner"
 msgstr "Vainqueur"
 
 msgid "With less players than prizes, some prizes will not be attributed."
@@ -10654,7 +10828,8 @@ msgstr "Forfait définitif"
 msgid "Withdrawn"
 msgstr "Forfait définitif"
 
-msgid "Woman *** NAME FOR GENDER WOMAN"
+msgctxt "name for gender woman"
+msgid "Woman"
 msgstr "Femme"
 
 msgid "Woman Candidate Master"
@@ -10672,7 +10847,8 @@ msgstr "Maître Internationale Féminin"
 msgid "Women"
 msgstr "Femmes"
 
-msgid "Women *** EVENT TAG NAME"
+msgctxt "event tag name"
+msgid "Women"
 msgstr "Féminin"
 
 msgid "Women's Title:"
@@ -10684,7 +10860,8 @@ msgstr "Format XLSX"
 msgid "XX fields"
 msgstr "Champs XX"
 
-msgid "Y *** THE LETTER TO ANSWER YES"
+msgctxt "the letter to answer yes"
+msgid "Y"
 msgstr "O"
 
 msgid "YY/MM/DD"
@@ -10859,7 +11036,8 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 msgid "Your text here"
 msgstr "Votre texte ici"
 
-msgid "Youth *** EVENT TAG NAME"
+msgctxt "event tag name"
+msgid "Youth"
 msgstr "Jeunes"
 
 msgid "Zambia"
@@ -11011,7 +11189,8 @@ msgstr "https://sharly-chess.com/fr/bien-demarrer/"
 msgid "in"
 msgstr "po"
 
-msgid "incomplete *** INCOMPLETE TEAM"
+msgctxt "incomplete team"
+msgid "incomplete"
 msgstr "incomplète"
 
 msgid "item id"
@@ -11066,7 +11245,8 @@ msgstr "matchs du début au n°{last}, sur {parts} écrans"
 msgid "matches on {parts} screens"
 msgstr "matchs sur {parts} écrans"
 
-msgid "min *** MINUTES"
+msgctxt "minutes"
+msgid "min"
 msgstr "min."
 
 #, python-brace-format
@@ -11278,7 +11458,8 @@ msgstr "écrans de {number} équipes du n°{first} à la fin"
 msgid "screens of {number} teams from start to #{last}"
 msgstr "écrans de {number} équipes du début au n°{last}"
 
-msgid "sec *** SECONDS"
+msgctxt "seconds"
+msgid "sec"
 msgstr "sec."
 
 msgid "some already played each other"
@@ -11363,7 +11544,8 @@ msgid "yes"
 msgstr "oui"
 
 #, python-brace-format
-msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
+msgctxt "senior age category"
+msgid "{age_limit}+"
 msgstr "{age_limit}+"
 
 #, python-brace-format

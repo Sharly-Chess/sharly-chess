@@ -3,7 +3,7 @@ import random
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.player import Player
@@ -337,13 +337,13 @@ class PairingCardType(PlaceCardType):
         place_card_pairing.number = random.randint(1, 99)
         place_card_pairing.white_player = cls.get_random_player(
             last_name=_('WHITE PLAYER'),
-            color=_('W *** WHITE COLOR FOR PLACE CARDS'),
+            color=pgettext('white color for place cards', 'W'),
         )
         place_card_pairing.white_player.color_background = '#fff'
         place_card_pairing.white_player.color_text = '#000'
         place_card_pairing.black_player = cls.get_random_player(
             last_name=_('BLACK PLAYER'),
-            color=_('B *** BLACK COLOR FOR PLACE CARDS'),
+            color=pgettext('black color for place cards', 'B'),
         )
         place_card_pairing.black_player.color_background = '#000'
         place_card_pairing.black_player.color_text = '#fff'

@@ -28,7 +28,7 @@ from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
 
 from common.exception import SharlyChessException, FormError
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.columns.handlers import PlayersTabColumnHandler, PlayerDatasheetColumnHandler
@@ -913,7 +913,9 @@ class PlayerAdminController(BaseEventAdminController):
                     ):
                         label = tournaments_by_id[team.tournament_id or 0].name
                     else:
-                        label = _('Unassigned *** TEAMS NOT ASSIGNED TO A TOURNAMENT')
+                        label = pgettext(
+                            'group of the teams with no tournament', 'Unassigned'
+                        )
                     teams_by_tournament_label.setdefault(label, {})[str(team.id)] = (
                         team.name
                     )

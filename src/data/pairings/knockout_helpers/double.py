@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.pairings import double_elimination
 from data.pairings.knockout_helpers import bracket as knockout_bracket
 from data.pairings.knockout_helpers.common import tie_resolution_message
@@ -375,14 +375,16 @@ class DoubleEliminationMixin:
                 tournament, by_id, cache
             ):
                 return (
-                    _(
+                    pgettext(
+                        'team knock-out',
                         'No reset game is needed: the winners-bracket champion won '
-                        'the grand final. *** TEAM'
+                        'the grand final.',
                     )
                     if tournament.is_team_tournament
-                    else _(
+                    else pgettext(
+                        'individual knock-out',
                         'No reset game is needed: the winners-bracket champion won '
-                        'the grand final. *** PLAYER'
+                        'the grand final.',
                     )
                 )
         return None
@@ -683,14 +685,16 @@ class TwoGameDoubleElimMixin(TwoGameMatchMixin):
                 tournament, by_id, cache
             ):
                 return (
-                    _(
+                    pgettext(
+                        'team knock-out',
                         'No reset game is needed: the winners-bracket champion won '
-                        'the grand final. *** TEAM'
+                        'the grand final.',
                     )
                     if tournament.is_team_tournament
-                    else _(
+                    else pgettext(
+                        'individual knock-out',
                         'No reset game is needed: the winners-bracket champion won '
-                        'the grand final. *** PLAYER'
+                        'the grand final.',
                     )
                 )
         return None

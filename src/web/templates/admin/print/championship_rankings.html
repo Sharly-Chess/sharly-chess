@@ -62,10 +62,10 @@
                     <th class="num">{{ _('Rk.') }}</th>
                     <th>{{ _('Competitor') }}</th>
                     {% if not is_team %}
-                        <th>{{ _('Cat. *** CATEGORY COLUMN HEADER') }}</th>
-                        <th>{{ _('Gen. *** GENDER COLUMN HEADER') }}</th>
+                        <th>{{ pgettext('category column header', 'Cat.') }}</th>
+                        <th>{{ pgettext('gender column header', 'Gen.') }}</th>
                     {% endif %}
-                    <th>{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
+                    <th>{{ pgettext('federation column header', 'Fed.') }}</th>
                     {% for header in rule_headers %}
                         <th class="num" title="{{ header.title }}">{{ header.acronym }}</th>
                     {% endfor %}

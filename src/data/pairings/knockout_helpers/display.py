@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.pairings.knockout_helpers.common import (
     find_knockout_board,
     seeded_players,
@@ -326,14 +326,14 @@ class KnockoutDisplayMixin:
         for_teams: bool = False,
     ) -> dict[int, str]:
         winner = (
-            _('Winner *** TEAM KNOCK-OUT')
+            pgettext('team knock-out', 'Winner')
             if for_teams
-            else _('Winner *** PLAYER KNOCK-OUT')
+            else pgettext('individual knock-out', 'Winner')
         )
         out = (
-            _('Out — round {round} *** TEAM KNOCK-OUT')
+            pgettext('team knock-out', 'Out — round {round}')
             if for_teams
-            else _('Out — round {round} *** PLAYER KNOCK-OUT')
+            else pgettext('individual knock-out', 'Out — round {round}')
         )
         still_in = [eid for eid in ids if values[eid] >= rounds + 1]
         sole_survivor = still_in[0] if len(still_in) == 1 else None

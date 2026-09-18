@@ -213,10 +213,6 @@ class I18nTranslator:
     @staticmethod
     def extract_tokens(string: str) -> tuple[str, list[str]]:
         tokens: list[str] = []
-        # ignore everything after *** (mandatory strings with instructions for the translators)
-        if matches := re.match(r'^(.*)\s+\*\*\*\s+.*$', string):
-            string = matches.group(1)
-        # now really extract the tokens
         while True:
             token: str | None = None
             if (
@@ -293,10 +289,6 @@ class I18nTranslator:
     ) -> bool:
         """Translates a message, returns True on success, False on error."""
         if isinstance(message.id, str):
-            if (index := message.id.find(' ***')) != -1:
-                message.string = message.id[:index]
-                self.flag_message(message, 'fuzzy')
-                return True
             message.string = self.translate_string(message.id, percent)
             if message.string:
                 self.flag_message(message, 'ai_translation')

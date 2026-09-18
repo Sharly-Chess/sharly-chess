@@ -6,7 +6,7 @@ from enum import StrEnum
 from functools import partial
 from typing import Self, Any
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.account import Account
 from data.event import Event
 from data.player import Player
@@ -254,13 +254,13 @@ class PlayerFFELicence(StrEnum):
     def compact_name(self) -> str:
         match self:
             case PlayerFFELicence.NONE:
-                return _('None *** FFE licence')
+                return pgettext('FFE licence', 'None')
             case PlayerFFELicence.N:
-                return _('N - Expired *** FFE licence')
+                return pgettext('FFE licence', 'N - Expired')
             case PlayerFFELicence.A:
-                return _('A - Competition *** FFE licence')
+                return pgettext('FFE licence', 'A - Competition')
             case PlayerFFELicence.B:
-                return _('B - Leisure *** FFE licence')
+                return pgettext('FFE licence', 'B - Leisure')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 

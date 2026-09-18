@@ -30,11 +30,11 @@
                 <thead class="modal-table-sticky-header">
                     <tr>
                         <th scope="col">
-                            {{ _('Rk. *** RANK COLUMN HEADER') }}
+                            {{ pgettext('rank column header', 'Rk.') }}
                         </th>
                         {% if not admin_prize_category.is_main %}
                             <th scope="col">
-                                {{ _('Rk. O. *** RANK OVERALL COLUMN HEADER') }}
+                                {{ pgettext('rank overall column header', 'Rk. O.') }}
                             </th>
                         {% endif %}
                         <th scope="col">
@@ -44,13 +44,13 @@
                             {{ admin_tournament.rating.print_view_header }}
                         </th>
                         <th scope="col">
-                            {{ _('Cat. *** CATEGORY COLUMN HEADER') }}
+                            {{ pgettext('category column header', 'Cat.') }}
                         </th>
                         <th scope="col">
-                            {{ _('Gen. *** GENDER COLUMN HEADER') }}
+                            {{ pgettext('gender column header', 'Gen.') }}
                         </th>
                         <th scope="col">
-                            {{ _('Fed. *** FEDERATION COLUMN HEADER') }}
+                            {{ pgettext('federation column header', 'Fed.') }}
                         </th>
                         <th scope="col">
                             {{ _('Club') }}
@@ -60,15 +60,15 @@
                         </th>
                         {% if admin_prize_category.ranks_by_average_performance %}
                             <th scope="col">
-                                {{ _('Avg. perf. *** AVERAGE PERFORMANCE COLUMN HEADER') }}
+                                {{ pgettext('average performance column header', 'Avg. perf.') }}
                             </th>
                         {% elif admin_prize_category.ranks_by_best_round_performance %}
                             <th scope="col">
-                                {{ _('Peak perf. *** PEAK PERFORMANCE COLUMN HEADER') }}
+                                {{ pgettext('peak performance column header', 'Peak perf.') }}
                             </th>
                         {% endif %}
                          <th scope="col">
-                            {{ _('Prize *** PRIZE COLUMN HEADER') }}
+                            {{ pgettext('prize column header', 'Prize') }}
                         </th>
                     </tr>
                 </thead>

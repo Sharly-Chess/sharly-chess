@@ -2,9 +2,11 @@
 <div class="row mt-2">
     <span>
         {{ _('Columns:') }}
-        {{ ngettext(
-            '%(num)d required *** COLUMNS, SINGULAR',
-            '%(num)d required *** COLUMNS, PLURAL',
+        {# i18n: counts columns; the noun is in the 'Columns:' label this follows #}
+        {{ npgettext(
+            'columns',
+            '%(num)d required',
+            '%(num)d required',
             required_column_ids|length
         ) }}
         {% if required_column_ids %}
@@ -13,9 +15,11 @@
                 {{ macros.tooltip_attributes('', build_list_tooltip(required_column_ids), 'right') }}
             ></i>,
         {% endif %}
-        {{ ngettext(
-            '%(num)d optional *** COLUMNS, SINGULAR',
-            '%(num)d optional *** COLUMNS, PLURAL',
+        {# i18n: counts columns; the noun is in the 'Columns:' label this follows #}
+        {{ npgettext(
+            'columns',
+            '%(num)d optional',
+            '%(num)d optional',
             optional_column_ids|length
         ) }}
         {% if optional_column_ids %}
@@ -24,9 +28,11 @@
                 {{ macros.tooltip_attributes('', build_list_tooltip(optional_column_ids), 'right') }}
             ></i>,
         {% endif %}
-        {{ ngettext(
-            '%(num)d informative *** COLUMNS, SINGULAR',
-            '%(num)d informative *** COLUMNS, PLURAL',
+        {# i18n: counts columns; the noun is in the 'Columns:' label this follows #}
+        {{ npgettext(
+            'columns',
+            '%(num)d informative',
+            '%(num)d informative',
             informative_column_ids|length
         ) }}
         {% if informative_column_ids %}

@@ -30,7 +30,7 @@
     {% if player.has_real_rating %}
         {{ player.first_real_rating_str }}
     {% else %}
-        <i>{{ _('Unrated *** SINGULAR FOR UNRATED PLAYER') }}</i>
+        <i>{{ pgettext('singular for unrated player', 'Unrated') }}</i>
     {% endif %}
     {% if player.plugin_data.ffe.league %}
         - {{ player.plugin_data.ffe.league }}

@@ -32,7 +32,7 @@
             {% endif %}
         </th>
         {% if not hide_player_points %}
-            <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
+            <th>{{ pgettext('points column header', 'Pts') }}</th>
             {% if admin_tournament.print_real_points(admin_round) %}
                 <th>&nbsp;</th>
             {% endif %}
@@ -44,7 +44,7 @@
             {% if admin_tournament.print_real_points(admin_round) %}
                 <th>&nbsp;</th>
             {% endif %}
-            <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
+            <th>{{ pgettext('points column header', 'Pts') }}</th>
         {% endif %}
     </tr>
 </thead>

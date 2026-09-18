@@ -50,6 +50,58 @@ class TestMessageTokens:
 
 
 @pytest.mark.unit
+class TestMessageContexts:
+    """A note telling apart two strings that read the same belongs in the
+    context, where it stays out of what the reader sees."""
+
+    def test_a_note_left_in_the_text_is_refused(self):
+        assert DomainLocaleInfo.message_uses_legacy_note(
+            Message('Unpaired *** WOMAN', 'Non appariée')
+        )
+        assert DomainLocaleInfo.message_uses_legacy_note(
+            Message(
+                ('%(num)d column *** PLURAL', '%(num)d columns *** PLURAL'),
+                ('', ''),
+            )
+        )
+
+    def test_a_message_carrying_its_note_as_a_context_passes(self):
+        assert not DomainLocaleInfo.message_uses_legacy_note(
+            Message('Unpaired', 'Non appariée', context='woman')
+        )
+
+    def test_a_shortcut_has_to_be_translated(self):
+        assert DomainLocaleInfo.message_is_mandatory(
+            Message('Configuration', '', context='with shortcut indication')
+        )
+        assert DomainLocaleInfo.message_is_mandatory(
+            Message('SC_C', '', context='keyboard shortcut for the configuration tab')
+        )
+
+    def test_every_other_message_may_fall_back_to_english(self):
+        assert not DomainLocaleInfo.message_is_mandatory(
+            Message('Unpaired', '', context='woman')
+        )
+        assert not DomainLocaleInfo.message_is_mandatory(Message('Unpaired', ''))
+
+
+@pytest.mark.unit
+class TestMessageLength:
+    """A short label carries its whole meaning in a word English abbreviates
+    and another language may spell out."""
+
+    def test_a_short_label_may_be_spelled_out(self):
+        assert DomainLocaleInfo.check_message_length(
+            Message('Unrated', 'Non comptabilisés pour le classement Elo')
+        )
+
+    def test_a_paragraph_in_place_of_a_label_is_still_refused(self):
+        assert not DomainLocaleInfo.check_message_length(
+            Message('Unrated', 'Non comptabilisés pour le classement Elo ' * 3)
+        )
+
+
+@pytest.mark.unit
 class TestOrdinalSuffixPattern:
     """The letters raised over a number are the language's own — '8es de
     finale' in French, '1st' in English."""

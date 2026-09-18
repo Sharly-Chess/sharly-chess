@@ -3,7 +3,7 @@ from typing import Any
 
 from markupsafe import escape
 
-from common.i18n import _
+from common.i18n import _, pgettext
 from data.board import Board
 from .column import Column, ColumnUsage
 
@@ -31,7 +31,7 @@ class BoardColumn(Column[Board], ABC):
 class NumberColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Bd. *** BOARD NUMBER COLUMN HEADER')
+        return pgettext('board number column header', 'Bd.')
 
     def get_cell_content(self, board: Board) -> Any:
         if board.fixed_number:
@@ -55,7 +55,7 @@ class NumberColumn(BoardColumn):
 class WhitePointsColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Pts *** POINTS COLUMN HEADER')
+        return pgettext('points column header', 'Pts')
 
     def get_cell_content(self, board: Board) -> Any:
         wtp = board.optional_white_tournament_player
@@ -176,7 +176,7 @@ class WhiteFederationColumn(BoardColumn):
 class ResultColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Res. *** RESULT COLUMN HEADER')
+        return pgettext('result column header', 'Res.')
 
     def get_cell_content(self, board: Board) -> Any:
         return board.result_str
@@ -198,7 +198,7 @@ class NoResultColumn(BoardColumn):
 class ScreenResultColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Res. *** RESULT COLUMN HEADER')
+        return pgettext('result column header', 'Res.')
 
     def get_cell_content(self, board: Board) -> Any:
         return board.result_str or _('#{board_number}').format(
@@ -305,7 +305,7 @@ class BlackRealPointsColumn(BoardColumn):
 class BlackPointsColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Pts *** POINTS COLUMN HEADER')
+        return pgettext('points column header', 'Pts')
 
     def get_cell_content(self, board: Board) -> Any:
         return getattr(board.black_tournament_player, 'vpoints_str', '')

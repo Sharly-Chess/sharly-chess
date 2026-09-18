@@ -9,17 +9,17 @@
     <table class="player-table">
         <thead>
             <tr class="player-header">
-                <th class="header text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+                <th class="header text-end">{{ pgettext('rank column header', 'Rk.') }}</th>
                 <th class="header text-start">{{ _('Team') }}</th>
                 {% if eliminates %}
-                    <th class="header text-end">{{ _('Result *** KNOCK-OUT RESULT COLUMN') }}</th>
+                    <th class="header text-end">{{ pgettext('knock-out result column', 'Result') }}</th>
                 {% else %}
-                    <th class="header text-center">{{ _('Played *** TEAM RANKING HEADER PLAYED') }}</th>
+                    <th class="header text-center">{{ pgettext('team ranking header played', 'Played') }}</th>
                     {% if primary_is_mp %}
-                        <th class="header text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</th>
-                        <th class="header text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</th>
-                        <th class="header text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</th>
-                        <th class="header text-center">{{ _('F *** TEAM RANKING HEADER FORFEIT') }}</th>
+                        <th class="header text-center">{{ pgettext('team ranking header win', 'W') }}</th>
+                        <th class="header text-center">{{ pgettext('team ranking header draw', 'D') }}</th>
+                        <th class="header text-center">{{ pgettext('team ranking header loss', 'L') }}</th>
+                        <th class="header text-center">{{ pgettext('team ranking header forfeit', 'F') }}</th>
                     {% endif %}
                     {% for tie_break in team_tie_breaks %}
                         <th class="header text-center">{{ tournament.tie_break_acronym(tie_break) }}</th>

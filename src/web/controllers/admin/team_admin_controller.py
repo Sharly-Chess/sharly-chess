@@ -9,7 +9,7 @@ from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 
-from common.i18n import _, ngettext
+from common.i18n import _, ngettext, pgettext
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
@@ -100,7 +100,7 @@ class TeamAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         tournament_options: dict[str, str | SelectOption] = {
-            '': f'— {_("Unassigned *** TEAM NOT ASSIGNED TO A TOURNAMENT")} —',
+            '': f'— {pgettext("no tournament chosen for a team", "Unassigned")} —',
         }
         for tournament in sorted(
             event.tournaments_by_id.values(), key=lambda t: (t.index, t.name)
