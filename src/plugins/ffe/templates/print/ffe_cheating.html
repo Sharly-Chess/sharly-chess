@@ -69,9 +69,9 @@
                 <div class="item">
                     <label for="player-ffe-licence-number">N° de licence :</label>
                 </div>
-                <div class="item {%if not player or not player.plugin_data or not player.plugin_data.ffe or not player.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+                <div class="item {%if not player or not player.national_id %}error{% endif %}">
                     <div class="error-info">{{ player_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
-                    <input id="player-ffe-licence-number" value="{% if player %}{{ player.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}" />
+                    <input id="player-ffe-licence-number" value="{% if player %}{{ player.national_id or '' }}{% endif %}" />
                 </div>
             </div>
         </section>

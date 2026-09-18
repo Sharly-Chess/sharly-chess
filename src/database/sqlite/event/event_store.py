@@ -274,6 +274,10 @@ class StoredPlayer:
     title: str = ''
     women_title: str = ''
     fide_id: int | None = None
+    #: Identifier in the national federation, and the data source it comes
+    #: from (`DataSource.national_source_id`).
+    national_id: str | None = None
+    national_source: str | None = None
     federation: str = 'FID'
     club: str | None = None
     fixed: int | None = None

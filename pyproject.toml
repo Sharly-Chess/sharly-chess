@@ -50,12 +50,14 @@ dependencies = [
   "requests ~= 2.34.2",
   "rubicon-objc ~= 0.5.6",
   "sniffio ~= 1.3.1",
+  "openpyxl ~= 3.1.5",
   "text_unidecode ~= 1.3",
   "toga == 0.5.2",
   "toml ~= 0.10.2",
   "uvicorn ~= 0.51.0",
   "validators ~= 0.35.0",
   "wsproto ~= 1.3.2",
+  "xlrd ~= 2.0.2",
   "xlsxwriter ~= 3.2.9",
 ]
 
@@ -69,12 +71,14 @@ lint = [
   # Stubs for the dependencies typeshed carries. Without them mypy knows
   # nothing about these APIs and checks none of the calls into them.
   "types-colorama",
+  "types-openpyxl",
   "types-paramiko",
   "types-psutil",
   "types-pyyaml",
   "types-pyinstaller",
   "types-qrcode",
   "types-toml",
+  "types-xlrd",
 ]
 
 translate = [

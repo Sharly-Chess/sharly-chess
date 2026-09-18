@@ -79,6 +79,7 @@ class PlaceCardType(IdentifiableEntity, ABC):
         ).short_name
         config = SharlyChessConfig()
         place_card_player.federation = random.choice(list(config.federations.keys()))
+        place_card_player.national_id = f'{random.randint(10_000, 99_999)}'
         place_card_player.club = _("Player's club")
         place_card_player.category = random.choice(
             config.default_player_category_set.categories

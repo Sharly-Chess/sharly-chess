@@ -141,7 +141,7 @@ class EventDocumentsController(BaseEventAdminController):
             'players_per_tournament_id': players_per_tournament_id,
             'teams_per_tournament_id': teams_per_tournament_id,
             'allowed_tournaments': allowed_tournaments,
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
         }
 
     @classmethod

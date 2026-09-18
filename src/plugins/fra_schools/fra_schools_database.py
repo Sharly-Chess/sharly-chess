@@ -36,6 +36,19 @@ class FRASchoolsDatabase(GitHubLocalSourceDatabase):
     def _source_file_name(self) -> str:
         return 'fra_schools_v1.db'
 
+    @override
+    @property
+    def is_forced_active(self) -> bool:
+        return True
+
+    @override
+    @property
+    def content_description(self) -> str:
+        count = self._count_rows('school')
+        if count is None:
+            return ''
+        return _('{count} schools').format(count=Utils.localized_number(count))
+
     @classmethod
     def credentials_file(cls) -> Path:
         return fra_schools.PLUGIN_DIR / '.database-enc-credentials'

@@ -31,6 +31,7 @@ class PlaceCardPlayer:
         self.gender: str = ''
         self.title: str = ''
         self.federation: str = ''
+        self.national_id: str = ''
         self.club: str = ''
         self.category: str = ''
         self.color: str = ''
@@ -55,6 +56,7 @@ class PlaceCardPlayer:
             self.gender = tournament_player.gender.short_name
             self.title = tournament_player.display_title
             self.federation = tournament_player.federation.name
+            self.national_id = tournament_player.national_id or ''
             self.club = tournament_player.club.name
             self.category = tournament_player.category.name
             self.color = color

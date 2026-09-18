@@ -29,7 +29,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.board import PlayerRatingType
 from data.event import Event
-from data.input_output import OnlineDataSourceManager
+from data.input_output import DataSourceManager, OnlineDataSourceManager
 from data.event_metadata import EventMetadata
 from data.championship.championship import Championship
 from data.championship.championship_loader import (
@@ -906,6 +906,7 @@ class IndexAdminController(BaseAdminController):
         EventDatabase(uniq_id).create()
         with EventDatabase(uniq_id, write=True) as database:
             database.update_stored_event(stored_event)
+        DataSourceManager().activate_for_federation(stored_event.federation)
         Message.success(
             request, _('Event [{uniq_id}] has been created.').format(uniq_id=uniq_id)
         )
@@ -1791,7 +1792,7 @@ class IndexAdminController(BaseAdminController):
         request: HTMXRequest,
     ) -> Template:
         source_databases: list[LocalSourceDatabase] = (
-            LocalSourceDatabaseManager().objects()
+            LocalSourceDatabaseManager().active_objects()
         )
         for database in source_databases:
             database.check()
@@ -1829,8 +1830,12 @@ class IndexAdminController(BaseAdminController):
     @staticmethod
     def _database_modal_context() -> dict[str, Any]:
         return {
-            'databases': LocalSourceDatabaseManager().objects(),
-            'online_data_sources': OnlineDataSourceManager().objects(),
+            'databases': LocalSourceDatabaseManager().active_objects(),
+            'inactive_databases': LocalSourceDatabaseManager().inactive_objects(),
+            'online_data_sources': OnlineDataSourceManager().active_objects(),
+            'inactive_online_data_sources': (
+                OnlineDataSourceManager().inactive_objects()
+            ),
             'network_connected': NetworkMonitor.connected(),
             'outdate_delay_options': OutdatedDelayManager().options(),
             'outdate_action_options': OutdatedActionManager().options(),
@@ -1903,21 +1908,122 @@ class IndexAdminController(BaseAdminController):
         database.update()
         return Reswap(content=None, method='none', status_code=HTTP_200_OK)
 
+    @post(
+        path='/database-install-file/{database_id:str}',
+        name='admin-database-install-file',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+    )
+    async def _database_install_file(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
+        ],
+        database_id: FromPath[str],
+    ) -> Template:
+        """Installs a database from a source file the user provides, for
+        the lists the application cannot download itself."""
+        try:
+            database = LocalSourceDatabaseManager().get_object(database_id)
+        except KeyError:
+            raise NotFoundException(f'Unknown database [{database_id}].') from None
+        normalized_data = await WebContext.normalize_multipart_data(data)
+        source_file = WebContext.form_data_to_path(normalized_data, 'file')
+        if source_file is None or not database.is_active:
+            raise NotFoundException('No file provided.')
+        database.update(source_file=source_file)
+        return HTMXTemplate(
+            template_name='/admin/common/database/database_update_buttons.html',
+            context={'database': database},
+        )
+
     @delete(
         path='/database-delete/{database_id:str}',
         name='admin-database-delete',
         guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
         status_code=HTTP_200_OK,
     )
-    async def _database_delete(self, database_id: FromPath[str]) -> Template:
+    async def _database_delete(
+        self, request: HTMXRequest, database_id: FromPath[str]
+    ) -> Template:
+        """Removes a database from the application: the file is deleted and
+        the database is no longer offered. A database a plugin needs keeps
+        its file deleted only."""
+        web_context = AdminWebContext(request)
         try:
             database = LocalSourceDatabaseManager().get_object(database_id)
-            database.delete()
         except KeyError:
             raise NotFoundException(f'Unknown database [{database_id}].') from None
-        return HTMXTemplate(
-            template_name='/admin/common/database/database_update_buttons.html',
-            context={'database': database},
+        if database.is_forced_active:
+            database.delete()
+        else:
+            database.deactivate()
+        return self._admin_render(
+            web_context=web_context,
+            template_context=self._database_modal_context(),
+        )
+
+    @post(
+        path='/database-activate/{database_id:str}',
+        name='admin-database-activate',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+    )
+    async def _database_activate(
+        self, request: HTMXRequest, database_id: FromPath[str]
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        try:
+            database = LocalSourceDatabaseManager().get_object(database_id)
+        except KeyError:
+            raise NotFoundException(f'Unknown database [{database_id}].') from None
+        database.activate()
+        return self._admin_render(
+            web_context=web_context,
+            template_context=self._database_modal_context(),
+        )
+
+    @post(
+        path='/online-data-source/activate/{data_source_id:str}',
+        name='admin-online-data-source-activate',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+    )
+    async def _online_data_source_activate(
+        self, request: HTMXRequest, data_source_id: FromPath[str]
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        try:
+            data_source = OnlineDataSourceManager().get_object(data_source_id)
+        except KeyError:
+            raise NotFoundException(
+                f'Unknown data source [{data_source_id}].'
+            ) from None
+        data_source.activate()
+        await data_source.reload_connection_status()
+        return self._admin_render(
+            web_context=web_context,
+            template_context=self._database_modal_context(),
+        )
+
+    @delete(
+        path='/online-data-source/deactivate/{data_source_id:str}',
+        name='admin-online-data-source-deactivate',
+        guards=[ActionGuard(AuthAction.MANAGE_SOURCE_DATABASES)],
+        status_code=HTTP_200_OK,
+    )
+    async def _online_data_source_deactivate(
+        self, request: HTMXRequest, data_source_id: FromPath[str]
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        try:
+            data_source = OnlineDataSourceManager().get_object(data_source_id)
+        except KeyError:
+            raise NotFoundException(
+                f'Unknown data source [{data_source_id}].'
+            ) from None
+        data_source.deactivate()
+        return self._admin_render(
+            web_context=web_context,
+            template_context=self._database_modal_context(),
         )
 
     @post(

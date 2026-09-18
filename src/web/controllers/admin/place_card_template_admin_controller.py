@@ -191,6 +191,7 @@ class PlaceCardTemplateAdminController(BaseAdminController):
                 (_('Category'), 'category'),
                 (_('Federation'), 'federation'),
                 (_('Flag'), 'federation_flag | safe'),
+                (_('National ID'), 'national_id'),
                 (_('Club'), 'club'),
                 (_('Year of birth'), 'year_of_birth'),
                 (_('Gender'), 'gender'),

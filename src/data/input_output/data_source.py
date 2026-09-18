@@ -28,7 +28,9 @@ from data.input_output.player_updater_fields import (
     BlitzRatingUpdaterField,
     FederationUpdaterField,
 )
-from data.player import Player, PlayerRating
+from data.player import Player, PlayerProfileLink, PlayerRating
+from database.sqlite.config.config_database import ConfigDatabase
+from database.sqlite.config.config_store import StoredOnlineDataSource
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase
@@ -111,6 +113,19 @@ class DataSource(IdentifiableEntity, ABC):
 
     SEARCH_LIMIT = 30
 
+    #: The federation whose events activate the data source, None for a
+    #: data source activated another way.
+    federation: ClassVar[str | None] = None
+
+    #: The search filters the data source supports, see
+    #: `SearchFilterManager.get_filters_by_datasource`.
+    search_filter_ids: ClassVar[tuple[str, ...]] = ()
+
+    #: The key stored as the `national_source` of the players whose
+    #: `national_id` the data source provides, shared by the data sources of
+    #: one federation; None for a data source without national identifiers.
+    national_source_id: ClassVar[str | None] = None
+
     @property
     @abstractmethod
     def is_available(self) -> bool:
@@ -118,6 +133,85 @@ class DataSource(IdentifiableEntity, ABC):
 
     def on_app_init(self) -> None:
         """Function to execute at the start of the server to initialize the data source."""
+
+    @property
+    def short_name(self) -> str:
+        """The name where room is short (the search bar)."""
+        return self.name
+
+    # --------------------------------------------------------------------------
+    # National identifiers
+    # --------------------------------------------------------------------------
+
+    @property
+    def national_source_name(self) -> str:
+        """Short name put before a national identifier."""
+        return self.name
+
+    @property
+    def national_id_form_label(self) -> str:
+        """The label of the national identifier on the player form."""
+        return _('{source} ID:').format(source=self.national_source_name)
+
+    @property
+    def national_id_form_placeholder(self) -> str:
+        return ''
+
+    def player_profile_url(self, national_id: str) -> str | None:
+        """The federation's profile page of a player, None when there is
+        none."""
+        return None
+
+    def player_profile_link(self, player: Player) -> PlayerProfileLink | None:
+        """The national identifier of a player, shown on the identity line
+        of the record modal."""
+        if not player.national_id:
+            return None
+        return PlayerProfileLink(
+            label=f'{self.national_source_name} {player.national_id}',
+            url=self.player_profile_url(player.national_id),
+        )
+
+    def check_national_id_match(
+        self, player1: StoredPlayer, player2: StoredPlayer
+    ) -> bool:
+        """Whether two players carry the same identifier of the federation
+        of the data source. An identifier without a source (typed in, or
+        imported from a datasheet) is taken as one of the federation."""
+        if not self.national_source_id or not player1.national_id:
+            return False
+        return player1.national_id == player2.national_id and all(
+            player.national_source in (None, self.national_source_id)
+            for player in (player1, player2)
+        )
+
+    # --------------------------------------------------------------------------
+    # Activation
+    # --------------------------------------------------------------------------
+
+    @property
+    @abstractmethod
+    def is_active(self) -> bool:
+        """Whether the data source is offered in the application."""
+
+    @property
+    @abstractmethod
+    def is_forced_active(self) -> bool:
+        """Whether the data source is active whatever the user says (a
+        plugin needs it)."""
+
+    @abstractmethod
+    def activate(self) -> None:
+        """Offers the data source in the application."""
+
+    @abstractmethod
+    def deactivate(self) -> None:
+        """Withdraws the data source from the application."""
+
+    @abstractmethod
+    def activate_for_federation(self, federation: str) -> None:
+        """Activates the data source of a federation the first time it is
+        needed; a data source the user has removed stays removed."""
 
     @property
     def info_or_warning_message(self) -> tuple[str, bool]:
@@ -433,8 +527,26 @@ class LocalDataSource(DataSource, ABC):
     def is_available(self) -> bool:
         return self.local_database_type.file_path().exists()
 
+    @property
+    def is_active(self) -> bool:
+        return self.database.is_active
+
+    @property
+    def is_forced_active(self) -> bool:
+        return self.database.is_forced_active
+
+    def activate(self) -> None:
+        self.database.activate()
+
+    def deactivate(self) -> None:
+        self.database.deactivate()
+
+    def activate_for_federation(self, federation: str) -> None:
+        self.database.activate_for_federation(federation)
+
     def on_app_init(self) -> None:
         self.database.check()
+        self.database.install_if_missing()
 
     @property
     def search_error_icon(self) -> str:
@@ -463,6 +575,54 @@ class OnlineDataSource(DataSource, ABC):
     connection_status: ClassVar[bool | None] = None
     _connection_last_checked_at: ClassVar[datetime | None] = None
     _background_tasks: ClassVar[set[asyncio.Task]] = set()
+    _stored_data_source: ClassVar[StoredOnlineDataSource | None] = None
+
+    @property
+    def stored_data_source(self) -> StoredOnlineDataSource:
+        cls = self.__class__
+        if cls._stored_data_source is None:
+            with ConfigDatabase() as database:
+                cls._stored_data_source = database.load_stored_online_data_source(
+                    self.id
+                ) or StoredOnlineDataSource(name=self.id)
+        return cls._stored_data_source
+
+    @property
+    def default_is_active(self) -> bool:
+        """Whether the data source is active until the user says otherwise."""
+        return False
+
+    @property
+    def is_forced_active(self) -> bool:
+        return False
+
+    @property
+    def is_active(self) -> bool:
+        if self.is_forced_active:
+            return True
+        stored_is_active = self.stored_data_source.is_active
+        if stored_is_active is None:
+            return self.default_is_active
+        return stored_is_active
+
+    def _set_is_active(self, is_active: bool) -> None:
+        stored_data_source = self.stored_data_source
+        stored_data_source.is_active = is_active
+        with ConfigDatabase(write=True) as database:
+            database.upsert_stored_online_data_source(stored_data_source)
+
+    def activate(self) -> None:
+        self._set_is_active(True)
+
+    def deactivate(self) -> None:
+        self._set_is_active(False)
+
+    def activate_for_federation(self, federation: str) -> None:
+        if self.federation != federation:
+            return
+        if self.stored_data_source.is_active is not None:
+            return
+        self.activate()
 
     @classmethod
     @abstractmethod
@@ -542,6 +702,8 @@ class OnlineDataSource(DataSource, ABC):
 
 
 class FideDataSource(LocalDataSource):
+    search_filter_ids = ('federation_filter', 'gender_filter', 'category_filter')
+
     @staticmethod
     def static_id() -> str:
         return 'fide'
@@ -549,6 +711,10 @@ class FideDataSource(LocalDataSource):
     @staticmethod
     def static_name() -> str:
         return _('FIDE database')
+
+    @property
+    def short_name(self) -> str:
+        return 'FIDE'
 
     @property
     def local_database_type(self) -> type[LocalSourcePlayerDatabase]:

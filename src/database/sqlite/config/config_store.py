@@ -73,4 +73,13 @@ class StoredLocalSourceDatabase:
     outdate_delay: str
     outdate_action: str
     updated_at: float | None = None
+    #: None until activated or deactivated once, see `LocalSourceDatabase.is_active`.
+    is_active: bool | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
+
+
+@dataclass
+class StoredOnlineDataSource:
+    name: str
+    #: None until activated or deactivated once, see `OnlineDataSource.is_active`.
+    is_active: bool | None = None
