@@ -11,6 +11,7 @@
 ## Tournaments
 
 - Exclusion of players (or teams) who have not played 50% of the games (or matches) in accordance with FIDE 6.6 in round robins (5.1.0)
+- Separate players of the same club when distributing players on balanced tournaments, as much as possible (5.1.0)
 
 ## Players
 

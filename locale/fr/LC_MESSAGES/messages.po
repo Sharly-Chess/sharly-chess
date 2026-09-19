@@ -624,7 +624,7 @@ msgid "A player starts every round with these points added to those they have sc
 msgstr "Un·e joueur·euse commence chaque ronde avec ces points ajoutés à ceux qu'il·elle a marqués. Ils ne sont utilisés que pour l'appariement, jamais pour le classement, et ne font pas partie des résultats transmis pour l'évolution du classement des joueur·euses."
 
 msgid "A player that withdrew or was expelled having completed less than half of their games is not ranked, and their games are annulled: they no longer count in the opponents' scores and tie-breaks."
-msgstr "Un·e joueur·euse qui a abandonné ou a été exclu·e après avoir disputé moins de la moitié de ses parties n'est pas classé·e, et ses parties sont annulées : elles ne comptent plus dans les points et les départages de ses adversaires."
+msgstr "Un·e joueur·euse qui a abandonné ou a été exclu·e après avoir disputé moins de la moitié de ses parties n'est pas classé·e, et ses parties sont annulées : elles ne comptent plus dans les points et les départages de ses adversaires."
 
 #, python-brace-format
 msgid "A player with {column}=[{value}] already exists in the event."
@@ -664,7 +664,7 @@ msgid "A set with this name already existe."
 msgstr "Un ensemble avec ce nom existe déjà."
 
 msgid "A team that withdrew or was expelled having completed less than half of its matches is not ranked, and its matches are annulled: they no longer count in the other teams' scores and tie-breaks."
-msgstr "Une équipe qui a abandonné ou a été exclue après avoir disputé moins de la moitié de ses matchs n'est pas classée, et ses matchs sont annulés : ils ne comptent plus dans les points et les départages des autres équipes."
+msgstr "Une équipe qui a abandonné ou a été exclue après avoir disputé moins de la moitié de ses matchs n'est pas classée, et ses matchs sont annulés : ils ne comptent plus dans les points et les départages des autres équipes."
 
 msgid "A template name is required."
 msgstr "Un nom de modèle est requis."
@@ -1106,7 +1106,7 @@ msgid "Application startup..."
 msgstr "Démarrage de l'application..."
 
 msgid "Applied in order, these decide who advances from a level knock-out match (a tied team match or a drawn individual game). The \"Manual\" tie-break stands for a play-off — when reached, you designate the winner from the pairing tab. The standings always rank by the round reached."
-msgstr "Appliqués dans l'ordre, ils déterminent qui se qualifie lors d'un match de coupe à égalité (un match par équipes nul ou une partie individuelle nulle). Le départage « Manuel » correspond à un barrage — le cas échéant, vous désignez le·la vainqueur·e depuis l'onglet des appariements. Le classement se fait toujours selon le tour atteint."
+msgstr "Appliqués dans l'ordre, ils déterminent qui se qualifie lors d'un match de coupe à égalité (un match par équipes nul ou une partie individuelle nulle). Le départage « Manuel » correspond à un barrage — le cas échéant, vous désignez le·la vainqueur·e depuis l'onglet des appariements. Le classement se fait toujours selon le tour atteint."
 
 msgid "Apply"
 msgstr "Appliquer"
@@ -2193,8 +2193,8 @@ msgstr "Continuer"
 #, python-format
 msgid "Continue with %(num)d round?"
 msgid_plural "Continue with %(num)d rounds?"
-msgstr[0] "Continuer avec %(num)d ronde ?"
-msgstr[1] "Continuer avec %(num)d rondes ?"
+msgstr[0] "Continuer avec %(num)d ronde ?"
+msgstr[1] "Continuer avec %(num)d rondes ?"
 
 msgid "Corners"
 msgstr "Coins"
@@ -3204,7 +3204,7 @@ msgid "Each competitor row carries a popover with the per-stage breakdown."
 msgstr "Chaque ligne affiche une infobulle détaillant chaque étape."
 
 msgid "Each competitor takes the opposite colour to its previous round; when an upset makes two clash, the higher seed alternates and the lower seed takes what is left. For teams, the colour is the one on the first board."
-msgstr "Chaque compétiteur prend la couleur opposée à sa ronde précédente ; en cas de conflit, la meilleure tête de série alterne et l'autre prend la couleur restante. Pour les équipes, la couleur est celle au premier échiquier."
+msgstr "Chaque compétiteur prend la couleur opposée à sa ronde précédente ; en cas de conflit, la meilleure tête de série alterne et l'autre prend la couleur restante. Pour les équipes, la couleur est celle au premier échiquier."
 
 msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
@@ -3528,11 +3528,11 @@ msgstr "Exclure : {values}"
 
 #, python-format
 msgid "Excluded from the final standings: completed less than 50%% of the games (FIDE 6.6)."
-msgstr "Exclu·e du classement final : moins de 50 %% des parties disputées (FIDE 6.6)."
+msgstr "Exclu·e du classement final : moins de 50 %% des parties disputées (FIDE 6.6)."
 
 #, python-format
 msgid "Excluded from the final standings: completed less than 50%% of the matches (FIDE 6.6)."
-msgstr "Exclue du classement final : moins de 50 %% des matchs disputés (FIDE 6.6)."
+msgstr "Exclue du classement final : moins de 50 %% des matchs disputés (FIDE 6.6)."
 
 msgctxt "said of a man"
 msgid "Exempt"
@@ -4535,7 +4535,7 @@ msgstr "Date de naissance invalide (attendue : {min} - {max})"
 
 #, python-brace-format
 msgid "Invalid {label} [{value}]: use only letters, digits, hyphens and underscores."
-msgstr "{label} invalide [{value}] : utilisez uniquement des lettres, des chiffres, des tirets et des traits de soulignement."
+msgstr "{label} invalide [{value}] : utilisez uniquement des lettres, des chiffres, des tirets et des traits de soulignement."
 
 #, python-brace-format
 msgid "Invalid {rating_type} rating [{rating}] (expected in range [{min}-{max}])."
@@ -4548,7 +4548,7 @@ msgid "Iraq"
 msgstr "Iraq"
 
 msgid "Ireland"
-msgstr "Belgique"
+msgstr "Irlande"
 
 msgid "Isle of Man"
 msgstr "Île de Man"
@@ -5213,7 +5213,7 @@ msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
 msgid "Minimum participation:"
-msgstr "Participation minimale :"
+msgstr "Participation minimale :"
 
 msgid "Minimum rating"
 msgstr "Elo minimum"
@@ -5409,7 +5409,7 @@ msgid "Naming"
 msgstr "Nom affiché"
 
 msgid "Naming:"
-msgstr "Nom affiché :"
+msgstr "Nom affiché :"
 
 msgctxt "name for rating type national"
 msgid "National"
@@ -5439,7 +5439,7 @@ msgid "Nauru"
 msgstr "Nauru"
 
 msgid "Need a plugin of your own?"
-msgstr "Besoin d’un plugin sur mesure ?"
+msgstr "Besoin d’un plugin sur mesure ?"
 
 msgid "Need help?"
 msgstr "Besoin d'aide ?"
@@ -5797,11 +5797,11 @@ msgstr "Aucune règle de classement configurée"
 
 msgctxt "individual knock-out"
 msgid "No reset game is needed: the winners-bracket champion won the grand final."
-msgstr "Aucune belle n'est nécessaire : le·la champion·ne du tableau supérieur a remporté la grande finale."
+msgstr "Aucune belle n'est nécessaire : le·la champion·ne du tableau supérieur a remporté la grande finale."
 
 msgctxt "team knock-out"
 msgid "No reset game is needed: the winners-bracket champion won the grand final."
-msgstr "Aucune belle n'est nécessaire : l'équipe championne du tableau supérieur a remporté la grande finale."
+msgstr "Aucune belle n'est nécessaire : l'équipe championne du tableau supérieur a remporté la grande finale."
 
 msgid "No result"
 msgstr "Pas de résultat"
@@ -5869,10 +5869,10 @@ msgid "No teams in this tournament."
 msgstr "Aucune équipe dans ce tournoi."
 
 msgid "No tie-break decides this drawn game. Add the \"Manual\" tie-break to hold a play-off."
-msgstr "Aucun départage ne tranche cette partie nulle. Ajoutez le départage « Manuel » pour organiser un barrage."
+msgstr "Aucun départage ne tranche cette partie nulle. Ajoutez le départage « Manuel » pour organiser un barrage."
 
 msgid "No tie-break decides this tied match. Add the \"Manual\" tie-break to hold a play-off."
-msgstr "Aucun départage ne tranche ce match à égalité. Ajoutez le départage « Manuel » pour organiser un barrage."
+msgstr "Aucun départage ne tranche ce match à égalité. Ajoutez le départage « Manuel » pour organiser un barrage."
 
 msgid "No tie-breaks defined other than points."
 msgstr "Aucun départage défini en dehors des points."
@@ -5986,11 +5986,11 @@ msgstr "Non comptée comme une fédération (1.4.2a)"
 
 #, python-format
 msgid "Not counted in the final standings: withdrew or was expelled having completed less than 50%% of the games (FIDE 6.6). The result stays in the crosstable."
-msgstr "Non compté·e au classement final : forfait ou exclusion avec moins de 50 %% des parties disputées (FIDE 6.6). Le résultat reste dans la grille."
+msgstr "Non compté·e au classement final : forfait ou exclusion avec moins de 50 %% des parties disputées (FIDE 6.6). Le résultat reste dans la grille."
 
 #, python-format
 msgid "Not counted in the final standings: withdrew or was expelled having completed less than 50%% of the matches (FIDE 6.6). The result stays in the crosstable."
-msgstr "Non comptée au classement final : forfait ou exclusion avec moins de 50 %% des matchs disputés (FIDE 6.6). Le résultat reste dans la grille."
+msgstr "Non comptée au classement final : forfait ou exclusion avec moins de 50 %% des matchs disputés (FIDE 6.6). Le résultat reste dans la grille."
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entier (requis : 2)."
@@ -6418,7 +6418,7 @@ msgstr "BYE d'appariement. Par défaut, valeur de la victoire."
 
 #, python-brace-format
 msgid "Pairing generation failed: {details}"
-msgstr "Échec de la génération des appariements : {details}"
+msgstr "Échec de la génération des appariements : {details}"
 
 #, python-format
 msgid "Pairing information for round %(round)d"
@@ -7031,7 +7031,7 @@ msgid "Plugins"
 msgstr "Plug-ins"
 
 msgid "Plugins add features to Sharly Chess: connections to the platforms of the federations, extra pairing systems, extra tie-breaks, extra screens, extra documents…"
-msgstr "Les plug-ins ajoutent des fonctionnalités à Sharly Chess : connexions aux plateformes des fédérations, systèmes d’appariement supplémentaires, départages supplémentaires, écrans supplémentaires, documents supplémentaires…"
+msgstr "Les plug-ins ajoutent des fonctionnalités à Sharly Chess : connexions aux plateformes des fédérations, systèmes d’appariement supplémentaires, départages supplémentaires, écrans supplémentaires, documents supplémentaires…"
 
 msgid "Point attribution"
 msgstr "Attribution des points"
@@ -7438,10 +7438,10 @@ msgid "Reminder: the tournament is played on multiple FIDE periods, you might ha
 msgstr "Rappel : le tournoi est joué sur plusieurs périodes FIDE, vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
 
 msgid "Reminder: you might have to update the players' information before distributing them among the tournaments."
-msgstr "Rappel : vous devez peut-être mettre à jour les informations des joueur·euses avant de les répartir dans les tournois."
+msgstr "Rappel : vous devez peut-être mettre à jour les informations des joueur·euses avant de les répartir dans les tournois."
 
 msgid "Reminder: you might have to update the players' information before printing the place cards."
-msgstr "Rappel : vous devez peut-être mettre à jour les informations des joueur·euses avant d'imprimer les chevalets."
+msgstr "Rappel : vous devez peut-être mettre à jour les informations des joueur·euses avant d'imprimer les chevalets."
 
 msgid "Reminder: you might have to update the players' ratings before pairing."
 msgstr "Rappel : vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
@@ -7727,7 +7727,7 @@ msgstr "La ronde %(round)d est terminée."
 
 #, python-format
 msgid "Round #%(round)d is finished. End it and make round #%(next)d the current round, or just take a look at the next round?"
-msgstr "La ronde n°%(round)d est terminée. La clôturer et définir la ronde n°%(next)d comme ronde courante, ou simplement consulter la ronde suivante ?"
+msgstr "La ronde n°%(round)d est terminée. La clôturer et définir la ronde n°%(next)d comme ronde courante, ou simplement consulter la ronde suivante ?"
 
 #, python-format
 msgid "Round #%(round)d is running."
@@ -7788,12 +7788,12 @@ msgstr "Ronde {round}"
 #, python-brace-format
 msgctxt "individual knock-out"
 msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
-msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner le·la vainqueur·e d'un barrage — ou ajoutez d'autres départages de qualification."
+msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner le·la vainqueur·e d'un barrage — ou ajoutez d'autres départages de qualification."
 
 #, python-brace-format
 msgctxt "team knock-out"
 msgid "Round {round} has tied match(es) that the advancement tie-breaks cannot decide. Add the \"Manual\" tie-break in the tie-break settings to designate the winner of a play-off — or add other advancement tie-breaks."
-msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner l'équipe vainqueure d'un barrage — ou ajoutez d'autres départages de qualification."
+msgstr "Le tour {round} comporte un ou plusieurs matchs à égalité que les départages de qualification ne peuvent trancher. Ajoutez le départage « Manuel » dans les paramètres de départage pour désigner l'équipe vainqueure d'un barrage — ou ajoutez d'autres départages de qualification."
 
 #, python-brace-format
 msgid "Round {round} is already paired. Unpair it before pairing it again."
@@ -8211,6 +8211,9 @@ msgstr "Catégories Séniors"
 msgctxt "september"
 msgid "Sep"
 msgstr "Sep"
+
+msgid "Separate players from the same club"
+msgstr "Séparer les joueur·euses du même club"
 
 msgid "September"
 msgstr "Septembre"
@@ -8933,7 +8936,7 @@ msgid "Thailand"
 msgstr "Thaïlande"
 
 msgid "The \"Manual\" tie-break settles the match by play-off, so any tie-break listed below it never applies. Move \"Manual\" to the end of the list."
-msgstr "Le départage « Manuel » règle le match par barrage : tout départage situé en dessous ne s’applique jamais. Déplacez « Manuel » en fin de liste."
+msgstr "Le départage « Manuel » règle le match par barrage : tout départage situé en dessous ne s’applique jamais. Déplacez « Manuel » en fin de liste."
 
 msgid "The FIDE coefficient (k) of the player. When left empty, the coefficient shown is estimated from the rating and the age of the player."
 msgstr "Le coefficient FIDE (k) du·de la joueur·euse. Laissé vide, le coefficient affiché est estimé à partir du classement et de l'âge du·de la joueur·euse."
@@ -9590,7 +9593,7 @@ msgid "This content is too advanced for the block editor."
 msgstr "Ce contenu est trop avancé pour l’éditeur de blocs."
 
 msgid "This content uses advanced Jinja; simplify it to use the block editor."
-msgstr "Ce contenu utilise du Jinja avancé ; simplifiez-le pour utiliser l’éditeur de blocs."
+msgstr "Ce contenu utilise du Jinja avancé ; simplifiez-le pour utiliser l’éditeur de blocs."
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
@@ -9665,7 +9668,7 @@ msgid "This folder is not empty."
 msgstr "Ce dossier n'est pas vide."
 
 msgid "This keeps players facing opponents of similar strength. When on (standard Keizer), each player's score includes their own current ranking value, so the standings stay stable and each round pairs players of near-equal strength: one bad result does not drop a strong player far down the field, and pairings do not swing wildly. When off, the score comes purely from results, which can make the early standings, and so the pairings, more volatile."
-msgstr "Cela permet aux joueurs d'affronter des adversaires de force similaire. Lorsque l'option est activée (Keizer standard), le score de chaque joueur inclut sa propre valeur de classement actuelle : le classement reste stable et chaque ronde apparie des joueurs de force proche. Un mauvais résultat ne fait pas chuter un joueur fort loin dans le classement, et les appariements ne varient pas brutalement. Lorsque l'option est désactivée, le score provient uniquement des résultats, ce qui peut rendre le classement initial, et donc les appariements, plus instables."
+msgstr "Cela permet aux joueurs d'affronter des adversaires de force similaire. Lorsque l'option est activée (Keizer standard), le score de chaque joueur inclut sa propre valeur de classement actuelle : le classement reste stable et chaque ronde apparie des joueurs de force proche. Un mauvais résultat ne fait pas chuter un joueur fort loin dans le classement, et les appariements ne varient pas brutalement. Lorsque l'option est désactivée, le score provient uniquement des résultats, ce qui peut rendre le classement initial, et donc les appariements, plus instables."
 
 msgid "This menu is empty."
 msgstr "Ce menu est vide."
@@ -11467,6 +11470,9 @@ msgstr "sec."
 
 msgid "some already played each other"
 msgstr "certain·es se sont déjà rencontré·es"
+
+msgid "split the players belonging to the same club between the balanced tournaments, as much as possible."
+msgstr "Répartir les joueur·euses appartenant à un même club entre les tournois équilibrés, autant que possible."
 
 msgid "standard ratings"
 msgstr "classements standard"
