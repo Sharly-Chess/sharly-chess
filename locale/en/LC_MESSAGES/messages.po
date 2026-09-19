@@ -8210,6 +8210,9 @@ msgctxt "september"
 msgid "Sep"
 msgstr ""
 
+msgid "Separate players from the same club"
+msgstr ""
+
 msgid "September"
 msgstr ""
 
@@ -11464,6 +11467,9 @@ msgid "sec"
 msgstr ""
 
 msgid "some already played each other"
+msgstr ""
+
+msgid "split the players belonging to the same club between the balanced tournaments, as much as possible."
 msgstr ""
 
 msgid "standard ratings"

@@ -8212,6 +8212,9 @@ msgctxt "september"
 msgid "Sep"
 msgstr "Sep"
 
+msgid "Separate players from the same club"
+msgstr "Séparer les joueur·euses du même club"
+
 msgid "September"
 msgstr "Septembre"
 
@@ -11467,6 +11470,9 @@ msgstr "sec."
 
 msgid "some already played each other"
 msgstr "certain·es se sont déjà rencontré·es"
+
+msgid "split the players belonging to the same club between the balanced tournaments, as much as possible."
+msgstr "Répartir les joueur·euses appartenant à un même club entre les tournois équilibrés, autant que possible."
 
 msgid "standard ratings"
 msgstr "classements standard"
