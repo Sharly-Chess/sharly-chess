@@ -495,6 +495,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
         player.last_name = last
         player.full_name = Player.player_full_name(first, last)
         player.club = _EXAMPLE_CLUB_NAMES[example % len(_EXAMPLE_CLUB_NAMES)]
+        player.national_id = f'{10_000 + example}'
         player.team_name = _EXAMPLE_TEAM_NAMES[example % len(_EXAMPLE_TEAM_NAMES)]
 
     def _apply_example(

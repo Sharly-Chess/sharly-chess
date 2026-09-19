@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import cast
 
 from text_unidecode import unidecode
 
@@ -17,6 +16,7 @@ from data.input_output.data_source import LocalDataSource
 from data.input_output.player_updater_fields import (
     PlayerUpdaterField,
     FideIDUpdaterField,
+    NationalIdUpdaterField,
     TitleUpdaterField,
     WomenTitleUpdaterField,
     NameUpdaterField,
@@ -28,14 +28,12 @@ from data.input_output.player_updater_fields import (
     FederationUpdaterField,
     ClubUpdaterField,
 )
-from data.player import Player
+from data.player import Player, PlayerProfileLink
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
-    FfeLicenceNumberDatasheetColumn,
-    FfeIdDatasheetColumn,
     FfeLicenceDatasheetColumn,
     FfeLeagueDatasheetColumn,
 )
@@ -83,29 +81,6 @@ class FfePlayerUpdaterField(PlayerUpdaterField, ABC):
     @abstractmethod
     def _get_ffe_string_value(self, plugin_data: FfePlayerPluginData) -> str:
         """Get the string value from the FFE plugin data."""
-
-
-class FfeLicenceNumberUpdaterField(FfePlayerUpdaterField):
-    @staticmethod
-    def static_id() -> str:
-        return 'ffe_licence_number'
-
-    @staticmethod
-    def static_name() -> str:
-        return 'FFE'
-
-    def _is_ffe_plugin_data_updated(
-        self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
-    ) -> bool:
-        return src_pd.ffe_licence_number != match_pd.ffe_licence_number
-
-    def _update_ffe_plugin_data(
-        self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
-    ) -> None:
-        src_pd.ffe_licence_number = match_pd.ffe_licence_number
-
-    def _get_ffe_string_value(self, plugin_data: FfePlayerPluginData) -> str:
-        return plugin_data.ffe_licence_number or ''
 
 
 class FfeLicenceUpdaterField(FfePlayerUpdaterField):
@@ -162,8 +137,8 @@ class _FfeDataSource(ABC):
     @property
     def _player_updater_fields(self) -> list[PlayerUpdaterField]:
         return [
-            FfeLicenceNumberUpdaterField(),
             FfeLicenceUpdaterField(),
+            NationalIdUpdaterField(),
             FideIDUpdaterField(),
             TitleUpdaterField(),
             WomenTitleUpdaterField(),
@@ -189,9 +164,9 @@ class _FfeDataSource(ABC):
 
     @staticmethod
     def _get_licence_number(stored_player: StoredPlayer) -> str | None:
-        return cast(
-            str | None, get_data(stored_player.plugin_data, 'ffe_licence_number', None)
-        )
+        if stored_player.national_source not in (None, NATIONAL_SOURCE_ID):
+            return None
+        return stored_player.national_id
 
     @staticmethod
     def _get_name_key(stored_player: StoredPlayer) -> tuple[str, str, date] | None:
@@ -243,11 +218,35 @@ class _FfeDataSource(ABC):
 
     @staticmethod
     def _get_player_source_id(stored_player: StoredPlayer) -> str:
-        return str(get_data(stored_player.plugin_data, 'ffe_id'))
+        return str(get_data(stored_player.plugin_data, 'ffe_id') or '')
+
+    @property
+    def national_source_name(self) -> str:
+        return 'FFE'
+
+    @property
+    def national_id_form_label(self) -> str:
+        return _('FFE licence no.:')
+
+    @property
+    def national_id_form_placeholder(self) -> str:
+        return 'R08943'
+
+    def player_profile_link(self, player: Player) -> PlayerProfileLink | None:
+        """The licence number is what an arbiter recognises; the profile
+        page is keyed on the FFE id, which only players fetched from an FFE
+        source carry."""
+        if not player.national_id:
+            return None
+        ffe_id = FFEUtils.get_player_plugin_data(player).ffe_id
+        return PlayerProfileLink(
+            label=_('FFE {id}').format(id=player.national_id),
+            url=FFEUtils.player_url(ffe_id) if ffe_id else None,
+        )
 
     @property
     def _import_identifier_column(self) -> DatasheetColumn:
-        return FfeLicenceNumberDatasheetColumn()
+        return pds.NationalIdColumn()
 
     @property
     def _imported_datasheet_columns(self) -> list[DatasheetColumn]:
@@ -263,7 +262,6 @@ class _FfeDataSource(ABC):
             pds.FederationColumn(),
             FfeLeagueDatasheetColumn(),
             pds.ClubColumn(),
-            FfeIdDatasheetColumn(),
             FfeLicenceDatasheetColumn(),
         ]
         columns += PlayerDatasheetColumnHandler.get_rating_columns()
@@ -276,19 +274,26 @@ class _FfeDataSource(ABC):
             identifier_values, [], []
         )
         return {
-            stored_player.plugin_data[PLUGIN_NAME]['ffe_licence_number']: stored_player
+            stored_player.national_id or '': stored_player
             for stored_player in stored_players or []
         }
 
 
-class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
+class FfeLocalDataSource(_FfeDataSource, LocalDataSource):
+    federation = 'FRA'
+    national_source_id = NATIONAL_SOURCE_ID
+
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-local'
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE database (local)')
+        return _('FFE (France) - local database')
+
+    @property
+    def short_name(self) -> str:
+        return _('FFE (local)')
 
     @property
     def local_database_type(self) -> type[LocalSourcePlayerDatabase]:
@@ -362,14 +367,25 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         return await self._get_stored_players_by_import_identifier(identifier_values)
 
 
-class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
+class FfeOnlineDataSource(_FfeDataSource, OnlineDataSource):
+    federation = 'FRA'
+    national_source_id = NATIONAL_SOURCE_ID
+
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-online'
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE database (online)')
+        return _('FFE (France) - online database')
+
+    @property
+    def short_name(self) -> str:
+        return _('FFE (online)')
+
+    @property
+    def is_forced_active(self) -> bool:
+        return True
 
     @classmethod
     async def check_connection(cls) -> bool:

@@ -22,7 +22,7 @@ python src/sharly_chess.py
 
 ## Configuring _FIDE_ local database decryption
 
-The `src/.fide-database-enc-credentials` file, used to decrypt the _FIDE_ local database, is not stored in the _GitHub_ repository.
+The `src/.fide-database-enc-credentials` file, used to decrypt the _FIDE_ local database when it is downloaded ready-made from _GitHub_ (see `FIDE_SOURCE` in `src/database/sqlite/fide/fide_database.py`; the application converts the official _FIDE_ list itself otherwise), is not stored in the _GitHub_ repository.
 
 It must be generated in each developer’s environment (ask other developers for the credentials):
 

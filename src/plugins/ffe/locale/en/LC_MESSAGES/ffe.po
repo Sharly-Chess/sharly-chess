@@ -186,6 +186,21 @@ msgstr ""
 msgid "FFE"
 msgstr ""
 
+msgid "FFE (France)"
+msgstr "FFE (France)"
+
+msgid "FFE (France) - local database"
+msgstr "FFE (France) - local database"
+
+msgid "FFE (France) - online database"
+msgstr "FFE (France) - online database"
+
+msgid "FFE (local)"
+msgstr "FFE (local)"
+
+msgid "FFE (online)"
+msgstr "FFE (online)"
+
 msgid "FFE 4-board team cup. 5-player roster cap, max Elo 1800 per player, mixed-system schedule (Swiss / Molter / round-robin)."
 msgstr ""
 
@@ -217,12 +232,6 @@ msgstr ""
 msgid "FFE certification number:"
 msgstr ""
 
-msgid "FFE database (local)"
-msgstr ""
-
-msgid "FFE database (online)"
-msgstr ""
-
 msgid "FFE forms"
 msgstr ""
 
@@ -235,9 +244,8 @@ msgstr ""
 msgid "FFE licence B (leisure)"
 msgstr ""
 
-#, python-brace-format
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
-msgstr ""
+msgid "FFE licence no.:"
+msgstr "FFE licence no.:"
 
 msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
 msgstr ""
@@ -300,9 +308,6 @@ msgstr[1] ""
 msgid "For unrated players, a representative rating is calculated."
 msgstr ""
 
-msgid "French Chess Federation"
-msgstr ""
-
 msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
 msgstr ""
 
@@ -348,10 +353,6 @@ msgstr ""
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr ""
 
-#, python-brace-format
-msgid "Invalid format (expected: {format})."
-msgstr ""
-
 msgid "JSON file (papi-converter format)"
 msgstr ""
 
@@ -394,12 +395,11 @@ msgstr "Lic."
 msgid "Licence"
 msgstr ""
 
-msgctxt "licence number"
-msgid "Licence no."
-msgstr "Licence no."
-
 msgid "Licence number"
 msgstr ""
+
+msgid "Licence type:"
+msgstr "Licence type:"
 
 msgid "Licence types"
 msgstr ""
@@ -559,9 +559,6 @@ msgstr ""
 msgid "Ranking by league after round #{round}"
 msgstr ""
 
-msgid "Replace the player to update this field."
-msgstr ""
-
 #, python-brace-format
 msgid "Roster must consist of women players only: {names}."
 msgstr ""
@@ -675,7 +672,7 @@ msgstr ""
 msgid "This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
 msgstr ""
 
-msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence not required)."
+msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."
 msgstr ""
 
 msgid "Tournament"

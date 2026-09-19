@@ -11,8 +11,8 @@
         src="{{ macros.federation_flag_url(player.federation) }}"
     />
     {% if not no_identifier %}
-        {% if player.plugin_data.ffe.ffe_licence_number %}
-            {{ player.plugin_data.ffe.ffe_licence_number }}
+        {% if player.national_id %}
+            {{ player.national_id }}
         {% else %}
             -
         {% endif %}

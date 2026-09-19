@@ -32,7 +32,6 @@ from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import (
     Player,
-    PlayerProfileLink,
     PlayerRating,
     PlayerRatingAndType,
     TournamentPlayer,
@@ -56,7 +55,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
-from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
+from plugins.ffe import migrations, PLUGIN_NAME, NATIONAL_SOURCE_ID, ffe_tie_breaks
 from plugins.ffe.ffe_background_uploader import (
     EventLoader,
     FfeBackgroundUploader,
@@ -70,9 +69,8 @@ from plugins.ffe.ffe_entity import (
     FfeLeaguePlayerFilter,
     FfeLeaguesFilterOption,
     FfeLeagueTableColumn,
-    FfeIdDatasheetColumn,
-    FfeLicenceNumberDatasheetColumn,
     FfeLicenceDatasheetColumn,
+    FfeLicenceNumberDatasheetColumn,
     FfeLeagueDatasheetColumn,
     FfeLicenceTypeTableColumn,
     FfeLeaguePlayersTabColumn,
@@ -426,7 +424,7 @@ class FfePlugin(Plugin):
         templates_by_section['identity'].insert(
             0, '/ffe_player_form_identity_fields.html'
         )
-        templates_by_section['fide'].append('/ffe_player_form_fields.html')
+        templates_by_section['national'].append('/ffe_player_form_fields.html')
 
     @hookimpl
     def validate_player_form_fields(
@@ -445,9 +443,7 @@ class FfePlugin(Plugin):
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'
 
-        ffe_licence_number = WebContext.form_data_to_str(
-            data, field := 'ffe_licence_number'
-        )
+        ffe_licence_number = WebContext.form_data_to_str(data, field := 'national_id')
         if ffe_licence_number and not PlayerFFELicence.validate(ffe_licence_number):
             errors[field] = _(
                 'Invalid FFE licence number [{ffe_licence_number}].'
@@ -457,9 +453,9 @@ class FfePlugin(Plugin):
     def get_player_duplicate_key(
         self, stored_player: StoredPlayer
     ) -> tuple[str, str] | None:
-        if licence_number := self.get_data(
-            stored_player.plugin_data, 'ffe_licence_number'
-        ):
+        if stored_player.national_source not in (None, NATIONAL_SOURCE_ID):
+            return None
+        if licence_number := stored_player.national_id:
             return self.id, licence_number
         return None
 
@@ -538,6 +534,9 @@ class FfePlugin(Plugin):
                 stored_player.comment = ffe_stored_player.comment
             if not stored_player.club:
                 stored_player.club = ffe_stored_player.club
+            if not stored_player.national_id:
+                stored_player.national_id = ffe_stored_player.national_id
+                stored_player.national_source = ffe_stored_player.national_source
             stored_player.plugin_data[self.id] = copy.copy(
                 ffe_stored_player.plugin_data.get(self.id, {})
             )
@@ -560,49 +559,13 @@ class FfePlugin(Plugin):
             'ffe_licence',
             plugin_data.ffe_licence.compact_name if plugin_data.ffe_licence else '',
         )
-        setattr(  # noqa: B010
-            place_card_player,
-            'ffe_licence_number',
-            plugin_data.ffe_licence_number or '',
-        )
 
     @hookimpl
     def place_card_field_tokens(self) -> list[dict[str, str]]:
         return [
             {'group': 'FFE', 'label': _('League'), 'expr': '{{ player.ffe_league }}'},
             {'group': 'FFE', 'label': _('Licence'), 'expr': '{{ player.ffe_licence }}'},
-            {
-                'group': 'FFE',
-                'label': _('Licence number'),
-                'expr': '{{ player.ffe_licence_number }}',
-            },
         ]
-
-    @hookimpl
-    def insert_player_profile_links(
-        self,
-        player: Player,
-        links: list[PlayerProfileLink],
-    ) -> None:
-        plugin_data = FFEUtils.get_player_plugin_data(player)
-        # The licence number is what an arbiter recognises; the profile page
-        # is keyed on the numeric FFE id, which only players coming from an
-        # FFE source carry. Show whichever we have, link when we have both.
-        label = plugin_data.ffe_licence_number or (
-            str(plugin_data.ffe_id) if plugin_data.ffe_id else None
-        )
-        if not label:
-            return
-        links.append(
-            PlayerProfileLink(
-                label=_('FFE {id}').format(id=label),
-                url=(
-                    FFEUtils.player_url(plugin_data.ffe_id)
-                    if plugin_data.ffe_id
-                    else None
-                ),
-            )
-        )
 
     @hookimpl
     def get_player_rating(
@@ -638,7 +601,6 @@ class FfePlugin(Plugin):
     ) -> None:
         plugin_data = FFEUtils.get_player_plugin_data(player)
         trf_national_player.classification = plugin_data.ffe_licence.value
-        trf_national_player.national_id = plugin_data.ffe_licence_number or ''
         trf_national_player.origin = plugin_data.league or ''
 
     @hookimpl
@@ -655,38 +617,7 @@ class FfePlugin(Plugin):
             plugin_data.ffe_licence = PlayerFFELicence(tnp.classification)
         if tnp.origin in FFE_LEAGUES:
             plugin_data.league = tnp.origin
-        if PlayerFFELicence.validate(tnp.national_id):
-            plugin_data.ffe_licence_number = tnp.national_id
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
-
-    @hookimpl
-    def validate_player_tournament_move(
-        self, tournament: 'Tournament', player: TournamentPlayer
-    ) -> None:
-        plugin_data = FFEUtils.get_player_plugin_data(player)
-        ffe_licence_number = plugin_data.ffe_licence_number
-        ffe_id = plugin_data.ffe_id
-        if ffe_licence_number and any(
-            FFEUtils.get_player_plugin_data(player_).ffe_licence_number
-            == ffe_licence_number
-            for player_ in tournament.tournament_players_by_id.values()
-        ):
-            message = _(
-                'FFE licence [{ffe_licence_number}] already '
-                'present in tournament [{tournament}].'
-            ).format(
-                ffe_licence_number=ffe_licence_number,
-                tournament=tournament.name,
-            )
-            raise ValueError(message)
-        if ffe_id and any(
-            FFEUtils.get_player_plugin_data(tournament_player_).ffe_id == ffe_id
-            for tournament_player_ in tournament.tournament_players_by_id.values()
-        ):
-            # This string is not translated because the error should never happen
-            raise ValueError(
-                f'FFE ID [{ffe_id}] already present in tournament [{tournament.name}].'
-            )
 
     @staticmethod
     def _get_ffe_club_sort_key(player: Player) -> tuple:
@@ -721,9 +652,8 @@ class FfePlugin(Plugin):
     ) -> None:
         tournament: type[DatasheetColumn] = player_datasheet.TournamentColumn
         ffe_columns: list[DatasheetColumn] = [
-            FfeIdDatasheetColumn(),
-            FfeLicenceNumberDatasheetColumn(),
             FfeLicenceDatasheetColumn(),
+            FfeLicenceNumberDatasheetColumn(),
         ]
         for column in ffe_columns:
             PluginUtils.insert_on_isinstance(
@@ -1308,7 +1238,6 @@ class FfePlugin(Plugin):
         sync_data: SCEPlayerSyncData,
     ) -> None:
         plugin_data = FFEUtils.get_player_plugin_data(player)
-        sync_data.national_id = plugin_data.ffe_licence_number
         sync_data.ffe_licence = plugin_data.ffe_licence
         sync_data.ffe_league = plugin_data.league
 
@@ -1335,7 +1264,6 @@ class FfePlugin(Plugin):
         plugin_data = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
-        plugin_data.ffe_licence_number = sync_data.national_id
         plugin_data.ffe_licence = sync_data.ffe_licence
         plugin_data.league = sync_data.ffe_league
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()

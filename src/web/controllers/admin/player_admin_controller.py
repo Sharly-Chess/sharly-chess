@@ -447,7 +447,7 @@ class PlayerAdminController(BaseEventAdminController):
         ]
         template_context |= {
             'default_print_document': web_context.default_print_document,
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
             'search': SessionPlayersSearch(request, event).get(),
             'allowed_tournaments': web_context.allowed_tournaments,
             'enabled_columns': web_context.column_handler.enabled_columns,
@@ -733,6 +733,16 @@ class PlayerAdminController(BaseEventAdminController):
             tournament = web_context.admin_player.optional_single_tournament
         return tournament.start_date if tournament else event.start_date
 
+    @staticmethod
+    def _national_data_source(event: Event, data: dict[str, str]) -> DataSource | None:
+        """The data source whose national identifier the player form
+        shows: the one the player was fetched from, else the one of the
+        federation of the event; None when the form has no such field."""
+        manager = DataSourceManager()
+        if national_source := WebContext.form_data_to_str(data, 'national_source'):
+            return manager.national_source(national_source)
+        return manager.national_source_for_federation(event.federation)
+
     @classmethod
     def _render_players_form_modal(
         cls,
@@ -765,6 +775,8 @@ class PlayerAdminController(BaseEventAdminController):
             federation = event.federation
             club: str | None = None
             fide_id: int | None = None
+            national_id: str | None = None
+            national_source: str | None = None
             mail: str | None = None
             phone: str | None = None
             comment: str | None = None
@@ -795,6 +807,8 @@ class PlayerAdminController(BaseEventAdminController):
                     federation = stored_player.federation
                     club = stored_player.club
                     fide_id = stored_player.fide_id or None
+                    national_id = stored_player.national_id or None
+                    national_source = stored_player.national_source or None
                 # Fields unused by the search, kept on replace
                 mail = stored_player.mail
                 phone = stored_player.phone
@@ -855,6 +869,8 @@ class PlayerAdminController(BaseEventAdminController):
                     'women_title': women_title,
                     'federation': federation,
                     'fide_id': fide_id,
+                    'national_id': national_id,
+                    'national_source': national_source,
                     'club': club,
                     'mail': mail,
                     'phone': phone,
@@ -992,7 +1008,8 @@ class PlayerAdminController(BaseEventAdminController):
                 if action == 'create' and old_player_id
                 else None
             ),
-            'data_sources': DataSourceManager().objects(),
+            'data_sources': DataSourceManager().active_objects(),
+            'national_data_source': cls._national_data_source(event, data),
             'warning_message': warning_message,
             'add_other_active': SessionPlayersAddOtherActive(request).get(),
             'modal': 'player',
@@ -1389,6 +1406,9 @@ class PlayerAdminController(BaseEventAdminController):
                 for tr in TournamentRating
             },
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
+            national_id=WebContext.form_data_to_str(data, 'national_id') or None,
+            national_source=WebContext.form_data_to_str(data, 'national_source')
+            or None,
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=(WebContext.form_data_to_str(data, 'club') or '').strip(),
             fixed=WebContext.form_data_to_int(data, 'fixed'),
@@ -2026,7 +2046,9 @@ class PlayerAdminController(BaseEventAdminController):
         tournaments = web_context.player_addable_tournaments
         tournament_options = {'': '-'} | web_context.get_tournament_options(tournaments)
         data_sources = [
-            source for source in DataSourceManager().objects() if source.is_available
+            source
+            for source in DataSourceManager().active_objects()
+            if source.is_available
         ]
         template_context = {
             'modal': 'players_import',
@@ -2042,7 +2064,7 @@ class PlayerAdminController(BaseEventAdminController):
             'data_sources': data_sources,
             'build_list_tooltip': cls._build_list_tooltip,
             'split_column_ids': cls._split_datasheet_columns_ids,
-            'columns': PlayerDatasheetColumnHandler(event).columns,
+            'columns': PlayerDatasheetColumnHandler(event).export_columns,
             'data': default_data | (data or {}),
             'errors': errors or {},
         }
@@ -2618,6 +2640,20 @@ class PlayerAdminController(BaseEventAdminController):
                     'Fide ID [{fide_id}] already present in tournament [{tournament}].'
                 ).format(
                     fide_id=player.fide_id,
+                    tournament=dst_tournament.name,
+                ),
+            )
+        if player.national_id and any(
+            tournament_player.national_id == player.national_id
+            and tournament_player.national_source == player.national_source
+            for tournament_player in dst_tournament.tournament_players_by_id.values()
+        ):
+            raise ValueError(
+                _(
+                    'National ID [{national_id}] already present '
+                    'in tournament [{tournament}].'
+                ).format(
+                    national_id=player.national_id,
                     tournament=dst_tournament.name,
                 ),
             )

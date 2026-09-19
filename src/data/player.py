@@ -246,16 +246,41 @@ class Player:
             return None
         return f'https://ratings.fide.com/profile/{self.fide_id}'
 
+    @property
+    def national_id(self) -> str | None:
+        return self.stored_player.national_id
+
+    @property
+    def national_source(self) -> str | None:
+        """The source of the national identifier: the one it was fetched
+        from, or the federation's of the event for an identifier typed in."""
+        from data.input_output import DataSourceManager
+
+        if not self.national_id:
+            return None
+        if self.stored_player.national_source:
+            return self.stored_player.national_source
+        data_source = DataSourceManager().national_source_for_federation(
+            self.event.federation
+        )
+        return data_source.national_source_id if data_source else None
+
     @cached_property
     def profile_links(self) -> list[PlayerProfileLink]:
         """The federation identifiers shown on the record modal's identity
-        line. FIDE first, then whatever the enabled plugins contribute for
-        their own federation."""
+        line. FIDE first, then the national identifier, then whatever the
+        enabled plugins contribute for their own federation."""
+        from data.input_output import DataSourceManager
+
         links: list[PlayerProfileLink] = []
         if (url := self.fide_profile_url) is not None:
             links.append(
                 PlayerProfileLink(label=_('FIDE {id}').format(id=self.fide_id), url=url)
             )
+        if self.national_id and self.national_source:
+            data_source = DataSourceManager().national_source(self.national_source)
+            if data_source and (link := data_source.player_profile_link(self)):
+                links.append(link)
         plugin_manager.hook_for_event(self.event, 'insert_player_profile_links')(
             player=self, links=links
         )
@@ -474,11 +499,15 @@ class Player:
             rating_and_type = self.get_rating_and_type(
                 tournament_rating, PlayerRatingType.FIDE, self.category
             )
-            if rating_and_type.type == PlayerRatingType.ESTIMATED:
+            if not rating_and_type.value or (
+                rating_and_type.type == PlayerRatingType.ESTIMATED
+            ):
                 rating_and_type = self.get_rating_and_type(
                     tournament_rating, PlayerRatingType.NATIONAL, self.category
                 )
-            if rating_and_type.type != PlayerRatingType.ESTIMATED:
+            if rating_and_type.value and (
+                rating_and_type.type != PlayerRatingType.ESTIMATED
+            ):
                 return f'{rating_and_type} ({tournament_rating.acronym})'
         raise ValueError('Player expected to have a real rating')
 
@@ -981,6 +1010,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         np = TrfNationalPlayer(
             player_id=trf_player.id,
             rating=self.national_rating_value or 0,
+            national_id=self.national_id or '',
         )
         plugin_manager.hook_for_event(self.event, 'augment_trf_national_player')(
             player=self, trf_national_player=np
