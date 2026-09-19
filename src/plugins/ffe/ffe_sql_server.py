@@ -17,7 +17,7 @@ from data.player import PlayerRating
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from database.sqlite.event.event_store import StoredPlayer
 from plugins import PLUGINS_DIR
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.papi_mappers import (
     PapiPlayerTitle,
     PapiPlayerGender,
@@ -137,16 +137,17 @@ class FFESqlServer(SqlServer):
                 ).stored_value,
             },
             fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
+            national_id=row['NrFFE'] or None,
+            national_source=NATIONAL_SOURCE_ID,
             federation=row['Federation'],
             club=row['ClubNom'] if row['ClubNom'] else '',
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
-                    ffe_id=row['Ref'],
                     ffe_licence=PapiPlayerFFELicence.get_core_object(
                         row['AffType'] or '', row['NrFFE']
                     ),
-                    ffe_licence_number=row['NrFFE'],
                     league=row['ClubLigue'],
+                    ffe_id=row['Ref'],
                 ).to_stored_value()
             },
         )

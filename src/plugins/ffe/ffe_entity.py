@@ -514,52 +514,24 @@ class FfeLicenceTypeTableColumn(TournamentPlayerTableColumn):
         return 'text-center'
 
 
-class FfeIdDatasheetColumn(DatasheetColumn):
-    @property
-    def id(self) -> str:
-        return 'ffe_id'
-
-    def get_cell_content(self, player: Player) -> Any:
-        return FFEUtils.get_player_plugin_data(player).ffe_id
-
-    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
-        if not value:
-            return
-        if not value.isdigit() or int(value) == 0:
-            raise SharlyChessException(_('A positive integer is expected.'))
-        plugin_data = FfePlayerPluginData.from_stored_value(
-            stored_player.plugin_data.get(PLUGIN_NAME, {})
-        )
-        plugin_data.ffe_id = int(value)
-        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
-
-
 class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
+    """The former column of the licence number, read from old datasheets
+    into the national id."""
+
     @property
     def id(self) -> str:
         return 'ffe_licence_number'
 
+    @property
+    def import_only(self) -> bool:
+        return True
+
     def get_cell_content(self, player: Player) -> Any:
-        return FFEUtils.get_player_plugin_data(player).ffe_licence_number or ''
+        return player.national_id
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
-        if not value:
-            return
-        if not PlayerFFELicence.validate(value):
-            raise SharlyChessException(
-                _('Invalid format (expected: {format}).').format(
-                    format='A12345, AB1234'
-                )
-            )
-        plugin_data = FfePlayerPluginData.from_stored_value(
-            stored_player.plugin_data.get(PLUGIN_NAME, {})
-        )
-        plugin_data.ffe_licence_number = value or None
-        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
-
-    @property
-    def is_unique(self) -> bool:
-        return True
+        if value and not stored_player.national_id:
+            stored_player.national_id = value.strip()
 
 
 class FfeLicenceDatasheetColumn(DatasheetColumn):

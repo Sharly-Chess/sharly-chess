@@ -14,11 +14,11 @@ from common.logger import get_logger
 from data.player import PlayerRating
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
-from database.sqlite.local_source_database import LocalSourcePlayerDatabase
+from database.sqlite.local_source_database import GitHubLocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
 from plugins import ffe
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 from utils.enum import (
     TournamentRating,
@@ -30,7 +30,7 @@ from utils.enum import (
 logger: Logger = get_logger()
 
 
-class FfeDatabase(LocalSourcePlayerDatabase):
+class FfeDatabase(GitHubLocalSourcePlayerDatabase):
     """
     The SQLite database class for FFE players. Usage:
     1. Check if the database exists and is up-to-date.
@@ -48,7 +48,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE')
+        return _('FFE (France)')
 
     @staticmethod
     def version() -> Version:
@@ -57,6 +57,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     @property
     def _source_file_name(self) -> str:
         return 'ffe_players_v1.db'
+
+    federation = 'FRA'
 
     @classmethod
     def credentials_file(cls) -> Path:
@@ -102,15 +104,16 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                 ).stored_value,
             },
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
+            national_id=row['ffe_licence_number'] or None,
+            national_source=NATIONAL_SOURCE_ID,
             federation=row['federation'],
             club=row['club'],
             transient_arbiter_titles={'ffe': row['ffe_arbiter_title']},
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
-                    ffe_id=row['ffe_id'],
                     ffe_licence=PlayerFFELicence(row['ffe_licence']),
-                    ffe_licence_number=row['ffe_licence_number'],
                     league=row['league'],
+                    ffe_id=row['ffe_id'],
                 ).to_stored_value()
             },
         )

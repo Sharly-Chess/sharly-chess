@@ -24,6 +24,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Interfacing _Sharly Chess_ with _ChessEvent_](docs/technical-appendices/chessevent-interfacing.md)
 - [Setting up a development environment](docs/technical-appendices/dev-setup.md)
 - [Description of the databases](docs/technical-appendices/databases.md)
+- [National rating lists](docs/technical-appendices/national-rating-lists.md)
 - [Network](docs/technical-appendices/network.md)
 - [FIDE endorsement](docs/technical-appendices/fide-endorsement.md)
 

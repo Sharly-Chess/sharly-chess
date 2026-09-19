@@ -42,8 +42,8 @@ def player(id_: int, **kwargs) -> StoredPlayer:
             ),
         ),
         (
-            player(1, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}}),
-            player(2, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}}),
+            player(1, national_id='A12345'),
+            player(2, national_id='A12345'),
         ),
     ],
 )
@@ -73,7 +73,7 @@ def test_has_multi_tournament_players_ignores_distinct_players():
                 first_name=f'First {id_}',
                 date_of_birth=date(2000, 1, 1),
                 fide_id=1000 + id_,
-                plugin_data={'ffe': {'ffe_licence_number': f'A{id_:05d}'}},
+                national_id=f'A{id_:05d}',
             )
             for id_ in range(1, 1001)
         )
@@ -84,9 +84,9 @@ def test_has_multi_tournament_players_ignores_distinct_players():
 
 @pytest.mark.unit
 def test_duplicate_key_is_used_when_checking_one_player():
-    event = make_event(player(1, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}}))
+    event = make_event(player(1, national_id='A12345'))
     existing_player = next(iter(event.players))
-    stored_player = player(2, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}})
+    stored_player = player(2, national_id='A12345')
 
     assert event._are_player_duplicates(stored_player, existing_player)
 
@@ -115,7 +115,7 @@ def test_identity_keys_ignore_a_name_without_a_first_name():
 @pytest.mark.unit
 def test_identity_keys_include_the_ffe_licence_number():
     event = make_event()
-    stored_player = player(1, plugin_data={'ffe': {'ffe_licence_number': 'A12345'}})
+    stored_player = player(1, national_id='A12345')
     assert any(
         key[0] == 'plugin' for key in event.get_player_identity_keys(stored_player)
     )

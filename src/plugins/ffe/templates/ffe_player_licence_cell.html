@@ -2,7 +2,7 @@
 {% import '/ffe_macros.j2' as ffe_macros %}
 
 {% set licence = player.plugin_data.ffe.ffe_licence %}
-{% set licence_number = player.plugin_data.ffe.ffe_licence_number or '' %}
+{% set licence_number = player.national_id or '' %}
 <span
     {% if not licence_number or licence == '' %}
         {{ macros.tooltip_attributes('', licence.name, 'right') }}

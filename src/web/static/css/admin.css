@@ -32,6 +32,9 @@
 
 .compact-sidebar .sidebar .nav-icon-main-badge {
     position: absolute;
+    top: 2px;
+    bottom: auto;
+    right: 6px;
 }
 
 .player-link {

@@ -35,7 +35,7 @@ from database.sqlite.event.event_store import (
     StoredTieBreak,
     set_stored_fields,
 )
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,
@@ -576,16 +576,17 @@ class PapiConverter:
             women_title=title.women_value,
             ratings=ratings,
             fide_id=fide_id,
+            national_id=papi_player.nrFFE or None,
+            national_source=NATIONAL_SOURCE_ID if papi_player.nrFFE else None,
             federation=papi_player.federation,
             club=papi_player.club,
             fixed=papi_player.fixedBoard,
             check_in=papi_player.checkedIn,
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
-                    ffe_id=papi_player.refFFE,
                     ffe_licence=ffe_licence,
-                    ffe_licence_number=papi_player.nrFFE,
                     league=papi_player.league,
+                    ffe_id=papi_player.refFFE,
                 ).to_stored_value()
             },
         )
@@ -1094,11 +1095,11 @@ class PapiConverter:
                 tournament_player, TournamentRating.BLITZ
             ),
             licenceType=PapiPlayerFFELicence.get_outer_value(
-                plugin_data.ffe_licence, plugin_data.ffe_licence_number
+                plugin_data.ffe_licence, FFEUtils.licence_number(tournament_player)
             ),
             refFFE=plugin_data.ffe_id
             or (self.MOCK_FFE_ID_DELTA + tournament_player.id),
-            nrFFE=plugin_data.ffe_licence_number,
+            nrFFE=FFEUtils.licence_number(tournament_player),
             league=plugin_data.league,
         )
 
