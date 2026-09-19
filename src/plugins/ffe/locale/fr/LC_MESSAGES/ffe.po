@@ -680,7 +680,7 @@ msgstr "La moyenne des classements des joueur·euses de l'équipe, pondérée pa
 msgid "This Scheveningen is unknown by the FFE website and will be exported as an individual Swiss tournament."
 msgstr "Le Scheveningen n'est pas connu du site FFE et sera exporté comme un tournoi individuel au système suisse."
 
-msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence not required)."
+msgid "This filter applies only to players affiliated with the French federation, others will neither be filtered nor greyed out (a French licence is not required)."
 msgstr "Ce filtre ne s'applique qu'aux joueur·euses affilié·es à la fédération française, les autres ne seront ni filtré·es ni grisé·es (pas besoin de licence française)."
 
 msgid "Tournament"
