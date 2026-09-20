@@ -28,7 +28,7 @@ from data.criteria.tournament_criteria import (
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.input_output.trf.trf_data import TrfNationalPlayer
-from data.pairings.managers import PairingVariationManager
+from data.pairings.managers import PairingSystemManager, PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import (
     Player,
@@ -871,16 +871,15 @@ class FfePlugin(Plugin):
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]] | None:
-        # The FFE-site connection is Papi-based. Individual tournaments
-        # always carry the fields; among the team systems only a saved
-        # Scheveningen, which is uploaded as an individual Swiss. On
-        # creation the system is not settled yet, so team forms stay bare
-        # until the tournament exists and is a Scheveningen.
-        if event.is_team_event and not (
-            tournament is not None and FFEUtils.supports_ffe_transfer(tournament)
-        ):
-            return None
-        return '/ffe_tournament_form_fields.html', {}
+        # The connection fields follow the pairing system chosen in the
+        # form: the template shows them for the systems listed here.
+        return '/ffe_tournament_form_fields.html', {
+            'ffe_transfer_system_ids': [
+                system.id
+                for system in PairingSystemManager(event).objects()
+                if FFEUtils.system_supports_ffe_transfer(event, system)
+            ],
+        }
 
     @hookimpl
     def validate_tournament_form_fields(

@@ -208,6 +208,14 @@ class RuleSet(IdentifiableEntity, ABC):
         changes. Sub-classes override; default empty."""
         return {}
 
+    def form_prefills(self) -> dict[str, str]:
+        """Form-data string values the rule set suggests for fields it
+        does not manage — entry criteria, typically. The tournament modal
+        writes them into the inputs when the arbiter picks the rule set
+        and leaves them editable from then on; nothing is enforced on
+        save. Sub-classes override; default empty."""
+        return {}
+
     @property
     def roster_max_size(self) -> int | None:
         """Maximum number of players a team may carry on its roster.
