@@ -52,7 +52,7 @@ class PlayerPointAdjustmentTestCase(TestCase):
         tournament = self.tournament
         white = tournament.tournament_players_by_pairing_number[1]
         black = tournament.tournament_players_by_pairing_number[2]
-        tournament.create_boards(
+        tournament.board_operations.create(
             [
                 StoredBoard(
                     id=None,
@@ -239,7 +239,7 @@ class PlayerPointAdjustmentTestCase(TestCase):
             )
         assert tournament.point_adjustments.for_player(white.id, 1) == -2.0
 
-        tournament.unpair_boards(tournament.get_round_boards(1))
+        tournament.board_operations.unpair(tournament.get_round_boards(1))
 
         assert tournament.point_adjustments.for_player(white.id, 1) == 0.0
         assert tournament.point_adjustments.for_player(black.id, 1) == 0.0
@@ -258,5 +258,5 @@ class PlayerPointAdjustmentTestCase(TestCase):
             tournament.point_adjustments.set_manual_for_player(
                 player.id, 2, -1.0, 'later round', database
             )
-        tournament.unpair_boards(tournament.get_round_boards(1))
+        tournament.board_operations.unpair(tournament.get_round_boards(1))
         assert tournament.point_adjustments.for_player(player.id, 2) == -1.0

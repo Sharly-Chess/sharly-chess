@@ -375,7 +375,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             return []
         return [
             {'index': index, 'label': label}
-            for index, label in self.admin_tournament.unboarded_holes(round_)
+            for index, label in self.admin_tournament.board_operations.unboarded_holes(
+                round_
+            )
         ]
 
     def reload_unpaired_team_lists(self) -> None:
@@ -872,7 +874,7 @@ class PairingsAdminController(BaseEventAdminController):
         team_board = tournament.team_boards_by_id.get(team_board_id)
         if team_board is None:
             raise NotFoundException(f'Team board {team_board_id} not found.')
-        tournament.unpair_team_board(team_board)
+        tournament.board_operations.unpair_team(team_board)
         web_context = PairingsAdminWebContext(
             request,
             tournament_id=tournament_id,
@@ -1056,7 +1058,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         board = web_context.get_admin_board()
         tournament = web_context.get_admin_tournament()
-        tournament.unpair_boards([board])
+        tournament.board_operations.unpair([board])
 
         web_context = PairingsAdminWebContext(
             request,
@@ -1882,7 +1884,7 @@ class PairingsAdminController(BaseEventAdminController):
             and exempt_team_board.stored_team_board.team_a_id != team.id
             else None
         )
-        tb = tournament.create_team_round_pairing(pairing_round, team.id)
+        tb = tournament.board_operations.pair_teams(pairing_round, team.id)
         if exempt_team is not None:
             message = _(
                 'Team [{team}] has been paired against [{opponent}] at board #{board}.'
@@ -1931,12 +1933,12 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_player = web_context.get_admin_player()
         # The waiting opponent is the player on the awaiting bye board, not a
         # settled forfeit hole (also black-less) — matching create_round_pairing.
-        pab_board = tournament.get_round_pab_board(pairing_round)
+        pab_board = tournament.board_operations.pab_board(pairing_round)
         exempt_tournament_player = (
             pab_board.optional_white_tournament_player if pab_board else None
         )
         if exempt_tournament_player is not None:
-            board = tournament.create_round_pairing(
+            board = tournament.board_operations.pair(
                 pairing_round,
                 exempt_tournament_player.id,
                 tournament_player.id,
@@ -1950,7 +1952,7 @@ class PairingsAdminController(BaseEventAdminController):
                 board=board.number,
             )
         else:
-            tournament.create_round_pairing(
+            tournament.board_operations.pair(
                 pairing_round,
                 tournament_player.id,
                 None,
@@ -2013,8 +2015,8 @@ class PairingsAdminController(BaseEventAdminController):
             elif kind2 == 'h':
                 index = value2
             else:
-                index = tournament.first_unused_board_index(pairing_round)
-            tournament.create_flat_manual_board(
+                index = tournament.board_operations.first_unused_index(pairing_round)
+            tournament.board_operations.create_flat_manual(
                 pairing_round, white_id, black_id, index
             )
             Message.success(request, _('Pairing added.'))
@@ -2291,7 +2293,7 @@ class PairingsAdminController(BaseEventAdminController):
                 action=PairingAction.FULL_UNPAIRING,
             )
             tournament = web_context.get_admin_tournament()
-            tournament.unpair_boards(web_context.admin_boards)
+            tournament.board_operations.unpair(web_context.admin_boards)
             # A fully-unpaired round loses its prohibited-pairing snapshot;
             # re-pairing writes a fresh one.
             with EventDatabase(tournament.event.uniq_id, True) as database:
@@ -2317,7 +2319,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
-        tournament.unpair_boards(list(tournament.boards_by_id.values()))
+        tournament.board_operations.unpair(list(tournament.boards_by_id.values()))
         tournament.set_current_round(0)
 
         web_context = PairingsAdminWebContext(

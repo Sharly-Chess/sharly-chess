@@ -1316,7 +1316,7 @@ class TournamentImporterTestCase(TestCase):
         # First click on team A: creates a PAB envelope with PAB-result
         # individual boards. The team_b column is empty. Boards with a
         # present player have a PAB pairing; bare-hole boards stay empty.
-        tb_pending = tournament.create_team_round_pairing(2, team_a.id)
+        tb_pending = tournament.board_operations.pair_teams(2, team_a.id)
         self.assertIsNone(tb_pending.team_b)
         self.assertEqual(tb_pending.team_a.id, team_a.id)
         self.assertEqual(tb_pending.bye_type, 'PAB')
@@ -1333,7 +1333,7 @@ class TournamentImporterTestCase(TestCase):
         # Second click on team B: completes the pair. PAB-side boards
         # are dropped and rebuilt with both lineups; results flip to
         # NO_RESULT (each board with at least one present player).
-        tb_complete = tournament.create_team_round_pairing(2, team_b.id)
+        tb_complete = tournament.board_operations.pair_teams(2, team_b.id)
         complete_team_b = tb_complete.team_b
         assert complete_team_b is not None
         self.assertEqual(
@@ -1383,8 +1383,8 @@ class TournamentImporterTestCase(TestCase):
         self._set_team_manual_bye(tournament, team_b.id, 2, 'ZPB')
         self.assertEqual(team_b.round_bye_type(2), 'ZPB')
         # Manually pair team_a and team_b. The ZPB should be removed.
-        tournament.create_team_round_pairing(2, team_a.id)
-        tournament.create_team_round_pairing(2, team_b.id)
+        tournament.board_operations.pair_teams(2, team_a.id)
+        tournament.board_operations.pair_teams(2, team_b.id)
         self.assertIsNone(team_b.round_bye_type(2))
         boards = tournament.get_round_team_boards(2)
         # Only one envelope — the completed pair.

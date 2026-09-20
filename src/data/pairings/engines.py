@@ -171,10 +171,10 @@ class PairingEngine(ABC):
                 Board(tournament, round_, stored_board)
                 for stored_board in stored_boards
             ]
-            available_indexes = tournament.get_available_board_indexes(round_)
+            available_indexes = tournament.board_operations.available_indexes(round_)
             for board in sorted(boards, reverse=True):
                 board.index = available_indexes.pop(0)
-        tournament.create_boards(stored_boards, round_, self.pab_result)
+        tournament.board_operations.create(stored_boards, round_, self.pab_result)
         return ''
 
     def _prohibited_pairing_feasible(
@@ -791,7 +791,7 @@ class TeamPairingEngine(PairingEngine, ABC):
                 tournament.stored_tournament.stored_team_boards_by_round[round_] = kept
         if partial_pairings:
             tournament.clear_team_cache()
-            tournament.create_boards(stored_boards, round_, self.pab_result)
+            tournament.board_operations.create(stored_boards, round_, self.pab_result)
             return
         with EventDatabase(tournament.event.uniq_id, True) as database:
             existing = tournament.stored_tournament.stored_team_boards_by_round.get(
@@ -936,7 +936,7 @@ class TeamPairingEngine(PairingEngine, ABC):
                 manual_bye_team_ids.add(team.id)
             tournament.stored_tournament.stored_team_boards_by_round[round_] = kept
         tournament.clear_team_cache()
-        tournament.create_boards(stored_boards, round_, self.pab_result)
+        tournament.board_operations.create(stored_boards, round_, self.pab_result)
 
     def _team_match_stored_boards(
         self,

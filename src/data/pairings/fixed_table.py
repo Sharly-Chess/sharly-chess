@@ -408,7 +408,7 @@ class FixedTablePairingEngine(PairingEngine):
         # the new ``board_id``, which is required for result entry. The
         # PAB branches inside are dead code for flat fixed-table systems
         # (every board has both players) but harmless.
-        tournament.create_boards(stored_boards, round_, self.pab_result)
+        tournament.board_operations.create(stored_boards, round_, self.pab_result)
         return ''
 
     def _combined_pairings_or_empty(

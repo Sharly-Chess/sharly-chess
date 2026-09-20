@@ -273,7 +273,7 @@ class TeamMatchIndexTestCase(_TeamLineupHarness):
         stb = team_board.stored_team_board
         assert stb.team_b_id is not None
         unpaired = (stb.team_a_id, stb.team_b_id)
-        tournament.unpair_team_board(team_board)
+        tournament.board_operations.unpair_team(team_board)
         index = tournament.team_match_by_team_and_round
         self.assertEqual(len(index), TEAMS - 2)
         for team_id in unpaired:

@@ -453,7 +453,7 @@ class TestScheveningenTournament(TestCase):
                 )
                 player_ids.append(player_id)
         tournament = self._tournament()
-        tournament.create_boards(
+        tournament.board_operations.create(
             [
                 StoredBoard(
                     id=None,

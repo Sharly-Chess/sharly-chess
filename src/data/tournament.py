@@ -8,13 +8,13 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any, cast
 from _weakref import ReferenceType
 
-from common.exception import SharlyChessException
 from common.i18n import _, pgettext
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 
 from data.account import Account
 from data.board import Board, compute_round_board_numbers
+from data.board_operations import BoardOperations
 from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.player import Player, TournamentPlayer
@@ -38,12 +38,9 @@ from data.tie_breaks import (
 from data.criteria.tournament_criteria import TournamentCriterion
 from database.sqlite.event.event_store import (
     StoredPlayer,
-    StoredBoard,
-    StoredTeamBoard,
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
-    set_stored_fields,
 )
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
@@ -54,7 +51,6 @@ from utils.enum import (
     PlayerGender,
     Result,
     ScoreType,
-    TeamByeType,
     TeamColourType,
     TeamSortMode,
     TournamentRating,
@@ -1786,85 +1782,9 @@ class Tournament:
             return board.fixed_number or board.standard_number
         return self._round_board_numbers(board.round)[board.identifier]
 
-    def get_round_pab_board(self, round_: int) -> Board | None:
-        """The round's pairing-allocated-bye board — a player seated alone,
-        *waiting* for an opponent. A flat-system forfeit hole is also
-        black-less but is a settled result (``FORFEIT_WIN``), not an empty
-        bye, so it's excluded: manual pairing must not attach a new player
-        to a legitimate forfeit board."""
-        return next(
-            (
-                board
-                for board in self.boards_by_id.values()
-                if board.round == round_
-                and not board.black_tournament_player
-                and board.result == Result.PAIRING_ALLOCATED_BYE
-            ),
-            None,
-        )
-
-    def unboarded_holes(self, round_: int) -> list[tuple[int, str]]:
-        """Flat fixed-table (Molter): empty table cells with no board this
-        round — absent seats, e.g. freed by unpairing and awaiting a forfeit
-        pairing. Each is ``(board_index, label)`` like ``(5, 'B3')``. Empty
-        for other systems. A present-but-unpaired player's seat isn't a hole
-        (it's filled in the lineup); only ``None`` slots count."""
-        from data.pairings.fixed_table import FixedTablePairingEngine
-
-        engine = self.pairing_variation.engine
-        if not isinstance(engine, FixedTablePairingEngine):
-            return []
-        refs = engine.board_references(self, round_)
-        team_by_letter = engine.team_by_letter(self)
-        boarded = {board.index for board in self.get_round_boards(round_)}
-        holes: list[tuple[int, str]] = []
-        for index, (white_ref, black_ref) in enumerate(refs):
-            if index in boarded:
-                continue
-            for ref in (white_ref, black_ref):
-                team = team_by_letter.get(ref[0])
-                if team is None:
-                    continue
-                slot = int(ref[1:]) - 1
-                slots = team.effective_round_slots(round_)
-                if 0 <= slot < len(slots) and slots[slot] is None:
-                    holes.append((index, ref))
-        return holes
-
-    def create_flat_manual_board(
-        self,
-        round_: int,
-        white_id: int | None,
-        black_id: int | None,
-        index: int,
-    ) -> None:
-        """Create one flat (Molter) board from a manual selection. Either side
-        may be ``None`` (a hole) — but not both. Two players ⇒ a game; one
-        player + a hole ⇒ a forfeit win for the present player (handled by
-        :meth:`create_boards`, which scores a one-sided flat board as a
-        forfeit). No lineup is touched."""
-        if white_id is None and black_id is None:
-            raise SharlyChessException('A board needs at least one player.')
-        for player_id in (white_id, black_id):
-            if player_id is None:
-                continue
-            pairing = self.tournament_players_by_id[player_id].pairings[round_]
-            if pairing.exists and pairing.stored_pairing.board_id is not None:
-                raise SharlyChessException(
-                    f'Player {player_id} is already paired in round {round_}.'
-                )
-        self.create_boards(
-            [
-                StoredBoard(
-                    id=None,
-                    white_player_id=white_id,
-                    black_player_id=black_id,
-                    index=index,
-                )
-            ],
-            round_,
-            Result.FORFEIT_WIN,
-        )
+    @cached_property
+    def board_operations(self) -> BoardOperations:
+        return BoardOperations(self)
 
     def get_unpaired_tournament_players(
         self, boards: list[Board]
@@ -2550,39 +2470,6 @@ class Tournament:
         # and holds on to it.
         self.knockout.invalidate_engine_cache()
 
-    def get_available_board_indexes(self, round_: int) -> list[int]:
-        board_indexes = [
-            board.index for board in self.get_round_boards(round_) if not board.exempt
-        ]
-        max_board_count = (
-            len(self.tournament_players) // 2 + len(self.tournament_players) % 2
-        )
-        return [index for index in range(max_board_count) if index not in board_indexes]
-
-    def first_unused_board_index(self, round_: int) -> int:
-        """Smallest table index occupied by NO board this round — counting
-        one-sided forfeit (exempt) boards, which still own a real table.
-        Unlike :meth:`get_available_board_indexes` (which frees an exempt
-        bye's index for reuse), this never reuses a hole's index, so a manual
-        flat pairing can't be placed on top of an existing forfeit table."""
-        used = {board.index for board in self.get_round_boards(round_)}
-        index = 0
-        while index in used:
-            index += 1
-        return index
-
-    def get_pab_board_index(
-        self,
-        round_: int,
-        new_indexes: list[int] | None = None,
-    ) -> int:
-        board_indexes = [
-            board.index for board in self.get_round_boards(round_) if not board.exempt
-        ] + (new_indexes or [])
-        if not board_indexes:
-            return 0
-        return max(board_indexes) + 1
-
     def set_tournament_players_pairing_numbers(self) -> None:
         # Set up the cached property, which makes sure the
         # pairing number checking process is not executed twice
@@ -2686,346 +2573,6 @@ class Tournament:
                 database.set_tournament_pairing_settings(
                     self.id, self.stored_pairing_settings
                 )
-
-    def create_round_pairing(
-        self, round_nb: int, white_player_id: int, black_player_id: int | None
-    ) -> Board:
-        """Creates a pairing for a round."""
-        white_tournament_player = self.tournament_players_by_id[white_player_id]
-        black_tournament_player = (
-            self.tournament_players_by_id[black_player_id] if black_player_id else None
-        )
-        white_pairing = white_tournament_player.pairings[round_nb]
-        black_pairing = (
-            black_tournament_player.pairings[round_nb]
-            if black_tournament_player
-            else None
-        )
-
-        if white_pairing.opponent_id:
-            raise ValueError(
-                f'White player {white_tournament_player.full_name} already has an '
-                f'opponent (id: {white_pairing.opponent_id}) for round {round_nb}.'
-            )
-        if black_tournament_player and black_pairing and black_pairing.opponent_id:
-            raise ValueError(
-                f'Black player {black_tournament_player.full_name} already has an '
-                f'opponent (id: {black_pairing.opponent_id}) for round {round_nb}.'
-            )
-        with EventDatabase(self.event.uniq_id, True) as database:
-            if black_tournament_player and black_pairing:
-                result = Result.NO_RESULT
-                board = self.get_round_pab_board(round_nb)
-                assert board is not None
-                board_id = board.identifier
-                board.index = self.get_available_board_indexes(round_nb)[0]
-                board.replace_player(black_tournament_player, 'black')
-                # Re-freeze the fixed number now the second seat is filled.
-                set_stored_fields(
-                    board.stored_board, fixed_number=board.live_fixed_number or 0
-                )
-                black_pairing.stored_pairing.result = result.value
-                black_pairing.stored_pairing.board_id = board_id
-                black_pairing.update(database)
-                database.update_stored_board(board.stored_board)
-            else:
-                result = Result.PAIRING_ALLOCATED_BYE
-                # Fill the first free table index (a hole left by an unpaired
-                # board), not the end — so a manually paired player lands on
-                # the lowest vacant table rather than after the last one.
-                available_indexes = self.get_available_board_indexes(round_nb)
-                stored_board = StoredBoard(
-                    id=None,
-                    white_player_id=white_tournament_player.id,
-                    black_player_id=None,
-                    index=available_indexes[0] if available_indexes else 0,
-                )
-                board = Board(self, round_nb, stored_board)
-                set_stored_fields(
-                    stored_board, fixed_number=board.live_fixed_number or 0
-                )
-                board_id = database.add_stored_board(stored_board)
-                set_stored_fields(stored_board, id=board_id)
-                self.boards_by_id[board_id] = board
-            white_pairing.stored_pairing.result = result.value
-            white_pairing.stored_pairing.board_id = board_id
-            white_pairing.update(database)
-        return board
-
-    def create_team_round_pairing(self, round_: int, team_id: int) -> TeamBoard:
-        """Manual team pairing — mirrors :meth:`create_round_pairing`.
-
-        If a PAB envelope (team_b is None, not a manual bye) already
-        exists for the round, completes the pair: the existing team
-        becomes ``team_a``, *team_id* becomes ``team_b``, individual
-        boards are regenerated with both lineups and their results
-        flipped from PAB to NO_RESULT. Otherwise creates a fresh PAB
-        envelope for *team_id* (with its lineup populated against an
-        empty opposing side, just like an engine-assigned bye)."""
-        from data.pairings.engines import TeamPairingEngine
-
-        engine = self.pairing_variation.engine
-        assert isinstance(engine, TeamPairingEngine)
-        round_list = self.stored_tournament.stored_team_boards_by_round.setdefault(
-            round_, []
-        )
-        manual_bye_types = TeamByeType.manual_bye_types()
-        pab_stb = next(
-            (
-                stb
-                for stb in round_list
-                if stb.team_b_id is None and stb.bye_type not in manual_bye_types
-            ),
-            None,
-        )
-        on_board_team_ids: set[int] = set()
-        for stb in round_list:
-            if stb.team_b_id is None and stb.bye_type in manual_bye_types:
-                continue
-            on_board_team_ids.add(stb.team_a_id)
-            if stb.team_b_id is not None:
-                on_board_team_ids.add(stb.team_b_id)
-        if team_id in on_board_team_ids and (
-            pab_stb is None or pab_stb.team_a_id != team_id
-        ):
-            raise ValueError(
-                f'Team {team_id} already has a team-board for round {round_}.'
-            )
-        completing_pair = pab_stb is not None and pab_stb.team_a_id != team_id
-        stored_boards: list[StoredBoard] = []
-        new_stb: StoredTeamBoard | None = None
-        boards_to_delete: list[int] = []
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            # Clear any existing manual bye envelope (HPB/FPB/ZPB) for
-            # this team — pairing supersedes it.
-            existing_byes = [
-                stb
-                for stb in round_list
-                if stb.team_a_id == team_id
-                and stb.team_b_id is None
-                and stb.bye_type in manual_bye_types
-            ]
-            for bye_stb in existing_byes:
-                if bye_stb.id is not None:
-                    database.delete_stored_team_board(bye_stb.id)
-                round_list.remove(bye_stb)
-            if completing_pair:
-                assert pab_stb is not None
-                # Drop the PAB-side individual boards; new ones with
-                # both lineups will be built below.
-                boards_to_delete.extend(
-                    board.identifier
-                    for board in list(self.boards_by_id.values())
-                    if board.stored_board.team_board_id == pab_stb.id
-                )
-                for board_id in boards_to_delete:
-                    deleted_board = self.boards_by_id.get(board_id)
-                    if deleted_board is None:
-                        continue
-                    for tp in (
-                        deleted_board.optional_white_tournament_player,
-                        deleted_board.black_tournament_player,
-                    ):
-                        if tp is not None:
-                            tp.delete_pairing(round_, database)
-                            tp.reset_board()
-                    database.delete_stored_board(board_id)
-                    del self.boards_by_id[board_id]
-                pab_stb.team_b_id = team_id
-                pab_stb.bye_type = None
-                database.update_stored_team_board(pab_stb)
-                stored_boards = engine._team_match_stored_boards(self, pab_stb)
-            else:
-                # Reuse the first free table number — like individual manual
-                # pairing, a hole left by an unpaired match is filled rather
-                # than always appending at the end (hidden byes hold NULL).
-                used_indexes = {
-                    stb.index for stb in round_list if stb.index is not None
-                }
-                next_index = 0
-                while next_index in used_indexes:
-                    next_index += 1
-                new_stb = StoredTeamBoard(
-                    id=None,
-                    tournament_id=self.id,
-                    round_=round_,
-                    team_a_id=team_id,
-                    team_b_id=None,
-                    index=next_index,
-                    bye_type=None,
-                )
-                new_stb.id = database.add_stored_team_board(new_stb)
-                round_list.append(new_stb)
-                stored_boards = engine._team_match_stored_boards(self, new_stb)
-        self.clear_team_cache()
-        self.create_boards(stored_boards, round_, Result.PAIRING_ALLOCATED_BYE)
-        # Whichever of the two branches above ran assigned the one read here.
-        target_stb = pab_stb if completing_pair else new_stb
-        assert target_stb is not None
-        assert target_stb.id is not None
-        return self.team_boards_by_id[target_stb.id]
-
-    def unpair_team_board(self, team_board: TeamBoard) -> None:
-        """Unpair a single team match. Deletes the team_board envelope
-        and every individual board under it, but leaves the rest of
-        the round (other team_boards, manual byes) intact."""
-        round_ = team_board.round
-        stb_id = team_board.stored_team_board.id
-        assert stb_id is not None
-        boards_to_delete = [
-            board
-            for board in self.boards_by_id.values()
-            if board.stored_board.team_board_id == stb_id
-        ]
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            for board in boards_to_delete:
-                white_tp = board.optional_white_tournament_player
-                if white_tp is not None:
-                    white_tp.delete_pairing(round_, database)
-                    white_tp.reset_board()
-                if board.black_tournament_player:
-                    board.black_tournament_player.delete_pairing(round_, database)
-                    board.black_tournament_player.reset_board()
-                database.delete_stored_board(board.identifier)
-                if board.identifier in self.boards_by_id:
-                    del self.boards_by_id[board.identifier]
-            database.delete_stored_team_board(stb_id)
-            for team_id in (
-                team_board.stored_team_board.team_a_id,
-                team_board.stored_team_board.team_b_id,
-            ):
-                if team_id is not None:
-                    self.point_adjustments.set_manual(
-                        team_id, round_, 0.0, 0.0, None, database
-                    )
-            round_list = self.stored_tournament.stored_team_boards_by_round.get(
-                round_, []
-            )
-            self.stored_tournament.stored_team_boards_by_round[round_] = [
-                stb for stb in round_list if stb.id != stb_id
-            ]
-        self.clear_team_cache()
-
-    def unpair_boards(self, boards: list[Board]) -> None:
-        rounds: set[int] = set()
-        with EventDatabase(self.event.uniq_id, True) as database:
-            for board in boards:
-                rounds.add(board.round)
-                white_tp = board.optional_white_tournament_player
-                if white_tp is not None:
-                    white_tp.delete_pairing(board.round, database)
-                    white_tp.reset_board()
-                    self.point_adjustments.set_manual_for_player(
-                        white_tp.id, board.round, 0.0, None, database
-                    )
-                if board.black_tournament_player:
-                    board.black_tournament_player.delete_pairing(board.round, database)
-                    board.black_tournament_player.reset_board()
-                    self.point_adjustments.set_manual_for_player(
-                        board.black_tournament_player.id,
-                        board.round,
-                        0.0,
-                        None,
-                        database,
-                    )
-                database.delete_stored_board(board.identifier)
-                if board.identifier in self.boards_by_id:
-                    del self.boards_by_id[board.identifier]
-            for round_ in rounds:
-                if pab_board := self.get_round_pab_board(round_):
-                    pab_board.index = self.get_pab_board_index(round_)
-                    database.update_stored_board(pab_board.stored_board)
-            if self.event.is_team_event:
-                manual_bye_types = TeamByeType.manual_bye_types()
-                for round_ in rounds:
-                    round_list = self.stored_tournament.stored_team_boards_by_round.get(
-                        round_, []
-                    )
-                    kept: list[StoredTeamBoard] = []
-                    for stb in round_list:
-                        is_manual_bye = (
-                            stb.team_b_id is None and stb.bye_type in manual_bye_types
-                        )
-                        if is_manual_bye:
-                            kept.append(stb)
-                        elif stb.id is not None:
-                            database.delete_stored_team_board(stb.id)
-                            # The match is gone, so its manual bonus /
-                            # penalty goes with it.
-                            for team_id in (stb.team_a_id, stb.team_b_id):
-                                if team_id is not None:
-                                    self.point_adjustments.set_manual(
-                                        team_id, round_, 0.0, 0.0, None, database
-                                    )
-                    if kept:
-                        self.stored_tournament.stored_team_boards_by_round[round_] = (
-                            kept
-                        )
-                    else:
-                        self.stored_tournament.stored_team_boards_by_round.pop(
-                            round_, None
-                        )
-        if self.event.is_team_event:
-            self.clear_team_cache()
-
-    def create_boards(
-        self, stored_boards: list[StoredBoard], round_: int, pab_result: Result
-    ) -> None:
-        with EventDatabase(self.event.uniq_id, True) as database:
-            if pab_board := self.get_round_pab_board(round_):
-                pab_board.index = self.get_pab_board_index(
-                    round_, [board.index for board in stored_boards]
-                )
-                database.update_stored_board(pab_board.stored_board)
-            for stored_board in stored_boards:
-                board = Board(self, round_, stored_board)
-                if stored_board.fixed_number is None:
-                    # Freeze the fixed table number now so a later edit to a
-                    # player's fixed table can't renumber this round.
-                    set_stored_fields(
-                        stored_board, fixed_number=board.live_fixed_number or 0
-                    )
-                id_ = database.add_stored_board(stored_board)
-                set_stored_fields(stored_board, id=id_)
-                self.boards_by_id[id_] = board
-                white_pairing = board.optional_white_pairing
-                black_pairing = board.optional_black_pairing
-                # Reset every pairing this loop touches so any stale
-                # result from a prior round-pairing (e.g. ZPB on a
-                # player who was absent before being paired in) doesn't
-                # leak through. The hole / PAB branches below override
-                # this explicitly.
-                for p in (white_pairing, black_pairing):
-                    if p is None:
-                        continue
-                    p.stored_pairing.board_id = id_
-                    p.stored_pairing.result = Result.NO_RESULT.value
-                    p.stored_pairing.effective_points = None
-                    p.stored_pairing.illegal_moves = 0
-                present_pairing = white_pairing or black_pairing
-                if present_pairing is not None and not (
-                    white_pairing is not None and black_pairing is not None
-                ):
-                    parent_team_board_id = stored_board.team_board_id
-                    parent_team_board = (
-                        self.team_boards_by_id.get(parent_team_board_id)
-                        if parent_team_board_id is not None
-                        else None
-                    )
-                    if (
-                        parent_team_board is not None
-                        and parent_team_board.stored_team_board.team_b_id is not None
-                    ):
-                        # Real team match, hole on the opposing side ⇒
-                        # forfeit win for the present player.
-                        present_pairing.stored_pairing.result = Result.FORFEIT_WIN.value
-                    else:
-                        # PAB envelope (or individual-mode bye) ⇒ PAB.
-                        present_pairing.stored_pairing.result = pab_result.value
-                if white_pairing is not None:
-                    white_pairing.update(database)
-                if black_pairing is not None:
-                    black_pairing.update(database)
 
     def toggle_check_in_open(self) -> None:
         check_in_open = not self.check_in_open
