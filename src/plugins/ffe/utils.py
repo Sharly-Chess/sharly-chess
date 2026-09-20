@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
 from functools import partial
-from typing import Self, Any
+from typing import Self, Any, TYPE_CHECKING
 
 from common.i18n import _, pgettext
 from data.account import Account
@@ -35,6 +35,9 @@ from plugins.ffe.ffe_upload_status import (
 from plugins.utils import PluginUtils, PluginData, AccountPluginData
 from utils.date_time import format_datetime
 from utils.entity import EntityManager
+
+if TYPE_CHECKING:
+    from data.pairings.systems import PairingSystem
 from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
 
@@ -69,19 +72,29 @@ FFE_LEAGUES: dict[str, str] = {
 
 class FFEUtils:
     @staticmethod
-    def supports_ffe_transfer(tournament: Tournament) -> bool:
+    def system_supports_ffe_transfer(
+        event: Event, pairing_system: 'PairingSystem'
+    ) -> bool:
         """Whether the FFE-site transfer (Papi upload and its fields) is
-        offered for this tournament. The transfer is Papi-based, so it
-        needs a game-point score; every such individual tournament
-        qualifies; among the team systems only the Scheveningen, which is
-        uploaded as an individual Swiss."""
+        offered for a tournament of ``event`` paired with this system. The
+        transfer is Papi-based, so it needs a game-point score; every such
+        individual tournament qualifies; among the team systems only the
+        Scheveningen, which is uploaded as an individual Swiss."""
         from data.pairings.scheveningen import ScheveningenPairingSystem
 
-        if not tournament.pairing_system.uses_result_points:
+        if not pairing_system.uses_result_points:
             return False
-        if not tournament.event.is_team_event:
+        if not event.is_team_event:
             return True
-        return isinstance(tournament.pairing_system, ScheveningenPairingSystem)
+        return isinstance(pairing_system, ScheveningenPairingSystem)
+
+    @staticmethod
+    def supports_ffe_transfer(tournament: Tournament) -> bool:
+        """Whether the FFE-site transfer is offered for this tournament —
+        see :meth:`system_supports_ffe_transfer`."""
+        return FFEUtils.system_supports_ffe_transfer(
+            tournament.event, tournament.pairing_system
+        )
 
     @staticmethod
     def event_supports_ffe_transfer(event: Event) -> bool:

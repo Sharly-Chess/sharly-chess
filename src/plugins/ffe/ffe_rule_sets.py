@@ -22,16 +22,20 @@ from typing import override, TYPE_CHECKING, cast
 
 from common.i18n import _, ngettext
 from data.pairings.fixed_table import FixedPairingTable, TablePairing as P
+from data.criteria.tournament_criteria import RatingTournamentCriterion
 from data.rule_sets import RuleSet
 from data.rule_sets.rule_sets import PointAdjustment, RuleSetField
+from plugins.ffe.ffe_entity import FfeLicenceTournamentCriterion
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.enum import (
+    BoardColor,
     EventType,
     PlayerGender,
     Result,
     ScoreType,
     TeamColourType,
     TeamSortMode,
+    TournamentRating,
 )
 
 if TYPE_CHECKING:
@@ -125,6 +129,11 @@ _FFE_PLAYED_RESULTS = frozenset(
 _FFE_FORFEIT_LOSS_RESULTS = frozenset({Result.FORFEIT_LOSS, Result.DOUBLE_FORFEIT})
 
 
+# The first-named team plays white on the odd boards.
+_FFE_COLOUR_PATTERN = ''.join(
+    (BoardColor.WHITE, BoardColor.BLACK, BoardColor.WHITE, BoardColor.BLACK)
+)
+
 # 3 teams / 4 players — cup-specific Molter table used by both the
 # Loubatière and Parité 3-team / 3-round phases. Not part of the
 # standard FFE Molter registry (whose 3T×4P slot is a truncation of
@@ -206,11 +215,15 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     @override
     def managed_fields(self) -> set[str]:
         return {
+            FfeLicenceTournamentCriterion().form_key,
             'rounds',
+            'rating',
             'team_player_count',
             'roster_max_size',
             'primary_score',
+            'secondary_score_for_colours',
             'team_colour_type',
+            'color_pattern',
             'enforce_roster_order',
             'mp_win',
             'mp_draw',
@@ -230,9 +243,15 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         stored_tournament: 'StoredTournament',
         pairing_system_id: str | None = None,
     ) -> None:
+        stored_tournament.criteria[FfeLicenceTournamentCriterion.static_id()] = (
+            PlayerFFELicence.A.value
+        )
+        stored_tournament.rating = TournamentRating.STANDARD.value
         stored_tournament.team_player_count = 4
         stored_tournament.roster_max_size = self.roster_max_size
         stored_tournament.team_colour_type = TeamColourType.A.value
+        stored_tournament.color_pattern = _FFE_COLOUR_PATTERN
+        stored_tournament.secondary_score_for_colours = True
         stored_tournament.enforce_roster_order = True
         stored_tournament.match_points = dict(_FFE_MATCH_POINTS)
         stored_tournament.primary_score = self._primary_score_for(pairing_system_id)
@@ -313,6 +332,16 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
 
     # Subclass attribute: per-player rating ceiling. None = skip.
     PLAYER_RATING_CAP: int | None = None
+
+    @override
+    def form_prefills(self) -> dict[str, str]:
+        # The rating ceiling is suggested only, as later phases readmit
+        # players over it.
+        if self.PLAYER_RATING_CAP is None:
+            return {}
+        return {
+            RatingTournamentCriterion().form_key + '_max': str(self.PLAYER_RATING_CAP)
+        }
 
     @override
     def roster_warnings(self, team: 'Team') -> list[str]:
@@ -515,12 +544,16 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     ) -> dict[str, str]:
         gp = self._game_points_for(pairing_system_id)
         defaults: dict[str, str] = {
+            FfeLicenceTournamentCriterion().form_key: PlayerFFELicence.A.value,
+            'rating': str(TournamentRating.STANDARD.value),
             'team_player_count': '4',
             'roster_max_size': str(self.roster_max_size)
             if self.roster_max_size
             else '',
             'primary_score': self._primary_score_for(pairing_system_id),
             'team_colour_type': TeamColourType.A.value,
+            'color_pattern': _FFE_COLOUR_PATTERN,
+            'secondary_score_for_colours': 'on',
             'enforce_roster_order': 'on',
             'mp_win': _fmt(_FFE_MATCH_POINTS[Result.WIN.value]),
             'mp_draw': _fmt(_FFE_MATCH_POINTS[Result.DRAW.value]),

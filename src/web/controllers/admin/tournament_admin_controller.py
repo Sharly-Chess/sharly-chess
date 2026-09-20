@@ -550,6 +550,7 @@ class TournamentAdminController(BaseEventAdminController):
         # …and, one level up, by the values of the rule set's own fields
         # that declare ``affects_defaults`` ('' = the rule set has none).
         rule_set_defaults: dict[str, dict[str, dict[str, dict[str, str]]]] = {}
+        rule_set_prefills: dict[str, dict[str, str]] = {}
         rule_set_lock_titles: dict[str, str] = {}
         # Serialisable description of each rule set's own fields, shared
         # by the rendering loop and the modal JS.
@@ -588,6 +589,7 @@ class TournamentAdminController(BaseEventAdminController):
                         )
                 defaults_by_config[rule_set_config_key(config)] = defaults_by_pairing
             rule_set_defaults[rs.id] = defaults_by_config
+            rule_set_prefills[rs.id] = dict(rs.form_prefills())
             rule_set_lock_titles[rs.id] = _('Set by rule set "{name}".').format(
                 name=rs.name
             )
@@ -600,6 +602,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'rule_set_options': rule_set_options,
                 'rule_set_managed_fields': rule_set_managed_fields,
                 'rule_set_defaults': rule_set_defaults,
+                'rule_set_prefills': rule_set_prefills,
                 'rule_set_lock_titles': rule_set_lock_titles,
                 'rule_set_config_fields': rule_set_config_fields,
                 'plugin_form_fields_templates': plugin_form_fields_templates,

@@ -431,7 +431,7 @@
                             ) }}
                         </div>
                                                 <div id="team-colour-pattern-cell" class="col-12 col-md-6">
-                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <div id="color-pattern-input-container" class="d-flex align-items-center gap-2 flex-wrap">
                                 <label class="form-label mb-0">
                                     {{ _('Colour pattern:') }}
                                     <i
@@ -452,7 +452,7 @@
                             <input
                                 type="hidden"
                                 name="color_pattern"
-                                id="color-pattern-value"
+                                id="color-pattern"
                                 value="{{ data['color_pattern'] or '' }}"
                             >
                             {% if errors.get('color_pattern') %}
@@ -465,7 +465,7 @@
                                     const WHITE = '{{ BoardColor.WHITE.value }}';
                                     const BLACK = '{{ BoardColor.BLACK.value }}';
                                     const $countInput = $('#team-player-count');
-                                    const $hidden = $('#color-pattern-value');
+                                    const $hidden = $('#color-pattern');
                                     const $container = $('#color-pattern-swatches');
 
                                     function currentPattern() {
@@ -489,10 +489,12 @@
                                             $hidden.val('');
                                             return;
                                         }
+                                        const allLocked = $hidden.prop('disabled');
                                         let next = '';
                                         for (let i = 0; i < count; i++) {
-                                            const locked = i === 0;
-                                            const ch = locked
+                                            const firstBoard = i === 0;
+                                            const locked = allLocked || firstBoard;
+                                            const ch = firstBoard
                                                 ? WHITE
                                                 : ((stored[i] === WHITE || stored[i] === BLACK)
                                                     ? stored[i] : defaultChar(i));
@@ -514,7 +516,7 @@
                                                     fontSize: '0.8rem',
                                                 },
                                                 text: String(i + 1),
-                                                title: locked
+                                                title: locked && !allLocked
                                                     ? '{{ _("First board is always White for team 1.") }}'
                                                     : '',
                                             });
@@ -543,6 +545,7 @@
                                     });
 
                                     $countInput.on('change input', render);
+                                    $hidden.on('change', render);
                                     render();
                                 })();
                             </script>
@@ -638,19 +641,13 @@
                                 'MATCH_POINTS': {{ _('Use game points for colour allocation')|tojson }},
                                 'GAME_POINTS': {{ _('Use match points for colour allocation')|tojson }},
                             };
-                            const secondaryInput =
-                                $('#secondary-score-for-colours').get(0);
+                            const $secondaryPlaceholder = $secondary
+                                .find('.switch-placeholder');
                             function syncSecondaryLabel() {
-                                if (!secondaryInput) return;
                                 const label =
                                     SECONDARY_LABELS[$('#primary-score').val()];
                                 if (!label) return;
-                                // The macro renders the placeholder as a bare
-                                // text node right after the input.
-                                const node = secondaryInput.nextSibling;
-                                if (node && node.nodeType === 3) {
-                                    node.nodeValue = ' ' + label;
-                                }
+                                $secondaryPlaceholder.text(label);
                             }
                             $('#pairing-system').on('change', sync);
                             $('#primary-score').on('change', syncSecondaryLabel);
@@ -961,6 +958,10 @@
                             // values of the rule set's own fields (see
                             // configKey), '' when it declares none.
                             const RULE_SET_DEFAULTS = {{ rule_set_defaults|tojson }};
+                            // Suggested values for fields the rule set
+                            // leaves editable, written once when it is
+                            // picked.
+                            const RULE_SET_PREFILLS = {{ rule_set_prefills|tojson }};
                             const RULE_SET_LOCK_TITLES = {{ rule_set_lock_titles|tojson }};
                             const RULE_SET_CONFIG_FIELDS = {{ rule_set_config_fields|tojson }};
                             const $ruleSet = $('#rule-set');
@@ -1018,6 +1019,11 @@
                                     if ($input.is('select')) {
                                         $input.trigger('change.select2');
                                     }
+                                    // A hidden input drives its own widget,
+                                    // which redraws on change.
+                                    if ($input.is('[type="hidden"]')) {
+                                        $input.trigger('change');
+                                    }
                                 });
                                 $('[data-rule-set-tooltip]').each(function() {
                                     disposeTooltip(this);
@@ -1030,45 +1036,43 @@
                                 });
                             }
 
+                            function lockField(name, defaults, title) {
+                                const fid = inputId(name);
+                                const $input = $('#' + fid);
+                                if ($input.length === 0) return;
+                                // Disabled first, so the change handlers
+                                // below already see the field as locked.
+                                $input.prop('disabled', true)
+                                      .attr('data-rule-set-locked', '1');
+                                if (Object.prototype.hasOwnProperty.call(defaults, name)) {
+                                    setValue($input, defaults[name]);
+                                }
+                                // Disabled inputs swallow hover events so
+                                // the tooltip has to live on the input
+                                // wrapper (matches the macro's existing
+                                // info-icon pattern).
+                                const $tip = $('#' + fid + '-input-container');
+                                if ($tip.length === 0) return;
+                                $tip.attr({
+                                    'data-bs-toggle': 'tooltip',
+                                    'data-bs-placement': 'top',
+                                    'data-bs-html': 'true',
+                                    'data-bs-custom-class': 'sharly-chess-tooltip-info',
+                                    'data-bs-title':
+                                        "<i class='bi-info-circle-fill'></i> " + title,
+                                    'data-rule-set-tooltip': '1',
+                                });
+                                const el = $tip.get(0);
+                                disposeTooltip(el);
+                                new bootstrap.Tooltip(el);
+                            }
+
                             function lockForRuleSet(id) {
                                 const fields = RULE_SET_MANAGED[id] || [];
                                 const defaults = currentDefaults(id);
                                 const title = RULE_SET_LOCK_TITLES[id] || '';
                                 fields.forEach(function(name) {
-                                    const fid = inputId(name);
-                                    const $input = $('#' + fid);
-                                    if ($input.length === 0) return;
-                                    if (Object.prototype.hasOwnProperty.call(defaults, name)) {
-                                        if ($input.is(':checkbox')) {
-                                            $input.prop('checked', defaults[name] === 'on');
-                                        } else {
-                                            $input.val(defaults[name]);
-                                        }
-                                        if ($input.is('select')) {
-                                            $input.trigger('change.select2');
-                                        }
-                                        $input.trigger('change');
-                                    }
-                                    $input.prop('disabled', true)
-                                          .attr('data-rule-set-locked', '1');
-                                    // Disabled inputs swallow hover events so
-                                    // the tooltip has to live on the input
-                                    // wrapper (matches the macro's existing
-                                    // info-icon pattern).
-                                    const $tip = $('#' + fid + '-input-container');
-                                    if ($tip.length === 0) return;
-                                    $tip.attr({
-                                        'data-bs-toggle': 'tooltip',
-                                        'data-bs-placement': 'top',
-                                        'data-bs-html': 'true',
-                                        'data-bs-custom-class': 'sharly-chess-tooltip-info',
-                                        'data-bs-title':
-                                            "<i class='bi-info-circle-fill'></i> " + title,
-                                        'data-rule-set-tooltip': '1',
-                                    });
-                                    const el = $tip.get(0);
-                                    disposeTooltip(el);
-                                    new bootstrap.Tooltip(el);
+                                    lockField(name, defaults, title);
                                 });
                             }
 
@@ -1094,7 +1098,39 @@
                                 if (id) lockForRuleSet(id);
                             }
 
-                            $ruleSet.on('change', refresh);
+                            function setValue($input, value) {
+                                if ($input.is(':checkbox')) {
+                                    $input.prop('checked', value === 'on');
+                                } else {
+                                    $input.val(value);
+                                }
+                                if ($input.is('select')) {
+                                    $input.trigger('change.select2');
+                                }
+                                $input.trigger('change');
+                            }
+
+                            function prefillForRuleSet(id) {
+                                const prefills = RULE_SET_PREFILLS[id] || {};
+                                Object.keys(prefills).forEach(function(name) {
+                                    const $input = $('#' + inputId(name));
+                                    if ($input.length === 0) return;
+                                    setValue($input, prefills[name]);
+                                });
+                            }
+
+                            // The modal's init re-triggers the rule-set
+                            // change (see triggerModalInitEvent), which
+                            // must not overwrite a stored tournament's
+                            // values: only a pick made once the modal has
+                            // settled prefills.
+                            let ready = false;
+                            setTimeout(() => { ready = true; }, 250);
+                            $ruleSet.on('change', function() {
+                                refresh();
+                                const id = $ruleSet.val();
+                                if (ready && id) prefillForRuleSet(id);
+                            });
                             // A rule set's own fields can drive its defaults
                             // (a phase setting the round count, say).
                             $('[data-rule-set-config]').on('change', 'input, select', refresh);
@@ -1103,6 +1139,15 @@
                             // per system or variation), so re-apply on both.
                             $pairingSystem.on('change', refresh);
                             $('[name$="_pairing_variation"]').on('change', refresh);
+                            // Those same changes re-render the rounds field
+                            // from the server, which brings back an unlocked
+                            // input: lock the new one again once it lands.
+                            $('#modal-form').on('htmx:afterSwap', function(evt) {
+                                if (evt.target.id !== 'rounds-field') return;
+                                const id = $ruleSet.val();
+                                if (!id || !(RULE_SET_MANAGED[id] || []).includes('rounds')) return;
+                                lockField('rounds', currentDefaults(id), RULE_SET_LOCK_TITLES[id] || '');
+                            });
                             // Disabled inputs are skipped by HTMX during
                             // form serialisation — re-inject their values
                             // into the request parameters at submit time.

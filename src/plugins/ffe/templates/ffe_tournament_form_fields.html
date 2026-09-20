@@ -1,9 +1,3 @@
-<div id="ffe-connection-section" class="mt-4">
-    <h4>
-        {{ _('Connection French Chess Federation') }}
-    </h4>
-    {% include 'ffe_tournament_ffe_auth_fields.html' %}
-</div>
 <input id="player-rating-type-hidden" type="hidden" name="player_rating_type" value="3">
 <script>
     $(document).ready(function() {
@@ -16,25 +10,24 @@
             placement: 'top',
         });
     });
-
+</script>
+<div id="ffe-connection-section" class="mt-4">
+    <h4>
+        {{ _('Connection French Chess Federation') }}
+    </h4>
+    {% include 'ffe_tournament_ffe_auth_fields.html' %}
+</div>
+<script>
     (function () {
-        // The FFE transfer is Papi-based (a count of game points), so it
-        // does not apply to a system whose score is computed some other
-        // way (a Keizer). Hide the connection fields for those systems.
-        {% if pairing_systems is defined %}
-            const NO_FFE_TRANSFER = {{
-                pairing_systems
-                | rejectattr('uses_result_points')
-                | map(attribute='id')
-                | list
-                | tojson
-            }};
-            function syncFfeConnection() {
-                const id = $('#pairing-system').val() || '';
-                $('#ffe-connection-section').toggle(!NO_FFE_TRANSFER.includes(id));
-            }
-            $('#pairing-system').on('change', syncFfeConnection);
-            syncFfeConnection();
-        {% endif %}
+        // The FFE transfer is offered for some systems only (a game-point
+        // score, and a Scheveningen among the team systems): the
+        // connection fields follow the system chosen in the form.
+        const FFE_TRANSFER = {{ ffe_transfer_system_ids|tojson }};
+        function syncFfeConnection() {
+            const id = $('#pairing-system').val() || '';
+            $('#ffe-connection-section').toggle(FFE_TRANSFER.includes(id));
+        }
+        $('#pairing-system').on('change', syncFfeConnection);
+        syncFfeConnection();
     })();
 </script>
