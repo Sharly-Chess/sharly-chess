@@ -23,7 +23,7 @@
                     {{ tournament.rating.print_view_header }}
                 </th>
                 <th class="perf">
-                    {{ pgettext('performance indicator column header', 'Score') }}</th>
+                    {{ pgettext('performance indicator column header', 'Score') }}
                 </th>
             </tr>
         </thead>
@@ -41,7 +41,7 @@
                         <td class="title">{{ opponent.display_title }}</td>
                         <td class="name">{{ opponent.full_name }}</td>
                         <td class="rating">{{ opponent.rating_str }}</td>
-                        <td class="perf">{{"%+.2f" % score }}</td>
+                        <td class="perf">{{ "%+.2f" % score }}</td>
                     </tr>
                 {% endwith %}
             {% endfor %}

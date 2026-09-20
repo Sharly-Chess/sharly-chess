@@ -255,19 +255,19 @@
         {% for norm_title, norm in norms.items() %}
             {% if loop.first %}
                 <div class="info" id="norm-{{ norm_title.name }}">
-                    {{_('Scroll down to review all the norms…')}}
+                    {{ _('Scroll down to review all the norms…') }}
                     <br />
-                    {{_('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.')}}
+                    {{ _('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.') }}
                     <br />
-                    {{_('All values may be modified by the arbiter if necessary.')}}
+                    {{ _('All values may be modified by the arbiter if necessary.') }}
                     <br />
-                    {{_('Note: norms are computed based only on <em>completed</em> games.')}}
+                    {{ _('Note: norms are computed based only on <em>completed</em> games.') }}
                 </div>
             {% else %}
                 <div class="spacer"></div>
             {% endif %}
             <div class="heading" {% if not loop.first %}id="norm-{{ norm_title.name }}{% endif %}">
-                {{norm_title.name}}
+                {{ norm_title.name }}
             </div>
             {# Non-print deep-link to the separate Norm Calculation Details
                document. That doc is hidden from the picker
@@ -542,7 +542,7 @@
                                 </div>
                             </td>
                             <td><input class="center" size="5" value="{{ opp.rating }}"  /></td>
-                            <td><input class="center" size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
+                            <td><input class="center" size="5" value="{{ adjusted_opp_rating if opp is not none }}" /></td>
                             <td><input class="center" size="4" value="{% if opp is not none %}{{ opp.strongest_title.value if opp.strongest_title in [
                                 PlayerTitle.GRANDMASTER,
                                 PlayerTitle.INTERNATIONAL_MASTER,
@@ -585,7 +585,7 @@
                         <div class="item" style="margin-top: var(--row-gap);">
                             <label>Exceeding norm by:</label>
                             <input value="{{ norm.performance_diff if norm.performance_diff is not none and norm.performance_diff >= 0 }}" />
-                            <label>points<label>
+                            <label>points</label>
                         </div>
 
                         <div class="item" style="margin-top: var(--row-gap);">

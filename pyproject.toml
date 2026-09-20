@@ -61,6 +61,7 @@ dependencies = [
 
 [project.optional-dependencies]
 lint = [
+  "djlint ~= 1.46.2",
   "mypy >= 2.3.0",
   "pipdeptree",
   "pre-commit",
@@ -182,6 +183,25 @@ ignore = [
 # loop is called in the same iteration, which `B023` cannot tell apart from a
 # closure that outlives it.
 "docs/technical-appendices/molter/*" = ["B023"]
+
+[tool.djlint]
+profile = "jinja"
+extension = "html"
+# Templates live beside the code that renders them, in the core and in
+# each plugin, so the tree to lint is `src`.
+#
+# Ignored:
+# - H021, inline styles: print layouts and htmx fragments size themselves
+#   in place, and a stylesheet rule per one-off measure would say less.
+# - T002, quotes inside a tag: the templates use single quotes, as the
+#   Python around them does.
+# - H043, `<button>` without a type: left for a pass of its own.
+# - H036 and H020, `<br>` for spacing and an empty tag pair: a dot drawn
+#   by CSS, a blank cell in a printed grid.
+# - H005, H007, H016, H030, H031, the document-level rules (`lang`,
+#   doctype, title, meta description): most templates are fragments
+#   swapped into a page, and the print documents have no description.
+ignore = "H021,T002,H043,H036,H020,H005,H007,H016,H030,H031"
 
 [tool.coverage.run]
 source = ["src"]

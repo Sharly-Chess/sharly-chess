@@ -57,14 +57,14 @@
                     <option
                         value="{{ round }}"
                         data-label="{{ round_label | raise_ordinal_suffix }}"
-                        {% if round == admin_round %}selected{%endif %}
+                        {% if round == admin_round %}selected{% endif %}
                     >
                         {{ round_label }}
                     </option>
                 {% endfor %}
             {% endwith %}
             {% if admin_tournament.finished %}
-                <option value="{{ admin_tournament.rounds + 1 }}" {% if display_rankings %}selected{%endif %}>
+                <option value="{{ admin_tournament.rounds + 1 }}" {% if display_rankings %}selected{% endif %}>
                     {{ _('Ranking') }}
                 </option>
             {% endif %}
@@ -183,7 +183,7 @@
             hx-on::after-request="window.scrollTo(0, 0)"
         >
             {% for value, text in tournament_options.items() %}
-                <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
+                <option value="{{ value }}" {% if value == admin_tournament_id %}selected{% endif %}>
                     {{ text }}
                 </option>
             {% endfor %}

@@ -4,7 +4,6 @@
     {% include 'prizes.css' %}
 {% endblock %}
 
-
 {% block content %}
     {% for tournament in tournaments %}
         {% if not loop.first %}
@@ -40,22 +39,22 @@
                             <div class="header">{{ _('Signature') }}</div>
                             {% for prize_assigned_to_player in prizes_assigned_to_players %}
                                 {% set classes = 'first-row' if loop.first else '' %}
-                                <div class="cell number {{classes}}">
+                                <div class="cell number {{ classes }}">
                                     <span class="fw-bold text-start text-nowrap">
                                         {{ ordinal_integer(loop.index)|safe }}
                                     </span>
                                 </div>
-                                <div class="cell player {{classes}}">
+                                <div class="cell player {{ classes }}">
                                     <span class="fw-bold text-start text-nowrap">
                                         {{ prize_assigned_to_player.assigned_to.full_name }}
                                     </span>
                                 </div>
-                                <div class="cell value {{classes}}">
+                                <div class="cell value {{ classes }}">
                                     <span class="fw-bold text-start text-nowrap">
                                         {{ prize_assigned_to_player.name }}
                                     </span>
                                 </div>
-                                <div class="cell payment {{classes}}">
+                                <div class="cell payment {{ classes }}">
                                     <span class="text-start text-nowrap">
                                         {% if prize_assigned_to_player.prize.is_monetary %}
                                             {{ _('Proxy (if any):') }}<br/>
@@ -68,7 +67,7 @@
                                         {% endif %}
                                     </span>
                                 </div>
-                                <div class="cell signature {{classes}}">
+                                <div class="cell signature {{ classes }}">
                                     <span></span>
                                 </div>
                             {% endfor %}

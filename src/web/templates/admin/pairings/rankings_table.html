@@ -64,7 +64,7 @@
         {% set row_class='even' if loop.index is even else 'odd' %}
 
         {% if ns.current_key != group_key %}
-            {% if not loop.first %}</tbody>{% endif %}
+            {# djlint:off H025 #}{% if not loop.first %}</tbody>{% endif %}{# djlint:on #}
             {% set ns.current_key = group_key %}
             <tbody class="sortable with-handles">
         {% endif %}

@@ -1,4 +1,4 @@
-<span {{ macros.tooltip_attributes('info', _('Screen settings'), 'bottom') }}
+<span {{ macros.tooltip_attributes('info', _('Screen settings'), 'bottom') }}>
     <button
         class="btn btn-outline-primary text-nowrap"
         hx-get="{{ url_for(
@@ -10,7 +10,6 @@
         data-bs-target="#modal-wrapper"
         hx-target="body"
         hx-indicator="#please-wait"
-
     >
         <i class="bi-gear-fill"></i>
     </button>

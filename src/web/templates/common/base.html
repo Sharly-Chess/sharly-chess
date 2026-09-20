@@ -10,9 +10,9 @@
             <link href="{{ url_for('static', file_path='/lib/bootstrap/bootstrap-' ~ sharly_chess_config.bootstrap_version ~ '-dist/css/bootstrap.min.css') }}" rel="stylesheet">
             {# https://github.com/twbs/icons/releases #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap-icons/bootstrap-icons-' ~ sharly_chess_config.bootstrap_icons_version ~ '/font/bootstrap-icons.min.css') }}">
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/base.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/user.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/admin.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/base.css') }}?version={{ sharly_chess_config.version }}" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/user.css') }}?version={{ sharly_chess_config.version }}" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/css/admin.css') }}?version={{ sharly_chess_config.version }}" />
             {# https://jquery.com/download/ #}
             <script src="{{ url_for('static', file_path='/lib/jquery/jquery-' ~ sharly_chess_config.jquery_version ~ '.min.js') }}"></script>
             {# https://unpkg.com/browse/htmx.org@<htmx_version>/dist/ #}
@@ -29,15 +29,15 @@
             <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}?version={{ sharly_chess_config.version }}"></script>
             <script src="{{ url_for('static', file_path='/lib/polyglot/polyglot.js') }}?version={{ sharly_chess_config.version }}"></script>
             {# https://github.com/apalfrey/select2-bootstrap-5-theme #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/select2-' ~ sharly_chess_config.select2_version ~ '/dist/css/select2.min.css') }}" type="text/css" />
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/dark-bootstrap-5.css') }}?version={{ sharly_chess_config.version }}" type="text/css" />
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/bootstrap-5-' ~ sharly_chess_config.select2_bootstrap_theme_version ~ '.min.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/select2-' ~ sharly_chess_config.select2_version ~ '/dist/css/select2.min.css') }}" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/dark-bootstrap-5.css') }}?version={{ sharly_chess_config.version }}" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/select2/themes/bootstrap-5-' ~ sharly_chess_config.select2_bootstrap_theme_version ~ '.min.css') }}" />
             <script src="{{ url_for('static', file_path='/lib/select2/select2-' ~ sharly_chess_config.select2_version ~ '/dist/js/select2.full.min.js') }}"></script>
             {# https://air-datepicker.com #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/air-datepicker/air-datepicker-' ~ sharly_chess_config.air_datepicker_version ~ '/dist/air-datepicker.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/air-datepicker/air-datepicker-' ~ sharly_chess_config.air_datepicker_version ~ '/dist/air-datepicker.css') }}" />
             <script src="{{ url_for('static', file_path='/lib/air-datepicker/air-datepicker-' ~ sharly_chess_config.air_datepicker_version ~ '/dist/air-datepicker.js') }}"></script>
             {# https://github.com/palcarazm/bootstrap5-toggle #}
-            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/css/bootstrap5-toggle.min.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/css/bootstrap5-toggle.min.css') }}" />
             <script src="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/js/bootstrap5-toggle.jquery.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/progressbar.js/progressbar.js-' ~ sharly_chess_config.progressbar_js_version ~ '/dist/progressbar.min.js') }}"></script>
             <script>window.SC_I18N = { selectPlayer: "{{ _('Select player') }}" };</script>
@@ -216,9 +216,13 @@
             }
         </script>
     {% endif %}
+    {# The same id as the container above, on purpose: this one is the
+       out-of-band swap that appends to it. #}
+    {# djlint:off H053 #}
     {% if messages %}
         <div id="messages" hx-swap-oob="beforeend">
             {% include '/common/messages.html' %}
         </div>
     {% endif %}
+    {# djlint:on #}
 </html>

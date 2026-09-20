@@ -7099,6 +7099,9 @@ msgstr "Présent·e"
 msgid "Present and to pair"
 msgstr "Présent·e et à apparier"
 
+msgid "Preview"
+msgstr "Aperçu"
+
 msgid "Preview the card with different sample data."
 msgstr "Prévisualisez le chevalet avec différentes données d’exemple."
 

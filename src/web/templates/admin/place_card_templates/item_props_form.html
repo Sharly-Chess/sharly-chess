@@ -84,7 +84,7 @@
             {% for group in field_tokens %}
                 <optgroup label="{{ group.label }}">
                     {% for token in group.tokens %}
-                        <option value="{{ token.expr | replace('{{', '') | replace('}}', '') | trim }}">{{ token.label }}</option>
+                        <option value="{{ token.expr | replace('{{ ', '') | replace(' }}', '') | trim }}">{{ token.label }}</option>
                     {% endfor %}
                 </optgroup>
             {% endfor %}

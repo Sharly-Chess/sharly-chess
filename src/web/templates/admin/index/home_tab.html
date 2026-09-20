@@ -9,8 +9,8 @@
             <i class="bi-translate pe-1"></i>
             <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img
-                    src="{{locale_infos[locale].flag_url}}"
-                    alt="{{locale_infos[locale].name}}"
+                    src="{{ locale_infos[locale].flag_url }}"
+                    alt="{{ locale_infos[locale].name }}"
                     class="locale-flag"
                 />
                 {{ locale_infos[locale].name }}
@@ -32,8 +32,8 @@
                             tabindex="0"
                         >
                             <img
-                                src="{{l_info.flag_url}}"
-                                alt="{{l_info.name}}"
+                                src="{{ l_info.flag_url }}"
+                                alt="{{ l_info.name }}"
                                 class="locale-flag"
                             />
                             {{ l_info.name }}
