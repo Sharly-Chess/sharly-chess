@@ -3,7 +3,7 @@ import re
 from collections import Counter, defaultdict
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Optional
-from collections.abc import Iterable
+from collections.abc import Hashable, Iterable
 
 from packaging.version import Version
 
@@ -456,7 +456,7 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_player_duplicate_key(
         self, stored_player: StoredPlayer
-    ) -> tuple[str, str] | None:
+    ) -> tuple[str, Hashable] | None:
         if licence_number := self.get_data(
             stored_player.plugin_data, 'ffe_licence_number'
         ):
