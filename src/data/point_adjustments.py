@@ -6,6 +6,7 @@ arbiter's alone. Both are folded into the standings, the tie-break
 records, the screens and the TRF export.
 """
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from database.sqlite.event.event_store import (
@@ -17,6 +18,15 @@ if TYPE_CHECKING:
     from data.rule_sets.rule_sets import PointAdjustment
     from data.tournament import Tournament
     from database.sqlite.event.event_database import EventDatabase
+
+
+def _replace[T](rows: list[T], is_the_one: Callable[[T], bool], row: T | None) -> None:
+    """Keep the loaded rows in step with the database: the row for the
+    key goes, and ``row`` takes its place unless there is nothing left
+    to store."""
+    rows[:] = [existing for existing in rows if not is_the_one(existing)]
+    if row is not None:
+        rows.append(row)
 
 
 class PointAdjustments:
@@ -73,24 +83,23 @@ class PointAdjustments:
         database.set_stored_team_point_adjustment(
             tournament.id, team_id, round_, mp_delta, gp_delta, reason
         )
-        adjustments = tournament.stored_tournament.stored_team_point_adjustments
-        adjustments[:] = [
-            adjustment
-            for adjustment in adjustments
-            if not (adjustment.team_id == team_id and adjustment.round_ == round_)
-        ]
-        if mp_delta or gp_delta or reason:
-            adjustments.append(
-                StoredTeamPointAdjustment(
-                    id=None,
-                    tournament_id=tournament.id,
-                    team_id=team_id,
-                    round_=round_,
-                    mp_delta=mp_delta,
-                    gp_delta=gp_delta,
-                    reason=reason,
-                )
+        _replace(
+            tournament.stored_tournament.stored_team_point_adjustments,
+            lambda adjustment: (
+                adjustment.team_id == team_id and adjustment.round_ == round_
+            ),
+            StoredTeamPointAdjustment(
+                id=None,
+                tournament_id=tournament.id,
+                team_id=team_id,
+                round_=round_,
+                mp_delta=mp_delta,
+                gp_delta=gp_delta,
+                reason=reason,
             )
+            if mp_delta or gp_delta or reason
+            else None,
+        )
 
     def stored_for_player(
         self, player_id: int, round_: int
@@ -140,23 +149,22 @@ class PointAdjustments:
         database.set_stored_player_point_adjustment(
             tournament.id, player_id, round_, delta, reason
         )
-        adjustments = tournament.stored_tournament.stored_player_point_adjustments
-        adjustments[:] = [
-            adjustment
-            for adjustment in adjustments
-            if not (adjustment.player_id == player_id and adjustment.round_ == round_)
-        ]
-        if delta or reason:
-            adjustments.append(
-                StoredPlayerPointAdjustment(
-                    id=None,
-                    tournament_id=tournament.id,
-                    player_id=player_id,
-                    round_=round_,
-                    delta=delta,
-                    reason=reason,
-                )
+        _replace(
+            tournament.stored_tournament.stored_player_point_adjustments,
+            lambda adjustment: (
+                adjustment.player_id == player_id and adjustment.round_ == round_
+            ),
+            StoredPlayerPointAdjustment(
+                id=None,
+                tournament_id=tournament.id,
+                player_id=player_id,
+                round_=round_,
+                delta=delta,
+                reason=reason,
             )
+            if delta or reason
+            else None,
+        )
 
     def bound(self, after_round: int | None) -> int:
         """Highest round whose adjustments count: the explicit bound, or

@@ -13,6 +13,12 @@ from functools import cached_property
 from utils.enum import Result, ScoreType
 
 
+def _value(overrides: dict[int, float], result: Result, default: float) -> float:
+    """What ``result`` is worth: the override when set, ``default``
+    otherwise."""
+    return float(overrides.get(result.value, default))
+
+
 @dataclass(frozen=True)
 class PointSystem:
     """The points a tournament awards, per result.
@@ -54,16 +60,16 @@ class PointSystem:
                 )
             }
         raw = self.game_point_overrides
-        win = float(raw.get(Result.WIN.value, 1.0))
-        draw = float(raw.get(Result.DRAW.value, 0.5))
-        loss = float(raw.get(Result.LOSS.value, 0.0))
+        win = _value(raw, Result.WIN, 1.0)
+        draw = _value(raw, Result.DRAW, 0.5)
+        loss = _value(raw, Result.LOSS, 0.0)
         return {
             Result.WIN: win,
             Result.DRAW: draw,
             Result.LOSS: loss,
-            Result.ZERO_POINT_BYE: float(raw.get(Result.ZERO_POINT_BYE.value, loss)),
-            Result.PAIRING_ALLOCATED_BYE: float(
-                raw.get(Result.PAIRING_ALLOCATED_BYE.value, win)
+            Result.ZERO_POINT_BYE: _value(raw, Result.ZERO_POINT_BYE, loss),
+            Result.PAIRING_ALLOCATED_BYE: _value(
+                raw, Result.PAIRING_ALLOCATED_BYE, win
             ),
         }
 
@@ -78,11 +84,11 @@ class PointSystem:
         LOSS unless the form sets ``gp_zpb`` explicitly (e.g. a
         federation rule scoring forfeits as -1)."""
         raw = self.game_point_overrides
-        loss = float(raw.get(Result.LOSS.value, 0.0))
-        absent = float(raw.get(Result.ZERO_POINT_BYE.value, loss))
+        loss = _value(raw, Result.LOSS, 0.0)
+        absent = _value(raw, Result.ZERO_POINT_BYE, loss)
         return {
-            Result.WIN: float(raw.get(Result.WIN.value, 1.0)),
-            Result.DRAW: float(raw.get(Result.DRAW.value, 0.5)),
+            Result.WIN: _value(raw, Result.WIN, 1.0),
+            Result.DRAW: _value(raw, Result.DRAW, 0.5),
             Result.LOSS: loss,
             Result.ZERO_POINT_BYE: absent,
             # ``Result.points()`` only falls back to LOSS for these;
@@ -105,19 +111,16 @@ class PointSystem:
         if not self.is_team:
             return {}
         raw = self.match_point_overrides
-        win = float(raw.get(Result.WIN.value, 2.0))
-        draw = float(raw.get(Result.DRAW.value, 1.0))
-        loss = float(raw.get(Result.LOSS.value, 0.0))
+        win = _value(raw, Result.WIN, 2.0)
+        draw = _value(raw, Result.DRAW, 1.0)
+        loss = _value(raw, Result.LOSS, 0.0)
         return {
             Result.WIN: win,
             Result.DRAW: draw,
             Result.LOSS: loss,
-            Result.ZERO_POINT_BYE: float(raw.get(Result.ZERO_POINT_BYE.value, loss)),
-            Result.PAIRING_ALLOCATED_BYE: float(
-                raw.get(
-                    Result.PAIRING_ALLOCATED_BYE.value,
-                    draw if self.pab_is_draw else win,
-                )
+            Result.ZERO_POINT_BYE: _value(raw, Result.ZERO_POINT_BYE, loss),
+            Result.PAIRING_ALLOCATED_BYE: _value(
+                raw, Result.PAIRING_ALLOCATED_BYE, draw if self.pab_is_draw else win
             ),
         }
 
@@ -129,13 +132,11 @@ class PointSystem:
         ``pab_is_draw``, scaled by the board count."""
         raw = self.game_point_overrides
         per_board = (
-            float(raw.get(Result.DRAW.value, Result.DRAW.point_value))
+            _value(raw, Result.DRAW, Result.DRAW.point_value)
             if self.pab_is_draw
-            else float(raw.get(Result.WIN.value, Result.WIN.point_value))
+            else _value(raw, Result.WIN, Result.WIN.point_value)
         )
-        return float(
-            raw.get(Result.PAIRING_ALLOCATED_BYE.value, self.boards * per_board)
-        )
+        return _value(raw, Result.PAIRING_ALLOCATED_BYE, self.boards * per_board)
 
     @property
     def secondary_score(self) -> ScoreType:
