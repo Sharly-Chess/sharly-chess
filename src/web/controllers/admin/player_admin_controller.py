@@ -1071,9 +1071,12 @@ class PlayerAdminController(BaseEventAdminController):
             web_context,
             action=FormAction.REPLACE if player_id else FormAction.CREATE,
             search_stored_player=stored_player,
+            # A field the form did not send — a select locked while the
+            # player is paired — keeps the player's own value.
             carry_over_data={
-                field: str(data.get(field, ''))
+                field: str(data[field])
                 for field in web_context.carry_over_fields
+                if field in data
             },
             errors=errors,
         )

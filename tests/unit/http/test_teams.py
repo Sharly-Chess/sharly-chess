@@ -295,3 +295,37 @@ def test_a_team_match_is_unpaired_on_its_own(http: TestClient, paired: Tournamen
     assert response.status_code == 200
     remaining = EVENT.tournament().get_round_team_boards(1)
     assert len(remaining) == TEAM_COUNT // 2 - 1
+
+
+@pytest.mark.unit
+def test_the_team_chosen_before_a_search_is_kept(
+    http: TestClient, tournament: Tournament
+):
+    """Picking a search result opens the player form afresh, with the
+    team chosen before the search still chosen — or none, if none was."""
+    from unittest.mock import AsyncMock, patch
+
+    from database.sqlite.event.event_store import StoredPlayer
+    from web.controllers.admin.player_admin_controller import PlayerAdminController
+
+    for name in ('Alpha', 'Beta'):
+        assert create_team(http, tournament, name=name).status_code == 200
+    beta = next(team for team in EVENT.tournament().teams if team.name == 'Beta')
+    found = StoredPlayer(id=None, last_name='FOUND', first_name='Player')
+    with patch.object(
+        PlayerAdminController,
+        'get_search_stored_player',
+        AsyncMock(return_value=(found, {})),
+    ):
+        chosen = http.post(
+            f'/player-modal/from-search/{EVENT_ID}/fide/1',
+            data={'team_id': str(beta.id)},
+        )
+        none = http.post(
+            f'/player-modal/from-search/{EVENT_ID}/fide/1', data={'team_id': ''}
+        )
+    assert chosen.status_code == 200
+    assert f'<option value="{beta.id}" selected>' in chosen.text
+    assert none.status_code == 200
+    assert f'<option value="{beta.id}" selected>' not in none.text
+    assert '<option value="" selected>' in none.text
