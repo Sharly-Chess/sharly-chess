@@ -1179,7 +1179,7 @@ class Tournament:
         return sum(player.estimated for player in self.tournament_players)
 
     # -------------------------------------------------------------------------
-    # Misc
+    # Arbiters
     # -------------------------------------------------------------------------
 
     @property
@@ -1214,94 +1214,9 @@ class Tournament:
             )
         ]
 
-    @property
-    def max_ranking_round(self) -> int:
-        if not self.started:
-            return 0
-        if self.finished:
-            # A tournament that ends before its last reserved round (a double
-            # elimination whose grand final needs no reset) still ranks as of
-            # that last round — it is finished, just never paired, so its
-            # standings are the final ones.
-            return self.rounds
-        if self.playing:
-            return self.current_round - 1
-        return self.current_round
-
-    @property
-    def started(self) -> bool:
-        return self.current_round != 0
-
-    @property
-    def hide_pairing_points(self) -> bool:
-        """Whether the pairing table hides the running points columns. Team
-        systems that pair whole teams keep points on the team block, not the
-        board rows; and a knock-out ranks by the round reached, not points, so
-        its pairing table has no points to show for players or teams."""
-        return (
-            self.event.is_team_event and self.pairing_system.paired_by_team
-        ) or self.pairing_system.eliminates_participants
-
-    @property
-    def hide_team_block_points(self) -> bool:
-        """Whether the team blocks of the pairing table hide the running score
-        of each team. A knock-out ranks by the round reached, not points, so it
-        has no score to show; every other team system does."""
-        return self.pairing_system.eliminates_participants
-
-    @property
-    def finished(self) -> bool:
-        if self.current_round == self.rounds and not self.playing:
-            return True
-        # A system may end early: a double elimination whose grand final the
-        # winners' champion wins skips its reserved reset round, so the last
-        # round is played but never reached. The pairing system decides.
-        return self.pairing_system.tournament_is_over(self)
-
-    @property
-    def boards(self) -> list[Board]:
-        return self.get_round_boards(self.current_round)
-
-    def boards_without_result(self, at_round: int) -> list[Board]:
-        boards = self.get_round_boards(at_round)
-        return [
-            board
-            for board in boards
-            if board.result == Result.NO_RESULT
-            and (
-                board.stored_board.white_player_id is not None
-                or board.stored_board.black_player_id is not None
-            )
-        ]
-
-    @property
-    def dependent_families(self) -> list[Family]:
-        return [
-            family
-            for family in self.event.families_by_id.values()
-            if family.tournament.id == self.id
-        ]
-
-    @property
-    def dependent_screens(self) -> list[Screen]:
-        return [
-            screen
-            for screen in self.event.basic_screens_by_id.values()
-            if screen.screen_type.depends_on_tournament(screen, self)
-        ]
-
-    @property
-    def related_screens(self) -> list[Screen]:
-        return [
-            screen
-            for screen in self.event.basic_screens_by_id.values()
-            if screen.screen_type.relates_to_tournament(screen, self)
-        ]
-
-    def print_real_points(self, round_: int | None = None) -> bool:
-        if round_ is None:
-            round_ = self.current_round
-        return self.pairing_variation.print_real_points(self, round_)
+    # -------------------------------------------------------------------------
+    # Points
+    # -------------------------------------------------------------------------
 
     @property
     def point_values(self) -> dict[Result, float]:
@@ -1347,6 +1262,84 @@ class Tournament:
     def team_pab_game_points(self) -> float:
         return self.point_system.team_pab_game_points
 
+    def print_real_points(self, round_: int | None = None) -> bool:
+        if round_ is None:
+            round_ = self.current_round
+        return self.pairing_variation.print_real_points(self, round_)
+
+    @property
+    def hide_pairing_points(self) -> bool:
+        """Whether the pairing table hides the running points columns. Team
+        systems that pair whole teams keep points on the team block, not the
+        board rows; and a knock-out ranks by the round reached, not points, so
+        its pairing table has no points to show for players or teams."""
+        return (
+            self.event.is_team_event and self.pairing_system.paired_by_team
+        ) or self.pairing_system.eliminates_participants
+
+    @property
+    def hide_team_block_points(self) -> bool:
+        """Whether the team blocks of the pairing table hide the running score
+        of each team. A knock-out ranks by the round reached, not points, so it
+        has no score to show; every other team system does."""
+        return self.pairing_system.eliminates_participants
+
+    def set_tournament_player_points(
+        self, tournament_player: TournamentPlayer, *, before_round: int
+    ) -> None:
+        """Sets the points of a player before round *before_round*."""
+        if self.pairing_system.id == 'KEIZER':
+            # A Keizer total is not a game-point count; it comes from the
+            # whole-table scorer. Points and board-ordering points are the
+            # same figure — board 1 is the leader.
+            total = self.keizer_scorer.total(
+                tournament_player, after_round=before_round - 1
+            )
+            tournament_player.points = total
+            tournament_player.vpoints = total
+            return
+        vpoints = self.player_virtual_points(tournament_player, at_round=before_round)
+        tournament_player.compute_points(before_round=before_round)
+        assert tournament_player.points is not None
+        tournament_player.vpoints = tournament_player.points + vpoints
+
+    @property
+    def keizer_scorer(self) -> 'KeizerScorer':
+        """The whole-table Keizer scorer, rebuilt after the per-player
+        compute caches are cleared so it always reflects current results."""
+        if self._keizer_scorer is None:
+            from data.pairings.keizer import KeizerScorer
+
+            self._keizer_scorer = KeizerScorer(self)
+        return self._keizer_scorer
+
+    def reset_keizer_scorer(self) -> None:
+        """Forget the Keizer scorer, so the next read rebuilds it from the
+        current results."""
+        self._keizer_scorer = None
+
+    def player_virtual_points(
+        self, tournament_player: TournamentPlayer, *, at_round: int
+    ) -> float:
+        if self.pairing_variation.vpoints_use_pairing_numbers:
+            self.set_tournament_players_pairing_numbers()
+        return self.pairing_variation.compute_virtual_points(
+            self, tournament_player, at_round
+        )
+
+    def team_primary_score_before_round(self, team_id: int, round_: int) -> float:
+        """The team's cumulative primary score (match points or game
+        points, per :attr:`primary_score`) at the start of ``round_``
+        — i.e. after rounds 1..``round_``−1 have been accounted for.
+        Returns ``0.0`` for teams with no prior team_board entries."""
+        totals = self.team_totals_after(round_ - 1)
+        mp, gp = totals.get(team_id, (0.0, 0.0))
+        return mp if self.primary_score == ScoreType.MATCH_POINTS else gp
+
+    # -------------------------------------------------------------------------
+    # Progress
+    # -------------------------------------------------------------------------
+
     @cached_property
     def current_round(self) -> int:
         return (
@@ -1354,13 +1347,50 @@ class Tournament:
             or self.pairing_system.default_current_round(self)
         )
 
+    def set_current_round(self, round_: int) -> None:
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_tournament_current_round(self.id, round_)
+
+    @property
+    def max_ranking_round(self) -> int:
+        if not self.started:
+            return 0
+        if self.finished:
+            # A tournament that ends before its last reserved round (a double
+            # elimination whose grand final needs no reset) still ranks as of
+            # that last round — it is finished, just never paired, so its
+            # standings are the final ones.
+            return self.rounds
+        if self.playing:
+            return self.current_round - 1
+        return self.current_round
+
+    @property
+    def started(self) -> bool:
+        return self.current_round != 0
+
+    @property
+    def finished(self) -> bool:
+        if self.current_round == self.rounds and not self.playing:
+            return True
+        # A system may end early: a double elimination whose grand final the
+        # winners' champion wins skips its reserved reset round, so the last
+        # round is played but never reached. The pairing system decides.
+        return self.pairing_system.tournament_is_over(self)
+
     @property
     def is_last_round(self) -> bool:
         return self.current_round == self.rounds
 
-    @cached_property
-    def is_fully_paired(self) -> bool:
-        return all(self.is_round_paired(round_) for round_ in range(1, self.rounds + 1))
+    def is_round_in_tournament(self, round_: int) -> bool:
+        return 1 <= round_ <= self.rounds
+
+    def round_label(self, round_: int) -> str | None:
+        """The name of a whole round for the round navigation — a knock-out's
+        stage ('Semifinals', 'Upper Bracket Final', …). ``None`` for a system
+        whose rounds have no name of their own."""
+        label = getattr(self.pairing_variation.engine, 'round_label', None)
+        return label(self, round_) if label is not None else None
 
     @cached_property
     def has_results(self) -> bool:
@@ -1373,6 +1403,54 @@ class Tournament:
         return any(
             self.round_has_pairings(round_) for round_ in range(1, self.rounds + 1)
         )
+
+    @cached_property
+    def is_fully_paired(self) -> bool:
+        return all(self.is_round_paired(round_) for round_ in range(1, self.rounds + 1))
+
+    @cached_property
+    def last_paired_round(self) -> int:
+        return next(
+            (
+                round_
+                for round_ in reversed(range(1, self.rounds + 1))
+                if self.round_has_pairings(round_)
+            ),
+            0,
+        )
+
+    @cached_property
+    def playing(self) -> bool:
+        return self.is_round_in_tournament(
+            self.current_round
+        ) and not self.is_round_finished(self.current_round)
+
+    @cached_property
+    def knockout(self) -> 'KnockoutView':
+        """The knock-out-specific facet of this tournament — advancement, the
+        round-reached standings, the bracket tie-resolution display and the
+        manual-winner writers. See
+        :class:`~data.pairings.knockout_helpers.view.KnockoutView`."""
+        from data.pairings.knockout_helpers.view import KnockoutView
+
+        return KnockoutView(self)
+
+    @cached_property
+    def big_tournament_exemption(self) -> BigTournamentExemption:
+        """1.4.3d Swiss exception — see data.norms for the calculation.
+
+        Cached on the Tournament instance so the per-applicant searcher
+        can read it cheaply for every player.
+        """
+        return compute_big_tournament_exemption(self)
+
+    @cached_property
+    def high_level_tournament(self) -> bool:
+        """1.5.6a — see data.norms for the calculation.
+
+        Cached on the Tournament instance for per-applicant lookup.
+        """
+        return compute_high_level_tournament(self)
 
     @property
     def has_titled_players(self) -> bool:
@@ -1388,139 +1466,9 @@ class Tournament:
             for player in self.tournament_players
         )
 
-    @cached_property
-    def last_paired_round(self) -> int:
-        return next(
-            (
-                round_
-                for round_ in reversed(range(1, self.rounds + 1))
-                if self.round_has_pairings(round_)
-            ),
-            0,
-        )
-
-    @cached_property
-    def can_add_players(self) -> bool:
-        """Determines if players can be added to the tournament."""
-        return not self.finished and (
-            not self.has_pairings
-            or self.pairing_system.allow_player_addition_once_paired
-        )
-
-    @cached_property
-    def can_add_teams(self) -> bool:
-        """Determines if teams can be added to the tournament."""
-        return not self.finished and (
-            not self.has_pairings or self.pairing_system.allow_team_addition_once_paired
-        )
-
-    @cached_property
-    def playing(self) -> bool:
-        return self.is_round_in_tournament(
-            self.current_round
-        ) and not self.is_round_finished(self.current_round)
-
-    @cached_property
-    def tournament_players_by_id(self) -> dict[int, TournamentPlayer]:
-        players_by_id: dict[int, TournamentPlayer] = {}
-        for (
-            stored_tournament_player
-        ) in self.stored_tournament.stored_tournament_players:
-            tournament_player = TournamentPlayer(self, stored_tournament_player)
-            players_by_id[tournament_player.id] = tournament_player
-        return players_by_id
-
-    @property
-    def players_by_id(self) -> dict[int, TournamentPlayer]:
-        return self.tournament_players_by_id
-
-    @property
-    def players(self) -> Collection[TournamentPlayer]:
-        return self.tournament_players
-
-    @cached_property
-    def boards_by_id(self) -> BoardsById:
-        boards_by_id: BoardsById = BoardsById()
-        for (
-            round_,
-            stored_boards,
-        ) in self.stored_tournament.stored_boards_by_round.items():
-            for stored_board in stored_boards:
-                board = Board(self, round_, stored_board)
-                boards_by_id[board.identifier] = board
-        return boards_by_id
-
-    def invalidate_board_layout(self) -> None:
-        """Invalidate board-number caches after an in-place board change."""
-        if 'boards_by_id' in self.__dict__:
-            self.boards_by_id.version += 1
-
-    def get_round_boards(self, round_: int) -> list[Board]:
-        return sorted(
-            (board for board in self.boards_by_id.values() if board.round == round_),
-            key=lambda board: board.index,
-        )
-
-    @cached_property
-    def leave_fixed_board_holes(self) -> bool:
-        """Whether a fixed board number leaves the table it displaces empty
-        and duplicates the number it lands on, reproducing the numbering of
-        the reference file format. When false the round is numbered compactly:
-        fixed players keep their number and every other board fills the
-        remaining numbers in order."""
-        return bool(
-            plugin_manager.hook_for_event(self.event, 'leave_fixed_board_holes')(
-                tournament=self
-            )
-        )
-
-    def _round_board_numbers(self, round_: int) -> dict[int, int]:
-        cache_key = (round_, self.boards_by_id.version)
-        cached = self._round_board_numbers_cache.get(cache_key)
-        if cached is not None:
-            return cached
-        entries = [
-            (board.identifier, board.fixed_number, board.standard_number)
-            for board in self.get_round_boards(round_)
-        ]
-        board_numbers = compute_round_board_numbers(
-            entries, self.first_board_number, self.leave_fixed_board_holes
-        )
-        self._round_board_numbers_cache[cache_key] = board_numbers
-        return board_numbers
-
-    def board_number(self, board: Board) -> int:
-        if board.stored_board.id is None:
-            return board.fixed_number or board.standard_number
-        return self._round_board_numbers(board.round)[board.identifier]
-
-    @cached_property
-    def board_operations(self) -> BoardOperations:
-        return BoardOperations(self)
-
-    def get_unpaired_tournament_players(
-        self, boards: list[Board]
-    ) -> list[TournamentPlayer]:
-        # Knock-out: the bracket seats every player still in, so an
-        # unboarded player is knocked out, not waiting to be paired. There
-        # is nothing to hand-pair, so the "to pair" list stays empty.
-        if self.pairing_system.eliminates_participants:
-            return []
-        paired_player_ids: list[int] = []
-        for board in boards:
-            if board.optional_white_tournament_player:
-                paired_player_ids.append(board.optional_white_tournament_player.id)
-            if board.black_tournament_player:
-                paired_player_ids.append(board.black_tournament_player.id)
-        return [
-            tournament_player
-            for tournament_player in self.tournament_players
-            if tournament_player.id not in paired_player_ids
-        ]
-
-    @property
-    def has_never_paired_players(self) -> bool:
-        return any(not player.has_real_pairings for player in self.tournament_players)
+    # -------------------------------------------------------------------------
+    # Rounds
+    # -------------------------------------------------------------------------
 
     def set_for_round(
         self,
@@ -1643,23 +1591,6 @@ class Tournament:
             for player in self.tournament_players
         )
 
-    @cached_property
-    def knockout(self) -> 'KnockoutView':
-        """The knock-out-specific facet of this tournament — advancement, the
-        round-reached standings, the bracket tie-resolution display and the
-        manual-winner writers. See
-        :class:`~data.pairings.knockout_helpers.view.KnockoutView`."""
-        from data.pairings.knockout_helpers.view import KnockoutView
-
-        return KnockoutView(self)
-
-    def round_label(self, round_: int) -> str | None:
-        """The name of a whole round for the round navigation — a knock-out's
-        stage ('Semifinals', 'Upper Bracket Final', …). ``None`` for a system
-        whose rounds have no name of their own."""
-        label = getattr(self.pairing_variation.engine, 'round_label', None)
-        return label(self, round_) if label is not None else None
-
     def round_sections(self, boards: list) -> list[tuple[str | None, list]]:
         """Group a round's *boards* (individual boards or team matches) into
         the sections the pairing tab heads with a title — for a knock-out the
@@ -1763,49 +1694,6 @@ class Tournament:
             for player in self.tournament_players
         )
 
-    def is_round_in_tournament(self, round_: int) -> bool:
-        return 1 <= round_ <= self.rounds
-
-    @cached_property
-    def big_tournament_exemption(self) -> BigTournamentExemption:
-        """1.4.3d Swiss exception — see data.norms for the calculation.
-
-        Cached on the Tournament instance so the per-applicant searcher
-        can read it cheaply for every player.
-        """
-        return compute_big_tournament_exemption(self)
-
-    @cached_property
-    def high_level_tournament(self) -> bool:
-        """1.5.6a — see data.norms for the calculation.
-
-        Cached on the Tournament instance for per-applicant lookup.
-        """
-        return compute_high_level_tournament(self)
-
-    def to_trf(
-        self,
-        after_round: int | None = None,
-        next_round_pairings_as_zpb: bool = False,
-        prohibited_pairing_override: list['TrfProhibitedPairing'] | None = None,
-    ) -> 'TrfTournament':
-        from data.input_output.trf.trf_export import TrfExport
-
-        return TrfExport(self).build(
-            after_round=after_round,
-            next_round_pairings_as_zpb=next_round_pairings_as_zpb,
-            prohibited_pairing_override=prohibited_pairing_override,
-        )
-
-    def team_primary_score_before_round(self, team_id: int, round_: int) -> float:
-        """The team's cumulative primary score (match points or game
-        points, per :attr:`primary_score`) at the start of ``round_``
-        — i.e. after rounds 1..``round_``−1 have been accounted for.
-        Returns ``0.0`` for teams with no prior team_board entries."""
-        totals = self.team_totals_after(round_ - 1)
-        mp, gp = totals.get(team_id, (0.0, 0.0))
-        return mp if self.primary_score == ScoreType.MATCH_POINTS else gp
-
     def has_acceleration_beyond_last_round(self) -> bool:
         """Whether an acceleration entry would reach past the final round.
 
@@ -1821,79 +1709,113 @@ class Tournament:
             for accelerated_round in TrfExport(self).accelerated_rounds()
         )
 
-    def set_tournament_player_points(
-        self, tournament_player: TournamentPlayer, *, before_round: int
-    ) -> None:
-        """Sets the points of a player before round *before_round*."""
-        if self.pairing_system.id == 'KEIZER':
-            # A Keizer total is not a game-point count; it comes from the
-            # whole-table scorer. Points and board-ordering points are the
-            # same figure — board 1 is the leader.
-            total = self.keizer_scorer.total(
-                tournament_player, after_round=before_round - 1
-            )
-            tournament_player.points = total
-            tournament_player.vpoints = total
-            return
-        vpoints = self.player_virtual_points(tournament_player, at_round=before_round)
-        tournament_player.compute_points(before_round=before_round)
-        assert tournament_player.points is not None
-        tournament_player.vpoints = tournament_player.points + vpoints
+    # -------------------------------------------------------------------------
+    # Boards
+    # -------------------------------------------------------------------------
 
     @property
-    def keizer_scorer(self) -> 'KeizerScorer':
-        """The whole-table Keizer scorer, rebuilt after the per-player
-        compute caches are cleared so it always reflects current results."""
-        if self._keizer_scorer is None:
-            from data.pairings.keizer import KeizerScorer
-
-            self._keizer_scorer = KeizerScorer(self)
-        return self._keizer_scorer
-
-    def reset_keizer_scorer(self) -> None:
-        """Forget the Keizer scorer, so the next read rebuilds it from the
-        current results."""
-        self._keizer_scorer = None
-
-    def player_virtual_points(
-        self, tournament_player: TournamentPlayer, *, at_round: int
-    ) -> float:
-        if self.pairing_variation.vpoints_use_pairing_numbers:
-            self.set_tournament_players_pairing_numbers()
-        return self.pairing_variation.compute_virtual_points(
-            self, tournament_player, at_round
-        )
-
-    def store_illegal_move(self, tournament_player: TournamentPlayer) -> None:
-        """Store an illegal move for the given `tournament_player`, for the current
-        round."""
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            tournament_player.pairings[self.current_round].add_illegal_move(database)
-
-    def delete_illegal_move(self, tournament_player: TournamentPlayer) -> bool:
-        """Deletes one illegal move for the given `tournament_player` for the current round."""
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            return tournament_player.pairings[self.current_round].delete_illegal_move(
-                database
-            )
+    def boards(self) -> list[Board]:
+        return self.get_round_boards(self.current_round)
 
     @cached_property
-    def ranking(self) -> PlayerRanking:
-        return PlayerRanking(self)
+    def boards_by_id(self) -> BoardsById:
+        boards_by_id: BoardsById = BoardsById()
+        for (
+            round_,
+            stored_boards,
+        ) in self.stored_tournament.stored_boards_by_round.items():
+            for stored_board in stored_boards:
+                board = Board(self, round_, stored_board)
+                boards_by_id[board.identifier] = board
+        return boards_by_id
 
-    def compute_tournament_player_ranks(
-        self, *, after_round: int | None = None
-    ) -> dict[int, TournamentPlayer]:
-        """Compute and return the ranks of all the players after round
-        *after_round*."""
-        return self.ranking.compute(after_round=after_round)
+    def boards_without_result(self, at_round: int) -> list[Board]:
+        boards = self.get_round_boards(at_round)
+        return [
+            board
+            for board in boards
+            if board.result == Result.NO_RESULT
+            and (
+                board.stored_board.white_player_id is not None
+                or board.stored_board.black_player_id is not None
+            )
+        ]
+
+    def get_round_boards(self, round_: int) -> list[Board]:
+        return sorted(
+            (board for board in self.boards_by_id.values() if board.round == round_),
+            key=lambda board: board.index,
+        )
+
+    def invalidate_board_layout(self) -> None:
+        """Invalidate board-number caches after an in-place board change."""
+        if 'boards_by_id' in self.__dict__:
+            self.boards_by_id.version += 1
+
+    @cached_property
+    def leave_fixed_board_holes(self) -> bool:
+        """Whether a fixed board number leaves the table it displaces empty
+        and duplicates the number it lands on, reproducing the numbering of
+        the reference file format. When false the round is numbered compactly:
+        fixed players keep their number and every other board fills the
+        remaining numbers in order."""
+        return bool(
+            plugin_manager.hook_for_event(self.event, 'leave_fixed_board_holes')(
+                tournament=self
+            )
+        )
+
+    def _round_board_numbers(self, round_: int) -> dict[int, int]:
+        cache_key = (round_, self.boards_by_id.version)
+        cached = self._round_board_numbers_cache.get(cache_key)
+        if cached is not None:
+            return cached
+        entries = [
+            (board.identifier, board.fixed_number, board.standard_number)
+            for board in self.get_round_boards(round_)
+        ]
+        board_numbers = compute_round_board_numbers(
+            entries, self.first_board_number, self.leave_fixed_board_holes
+        )
+        self._round_board_numbers_cache[cache_key] = board_numbers
+        return board_numbers
+
+    def board_number(self, board: Board) -> int:
+        if board.stored_board.id is None:
+            return board.fixed_number or board.standard_number
+        return self._round_board_numbers(board.round)[board.identifier]
+
+    @cached_property
+    def board_operations(self) -> BoardOperations:
+        return BoardOperations(self)
+
+    def get_unpaired_tournament_players(
+        self, boards: list[Board]
+    ) -> list[TournamentPlayer]:
+        # Knock-out: the bracket seats every player still in, so an
+        # unboarded player is knocked out, not waiting to be paired. There
+        # is nothing to hand-pair, so the "to pair" list stays empty.
+        if self.pairing_system.eliminates_participants:
+            return []
+        paired_player_ids: list[int] = []
+        for board in boards:
+            if board.optional_white_tournament_player:
+                paired_player_ids.append(board.optional_white_tournament_player.id)
+            if board.black_tournament_player:
+                paired_player_ids.append(board.black_tournament_player.id)
+        return [
+            tournament_player
+            for tournament_player in self.tournament_players
+            if tournament_player.id not in paired_player_ids
+        ]
 
     @property
-    def tournament_players_by_rank(self) -> dict[int, TournamentPlayer]:
-        return self.ranking.players_by_rank
+    def has_never_paired_players(self) -> bool:
+        return any(not player.has_real_pairings for player in self.tournament_players)
 
-    def ensure_tournament_player_ranks_computed(self) -> None:
-        self.ranking.ensure_computed()
+    # -------------------------------------------------------------------------
+    # Results
+    # -------------------------------------------------------------------------
 
     def add_result(self, board: Board, white_result: Result) -> None:
         """Stores the given result for the given `board` in the current round.
@@ -1956,48 +1878,77 @@ class Tournament:
         # Remove the cached 'playing' value so that the pairing tab updates correctly
         self.__dict__.pop('playing', None)
 
-    def check_in_player(self, player: Player, check_in: bool) -> None:
-        """Stores the `check_in` status for the given `player`."""
+    def store_illegal_move(self, tournament_player: TournamentPlayer) -> None:
+        """Store an illegal move for the given `tournament_player`, for the current
+        round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_player_check_in(player.id, check_in)
-        player.stored_player.check_in = check_in
-        player.__dict__.pop('check_in_status', None)
+            tournament_player.pairings[self.current_round].add_illegal_move(database)
 
-    def check_in_team(self, team: 'Team', check_in: bool) -> None:
-        """Stores the per-team check-in status."""
+    def delete_illegal_move(self, tournament_player: TournamentPlayer) -> bool:
+        """Deletes one illegal move for the given `tournament_player` for the current round."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            team.set_check_in(check_in, database)
+            return tournament_player.pairings[self.current_round].delete_illegal_move(
+                database
+            )
 
-    def check_in_all_teams(self, check_in: bool) -> None:
-        teams = [team for team in self.teams if team.check_in != check_in]
-        if not teams:
-            return
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_team_check_in_for_tournament(self.id, check_in)
-            for team in teams:
-                team.stored_team.check_in = check_in
+    # -------------------------------------------------------------------------
+    # Ranking
+    # -------------------------------------------------------------------------
+
+    @cached_property
+    def ranking(self) -> PlayerRanking:
+        return PlayerRanking(self)
+
+    def compute_tournament_player_ranks(
+        self, *, after_round: int | None = None
+    ) -> dict[int, TournamentPlayer]:
+        """Compute and return the ranks of all the players after round
+        *after_round*."""
+        return self.ranking.compute(after_round=after_round)
 
     @property
-    def absent_teams(self) -> list['Team']:
-        return [team for team in self.teams if not team.check_in]
+    def tournament_players_by_rank(self) -> dict[int, TournamentPlayer]:
+        return self.ranking.players_by_rank
+
+    def ensure_tournament_player_ranks_computed(self) -> None:
+        self.ranking.ensure_computed()
+
+    # -------------------------------------------------------------------------
+    # Roster and check-in
+    # -------------------------------------------------------------------------
+
+    @cached_property
+    def tournament_players_by_id(self) -> dict[int, TournamentPlayer]:
+        players_by_id: dict[int, TournamentPlayer] = {}
+        for (
+            stored_tournament_player
+        ) in self.stored_tournament.stored_tournament_players:
+            tournament_player = TournamentPlayer(self, stored_tournament_player)
+            players_by_id[tournament_player.id] = tournament_player
+        return players_by_id
 
     @property
-    def team_check_in_status_grouped_counts(self) -> 'Counter[CheckInStatus]':
-        counter: Counter[CheckInStatus] = Counter()
-        for team in self.teams:
-            counter[
-                CheckInStatus.PRESENT if team.check_in else CheckInStatus.ABSENT
-            ] += 1
-        return counter
+    def players_by_id(self) -> dict[int, TournamentPlayer]:
+        return self.tournament_players_by_id
 
-    def check_in_all_players(self, check_in: bool) -> None:
-        player_ids = []
-        for player in self.players:
-            if player.check_in != check_in:
-                player_ids.append(player.id)
-                player.stored_player.check_in = check_in
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_players_check_in(player_ids, check_in)
+    @property
+    def players(self) -> Collection[TournamentPlayer]:
+        return self.tournament_players
+
+    @cached_property
+    def can_add_players(self) -> bool:
+        """Determines if players can be added to the tournament."""
+        return not self.finished and (
+            not self.has_pairings
+            or self.pairing_system.allow_player_addition_once_paired
+        )
+
+    @cached_property
+    def can_add_teams(self) -> bool:
+        """Determines if teams can be added to the tournament."""
+        return not self.finished and (
+            not self.has_pairings or self.pairing_system.allow_team_addition_once_paired
+        )
 
     def add_player_to_tournament(
         self,
@@ -2093,12 +2044,6 @@ class Tournament:
         # and holds on to it.
         self.knockout.invalidate_engine_cache()
 
-    def toggle_check_in_open(self) -> None:
-        check_in_open = not self.check_in_open
-        with EventDatabase(self.event.uniq_id, True) as database:
-            database.set_tournament_check_in_open(self.id, check_in_open)
-        self.stored_tournament.check_in_open = check_in_open
-
     def set_player_participation(
         self, player: TournamentPlayer, withdraw: bool = False
     ) -> None:
@@ -2131,6 +2076,93 @@ class Tournament:
                 if pairing.unpaired:
                     pairing.update_result(database, result)
 
-    def set_current_round(self, round_: int) -> None:
+    def check_in_player(self, player: Player, check_in: bool) -> None:
+        """Stores the `check_in` status for the given `player`."""
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_player_check_in(player.id, check_in)
+        player.stored_player.check_in = check_in
+        player.__dict__.pop('check_in_status', None)
+
+    def check_in_team(self, team: 'Team', check_in: bool) -> None:
+        """Stores the per-team check-in status."""
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            team.set_check_in(check_in, database)
+
+    def check_in_all_teams(self, check_in: bool) -> None:
+        teams = [team for team in self.teams if team.check_in != check_in]
+        if not teams:
+            return
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_team_check_in_for_tournament(self.id, check_in)
+            for team in teams:
+                team.stored_team.check_in = check_in
+
+    def check_in_all_players(self, check_in: bool) -> None:
+        player_ids = []
+        for player in self.players:
+            if player.check_in != check_in:
+                player_ids.append(player.id)
+                player.stored_player.check_in = check_in
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_players_check_in(player_ids, check_in)
+
+    @property
+    def absent_teams(self) -> list['Team']:
+        return [team for team in self.teams if not team.check_in]
+
+    @property
+    def team_check_in_status_grouped_counts(self) -> 'Counter[CheckInStatus]':
+        counter: Counter[CheckInStatus] = Counter()
+        for team in self.teams:
+            counter[
+                CheckInStatus.PRESENT if team.check_in else CheckInStatus.ABSENT
+            ] += 1
+        return counter
+
+    def toggle_check_in_open(self) -> None:
+        check_in_open = not self.check_in_open
         with EventDatabase(self.event.uniq_id, True) as database:
-            database.set_tournament_current_round(self.id, round_)
+            database.set_tournament_check_in_open(self.id, check_in_open)
+        self.stored_tournament.check_in_open = check_in_open
+
+    # -------------------------------------------------------------------------
+    # Exports and dependants
+    # -------------------------------------------------------------------------
+
+    def to_trf(
+        self,
+        after_round: int | None = None,
+        next_round_pairings_as_zpb: bool = False,
+        prohibited_pairing_override: list['TrfProhibitedPairing'] | None = None,
+    ) -> 'TrfTournament':
+        from data.input_output.trf.trf_export import TrfExport
+
+        return TrfExport(self).build(
+            after_round=after_round,
+            next_round_pairings_as_zpb=next_round_pairings_as_zpb,
+            prohibited_pairing_override=prohibited_pairing_override,
+        )
+
+    @property
+    def dependent_families(self) -> list[Family]:
+        return [
+            family
+            for family in self.event.families_by_id.values()
+            if family.tournament.id == self.id
+        ]
+
+    @property
+    def dependent_screens(self) -> list[Screen]:
+        return [
+            screen
+            for screen in self.event.basic_screens_by_id.values()
+            if screen.screen_type.depends_on_tournament(screen, self)
+        ]
+
+    @property
+    def related_screens(self) -> list[Screen]:
+        return [
+            screen
+            for screen in self.event.basic_screens_by_id.values()
+            if screen.screen_type.relates_to_tournament(screen, self)
+        ]
