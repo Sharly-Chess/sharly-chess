@@ -272,14 +272,20 @@ try:
             config_database.update_stored_config(stored_config)
         config.load_and_set_env()
 
-    apply_settings(args.locale, args.federation)
+    from common.data_recovery import DataRecovery
 
     # Answers the question asked on a new installation, so that starting the
     # application does not need a console to answer it on.
     if (example_events := getattr(args, 'example_events', None)) is not None:
-        from common.data_recovery import DataRecovery
-
         DataRecovery.install_example_events = example_events
+
+    # The data of the previous version is recovered before anything reads or
+    # writes the configuration: the settings given on the command line or in
+    # the setup window would otherwise be overwritten by the recovered ones.
+    if not TEST_ENV:
+        DataRecovery.setup()
+
+    apply_settings(args.locale, args.federation)
 
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):

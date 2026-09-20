@@ -227,19 +227,13 @@ class DataRecovery:
 
     @classmethod
     def _recover_config_file(cls, old_config_file: Path) -> None:
-        from gui.server_gui_toga import SharlyChessServerToga
-
         if not old_config_file.is_file():
             return
         logger.info('Recovering configuration file...')
         # copy the configuration database to its new destination
         shutil.copy(old_config_file, CONFIG_FILE)
         ConfigDatabase.setup()
-        config = SharlyChessConfig()
-        config.load_and_set_env()
-        if SharlyChessServerToga.instance is not None:
-            logger.debug('Applying recovered configuration to the Toga app...')
-            SharlyChessServerToga.instance.update_from_sharly_chess_config()
+        SharlyChessConfig().load_and_set_env()
         plugin_manager.reload_register()
 
     # -------------------------------------------------------------------------
