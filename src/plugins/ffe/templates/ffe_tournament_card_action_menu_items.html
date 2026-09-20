@@ -1,7 +1,10 @@
-{# The FFE site connection is Papi-based: individual tournaments, plus a
-   Scheveningen, which uploads as an individual Swiss. #}
+{# The FFE site connection is Papi-based (individual tournaments, plus a
+   Scheveningen, which uploads as an individual Swiss) or goes through
+   the site's team module (team competitions), which only offers the
+   upload. #}
 {% if ffe_utils.supports_ffe_transfer(tournament) %}
     {% set ffe_actions_unavailable_message=ffe_utils.ffe_actions_unavailable_message(tournament) %}
+    {% set team_transfer = ffe_utils.supports_team_transfer(tournament) %}
     {% if ffe_actions_unavailable_message %}
         <li
             {{ macros.tooltip_attributes(
@@ -36,6 +39,7 @@
                 <i class="ps-3 bi bi-caret-right-fill"></i>
             </button>
             <ul class="dropdown-menu">
+                {% if not team_transfer %}
                 <li>
                     <span
                         {% if not client.can_publish_results %}
@@ -59,6 +63,7 @@
                         </button>
                     </span>
                 </li>
+                {% endif %}
                 <li>
                     <span
                         {% if not client.can_publish_results %}
@@ -80,6 +85,7 @@
                         </button>
                     </span>
                 </li>
+                {% if not team_transfer %}
                 <li>
                     <span
                         {% if not client.can_download_fees %}
@@ -104,6 +110,7 @@
                         </button>
                     </span>
                 </li>
+                {% endif %}
             </ul>
         </li>
     {% endif %}

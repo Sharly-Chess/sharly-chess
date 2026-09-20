@@ -206,9 +206,11 @@ class FFESession(Session):
             logger.debug('Session initialized.')
         return result
 
-    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool:
-        """Authenticates on the FFE admin website.
-        Returns True on success, False if the credentials are incorrect."""
+    def _ffe_login(self, login: str, password: str) -> AdvancedHTMLParser | None:
+        """Posts the login form of the FFE admin website and returns the
+        page that follows, or None when the site did not answer properly.
+        The caller tells from the page whether the credentials were
+        accepted: the site answers the same form again otherwise."""
 
         assert self.ffe_state
         logger.debug('Authenticating...')
@@ -219,19 +221,28 @@ class FFESession(Session):
                 VIEW_STATE_GENERATOR_INPUT_ID
             ],
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
-            'ctl00$TextLogin': str(ffe_id),
-            'ctl00$TextPassword': ffe_password,
+            'ctl00$TextLogin': login,
+            'ctl00$TextPassword': password,
             'ctl00$CmdLogin.x': '12',
             'ctl00$CmdLogin.y': '6',
         }
         html: str | None = self._read_url(url=url, data=post_data, files=None)
         if not html:
-            return False
+            return None
         parser, error = self._parse_html_content(html)
         if error:
-            return False
+            return None
         assert parser is not None
         if not self.read_ffe_state(parser, url, True):
+            return None
+        return parser
+
+    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool:
+        """Authenticates on the FFE admin website with a tournament account.
+        Returns True on success, False if the credentials are incorrect."""
+
+        parser = self._ffe_login(str(ffe_id), ffe_password)
+        if parser is None:
             return False
         for id_ in [
             SET_VISIBLE_LINK_ID,

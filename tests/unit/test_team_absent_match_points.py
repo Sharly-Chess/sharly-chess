@@ -327,11 +327,10 @@ class LoubatiereForfeitedMatchTestCase(_AbsentMatchPointsHarness):
         assert rule_set is not None
         team = tournament.event.teams_by_id[forfeit_id]
         adjustment = rule_set.team_point_adjustment(team, 1)
-        # The forfeited games still cost a game point each; the match
-        # points come from the absence value, not from an adjustment.
-        assert adjustment is not None
-        self.assertEqual(adjustment.mp, 0.0)
-        self.assertLess(adjustment.gp, 0.0)
+        # The forfeited games cost a game point each, but the match
+        # score stops at zero and the team scored nothing: no adjustment
+        # is left. The match points come from the absence value.
+        self.assertIsNone(adjustment)
 
         self.assertEqual(self._mp(tournament, forfeit_id), 0.0)
         self.assertEqual(self._mp(tournament, opponent_id), 3.0)

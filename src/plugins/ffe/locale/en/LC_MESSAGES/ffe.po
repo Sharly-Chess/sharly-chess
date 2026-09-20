@@ -39,6 +39,9 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
+msgid "Account:"
+msgstr ""
+
 msgid "All the players with no FFE licence A"
 msgstr ""
 
@@ -147,6 +150,9 @@ msgstr ""
 msgid "Division"
 msgstr ""
 
+msgid "Division:"
+msgstr ""
+
 msgid "Download fees"
 msgstr ""
 
@@ -226,6 +232,9 @@ msgstr ""
 msgid "FFE forms"
 msgstr ""
 
+msgid "FFE group account, division or group not defined."
+msgstr ""
+
 msgid "FFE licence"
 msgstr ""
 
@@ -264,6 +273,9 @@ msgid "FFE website could not be reached"
 msgstr ""
 
 msgid "FFE website could not be reached."
+msgstr ""
+
+msgid "FFE website rejected the data"
 msgstr ""
 
 #, python-brace-format
@@ -315,6 +327,9 @@ msgstr ""
 msgid "Game points differential"
 msgstr ""
 
+msgid "Group:"
+msgstr ""
+
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
 msgstr ""
 
@@ -334,6 +349,9 @@ msgid "Inter-departmental zone phase"
 msgstr ""
 
 msgid "Invalid FFE certification number or password."
+msgstr ""
+
+msgid "Invalid FFE group account or password."
 msgstr ""
 
 #, python-brace-format
@@ -471,6 +489,9 @@ msgstr ""
 msgid "No internet connection"
 msgstr ""
 
+msgid "No internet connection."
+msgstr ""
+
 #, python-brace-format
 msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
 msgstr ""
@@ -500,6 +521,9 @@ msgstr ""
 msgid "PAPI"
 msgstr ""
 
+msgid "Page of the group on the FFE website (group account required)."
+msgstr ""
+
 msgid "Page of the tournament on the FFE website."
 msgstr ""
 
@@ -518,6 +542,9 @@ msgid "Papi export requires the standings to be ranked on the points first. This
 msgstr ""
 
 msgid "Papi file"
+msgstr ""
+
+msgid "Password:"
 msgstr ""
 
 msgid "Pending"
@@ -544,6 +571,10 @@ msgstr ""
 
 #, python-brace-format
 msgid "Player without an A (competition) FFE licence: {names}."
+msgstr ""
+
+#, python-brace-format
+msgid "Players without FFE licence number: {names}."
 msgstr ""
 
 msgid "Players:"
@@ -579,6 +610,12 @@ msgid "Rules upload link not found, check that the tournament is not marked as f
 msgstr ""
 
 msgid "Scan to access the tournament on the FFE site."
+msgstr ""
+
+msgid "Select a division"
+msgstr ""
+
+msgid "Select a group"
 msgstr ""
 
 msgid "Select the arbiter"
@@ -635,6 +672,10 @@ msgstr ""
 msgid "T7 Player reporting"
 msgstr ""
 
+#, python-brace-format
+msgid "Team [{team}] has no player with an FFE licence number."
+msgstr ""
+
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr ""
 
@@ -661,6 +702,12 @@ msgstr ""
 
 #, python-brace-format
 msgid "The [{variation}] pairing system is not recognized by the FFE, which derives acceleration from the ratings: the pairings displayed on the FFE website may differ."
+msgstr ""
+
+msgid "The account of the group director on the FFE website (administration of team competitions)."
+msgstr ""
+
+msgid "The match score cannot go below zero."
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
@@ -799,6 +846,9 @@ msgid "authentication failed, check the password and certification number"
 msgstr ""
 
 msgid "consult the logs"
+msgstr ""
+
+msgid "group not found on the FFE website, check the division and group in the tournament properties"
 msgstr ""
 
 msgid "no internet connection"

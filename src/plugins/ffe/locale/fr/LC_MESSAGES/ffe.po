@@ -44,6 +44,9 @@ msgstr "A ou B"
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
+msgid "Account:"
+msgstr "Compte :"
+
 msgid "All the players with no FFE licence A"
 msgstr "Tou·tes les joueur·euses sans licence A"
 
@@ -152,6 +155,9 @@ msgstr "Phase départementale"
 msgid "Division"
 msgstr "Division"
 
+msgid "Division:"
+msgstr "Division :"
+
 msgid "Download fees"
 msgstr "Télécharger les droits d'homologation"
 
@@ -231,6 +237,9 @@ msgstr "Base de données FFE (en ligne)"
 msgid "FFE forms"
 msgstr "Formulaires FFE"
 
+msgid "FFE group account, division or group not defined."
+msgstr "Compte de groupe FFE, division ou groupe non définis."
+
 msgid "FFE licence"
 msgstr "Licence FFE"
 
@@ -270,6 +279,9 @@ msgstr "impossible d'accéder au site FFE"
 
 msgid "FFE website could not be reached."
 msgstr "Impossible d'accéder au site FFE."
+
+msgid "FFE website rejected the data"
+msgstr "le site de la FFE a refusé les données"
 
 #, python-brace-format
 msgid "FFE {id}"
@@ -320,6 +332,9 @@ msgstr "Points de partie « pour »"
 msgid "Game points differential"
 msgstr "Différentiel de points de parties"
 
+msgid "Group:"
+msgstr "Groupe :"
+
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
 msgstr "Cependant, l'ordre des résultats de la dernière ronde restera le même que ceux de Sharly Chess."
 
@@ -340,6 +355,9 @@ msgstr "Phase zone interdépartementale"
 
 msgid "Invalid FFE certification number or password."
 msgstr "Identifiant FFE ou mot de passe invalide."
+
+msgid "Invalid FFE group account or password."
+msgstr "Compte de groupe FFE ou mot de passe invalide."
 
 #, python-brace-format
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
@@ -476,6 +494,9 @@ msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 msgid "No internet connection"
 msgstr "Aucune connexion à internet"
 
+msgid "No internet connection."
+msgstr "Pas de connexion internet."
+
 #, python-brace-format
 msgid "No legal {n}-player lineup: cheapest sum {sum} > {cap} cap."
 msgstr "Aucun composition de {n} joueur·euses légale: plus faible somme {sum} > plafond {cap}."
@@ -505,6 +526,9 @@ msgstr "Arbitre Fédéral Open 2"
 msgid "PAPI"
 msgstr "PAPI"
 
+msgid "Page of the group on the FFE website (group account required)."
+msgstr "Page du groupe sur le site de la FFE (compte de groupe requis)."
+
 msgid "Page of the tournament on the FFE website."
 msgstr "Page du tournoi sur le site FFE."
 
@@ -524,6 +548,9 @@ msgstr "L'export Papi exige que le classement soit établi sur les points en pre
 
 msgid "Papi file"
 msgstr "Fichier Papi"
+
+msgid "Password:"
+msgstr "Mot de passe :"
 
 msgid "Pending"
 msgstr "En attente"
@@ -550,6 +577,10 @@ msgstr "Joueur·euses classé·e au dessus de {cap} : {names}."
 #, python-brace-format
 msgid "Player without an A (competition) FFE licence: {names}."
 msgstr "Joueur·euses sans licence A (compétition) : {names}."
+
+#, python-brace-format
+msgid "Players without FFE licence number: {names}."
+msgstr "Joueur·euses sans numéro de licence FFE : {names}."
 
 msgid "Players:"
 msgstr "Joueur·euses :"
@@ -585,6 +616,12 @@ msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tourno
 
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
+
+msgid "Select a division"
+msgstr "Sélectionnez une division"
+
+msgid "Select a group"
+msgstr "Sélectionnez un groupe"
 
 msgid "Select the arbiter"
 msgstr "Sélectionner l'arbitre"
@@ -640,6 +677,10 @@ msgstr "T6 Exclusion d'un·e joueur·euse"
 msgid "T7 Player reporting"
 msgstr "T7 Signalement d'un·e joueur·euse"
 
+#, python-brace-format
+msgid "Team [{team}] has no player with an FFE licence number."
+msgstr "L'équipe [{team}] n'a aucun·e joueur·euse avec un numéro de licence FFE."
+
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
 
@@ -667,6 +708,12 @@ msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
 #, python-brace-format
 msgid "The [{variation}] pairing system is not recognized by the FFE, which derives acceleration from the ratings: the pairings displayed on the FFE website may differ."
 msgstr "Le système d'appariement [{variation}] n'est pas reconnu par la FFE, qui déduit l'accélération des classements : les appariements affichés sur le site de la FFE peuvent différer."
+
+msgid "The account of the group director on the FFE website (administration of team competitions)."
+msgstr "Le compte du directeur ou de la directrice de groupe sur le site de la FFE (administration des compétitions par équipes)."
+
+msgid "The match score cannot go below zero."
+msgstr "Le score du match ne peut pas être négatif."
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
@@ -805,6 +852,9 @@ msgstr "authentification échouée, vérifiez le mot de passe et le numéro de c
 
 msgid "consult the logs"
 msgstr "consultez les logs"
+
+msgid "group not found on the FFE website, check the division and group in the tournament properties"
+msgstr "groupe introuvable sur le site de la FFE, vérifiez la division et le groupe dans les propriétés du tournoi"
 
 msgid "no internet connection"
 msgstr "pas de connexion internet"

@@ -825,15 +825,15 @@ class FfePlugin(Plugin):
     def on_tournament_data_updated(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> None:
-        # The FFE upload pipeline is Papi-based. In a team event only a
-        # Scheveningen (uploaded as an individual Swiss) auto-uploads; the
-        # other team systems have no Papi form.
+        # In a team event, a Scheveningen auto-uploads as an individual
+        # Swiss (Papi) and a team competition through the site's team
+        # module; the other team systems have no FFE form.
         if stored_event.event_type == EventType.TEAM:
             from data.pairings.scheveningen import ScheveningenPairingSystem
 
             if not (stored_tournament.pairing or '').startswith(
                 f'{ScheveningenPairingSystem.static_id()}_'
-            ):
+            ) and not self._stored_tournament_team_competition_id(stored_tournament):
                 return
         # Defer the event reload so result entry does not wait for it.
         if not FfeBackgroundUploader.should_schedule_tournament_upload(
@@ -861,19 +861,67 @@ class FfePlugin(Plugin):
 
         Thread(target=_reload_and_schedule, daemon=True).start()
 
+    @staticmethod
+    def _stored_tournament_team_competition_id(
+        stored_tournament: 'StoredTournament',
+    ) -> int | None:
+        from plugins.ffe.ffe_rule_sets import _FfeTeamCupRuleSet
+
+        for rule_set_type in _FfeTeamCupRuleSet.__subclasses__():
+            if rule_set_type.static_id() == stored_tournament.rule_set:
+                return rule_set_type.ffe_competition_id()
+        return None
+
     @hookimpl
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]] | None:
-        # The connection fields follow the pairing system chosen in the
-        # form: the template shows them for the systems listed here.
+        from data.rule_sets import RuleSetManager
+
+        # The connection fields follow the pairing system and rule set
+        # chosen in the form: the Papi fields for the systems listed
+        # here, the team-module fields for the rule sets listed here.
+        team_competition_rule_set_ids: list[str] = []
+        division_hints: dict[str, dict[str, str]] = {}
+        if event.is_team_event:
+            for rule_set_type in RuleSetManager(event).entity_types():
+                rule_set = rule_set_type({})
+                if FFEUtils.rule_set_team_competition_id(rule_set) is None:
+                    continue
+                team_competition_rule_set_ids.append(rule_set.id)
+                division_hints[rule_set.id] = self._division_hints(rule_set_type)
         return '/ffe_tournament_form_fields.html', {
             'ffe_transfer_system_ids': [
                 system.id
                 for system in PairingSystemManager(event).objects()
                 if FFEUtils.system_supports_ffe_transfer(event, system)
             ],
+            'ffe_team_competition_rule_set_ids': team_competition_rule_set_ids,
+            'ffe_team_division_hints': division_hints,
+            'ffe_team_auth_valid': (
+                FFEUtils.get_tournament_plugin_data(tournament).team_configured
+                if tournament
+                else False
+            ),
         }
+
+    @staticmethod
+    def _division_hints(rule_set_type: type['RuleSet']) -> dict[str, str]:
+        """Site division name per value of the rule set's phase field,
+        keyed by the form value, for the form to pre-select the division
+        the phase implies."""
+        from plugins.ffe.ffe_rule_sets import _FfeTeamCupRuleSet
+
+        assert issubclass(rule_set_type, _FfeTeamCupRuleSet)
+        hints: dict[str, str] = {}
+        for config_field in rule_set_type({}).config_fields:
+            if config_field.kind != 'select':
+                continue
+            for value in config_field.values():
+                rule_set = rule_set_type({config_field.id: value})
+                if name := rule_set.ffe_division_name:
+                    hints[f'{config_field.form_field_name(rule_set.id)}={value}'] = name
+        return hints
 
     @hookimpl
     def validate_tournament_form_fields(
@@ -899,7 +947,7 @@ class FfePlugin(Plugin):
     ) -> TournamentConnectionField | None:
         if not FFEUtils.supports_ffe_transfer(tournament):
             return None
-        if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
+        if not FFEUtils.is_configured(tournament):
             return None
         return TournamentConnectionField(
             label=_('FFE'),
@@ -930,6 +978,8 @@ class FfePlugin(Plugin):
     ) -> str | None:
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
+        if FFEUtils.supports_team_transfer(tournament):
+            return None
         return PapiConverter.check_tiebreaks_warning(
             tournament.tie_breaks, three_points_for_a_win=tournament.win_points == 3.0
         )
@@ -939,6 +989,8 @@ class FfePlugin(Plugin):
         self, tournament: 'Tournament'
     ) -> str | None:
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
+            return None
+        if FFEUtils.supports_team_transfer(tournament):
             return None
         return PapiConverter.check_pairing_warning(tournament)
 
@@ -959,6 +1011,8 @@ class FfePlugin(Plugin):
     def signal_special_result_set(
         self, tournament: 'Tournament', result: Result
     ) -> str | None:
+        if FFEUtils.supports_team_transfer(tournament):
+            return None
         return PapiConverter.check_result(result, tournament)
 
     @hookimpl

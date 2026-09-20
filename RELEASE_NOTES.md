@@ -12,6 +12,7 @@
 
 - Exclusion of players (or teams) who have not played 50% of the games (or matches) in accordance with FIDE 6.6 in round robins (5.1.0)
 - Separate players of the same club when distributing players on balanced tournaments, as much as possible (5.1.0)
+- The Coupe Jean-Claude Loubatière, the Coupe de la Parité and the Nationale 1 and 2 Féminines can be sent to the _FFE_ website: teams and match reports are filled in from the tournament with the group account (5.1.0)
 
 ## Players
 

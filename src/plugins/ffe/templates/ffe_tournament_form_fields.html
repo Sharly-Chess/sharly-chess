@@ -17,17 +17,52 @@
     </h4>
     {% include 'ffe_tournament_ffe_auth_fields.html' %}
 </div>
+<div id="ffe-team-connection-section" class="mt-4">
+    <h4>
+        {{ _('Connection French Chess Federation') }}
+    </h4>
+    {% include 'ffe_tournament_team_auth_fields.html' %}
+</div>
 <script>
     (function () {
         // The FFE transfer is offered for some systems only (a game-point
-        // score, and a Scheveningen among the team systems): the
-        // connection fields follow the system chosen in the form.
+        // score, and a Scheveningen among the team systems) and, through
+        // the site's team module, for the team competitions listed
+        // here: the connection fields follow the system and rule set
+        // chosen in the form.
         const FFE_TRANSFER = {{ ffe_transfer_system_ids|tojson }};
+        const TEAM_COMPETITIONS = {{ ffe_team_competition_rule_set_ids|tojson }};
+        const DIVISION_HINTS = {{ ffe_team_division_hints|tojson }};
+        function teamCompetition() {
+            const id = $('#rule-set').val() || '';
+            return TEAM_COMPETITIONS.includes(id) ? id : '';
+        }
+        window.ffeTeamDivisionHint = function () {
+            const hints = DIVISION_HINTS[teamCompetition()] || {};
+            for (const key of Object.keys(hints)) {
+                const [name, value] = key.split('=');
+                const $input = $('[name="' + name + '"]');
+                if ($input.length && ($input.val() || '') === value) {
+                    return hints[key];
+                }
+            }
+            return '';
+        };
         function syncFfeConnection() {
             const id = $('#pairing-system').val() || '';
-            $('#ffe-connection-section').toggle(FFE_TRANSFER.includes(id));
+            const team = teamCompetition() !== '';
+            $('#ffe-connection-section').toggle(!team && FFE_TRANSFER.includes(id));
+            $('#ffe-team-connection-section').toggle(team);
+        }
+        function refreshTeamLists() {
+            syncFfeConnection();
+            if (teamCompetition()) {
+                htmx.trigger('#ffe-team-connection-section .team-auth-fields', 'ffe-team-refresh');
+            }
         }
         $('#pairing-system').on('change', syncFfeConnection);
+        $('#rule-set').on('change', refreshTeamLists);
+        $('[data-rule-set-config] select').on('change', refreshTeamLists);
         syncFfeConnection();
     })();
 </script>

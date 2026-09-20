@@ -1,0 +1,88 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{# The division and group lists come from the FFE website: the fragment
+   reloads itself whenever the credentials, the rule set or its phase
+   change, and the selects then offer what the site lists for the
+   competition. Until the site has answered, each select only offers
+   the stored value. #}
+{% set division_options = {'': _('Select a division')} %}
+{% if ffe_team_divisions %}
+    {% for option in ffe_team_divisions %}
+        {% set ignored = division_options.update({option.id ~ '|' ~ option.name: option.name}) %}
+    {% endfor %}
+{% elif data.ffe_team_division %}
+    {% set ignored = division_options.update({data.ffe_team_division: data.ffe_team_division.split('|', 1)[1]}) %}
+{% endif %}
+{% set group_options = {'': _('Select a group')} %}
+{% if ffe_team_groups %}
+    {% for option in ffe_team_groups %}
+        {% set ignored = group_options.update({option.id ~ '|' ~ option.name: option.name}) %}
+    {% endfor %}
+{% elif data.ffe_team_group %}
+    {% set ignored = group_options.update({data.ffe_team_group: data.ffe_team_group.split('|', 1)[1]}) %}
+{% endif %}
+<div
+    class="team-auth-fields row gy-2 gx-3"
+    hx-post="{{ url_for(
+        'ffe-team-auth',
+        event_uniq_id=admin_event.uniq_id if admin_event else event_uniq_id,
+    ) }}"
+    hx-trigger="input delay:500ms, ffe-team-refresh"
+    hx-include="#modal-form"
+    hx-target="this"
+    hx-swap="morphdom"
+    hx-sync="this:replace"
+    hx-indicator="unset"
+    hx-vals='js:{
+        ffe_team_password_visible: $("#ffe-team-password").attr("type") === "text",
+        ffe_team_division_hint: window.ffeTeamDivisionHint ? window.ffeTeamDivisionHint() : ""
+    }'
+>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.text_input(
+            name='ffe_team_login',
+            label=_('Account:'),
+            tooltip_text=_(
+                'The account of the group director on the FFE website '
+                '(administration of team competitions).'
+            ),
+            autocomplete='off',
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        <input type="password" name="fake_ffe_team_password" style="display:none" autocomplete="current-password">
+        {{ admin_macros.password_input(
+            name='ffe_team_password',
+            label=_('Password:'),
+            autocomplete='new-password',
+            valid=ffe_team_auth_valid,
+            password_visible=ffe_team_password_visible,
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.select_input(
+            name='ffe_team_division',
+            label=_('Division:'),
+            select_options=division_options,
+            onchange="htmx.trigger(this.closest('.team-auth-fields'), 'ffe-team-refresh')",
+            data=data, errors=errors
+        ) }}
+    </div>
+    <div class="col-12 col-md-6">
+        {{ admin_macros.select_input(
+            name='ffe_team_group',
+            label=_('Group:'),
+            select_options=group_options,
+            onchange="htmx.trigger(this.closest('.team-auth-fields'), 'ffe-team-refresh')",
+            data=data, errors=errors
+        ) }}
+    </div>
+    {% if ffe_team_message %}
+        <div class="col-12 text-warning small">
+            {{ ffe_team_message }}
+        </div>
+    {% endif %}
+</div>

@@ -31,6 +31,8 @@ from plugins.ffe.ffe_upload_status import (
     AuthFailureFFEUploadStatus,
     FinishedFailureFFEUploadStatus,
     PapiConversionFailureFFEUploadStatus,
+    GroupNotFoundFFEUploadStatus,
+    RejectedFFEUploadStatus,
 )
 from plugins.utils import PluginUtils, PluginData, AccountPluginData
 from utils.date_time import format_datetime
@@ -38,6 +40,7 @@ from utils.entity import EntityManager
 
 if TYPE_CHECKING:
     from data.pairings.systems import PairingSystem
+    from data.rule_sets.rule_sets import RuleSet
 from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
 
@@ -89,12 +92,38 @@ class FFEUtils:
         return isinstance(pairing_system, ScheveningenPairingSystem)
 
     @staticmethod
+    def rule_set_team_competition_id(rule_set: 'RuleSet | None') -> int | None:
+        """The FFE team-module competition of *rule_set*, ``None`` when it
+        is not an FFE team competition."""
+        from plugins.ffe.ffe_rule_sets import _FfeTeamCupRuleSet
+
+        if not isinstance(rule_set, _FfeTeamCupRuleSet):
+            return None
+        return rule_set.ffe_competition_id()
+
+    @classmethod
+    def team_competition_id(cls, tournament: Tournament) -> int | None:
+        """The FFE team-module competition this tournament is sent to
+        (see :meth:`rule_set_team_competition_id`)."""
+        if not tournament.event.is_team_event:
+            return None
+        return cls.rule_set_team_competition_id(tournament.rule_set)
+
+    @classmethod
+    def supports_team_transfer(cls, tournament: Tournament) -> bool:
+        """Whether the tournament is sent through the site's team module
+        (match reports, one per round and pair of teams) rather than as
+        a Papi file."""
+        return cls.team_competition_id(tournament) is not None
+
+    @staticmethod
     def supports_ffe_transfer(tournament: Tournament) -> bool:
         """Whether the FFE-site transfer is offered for this tournament —
-        see :meth:`system_supports_ffe_transfer`."""
+        see :meth:`system_supports_ffe_transfer` and
+        :meth:`supports_team_transfer`."""
         return FFEUtils.system_supports_ffe_transfer(
             tournament.event, tournament.pairing_system
-        )
+        ) or FFEUtils.supports_team_transfer(tournament)
 
     @staticmethod
     def event_supports_ffe_transfer(event: Event) -> bool:
@@ -106,6 +135,14 @@ class FFEUtils:
             FFEUtils.supports_ffe_transfer(tournament)
             for tournament in event.tournaments
         )
+
+    @classmethod
+    def is_configured(cls, tournament: Tournament) -> bool:
+        """Whether the tournament holds the credentials its transfer needs."""
+        pd = cls.get_tournament_plugin_data(tournament)
+        if cls.supports_team_transfer(tournament):
+            return pd.team_configured
+        return bool(pd.ffe_id and pd.password)
 
     @classmethod
     def resolve_auto_upload(cls, tournament: Tournament) -> bool:
@@ -142,6 +179,12 @@ class FFEUtils:
         from plugins.ffe.papi_converter import PapiConverter
 
         pd = FFEUtils.get_tournament_plugin_data(tournament)
+        if FFEUtils.supports_team_transfer(tournament):
+            from plugins.ffe.ffe_team_session import FFETeamSession
+
+            if not pd.team_configured:
+                return _('FFE group account, division or group not defined.')
+            return FFETeamSession.upload_unavailable_message(tournament)
         if not pd.ffe_id and not pd.password:
             return _('FFE certification number and password not defined.')
         if not pd.ffe_id:
@@ -189,6 +232,21 @@ class FFEUtils:
         return f'https://echecs.asso.fr/FicheJoueur.aspx?Id={ffe_id}'
 
     @classmethod
+    def team_group_url(cls, tournament: Tournament) -> str | None:
+        """The group's page in the site's team module (admin side, the
+        group account must be logged in)."""
+        from plugins.ffe.ffe_session import FFE_ADMIN_URL
+
+        pd = cls.get_tournament_plugin_data(tournament)
+        competition_id = cls.team_competition_id(tournament)
+        if not competition_id or not pd.team_division_id or not pd.team_group_id:
+            return None
+        return (
+            f'{FFE_ADMIN_URL}/Equipes.aspx?C={competition_id}'
+            f'&D={pd.team_division_id}&G={pd.team_group_id}'
+        )
+
+    @classmethod
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
     ) -> list[FFEUploadStatus]:
@@ -197,7 +255,7 @@ class FFEUtils:
 
         plugin_data = cls.get_tournament_plugin_data(tournament)
 
-        if not plugin_data.ffe_id or not plugin_data.password:
+        if not cls.is_configured(tournament):
             return [NotConfiguredFFEUploadStatus()]
 
         statuses: list[FFEUploadStatus] = []
@@ -209,7 +267,12 @@ class FFEUtils:
             )
             statuses.append(status)
 
-        if PapiConverter.papi_export_unavailable_message(tournament):
+        if cls.supports_team_transfer(tournament):
+            from plugins.ffe.ffe_team_session import FFETeamSession
+
+            if FFETeamSession.upload_unavailable_message(tournament):
+                statuses.append(IncompatibleFFEUploadStatus())
+        elif PapiConverter.papi_export_unavailable_message(tournament):
             statuses.append(IncompatibleFFEUploadStatus())
 
         is_modified = FfeBackgroundUploader.ffe_upload_needed(tournament)
@@ -240,6 +303,8 @@ class FFEUploadFailureStatusManager(EntityManager[FailureFFEUploadStatus]):
             AuthFailureFFEUploadStatus,
             FinishedFailureFFEUploadStatus,
             PapiConversionFailureFFEUploadStatus,
+            GroupNotFoundFFEUploadStatus,
+            RejectedFFEUploadStatus,
         ]
 
 
@@ -406,10 +471,20 @@ class FfeEventPluginData(PluginData):
 class FfeTournamentPluginData(PluginData):
     ffe_id: int | None = None
     password: str | None = None
+    # Team competitions are sent through the site's team module, with a
+    # group account rather than a tournament certification number.
+    team_login: str | None = None
+    team_password: str | None = None
+    team_division_id: int | None = None
+    team_division_name: str | None = None
+    team_group_id: int | None = None
+    team_group_name: str | None = None
     auto_upload: bool = False
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
+    # What the site or the upload said, when the failure has a text.
+    upload_failure_message: str | None = None
 
     @property
     def last_upload_at_str(self) -> str:
@@ -422,6 +497,12 @@ class FfeTournamentPluginData(PluginData):
         return cls(
             ffe_id=stored_value.get('ffe_id'),
             password=stored_value.get('password'),
+            team_login=stored_value.get('team_login'),
+            team_password=stored_value.get('team_password'),
+            team_division_id=stored_value.get('team_division_id'),
+            team_division_name=stored_value.get('team_division_name'),
+            team_group_id=stored_value.get('team_group_id'),
+            team_group_name=stored_value.get('team_group_name'),
             auto_upload=stored_value.get('auto_upload', False),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
@@ -430,12 +511,19 @@ class FfeTournamentPluginData(PluginData):
                 stored_value.get('last_upload_attempt_at')
             ),
             upload_failure_id=stored_value.get('upload_failure_id'),
+            upload_failure_message=stored_value.get('upload_failure_message'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
             'ffe_id': self.ffe_id,
             'password': self.password,
+            'team_login': self.team_login,
+            'team_password': self.team_password,
+            'team_division_id': self.team_division_id,
+            'team_division_name': self.team_division_name,
+            'team_group_id': self.team_group_id,
+            'team_group_name': self.team_group_name,
             'auto_upload': self.auto_upload,
             'last_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_upload_at
@@ -444,6 +532,7 @@ class FfeTournamentPluginData(PluginData):
                 self.last_upload_attempt_at
             ),
             'upload_failure_id': self.upload_failure_id,
+            'upload_failure_message': self.upload_failure_message,
         }
 
     @classmethod
@@ -456,14 +545,32 @@ class FfeTournamentPluginData(PluginData):
         plugin_data = cls(
             ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
             password=WebContext.form_data_to_str(data, 'ffe_password'),
+            team_login=WebContext.form_data_to_str(data, 'ffe_team_login'),
+            team_password=WebContext.form_data_to_str(data, 'ffe_team_password'),
+        )
+        # The division and group selects carry ``id|name``: the name is
+        # what the arbiter sees afterwards, the id what the upload uses.
+        plugin_data.team_division_id, plugin_data.team_division_name = (
+            cls._split_site_choice(
+                WebContext.form_data_to_str(data, 'ffe_team_division')
+            )
+        )
+        plugin_data.team_group_id, plugin_data.team_group_name = cls._split_site_choice(
+            WebContext.form_data_to_str(data, 'ffe_team_group')
         )
         if previous_object:
-            if action != 'clone' and plugin_data.ffe_id and plugin_data.password:
+            if action != 'clone' and (
+                (plugin_data.ffe_id and plugin_data.password)
+                or plugin_data.team_configured
+            ):
                 plugin_data.last_upload_at = previous_object.last_upload_at
                 plugin_data.last_upload_attempt_at = (
                     previous_object.last_upload_attempt_at
                 )
                 plugin_data.upload_failure_id = previous_object.upload_failure_id
+                plugin_data.upload_failure_message = (
+                    previous_object.upload_failure_message
+                )
             plugin_data.auto_upload = previous_object.auto_upload
         return plugin_data
 
@@ -472,7 +579,39 @@ class FfeTournamentPluginData(PluginData):
             {
                 'ffe_id': self.ffe_id if action != 'clone' else '',
                 'ffe_password': self.password if action != 'clone' else '',
+                'ffe_team_login': self.team_login if action != 'clone' else '',
+                'ffe_team_password': self.team_password if action != 'clone' else '',
+                'ffe_team_division': self.site_choice(
+                    self.team_division_id, self.team_division_name
+                ),
+                'ffe_team_group': self.site_choice(
+                    self.team_group_id, self.team_group_name
+                ),
             }
+        )
+
+    @staticmethod
+    def site_choice(id_: int | None, name: str | None) -> str:
+        """The ``id|name`` value of a site select option."""
+        return f'{id_}|{name}' if id_ else ''
+
+    @staticmethod
+    def _split_site_choice(value: str | None) -> tuple[int | None, str | None]:
+        if not value or '|' not in value:
+            return None, None
+        id_str, name = value.split('|', 1)
+        try:
+            return int(id_str), name
+        except ValueError:
+            return None, None
+
+    @property
+    def team_configured(self) -> bool:
+        return bool(
+            self.team_login
+            and self.team_password
+            and self.team_division_id
+            and self.team_group_id
         )
 
 
