@@ -46,7 +46,7 @@ class PointsTieBreakTestCase(TestCase):
         ranking order."""
         self._held.append(tie_breaks)
         tournament = self.tournament
-        tournament.tie_breaks_by_id = {
+        tournament.tie_break_configuration.by_id = {
             index + 1: tie_break for index, tie_break in enumerate(tie_breaks)
         }
         tournament.compute_tournament_player_ranks()
@@ -59,7 +59,7 @@ class PointsTieBreakTestCase(TestCase):
         # An empty list would otherwise rank nobody, the score being one
         # of the criteria rather than an implicit first key.
         tournament = self.tournament
-        tournament.tie_breaks_by_id = {}
+        tournament.tie_break_configuration.by_id = {}
         self.assertEqual([tb.id for tb in tournament.tie_breaks], ['POINTS'])
         ranked = self._rank([])
         self.assertEqual(ranked[0][1], max(points for __, points in ranked))

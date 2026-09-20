@@ -1476,7 +1476,7 @@ class TournamentAdminController(BaseEventAdminController):
                     base_tournament = web_context.get_admin_tournament()
                     assert tournament.id is not None
                     database.delete_all_tournament_stored_tie_breaks(tournament.id)
-                    for tie_break in base_tournament.tie_breaks_with_invalid:
+                    for tie_break in base_tournament.tie_break_configuration.all:
                         stored_tie_break = tie_break.to_stored_value()
                         stored_tie_break.tournament_id = tournament.id
                         database.add_stored_tie_break(stored_tie_break)
@@ -1984,7 +1984,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'This tie-break cannot decide which team advances in a knock-out.'
             )
         elif not advancement and (
-            message := tournament.tie_break_invalid_message(tie_break)
+            message := tournament.tie_break_configuration.invalid_message(tie_break)
         ):
             errors[field] = message
         else:
@@ -2193,7 +2193,7 @@ class TournamentAdminController(BaseEventAdminController):
         for stored_tb in tie_break_set.stored_tie_breaks:
             tie_break = instantiate_tie_break(stored_tb, tournament.event)
             if tie_break is not None:
-                tournament.add_tie_break(tie_break)
+                tournament.tie_break_configuration.add(tie_break)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2221,7 +2221,7 @@ class TournamentAdminController(BaseEventAdminController):
         error: str | None = None
         if not name:
             error = _('Please choose a name for the set.')
-        elif tournament.tie_breaks_invalid_messages:
+        elif tournament.tie_break_configuration.invalid_messages:
             error = _(
                 'The tournament has invalid tie-breaks; '
                 'please fix them before saving as a set.'
@@ -2303,7 +2303,7 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             )
         tie_break = self._tie_break_from_data(event, data)
-        tournament.add_tie_break(tie_break)
+        tournament.tie_break_configuration.add(tie_break)
         if add_other:
             template_context = self._tie_break_form_modal_context(
                 web_context, {}, FormAction.CREATE, errors
@@ -2337,7 +2337,7 @@ class TournamentAdminController(BaseEventAdminController):
             raise ValidationException(
                 f"Tie-breaks of type [{tie_break.id}] can't be duplicated."
             )
-        tournament.add_tie_break(tie_break)
+        tournament.tie_break_configuration.add(tie_break)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2377,7 +2377,7 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             )
         tie_break = self._tie_break_from_data(event, data)
-        tournament.update_tie_break(tie_break_id, tie_break)
+        tournament.tie_break_configuration.update(tie_break_id, tie_break)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2403,7 +2403,7 @@ class TournamentAdminController(BaseEventAdminController):
             tie_break_id=tie_break_id,
         )
         tournament = web_context.get_admin_tournament()
-        tournament.delete_tie_break(tie_break_id)
+        tournament.tie_break_configuration.delete(tie_break_id)
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )
@@ -2424,7 +2424,7 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-        tournament.reorder_tie_breaks(data.get('tie_break_ids', []))
+        tournament.tie_break_configuration.reorder(data.get('tie_break_ids', []))
         return self._admin_base_event_render(
             web_context.template_context | self._tie_breaks_modal_context(tournament)
         )

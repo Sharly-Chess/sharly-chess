@@ -7,7 +7,7 @@
     <div class="d-flex">
         <h4>{{ _('Ranking') }}</h4>
         <div class="flex-grow-1"></div>
-        {% if admin_tournament.has_manual_tie_break_values %}
+        {% if admin_tournament.tie_break_configuration.has_manual_values %}
             <button
                 class="btn btn-outline-primary text-nowrap mb-3"
                 hx-post="{{ url_for(

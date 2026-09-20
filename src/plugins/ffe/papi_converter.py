@@ -748,7 +748,7 @@ class PapiConverter:
 
         # Papi ranks on the points and then on up to three tie-breaks;
         # there is no way to express a criterion that outranks the score.
-        if not tournament.leads_on_points:
+        if not tournament.tie_break_configuration.leads_on_points:
             return _(
                 'Papi export requires the standings to be ranked on the points '
                 'first. This tournament ranks on [{tie_break}] before them, '

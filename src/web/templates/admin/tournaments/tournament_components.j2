@@ -228,7 +228,7 @@
     {% set config = item.tie_breaks_by_id %}
     {% set advancement = item.tie_break_config_purpose == 'ADVANCEMENT' %}
     {% if config %}
-        {% set invalid_messages_by_id = {} if advancement else item.tie_breaks_invalid_messages %}
+        {% set invalid_messages_by_id = {} if advancement else item.tie_break_configuration.invalid_messages %}
         {% for stored_id, tie_break in config.items() %}
             {% if stored_id in invalid_messages_by_id %}
                 {% set badge_class = 'text-bg-danger' %}
@@ -258,14 +258,14 @@
        tie-break to be missing, so the recommendation does not apply. #}
     {% set section_warning = None if item.pairing_system.eliminates_participants else (
         _('It is highly recommended to set at least one tie-break.')
-        if item.only_ranks_on_points else
-        item.tie_breaks_warning_message
+        if item.tie_break_configuration.only_points else
+        item.tie_break_configuration.warning_message
     ) %}
     {% if section_warning %}
         <i
             class="bi-exclamation-triangle-fill text-warning flex-shrink-0 {{ extra_class }}"
             {{ macros.tooltip_attributes(
-                'warning' if item.only_ranks_on_points else '',
+                'warning' if item.tie_break_configuration.only_points else '',
                 section_warning,
                 'top',
             ) }}

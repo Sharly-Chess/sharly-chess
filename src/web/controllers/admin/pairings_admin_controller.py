@@ -3582,7 +3582,7 @@ class PairingsAdminController(BaseEventAdminController):
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
         with EventDatabase(event_uniq_id, True) as database:
-            tournament.delete_manual_tie_break_values(database)
+            tournament.tie_break_configuration.delete_manual_values(database)
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, reload_event=True
         )

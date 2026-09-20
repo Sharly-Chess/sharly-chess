@@ -217,7 +217,7 @@ class TournamentExporterTestCase(TestCase):
         """Rank on the points, then on *tie_breaks* — the points being a
         criterion of their own now, they are stated rather than implied."""
         ordered = [PointsTieBreak(), *tie_breaks]
-        self.tournament.tie_breaks_by_id = {
+        self.tournament.tie_break_configuration.by_id = {
             index + 1: tie_break for index, tie_break in enumerate(ordered)
         }
 

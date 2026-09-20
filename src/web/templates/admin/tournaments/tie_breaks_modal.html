@@ -3,7 +3,7 @@
 {# Advancement tie-breaks are hand-picked and never rule-set managed; the
    "points alone" caveat is a standings notion and does not apply. #}
 {% set rule_set_managed = (not advancement) and admin_tournament.rule_set_managed_tie_breaks %}
-{% set only_the_points = (not advancement) and admin_tournament.only_ranks_on_points %}
+{% set only_the_points = (not advancement) and admin_tournament.tie_break_configuration.only_points %}
 {# A definite width, not fit-content: sizing to the content meant the
    dialog moved whenever the content did — opening the custom-sets section,
    or the body growing tall enough for a scrollbar. Anything too wide now
@@ -88,7 +88,7 @@
                 {{ _('%(string)s:', string=_('Tournament')) }}
                 {{ admin_tournament.name }}
                 {% set warning_message = None if advancement
-                    else admin_tournament.tie_breaks_warning_message %}
+                    else admin_tournament.tie_break_configuration.warning_message %}
                 {% if warning_message %}
                     <i
                         class="bi-exclamation-triangle-fill text-warning ps-2"
@@ -107,7 +107,7 @@
                 ) %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
-                {% if admin_tournament.advancement_tie_breaks_after_manual %}
+                {% if admin_tournament.tie_break_configuration.advancement_after_manual %}
                     {% with type='warning', hide_remove_button=true,
                         icon='bi-exclamation-triangle-fill', message=_(
                             'The "Manual" tie-break settles the match by '
@@ -138,7 +138,7 @@
             {% endif %}
             {# Ranking on tie-breaks without the score is almost never
                what an arbiter means, so say so rather than let it pass. #}
-            {% if not advancement and admin_tournament.tie_breaks_by_id and not admin_tournament.ranks_on_points %}
+            {% if not advancement and admin_tournament.tie_breaks_by_id and not admin_tournament.tie_break_configuration.ranks_on_points %}
                 {% with type='warning', message=_(
                     'The points are not among the ranking criteria.'
                 ), hide_remove_button=true, icon='bi-exclamation-triangle-fill' %}
@@ -161,7 +161,7 @@
                     hx-indicator="#please-wait"
                 >
                     {% set invalid_messages_by_id = {} if advancement
-                        else admin_tournament.tie_breaks_invalid_messages %}
+                        else admin_tournament.tie_break_configuration.invalid_messages %}
                     {% for stored_id, tie_break in config_tie_breaks.items() %}
                         <div
                             class="tie-break-row border border-secondary bg-body-tertiary
