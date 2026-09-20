@@ -1598,7 +1598,7 @@ class SharlyChessServerToga(toga.App):
             port=self.port,
             loop=loop,
             handle_signals=False,
-            on_port_chosen=schedule_ready,
+            on_ready=schedule_ready,
         )
         self.serve_task = loop.create_task(engine.serve())
 

@@ -72,6 +72,19 @@ def launch_browser(url: str) -> None:
     open(url, new=2)
 
 
+class _Server(uvicorn.Server):
+    def __init__(
+        self, config: uvicorn.Config, on_ready: Callable[[], None] | None
+    ) -> None:
+        super().__init__(config)
+        self.on_ready = on_ready
+
+    async def startup(self, sockets: list[socket.socket] | None = None) -> None:
+        await super().startup(sockets)
+        if self.started and self.on_ready:
+            self.on_ready()
+
+
 class ServerEngine:
     app: ClassVar[Litestar | None] = None
     server: ClassVar[uvicorn.Server | None] = None
@@ -83,13 +96,14 @@ class ServerEngine:
         port: int | None = None,
         loop: asyncio.AbstractEventLoop | None = None,
         handle_signals: bool = True,
-        on_port_chosen: Callable[[], None] | None = None,
+        on_ready: Callable[[], None] | None = None,
     ):
         self.debug = debug
         self.profile = profile
         self.handle_signals = handle_signals
         self.port = port
-        self.on_port_chosen = on_port_chosen
+        # Called once the server accepts connections.
+        self.on_ready = on_ready
 
         # before all the rest, initialize a SharlyChessConfig instance to set the language.
         config = SharlyChessConfig()
@@ -217,9 +231,6 @@ class ServerEngine:
                 )
                 return
 
-        if self.on_port_chosen:
-            self.on_port_chosen()
-
         logger.info(f'Port: {sc_config.web_port}')
         logger.info(f'Local URL: {sc_config.local_url}')
 
@@ -245,7 +256,7 @@ class ServerEngine:
             log_config=logging_config,
             timeout_graceful_shutdown=5,
         )
-        server = uvicorn.Server(config)
+        server = _Server(config, on_ready=self.on_ready)
         self.__class__.server = server
 
         # The handler each signal already had. Replacing it outright drops
