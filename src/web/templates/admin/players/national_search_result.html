@@ -1,0 +1,22 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<img
+    class="player-federation-flag pe-1"
+    alt="{{ player.federation }}"
+    src="{{ macros.federation_flag_url(player.federation) }}"
+/>
+{% if not no_identifier %}
+    {{ player.national_id }}
+{% endif %}
+<span class="fw-bold">
+    {{ player.full_name }}
+</span>
+{% if player.year_of_birth %}
+    ({{ player.year_of_birth }}, {{ player.category.name }})
+{% endif %}
+-
+{% if player.has_real_rating %}
+    {{ player.first_real_rating_str }}
+{% else %}
+    <i>{{ pgettext('singular for unrated player', 'Unrated') }}</i>
+{% endif %}

@@ -1443,6 +1443,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             check_in=True,
         )
         if national_player:
+            stored_player.national_id = national_player.national_id or None
             plugin_manager.hook_for_event(
                 event, 'augment_stored_player_from_trf_national_player'
             )(

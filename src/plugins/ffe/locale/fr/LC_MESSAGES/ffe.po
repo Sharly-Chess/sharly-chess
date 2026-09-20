@@ -200,6 +200,21 @@ msgstr "Licence FFE expirée"
 msgid "FFE"
 msgstr "FFE"
 
+msgid "FFE (France)"
+msgstr "FFE (France)"
+
+msgid "FFE (France) - local database"
+msgstr "FFE (France) - base de données locale"
+
+msgid "FFE (France) - online database"
+msgstr "FFE (France) - base de données en ligne"
+
+msgid "FFE (local)"
+msgstr "FFE (locale)"
+
+msgid "FFE (online)"
+msgstr "FFE (en ligne)"
+
 msgid "FFE 4-board team cup. 5-player roster cap, max Elo 1800 per player, mixed-system schedule (Swiss / Molter / round-robin)."
 msgstr "Coupe FFE par équipes à 4 échiquiers. Effectif limité à 5 joueur·euses, Elo maximum de 1800 pour chaque joueur·euse, appariements (Suisse / Molter / toutes rondes)."
 
@@ -231,12 +246,6 @@ msgstr "Numéro d'homologation FFE non défini."
 msgid "FFE certification number:"
 msgstr "Numéro d'homologation :"
 
-msgid "FFE database (local)"
-msgstr "Base de données FFE (locale)"
-
-msgid "FFE database (online)"
-msgstr "Base de données FFE (en ligne)"
-
 msgid "FFE forms"
 msgstr "Formulaires FFE"
 
@@ -252,9 +261,8 @@ msgstr "Licence FFE A (compétition)"
 msgid "FFE licence B (leisure)"
 msgstr "Licence FFE B (loisir)"
 
-#, python-brace-format
-msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
-msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
+msgid "FFE licence no.:"
+msgstr "Numéro de licence FFE :"
 
 msgid "FFE mixed team cup. 6-player roster (3M + 3W), per-match lineup must field 2 men and 2 women, team Elo capped at 8000."
 msgstr "Coupe de la parité FFE. Effectif de 6 joueur·euses (3F + 3H), 2 femmes et 2 hommes alignés à chaque ronde, Elo total de l'équipe plafonné à 8000."
@@ -320,9 +328,6 @@ msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins sig
 msgid "For unrated players, a representative rating is calculated."
 msgstr "Pour les joueur·euses estimé·es, un classement représentatif est calculé."
 
-msgid "French Chess Federation"
-msgstr "Fédération Française des Échecs"
-
 msgid "French Federation specific features (player search, results uploading, leagues, Papi import/export...)"
 msgstr "Fonctionnalités spécifiques à la Fédération Française (recherche de joueur·euses, envoi des résultats, ligues, compatibilité avec Papi)"
 
@@ -374,10 +379,6 @@ msgstr "Format de date invalide [{date}] (attendu : {format})"
 msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr "Extension de fichier [{extension}] invalide (attendue : {expected})."
 
-#, python-brace-format
-msgid "Invalid format (expected: {format})."
-msgstr "Format invalide (attendu : {format})."
-
 msgid "JSON file (papi-converter format)"
 msgstr "Fichier JSON (format papi-converter)"
 
@@ -420,12 +421,11 @@ msgstr "Lic."
 msgid "Licence"
 msgstr "Licence"
 
-msgctxt "licence number"
-msgid "Licence no."
-msgstr "N° licence"
-
 msgid "Licence number"
 msgstr "Numéro de licence"
+
+msgid "Licence type:"
+msgstr "Type de licence :"
 
 msgid "Licence types"
 msgstr "Types de licence"
@@ -594,9 +594,6 @@ msgstr "Page publique du tournoi."
 #, python-brace-format
 msgid "Ranking by league after round #{round}"
 msgstr "Classement par ligue après la ronde n°{round}"
-
-msgid "Replace the player to update this field."
-msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
 
 #, python-brace-format
 msgid "Roster must consist of women players only: {names}."

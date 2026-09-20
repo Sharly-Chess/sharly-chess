@@ -228,7 +228,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'plugin_card_action_menu_items_templates': plugin_card_action_menu_items_templates,
                 'plugin_tab_action_menu_items_templates': plugin_tab_action_menu_items_templates,
                 'show_details': SessionTournamentsShowDetails(request).get(),
-                'data_sources': DataSourceManager().objects(),
+                'data_sources': DataSourceManager().active_objects(),
             }
             | plugin_context
             | (template_context or {})

@@ -14,7 +14,7 @@ from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME, NATIONAL_SOURCE_ID
 from plugins.ffe.ffe_upload_status import (
     FFEUploadStatus,
     NeverUploadedFFEUploadStatus,
@@ -267,6 +267,22 @@ class FFEUtils:
             f'{FFE_ADMIN_URL}/Equipes.aspx?C={competition_id}'
             f'&D={pd.team_division_id}&G={pd.team_group_id}'
         )
+
+    @classmethod
+    def licence_number(cls, player: Player) -> str | None:
+        """The FFE licence number of a player, carried as their national
+        id."""
+        if player.national_source != NATIONAL_SOURCE_ID:
+            return None
+        return player.national_id
+
+    @classmethod
+    def licence(cls, player: Player) -> 'PlayerFFELicence':
+        """The licence of a player: a licence type without a licence
+        number means none."""
+        if not cls.licence_number(player):
+            return PlayerFFELicence.NONE
+        return cls.get_player_plugin_data(player).ffe_licence
 
     @classmethod
     def resolve_tournament_upload_statuses(
@@ -651,33 +667,34 @@ class FfeTournamentPluginData(PluginData):
 
 @dataclass
 class FfePlayerPluginData(PluginData):
-    ffe_id: int | None
+    """The licence number of the player is their national id; the FFE id
+    (the Ref of the FFE database) only keys the profile page."""
+
     ffe_licence: PlayerFFELicence
-    ffe_licence_number: str | None
     league: str | None
+    ffe_id: int | None = None
+
+    @property
+    def no_licence(self) -> PlayerFFELicence:
+        """The licence of a player without a licence number, which the
+        templates showing the licence fall back on."""
+        return PlayerFFELicence.NONE
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
-        ffe_licence_number = stored_value.get('ffe_licence_number')
         return cls(
-            ffe_id=stored_value.get('ffe_id'),
             ffe_licence=PlayerFFELicence(
                 stored_value.get('ffe_licence', PlayerFFELicence.NONE)
-                if ffe_licence_number
-                else PlayerFFELicence.NONE
             ),
-            ffe_licence_number=ffe_licence_number,
             league=stored_value.get('league'),
+            ffe_id=stored_value.get('ffe_id'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
-            'ffe_id': self.ffe_id,
-            'ffe_licence': (
-                self.ffe_licence if self.ffe_licence_number else PlayerFFELicence.NONE
-            ).value,
-            'ffe_licence_number': self.ffe_licence_number,
+            'ffe_licence': self.ffe_licence.value,
             'league': self.league,
+            'ffe_id': self.ffe_id,
         }
 
     @classmethod
@@ -688,13 +705,12 @@ class FfePlayerPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         return cls(
-            ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
             ffe_licence=PlayerFFELicence(
                 WebContext.form_data_to_str(data, 'ffe_licence')
                 or PlayerFFELicence.NONE
             ),
-            ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
             league=WebContext.form_data_to_str(data, 'ffe_league'),
+            ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
@@ -702,10 +718,9 @@ class FfePlayerPluginData(PluginData):
             return {}
         return WebContext.values_dict_to_form_data(
             {
-                'ffe_id': self.ffe_id,
                 'ffe_licence': self.ffe_licence.value,
-                'ffe_licence_number': self.ffe_licence_number,
                 'ffe_league': self.league,
+                'ffe_id': self.ffe_id,
             }
         )
 

@@ -21,6 +21,7 @@ from database.sqlite.event.event_store import (
     StoredTeam,
     StoredTournamentPlayer,
 )
+from plugins.ffe import NATIONAL_SOURCE_ID
 from plugins.ffe.ffe_team_session import (
     FFETeamSession,
     MatchReportData,
@@ -242,11 +243,7 @@ class _MatchReportHarness(TestCase):
                 if seed == 1 and first_team_players is not None:
                     players = first_team_players
                 for index in range(players):
-                    plugin_data = (
-                        {'ffe': {'ffe_licence_number': f'A{seed}{index:04d}'}}
-                        if licences
-                        else {}
-                    )
+                    licence_number = f'A{seed}{index:04d}' if licences else None
                     player_id = database.add_stored_player(
                         StoredPlayer(
                             id=None,
@@ -254,7 +251,10 @@ class _MatchReportHarness(TestCase):
                             team_id=team_id,
                             team_index=index,
                             check_in=True,
-                            plugin_data=plugin_data,
+                            national_id=licence_number,
+                            national_source=NATIONAL_SOURCE_ID
+                            if licence_number
+                            else None,
                         )
                     )
                     database.add_stored_tournament_player(

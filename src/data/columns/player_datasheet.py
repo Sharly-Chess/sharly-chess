@@ -65,6 +65,12 @@ class DatasheetColumn(ABC):
         """Defines if the column is only exported but not imported."""
         return False
 
+    @property
+    def import_only(self) -> bool:
+        """Defines if the column is only read on import, never exported nor
+        listed: a former name of another column, still accepted."""
+        return False
+
     @abstractmethod
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
         """Augment the stored player object from a cell value.
@@ -337,6 +343,22 @@ class FideIDColumn(DatasheetColumn):
         if not value.isdigit() or int(value) == 0:
             raise SharlyChessException(_('A positive integer is expected.'))
         stored_player.fide_id = int(value)
+
+    @property
+    def is_unique(self) -> bool:
+        return True
+
+
+class NationalIdColumn(DatasheetColumn):
+    @property
+    def id(self) -> str:
+        return 'national_id'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.national_id
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str) -> None:
+        stored_player.national_id = value.strip() or None
 
     @property
     def is_unique(self) -> bool:
