@@ -6,7 +6,7 @@ from typing import cast
 
 from data.player import Player
 from database.sqlite.event.event_store import StoredPlayer
-from plugins.ffe import PLUGIN_NAME
+from plugins.ffe import NATIONAL_SOURCE_ID
 from plugins.ffe.ffe_data_sources import _FfeDataSource
 from plugins.ffe.utils import FfeNameKey, ffe_database_name_keys
 
@@ -27,7 +27,8 @@ def _stored_player(
         year_of_birth=year_of_birth,
         fide_id=fide_id,
     )
-    stored_player.plugin_data = {PLUGIN_NAME: {'ffe_licence_number': licence_number}}
+    stored_player.national_id = licence_number
+    stored_player.national_source = NATIONAL_SOURCE_ID if licence_number else None
     return stored_player
 
 

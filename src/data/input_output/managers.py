@@ -16,9 +16,49 @@ from utils.entity import EntityManager, EventBoundEntityManager
 class DataSourceManager(EntityManager[DataSource]):
     @override
     def entity_types(self) -> list[type[DataSource]]:
-        data_sources: list[type[DataSource]] = [FideDataSource]
+        from data.input_output.national_data_sources import (
+            NATIONAL_DATA_SOURCE_TYPES,
+        )
+
+        data_sources: list[type[DataSource]] = [
+            FideDataSource,
+            *NATIONAL_DATA_SOURCE_TYPES,
+        ]
         plugin_manager.hook.insert_data_sources(data_sources=data_sources)
         return data_sources
+
+    def active_objects(self) -> list[DataSource]:
+        return [data_source for data_source in self.objects() if data_source.is_active]
+
+    def national_source(self, national_source_id: str) -> DataSource | None:
+        """A data source providing the national identifiers of the given
+        source key, the active one when there is one."""
+        data_sources = [
+            data_source
+            for data_source in self.objects()
+            if data_source.national_source_id == national_source_id
+        ]
+        return next(
+            (data_source for data_source in data_sources if data_source.is_active),
+            data_sources[0] if data_sources else None,
+        )
+
+    def national_source_for_federation(self, federation: str) -> DataSource | None:
+        """The data source providing the national identifiers of a
+        federation, the active one when there is one."""
+        data_sources = [
+            data_source
+            for data_source in self.objects()
+            if data_source.federation == federation and data_source.national_source_id
+        ]
+        return next(
+            (data_source for data_source in data_sources if data_source.is_active),
+            data_sources[0] if data_sources else None,
+        )
+
+    def activate_for_federation(self, federation: str) -> None:
+        for data_source in self.objects():
+            data_source.activate_for_federation(federation)
 
 
 class OnlineDataSourceManager(EntityManager[OnlineDataSource]):
@@ -28,6 +68,14 @@ class OnlineDataSourceManager(EntityManager[OnlineDataSource]):
             data_source
             for data_source in DataSourceManager().entity_types()
             if issubclass(data_source, OnlineDataSource)
+        ]
+
+    def active_objects(self) -> list[OnlineDataSource]:
+        return [data_source for data_source in self.objects() if data_source.is_active]
+
+    def inactive_objects(self) -> list[OnlineDataSource]:
+        return [
+            data_source for data_source in self.objects() if not data_source.is_active
         ]
 
 

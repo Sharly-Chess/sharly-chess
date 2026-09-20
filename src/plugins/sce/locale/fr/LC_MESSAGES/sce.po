@@ -208,6 +208,9 @@ msgstr "Déplacer un·e joueur·euse d'un tournoi synchronisé avec Sharly-Chess
 msgid "Name"
 msgstr "Nom"
 
+msgid "National ID"
+msgstr "Identifiant national"
+
 msgid "Never synchronized"
 msgstr "Jamais synchronisé"
 

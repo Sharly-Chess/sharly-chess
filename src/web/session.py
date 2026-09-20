@@ -500,7 +500,8 @@ class SessionPlayersActiveDataSource(SessionVariable[str]):
     def default_value(self) -> str:
         from data.input_output import DataSourceManager
 
-        return DataSourceManager().entity_types()[0].static_id()
+        data_sources = DataSourceManager().active_objects()
+        return data_sources[0].id if data_sources else ''
 
 
 class SessionPlayersAddOtherActive(BoolSessionVariable):
