@@ -894,6 +894,73 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         ]
         self.assertEqual(results, expected)
 
+    def test_win_chances_follow_the_fide_conversion_table(self):
+        """FIDE B.02 §8.1b: the expected score for a rating difference,
+        checked at every step of the table — the first difference each
+        percentage covers, and the last."""
+        win_chances = tie_breaks.PerfectTournamentPerformanceTieBreak.win_chances
+        table = [
+            (0, 3, '0.50'),
+            (4, 10, '0.51'),
+            (11, 17, '0.52'),
+            (18, 25, '0.53'),
+            (26, 32, '0.54'),
+            (33, 39, '0.55'),
+            (40, 46, '0.56'),
+            (47, 53, '0.57'),
+            (54, 61, '0.58'),
+            (62, 68, '0.59'),
+            (69, 76, '0.60'),
+            (77, 83, '0.61'),
+            (84, 91, '0.62'),
+            (92, 98, '0.63'),
+            (99, 106, '0.64'),
+            (107, 113, '0.65'),
+            (114, 121, '0.66'),
+            (122, 129, '0.67'),
+            (130, 137, '0.68'),
+            (138, 145, '0.69'),
+            (146, 153, '0.70'),
+            (154, 162, '0.71'),
+            (163, 170, '0.72'),
+            (171, 179, '0.73'),
+            (180, 188, '0.74'),
+            (189, 197, '0.75'),
+            (198, 206, '0.76'),
+            (207, 215, '0.77'),
+            (216, 225, '0.78'),
+            (226, 235, '0.79'),
+            (236, 245, '0.80'),
+            (246, 256, '0.81'),
+            (257, 267, '0.82'),
+            (268, 278, '0.83'),
+            (279, 290, '0.84'),
+            (291, 302, '0.85'),
+            (303, 315, '0.86'),
+            (316, 328, '0.87'),
+            (329, 344, '0.88'),
+            (345, 357, '0.89'),
+            (358, 374, '0.90'),
+            (375, 391, '0.91'),
+            (392, 411, '0.92'),
+            (412, 432, '0.93'),
+            (433, 456, '0.94'),
+            (457, 484, '0.95'),
+            (485, 517, '0.96'),
+            (518, 559, '0.97'),
+            (560, 619, '0.98'),
+            (620, 735, '0.99'),
+            (736, 1000, '1.00'),
+        ]
+        for first, last, expected in table:
+            for difference in (first, last):
+                with self.subTest(difference=difference):
+                    high, low = win_chances(2000 + difference, 2000)
+                    self.assertEqual(high, Decimal(expected))
+                    self.assertEqual(low, 1 - Decimal(expected))
+                    # The weaker player's chances are the complement.
+                    self.assertEqual(win_chances(2000, 2000 + difference), (low, high))
+
     def test_ptp(self):
         tie_break_ = tie_breaks.PerfectTournamentPerformanceTieBreak()
         results = self.get_tie_break_player_values(tie_break_, exclude_ids=[2, 14])
@@ -915,16 +982,9 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
-        # NOTE(Amaras): the following two players do not have the
-        # correct PTP, according to the tie-break exercises.
-        # I do not know why this happens, but it's the closest I got
-        # to having all correct values
         self.assertEqual(
             self.get_tie_break_player_values(tie_break_, only_ids=[2, 14]),
-            {
-                2: 2217,  # NOTE(Amaras): this should be 2216
-                14: 1940,  # NOTE(Amaras): this should be 1942
-            },
+            {2: 2216, 14: 1942},
         )
 
     def test_average_perfect_performance_opponents(self):
@@ -949,10 +1009,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         self.assertEqual(results, expected)
         self.assertEqual(
             self.get_tie_break_player_values(tie_break_, only_ids=[3, 13]),
-            {
-                3: 1935,  # NOTE(Amaras): this should be 1934
-                13: 1908,  # NOTE(Amaras): this should be 1909
-            },
+            {3: 1934, 13: 1909},
         )
 
     def test_player_rating(self):
