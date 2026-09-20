@@ -638,19 +638,13 @@
                                 'MATCH_POINTS': {{ _('Use game points for colour allocation')|tojson }},
                                 'GAME_POINTS': {{ _('Use match points for colour allocation')|tojson }},
                             };
-                            const secondaryInput =
-                                $('#secondary-score-for-colours').get(0);
+                            const $secondaryPlaceholder = $secondary
+                                .find('.switch-placeholder');
                             function syncSecondaryLabel() {
-                                if (!secondaryInput) return;
                                 const label =
                                     SECONDARY_LABELS[$('#primary-score').val()];
                                 if (!label) return;
-                                // The macro renders the placeholder as a bare
-                                // text node right after the input.
-                                const node = secondaryInput.nextSibling;
-                                if (node && node.nodeType === 3) {
-                                    node.nodeValue = ' ' + label;
-                                }
+                                $secondaryPlaceholder.text(label);
                             }
                             $('#pairing-system').on('change', sync);
                             $('#primary-score').on('change', syncSecondaryLabel);
