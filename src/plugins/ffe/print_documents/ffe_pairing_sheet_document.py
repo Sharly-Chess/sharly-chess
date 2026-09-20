@@ -243,10 +243,7 @@ class FfePairingSheetDocument(PrintDocument):
                 {
                     'number': index,
                     'name': player.full_name,
-                    'code_ffe': FFEUtils.get_player_plugin_data(
-                        player
-                    ).ffe_licence_number
-                    or '',
+                    'code_ffe': FFEUtils.licence_number(player) or '',
                     'elo': player.event_default_rating,
                     'results': results,
                 }
