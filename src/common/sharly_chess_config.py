@@ -351,7 +351,7 @@ class SharlyChessConfig(metaclass=Singleton):
     web_ports: list[int] = (
         ([80, 81, 8080, 8081] if sys.platform != 'linux' else [8080, 8081])
         if not TEST_ENV
-        else [9000]
+        else [int(os.environ.get('TEST_PORT', '9000'))]
     )
 
     """ The accepted console log levels. """

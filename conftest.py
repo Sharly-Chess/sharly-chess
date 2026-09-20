@@ -8,7 +8,7 @@ import sys
 import time
 from io import TextIOWrapper
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 from collections.abc import Generator
 
 import pytest
@@ -46,6 +46,9 @@ def pytest_configure(config):
     config.addinivalue_line(
         'markers', 'release_only: mark test as release only test (runs on release only)'
     )
+    # Relative page.goto() targets resolve against the port this process
+    # picked; the ini value is a fixed one.
+    config.option.base_url = TestConfig.TEST_BASE_URL
 
 
 def pytest_collection_modifyitems(config, items):
@@ -113,6 +116,8 @@ class BackendServer:
             # server has to read and write the same tree as the tests
             # driving it.
             str(DATA_DIR),
+            '--port',
+            str(self.port),
         ]
 
         # coverage measures the process it is started in, and the server is
@@ -135,6 +140,7 @@ class BackendServer:
         # Its own process group, so stop() can signal the server and
         # everything it forked in one go. Unix and Windows spell this
         # differently: POSIX has a session, Windows a process group.
+        group_kwargs: dict[str, Any]
         if sys.platform == 'win32':
             group_kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
         else:
@@ -305,7 +311,7 @@ def setup_page(request, backend_server):
 @pytest.fixture(scope='session')
 def lan_context(browser: Browser):
     config = SharlyChessConfig()
-    config.web_port = 9000
+    config.web_port = TestConfig.TEST_PORT
     context = browser.new_context(base_url=config.lan_urls[0])
     yield context
     context.close()
@@ -370,6 +376,6 @@ class RetryingAPIRequestContext:
 def api_request_context(
     playwright: Playwright,
 ) -> Generator[APIRequestContext]:
-    request_context = playwright.request.new_context(base_url='http://127.0.0.1:9000')
+    request_context = playwright.request.new_context(base_url=TestConfig.TEST_BASE_URL)
     yield cast(APIRequestContext, RetryingAPIRequestContext(request_context))
     request_context.dispose()

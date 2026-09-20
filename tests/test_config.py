@@ -1,7 +1,9 @@
 """Test configuration and utilities."""
 
+import os
 import re
 import shutil
+import socket
 import time
 from enum import StrEnum
 from pathlib import Path
@@ -52,12 +54,25 @@ class ScreenType(StrEnum):
     IMAGE = ImageScreenType.static_id()
 
 
+def _free_port(host: str) -> int:
+    """A port nothing is listening on right now.
+
+    The port is chosen per test process rather than fixed: several
+    checkouts (or pytest-xdist workers) can then run their suites at the
+    same time, each against a server of its own.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        probe.bind((host, 0))
+        return probe.getsockname()[1]
+
+
 class TestConfig:
     """Configuration for test environment."""
 
     # Server configuration
     TEST_HOST = '127.0.0.1'  # Use IP instead of localhost
-    TEST_PORT = 9000
+    TEST_PORT = int(os.environ.get('TEST_PORT') or _free_port(TEST_HOST))
+    TEST_BASE_URL = f'http://{TEST_HOST}:{TEST_PORT}'
     TEST_TIMEOUT = 30  # seconds to wait for server startup
 
     # Global timeout for all global expect calls.
@@ -70,6 +85,7 @@ class TestConfig:
         """Get environment variables for test environment."""
         return {
             'TEST_ENV': 'true',
+            'TEST_PORT': str(cls.TEST_PORT),
         }
 
 
