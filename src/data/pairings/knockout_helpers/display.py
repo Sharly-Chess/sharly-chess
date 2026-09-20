@@ -295,7 +295,7 @@ class KnockoutDisplayMixin:
         self, tournament: 'Tournament', *, after_round: int | None = None
     ) -> dict[int, str]:
         if after_round is None:
-            after_round = tournament.ranked_after_round
+            after_round = tournament.ranking.ranked_after_round
         values = {
             player.id: self.ranking_value(tournament, player, after_round=after_round)
             for player in tournament.tournament_players
@@ -308,7 +308,7 @@ class KnockoutDisplayMixin:
         self, tournament: 'Tournament', *, after_round: int | None = None
     ) -> dict[int, str]:
         if after_round is None:
-            after_round = tournament.ranked_after_round
+            after_round = tournament.ranking.ranked_after_round
         values = self.team_ranking_values(tournament, after_round=after_round)
         return self._labels_from_values(
             values,

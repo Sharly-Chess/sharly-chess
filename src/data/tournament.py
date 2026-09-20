@@ -19,6 +19,7 @@ from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.pairing_numbers import PairingNumbers
 from data.player import Player, TournamentPlayer
+from data.player_ranking import PlayerRanking
 from data.player_categories import PlayerCategory
 from data.point_adjustments import PointAdjustments
 from data.point_system import PointSystem
@@ -121,8 +122,6 @@ class Tournament:
     ):
         self._event_ref: ReferenceType[Event] = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
-        self._tournament_players_by_rank: dict[int, TournamentPlayer] | None = None
-        self._ranks_after_round: int | None = None
         # Per-player caches are valid only while pairings are stable.
         self._compute_caching_enabled: bool = False
         self._round_board_numbers_cache: dict[tuple[int, int], dict[int, int]] = {}
@@ -1537,7 +1536,7 @@ class Tournament:
             round_ = self.current_round
         self._compute_caching_enabled = True
         try:
-            self._keizer_scorer = None
+            self.reset_keizer_scorer()
             for player in self.tournament_players:
                 player.clear_compute_caches()
             players_to_compute = (
@@ -1851,6 +1850,11 @@ class Tournament:
             self._keizer_scorer = KeizerScorer(self)
         return self._keizer_scorer
 
+    def reset_keizer_scorer(self) -> None:
+        """Forget the Keizer scorer, so the next read rebuilds it from the
+        current results."""
+        self._keizer_scorer = None
+
     def player_virtual_points(
         self, tournament_player: TournamentPlayer, *, at_round: int
     ) -> float:
@@ -1873,117 +1877,23 @@ class Tournament:
                 database
             )
 
-    @property
-    def ranked_after_round(self) -> int:
-        """The round the standings on this tournament were last computed for.
-        A label read beside those rows (a knock-out result, say) must describe
-        the same round, not the latest one played."""
-        if self._ranks_after_round is None:
-            return self.max_ranking_round
-        return self._ranks_after_round
-
-    def correct_ranking_round(self, ranking_round: int | None = None) -> int:
-        """Returns a correct round number that corresponds the best to a given round number."""
-        if ranking_round is None:
-            return self.max_ranking_round
-        return max(0, min(ranking_round, self.max_ranking_round))
+    @cached_property
+    def ranking(self) -> PlayerRanking:
+        return PlayerRanking(self)
 
     def compute_tournament_player_ranks(
         self, *, after_round: int | None = None
     ) -> dict[int, TournamentPlayer]:
-        """compute and return the ranks of all the players after round *after_round*."""
-        if after_round is None:
-            after_round = self.max_ranking_round
-
-        self._compute_caching_enabled = True
-        try:
-            self._compute_tournament_player_ranks(after_round)
-        finally:
-            self._compute_caching_enabled = False
-        assert self._tournament_players_by_rank is not None
-        return self._tournament_players_by_rank
-
-    def _compute_tournament_player_ranks(self, after_round: int) -> None:
-        self._ranks_after_round = after_round
-        self._keizer_scorer = None
-        for player in self.tournament_players:
-            player.clear_compute_caches()
-        self.set_tournament_players_pairing_numbers()
-        tie_breaks = self.tie_breaks
-        for tie_break in tie_breaks:
-            for player_id, variable in tie_break.get_player_variables(
-                self, after_round
-            ).items():
-                player = self.tournament_players_by_id[player_id]
-                player.tie_break_variables[tie_break.id] = variable
-        keizer = self.pairing_system.id == 'KEIZER'
-        knockout = self.pairing_system.eliminates_participants
-        for player in self.tournament_players:
-            if keizer:
-                player.points = self.keizer_scorer.total(
-                    player, after_round=after_round
-                )
-            elif knockout:
-                player.points = self.knockout.ranking_value(
-                    player, after_round=after_round
-                )
-            else:
-                player.points = player.standings_points(after_round)
-            player.compute_tie_break_values(
-                after_round=after_round, tie_breaks=tie_breaks
-            )
-
-        for index, tie_break in enumerate(tie_breaks):
-            if tie_break.is_computed_per_player:
-                continue
-            value_by_player_id = tie_break.compute_all_player_values(
-                self,
-                tie_break_index=index,
-                after_round=after_round,
-            )
-            for player_id, tie_break_value in value_by_player_id.items():
-                player = self.tournament_players_by_id[player_id]
-                player.tie_break_values[index].value = tie_break_value
-
-        # Players excluded from the standings (FIDE 6.6 round-robin rule) are
-        # ranked last regardless of their score, so the competitors keep a
-        # contiguous ranking. They stay in the crosstable for the record.
-        sorted_tournament_players = sorted(
-            self.tournament_players,
-            key=lambda p: (p.is_excluded_from_standings, p.rank_sort_key),
-        )
-        self._tournament_players_by_rank = dict(
-            enumerate(sorted_tournament_players, start=1)
-        )
-        for rank, player in self._tournament_players_by_rank.items():
-            player.rank = rank
-        for tie_break_index, tie_break in enumerate(tie_breaks):
-            if not tie_break.display_rank_delta:
-                continue
-            players_ranked_without_tie_break = sorted(
-                self.tournament_players,
-                key=lambda p: p.rank_sort_key_without_tie_break(tie_break_index),
-            )
-            for rank_without_tie_break, player in enumerate(
-                players_ranked_without_tie_break, start=1
-            ):
-                player.tie_break_values[tie_break_index].rank_progress = (
-                    rank_without_tie_break - player.rank
-                )
+        """Compute and return the ranks of all the players after round
+        *after_round*."""
+        return self.ranking.compute(after_round=after_round)
 
     @property
     def tournament_players_by_rank(self) -> dict[int, TournamentPlayer]:
-        assert self._tournament_players_by_rank is not None, (
-            'Tournament._tournament_players_by_rank is not set, call Tournament.compute_player_ranks() before.'
-        )
-        return self._tournament_players_by_rank
+        return self.ranking.players_by_rank
 
     def ensure_tournament_player_ranks_computed(self) -> None:
-        """Compute player ranks on demand when they have not been computed
-        yet, so rank-dependent derivations (e.g. a ranking screen's default
-        name) work without the caller having to precompute them."""
-        if self._tournament_players_by_rank is None:
-            self.compute_tournament_player_ranks()
+        self.ranking.ensure_computed()
 
     def add_result(self, board: Board, white_result: Result) -> None:
         """Stores the given result for the given `board` in the current round.

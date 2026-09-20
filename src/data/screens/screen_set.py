@@ -673,7 +673,7 @@ class ScreenSet:
         if self._team_items_lists is None:
             from utils.enum import ScoreType
 
-            ranking_round = self.tournament.correct_ranking_round(
+            ranking_round = self.tournament.ranking.correct_round(
                 self._config.ranking_round
             )
             min_points = self._config.ranking_min_points

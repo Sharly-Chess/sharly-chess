@@ -1663,7 +1663,7 @@ class RankingScreenType(ScreenType):
         from data.columns.handlers import PlayerColumnHandler
         from data.columns.player_table import ColumnUsage
 
-        ranking_round = tournament.correct_ranking_round(self.ranking_round(screen))
+        ranking_round = tournament.ranking.correct_round(self.ranking_round(screen))
         tournament.compute_tournament_player_ranks(after_round=ranking_round)
         column_handler = PlayerColumnHandler(event, ColumnUsage.SCREEN)
         if self.ranking_crosstable(screen):
@@ -1726,7 +1726,7 @@ class RankingScreenType(ScreenType):
     def family_item_range(self, family: 'Family') -> FamilyItemRange:
         tournament = family.tournament
         stored = family.stored_family
-        ranking_round = tournament.correct_ranking_round(stored.ranking_round)
+        ranking_round = tournament.ranking.correct_round(stored.ranking_round)
         min_points = stored.ranking_min_points
         max_points = stored.ranking_max_points
         if tournament.is_team_tournament:
