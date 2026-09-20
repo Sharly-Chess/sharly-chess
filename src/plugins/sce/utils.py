@@ -4,7 +4,7 @@ from functools import partial
 from logging import Logger
 from typing import Any
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.event import Event

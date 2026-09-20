@@ -37,14 +37,10 @@ if TYPE_CHECKING:
     from data.input_output.trf.trf_data import TrfNationalPlayer
     from data.pairings.systems import PairingSystem
     from data.pairings.variations import PairingVariation, SwissVariation
-    from data.player import (
-        Player,
-        PlayerProfileLink,
-        TournamentPlayer,
-        PlayerRatingAndType,
-        PlayerRatingType,
-        PlayerCategory,
-    )
+    from data.player import Player, PlayerProfileLink, TournamentPlayer
+    from utils.types import PlayerRatingAndType
+    from utils.enum import PlayerRatingType
+    from data.player_categories import PlayerCategory
     from plugins.migration import PluginMigrationManager
     from data.print_documents import (
         PrintDocument,

@@ -41,13 +41,13 @@ from data.input_output.data_source import DataSource, keep_reliable_k_factors
 from data.input_output.managers import DataSourceManager, PlayerExporterManager
 from data.player import (
     Player,
-    PlayerRating,
     TournamentPlayer,
     MIN_YOB,
     MAX_YOB,
     MIN_K_FACTOR,
     MAX_K_FACTOR,
 )
+from utils.types import PlayerRating
 from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,

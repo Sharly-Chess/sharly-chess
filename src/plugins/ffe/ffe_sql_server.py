@@ -13,7 +13,7 @@ from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from common.network import NetworkMonitor
-from data.player import PlayerRating
+from utils.types import PlayerRating
 from database.sql_server.sql_server import SqlServer, SqlServerCredentials
 from database.sqlite.event.event_store import StoredPlayer
 from plugins import PLUGINS_DIR

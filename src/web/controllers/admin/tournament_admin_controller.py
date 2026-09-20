@@ -19,7 +19,8 @@ from common.i18n import _, ngettext, pgettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from data.board import Board, PlayerRatingType
+from data.board import Board
+from utils.enum import PlayerRatingType
 from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
 from data.championship.championship_loader import ChampionshipLoader

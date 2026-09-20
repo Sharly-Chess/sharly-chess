@@ -7,7 +7,7 @@ from logging import Logger
 from typing import override, ClassVar
 from collections.abc import Collection
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -28,7 +28,8 @@ from data.input_output.player_updater_fields import (
     BlitzRatingUpdaterField,
     FederationUpdaterField,
 )
-from data.player import Player, PlayerRating
+from data.player import Player
+from utils.types import PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase

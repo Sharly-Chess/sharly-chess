@@ -10,8 +10,8 @@ from common import (
     CUSTOM_PLACE_CARDS_DIR,
     EMBEDDED_PLACE_CARDS_DIR,
     EXAMPLE_PLACE_CARDS_DIR,
-    SharlyChessException,
 )
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger

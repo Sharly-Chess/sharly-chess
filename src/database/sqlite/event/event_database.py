@@ -306,7 +306,7 @@ class EventDatabase(MigrationDatabase):
         self, row: dict[str, Any], stored_event_type: type[T]
     ) -> T:
         """Convert a row to a StoredEvent record."""
-        stored_event = stored_event_type(
+        return stored_event_type(
             uniq_id=self.uniq_id,
             name=row['name'],
             federation=row.get('federation', ''),
@@ -343,8 +343,6 @@ class EventDatabase(MigrationDatabase):
                 row['enabled_plugins'], []
             ),
         )
-
-        return cast(T, stored_event)
 
     def load_stored_event(self) -> StoredEvent:
         self.execute('SELECT * FROM `info`')

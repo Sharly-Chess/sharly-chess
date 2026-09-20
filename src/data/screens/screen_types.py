@@ -38,7 +38,7 @@ def _build_board_columns(
     first round is paired."""
     from data.columns.board_table import ScreenResultColumn
     from data.columns.handlers import BoardColumnHandler
-    from data.columns.player_table import ColumnUsage
+    from data.columns.column import ColumnUsage
 
     tournament.set_for_round()
     if tournament.current_round == 0:
@@ -1661,7 +1661,7 @@ class RankingScreenType(ScreenType):
         self, screen: 'Screen', tournament: 'Tournament', event: 'Event'
     ) -> 'list[TournamentPlayerTableColumn] | list[BoardColumn] | None':
         from data.columns.handlers import PlayerColumnHandler
-        from data.columns.player_table import ColumnUsage
+        from data.columns.column import ColumnUsage
 
         ranking_round = tournament.ranking.correct_round(self.ranking_round(screen))
         tournament.compute_tournament_player_ranks(after_round=ranking_round)

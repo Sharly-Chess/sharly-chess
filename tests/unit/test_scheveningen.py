@@ -710,7 +710,7 @@ class TestScheveningenTournament(TestCase):
         import data.tournament as tournament_module
 
         tournament = self._paired_round(4)
-        real_event_database = tournament_module.EventDatabase
+        real_event_database = EventDatabase
 
         def _no_write(uniq_id=None, write=False, **kwargs):
             if write:

@@ -16,7 +16,8 @@ if TYPE_CHECKING:
     from data.pairings.knockout_helpers.layout import BracketLayout, MatchDescriptor
     from data.pairing import Pairing
     from data.teams.team_board import TeamBoard
-    from data.tournament import Tournament, TournamentPlayer
+    from data.tournament import Tournament
+    from data.player import TournamentPlayer
 
 
 class _KnockoutDisplayHost(Protocol):

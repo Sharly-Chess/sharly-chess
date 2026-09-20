@@ -1,4 +1,4 @@
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from plugins.chessevent.chessevent_status import ChessEventStatus
 
 

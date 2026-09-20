@@ -31,7 +31,7 @@ from packaging.version import Version
 from toga import TextInput
 from toga.sources import ListSource
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW
+from travertino.constants import COLUMN, ROW
 import qrcode
 
 import web

@@ -9,7 +9,7 @@ from litestar.params import Body, FromPath
 from litestar.response import Template, File
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _, get_locale, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor

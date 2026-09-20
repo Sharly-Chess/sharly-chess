@@ -4,7 +4,7 @@ from typing import cast
 
 from text_unidecode import unidecode
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _, pgettext
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger

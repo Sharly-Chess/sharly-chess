@@ -8,7 +8,8 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
-from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
+from data.columns.player_table import TournamentPlayerTableColumn
+from data.columns.column import ColumnUsage
 from data.columns.players_tab import (
     PlayersTabColumn,
     ClubPlayersTabColumn,
@@ -36,7 +37,8 @@ from database.sqlite.event.event_store import (
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins import PLUGINS_DIR
 from plugins.chessevent.tournament_importer.data import ChessEventPlayer
-from plugins.ffe.ffe import FfeLeagueTableColumn, FfePlugin
+from plugins.ffe.ffe import FfePlugin
+from plugins.ffe.ffe_entity import FfeLeagueTableColumn
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import FfeLeaguePlayersTabColumn
 from plugins.ffe.papi_converter import PapiPlayer
@@ -64,8 +66,9 @@ from plugins.fra_schools.utils import (
     FRASchoolsEventPluginData,
     FRASchool,
 )
-from plugins.hookspec import ExtraStatisticsSection, hookimpl
-from plugins.manager import Path
+from plugins.hookspec import hookimpl
+from plugins.utils import ExtraStatisticsSection
+from pathlib import Path
 from plugins.sce.sce_data import SCEPlayerSyncData, SCEFraSchoolSyncData
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.utils import (

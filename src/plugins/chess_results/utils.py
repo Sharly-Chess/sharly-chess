@@ -14,7 +14,8 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from dotenv import load_dotenv
 
-from common import DEVEL_ENV, SharlyChessException
+from common import DEVEL_ENV
+from common.exception import SharlyChessException
 from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament

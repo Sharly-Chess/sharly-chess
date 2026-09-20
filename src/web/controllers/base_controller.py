@@ -31,7 +31,7 @@ from common.i18n.utils import (
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.client_tracker import ClientTracker
-from data.player import Federation, Club
+from utils.types import Club, Federation
 from utils import Utils
 from utils.date_time import format_date, format_date_range, format_datetime
 from web.messages import Message

@@ -20,7 +20,7 @@ from litestar.datastructures import MutableScopeHeaders, Cookie
 from litestar.middleware.session.server_side import ServerSideSessionBackend
 from litestar.types import Message, ScopeSession
 from litestar.utils.dataclass import extract_dataclass_items
-from litestar.utils.empty import Empty
+from litestar.types.empty import Empty
 
 from common.logger import get_logger
 

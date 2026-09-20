@@ -10,7 +10,7 @@ from litestar.params import Body, FromPath
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _, get_locale, ngettext, set_locale
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction

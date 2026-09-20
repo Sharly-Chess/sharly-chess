@@ -4,6 +4,8 @@ import gc
 from time import perf_counter
 from typing import TYPE_CHECKING
 
+from litestar.enums import ScopeType
+
 from web.performance import record_gc
 
 if TYPE_CHECKING:
@@ -19,7 +21,9 @@ class RequestGarbageCollectionMiddleware:
         self._restore_automatic_collection = False
 
     async def __call__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
-        if scope['type'] != 'http' or scope.get('path', '').startswith('/static/'):
+        if scope['type'] != ScopeType.HTTP or scope.get('path', '').startswith(
+            '/static/'
+        ):
             await self.app(scope, receive, send)
             return
 

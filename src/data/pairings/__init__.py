@@ -1,6 +1,13 @@
-from .systems import PairingSystem  # Noqa F401
-from .variations import PairingVariation  # Noqa F401
-from .managers import (  # Noqa F401
+from .systems import PairingSystem
+from .variations import PairingVariation
+from .managers import (
     PairingSystemManager,
     PairingVariationManager,
 )
+
+__all__ = [
+    'PairingSystem',
+    'PairingSystemManager',
+    'PairingVariation',
+    'PairingVariationManager',
+]

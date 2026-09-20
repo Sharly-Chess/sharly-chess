@@ -6,13 +6,14 @@ import sys
 from threading import Thread
 from time import sleep
 from types import FrameType
-from typing import ClassVar, cast
+from typing import ClassVar
 from collections.abc import Callable
 from webbrowser import open
 
 import requests
 import uvicorn
 from litestar import Litestar
+from litestar.enums import ScopeType
 from litestar.config.compression import CompressionConfig
 from litestar.exceptions import (
     PermissionDeniedException,
@@ -22,7 +23,7 @@ from litestar.exceptions import (
 )
 from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
-from litestar.types import ASGIApp, Scope, HTTPScope
+from litestar.types import ASGIApp, Scope
 
 from common import REQUEST_TIMEOUT
 from common.installation_checker import InstallationChecker
@@ -140,7 +141,7 @@ class ServerEngine:
         the same place."""
 
         def log_http_exception(exc: Exception, scope: Scope) -> None:
-            if scope['type'] != 'http':
+            if scope['type'] != ScopeType.HTTP:
                 return
             if isinstance(exc, PermissionDeniedException):
                 prefix = '403 permission denied'
@@ -150,7 +151,7 @@ class ServerEngine:
                 prefix = '400 bad request'
             else:
                 return
-            http = cast(HTTPScope, scope)
+            http = scope
             logger.error(
                 '%s: %s %s\n%s',
                 prefix,

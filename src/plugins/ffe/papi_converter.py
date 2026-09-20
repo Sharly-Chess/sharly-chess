@@ -22,7 +22,8 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     PairingVariation,
 )
-from data.player import TournamentPlayer, PlayerRating
+from data.player import TournamentPlayer
+from utils.types import PlayerRating
 from data.player_categories import PlayerCategory
 from data.tie_breaks.tie_breaks import ManualTieBreak, PointsTieBreak, TieBreak
 from data.tournament import Tournament

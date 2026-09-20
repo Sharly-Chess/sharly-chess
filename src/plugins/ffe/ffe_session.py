@@ -10,7 +10,7 @@ from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from data.event import Event

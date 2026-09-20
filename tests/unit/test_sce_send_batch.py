@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 import pytest
 from litestar.status_codes import HTTP_200_OK
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from plugins.sce.sce_batch import SCEBatchBuilder
 from plugins.sce.sce_session import SCESession
 

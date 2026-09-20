@@ -239,6 +239,15 @@ explicit_package_bases = true
 namespace_packages = true
 check_untyped_defs = true
 warn_unused_ignores = true
+# A `cast` to the type a value already has says nothing.
+warn_redundant_casts = true
+# `==` and `is` between types that can never be the same are a comparison
+# that always fails, not a check.
+strict_equality = true
+# A name imported into a package is not the package's unless `__all__`
+# says so; the rest is imported from where it is defined.
+no_implicit_reexport = true
+extra_checks = true
 enable_error_code = [
   # A name read on a path that never assigned it.
   "possibly-undefined",
@@ -267,6 +276,7 @@ module = [
   "rubicon.objc.*",
   "text_unidecode.*",
   "toga_cocoa.*",
+  "travertino.*",
   "xlsxwriter.*",
 ]
 ignore_missing_imports = true

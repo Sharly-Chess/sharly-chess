@@ -17,7 +17,8 @@ from data.event import Event
 from data.input_output import TournamentImporter
 from data.input_output.dict_reader import dict_to_dataclass
 from data.input_output.tournament_importer_options import TournamentImporterOption
-from data.player import PlayerRating, Player
+from data.player import Player
+from utils.types import PlayerRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (

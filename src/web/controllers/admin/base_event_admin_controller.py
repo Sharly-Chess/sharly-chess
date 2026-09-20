@@ -8,7 +8,7 @@ from data.access_levels.actions import AuthAction
 from data.access_levels.client_tracker import ClientTracker
 from data.screens.display_controller import DisplayController
 from data.event import Event
-from data.pairings.managers import plugin_manager
+from plugins.manager import plugin_manager
 from data.screens.rotator import Rotator
 from data.screens.screen import Screen
 from data.tournament import Tournament

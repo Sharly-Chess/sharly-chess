@@ -3,7 +3,7 @@ from litestar.params import FromQuery, FromPath
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.exception import ImporterError
 from common.i18n import _, ngettext
 from common.logger import get_logger
