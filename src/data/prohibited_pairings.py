@@ -11,10 +11,10 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from data.input_output.trf.trf_data import TrfProhibitedPairing
 from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
+    from data.input_output.trf.trf_data import TrfProhibitedPairing
     from data.pairing_dimensions import PairingDimension
     from data.tournament import Tournament
     from database.sqlite.event.event_database import EventDatabase
@@ -319,7 +319,7 @@ class ProhibitedPairings:
         protect_rank: int,
         rank_by_member: dict[int, int],
         round_: int,
-    ) -> list[TrfProhibitedPairing]:
+    ) -> 'list[TrfProhibitedPairing]':
         """The round's effective 260 lines. Hard groups become one
         N-member line each. Each soft group is relaxed at ``protect_rank``:
         its members split into protected (rank ``<= protect_rank``) and
@@ -327,6 +327,8 @@ class ProhibitedPairings:
         incident to a protected member — are emitted as compact clique
         lines (never the pairwise expansion). Members with no pairing
         number drop out."""
+        from data.input_output.trf.trf_data import TrfProhibitedPairing
+
         lines: list[TrfProhibitedPairing] = []
         for group in hard_groups:
             numbers = [
@@ -353,13 +355,15 @@ class ProhibitedPairings:
 
     def _soft_clique_lines(
         self, protected: list[int], unprotected: list[int], round_: int
-    ) -> list[TrfProhibitedPairing]:
+    ) -> 'list[TrfProhibitedPairing]':
         """The surviving prohibitions of one relaxed soft group, as cliques.
         Pairings incident to a protected member survive (a protected member
         must avoid everyone in the group); pairings between two unprotected
         members are relaxed. That edge set is covered by ``protected ∪ {u}``
         for each unprotected ``u`` (or just ``protected`` when none are
         unprotected) — one line per unprotected member, not one per pair."""
+        from data.input_output.trf.trf_data import TrfProhibitedPairing
+
         protected_numbers = [
             n
             for n in (self._member_pairing_number(m) for m in protected)
