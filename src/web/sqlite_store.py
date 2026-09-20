@@ -45,6 +45,11 @@ class SQLiteStore(Store):
                 await asyncio.sleep(delay)
         return None
 
+    @staticmethod
+    def _expires_at_field(expires_at: datetime | None) -> str | None:
+        """The expiry as stored: ISO text with a space before the time."""
+        return expires_at.isoformat(sep=' ') if expires_at else None
+
     async def __aenter__(self) -> None:
         return
 
@@ -85,7 +90,10 @@ class SQLiteStore(Store):
                 async with self.pool.connection() as db:
                     await db.execute(
                         'UPDATE store SET expires_at = ? WHERE key = ?',
-                        parameters=(storage_object.expires_at, key),
+                        parameters=(
+                            self._expires_at_field(storage_object.expires_at),
+                            key,
+                        ),
                     )
                     await db.commit()
 
@@ -108,7 +116,11 @@ class SQLiteStore(Store):
                     INSERT INTO store (key, data, expires_at) VALUES (?, ?, ?)
                     ON CONFLICT(key) DO
                     UPDATE SET data = excluded.data, expires_at = excluded.expires_at""",
-                    parameters=(key, storage_object.data, storage_object.expires_at),
+                    parameters=(
+                        key,
+                        storage_object.data,
+                        self._expires_at_field(storage_object.expires_at),
+                    ),
                 )
                 await db.commit()
 

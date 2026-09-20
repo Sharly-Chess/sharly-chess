@@ -48,7 +48,8 @@ def init_mock_FIDE_database():
     database.cursor = connection.cursor()
     connection.commit()
 
-    return database
+    yield database
+    connection.close()
 
 
 def test_no_filter(init_mock_FIDE_database):
