@@ -17,6 +17,7 @@ from data.board import Board, compute_round_board_numbers
 from data.board_operations import BoardOperations
 from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
+from data.pairing_numbers import PairingNumbers
 from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.point_adjustments import PointAdjustments
@@ -1051,14 +1052,15 @@ class Tournament:
         return dict(enumerate(ordered_players, start=1))
 
     @cached_property
+    def pairing_numbers(self) -> PairingNumbers:
+        return PairingNumbers(self)
+
+    @property
     def tournament_players_by_pairing_number(self) -> dict[int, TournamentPlayer]:
-        self._set_tournament_players_pairing_numbers()
-        return {
-            tournament_player.pairing_number or 0: tournament_player
-            for tournament_player in sorted(
-                self.tournament_players, key=attrgetter('pairing_number')
-            )
-        }
+        return self.pairing_numbers.by_number
+
+    def set_tournament_players_pairing_numbers(self) -> None:
+        self.pairing_numbers.assign()
 
     @cached_property
     def sorted_tournament_players(self) -> list[TournamentPlayer]:
@@ -2173,117 +2175,13 @@ class Tournament:
             'exclusive_player_ids',
             'tournament_players_by_fide_id',
             'tournament_players_by_starting_rank',
-            'tournament_players_by_pairing_number',
+            'pairing_numbers',
             'sorted_tournament_players',
             'sorted_tournament_players_without_unpaired',
         )
         # A knock-out resolves its whole match graph from the field's size
         # and holds on to it.
         self.knockout.invalidate_engine_cache()
-
-    def set_tournament_players_pairing_numbers(self) -> None:
-        # Set up the cached property, which makes sure the
-        # pairing number checking process is not executed twice
-        __ = self.tournament_players_by_pairing_number
-
-    def _set_tournament_players_pairing_numbers(self) -> None:
-        """Set the pairing numbers of all the players in the tournament.
-        Returns a list of players sorted by pairing number."""
-        inserted_tournament_players: list[TournamentPlayer] = []
-        current_tournament_players: list[TournamentPlayer] = []
-        current_pairing_numbers: set[int] = set()
-        for tournament_player in self.tournament_players:
-            if tournament_player.pairing_number is None:
-                inserted_tournament_players.append(tournament_player)
-            else:
-                current_tournament_players.append(tournament_player)
-                current_pairing_numbers.add(tournament_player.pairing_number)
-        # Holes in the numbering, i.e. numbers that were attributed and
-        # since freed. Counted over the players that *have* a number, not
-        # the whole field: a player still waiting for one has never held
-        # a number, so counting them would report the numbers about to be
-        # handed out as deleted — and on the first pairing, where nobody
-        # is numbered yet, that means all of them.
-        deleted_pairing_numbers = set(
-            range(1, len(current_tournament_players) + 1)
-        ).difference(current_pairing_numbers)
-        settings_updated = (
-            self.pairing_variation.update_settings_from_deleted_pairing_numbers(
-                self, deleted_pairing_numbers
-            )
-        )
-        if self.pairing_system.pairing_numbers_are_frozen(self):
-            # The numbering stands: keep it, and number only the players
-            # inserted into it or freed from it.
-            if (
-                not inserted_tournament_players
-                and not deleted_pairing_numbers
-                and not settings_updated
-            ):
-                return
-            sorted_tournament_players = sorted(
-                current_tournament_players, key=attrgetter('pairing_number')
-            )
-        else:
-            sorted_tournament_players = sorted(
-                current_tournament_players, key=attrgetter('starting_rank_sort_key')
-            )
-        # Handing out the numbers for the first time is not an insertion:
-        # nobody is being slotted into an existing order, so the pairing
-        # settings that address numbers (acceleration rules) must not be
-        # shifted — they were written against the numbering about to be
-        # created. Shifting them once per player would march a rule for
-        # numbers 1-2 clear off the end of the field.
-        numbers_already_attributed = bool(current_tournament_players)
-        for tournament_player in inserted_tournament_players:
-            tournament_player_index = next(
-                (
-                    index
-                    for index, player_ in enumerate(sorted_tournament_players)
-                    if player_.starting_rank_sort_key
-                    > tournament_player.starting_rank_sort_key
-                ),
-                len(sorted_tournament_players),
-            )
-            sorted_tournament_players.insert(tournament_player_index, tournament_player)
-            if numbers_already_attributed:
-                settings_updated |= (
-                    self.pairing_variation.update_settings_from_added_pairing_number(
-                        self, tournament_player_index + 1
-                    )
-                )
-
-        tournament_players_by_updated_pairing_number = {
-            pairing_number: player
-            for pairing_number, player in enumerate(sorted_tournament_players, start=1)
-            if pairing_number != player.pairing_number
-        }
-        if not tournament_players_by_updated_pairing_number:
-            return
-        for (
-            pairing_number,
-            tournament_player,
-        ) in tournament_players_by_updated_pairing_number.items():
-            tournament_player.stored_tournament_player.pairing_number = pairing_number
-        if self.is_team_tournament:
-            # A team tournament's players are synthesised from the team
-            # rosters and have no stored tournament_player row to persist
-            # to, so their numbering lives in memory only. Skipping the
-            # write also keeps the FFE-upload conversion — which runs on a
-            # throwaway copy whose database is already closed — from
-            # reopening a database that is no longer there.
-            return
-        with EventDatabase(self.event.uniq_id, True) as database:
-            for (
-                tournament_player
-            ) in tournament_players_by_updated_pairing_number.values():
-                database.set_tournament_player_pairing_number(
-                    tournament_player.stored_tournament_player
-                )
-            if settings_updated:
-                database.set_tournament_pairing_settings(
-                    self.id, self.stored_pairing_settings
-                )
 
     def toggle_check_in_open(self) -> None:
         check_in_open = not self.check_in_open
