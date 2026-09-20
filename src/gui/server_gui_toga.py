@@ -953,32 +953,6 @@ class SharlyChessServerToga(toga.App):
         self._request_window_size(self.compact_size)
         self._start()
 
-    def update_from_sharly_chess_config(self) -> None:
-        if self.launch_browser_switch is None:
-            # The setup content does not hold these widgets.
-            return
-
-        def config_update() -> None:
-            config = SharlyChessConfig()
-            assert self.launch_browser_switch is not None
-            self.launch_browser_switch.value = config.launch_browser
-            assert self.log_level_select is not None and isinstance(
-                self.log_level_select.items, ListSource
-            )
-            self.log_level_select.value = self.log_level_select.items.find(
-                data={'level': config.console_log_level}
-            )
-            assert self.log_color_switch is not None
-            self.log_color_switch.value = config.console_color
-            assert self.show_log_level_switch is not None
-            self.show_log_level_switch.value = config.console_show_level
-            assert self.show_log_time_switch is not None
-            self.show_log_time_switch.value = config.console_show_date
-            assert self.check_beta_switch is not None
-            self.check_beta_switch.value = config.check_beta_versions
-
-        self.gui_loop.call_soon_threadsafe(config_update)
-
     def _set_button_active(
         self, button: toga.Button, style: Pack, active: bool
     ) -> None:

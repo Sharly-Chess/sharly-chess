@@ -24,9 +24,8 @@ from litestar.logging import LoggingConfig
 from litestar.plugins.htmx import HTMXRequest
 from litestar.types import ASGIApp, Scope, HTTPScope
 
-from common import REQUEST_TIMEOUT, TEST_ENV
+from common import REQUEST_TIMEOUT
 from common.installation_checker import InstallationChecker
-from common.data_recovery import DataRecovery
 from common.logger import get_logger, set_logging_config
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -117,8 +116,6 @@ class ServerEngine:
         logger.info('Locale: %s', config.locale)
         if not InstallationChecker.check():
             return
-        if not TEST_ENV:
-            DataRecovery.setup()
 
         self.loop = self._ensure_loop(loop)
 
