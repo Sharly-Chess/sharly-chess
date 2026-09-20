@@ -75,6 +75,7 @@ class BackendServer:
         self.host = host or TestConfig.TEST_HOST
         self.port = port or TestConfig.TEST_PORT
         self.process: subprocess.Popen | None = None
+        self.log_file: Path | None = None
         self.log_file_handle: TextIOWrapper | None = None
         # Construct base URL with explicit port
         if self.port == 80:
@@ -132,10 +133,10 @@ class BackendServer:
         # Create log file for server output - use unique name to avoid conflicts
         import time
 
-        log_file = DATA_DIR / f'server_{int(time.time())}.log'
+        self.log_file = DATA_DIR / f'server_{int(time.time())}.log'
 
         # Keep reference to log file handle so we can close it later
-        self.log_file_handle = open(log_file, 'w')
+        self.log_file_handle = open(self.log_file, 'w')
 
         # Its own process group, so stop() can signal the server and
         # everything it forked in one go. Unix and Windows spell this
@@ -264,12 +265,13 @@ class BackendServer:
             time.sleep(0.5)
 
         error_message = f'Server did not start within {timeout} seconds'
-
-        # If server didn't start, capture the output for debugging
         if self.process and self.process.poll() is not None:
-            stdout, stderr = self.process.communicate()
-            error_message += f'\n\nServer stdout: {stdout}'
-            error_message += f'\n\nServer stderr: {stderr}'
+            error_message += f' (exited with code {self.process.returncode})'
+        # The server's output went to its log file, not to a pipe.
+        if self.log_file_handle and self.log_file:
+            self.log_file_handle.flush()
+            error_message += f'\n\nServer log ({self.log_file}):\n'
+            error_message += self.log_file.read_text(errors='replace')[-4000:]
 
         raise RuntimeError(error_message)
 
