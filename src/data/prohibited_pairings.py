@@ -276,7 +276,7 @@ class ProhibitedPairings:
         tournament = self.tournament
         if tournament.is_team_tournament:
             return {
-                row['team'].id: row['rank']
+                row.team.id: row.rank
                 for row in tournament.team_standings(after_round=after_round)
             }
         return {

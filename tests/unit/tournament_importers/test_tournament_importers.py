@@ -1267,7 +1267,7 @@ class TournamentImporterTestCase(TestCase):
         self._set_team_manual_bye(tournament, fpb_team.id, 1, 'FPB')
         self._set_team_manual_bye(tournament, pab_team.id, 1, 'PAB')
 
-        standings = {row['team'].id: row for row in tournament.team_standings()}
+        standings = {row.team.id: row for row in tournament.team_standings()}
         match_points = tournament.match_points
         win_mp = match_points[Result.WIN]
         draw_mp = match_points[Result.DRAW]
@@ -1275,14 +1275,14 @@ class TournamentImporterTestCase(TestCase):
         pab_mp = match_points[Result.PAIRING_ALLOCATED_BYE]
         n = float(tournament.team_player_count or 0)
 
-        self.assertEqual(standings[zpb_team.id]['mp'], loss_mp)
-        self.assertEqual(standings[zpb_team.id]['gp'], 0.0)
-        self.assertEqual(standings[hpb_team.id]['mp'], draw_mp)
-        self.assertEqual(standings[hpb_team.id]['gp'], n * 0.5)
-        self.assertEqual(standings[fpb_team.id]['mp'], win_mp)
-        self.assertEqual(standings[fpb_team.id]['gp'], n * 1.0)
-        self.assertEqual(standings[pab_team.id]['mp'], pab_mp)
-        self.assertEqual(standings[pab_team.id]['gp'], tournament.team_pab_game_points)
+        self.assertEqual(standings[zpb_team.id].mp, loss_mp)
+        self.assertEqual(standings[zpb_team.id].gp, 0.0)
+        self.assertEqual(standings[hpb_team.id].mp, draw_mp)
+        self.assertEqual(standings[hpb_team.id].gp, n * 0.5)
+        self.assertEqual(standings[fpb_team.id].mp, win_mp)
+        self.assertEqual(standings[fpb_team.id].gp, n * 1.0)
+        self.assertEqual(standings[pab_team.id].mp, pab_mp)
+        self.assertEqual(standings[pab_team.id].gp, tournament.team_pab_game_points)
 
     def test_create_team_round_pairing_flow(self):
         """Manual team pairing — first click creates a PAB envelope

@@ -1732,18 +1732,18 @@ class RankingScreenType(ScreenType):
         if tournament.is_team_tournament:
             from utils.enum import ScoreType
 
-            primary_is_mp = (
-                tournament.pairing_system.paired_by_team
-                and tournament.primary_score == ScoreType.MATCH_POINTS
+            score_type = (
+                tournament.primary_score
+                if tournament.pairing_system.paired_by_team
+                else ScoreType.GAME_POINTS
             )
-            score_key = 'mp' if primary_is_mp else 'gp'
             total = len(
                 [
                     row
                     for row in tournament.team_standings(after_round=ranking_round)
-                    if not row['team'].is_excluded_from_standings
-                    and (min_points is None or row[score_key] >= min_points)
-                    and (max_points is None or row[score_key] <= max_points)
+                    if not row.team.is_excluded_from_standings
+                    and (min_points is None or row.score(score_type) >= min_points)
+                    and (max_points is None or row.score(score_type) <= max_points)
                 ]
             )
         else:
@@ -1767,8 +1767,8 @@ class RankingScreenType(ScreenType):
             last_standing = screen_set.last_team_standing
             if first_standing is not None and last_standing is not None:
                 return _('Teams from #%(first)d to #%(last)d') % {
-                    'first': first_standing['rank'],
-                    'last': last_standing['rank'],
+                    'first': first_standing.rank,
+                    'last': last_standing.rank,
                 }
             return _('Teams (none now)')
         first_player = screen_set.first_tournament_player_by_rank
@@ -1809,8 +1809,8 @@ class RankingScreenType(ScreenType):
             first_standing = screen_set.first_team_standing
             last_standing = screen_set.last_team_standing
             return (
-                str(first_standing['rank']) if first_standing is not None else dash,
-                str(last_standing['rank']) if last_standing is not None else dash,
+                str(first_standing.rank) if first_standing is not None else dash,
+                str(last_standing.rank) if last_standing is not None else dash,
             )
         first = screen_set.first_tournament_player_by_rank
         last = screen_set.last_tournament_player_by_rank

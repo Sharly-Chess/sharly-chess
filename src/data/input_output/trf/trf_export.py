@@ -224,7 +224,7 @@ class TrfExport:
         # otherwise the in-progress round leaks into the TRF rank fed to
         # bbpPairings (e.g. during complementary pairing).
         for row in tournament.team_standings(after_round=after_round):
-            rank_by_team_id[row['team'].id] = row['rank']
+            rank_by_team_id[row.team.id] = row.rank
         nickname_by_team_id = self._team_nickname_map(tpn_by_team_id)
         trf_teams: list[TrfTeam] = []
         for team in teams:

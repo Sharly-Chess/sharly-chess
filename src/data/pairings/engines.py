@@ -26,7 +26,7 @@ from data.pairings.settings import BergerNumbersSetting
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
 from utils import Utils
-from utils.enum import BoardColor, Result, TeamByeType, ScoreType
+from utils.enum import BoardColor, Result, TeamByeType
 
 if TYPE_CHECKING:
     from data.teams.team import Team
@@ -820,9 +820,7 @@ class TeamPairingEngine(PairingEngine, ABC):
             # Order matches by standings entering the round (exclude any
             # results already entered for the round being paired).
             standings_by_team_id = {
-                row['team'].id: row[
-                    'mp' if tournament.primary_score == ScoreType.MATCH_POINTS else 'gp'
-                ]
+                row.team.id: row.score(tournament.primary_score)
                 for row in tournament.team_standings(after_round=round_ - 1)
             }
 

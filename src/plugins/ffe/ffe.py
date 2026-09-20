@@ -393,9 +393,9 @@ class FfePlugin(Plugin):
         if rule_set is None or not getattr(rule_set, 'round3_winner_protection', False):
             return []
         winners = [
-            row['team'].id
+            row.team.id
             for row in tournament.team_standings(after_round=2)
-            if row['played'] == 2 and row['wins'] == 2
+            if row.played == 2 and row.wins == 2
         ]
         if len(winners) < 2:
             return []

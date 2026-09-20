@@ -85,7 +85,7 @@ if TYPE_CHECKING:
     from data.pairings.keizer import KeizerScorer
     from data.pairings.knockout_helpers.view import KnockoutView
     from data.teams.team import Team
-    from data.teams.team_scoring import TeamScoring
+    from data.teams.team_scoring import TeamScoring, TeamStanding
     from data.tie_breaks.team_records import TeamRecord
     from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
 
@@ -640,7 +640,7 @@ class Tournament:
 
         return TeamScoring(self)
 
-    def team_standings(self, *, after_round: int | None = None) -> list[dict[str, Any]]:
+    def team_standings(self, *, after_round: int | None = None) -> list['TeamStanding']:
         return self.team_scoring.standings(after_round=after_round)
 
     def team_records(self, *, after_round: int | None = None) -> list['TeamRecord']:

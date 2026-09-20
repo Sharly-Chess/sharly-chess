@@ -209,9 +209,9 @@ class TeamByeRecordsTestCase(_TeamLineupHarness):
         )
         self.assertEqual(len(record.matches), 1)
         standings_mp = next(
-            entry['mp']
+            entry.mp
             for entry in tournament.team_standings()
-            if entry['team'].id == team_id
+            if entry.team.id == team_id
         )
         return record.matches[0], standings_mp
 

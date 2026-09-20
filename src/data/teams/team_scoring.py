@@ -7,26 +7,69 @@ match are worth.
 """
 
 from collections.abc import Callable
-from dataclasses import replace
-from typing import TYPE_CHECKING, Any
+from dataclasses import dataclass, field, replace
+from typing import TYPE_CHECKING, Literal
 
 from data.teams.team_board import TeamBoard
 from data.tie_breaks import TeamTieBreak, TieBreak
 from data.tie_breaks.team_records import TeamMatchRecord, TeamMatchType, TeamRecord
 from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
-from utils.enum import Result, TeamByeType
+from utils.enum import Result, ScoreType, TeamByeType
 from utils.types import TieBreakValue
 
 if TYPE_CHECKING:
+    from data.teams.team import Team
     from data.tournament import Tournament
 
-Row = dict[str, Any]
-RankKey = Callable[[Row], tuple[float, ...]]
+Outcome = Literal['wins', 'draws', 'losses', 'forfeits']
+RankKey = Callable[['TeamStanding'], tuple[float, ...]]
+
+
+@dataclass
+class TeamStanding:
+    """One team's line in the standings."""
+
+    team: 'Team'
+    mp: float = 0.0
+    gp: float = 0.0
+    played: int = 0
+    wins: int = 0
+    draws: int = 0
+    losses: int = 0
+    # A round the team was absent for counts here rather than as a loss,
+    # so a loss is one taken over the board — a match it forfeited
+    # outright, and a round it was left unpaired as absent for.
+    forfeits: int = 0
+    tie_break_values: list[TieBreakValue] = field(default_factory=list)
+    rank: int = 0
+
+    def score(self, score_type: ScoreType) -> float:
+        """The team's match or game points, whichever ``score_type`` is."""
+        return self.mp if score_type == ScoreType.MATCH_POINTS else self.gp
+
+    def add(self, mp: float, gp: float, outcome: Outcome) -> None:
+        """Count one more round, scored ``mp`` / ``gp`` and ending in
+        ``outcome``."""
+        self.played += 1
+        self.mp += mp
+        self.gp += gp
+        setattr(self, outcome, getattr(self, outcome) + 1)
+
+    @property
+    def tie_order(self) -> tuple[float, str]:
+        """The order of teams nothing else separates: pairing number,
+        then name."""
+        team = self.team
+        return (
+            team.pairing_number if team.pairing_number is not None else float('inf'),
+            team.name.lower(),
+        )
+
 
 # What a bye counts as in the standings' tally of a team's rounds. A
 # pairing-allocated bye is awarded, so it is a win, as is a full-point
 # bye; a zero-point bye is the round the team was absent for.
-_BYE_OUTCOME: dict[str, str] = {
+_BYE_OUTCOME: dict[str, Outcome] = {
     TeamByeType.ZPB: 'forfeits',
     TeamByeType.HPB: 'draws',
     TeamByeType.FPB: 'wins',
@@ -101,7 +144,7 @@ class TeamScoring:
     # Standings
     # -------------------------------------------------------------------------
 
-    def standings(self, *, after_round: int | None = None) -> list[Row]:
+    def standings(self, *, after_round: int | None = None) -> list[TeamStanding]:
         """The team standings, sorted by the configured ranking criteria
         in order. The primary score is one of them — the Points tie-break
         — rather than an implicit first key, so that its position can be
@@ -133,32 +176,21 @@ class TeamScoring:
         rows = list(standings.values())
         base_key = self._base_key(after_round)
         team_tie_breaks = [tb for tb in tournament.tie_breaks if tb.supports_team_mode]
-        self._add_tie_break_values(rows, team_tie_breaks, base_key, after_round)
-        return self._ranking(rows, team_tie_breaks, base_key)
+        values = self._tie_break_values(rows, team_tie_breaks, base_key, after_round)
+        return self._ranking(rows, team_tie_breaks, values, base_key)
 
-    def _empty_standings(self) -> dict[int, Row]:
-        """One entry per team of the tournament, nothing scored yet."""
+    def _empty_standings(self) -> dict[int, TeamStanding]:
+        """One line per team of the tournament, nothing scored yet."""
         tournament = self.tournament
         return {
-            team.id: {
-                'team': team,
-                'mp': 0.0,
-                'gp': 0.0,
-                'played': 0,
-                'wins': 0,
-                'draws': 0,
-                'losses': 0,
-                # A round the team was absent for counts here rather than
-                # as a loss, so a loss is one taken over the board — a
-                # match it forfeited outright, and a round it was left
-                # unpaired as absent for.
-                'forfeits': 0,
-            }
+            team.id: TeamStanding(team)
             for team in tournament.event.sorted_teams
             if team.tournament_id == tournament.id
         }
 
-    def _tally_boards(self, standings: dict[int, Row], after_round: int | None) -> None:
+    def _tally_boards(
+        self, standings: dict[int, TeamStanding], after_round: int | None
+    ) -> None:
         """Flat fixed-table scoring (no team boards): each player's game
         points go straight into the team's total. ``team_game_points`` is
         used so the ``gp_*`` override applies to team scoring here too."""
@@ -177,10 +209,10 @@ class TeamScoring:
                 if player is None or player.team_id not in standings:
                     continue
                 entry = standings[player.team_id]
-                entry['gp'] += pairing.result.points(team_game_points)
-                entry['played'] += 1
+                entry.gp += pairing.result.points(team_game_points)
+                entry.played += 1
 
-    def _flat_ranking(self, rows: list[Row]) -> list[Row]:
+    def _flat_ranking(self, rows: list[TeamStanding]) -> list[TeamStanding]:
         """Flat fixed-table order: game points, then pairing number and
         name. The team tie-breaks are not computed in this mode, but every
         row still carries one zero per team tie-break so consumers that
@@ -190,16 +222,16 @@ class TeamScoring:
             tb for tb in self.tournament.tie_breaks if tb.supports_team_mode
         ]
         for row in rows:
-            row['tie_break_values'] = self._wrap_tie_break_values(
+            row.tie_break_values = self._wrap_tie_break_values(
                 team_tie_breaks, [0.0] * len(team_tie_breaks)
             )
-        rows.sort(key=lambda row: (-row['gp'], *self._team_order(row)))
+        rows.sort(key=lambda row: (-row.gp, *row.tie_order))
         for rank, row in enumerate(rows, 1):
-            row['rank'] = rank
+            row.rank = rank
         return rows
 
     def _tally_matches(
-        self, standings: dict[int, Row], after_round: int | None
+        self, standings: dict[int, TeamStanding], after_round: int | None
     ) -> None:
         """Score each team board through ``after_round``: byes at what
         their type is worth, matches at their effective game points."""
@@ -214,10 +246,7 @@ class TeamScoring:
                 if entry is None or score is None:
                     continue
                 mp, gp = score
-                entry['played'] += 1
-                entry['mp'] += mp
-                entry['gp'] += gp
-                entry[_BYE_OUTCOME.get(stb.bye_type or '', 'wins')] += 1
+                entry.add(mp, gp, _BYE_OUTCOME.get(stb.bye_type or '', 'wins'))
                 continue
             a_gp, b_gp = team_board.game_points
             # Match result follows the effective game points (board + this
@@ -229,6 +258,8 @@ class TeamScoring:
             )
             assert match_points_pair is not None
             a_mp, b_mp = match_points_pair
+            a_outcome: Outcome
+            b_outcome: Outcome
             if a_gp_effective > b_gp_effective:
                 a_outcome, b_outcome = 'wins', 'losses'
             elif a_gp_effective < b_gp_effective:
@@ -246,22 +277,18 @@ class TeamScoring:
                 (stb.team_b_id, b_mp, b_gp, b_outcome),
             ):
                 entry = standings.get(team_id)
-                if entry is None:
-                    continue
-                entry['played'] += 1
-                entry['mp'] += mp
-                entry['gp'] += gp
-                entry[outcome] += 1
+                if entry is not None:
+                    entry.add(mp, gp, outcome)
 
     def _apply_point_adjustments(
-        self, standings: dict[int, Row], after_round: int | None
+        self, standings: dict[int, TeamStanding], after_round: int | None
     ) -> None:
         adjustments = self.tournament.point_adjustments
         for round_ in range(1, adjustments.bound(after_round) + 1):
             for team_id, entry in standings.items():
                 mp_adj, gp_adj = adjustments.effective(team_id, round_)
-                entry['mp'] += mp_adj
-                entry['gp'] += gp_adj
+                entry.mp += mp_adj
+                entry.gp += gp_adj
 
     def _base_key(self, after_round: int | None) -> RankKey:
         """What ranks ahead of the configured criteria: nothing.
@@ -282,28 +309,27 @@ class TeamScoring:
                 after_round if after_round is not None else tournament.max_ranking_round
             )
         )
-        return lambda row: (-elimination_values.get(row['team'].id, 0.0),)
+        return lambda row: (-elimination_values.get(row.team.id, 0.0),)
 
-    def _add_tie_break_values(
+    def _tie_break_values(
         self,
-        rows: list[Row],
+        rows: list[TeamStanding],
         team_tie_breaks: list[TieBreak],
         base_key: RankKey,
         after_round: int | None,
-    ) -> None:
-        """Append each team tie-break's raw value to every row, in
-        tie-break order."""
-        for row in rows:
-            row['tie_break_values'] = []
+    ) -> dict[int, list[float]]:
+        """Each team's raw value for each team tie-break, in tie-break
+        order, keyed by team id."""
+        values: dict[int, list[float]] = {row.team.id: [] for row in rows}
         if not team_tie_breaks:
-            return
+            return values
         if after_round is None:
             after_round = self.tournament.current_round
         records_by_id = {r.team_id: r for r in self.records(after_round=after_round)}
         context = self.tie_break_context()
 
-        def key_so_far(row: Row) -> tuple[float, ...]:
-            return base_key(row) + tuple(-v for v in row['tie_break_values'])
+        def key_so_far(row: TeamStanding) -> tuple[float, ...]:
+            return base_key(row) + tuple(-v for v in values[row.team.id])
 
         for tb in team_tie_breaks:
             if tb.display_rank_delta and isinstance(tb, TeamTieBreak):
@@ -311,7 +337,7 @@ class TeamScoring:
                 # sort key so far, then ask the tie-break to assign
                 # rank-deltas within each still-tied group.
                 rows.sort(key=key_so_far)
-                groups: list[list[Row]] = []
+                groups: list[list[TeamStanding]] = []
                 current_key: tuple[float, ...] | None = None
                 for row in rows:
                     key = key_so_far(row)
@@ -321,10 +347,10 @@ class TeamScoring:
                     groups[-1].append(row)
                 tied = [
                     [
-                        records_by_id[row['team'].id]
+                        records_by_id[row.team.id]
                         for row in group
-                        if row['team'].id in records_by_id
-                        and not row['team'].is_excluded_from_standings
+                        if row.team.id in records_by_id
+                        and not row.team.is_excluded_from_standings
                     ]
                     for group in groups
                     if len(group) > 1
@@ -337,13 +363,11 @@ class TeamScoring:
                     else {}
                 )
                 for row in rows:
-                    row['tie_break_values'].append(
-                        float(values_map.get(row['team'].id, 0.0))
-                    )
+                    values[row.team.id].append(float(values_map.get(row.team.id, 0.0)))
                 continue
             # Scalar tie-break — compute one value per team.
             for row in rows:
-                record = records_by_id.get(row['team'].id)
+                record = records_by_id.get(row.team.id)
                 value = (
                     tb.compute_team_value(
                         record, records_by_id, context, after_round=after_round
@@ -351,41 +375,33 @@ class TeamScoring:
                     if record is not None
                     else 0.0
                 )
-                row['tie_break_values'].append(float(value))
+                values[row.team.id].append(float(value))
+        return values
 
     def _ranking(
-        self, rows: list[Row], team_tie_breaks: list[TieBreak], base_key: RankKey
-    ) -> list[Row]:
-        """Sort the rows, number them, and wrap their tie-break values
-        for display."""
+        self,
+        rows: list[TeamStanding],
+        team_tie_breaks: list[TieBreak],
+        values: dict[int, list[float]],
+        base_key: RankKey,
+    ) -> list[TeamStanding]:
+        """Sort the rows, number them, and give them their tie-break
+        values, wrapped for display."""
         rows.sort(
             key=lambda row: (
                 # Teams excluded from the standings (FIDE 6.6) rank last,
                 # regardless of score, so the competitors keep a contiguous
                 # ranking. They stay in the crosstable for the record.
-                row['team'].is_excluded_from_standings,
-                base_key(row)
-                + tuple(-v for v in row['tie_break_values'])
-                + self._team_order(row),
+                row.team.is_excluded_from_standings,
+                base_key(row) + tuple(-v for v in values[row.team.id]) + row.tie_order,
             )
         )
         for rank, row in enumerate(rows, 1):
-            row['rank'] = rank
-        for row in rows:
-            row['tie_break_values'] = self._wrap_tie_break_values(
-                team_tie_breaks, row['tie_break_values']
+            row.rank = rank
+            row.tie_break_values = self._wrap_tie_break_values(
+                team_tie_breaks, values[row.team.id]
             )
         return rows
-
-    @staticmethod
-    def _team_order(row: Row) -> tuple[float, str]:
-        """The order of teams nothing else separates: pairing number,
-        then name."""
-        team = row['team']
-        return (
-            team.pairing_number if team.pairing_number is not None else float('inf'),
-            team.name.lower(),
-        )
 
     @staticmethod
     def _wrap_tie_break_values(

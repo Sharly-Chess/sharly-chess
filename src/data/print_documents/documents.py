@@ -1123,7 +1123,7 @@ class TeamRankingPrintDocument(PrintDocument):
         standings = [
             row
             for row in self.tournament.team_standings(after_round=self.ranking_round)
-            if not row['team'].is_excluded_from_standings
+            if not row.team.is_excluded_from_standings
         ]
         # A knock-out ranks by the round reached, shown as a plain-language
         # result, not match/game points or standings tie-breaks.
@@ -1444,7 +1444,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
                     cells[mine][theirs].append({'round': round_, 'score': score})
 
         standings_by_team_id = {
-            entry['team'].id: entry
+            entry.team.id: entry
             for entry in tournament.team_standings(after_round=bound_round)
         }
 

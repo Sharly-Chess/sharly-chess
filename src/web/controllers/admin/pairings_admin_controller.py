@@ -3458,8 +3458,8 @@ class PairingsAdminController(BaseEventAdminController):
         else:
             # Standings as they stand entering this round (the modal shows
             # the accumulated MP/GP "at the start of round").
-            for row in tournament.team_standings(after_round=round - 1):
-                team = row['team']
+            for standing in tournament.team_standings(after_round=round - 1):
+                team = standing.team
                 rows.append(
                     {
                         'team': team,
@@ -3467,8 +3467,8 @@ class PairingsAdminController(BaseEventAdminController):
                         'mp': tournament.team_primary_score_before_round(
                             team.id, round
                         ),
-                        'gp': row['gp'],
-                        'rank': row['rank'],
+                        'gp': standing.gp,
+                        'rank': standing.rank,
                         'opponents': opponents_by_team.get(team.id, []),
                         'colors': colors_by_team.get(team.id, []),
                         'preference': None,
