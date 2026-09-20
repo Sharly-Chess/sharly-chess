@@ -57,7 +57,11 @@ class TestEventAgeCategorySets:
         expect(sets_modal).to_contain_text(SET_NAME)
 
         set_row = sets_modal.locator('.border').filter(has_text=SET_NAME)
-        set_row.locator('button:has(.bi-trash-fill)').click()
+        trash = set_row.locator('button:has(.bi-trash-fill)')
+        TestUtils.wait_for_htmx_bound(
+            page, f'[hx-post="{trash.get_attribute("hx-post")}"]'
+        )
+        trash.click()
         expect(sets_modal).not_to_contain_text(SET_NAME)
 
         # A delete carries the event form on, so Back restores it unsaved.
