@@ -6,7 +6,7 @@ from logging import Logger
 from pathlib import Path
 from collections.abc import Iterator
 
-from common import BASE_DIR, TMP_DIR
+from common import BASE_DIR
 from common.i18n.babel_wrapper import BabelDomainWrapper
 from common.i18n.domains import Domain
 from common.i18n.locale_info import DomainLocaleInfo
@@ -29,7 +29,9 @@ class BabelDomainUpdater(BabelDomainWrapper):
     ):
         super().__init__(domain_id)
         self.locales: list[str] = locales
-        self.tmp_dir: Path = TMP_DIR / 'i18n' / self.name
+        # The fingerprints describe the POT file of this checkout, which the
+        # data directory (shared by every checkout of the machine) cannot do.
+        self.tmp_dir: Path = BASE_DIR / 'tmp' / 'i18n' / self.name
         self.tmp_dir.mkdir(parents=True, exist_ok=True)
         self.domain_locale_infos: dict[str, DomainLocaleInfo] = {
             locale: DomainLocaleInfo(self.id, locale, default_locale)
