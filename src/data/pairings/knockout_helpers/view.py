@@ -187,7 +187,7 @@ class KnockoutView:
         method = getattr(self._t.pairing_variation.engine, 'grouping_preview', None)
         if method is None:
             return None
-        for dimension in self._t.prohibited_pairing_dimensions():
+        for dimension in self._t.pairing_dimensions():
             if dimension.id == dimension_id:
                 return cast(dict | None, method(self._t, dimension))
         return None

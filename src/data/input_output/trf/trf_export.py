@@ -137,18 +137,18 @@ class TrfExport:
                 # whole (hard-only round, or an imported 260 set).
                 whole = [list(group.member_ids) for group in groups]
                 result.extend(
-                    tournament.prohibited_pairing_applied_lines(
+                    tournament.prohibited_pairings.applied_lines(
                         whole, [], 0, {}, round_
                     )
                 )
                 continue
             hard_groups = [list(g.member_ids) for g in groups if g.is_hard]
             soft_groups = [list(g.member_ids) for g in groups if not g.is_hard]
-            rank_by_member = tournament.prohibited_member_weakness_ranks(
+            rank_by_member = tournament.prohibited_pairings.member_weakness_ranks(
                 after_round=round_ - 1
             )
             result.extend(
-                tournament.prohibited_pairing_applied_lines(
+                tournament.prohibited_pairings.applied_lines(
                     hard_groups, soft_groups, protect_rank, rank_by_member, round_
                 )
             )

@@ -23,6 +23,7 @@ from data.point_system import PointSystem
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
+from data.prohibited_pairings import ProhibitedPairings
 from data.screens.screen import Screen
 from data.teams.team_board import TeamBoard
 from data.teams.team_pairing_block import TeamPairingBlock
@@ -41,7 +42,6 @@ from database.sqlite.event.event_store import (
     StoredTeamBoard,
     StoredTeamPointAdjustment,
     StoredPlayerPointAdjustment,
-    StoredProhibitedPairingGroup,
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
@@ -84,7 +84,6 @@ if TYPE_CHECKING:
     from data.rule_sets import RuleSet
     from data.rule_sets.rule_sets import PointAdjustment
     from data.pairing_dimensions import PairingDimension
-    from data.prohibited_pairings import RoundProhibitedPairingGroup
     from data.pairings import PairingVariation, PairingSystem
     from data.pairings.keizer import KeizerScorer
     from data.pairings.knockout_helpers.view import KnockoutView
@@ -1154,28 +1153,11 @@ class Tournament:
     # Prohibited pairings
     # -------------------------------------------------------------------------
 
-    @property
-    def prohibited_pairing_forced_by_rule_set(self) -> 'tuple[str, bool] | None':
-        """The ``(dimension_id, is_hard)`` the tournament's rule set
-        imposes, or ``None`` when the configuration is free."""
-        rule_set = self.rule_set
-        return rule_set.forced_prohibited_pairing if rule_set else None
+    @cached_property
+    def prohibited_pairings(self) -> ProhibitedPairings:
+        return ProhibitedPairings(self)
 
-    @property
-    def prohibited_pairing_dimension_id(self) -> str | None:
-        forced = self.prohibited_pairing_forced_by_rule_set
-        if forced is not None:
-            return forced[0]
-        return self.stored_tournament.prohibited_pairing_dimension
-
-    @property
-    def prohibited_pairing_dimension_is_hard(self) -> bool:
-        forced = self.prohibited_pairing_forced_by_rule_set
-        if forced is not None:
-            return forced[1]
-        return self.stored_tournament.prohibited_pairing_dimension_is_hard
-
-    def prohibited_pairing_dimensions(self) -> 'list[PairingDimension]':
+    def pairing_dimensions(self) -> 'list[PairingDimension]':
         """All grouping dimensions applicable to this tournament: the
         core ones plus any contributed by enabled plugins, filtered to
         match this tournament's individual/team nature."""
@@ -1190,353 +1172,9 @@ class Tournament:
                 dimensions.extend(plugin_result)
         return [d for d in dimensions if d.is_team == self.is_team_tournament]
 
-    def prohibited_pairing_dimension(self) -> 'PairingDimension | None':
-        dimension_id = self.prohibited_pairing_dimension_id
-        if dimension_id is None:
-            return None
-        for dimension in self.prohibited_pairing_dimensions():
-            if dimension.id == dimension_id:
-                return dimension
-        return None
-
-    def set_prohibited_pairing_config(
-        self,
-        dimension_id: str | None,
-        dimension_is_hard: bool,
-        database: 'EventDatabase',
-    ) -> None:
-        self.stored_tournament.prohibited_pairing_dimension = dimension_id or None
-        self.stored_tournament.prohibited_pairing_dimension_is_hard = dimension_is_hard
-        database.update_stored_tournament(self.stored_tournament)
-
-    @property
-    def _prohibited_members(self) -> list:
-        """The members the dimension buckets — players for an individual
-        tournament, teams for a team one."""
-        if self.is_team_tournament:
-            return list(self.teams)
-        return list(self.tournament_players)
-
-    def _member_id(self, member: Any) -> int:
-        return cast(int, member.id)
-
-    def manual_prohibited_pairing_groups(
-        self,
-    ) -> 'list[StoredProhibitedPairingGroup]':
-        return [
-            group
-            for group in self.stored_tournament.stored_prohibited_pairing_groups
-            if group.round_ is None
-        ]
-
-    def set_manual_prohibited_pairing_groups(
-        self,
-        groups: list[tuple[bool, list[int]]],
-        database: 'EventDatabase',
-    ) -> None:
-        database.replace_manual_prohibited_pairing_groups(self.id, groups)
-        self.stored_tournament.stored_prohibited_pairing_groups = (
-            database.load_tournament_stored_prohibited_pairing_groups(self.id)
-        )
-
-    def dimension_prohibited_pairing_buckets(self) -> list[tuple[str, list[int]]]:
-        """Live dimension buckets of ≥2 members, each ``(key, member_ids)``
-        where ``key`` is the shared affiliation value (club / federation
-        / … name). Empty when no dimension is selected."""
-        dimension = self.prohibited_pairing_dimension()
-        if dimension is None:
-            return []
-        buckets: dict[str, list[int]] = {}
-        for member in self._prohibited_members:
-            key = dimension.group_key(member)
-            if key is None:
-                continue
-            buckets.setdefault(key, []).append(self._member_id(member))
-        return [
-            (key, member_ids)
-            for key, member_ids in buckets.items()
-            if len(member_ids) >= 2
-        ]
-
-    def dimension_prohibited_pairing_groups(self) -> list[tuple[bool, list[int]]]:
-        """Live dimension-derived groups for the current config, each
-        ``(is_hard, member_ids)``. Empty when no dimension is selected."""
-        is_hard = self.prohibited_pairing_dimension_is_hard
-        return [
-            (is_hard, member_ids)
-            for _key, member_ids in self.dimension_prohibited_pairing_buckets()
-        ]
-
-    def computed_prohibited_pairing_groups(
-        self, round_: int | None = None
-    ) -> list[tuple[bool, list[int]]]:
-        """The live groups for the current config — dimension-derived
-        plus the manual template groups. Each is ``(is_hard,
-        member_ids)``. This is what a full pairing snapshots.
-
-        When ``round_`` is given, plugin-contributed dynamic groups for
-        that round (the ``get_round_prohibited_pairing_groups`` hook —
-        e.g. results-based protections) are merged in too."""
-        groups: list[tuple[bool, list[int]]] = list(
-            self.dimension_prohibited_pairing_groups()
-        )
-        groups.extend(
-            (group.is_hard, list(group.member_ids))
-            for group in self.manual_prohibited_pairing_groups()
-            if len(group.member_ids) >= 2
-        )
-        if round_ is not None:
-            groups.extend(
-                (rule_group.is_hard, list(rule_group.member_ids))
-                for rule_group in self.round_rule_prohibited_pairing_groups(round_)
-            )
-        return groups
-
-    def round_rule_prohibited_pairing_groups(
-        self, round_: int
-    ) -> 'list[RoundProhibitedPairingGroup]':
-        """Named prohibited-pairing groups contributed by plugins for
-        ``round_`` (the ``get_round_prohibited_pairing_groups`` hook). Kept
-        named (unlike :meth:`computed_prohibited_pairing_groups`) so the
-        prohibited-pairings modal can label them before the round is paired.
-        Groups of fewer than two members are dropped."""
-        from plugins.manager import plugin_manager
-
-        groups: list[RoundProhibitedPairingGroup] = []
-        for plugin_result in plugin_manager.hook_for_event(
-            self.event, 'get_round_prohibited_pairing_groups'
-        )(tournament=self, round_=round_):
-            groups.extend(
-                group for group in plugin_result or [] if len(group.member_ids) >= 2
-            )
-        return groups
-
-    def prohibited_pairing_snapshot(
-        self, round_: int
-    ) -> 'list[StoredProhibitedPairingGroup]':
-        return [
-            group
-            for group in self.stored_tournament.stored_prohibited_pairing_groups
-            if group.round_ == round_
-        ]
-
-    def prohibited_pairing_count_for_round(self, round_: int) -> int:
-        """Number of prohibition groups in effect for ``round_``: the frozen
-        snapshot once the round is paired, otherwise the live configured
-        groups. Drives the round's prohibited-pairings button indicator."""
-        snapshot = self.prohibited_pairing_snapshot(round_)
-        if snapshot:
-            return sum(1 for group in snapshot if len(group.member_ids) >= 2)
-        return len(self.computed_prohibited_pairing_groups(round_))
-
-    def _member_pairing_number(self, member_id: int) -> int | None:
-        """The TRF pairing number used in 260 records — a team TPN in
-        team mode, a player pairing number otherwise."""
-        if self.is_team_tournament:
-            team = self.teams_by_id.get(member_id)
-            return team.pairing_number if team else None
-        tp = self.tournament_players_by_id.get(member_id)
-        return tp.pairing_number if tp else None
-
-    def prohibited_member_weakness_ranks(self, after_round: int) -> dict[int, int]:
-        """Member id → standing position entering the round (1 = top).
-        Soft prohibitions are relaxed from the bottom of this order, so an
-        unavoidable clash lands on the players/teams doing worst *now*. In
-        round 1 the standings collapse to the initial seed."""
-        if self.is_team_tournament:
-            return {
-                row['team'].id: row['rank']
-                for row in self.team_standings(after_round=after_round)
-            }
-        return {
-            tp.id: rank
-            for rank, tp in self.compute_tournament_player_ranks(
-                after_round=after_round
-            ).items()
-        }
-
-    def prohibited_pairing_relaxation_inputs(
-        self, after_round: int
-    ) -> tuple[list[list[int]], list[list[int]], dict[int, int]]:
-        """Split the round's configured prohibitions into the always-kept
-        hard groups and the soft groups, plus each member's standing rank
-        (1 = top) entering the round — the basis for soft relaxation.
-
-        Relaxation is member-level (*protect the top N*), so there is no
-        pairwise expansion: a soft group is relaxed by splitting its
-        members at a rank cutoff. Skips the standings entirely when there
-        are no soft groups."""
-        groups = self.computed_prohibited_pairing_groups(after_round + 1)
-        hard_groups: list[list[int]] = [
-            list(member_ids) for is_hard, member_ids in groups if is_hard
-        ]
-        soft_groups: list[list[int]] = [
-            list(member_ids) for is_hard, member_ids in groups if not is_hard
-        ]
-        if not soft_groups:
-            return hard_groups, [], {}
-        return (
-            hard_groups,
-            soft_groups,
-            self.prohibited_member_weakness_ranks(after_round),
-        )
-
-    def prohibited_pairing_applied_lines(
-        self,
-        hard_groups: list[list[int]],
-        soft_groups: list[list[int]],
-        protect_rank: int,
-        rank_by_member: dict[int, int],
-        round_: int,
-    ) -> 'list[TrfProhibitedPairing]':
-        """The round's effective 260 lines. Hard groups become one
-        N-member line each. Each soft group is relaxed at ``protect_rank``:
-        its members split into protected (rank ``<= protect_rank``) and
-        unprotected, and the surviving prohibitions — every pairing
-        incident to a protected member — are emitted as compact clique
-        lines (never the pairwise expansion). Members with no pairing
-        number drop out."""
-        from data.input_output.trf.trf_data import TrfProhibitedPairing
-
-        lines: list[TrfProhibitedPairing] = []
-        for group in hard_groups:
-            numbers = [
-                n
-                for n in (self._member_pairing_number(m) for m in group)
-                if n is not None
-            ]
-            if len(numbers) >= 2:
-                lines.append(
-                    TrfProhibitedPairing(
-                        first_round=round_, last_round=round_, pairing_numbers=numbers
-                    )
-                )
-        bottom = max(rank_by_member.values(), default=0) + 1
-        for group in soft_groups:
-            protected = [
-                m for m in group if rank_by_member.get(m, bottom) <= protect_rank
-            ]
-            unprotected = [
-                m for m in group if rank_by_member.get(m, bottom) > protect_rank
-            ]
-            lines.extend(self._soft_clique_lines(protected, unprotected, round_))
-        return lines
-
-    def _soft_clique_lines(
-        self, protected: list[int], unprotected: list[int], round_: int
-    ) -> 'list[TrfProhibitedPairing]':
-        """The surviving prohibitions of one relaxed soft group, as cliques.
-        Pairings incident to a protected member survive (a protected member
-        must avoid everyone in the group); pairings between two unprotected
-        members are relaxed. That edge set is covered by ``protected ∪ {u}``
-        for each unprotected ``u`` (or just ``protected`` when none are
-        unprotected) — one line per unprotected member, not one per pair."""
-        from data.input_output.trf.trf_data import TrfProhibitedPairing
-
-        protected_numbers = [
-            n
-            for n in (self._member_pairing_number(m) for m in protected)
-            if n is not None
-        ]
-        if not protected_numbers:
-            return []
-        if not unprotected:
-            if len(protected_numbers) < 2:
-                return []
-            return [
-                TrfProhibitedPairing(
-                    first_round=round_,
-                    last_round=round_,
-                    pairing_numbers=protected_numbers,
-                )
-            ]
-        lines: list[TrfProhibitedPairing] = []
-        for member in unprotected:
-            number = self._member_pairing_number(member)
-            if number is None:
-                continue
-            lines.append(
-                TrfProhibitedPairing(
-                    first_round=round_,
-                    last_round=round_,
-                    pairing_numbers=[*protected_numbers, number],
-                )
-            )
-        return lines
-
-    def prohibited_pairing_was_relaxed(self, round_: int) -> bool:
-        """True iff this round actually released a soft separation — some
-        soft member ranked below the chosen ``protect_rank``. When everyone
-        could be protected, ``resolve_soft_protect_rank`` stores the bottom
-        rank (full protection), which is *not* a relaxation; the display
-        must not announce one."""
-        groups = self.prohibited_pairing_snapshot(round_)
-        protect_rank = next(
-            (g.protect_rank for g in groups if g.protect_rank is not None), None
-        )
-        if protect_rank is None:
-            return False
-        ranks = self.prohibited_member_weakness_ranks(after_round=round_ - 1)
-        bottom = max(ranks.values(), default=0) + 1
-        return any(
-            ranks.get(member, bottom) > protect_rank
-            for group in groups
-            if not group.is_hard
-            for member in group.member_ids
-        )
-
-    def released_prohibited_pairing_members(self, round_: int) -> list[int]:
-        """The soft members released this round (standing rank below the
-        chosen ``protect_rank``) — flat and de-duplicated across all soft
-        groups. These are the only ones that may now be paired against an
-        affiliated opponent; everyone else kept all their soft separations.
-        Ordered by standing rank (weakest last)."""
-        groups = self.prohibited_pairing_snapshot(round_)
-        protect_rank = next(
-            (g.protect_rank for g in groups if g.protect_rank is not None), None
-        )
-        if protect_rank is None:
-            return []
-        ranks = self.prohibited_member_weakness_ranks(after_round=round_ - 1)
-        bottom = max(ranks.values(), default=0) + 1
-        released = {
-            member
-            for group in groups
-            if not group.is_hard
-            for member in group.member_ids
-            if ranks.get(member, bottom) > protect_rank
-        }
-        return sorted(released, key=lambda member: ranks.get(member, bottom))
-
-    def write_prohibited_pairing_snapshot(
-        self, round_: int, protect_rank: int | None, database: 'EventDatabase'
-    ) -> None:
-        """Freeze the round's prohibited-pairing **groups** (the configured
-        hard and soft groups that were the basis for this round's pairing)
-        together with the soft-relaxation cutoff ``protect_rank`` chosen for
-        the round. The configured groups drive the read-only modal; groups
-        plus ``protect_rank`` let the TRF 260 export regenerate the exact
-        effective set bbpPairings enforced — without persisting the (huge)
-        pairwise expansion."""
-        database.replace_round_prohibited_pairing_snapshot(
-            self.id,
-            round_,
-            self.computed_prohibited_pairing_groups(round_),
-            protect_rank,
-        )
-        self.stored_tournament.stored_prohibited_pairing_groups = (
-            database.load_tournament_stored_prohibited_pairing_groups(self.id)
-        )
-
-    def delete_prohibited_pairing_snapshot(
-        self, round_: int, database: 'EventDatabase'
-    ) -> None:
-        database.delete_round_prohibited_pairing_snapshot(self.id, round_)
-        self.stored_tournament.stored_prohibited_pairing_groups = [
-            group
-            for group in self.stored_tournament.stored_prohibited_pairing_groups
-            if group.round_ != round_
-        ]
+    # -------------------------------------------------------------------------
+    # Team boards and records
+    # -------------------------------------------------------------------------
 
     def clear_team_cache(self) -> None:
         Utils.reset_cached_properties(

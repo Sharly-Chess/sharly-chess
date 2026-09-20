@@ -131,8 +131,7 @@ class KnockoutGroupingSetting(PairingSetting['str | None']):
         if value is None:
             return True
         return any(
-            dimension.id == value
-            for dimension in tournament.prohibited_pairing_dimensions()
+            dimension.id == value for dimension in tournament.pairing_dimensions()
         )
 
 
@@ -152,7 +151,7 @@ class KnockoutGroupingMixin:
         dimension_id = KnockoutGroupingSetting.get_value(tournament)
         if not dimension_id:
             return None
-        for dimension in tournament.prohibited_pairing_dimensions():
+        for dimension in tournament.pairing_dimensions():
             if dimension.id == dimension_id:
                 return dimension
         return None

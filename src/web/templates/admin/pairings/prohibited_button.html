@@ -8,7 +8,7 @@
     {% if pp_button_oob %}hx-swap-oob="true"{% endif %}
 >
     {% set _pp_round_paired = admin_tournament.round_has_pairings(admin_round) %}
-    {% set pp_count = admin_tournament.prohibited_pairing_count_for_round(admin_round) %}
+    {% set pp_count = admin_tournament.prohibited_pairings.count_for_round(admin_round) %}
     {# Once the round is paired the snapshot is frozen — nothing to
        configure, and nothing to show when no groups were used. #}
     {% if client.can_use_pairing_engine(admin_tournament.id)

@@ -200,11 +200,11 @@ class PairingEngine(ABC):
         from data.prohibited_pairings import resolve_soft_protect_rank
 
         hard_groups, soft_groups, rank_by_member = (
-            tournament.prohibited_pairing_relaxation_inputs(after_round=round_ - 1)
+            tournament.prohibited_pairings.relaxation_inputs(after_round=round_ - 1)
         )
         if not hard_groups and not soft_groups:
             with EventDatabase(tournament.event.uniq_id, True) as database:
-                tournament.write_prohibited_pairing_snapshot(round_, None, database)
+                tournament.prohibited_pairings.write_snapshot(round_, None, database)
             return '', None
 
         protect_rank: int | None = None
@@ -219,7 +219,7 @@ class PairingEngine(ABC):
             )
 
             def feasible(cutoff: int) -> bool:
-                lines = tournament.prohibited_pairing_applied_lines(
+                lines = tournament.prohibited_pairings.applied_lines(
                     hard_groups, soft_groups, cutoff, rank_by_member, round_
                 )
                 return self._prohibited_pairing_feasible(tournament, round_, lines)
@@ -229,15 +229,19 @@ class PairingEngine(ABC):
             )
             if hard_infeasible:
                 with EventDatabase(tournament.event.uniq_id, True) as database:
-                    tournament.write_prohibited_pairing_snapshot(round_, None, database)
+                    tournament.prohibited_pairings.write_snapshot(
+                        round_, None, database
+                    )
                 return (
                     _('The prohibited pairings cannot be satisfied for this round.'),
                     None,
                 )
 
         with EventDatabase(tournament.event.uniq_id, True) as database:
-            tournament.write_prohibited_pairing_snapshot(round_, protect_rank, database)
-        return '', tournament.prohibited_pairing_applied_lines(
+            tournament.prohibited_pairings.write_snapshot(
+                round_, protect_rank, database
+            )
+        return '', tournament.prohibited_pairings.applied_lines(
             hard_groups,
             soft_groups,
             protect_rank if protect_rank is not None else 0,
