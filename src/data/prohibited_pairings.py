@@ -233,11 +233,10 @@ class ProhibitedPairings:
         named (unlike :meth:`computed_groups`) so the
         prohibited-pairings modal can label them before the round is paired.
         Groups of fewer than two members are dropped."""
-        tournament = self.tournament
         groups: list[RoundProhibitedPairingGroup] = []
         for plugin_result in plugin_manager.hook_for_event(
-            tournament.event, 'get_round_prohibited_pairing_groups'
-        )(tournament=tournament, round_=round_):
+            self.tournament.event, 'get_round_prohibited_pairing_groups'
+        )(tournament=self.tournament, round_=round_):
             groups.extend(
                 group for group in plugin_result or [] if len(group.member_ids) >= 2
             )

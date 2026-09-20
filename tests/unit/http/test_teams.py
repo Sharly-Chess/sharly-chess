@@ -283,7 +283,7 @@ def test_a_team_is_given_bonus_match_points(http: TestClient, paired: Tournament
         data={'mp': '1', 'gp': '0.5', 'reason': 'Opponent arrived late'},
     )
     assert response.status_code == 200
-    assert EVENT.tournament().manual_point_adjustment(identifier, 1) == (1.0, 0.5)
+    assert EVENT.tournament().point_adjustments.manual(identifier, 1) == (1.0, 0.5)
 
 
 @pytest.mark.unit

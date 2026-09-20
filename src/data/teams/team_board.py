@@ -170,8 +170,8 @@ class TeamBoard:
         if stb.team_b_id is None:
             return a_gp, b_gp
         tournament = self.tournament
-        _, a_adj = tournament.effective_point_adjustment(stb.team_a_id, self.round)
-        _, b_adj = tournament.effective_point_adjustment(stb.team_b_id, self.round)
+        _, a_adj = tournament.point_adjustments.effective(stb.team_a_id, self.round)
+        _, b_adj = tournament.point_adjustments.effective(stb.team_b_id, self.round)
         return a_gp + a_adj, b_gp + b_adj
 
     @property

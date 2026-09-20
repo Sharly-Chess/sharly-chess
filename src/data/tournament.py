@@ -19,6 +19,7 @@ from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
+from data.point_adjustments import PointAdjustments
 from data.point_system import PointSystem
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
@@ -39,8 +40,6 @@ from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredBoard,
     StoredTeamBoard,
-    StoredTeamPointAdjustment,
-    StoredPlayerPointAdjustment,
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
@@ -81,7 +80,6 @@ if TYPE_CHECKING:
         TrfTournament,
     )
     from data.rule_sets import RuleSet
-    from data.rule_sets.rule_sets import PointAdjustment
     from data.pairing_dimensions import PairingDimension
     from data.pairings import PairingVariation, PairingSystem
     from data.pairings.keizer import KeizerScorer
@@ -632,146 +630,9 @@ class Tournament:
     def color_pattern(self) -> str | None:
         return self.stored_tournament.color_pattern
 
-    def stored_point_adjustment(
-        self, team_id: int, round_: int
-    ) -> 'StoredTeamPointAdjustment | None':
-        """The stored manual adjustment row for (team, round), or None."""
-        for adj in self.stored_tournament.stored_team_point_adjustments:
-            if adj.team_id == team_id and adj.round_ == round_:
-                return adj
-        return None
-
-    def manual_point_adjustment(self, team_id: int, round_: int) -> tuple[float, float]:
-        """Stored manual (MP, GP) bonus/penalty for (team, round)."""
-        adj = self.stored_point_adjustment(team_id, round_)
-        return (adj.mp_delta, adj.gp_delta) if adj else (0.0, 0.0)
-
-    def rule_set_point_adjustment(
-        self, team_id: int, round_: int
-    ) -> 'PointAdjustment | None':
-        """Rule-set-imposed adjustment for (team, round), or None."""
-        rule_set = self.rule_set
-        if rule_set is None:
-            return None
-        team = self.event.teams_by_id.get(team_id)
-        if team is None:
-            return None
-        return rule_set.team_point_adjustment(team, round_)
-
-    def effective_point_adjustment(
-        self, team_id: int, round_: int
-    ) -> tuple[float, float]:
-        """Combined manual + rule-set (MP, GP) adjustment for the team's
-        round. Folded into standings, tie-break records, screens and the
-        TRF 299 export."""
-        mp, gp = self.manual_point_adjustment(team_id, round_)
-        rule_set_adjustment = self.rule_set_point_adjustment(team_id, round_)
-        if rule_set_adjustment is not None:
-            mp += rule_set_adjustment.mp
-            gp += rule_set_adjustment.gp
-        return mp, gp
-
-    def set_manual_point_adjustment(
-        self,
-        team_id: int,
-        round_: int,
-        mp_delta: float,
-        gp_delta: float,
-        reason: str | None,
-        database: 'EventDatabase',
-    ) -> None:
-        """Upsert the manual (MP, GP) adjustment for (team, round) and
-        keep the in-memory stored list in sync."""
-        database.set_stored_team_point_adjustment(
-            self.id, team_id, round_, mp_delta, gp_delta, reason
-        )
-        adjustments = self.stored_tournament.stored_team_point_adjustments
-        adjustments[:] = [
-            adjustment
-            for adjustment in adjustments
-            if not (adjustment.team_id == team_id and adjustment.round_ == round_)
-        ]
-        if mp_delta or gp_delta or reason:
-            adjustments.append(
-                StoredTeamPointAdjustment(
-                    id=None,
-                    tournament_id=self.id,
-                    team_id=team_id,
-                    round_=round_,
-                    mp_delta=mp_delta,
-                    gp_delta=gp_delta,
-                    reason=reason,
-                )
-            )
-
-    def stored_player_point_adjustment(
-        self, player_id: int, round_: int
-    ) -> 'StoredPlayerPointAdjustment | None':
-        """The stored manual adjustment row for (player, round), or None."""
-        for adjustment in self.stored_tournament.stored_player_point_adjustments:
-            if adjustment.player_id == player_id and adjustment.round_ == round_:
-                return adjustment
-        return None
-
-    def player_point_adjustment(self, player_id: int, round_: int) -> float:
-        """Manual bonus / penalty points for (player, round) in an
-        individual tournament. Team events adjust whole teams instead, so
-        this is always zero there.
-
-        Unlike the team counterpart there is no rule-set contribution:
-        rule sets award match points, which individual tournaments don't
-        have."""
-        if self.is_team_tournament:
-            return 0.0
-        adjustment = self.stored_player_point_adjustment(player_id, round_)
-        return adjustment.delta if adjustment else 0.0
-
-    def player_point_adjustment_total(self, player_id: int, after_round: int) -> float:
-        """Every adjustment for the player through ``after_round``."""
-        if self.is_team_tournament:
-            return 0.0
-        return sum(
-            adjustment.delta
-            for adjustment in self.stored_tournament.stored_player_point_adjustments
-            if adjustment.player_id == player_id and adjustment.round_ <= after_round
-        )
-
-    def set_manual_player_point_adjustment(
-        self,
-        player_id: int,
-        round_: int,
-        delta: float,
-        reason: str | None,
-        database: 'EventDatabase',
-    ) -> None:
-        """Upsert the manual adjustment for (player, round) and keep the
-        in-memory stored list in sync."""
-        database.set_stored_player_point_adjustment(
-            self.id, player_id, round_, delta, reason
-        )
-        adjustments = self.stored_tournament.stored_player_point_adjustments
-        adjustments[:] = [
-            adjustment
-            for adjustment in adjustments
-            if not (adjustment.player_id == player_id and adjustment.round_ == round_)
-        ]
-        if delta or reason:
-            adjustments.append(
-                StoredPlayerPointAdjustment(
-                    id=None,
-                    tournament_id=self.id,
-                    player_id=player_id,
-                    round_=round_,
-                    delta=delta,
-                    reason=reason,
-                )
-            )
-
-    def point_adjustment_bound(self, after_round: int | None) -> int:
-        """Highest round whose adjustments count: the explicit bound, or
-        the current round for live views."""
-        bound = after_round if after_round is not None else self.current_round
-        return bound or 0
+    @cached_property
+    def point_adjustments(self) -> PointAdjustments:
+        return PointAdjustments(self)
 
     @cached_property
     def team_scoring(self) -> 'TeamScoring':
@@ -3034,7 +2895,7 @@ class Tournament:
                 team_board.stored_team_board.team_b_id,
             ):
                 if team_id is not None:
-                    self.set_manual_point_adjustment(
+                    self.point_adjustments.set_manual(
                         team_id, round_, 0.0, 0.0, None, database
                     )
             round_list = self.stored_tournament.stored_team_boards_by_round.get(
@@ -3054,13 +2915,13 @@ class Tournament:
                 if white_tp is not None:
                     white_tp.delete_pairing(board.round, database)
                     white_tp.reset_board()
-                    self.set_manual_player_point_adjustment(
+                    self.point_adjustments.set_manual_for_player(
                         white_tp.id, board.round, 0.0, None, database
                     )
                 if board.black_tournament_player:
                     board.black_tournament_player.delete_pairing(board.round, database)
                     board.black_tournament_player.reset_board()
-                    self.set_manual_player_point_adjustment(
+                    self.point_adjustments.set_manual_for_player(
                         board.black_tournament_player.id,
                         board.round,
                         0.0,
@@ -3093,7 +2954,7 @@ class Tournament:
                             # penalty goes with it.
                             for team_id in (stb.team_a_id, stb.team_b_id):
                                 if team_id is not None:
-                                    self.set_manual_point_adjustment(
+                                    self.point_adjustments.set_manual(
                                         team_id, round_, 0.0, 0.0, None, database
                                     )
                     if kept:

@@ -72,16 +72,16 @@ class PlayerPointAdjustmentTestCase(TestCase):
         before = player.points_after(tournament.rounds)
 
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, -0.5, 'late arrival', database
             )
         self._reload()
         tournament = self.tournament
         player = tournament.tournament_players_by_pairing_number[player.pairing_number]
 
-        self.assertEqual(tournament.player_point_adjustment(player.id, 1), -0.5)
+        self.assertEqual(tournament.point_adjustments.for_player(player.id, 1), -0.5)
         self.assertEqual(
-            tournament.stored_player_point_adjustment(player.id, 1).reason,
+            tournament.point_adjustments.stored_for_player(player.id, 1).reason,
             'late arrival',
         )
         # The score cannot go below zero, so a penalty against nothing
@@ -96,10 +96,10 @@ class PlayerPointAdjustmentTestCase(TestCase):
         tournament = self.tournament
         player = tournament.tournament_players_by_pairing_number[1]
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, 3.0, 'bonus', database
             )
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 2, -1.0, 'penalty', database
             )
         self._reload()
@@ -111,16 +111,16 @@ class PlayerPointAdjustmentTestCase(TestCase):
         tournament = self.tournament
         player = next(iter(tournament.tournament_players_by_pairing_number.values()))
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, 1.0, None, database
             )
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, 0.0, None, database
             )
         self._reload()
         tournament = self.tournament
-        self.assertIsNone(tournament.stored_player_point_adjustment(player.id, 1))
-        self.assertEqual(tournament.player_point_adjustment(player.id, 1), 0.0)
+        self.assertIsNone(tournament.point_adjustments.stored_for_player(player.id, 1))
+        self.assertEqual(tournament.point_adjustments.for_player(player.id, 1), 0.0)
 
     def test_adjustment_round_trips_through_the_trf(self):
         """The delta goes out as a blank-type 299 keyed on the pairing
@@ -131,7 +131,7 @@ class PlayerPointAdjustmentTestCase(TestCase):
         tournament = self.tournament
         player = tournament.tournament_players_by_pairing_number[1]
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, -0.5, 'late arrival', database
             )
         self._reload()
@@ -157,12 +157,12 @@ class PlayerPointAdjustmentTestCase(TestCase):
         tournament = self.tournament
         player = tournament.tournament_players_by_pairing_number[1]
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, 1.0, None, database
             )
         self._reload()
         tournament = self.tournament
-        self.assertEqual(tournament.player_point_adjustment(player.id, 1), 1.0)
+        self.assertEqual(tournament.point_adjustments.for_player(player.id, 1), 1.0)
 
     def test_the_pairings_table_figure_includes_the_adjustment(self):
         """``compute_points`` fills ``player.points``, which is what the
@@ -171,7 +171,7 @@ class PlayerPointAdjustmentTestCase(TestCase):
         tournament = self.tournament
         player = tournament.tournament_players_by_pairing_number[1]
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, -1.0, 'penalty', database
             )
         self._reload()
@@ -197,7 +197,7 @@ class PlayerPointAdjustmentTestCase(TestCase):
         self.assertIsNone(PapiConverter.papi_export_unavailable_message(tournament))
 
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, -1.0, 'penalty', database
             )
         self._reload()
@@ -207,7 +207,7 @@ class PlayerPointAdjustmentTestCase(TestCase):
 
         # A row carrying only a reason is not a reason to block.
         with EventDatabase(EVENT_ID, write=True) as database:
-            self.tournament.set_manual_player_point_adjustment(
+            self.tournament.point_adjustments.set_manual_for_player(
                 player.id, 1, 0.0, 'noted, no points', database
             )
         self._reload()
@@ -231,22 +231,22 @@ class PlayerPointAdjustmentTestCase(TestCase):
         )
 
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 white.id, 1, -2.0, 'penalty', database
             )
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 black.id, 1, 1.0, 'bonus', database
             )
-        assert tournament.player_point_adjustment(white.id, 1) == -2.0
+        assert tournament.point_adjustments.for_player(white.id, 1) == -2.0
 
         tournament.unpair_boards(tournament.get_round_boards(1))
 
-        assert tournament.player_point_adjustment(white.id, 1) == 0.0
-        assert tournament.player_point_adjustment(black.id, 1) == 0.0
+        assert tournament.point_adjustments.for_player(white.id, 1) == 0.0
+        assert tournament.point_adjustments.for_player(black.id, 1) == 0.0
         self._reload()
         tournament = self.tournament
-        assert tournament.stored_player_point_adjustment(white.id, 1) is None
-        assert tournament.stored_player_point_adjustment(black.id, 1) is None
+        assert tournament.point_adjustments.stored_for_player(white.id, 1) is None
+        assert tournament.point_adjustments.stored_for_player(black.id, 1) is None
 
     def test_another_rounds_adjustment_is_left_alone(self):
         tournament = self.tournament
@@ -255,8 +255,8 @@ class PlayerPointAdjustmentTestCase(TestCase):
         tournament = self.tournament
         player = tournament.tournament_players_by_pairing_number[1]
         with EventDatabase(EVENT_ID, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, 2, -1.0, 'later round', database
             )
         tournament.unpair_boards(tournament.get_round_boards(1))
-        assert tournament.player_point_adjustment(player.id, 2) == -1.0
+        assert tournament.point_adjustments.for_player(player.id, 2) == -1.0

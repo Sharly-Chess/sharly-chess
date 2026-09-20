@@ -271,7 +271,7 @@
                                         </button>
                                     </span>
                                 {% endif %}
-                                {% set _delta = tournament.player_point_adjustment(
+                                {% set _delta = tournament.point_adjustments.for_player(
                                     tournament_player.id, round
                                 ) %}
                                 {% if _delta %}

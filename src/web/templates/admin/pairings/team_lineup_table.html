@@ -58,7 +58,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#modal-wrapper"
                         ><strong>{{ team.name }}</strong></a>
-                        {% set _mp, _gp = admin_tournament.effective_point_adjustment(
+                        {% set _mp, _gp = admin_tournament.point_adjustments.effective(
                             team.id, admin_round
                         ) %}
                         {% if _mp or _gp %}

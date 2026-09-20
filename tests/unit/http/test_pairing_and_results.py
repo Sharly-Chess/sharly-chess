@@ -153,7 +153,7 @@ def test_a_player_is_given_bonus_points(http: TestClient, tournament: Tournament
         data={'delta': '0.5', 'reason': 'Arrived to a broken clock'},
     )
     assert response.status_code == 200
-    assert EVENT.tournament().player_point_adjustment_total(player_id, 1) == 0.5
+    assert EVENT.tournament().point_adjustments.player_total(player_id, 1) == 0.5
 
 
 @pytest.mark.unit
@@ -169,7 +169,7 @@ def test_an_adjustment_the_trf_cannot_carry_is_refused(
         data={'delta': '100', 'reason': ''},
     )
     assert response.status_code == 200
-    assert EVENT.tournament().player_point_adjustment_total(player_id, 1) == 0.0
+    assert EVENT.tournament().point_adjustments.player_total(player_id, 1) == 0.0
 
 
 @pytest.mark.unit

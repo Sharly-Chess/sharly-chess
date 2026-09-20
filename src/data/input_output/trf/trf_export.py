@@ -279,13 +279,12 @@ class TrfExport:
         pairing number. Only the game-points field applies — 8-11 is for
         teams — and the 001 points already include the delta, which is
         what a reader recomputing the score from the results expects."""
-        tournament = self.tournament
         assignments: list[TrfAbnormalPointsAssignment] = []
-        for player in tournament.tournament_players_by_pairing_number.values():
+        for player in self.tournament.tournament_players_by_pairing_number.values():
             if player.pairing_number is None:
                 continue
             for round_ in range(1, after_round + 1):
-                delta = tournament.player_point_adjustment(player.id, round_)
+                delta = self.tournament.point_adjustments.for_player(player.id, round_)
                 if not delta:
                     continue
                 assignments.append(
@@ -308,14 +307,13 @@ class TrfExport:
         pairing number is the team's TPN. On import the value is stored
         as a manual adjustment (the rule set isn't carried by the TRF,
         so nothing re-derives the automatic part)."""
-        tournament = self.tournament
         assignments: list[TrfAbnormalPointsAssignment] = []
-        for team in tournament.teams:
+        for team in self.tournament.teams:
             tpn = tpn_by_team_id.get(team.id)
             if tpn is None:
                 continue
             for round_ in range(1, after_round + 1):
-                mp, gp = tournament.effective_point_adjustment(team.id, round_)
+                mp, gp = self.tournament.point_adjustments.effective(team.id, round_)
                 if not mp and not gp:
                     continue
                 assignments.append(
@@ -367,8 +365,7 @@ class TrfExport:
         defaults; readers fall back to W=1 / D=0.5 / L=0 / ZPB=LOSS /
         PAB=WIN when a symbol is absent. bbpPairings ``--team``
         accepts the full W / D / L / A (ZPB) / P (PAB) alphabet."""
-        tournament = self.tournament
-        raw = tournament.stored_tournament.game_points or {}
+        raw = self.tournament.stored_tournament.game_points or {}
         result: dict[str, float] = {}
         for outcome_value, value in raw.items():
             try:
@@ -663,8 +660,7 @@ class TrfExport:
         collide across teams of the same tournament in malformed
         databases; TRF26 requires unique TPNs, so collisions are
         pushed to the next free slot, in team-UI order."""
-        tournament = self.tournament
-        teams = sorted(tournament.teams, key=_team_ui_sort_key)
+        teams = sorted(self.tournament.teams, key=_team_ui_sort_key)
         tpn_by_team_id: dict[int, int] = {}
         used: set[int] = set()
         next_tpn = 1
@@ -691,10 +687,9 @@ class TrfExport:
         requires distinct nicknames). Assigned in TPN order for
         determinism. Shared by the 310 and 801/802 records so a team's
         nickname is identical across them."""
-        tournament = self.tournament
         nicknames: dict[int, str] = {}
         used: set[str] = set()
-        teams_by_id = tournament.event.teams_by_id
+        teams_by_id = self.tournament.event.teams_by_id
         for team_id in sorted(tpn_by_team_id, key=lambda t: tpn_by_team_id[t]):
             team = teams_by_id.get(team_id)
             base = ((team.name[:5] if team is not None else '') or 'T').upper()
@@ -766,14 +761,13 @@ class TrfExport:
         return f'FIDE_TEAM_{infix}{primary}_{secondary}'
 
     def _round_byes(self) -> list[TrfRoundBye]:
-        tournament = self.tournament
         round_byes: list[TrfRoundBye] = []
-        for round_ in range(1, tournament.rounds + 1):
+        for round_ in range(1, self.tournament.rounds + 1):
             pairing_numbers_by_bye: dict[Result, list[int]] = defaultdict(list)
             for (
                 pairing_number,
                 player,
-            ) in tournament.tournament_players_by_pairing_number.items():
+            ) in self.tournament.tournament_players_by_pairing_number.items():
                 result = player.pairings[round_].result
                 if result.is_next_round_bye:
                     pairing_numbers_by_bye[result].append(pairing_number)

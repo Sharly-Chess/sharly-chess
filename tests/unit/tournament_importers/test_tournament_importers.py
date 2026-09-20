@@ -336,7 +336,7 @@ class TournamentImporterTestCase(TestCase):
         from database.sqlite.event.event_database import EventDatabase
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            tournament.set_manual_point_adjustment(
+            tournament.point_adjustments.set_manual(
                 team.id, 1, -3.0, 0.0, 'test penalty', database
             )
         self.event = EventLoader().load_event(EVENT_ID)

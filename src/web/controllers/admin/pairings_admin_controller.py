@@ -665,7 +665,9 @@ class PairingsAdminController(BaseEventAdminController):
                 manual_gp = adjustment.gp_delta
                 reason = adjustment.reason or ''
                 break
-        rule_set_adjustment = tournament.rule_set_point_adjustment(team.id, round_)
+        rule_set_adjustment = tournament.point_adjustments.from_rule_set(
+            team.id, round_
+        )
         return {
             'team': team,
             'mp': manual_mp,
@@ -685,7 +687,7 @@ class PairingsAdminController(BaseEventAdminController):
         """The player's current manual delta and reason for the round.
         Individual tournaments have no match points and no rule-set
         contribution, so this is simpler than the team counterpart."""
-        adjustment = tournament.stored_player_point_adjustment(player.id, round_)
+        adjustment = tournament.point_adjustments.stored_for_player(player.id, round_)
         return {
             'player': player,
             'delta': adjustment.delta if adjustment else 0.0,
@@ -757,7 +759,7 @@ class PairingsAdminController(BaseEventAdminController):
             )
         reason = WebContext.form_data_to_str(data, 'reason') or None
         with EventDatabase(event.uniq_id, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, round, delta, reason, database
             )
         Message.success(request, _('Bonus / penalty points updated.'))
@@ -837,7 +839,7 @@ class PairingsAdminController(BaseEventAdminController):
             )
         reason = WebContext.form_data_to_str(data, 'reason') or None
         with EventDatabase(event.uniq_id, write=True) as database:
-            tournament.set_manual_point_adjustment(
+            tournament.point_adjustments.set_manual(
                 team.id, round, mp_delta, gp_delta, reason, database
             )
         Message.success(request, _('Bonus / penalty points updated.'))

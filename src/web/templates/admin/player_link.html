@@ -5,7 +5,7 @@
        includes get nothing. Team events adjust whole teams, so the
        tournament returns zero there and no badge appears. #}
     {% if point_adjustment_round is defined and point_adjustment_round and tournament_player %}
-        {% set _delta = tournament_player.tournament.player_point_adjustment(
+        {% set _delta = tournament_player.tournament.point_adjustments.for_player(
             tournament_player.id, point_adjustment_round
         ) %}
         {% if _delta %}

@@ -243,10 +243,10 @@ class TeamScoring:
         self, standings: dict[int, dict[str, Any]], after_round: int | None
     ) -> None:
         tournament = self.tournament
-        bound = tournament.point_adjustment_bound(after_round)
+        bound = tournament.point_adjustments.bound(after_round)
         for round_ in range(1, bound + 1):
             for team_id, entry in standings.items():
-                mp_adj, gp_adj = tournament.effective_point_adjustment(team_id, round_)
+                mp_adj, gp_adj = tournament.point_adjustments.effective(team_id, round_)
                 entry['mp'] += mp_adj
                 entry['gp'] += gp_adj
 
@@ -628,10 +628,10 @@ class TeamScoring:
         # see them; board- and rating-based tie-breaks read board data and
         # are unaffected).
 
-        adjustment_bound = tournament.point_adjustment_bound(after_round)
+        adjustment_bound = tournament.point_adjustments.bound(after_round)
         for team in tournament.teams:
             for round_ in range(1, adjustment_bound + 1):
-                mp_adj, gp_adj = tournament.effective_point_adjustment(team.id, round_)
+                mp_adj, gp_adj = tournament.point_adjustments.effective(team.id, round_)
                 if not mp_adj and not gp_adj:
                     continue
                 totals_mp[team.id] += mp_adj
@@ -714,8 +714,8 @@ class TeamScoring:
         # came from. Without this the totals would contradict the rank
         # written on the same line, which does include them.
         for team in tournament.teams:
-            for round_ in range(1, tournament.point_adjustment_bound(after_round) + 1):
-                mp_adj, gp_adj = tournament.effective_point_adjustment(team.id, round_)
+            for round_ in range(1, tournament.point_adjustments.bound(after_round) + 1):
+                mp_adj, gp_adj = tournament.point_adjustments.effective(team.id, round_)
                 if not mp_adj and not gp_adj:
                     continue
                 entry = totals.setdefault(team.id, [0.0, 0.0])
