@@ -679,18 +679,18 @@ class TournamentAdminController(BaseEventAdminController):
         tournament: Tournament | None = None
 
         index = len(event.tournaments)
+        if action == 'update':
+            tournament = web_context.get_admin_tournament()
+            index = tournament.index
         if rounds < 0:
             errors[field] = _('A positive integer is expected.')
         elif rounds_are_automatic:
             pass
-        elif action == 'update':
-            tournament = web_context.get_admin_tournament()
-            index = tournament.index
-            if rounds < tournament.last_paired_round:
-                errors['rounds'] = _(
-                    'Impossible to set a round number lower '
-                    'than the last round with pairings #{round}.'
-                ).format(round=tournament.current_round)
+        elif tournament is not None and rounds < tournament.last_paired_round:
+            errors['rounds'] = _(
+                'Impossible to set a round number lower '
+                'than the last round with pairings #{round}.'
+            ).format(round=tournament.current_round)
         rating = (
             WebContext.form_data_to_int(data, field := 'rating')
             or TournamentRating.STANDARD.value
