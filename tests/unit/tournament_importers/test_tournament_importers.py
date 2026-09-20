@@ -1393,7 +1393,7 @@ class TournamentImporterTestCase(TestCase):
 
     def test_team_primary_score_before_round_matches_standings(self):
         """``team_primary_score_before_round(team, R)`` and
-        ``_team_trf_totals_after(R-1)`` must agree on each team's
+        ``team_totals_after(R-1)`` must agree on each team's
         cumulative score, and both must honour bye_type. Used by the
         engine + post-import sort, so a drift would silently produce
         a different display order each side."""
@@ -1412,7 +1412,7 @@ class TournamentImporterTestCase(TestCase):
         # As of start of round 3, the team's primary score should
         # *not* include the ZPB as a PAB. Match the totals helper.
         score = tournament.team_primary_score_before_round(team.id, 3)
-        totals = tournament._team_trf_totals_after(2)
+        totals = tournament.team_totals_after(2)
         match_points = tournament.match_points
         if tournament.primary_score == ScoreType.MATCH_POINTS:
             self.assertEqual(score, totals[team.id][0])
@@ -1422,19 +1422,16 @@ class TournamentImporterTestCase(TestCase):
         # contribution.
         self.assertNotEqual(
             score,
-            tournament._team_trf_totals_after(1)[team.id][
+            tournament.team_totals_after(1)[team.id][
                 0 if tournament.primary_score == ScoreType.MATCH_POINTS else 1
             ]
             + match_points[Result.PAIRING_ALLOCATED_BYE],
         )
 
     def test_trf_team_round_trip_preserves_manual_bye_history(self):
-        """A manual bye applied to a *past* round must survive a TRF
-        export → re-import cycle. Earlier, ``_team_trf_round_byes``
-        only emitted 240 records for the round being paired, and the
-        importer didn't read 240 at all — so a past-round
-        ``HPB``/``FPB``/``ZPB`` collapsed into a plain PAB envelope on
-        re-import."""
+        """A manual bye applied to a *past* round survives a TRF export
+        → re-import cycle: the 240 records cover every round, not only
+        the one being paired, and the importer reads them."""
         import io
 
         TestUtils.delete_event(EVENT_ID)

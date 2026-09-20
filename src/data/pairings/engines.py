@@ -690,7 +690,7 @@ class DoubleBergerPairingEngine(BergerPairingEngine):
 def _team_ui_sort_key(team: 'Team') -> tuple[float, str]:
     """Sort key matching the team-admin UI:
     ``(pairing_number or ∞, name.lower())``. Shared by the pairing
-    engines and ``Tournament._populate_team_trf`` so the TPN order
+    engines and the TRF export so the TPN order
     bbpPairings sees on TRF26 records matches what the user reorders
     on screen."""
     return (
