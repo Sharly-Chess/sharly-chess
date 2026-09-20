@@ -309,3 +309,18 @@ module = [
   "gui.server_gui_toga",
 ]
 warn_unreachable = false
+
+[tool.mutmut]
+# Mutation testing, run by hand on the pure logic: `mutmut run`, then
+# `mutmut browse`. Each surviving mutant is a change the tests let through.
+source_paths = ["src/data/tie_breaks/", "src/data/pairings/"]
+do_not_mutate = ["src/data/pairings/engines.py", "src/data/pairings/managers.py"]
+also_copy = ["conftest.py", "pytest.ini", "src/", "locale/", "examples/", "default-files/", "docs/", "tools/"]
+pytest_add_cli_args_test_selection = ["tests/unit/"]
+# One process: the trampolines that record which test reaches which
+# function live in the process running the tests.
+# The hook-name test reads the source, which here is the mutated copy.
+pytest_add_cli_args = [
+  "-n", "0", "-p", "no:cacheprovider", "-q",
+  "--deselect", "tests/unit/test_plugin_hook_contract.py::test_every_hook_the_source_names_is_declared",
+]
