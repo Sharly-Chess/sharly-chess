@@ -21,6 +21,7 @@ from playwright.sync_api import (
 )
 
 from common import DATA_DIR
+from common.installation_checker import InstallationChecker
 from common.sharly_chess_config import SharlyChessConfig
 from tests.test_config import TestConfig
 import contextlib
@@ -49,6 +50,12 @@ def pytest_configure(config):
     # Relative page.goto() targets resolve against the port this process
     # picked; the ini value is a fixed one.
     config.option.base_url = TestConfig.TEST_BASE_URL
+    # The pairing engines and web libraries are downloaded on first use.
+    # Done here, once, before any pytest-xdist worker starts: left to the
+    # servers the workers launch, they would all download into the same
+    # tree at once and unpack each other's half-written archives.
+    if not hasattr(config, 'workerinput') and not InstallationChecker.check():
+        raise pytest.UsageError('The tools the server needs could not be installed.')
 
 
 def pytest_collection_modifyitems(config, items):
