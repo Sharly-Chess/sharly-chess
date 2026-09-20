@@ -8,7 +8,7 @@ import sys
 import time
 from io import TextIOWrapper
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 from collections.abc import Generator
 
 import pytest
@@ -21,6 +21,7 @@ from playwright.sync_api import (
 )
 
 from common import DATA_DIR
+from common.installation_checker import InstallationChecker
 from common.sharly_chess_config import SharlyChessConfig
 from tests.test_config import TestConfig
 import contextlib
@@ -46,6 +47,15 @@ def pytest_configure(config):
     config.addinivalue_line(
         'markers', 'release_only: mark test as release only test (runs on release only)'
     )
+    # Relative page.goto() targets resolve against the port this process
+    # picked; the ini value is a fixed one.
+    config.option.base_url = TestConfig.TEST_BASE_URL
+    # The pairing engines and web libraries are downloaded on first use.
+    # Done here, once, before any pytest-xdist worker starts: left to the
+    # servers the workers launch, they would all download into the same
+    # tree at once and unpack each other's half-written archives.
+    if not hasattr(config, 'workerinput') and not InstallationChecker.check():
+        raise pytest.UsageError('The tools the server needs could not be installed.')
 
 
 def pytest_collection_modifyitems(config, items):
@@ -72,6 +82,7 @@ class BackendServer:
         self.host = host or TestConfig.TEST_HOST
         self.port = port or TestConfig.TEST_PORT
         self.process: subprocess.Popen | None = None
+        self.log_file: Path | None = None
         self.log_file_handle: TextIOWrapper | None = None
         # Construct base URL with explicit port
         if self.port == 80:
@@ -113,6 +124,8 @@ class BackendServer:
             # server has to read and write the same tree as the tests
             # driving it.
             str(DATA_DIR),
+            '--port',
+            str(self.port),
         ]
 
         # coverage measures the process it is started in, and the server is
@@ -127,14 +140,15 @@ class BackendServer:
         # Create log file for server output - use unique name to avoid conflicts
         import time
 
-        log_file = DATA_DIR / f'server_{int(time.time())}.log'
+        self.log_file = DATA_DIR / f'server_{int(time.time())}.log'
 
         # Keep reference to log file handle so we can close it later
-        self.log_file_handle = open(log_file, 'w')
+        self.log_file_handle = open(self.log_file, 'w')
 
         # Its own process group, so stop() can signal the server and
         # everything it forked in one go. Unix and Windows spell this
         # differently: POSIX has a session, Windows a process group.
+        group_kwargs: dict[str, Any]
         if sys.platform == 'win32':
             group_kwargs = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP}
         else:
@@ -258,12 +272,13 @@ class BackendServer:
             time.sleep(0.5)
 
         error_message = f'Server did not start within {timeout} seconds'
-
-        # If server didn't start, capture the output for debugging
         if self.process and self.process.poll() is not None:
-            stdout, stderr = self.process.communicate()
-            error_message += f'\n\nServer stdout: {stdout}'
-            error_message += f'\n\nServer stderr: {stderr}'
+            error_message += f' (exited with code {self.process.returncode})'
+        # The server's output went to its log file, not to a pipe.
+        if self.log_file_handle and self.log_file:
+            self.log_file_handle.flush()
+            error_message += f'\n\nServer log ({self.log_file}):\n'
+            error_message += self.log_file.read_text(errors='replace')[-4000:]
 
         raise RuntimeError(error_message)
 
@@ -305,7 +320,7 @@ def setup_page(request, backend_server):
 @pytest.fixture(scope='session')
 def lan_context(browser: Browser):
     config = SharlyChessConfig()
-    config.web_port = 9000
+    config.web_port = TestConfig.TEST_PORT
     context = browser.new_context(base_url=config.lan_urls[0])
     yield context
     context.close()
@@ -370,6 +385,6 @@ class RetryingAPIRequestContext:
 def api_request_context(
     playwright: Playwright,
 ) -> Generator[APIRequestContext]:
-    request_context = playwright.request.new_context(base_url='http://127.0.0.1:9000')
+    request_context = playwright.request.new_context(base_url=TestConfig.TEST_BASE_URL)
     yield cast(APIRequestContext, RetryingAPIRequestContext(request_context))
     request_context.dispose()

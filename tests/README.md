@@ -40,8 +40,8 @@ pytest -m ""
 # With coverage (the floor is in pyproject.toml, under [tool.coverage.report])
 pytest --cov --cov-report=term-missing:skip-covered
 
-# In parallel
-pytest -n 4
+# Serially (the default is four pytest-xdist workers)
+pytest -n 0
 ```
 
 The backend server only starts when an `e2e`-marked test is selected; the

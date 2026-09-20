@@ -1,4 +1,5 @@
 from typing import cast
+import os
 import sys
 from logging import Logger
 from pathlib import Path
@@ -86,14 +87,22 @@ class BabelDomainWrapper(Domain):
         )
 
     def update_mo_file(self, locale: str) -> None:
-        """Compiles the PO file of the locale to the MO file."""
-        # logger.debug('Compiling locale %s...', locale)
+        """Compiles the PO file of the locale to the MO file.
+
+        The MO file is written next to the final one and moved into
+        place: a reader never sees a half-written file, which is what a
+        second process compiling the same locale at the same time (a
+        pytest-xdist worker, the server under test) would otherwise get.
+        """
+        mo_file: Path = self.locale_mo_file(locale)
+        partial_mo_file: Path = mo_file.with_name(f'{mo_file.stem}.{os.getpid()}.mo')
         self.run_babel_command(
             'compile',
             [
                 '--use-fuzzy',
-                f'--domain={self.name}',
-                f'--directory={self.locale_dir}',
                 f'--locale={locale}',
+                f'--input-file={self.locale_po_file(locale)}',
+                f'--output-file={partial_mo_file}',
             ],
         )
+        partial_mo_file.replace(mo_file)
