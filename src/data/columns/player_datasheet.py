@@ -5,7 +5,7 @@ from typing import Any, cast
 
 from text_unidecode import unidecode
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import Player, MIN_YOB, MAX_YOB

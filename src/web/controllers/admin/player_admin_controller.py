@@ -41,13 +41,13 @@ from data.input_output.data_source import DataSource, keep_reliable_k_factors
 from data.input_output.managers import DataSourceManager, PlayerExporterManager
 from data.player import (
     Player,
-    PlayerRating,
     TournamentPlayer,
     MIN_YOB,
     MAX_YOB,
     MIN_K_FACTOR,
     MAX_K_FACTOR,
 )
+from utils.types import PlayerRating
 from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,
@@ -1071,9 +1071,12 @@ class PlayerAdminController(BaseEventAdminController):
             web_context,
             action=FormAction.REPLACE if player_id else FormAction.CREATE,
             search_stored_player=stored_player,
+            # A field the form did not send — a select locked while the
+            # player is paired — keeps the player's own value.
             carry_over_data={
-                field: str(data.get(field, ''))
+                field: str(data[field])
                 for field in web_context.carry_over_fields
+                if field in data
             },
             errors=errors,
         )

@@ -7097,6 +7097,9 @@ msgstr ""
 msgid "Present and to pair"
 msgstr ""
 
+msgid "Preview"
+msgstr ""
+
 msgid "Preview the card with different sample data."
 msgstr ""
 

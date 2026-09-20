@@ -208,16 +208,12 @@ class TeamStandingsIntegrationTestCase(TestCase):
         # decides.
         standings = tournament.team_standings()
         self.assertEqual(len(standings), 2)
-        self.assertEqual(standings[0]['team'].id, self.team_a_id)
-        self.assertEqual(standings[1]['team'].id, self.team_b_id)
-        self.assertEqual(
-            [v.value for v in standings[0]['tie_break_values']], [1.0, 2.0]
-        )
-        self.assertEqual(
-            [v.value for v in standings[1]['tie_break_values']], [1.0, 1.0]
-        )
-        self.assertEqual(standings[0]['rank'], 1)
-        self.assertEqual(standings[1]['rank'], 2)
+        self.assertEqual(standings[0].team.id, self.team_a_id)
+        self.assertEqual(standings[1].team.id, self.team_b_id)
+        self.assertEqual([v.value for v in standings[0].tie_break_values], [1.0, 2.0])
+        self.assertEqual([v.value for v in standings[1].tie_break_values], [1.0, 1.0])
+        self.assertEqual(standings[0].rank, 1)
+        self.assertEqual(standings[1].rank, 2)
 
     def test_no_team_tie_breaks_ranks_on_the_points_alone(self) -> None:
         """A tournament with nothing configured ranks on its primary score
@@ -237,4 +233,4 @@ class TeamStandingsIntegrationTestCase(TestCase):
         standings = tournament.team_standings()
         self.assertEqual(len(standings), 1)
         # One criterion, the points; the team has played nothing, so 0.
-        self.assertEqual([v.value for v in standings[0]['tie_break_values']], [0.0])
+        self.assertEqual([v.value for v in standings[0].tie_break_values], [0.0])

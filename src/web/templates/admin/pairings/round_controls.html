@@ -57,14 +57,14 @@
                     <option
                         value="{{ round }}"
                         data-label="{{ round_label | raise_ordinal_suffix }}"
-                        {% if round == admin_round %}selected{%endif %}
+                        {% if round == admin_round %}selected{% endif %}
                     >
                         {{ round_label }}
                     </option>
                 {% endfor %}
             {% endwith %}
             {% if admin_tournament.finished %}
-                <option value="{{ admin_tournament.rounds + 1 }}" {% if display_rankings %}selected{%endif %}>
+                <option value="{{ admin_tournament.rounds + 1 }}" {% if display_rankings %}selected{% endif %}>
                     {{ _('Ranking') }}
                 </option>
             {% endif %}
@@ -104,7 +104,7 @@
         <span {{ macros.tooltip_attributes('info', _('Next round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
-                {% if admin_tournament.pairing_system.show_unfinished_round_modal and not (admin_tournament.finished and not admin_tournament.round_has_pairings(admin_round)) and (not (admin_tournament.round_has_pairings(admin_round) and admin_tournament.is_round_finished(admin_round)) or admin_tournament.unboarded_holes(admin_round)) %}
+                {% if admin_tournament.pairing_system.show_unfinished_round_modal and not (admin_tournament.finished and not admin_tournament.round_has_pairings(admin_round)) and (not (admin_tournament.round_has_pairings(admin_round) and admin_tournament.is_round_finished(admin_round)) or admin_tournament.board_operations.unboarded_holes(admin_round)) %}
                     hx-get="{{ url_for('admin-pairings-unfinished-round-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"
@@ -183,7 +183,7 @@
             hx-on::after-request="window.scrollTo(0, 0)"
         >
             {% for value, text in tournament_options.items() %}
-                <option value="{{ value }}" {% if value == admin_tournament_id %}selected{%endif %}>
+                <option value="{{ value }}" {% if value == admin_tournament_id %}selected{% endif %}>
                     {{ text }}
                 </option>
             {% endfor %}

@@ -19,12 +19,13 @@ from data.criteria.tournament_criteria import TournamentCriterion
 from data.event import Event
 from data.player import Player, TournamentPlayer
 from data.print_documents import PlayerSplitter, PrintOption, IndividualTeamType
-from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
+from data.print_documents.documents import QRCodePrintDocument
+from data.print_documents.options import TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
-from plugins.ffe.ffe_database import PlayerFFELicence
+from plugins.ffe.utils import PlayerFFELicence
 from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, FFE_LEAGUES
 from data.pairings.settings import (
     AccelerationGroup,

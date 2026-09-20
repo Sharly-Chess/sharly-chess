@@ -44,7 +44,7 @@
             {% endfor %}
         </div>
     </section>
-    <section class="teams" style="grid-template-columns: repeat({{player_columns|length}}, max-content);">
+    <section class="teams" style="grid-template-columns: repeat({{ player_columns|length }}, max-content);">
         {% for team in ordered_teams %}
             <div class="separator"></div>
 

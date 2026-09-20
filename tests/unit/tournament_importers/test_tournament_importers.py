@@ -336,7 +336,7 @@ class TournamentImporterTestCase(TestCase):
         from database.sqlite.event.event_database import EventDatabase
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            tournament.set_manual_point_adjustment(
+            tournament.point_adjustments.set_manual(
                 team.id, 1, -3.0, 0.0, 'test penalty', database
             )
         self.event = EventLoader().load_event(EVENT_ID)
@@ -1267,7 +1267,7 @@ class TournamentImporterTestCase(TestCase):
         self._set_team_manual_bye(tournament, fpb_team.id, 1, 'FPB')
         self._set_team_manual_bye(tournament, pab_team.id, 1, 'PAB')
 
-        standings = {row['team'].id: row for row in tournament.team_standings()}
+        standings = {row.team.id: row for row in tournament.team_standings()}
         match_points = tournament.match_points
         win_mp = match_points[Result.WIN]
         draw_mp = match_points[Result.DRAW]
@@ -1275,14 +1275,14 @@ class TournamentImporterTestCase(TestCase):
         pab_mp = match_points[Result.PAIRING_ALLOCATED_BYE]
         n = float(tournament.team_player_count or 0)
 
-        self.assertEqual(standings[zpb_team.id]['mp'], loss_mp)
-        self.assertEqual(standings[zpb_team.id]['gp'], 0.0)
-        self.assertEqual(standings[hpb_team.id]['mp'], draw_mp)
-        self.assertEqual(standings[hpb_team.id]['gp'], n * 0.5)
-        self.assertEqual(standings[fpb_team.id]['mp'], win_mp)
-        self.assertEqual(standings[fpb_team.id]['gp'], n * 1.0)
-        self.assertEqual(standings[pab_team.id]['mp'], pab_mp)
-        self.assertEqual(standings[pab_team.id]['gp'], tournament.team_pab_game_points)
+        self.assertEqual(standings[zpb_team.id].mp, loss_mp)
+        self.assertEqual(standings[zpb_team.id].gp, 0.0)
+        self.assertEqual(standings[hpb_team.id].mp, draw_mp)
+        self.assertEqual(standings[hpb_team.id].gp, n * 0.5)
+        self.assertEqual(standings[fpb_team.id].mp, win_mp)
+        self.assertEqual(standings[fpb_team.id].gp, n * 1.0)
+        self.assertEqual(standings[pab_team.id].mp, pab_mp)
+        self.assertEqual(standings[pab_team.id].gp, tournament.team_pab_game_points)
 
     def test_create_team_round_pairing_flow(self):
         """Manual team pairing — first click creates a PAB envelope
@@ -1316,7 +1316,7 @@ class TournamentImporterTestCase(TestCase):
         # First click on team A: creates a PAB envelope with PAB-result
         # individual boards. The team_b column is empty. Boards with a
         # present player have a PAB pairing; bare-hole boards stay empty.
-        tb_pending = tournament.create_team_round_pairing(2, team_a.id)
+        tb_pending = tournament.board_operations.pair_teams(2, team_a.id)
         self.assertIsNone(tb_pending.team_b)
         self.assertEqual(tb_pending.team_a.id, team_a.id)
         self.assertEqual(tb_pending.bye_type, 'PAB')
@@ -1333,7 +1333,7 @@ class TournamentImporterTestCase(TestCase):
         # Second click on team B: completes the pair. PAB-side boards
         # are dropped and rebuilt with both lineups; results flip to
         # NO_RESULT (each board with at least one present player).
-        tb_complete = tournament.create_team_round_pairing(2, team_b.id)
+        tb_complete = tournament.board_operations.pair_teams(2, team_b.id)
         complete_team_b = tb_complete.team_b
         assert complete_team_b is not None
         self.assertEqual(
@@ -1383,8 +1383,8 @@ class TournamentImporterTestCase(TestCase):
         self._set_team_manual_bye(tournament, team_b.id, 2, 'ZPB')
         self.assertEqual(team_b.round_bye_type(2), 'ZPB')
         # Manually pair team_a and team_b. The ZPB should be removed.
-        tournament.create_team_round_pairing(2, team_a.id)
-        tournament.create_team_round_pairing(2, team_b.id)
+        tournament.board_operations.pair_teams(2, team_a.id)
+        tournament.board_operations.pair_teams(2, team_b.id)
         self.assertIsNone(team_b.round_bye_type(2))
         boards = tournament.get_round_team_boards(2)
         # Only one envelope — the completed pair.
@@ -1393,7 +1393,7 @@ class TournamentImporterTestCase(TestCase):
 
     def test_team_primary_score_before_round_matches_standings(self):
         """``team_primary_score_before_round(team, R)`` and
-        ``_team_trf_totals_after(R-1)`` must agree on each team's
+        ``team_totals_after(R-1)`` must agree on each team's
         cumulative score, and both must honour bye_type. Used by the
         engine + post-import sort, so a drift would silently produce
         a different display order each side."""
@@ -1412,7 +1412,7 @@ class TournamentImporterTestCase(TestCase):
         # As of start of round 3, the team's primary score should
         # *not* include the ZPB as a PAB. Match the totals helper.
         score = tournament.team_primary_score_before_round(team.id, 3)
-        totals = tournament._team_trf_totals_after(2)
+        totals = tournament.team_totals_after(2)
         match_points = tournament.match_points
         if tournament.primary_score == ScoreType.MATCH_POINTS:
             self.assertEqual(score, totals[team.id][0])
@@ -1422,19 +1422,16 @@ class TournamentImporterTestCase(TestCase):
         # contribution.
         self.assertNotEqual(
             score,
-            tournament._team_trf_totals_after(1)[team.id][
+            tournament.team_totals_after(1)[team.id][
                 0 if tournament.primary_score == ScoreType.MATCH_POINTS else 1
             ]
             + match_points[Result.PAIRING_ALLOCATED_BYE],
         )
 
     def test_trf_team_round_trip_preserves_manual_bye_history(self):
-        """A manual bye applied to a *past* round must survive a TRF
-        export → re-import cycle. Earlier, ``_team_trf_round_byes``
-        only emitted 240 records for the round being paired, and the
-        importer didn't read 240 at all — so a past-round
-        ``HPB``/``FPB``/``ZPB`` collapsed into a plain PAB envelope on
-        re-import."""
+        """A manual bye applied to a *past* round survives a TRF export
+        → re-import cycle: the 240 records cover every round, not only
+        the one being paired, and the importer reads them."""
         import io
 
         TestUtils.delete_event(EVENT_ID)

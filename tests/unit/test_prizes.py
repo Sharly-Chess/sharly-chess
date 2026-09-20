@@ -8,7 +8,7 @@ from data.loader import EventLoader
 from data.player_categories import JuniorCategory, SeniorCategory
 from data.prize.prize_type import MonetaryPrizeType
 from data.tournament import Tournament
-from data.player import PlayerRating
+from utils.types import PlayerRating
 from data.criteria.player_filter_options import (
     GenderOption,
     MaxRatingOption,
@@ -35,7 +35,7 @@ from data.prize.prize_sharing import (
     NoPrizeSharing,
     PrizeSharing,
 )
-from data.prize.prize_group import AssignedPrize
+from data.prize.assigned_prize import AssignedPrize
 from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredTournamentPlayer,

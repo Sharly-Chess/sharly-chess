@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Optional, override, Any
 
 from common.exception import OptionError
 from common.i18n import _
-from data.event import SharlyChessConfig
+from common.sharly_chess_config import SharlyChessConfig
 from data.print_documents.pairing_styles import BoardsPairingStyle, PairingStyle
 from data.print_documents.place_cards.crop_marks import (
     CornersPlaceCardCropMarks,
@@ -35,7 +35,7 @@ from utils.option import Option
 if TYPE_CHECKING:
     from data.event import Event
     from data.print_documents import PrintIndividualTeamTypeManager
-    from data.print_documents.documents import PlaceCardTemplate
+    from data.print_documents.place_cards.template import PlaceCardTemplate
 
 
 class PrintOption[V](Option[V], ABC):
@@ -915,9 +915,7 @@ class PlaceCardPrintOption(PrintOption[str]):
     @property
     def place_card_type_options(self) -> dict[str, str]:
         from data.print_documents import PrintPlaceCardTypeManager
-        from data.print_documents.documents import (
-            PlaceCardTemplate,
-        )
+        from data.print_documents.place_cards.template import PlaceCardTemplate
 
         place_card_templates_by_type: dict[PlaceCardType, list[PlaceCardTemplate]] = (
             PlaceCardTemplate.get_place_card_templates_by_type()

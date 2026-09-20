@@ -793,7 +793,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         # the played-games-only variant, which measures games rather than
         # standing.
         if not only_played:
-            value += self.tournament.player_point_adjustment_total(
+            value += self.tournament.point_adjustments.player_total(
                 self.id, before_round - 1
             )
             # A score counts points won, so it stops at zero: a penalty
@@ -823,7 +823,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
         # reach the score groups the pairing engine works from — which is
         # what the TRF26 299 record they are exported as is for. Floored
         # at zero, as in ``points_before``.
-        value += self.tournament.player_point_adjustment_total(self.id, after_round)
+        value += self.tournament.point_adjustments.player_total(self.id, after_round)
         value = max(0.0, value)
         if caching:
             self._compute_cache[key] = value
@@ -869,7 +869,7 @@ class TournamentPlayer(Player):  # noqa: PLW1641
             for round_, pairing in self.pairings.items()
             if round_ <= after_round and self.game_counts_for_tie_breaks(pairing)
         )
-        value += self.tournament.player_point_adjustment_total(self.id, after_round)
+        value += self.tournament.point_adjustments.player_total(self.id, after_round)
         value = max(0.0, value)
         if caching:
             self._compute_cache[key] = value

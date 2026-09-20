@@ -437,7 +437,6 @@ class ChessResultsSession(Session):
         a team-vs-team tournament (Chess-Results types 2/3). Players are
         numbered sequentially grouped by team in roster order — the
         numbering Chess-Results displays and that the pairings reference."""
-        from utils.enum import ScoreType
 
         event = tournament.event
         # Chess-Results publishes the standings, so a team dropped from
@@ -529,10 +528,7 @@ class ChessResultsSession(Session):
                 )
 
         # --- Teams ---
-        standings_by_team_id = {
-            row['team'].id: row for row in tournament.team_standings()
-        }
-        primary_is_mp = tournament.primary_score == ScoreType.MATCH_POINTS
+        standings_by_team_id = {row.team.id: row for row in tournament.team_standings()}
         tdata = ET.SubElement(root, 'teams')
         previous_tbs: list[str] | None = None
         for team in teams:
@@ -540,8 +536,7 @@ class ChessResultsSession(Session):
             tb_values: list[str] = []
             if row:
                 tb_values.extend(
-                    f'{tbv.value:g}'
-                    for tbv in row.get('tie_break_values', [])[:MAX_TIE_BREAKS]
+                    f'{tbv.value:g}' for tbv in row.tie_break_values[:MAX_TIE_BREAKS]
                 )
             while len(tb_values) < MAX_TIE_BREAKS:
                 tb_values.append('')
@@ -549,7 +544,7 @@ class ChessResultsSession(Session):
                 tb_values == previous_tbs if previous_tbs is not None else False
             )
             previous_tbs = tb_values
-            points = (row['mp'] if primary_is_mp else row['gp']) if row else 0
+            points = row.score(tournament.primary_score) if row else 0
             ET.SubElement(
                 tdata,
                 'team',
@@ -557,7 +552,7 @@ class ChessResultsSession(Session):
                     'no': str(team_no[team.id]),
                     'teamname': team.name[:40],
                     'teamshort': team.name[:25],
-                    'rank': str(row['rank'] if row else ''),
+                    'rank': str(row.rank if row else ''),
                     'points': f'{points:g}',
                     'captain': (team.captain_display_name or '')[:70],
                     'equal': 'J' if same_as_previous else 'N',

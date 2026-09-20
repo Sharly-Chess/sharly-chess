@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from time import perf_counter, process_time
 from typing import TYPE_CHECKING, Any
 
+from litestar.enums import ScopeType
 from common.logger import get_logger
 
 if TYPE_CHECKING:
@@ -94,7 +95,9 @@ class PerformanceMiddleware:
         self.app = app
 
     async def __call__(self, scope: 'Scope', receive: 'Receive', send: 'Send') -> None:
-        if scope['type'] != 'http' or scope.get('path', '').startswith('/static/'):
+        if scope['type'] != ScopeType.HTTP or scope.get('path', '').startswith(
+            '/static/'
+        ):
             await self.app(scope, receive, send)
             return
 

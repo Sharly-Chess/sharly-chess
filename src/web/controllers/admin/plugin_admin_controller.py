@@ -17,7 +17,8 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
 from data.event_metadata import EventMetadata
 from data.loader import EventLoader
-from plugins.manager import Plugin, plugin_manager
+from plugins.manager import plugin_manager
+from plugins.utils import Plugin
 from utils.system_accent import readable_text_color, system_accent_color
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,

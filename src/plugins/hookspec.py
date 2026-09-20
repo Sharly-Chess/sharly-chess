@@ -37,14 +37,10 @@ if TYPE_CHECKING:
     from data.input_output.trf.trf_data import TrfNationalPlayer
     from data.pairings.systems import PairingSystem
     from data.pairings.variations import PairingVariation, SwissVariation
-    from data.player import (
-        Player,
-        PlayerProfileLink,
-        TournamentPlayer,
-        PlayerRatingAndType,
-        PlayerRatingType,
-        PlayerCategory,
-    )
+    from data.player import Player, PlayerProfileLink, TournamentPlayer
+    from utils.types import PlayerRatingAndType
+    from utils.enum import PlayerRatingType
+    from data.player_categories import PlayerCategory
     from plugins.migration import PluginMigrationManager
     from data.print_documents import (
         PrintDocument,
@@ -265,11 +261,13 @@ class AppHookSpecs:
         """Executed before the check-in modal is loaded."""
 
     @hookspec
-    def insert_search_filter_types(self, filters: dict) -> None:
+    def insert_search_filter_types(self, filters: dict[str, Any]) -> None:
         """Add plugin-specific filters for the player search."""
 
     @hookspec
-    def insert_search_filter_for_datasource(self, datasource_mapping: dict) -> None:
+    def insert_search_filter_for_datasource(
+        self, datasource_mapping: dict[str, Any]
+    ) -> None:
         """Map filters with datasources."""
 
     @hookspec
@@ -426,7 +424,7 @@ class AppHookSpecs:
 
     @hookspec
     def signal_special_result_set(
-        self, tournament: 'Tournament | None', result: Result
+        self, tournament: 'Tournament', result: Result
     ) -> str | None:
         """A signal sent when a special result is set. Returns a string to be displayed to the user"""
 

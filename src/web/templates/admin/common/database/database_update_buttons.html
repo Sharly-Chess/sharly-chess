@@ -44,7 +44,7 @@
     {% endif %}
     <script>
         {% with id=database.id %}
-            $('#{{id}}-updated-at').text({{ database.updated_at_str|tojson }});
+            $('#{{ id }}-updated-at').text({{ database.updated_at_str|tojson }});
         {% endwith %}
     </script>
 </div>

@@ -36,7 +36,7 @@
 <script>
     $(document).ready(function() {
         const placeCardTypeSelect = $('.modal #place-card-type');
-        const placeCardTemplateSelect = $('.modal #{{option.id}}');
+        const placeCardTemplateSelect = $('.modal #{{ option.id }}');
         const placeCardTemplatesPerType = {{ option.place_card_templates_per_type | tojson }};
 
         function updatePlaceCardTemplates() {

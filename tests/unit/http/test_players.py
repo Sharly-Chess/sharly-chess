@@ -6,7 +6,8 @@ from datetime import date
 import pytest
 from litestar.testing import TestClient
 
-from data.player import PlayerRating, TournamentPlayer
+from data.player import TournamentPlayer
+from utils.types import PlayerRating
 from data.tournament import Tournament
 from tests.unit.http.events import EventUnderTest
 from utils.enum import PlayerGender, PlayerTitle, TournamentRating

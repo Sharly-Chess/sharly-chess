@@ -38,7 +38,7 @@ def _build_board_columns(
     first round is paired."""
     from data.columns.board_table import ScreenResultColumn
     from data.columns.handlers import BoardColumnHandler
-    from data.columns.player_table import ColumnUsage
+    from data.columns.column import ColumnUsage
 
     tournament.set_for_round()
     if tournament.current_round == 0:
@@ -1661,9 +1661,9 @@ class RankingScreenType(ScreenType):
         self, screen: 'Screen', tournament: 'Tournament', event: 'Event'
     ) -> 'list[TournamentPlayerTableColumn] | list[BoardColumn] | None':
         from data.columns.handlers import PlayerColumnHandler
-        from data.columns.player_table import ColumnUsage
+        from data.columns.column import ColumnUsage
 
-        ranking_round = tournament.correct_ranking_round(self.ranking_round(screen))
+        ranking_round = tournament.ranking.correct_round(self.ranking_round(screen))
         tournament.compute_tournament_player_ranks(after_round=ranking_round)
         column_handler = PlayerColumnHandler(event, ColumnUsage.SCREEN)
         if self.ranking_crosstable(screen):
@@ -1726,24 +1726,24 @@ class RankingScreenType(ScreenType):
     def family_item_range(self, family: 'Family') -> FamilyItemRange:
         tournament = family.tournament
         stored = family.stored_family
-        ranking_round = tournament.correct_ranking_round(stored.ranking_round)
+        ranking_round = tournament.ranking.correct_round(stored.ranking_round)
         min_points = stored.ranking_min_points
         max_points = stored.ranking_max_points
         if tournament.is_team_tournament:
             from utils.enum import ScoreType
 
-            primary_is_mp = (
-                tournament.pairing_system.paired_by_team
-                and tournament.primary_score == ScoreType.MATCH_POINTS
+            score_type = (
+                tournament.primary_score
+                if tournament.pairing_system.paired_by_team
+                else ScoreType.GAME_POINTS
             )
-            score_key = 'mp' if primary_is_mp else 'gp'
             total = len(
                 [
                     row
                     for row in tournament.team_standings(after_round=ranking_round)
-                    if not row['team'].is_excluded_from_standings
-                    and (min_points is None or row[score_key] >= min_points)
-                    and (max_points is None or row[score_key] <= max_points)
+                    if not row.team.is_excluded_from_standings
+                    and (min_points is None or row.score(score_type) >= min_points)
+                    and (max_points is None or row.score(score_type) <= max_points)
                 ]
             )
         else:
@@ -1767,8 +1767,8 @@ class RankingScreenType(ScreenType):
             last_standing = screen_set.last_team_standing
             if first_standing is not None and last_standing is not None:
                 return _('Teams from #%(first)d to #%(last)d') % {
-                    'first': first_standing['rank'],
-                    'last': last_standing['rank'],
+                    'first': first_standing.rank,
+                    'last': last_standing.rank,
                 }
             return _('Teams (none now)')
         first_player = screen_set.first_tournament_player_by_rank
@@ -1809,8 +1809,8 @@ class RankingScreenType(ScreenType):
             first_standing = screen_set.first_team_standing
             last_standing = screen_set.last_team_standing
             return (
-                str(first_standing['rank']) if first_standing is not None else dash,
-                str(last_standing['rank']) if last_standing is not None else dash,
+                str(first_standing.rank) if first_standing is not None else dash,
+                str(last_standing.rank) if last_standing is not None else dash,
             )
         first = screen_set.first_tournament_player_by_rank
         last = screen_set.last_tournament_player_by_rank

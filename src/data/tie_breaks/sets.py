@@ -161,7 +161,7 @@ def evaluate_set_against_tournament(
             return True, _('Tie-break [{name}] is not available in this event.').format(
                 name=friendly_name_for_tie_break_type(stored_tb.type)
             )
-        if message := tournament.tie_break_invalid_message(tie_break):
+        if message := tournament.tie_break_configuration.invalid_message(tie_break):
             tooltip = (
                 f'<div class="fw-bold">'
                 f'  {tie_break.full_name} ({tie_break.acronym})'

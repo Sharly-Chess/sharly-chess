@@ -11,12 +11,12 @@ from data.screens.manager import ScreenTypeManager
 from data.screens.rotator import Rotator
 from data.screens.screen import Screen
 from data.tournament import Tournament
-from plugins.ffe.ffe_upload_controller import HTMXTemplate
+from litestar.plugins.htmx import HTMXTemplate
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
-from web.controllers.index_controller import HTTP_204_NO_CONTENT
+from litestar.status_codes import HTTP_204_NO_CONTENT
 from web.guards import EventGuard
 from web.urls import (
     admin_event_pairings_url,

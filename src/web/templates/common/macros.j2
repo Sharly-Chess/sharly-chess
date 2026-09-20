@@ -23,8 +23,8 @@
 {% endmacro %}
 
 {% macro point_adjustment_tooltip(tournament, team_id, round_) %}
-{%- set manual = tournament.stored_point_adjustment(team_id, round_) -%}
-{%- set rs = tournament.rule_set_point_adjustment(team_id, round_) -%}
+{%- set manual = tournament.point_adjustments.stored(team_id, round_) -%}
+{%- set rs = tournament.point_adjustments.from_rule_set(team_id, round_) -%}
 {%- set lines = [] -%}
 {%- if manual and (manual.mp_delta or manual.gp_delta) -%}
     {%- set parts = [] -%}
@@ -46,7 +46,7 @@
 {% endmacro %}
 
 {% macro player_point_adjustment_tooltip(tournament, player_id, round_) %}
-{%- set manual = tournament.stored_player_point_adjustment(player_id, round_) -%}
+{%- set manual = tournament.point_adjustments.stored_for_player(player_id, round_) -%}
 {%- if manual and manual.delta -%}
     {%- set line = '<strong>' ~ '%+g'|format(manual.delta) ~ ' ' ~ _('Points') ~ '</strong>' -%}
     {%- if manual.reason -%}{%- set line = line ~ ': ' ~ manual.reason -%}{%- endif -%}

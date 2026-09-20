@@ -95,7 +95,7 @@
                             <th class="text-nowrap text-center">{{ round }}</th>
                             <td class="text-nowrap text-center align-middle">
                                 {% if is_paired %}{{ team_board.match_score_display }}{% endif %}
-                                {% set _mp, _gp = tournament.effective_point_adjustment(
+                                {% set _mp, _gp = tournament.point_adjustments.effective(
                                     admin_team.id, round
                                 ) %}
                                 {% if _mp or _gp %}

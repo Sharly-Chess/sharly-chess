@@ -25,7 +25,7 @@
         {% include '/admin/common/collection_controls.html' %}
     {% endif %}
     <div class="d-flex align-items-center gap-2">
-        <span {{ macros.tooltip_attributes('info', _('Prize settings'), 'bottom') }}
+        <span {{ macros.tooltip_attributes('info', _('Prize settings'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
                 hx-get="{{ url_for(
@@ -37,7 +37,6 @@
                 data-bs-target="#modal-wrapper"
                 hx-target="body"
                 hx-indicator="#please-wait"
-
             >
                 <i class="bi-gear-fill"></i>
             </button>
@@ -178,7 +177,7 @@
                     hx-indicator="#please-wait"
                 >
                     {% for value, text in prize_group_options.items() %}
-                        <option value="{{ value }}" {% if value == admin_prize_group.id|string %}selected{%endif %}>
+                        <option value="{{ value }}" {% if value == admin_prize_group.id|string %}selected{% endif %}>
                             {{ text }}
                         </option>
                     {% endfor %}
@@ -266,7 +265,7 @@
             hx-indicator="#please-wait"
         >
             {% for value, text in tournament_options.items() %}
-                <option value="{{ value }}" {% if value == admin_tournament.id|string %}selected{%endif %}>
+                <option value="{{ value }}" {% if value == admin_tournament.id|string %}selected{% endif %}>
                     {{ text }}
                 </option>
             {% endfor %}

@@ -1,7 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
 
 <div
-    id="nav-{{nav_id}}-wrapper"
+    id="nav-{{ nav_id }}-wrapper"
     class="w-100"
     {% if swap_oob %}
         hx-swap-oob="true"
@@ -75,6 +75,7 @@
                                         <img
                                             src="{{ url_for('static', file_path=sub_nav_tab.icon_path) }}?version={{ sharly_chess_config.version }}"
                                             style="height: 1.2em"
+                                            alt=""
                                         />
                                     </span>
                                     <span class="mt-1 flex-grow-1">
@@ -131,7 +132,7 @@
                         <div class="sidebar-divider"></div>
                     {% endif %}
                     <button
-                        class="nav-link text-start d-flex align-items-center pe-2 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                        class="nav-link text-start d-flex align-items-center pe-2 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {% if active %}active{% endif %}"
                         id="nav-{{ sub_nav_id }}-tab"
                         data-testid="nav-{{ sub_nav_id }}-tab"
                         {% if 'modal' in sub_nav %}
@@ -162,6 +163,7 @@
                                 <img
                                     src="{{ url_for('static', file_path=sub_nav.icon_path) }}?version={{ sharly_chess_config.version }}"
                                     style="height: 1.2em"
+                                    alt=""
                                 />
                             </span>
                             <span class="mt-1 flex-grow-1">
@@ -205,7 +207,7 @@
         {% with active=(admin_event_tab == nav_id) %}
             <span class="sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
                 <button
-                    class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                    class="nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {% if active %}active{% endif %}"
                     id="nav-{{ nav_id }}-tab"
                     data-testid="nav-{{ nav_id }}-tab"
                     hx-get="{{ url_for(nav_id, event_uniq_id=admin_event.uniq_id) }}"

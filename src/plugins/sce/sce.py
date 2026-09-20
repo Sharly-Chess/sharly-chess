@@ -3,7 +3,7 @@ from collections.abc import Iterable
 
 from packaging.version import Version
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor

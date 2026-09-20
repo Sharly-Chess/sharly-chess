@@ -11,7 +11,8 @@ from typing import Any
 
 import pytest
 
-from plugins.sce.sce import PLUGIN_NAME, SCEPlugin
+from plugins.sce.sce import SCEPlugin
+from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_data import SCEEventPluginData, SCETokens
 
 

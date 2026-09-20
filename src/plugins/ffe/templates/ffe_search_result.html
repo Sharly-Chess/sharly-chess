@@ -8,6 +8,7 @@
 >
     <img
         class="player-federation-flag pe-1"
+        alt="{{ player.federation }}"
         src="{{ macros.federation_flag_url(player.federation) }}"
     />
     {% if not no_identifier %}
@@ -24,7 +25,7 @@
         ({{ player.year_of_birth }}, {{ player.category.name }})
     {% endif %}
     {% if player.plugin_data.ffe.ffe_licence %}
-        - {{player.plugin_data.ffe.ffe_licence}}
+        - {{ player.plugin_data.ffe.ffe_licence }}
     {% endif %}
     -
     {% if player.has_real_rating %}

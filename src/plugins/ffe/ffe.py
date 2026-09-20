@@ -3,7 +3,7 @@ import re
 from collections import Counter, defaultdict
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Optional
-from collections.abc import Iterable
+from collections.abc import Hashable, Iterable
 
 from packaging.version import Version
 
@@ -13,7 +13,8 @@ from common.i18n import _, ngettext, pgettext
 from data.account import Account
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
-from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
+from data.columns.player_table import TournamentPlayerTableColumn
+from data.columns.column import ColumnUsage
 from data.columns.players_tab import (
     PlayersTabColumn,
     ClubPlayersTabColumn,
@@ -30,13 +31,8 @@ from data.input_output.data_source import FideDataSource
 from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingSystemManager, PairingVariationManager
 from data.pairings.variations import SwissVariation
-from data.player import (
-    Player,
-    PlayerProfileLink,
-    PlayerRating,
-    PlayerRatingAndType,
-    TournamentPlayer,
-)
+from data.player import Player, PlayerProfileLink, TournamentPlayer
+from utils.types import PlayerRating, PlayerRatingAndType
 from data.player_categories import PlayerCategory, JuniorCategory
 from data.print_documents import (
     PlayerSplitter,
@@ -57,10 +53,8 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
-from plugins.ffe.ffe_background_uploader import (
-    EventLoader,
-    FfeBackgroundUploader,
-)
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
+from data.loader import EventLoader
 from plugins.ffe.ffe_data_sources import FfeLocalDataSource, FfeOnlineDataSource
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
@@ -393,9 +387,9 @@ class FfePlugin(Plugin):
         if rule_set is None or not getattr(rule_set, 'round3_winner_protection', False):
             return []
         winners = [
-            row['team'].id
+            row.team.id
             for row in tournament.team_standings(after_round=2)
-            if row['played'] == 2 and row['wins'] == 2
+            if row.played == 2 and row.wins == 2
         ]
         if len(winners) < 2:
             return []
@@ -456,7 +450,7 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_player_duplicate_key(
         self, stored_player: StoredPlayer
-    ) -> tuple[str, str] | None:
+    ) -> tuple[str, Hashable] | None:
         if licence_number := self.get_data(
             stored_player.plugin_data, 'ffe_licence_number'
         ):

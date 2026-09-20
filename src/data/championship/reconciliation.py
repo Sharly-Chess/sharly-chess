@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from data.championship.championship import ChampionshipSource
     from data.player import TournamentPlayer
     from data.teams.team import Team
+    from data.teams.team_scoring import TeamStanding
 
 
 class ReconciledParticipation:
@@ -181,7 +182,7 @@ class ReconciledTeamParticipation:
         self,
         source: 'ChampionshipSource',
         team: 'Team',
-        standings_row: dict[str, Any],
+        standings_row: 'TeamStanding',
     ):
         self.source = source
         self.team = team
@@ -209,8 +210,11 @@ class ReconciledTeamParticipation:
         return tournament.primary_score == ScoreType.MATCH_POINTS
 
     def points(self, team_score_basis: TeamScoreBasis) -> float:
-        key = 'mp' if self._uses_match_points(team_score_basis) else 'gp'
-        return float(self.standings_row[key])
+        return self.standings_row.score(
+            ScoreType.MATCH_POINTS
+            if self._uses_match_points(team_score_basis)
+            else ScoreType.GAME_POINTS
+        )
 
     @property
     def coefficient(self) -> float:
@@ -221,7 +225,7 @@ class ReconciledTeamParticipation:
 
     @property
     def rank(self) -> int:
-        return int(self.standings_row['rank'])
+        return self.standings_row.rank
 
     @property
     def field_size(self) -> int:
@@ -232,7 +236,7 @@ class ReconciledTeamParticipation:
 
     @property
     def wins(self) -> int:
-        return int(self.standings_row['wins'])
+        return self.standings_row.wins
 
     #: A team match carries both a match-point and a game-point score, so the
     #: extended direct encounter (Art. 13.3) can fall back from the primary
@@ -385,9 +389,7 @@ def reconcile_teams(
         tournament = source.tournament
         if tournament is None:
             continue
-        standings_by_team_id = {
-            row['team'].id: row for row in tournament.team_standings()
-        }
+        standings_by_team_id = {row.team.id: row for row in tournament.team_standings()}
         for team in tournament.teams:
             if team.is_excluded_from_standings:
                 continue

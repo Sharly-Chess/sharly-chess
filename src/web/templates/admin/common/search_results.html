@@ -30,6 +30,11 @@
                 {% if admin_player %}
                     hx-vals='{"player_id": {{ admin_player.id }}}'
                 {% endif %}
+                {# The result opens the form afresh; what was chosen in it
+                   before searching — the team, the tournament — goes along. #}
+                {% if usage == 'player' %}
+                    hx-include="#modal-form"
+                {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
@@ -43,7 +48,7 @@
                         event_uniq_id=admin_event.uniq_id,
                         page=page + 1,
                         usage=usage,
-                    )}}"
+                    ) }}"
                     hx-vals='js:{
                         "data_source_id": "{{ data_source.id }}",
                         "search": "{{ search }}",

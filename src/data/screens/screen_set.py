@@ -14,6 +14,7 @@ from datetime import datetime
 from database.sqlite.event.event_store import StoredScreenSet
 
 if TYPE_CHECKING:
+    from data.teams.team_scoring import TeamStanding
     from data.event import Event
     from data.screens.screen import Screen
     from data.screens.family import Family
@@ -340,9 +341,9 @@ class ScreenSet:
             name = _('Ranking %f to %l') if self.first or self.last else _('%t ranking')
         name = name.replace('%t', str(self.tournament.name))
         if self._team_first_item is not None:
-            name = name.replace(r'%f', str(self._team_first_item['rank']))
+            name = name.replace(r'%f', str(self._team_first_item.rank))
         if self._team_last_item is not None:
-            name = name.replace(r'%l', str(self._team_last_item['rank']))
+            name = name.replace(r'%l', str(self._team_last_item.rank))
         return name
 
     def _extract_team_data(self, items: list[Any]) -> None:
@@ -636,12 +637,12 @@ class ScreenSet:
         return self._team_last_item
 
     @property
-    def first_team_standing(self) -> dict[str, Any] | None:
+    def first_team_standing(self) -> 'TeamStanding | None':
         self._extract_team_standings()
         return self._team_first_item
 
     @property
-    def last_team_standing(self) -> dict[str, Any] | None:
+    def last_team_standing(self) -> 'TeamStanding | None':
         self._extract_team_standings()
         return self._team_last_item
 
@@ -672,23 +673,23 @@ class ScreenSet:
         if self._team_items_lists is None:
             from utils.enum import ScoreType
 
-            ranking_round = self.tournament.correct_ranking_round(
+            ranking_round = self.tournament.ranking.correct_round(
                 self._config.ranking_round
             )
             min_points = self._config.ranking_min_points
             max_points = self._config.ranking_max_points
-            primary_is_mp = (
-                self.tournament.pairing_system.paired_by_team
-                and self.tournament.primary_score == ScoreType.MATCH_POINTS
+            score_type = (
+                self.tournament.primary_score
+                if self.tournament.pairing_system.paired_by_team
+                else ScoreType.GAME_POINTS
             )
-            score_key = 'mp' if primary_is_mp else 'gp'
             self._extract_team_data(
                 items=[
                     row
                     for row in self.tournament.team_standings(after_round=ranking_round)
-                    if not row['team'].is_excluded_from_standings
-                    and (min_points is None or row[score_key] >= min_points)
-                    and (max_points is None or row[score_key] <= max_points)
+                    if not row.team.is_excluded_from_standings
+                    and (min_points is None or row.score(score_type) >= min_points)
+                    and (max_points is None or row.score(score_type) <= max_points)
                 ]
             )
 

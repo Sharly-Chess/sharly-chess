@@ -123,3 +123,6 @@ init-credentials-local.py
 /.coverage
 /htmlcov/
 /coverage.xml
+
+# Mutation testing
+/mutants/

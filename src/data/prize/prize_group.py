@@ -5,7 +5,7 @@ from collections.abc import Collection
 from functools import cached_property
 from typing import TYPE_CHECKING
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _
 from data.player import TournamentPlayer
 from data.prize.assigned_prize import AssignedPrize

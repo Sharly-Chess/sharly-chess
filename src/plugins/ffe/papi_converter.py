@@ -22,7 +22,8 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     PairingVariation,
 )
-from data.player import TournamentPlayer, PlayerRating
+from data.player import TournamentPlayer
+from utils.types import PlayerRating
 from data.player_categories import PlayerCategory
 from data.tie_breaks.tie_breaks import ManualTieBreak, PointsTieBreak, TieBreak
 from data.tournament import Tournament
@@ -748,7 +749,7 @@ class PapiConverter:
 
         # Papi ranks on the points and then on up to three tie-breaks;
         # there is no way to express a criterion that outranks the score.
-        if not tournament.leads_on_points:
+        if not tournament.tie_break_configuration.leads_on_points:
             return _(
                 'Papi export requires the standings to be ranked on the points '
                 'first. This tournament ranks on [{tie_break}] before them, '

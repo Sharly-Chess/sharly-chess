@@ -18,7 +18,7 @@ from litestar.status_codes import (
 )
 from requests import Session, HTTPError, Response
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event

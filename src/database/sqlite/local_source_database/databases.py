@@ -16,7 +16,8 @@ from typing import override
 from packaging.version import Version
 from requests import Response, get
 
-from common import SharlyChessException, DEVEL_ENV, TEMPFILE_DIR, DATA_SOURCES_DIR
+from common import DEVEL_ENV, TEMPFILE_DIR, DATA_SOURCES_DIR
+from common.exception import SharlyChessException
 from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor

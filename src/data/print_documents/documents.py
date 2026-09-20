@@ -19,7 +19,8 @@ from data.teams.team_board import TeamBoard
 from data.columns import player_table as columns
 from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
-from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
+from data.columns.player_table import TournamentPlayerTableColumn
+from data.columns.column import ColumnUsage
 from data.event import Event
 from data.norms import ForecastRequirement
 from data.pairings.engines import (
@@ -36,7 +37,8 @@ from data.pairings.systems import (
     SwissPairingSystem,
     TeamRoundRobinPairingSystem,
 )
-from data.player import TournamentPlayer, TournamentRating
+from data.player import TournamentPlayer
+from utils.enum import TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
@@ -92,7 +94,7 @@ from utils.enum import (
     ScoreType,
 )
 from utils.option import Option, OptionHandler
-from utils.types import PlayerTitle
+from utils.enum import PlayerTitle
 
 if TYPE_CHECKING:
     from data.pairings.knockout_helpers.layout import BracketLayout
@@ -1123,7 +1125,7 @@ class TeamRankingPrintDocument(PrintDocument):
         standings = [
             row
             for row in self.tournament.team_standings(after_round=self.ranking_round)
-            if not row['team'].is_excluded_from_standings
+            if not row.team.is_excluded_from_standings
         ]
         # A knock-out ranks by the round reached, shown as a plain-language
         # result, not match/game points or standings tie-breaks.
@@ -1444,7 +1446,7 @@ class TeamBergerGridPrintDocument(PrintDocument):
                     cells[mine][theirs].append({'round': round_, 'score': score})
 
         standings_by_team_id = {
-            entry['team'].id: entry
+            entry.team.id: entry
             for entry in tournament.team_standings(after_round=bound_round)
         }
 
@@ -2854,9 +2856,7 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
     @cached_property
     def display_incomplete_teams(self) -> bool:
         """Returns True if incomplete teams must be displayed."""
-        return cast(
-            bool, self._get_option(IndividualTeamDisplayIncompletePrintOption).value
-        )
+        return self._get_option(IndividualTeamDisplayIncompletePrintOption).value
 
     @property
     def team_size(self) -> int:
@@ -2869,9 +2869,7 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
 
     @property
     def max_teams_per_entity(self) -> int | None:
-        return cast(
-            int | None, self._get_option(IndividualTeamMaxPerEntityPrintOption).value
-        )
+        return self._get_option(IndividualTeamMaxPerEntityPrintOption).value
 
     @property
     def min_gender_count(self) -> int:

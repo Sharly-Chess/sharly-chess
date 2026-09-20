@@ -5,9 +5,10 @@ from typing import Self, Any
 from collections import Counter
 from collections.abc import Collection
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n.utils import normalized_key
-from data.event import Player, Event
+from data.event import Event
+from data.player import Player
 from database.sqlite.event.event_database import EventDatabase
 from plugins.fra_schools import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData

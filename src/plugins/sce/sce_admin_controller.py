@@ -11,7 +11,7 @@ from litestar.response import Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
-from common import SharlyChessException
+from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction

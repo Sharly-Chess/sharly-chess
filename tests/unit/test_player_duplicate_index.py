@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from data.board import PlayerRatingType
+from utils.enum import PlayerRatingType
 from data.event import Event
 from database.sqlite.event.event_store import StoredEvent, StoredPlayer
 

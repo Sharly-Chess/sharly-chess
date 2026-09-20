@@ -453,7 +453,7 @@ class TestScheveningenTournament(TestCase):
                 )
                 player_ids.append(player_id)
         tournament = self._tournament()
-        tournament.create_boards(
+        tournament.board_operations.create(
             [
                 StoredBoard(
                     id=None,
@@ -569,15 +569,15 @@ class TestScheveningenTournament(TestCase):
         # Team 1 takes the first three boards, Team 2 the fourth.
         self._enter_results(tournament, 1, 3)
         tournament = self._tournament()
-        standings = {row['team'].name: row for row in tournament.team_standings()}
-        assert standings['Team 1']['gp'] == 3.0
-        assert standings['Team 2']['gp'] == 1.0
-        assert standings['Team 1']['mp'] == 2.0
-        assert standings['Team 2']['mp'] == 0.0
-        assert standings['Team 1']['wins'] == 1
-        assert standings['Team 2']['losses'] == 1
-        assert standings['Team 1']['played'] == 1
-        assert standings['Team 1']['rank'] == 1
+        standings = {row.team.name: row for row in tournament.team_standings()}
+        assert standings['Team 1'].gp == 3.0
+        assert standings['Team 2'].gp == 1.0
+        assert standings['Team 1'].mp == 2.0
+        assert standings['Team 2'].mp == 0.0
+        assert standings['Team 1'].wins == 1
+        assert standings['Team 2'].losses == 1
+        assert standings['Team 1'].played == 1
+        assert standings['Team 1'].rank == 1
 
     def test_the_pairing_table_document_lists_every_round(self):
         """The whole schedule is known up front, so the document prints
@@ -710,7 +710,7 @@ class TestScheveningenTournament(TestCase):
         import data.tournament as tournament_module
 
         tournament = self._paired_round(4)
-        real_event_database = tournament_module.EventDatabase
+        real_event_database = EventDatabase
 
         def _no_write(uniq_id=None, write=False, **kwargs):
             if write:

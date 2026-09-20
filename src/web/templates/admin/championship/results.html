@@ -138,7 +138,7 @@
                 {% set ns = namespace(group=None) %}
                 {% for row in rows %}
                     {% if ns.group != row.manual_group %}
-                        {% if not loop.first %}</tbody>{% endif %}
+                        {# djlint:off H025 #}{% if not loop.first %}</tbody>{% endif %}{# djlint:on #}
                         {% set ns.group = row.manual_group %}
                         <tbody class="sortable with-handles">
                     {% endif %}

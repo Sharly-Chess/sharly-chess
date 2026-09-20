@@ -20,10 +20,8 @@ from data.print_documents import (
     PrintDocumentOptionManager,
     PrintOption,
 )
-from data.print_documents.documents import (
-    PlayerListPrintDocument,
-    TournamentsPrintOption,
-)
+from data.print_documents.documents import PlayerListPrintDocument
+from data.print_documents.options import TournamentsPrintOption
 from data.print_documents.options import TournamentPrintOption
 from data.tournament import Tournament
 from web.controllers.admin.base_event_admin_controller import (

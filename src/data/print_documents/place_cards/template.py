@@ -6,11 +6,11 @@ from typing import Any, Self
 
 from common import (
     BASE_DIR,
-    SharlyChessException,
     CUSTOM_PLACE_CARDS_DIR,
     EMBEDDED_PLACE_CARDS_DIR,
     EXAMPLE_PLACE_CARDS_DIR,
 )
+from common.exception import SharlyChessException
 from common.i18n import _
 from common.i18n.utils import parse_jinja_string, parse_jinja_template, normalized_key
 from common.logger import get_logger

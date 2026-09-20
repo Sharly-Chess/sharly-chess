@@ -183,7 +183,7 @@ class FixedTablePairingTestCase(TestCase):
         self._seed()
         tournament = self._load()
         p0, p1 = self.player_ids[0][0], self.player_ids[1][0]
-        tournament.create_flat_manual_board(1, p0, p1, 0)
+        tournament.board_operations.create_flat_manual(1, p0, p1, 0)
         tournament = self._load()
         board = next(b for b in tournament.get_round_boards(1) if b.index == 0)
         self.assertEqual(board.stored_board.white_player_id, p0)
@@ -195,7 +195,7 @@ class FixedTablePairingTestCase(TestCase):
         self._seed()
         tournament = self._load()
         p0 = self.player_ids[0][0]
-        tournament.create_flat_manual_board(1, p0, None, 3)
+        tournament.board_operations.create_flat_manual(1, p0, None, 3)
         tournament = self._load()
         board = next(b for b in tournament.get_round_boards(1) if b.index == 3)
         self.assertEqual(board.stored_board.white_player_id, p0)
@@ -238,15 +238,17 @@ class FixedTablePairingTestCase(TestCase):
         self._load()
         tournament = self._load()
         p = self.player_ids
-        tournament.create_flat_manual_board(1, p[0][0], p[1][0], 0)
-        tournament.create_flat_manual_board(1, p[2][0], None, 2)  # forfeit hole
+        tournament.board_operations.create_flat_manual(1, p[0][0], p[1][0], 0)
+        tournament.board_operations.create_flat_manual(
+            1, p[2][0], None, 2
+        )  # forfeit hole
         tournament = self._load()
         # Index 1 is the first truly-free table; index 2 (the hole) is taken.
-        self.assertEqual(tournament.first_unused_board_index(1), 1)
-        tournament.create_flat_manual_board(1, p[3][0], p[0][1], 1)
+        self.assertEqual(tournament.board_operations.first_unused_index(1), 1)
+        tournament.board_operations.create_flat_manual(1, p[3][0], p[0][1], 1)
         tournament = self._load()
         # Now 0, 1, 2 are occupied → next is 3, never the hole at 2.
-        self.assertEqual(tournament.first_unused_board_index(1), 3)
+        self.assertEqual(tournament.board_operations.first_unused_index(1), 3)
 
     def test_incomplete_roster_pairs_with_holes(self) -> None:
         """A team with fewer players than team_player_count pairs without

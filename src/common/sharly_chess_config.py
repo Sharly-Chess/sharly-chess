@@ -40,7 +40,7 @@ from utils.date_time import DateFormatterManager
 from utils.program_variables import ProgramVar
 
 if TYPE_CHECKING:
-    from data.player import Federation
+    from utils.types import Federation
     from data.player_categories import PlayerCategorySet
     from data.tag import Tag
     from data.tie_breaks.sets import TieBreakSet
@@ -239,7 +239,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def federation(self) -> Optional['Federation']:
-        from data.player import Federation
+        from utils.types import Federation
 
         if self.stored_config.federation is not None:
             return Federation(self.stored_config.federation)

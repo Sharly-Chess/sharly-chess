@@ -14,6 +14,7 @@ import pytest
 from data.loader import EventLoader
 from data.tie_breaks.team_records import TeamMatchType
 from data.teams.team import Team
+from data.teams.team_scoring import TeamStanding
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
@@ -52,7 +53,10 @@ class _AbsentMatchPointsHarness(TestCase):
         TestUtils.delete_event(EVENT_ID)
 
     def _create(
-        self, match_points: dict[int, float], rule_set: str | None = None
+        self,
+        match_points: dict[int, float],
+        rule_set: str | None = None,
+        game_points: dict[int, float] | None = None,
     ) -> None:
         TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
         stored_tournament = TestUtils.create_tournament(
@@ -65,6 +69,7 @@ class _AbsentMatchPointsHarness(TestCase):
                 'pairing': 'TEAM_ROUND_ROBIN_BERGER',
                 'primary_score': ScoreType.MATCH_POINTS,
                 'match_points': match_points,
+                'game_points': game_points,
                 'rule_set': rule_set,
                 'round_robin_participation_rule': False,
             },
@@ -122,16 +127,14 @@ class _AbsentMatchPointsHarness(TestCase):
         return self._load()
 
     @staticmethod
-    def _row(tournament: Tournament, team_id: int) -> dict:
+    def _row(tournament: Tournament, team_id: int) -> TeamStanding:
         return next(
-            entry
-            for entry in tournament.team_standings()
-            if entry['team'].id == team_id
+            entry for entry in tournament.team_standings() if entry.team.id == team_id
         )
 
     @classmethod
     def _mp(cls, tournament: Tournament, team_id: int) -> float:
-        return cls._row(tournament, team_id)['mp']
+        return cls._row(tournament, team_id).mp
 
     def _round_one_match(self, tournament: Tournament, team_id: int):
         return next(
@@ -150,9 +153,9 @@ class _AbsentMatchPointsHarness(TestCase):
         """Every round a team was in is one of the four outcomes."""
         for entry in tournament.team_standings():
             self.assertEqual(
-                entry['wins'] + entry['draws'] + entry['losses'] + entry['forfeits'],
-                entry['played'],
-                f'the tally does not add up for {entry["team"].name}',
+                entry.wins + entry.draws + entry.losses + entry.forfeits,
+                entry.played,
+                f'the tally does not add up for {entry.team.name}',
             )
 
 
@@ -212,12 +215,12 @@ class TeamAbsentMatchPointsTestCase(_AbsentMatchPointsHarness):
         opponent_id = self._opponent_id(tournament, forfeit_id)
         tournament = self._forfeit_round_one(tournament, forfeit_id)
         forfeit_row = self._row(tournament, forfeit_id)
-        self.assertEqual(forfeit_row['forfeits'], 1)
-        self.assertEqual(forfeit_row['losses'], 0)
-        self.assertEqual(forfeit_row['played'], 1)
+        self.assertEqual(forfeit_row.forfeits, 1)
+        self.assertEqual(forfeit_row.losses, 0)
+        self.assertEqual(forfeit_row.played, 1)
         opponent_row = self._row(tournament, opponent_id)
-        self.assertEqual(opponent_row['wins'], 1)
-        self.assertEqual(opponent_row['forfeits'], 0)
+        self.assertEqual(opponent_row.wins, 1)
+        self.assertEqual(opponent_row.forfeits, 0)
 
     def test_a_forfeited_match_is_not_a_played_round(self) -> None:
         """No game was played on the forfeiting team's side, so neither
@@ -279,9 +282,24 @@ class TeamAbsentMatchPointsTestCase(_AbsentMatchPointsHarness):
         self.assertEqual(self._mp(tournament, absent_id), 0.0)
         self._assert_tally_adds_up(tournament)
         row = self._row(tournament, absent_id)
-        self.assertEqual(row['forfeits'], 1)
-        self.assertEqual(row['losses'], 0)
-        self.assertEqual(row['played'], 1)
+        self.assertEqual(row.forfeits, 1)
+        self.assertEqual(row.losses, 0)
+        self.assertEqual(row.played, 1)
+
+    def test_an_absent_team_takes_the_absent_board_value_on_every_board(
+        self,
+    ) -> None:
+        """A federation may score a board lost by forfeit below zero; a
+        team absent for the round loses every board that way, in the
+        standings and in the totals a TRF carries alike."""
+        self._create(_CUP_MATCH_POINTS, game_points={Result.ZERO_POINT_BYE.value: -1.0})
+        absent_id = self.team_ids[0]
+        team: Team = self._load().event.teams_by_id[absent_id]
+        with EventDatabase(EVENT_ID, write=True) as database:
+            team.set_round_bye(1, TeamByeType.ZPB, database)
+        tournament = self._load()
+        self.assertEqual(self._row(tournament, absent_id).gp, -N)
+        self.assertEqual(tournament.team_totals_after(1)[absent_id], (0.0, -N))
 
 
 @pytest.mark.unit

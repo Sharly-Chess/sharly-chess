@@ -108,13 +108,13 @@ class TestAdvancementTieBreakStorage:
         # Even with a Points tie-break stored, a knock-out's standings are
         # forced to the round reached (the default points list), never the
         # stored list.
-        assert tournament.tie_breaks == tournament._default_tie_breaks
+        assert tournament.tie_breaks == tournament.tie_break_configuration._default
 
     def test_add_tie_break_joins_the_stored_advancement_list(self, tournament):
         from data.tie_breaks.team_tie_breaks import TopBoardResultsTieBreak
 
         before = set(tournament.tie_breaks_by_id)
-        tournament.add_tie_break(TopBoardResultsTieBreak())
+        tournament.tie_break_configuration.add(TopBoardResultsTieBreak())
         # The new tie-break joined the single list and shows in the advancement
         # list (it can decide a match).
         assert TopBoardResultsTieBreak().id in [
@@ -126,7 +126,7 @@ class TestAdvancementTieBreakStorage:
         # A standings list must keep one criterion; a knock-out's advancement
         # list may go to zero (a play-off decides then), so deleting all is fine.
         for tie_break_id in list(tournament.tie_breaks_by_id):
-            tournament.delete_tie_break(tie_break_id)
+            tournament.tie_break_configuration.delete(tie_break_id)
         assert tournament.tie_breaks_by_id == {}
 
 
@@ -352,7 +352,7 @@ class TestAdvancementResolver:
         # Replace Board Count with the play-off (manual) marker, so nothing
         # computed can settle the level match.
         (bc_id,) = tournament.tie_breaks_by_id.keys()
-        tournament.delete_tie_break(bc_id)
+        tournament.tie_break_configuration.delete(bc_id)
         manual = ManualTieBreak().to_stored_value()
         with EventDatabase(TB_EVENT_ID, write=True) as database:
             tid = next(
@@ -482,5 +482,5 @@ class TestManualNotLastWarning:
         event = EventLoader().load_event(DEF_EVENT_ID)
         tournament = event.tournaments_by_name['ko']
         # Board Count sits below the play-off marker, so it can never apply.
-        assert tournament.advancement_tie_breaks_after_manual is True
+        assert tournament.tie_break_configuration.advancement_after_manual is True
         TestUtils.delete_event(DEF_EVENT_ID)

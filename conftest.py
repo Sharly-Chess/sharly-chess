@@ -300,6 +300,33 @@ def backend_server(request):
     server.stop()
 
 
+@pytest.fixture(scope='session')
+def _cached_functions() -> list[Any]:
+    """The application's memoised functions, found once."""
+    import gc
+    from functools import _lru_cache_wrapper
+
+    return [obj for obj in gc.get_objects() if isinstance(obj, _lru_cache_wrapper)]
+
+
+@pytest.fixture(autouse=True)
+def _clear_function_caches(_cached_functions: list[Any]) -> None:
+    """Under mutation testing, no test shares a memoised result with
+    another.
+
+    mutmut runs against each mutant the tests that reached its function
+    while the whole suite ran; a function memoised with ``functools.cache``
+    is reached by the first test to call it and by no other, so every
+    later one is left out and the mutant meets one test where it should
+    meet many. Clearing the caches before each test keeps the record
+    honest. Everywhere else the caches are worth what they save.
+    """
+    if not os.environ.get('MUTANT_UNDER_TEST'):
+        return
+    for function in _cached_functions:
+        function.cache_clear()
+
+
 @pytest.fixture(autouse=True)
 def setup_page(request, backend_server):
     """Give every e2e test's page the same timeouts.

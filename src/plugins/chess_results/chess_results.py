@@ -7,10 +7,8 @@ from common.i18n import _
 from data.print_documents import QRCodeType
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chess_results import MAX_TIE_BREAKS, PLUGIN_NAME
-from plugins.chess_results.chess_results_background_uploader import (
-    EventLoader,
-    CRBackgroundUploader,
-)
+from plugins.chess_results.chess_results_background_uploader import CRBackgroundUploader
+from data.loader import EventLoader
 from plugins.chess_results.chess_results_controller import (
     ChessResultsController,
 )

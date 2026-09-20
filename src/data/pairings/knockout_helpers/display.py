@@ -16,7 +16,8 @@ if TYPE_CHECKING:
     from data.pairings.knockout_helpers.layout import BracketLayout, MatchDescriptor
     from data.pairing import Pairing
     from data.teams.team_board import TeamBoard
-    from data.tournament import Tournament, TournamentPlayer
+    from data.tournament import Tournament
+    from data.player import TournamentPlayer
 
 
 class _KnockoutDisplayHost(Protocol):
@@ -295,7 +296,7 @@ class KnockoutDisplayMixin:
         self, tournament: 'Tournament', *, after_round: int | None = None
     ) -> dict[int, str]:
         if after_round is None:
-            after_round = tournament.ranked_after_round
+            after_round = tournament.ranking.ranked_after_round
         values = {
             player.id: self.ranking_value(tournament, player, after_round=after_round)
             for player in tournament.tournament_players
@@ -308,7 +309,7 @@ class KnockoutDisplayMixin:
         self, tournament: 'Tournament', *, after_round: int | None = None
     ) -> dict[int, str]:
         if after_round is None:
-            after_round = tournament.ranked_after_round
+            after_round = tournament.ranking.ranked_after_round
         values = self.team_ranking_values(tournament, after_round=after_round)
         return self._labels_from_values(
             values,

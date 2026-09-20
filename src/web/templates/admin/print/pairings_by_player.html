@@ -55,7 +55,7 @@
                         {% else %}
                             <td colspan="{{ 1 + opponent_columns | length }}" class="plays">
                                 {{ tournament_player.exempt_str if pairing.exempt else tournament_player.not_paired_str }}
-                            <td>
+                            </td>
                         {% endif %}
                     </tr>
                 {% endfor %}

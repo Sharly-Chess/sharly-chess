@@ -375,7 +375,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             return []
         return [
             {'index': index, 'label': label}
-            for index, label in self.admin_tournament.unboarded_holes(round_)
+            for index, label in self.admin_tournament.board_operations.unboarded_holes(
+                round_
+            )
         ]
 
     def reload_unpaired_team_lists(self) -> None:
@@ -665,7 +667,9 @@ class PairingsAdminController(BaseEventAdminController):
                 manual_gp = adjustment.gp_delta
                 reason = adjustment.reason or ''
                 break
-        rule_set_adjustment = tournament.rule_set_point_adjustment(team.id, round_)
+        rule_set_adjustment = tournament.point_adjustments.from_rule_set(
+            team.id, round_
+        )
         return {
             'team': team,
             'mp': manual_mp,
@@ -685,7 +689,7 @@ class PairingsAdminController(BaseEventAdminController):
         """The player's current manual delta and reason for the round.
         Individual tournaments have no match points and no rule-set
         contribution, so this is simpler than the team counterpart."""
-        adjustment = tournament.stored_player_point_adjustment(player.id, round_)
+        adjustment = tournament.point_adjustments.stored_for_player(player.id, round_)
         return {
             'player': player,
             'delta': adjustment.delta if adjustment else 0.0,
@@ -757,7 +761,7 @@ class PairingsAdminController(BaseEventAdminController):
             )
         reason = WebContext.form_data_to_str(data, 'reason') or None
         with EventDatabase(event.uniq_id, write=True) as database:
-            tournament.set_manual_player_point_adjustment(
+            tournament.point_adjustments.set_manual_for_player(
                 player.id, round, delta, reason, database
             )
         Message.success(request, _('Bonus / penalty points updated.'))
@@ -837,7 +841,7 @@ class PairingsAdminController(BaseEventAdminController):
             )
         reason = WebContext.form_data_to_str(data, 'reason') or None
         with EventDatabase(event.uniq_id, write=True) as database:
-            tournament.set_manual_point_adjustment(
+            tournament.point_adjustments.set_manual(
                 team.id, round, mp_delta, gp_delta, reason, database
             )
         Message.success(request, _('Bonus / penalty points updated.'))
@@ -870,7 +874,7 @@ class PairingsAdminController(BaseEventAdminController):
         team_board = tournament.team_boards_by_id.get(team_board_id)
         if team_board is None:
             raise NotFoundException(f'Team board {team_board_id} not found.')
-        tournament.unpair_team_board(team_board)
+        tournament.board_operations.unpair_team(team_board)
         web_context = PairingsAdminWebContext(
             request,
             tournament_id=tournament_id,
@@ -1054,7 +1058,7 @@ class PairingsAdminController(BaseEventAdminController):
         )
         board = web_context.get_admin_board()
         tournament = web_context.get_admin_tournament()
-        tournament.unpair_boards([board])
+        tournament.board_operations.unpair([board])
 
         web_context = PairingsAdminWebContext(
             request,
@@ -1880,7 +1884,7 @@ class PairingsAdminController(BaseEventAdminController):
             and exempt_team_board.stored_team_board.team_a_id != team.id
             else None
         )
-        tb = tournament.create_team_round_pairing(pairing_round, team.id)
+        tb = tournament.board_operations.pair_teams(pairing_round, team.id)
         if exempt_team is not None:
             message = _(
                 'Team [{team}] has been paired against [{opponent}] at board #{board}.'
@@ -1929,12 +1933,12 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_player = web_context.get_admin_player()
         # The waiting opponent is the player on the awaiting bye board, not a
         # settled forfeit hole (also black-less) — matching create_round_pairing.
-        pab_board = tournament.get_round_pab_board(pairing_round)
+        pab_board = tournament.board_operations.pab_board(pairing_round)
         exempt_tournament_player = (
             pab_board.optional_white_tournament_player if pab_board else None
         )
         if exempt_tournament_player is not None:
-            board = tournament.create_round_pairing(
+            board = tournament.board_operations.pair(
                 pairing_round,
                 exempt_tournament_player.id,
                 tournament_player.id,
@@ -1948,7 +1952,7 @@ class PairingsAdminController(BaseEventAdminController):
                 board=board.number,
             )
         else:
-            tournament.create_round_pairing(
+            tournament.board_operations.pair(
                 pairing_round,
                 tournament_player.id,
                 None,
@@ -2011,8 +2015,8 @@ class PairingsAdminController(BaseEventAdminController):
             elif kind2 == 'h':
                 index = value2
             else:
-                index = tournament.first_unused_board_index(pairing_round)
-            tournament.create_flat_manual_board(
+                index = tournament.board_operations.first_unused_index(pairing_round)
+            tournament.board_operations.create_flat_manual(
                 pairing_round, white_id, black_id, index
             )
             Message.success(request, _('Pairing added.'))
@@ -2289,11 +2293,11 @@ class PairingsAdminController(BaseEventAdminController):
                 action=PairingAction.FULL_UNPAIRING,
             )
             tournament = web_context.get_admin_tournament()
-            tournament.unpair_boards(web_context.admin_boards)
+            tournament.board_operations.unpair(web_context.admin_boards)
             # A fully-unpaired round loses its prohibited-pairing snapshot;
             # re-pairing writes a fresh one.
             with EventDatabase(tournament.event.uniq_id, True) as database:
-                tournament.delete_prohibited_pairing_snapshot(round, database)
+                tournament.prohibited_pairings.delete_snapshot(round, database)
 
         web_context = PairingsAdminWebContext(
             request,
@@ -2315,7 +2319,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
-        tournament.unpair_boards(list(tournament.boards_by_id.values()))
+        tournament.board_operations.unpair(list(tournament.boards_by_id.values()))
         tournament.set_current_round(0)
 
         web_context = PairingsAdminWebContext(
@@ -2866,7 +2870,7 @@ class PairingsAdminController(BaseEventAdminController):
             ]
 
         dimension_options = {'': '-'}
-        for dimension in tournament.prohibited_pairing_dimensions():
+        for dimension in tournament.pairing_dimensions():
             dimension_options[dimension.id] = dimension.label
 
         manual_groups = [
@@ -2875,14 +2879,16 @@ class PairingsAdminController(BaseEventAdminController):
                 'is_hard': group.is_hard,
                 'members': [member_name(mid) for mid in group.member_ids],
             }
-            for index, group in enumerate(tournament.manual_prohibited_pairing_groups())
+            for index, group in enumerate(
+                tournament.prohibited_pairings.manual_groups()
+            )
         ]
 
         # The snapshot stores the configured hard + soft groups that were
         # the basis for this round's pairing, so they display directly as
         # groups. ``protect_rank`` (set when soft groups were relaxed) lets
         # us also regenerate the effective groups actually enforced.
-        snapshot = tournament.prohibited_pairing_snapshot(round_)
+        snapshot = tournament.prohibited_pairings.snapshot(round_)
         snapshot_groups = display(
             [(group.is_hard, list(group.member_ids)) for group in snapshot]
         )
@@ -2899,12 +2905,12 @@ class PairingsAdminController(BaseEventAdminController):
                 ),
                 None,
             )
-            if tournament.prohibited_pairing_was_relaxed(round_)
+            if tournament.prohibited_pairings.was_relaxed(round_)
             else None
         )
         pp_released = [
             member_name(mid)
-            for mid in tournament.released_prohibited_pairing_members(round_)
+            for mid in tournament.prohibited_pairings.released_members(round_)
         ]
 
         template_context = {
@@ -2913,10 +2919,10 @@ class PairingsAdminController(BaseEventAdminController):
             'pp_locked': locked,
             'pp_is_team': is_team,
             'pp_dimension_options': dimension_options,
-            'pp_dimension': tournament.prohibited_pairing_dimension_id or '',
-            'pp_dimension_is_hard': tournament.prohibited_pairing_dimension_is_hard,
+            'pp_dimension': tournament.prohibited_pairings.dimension_id or '',
+            'pp_dimension_is_hard': tournament.prohibited_pairings.dimension_is_hard,
             'pp_forced_by_rule_set': (
-                tournament.prohibited_pairing_forced_by_rule_set is not None
+                tournament.prohibited_pairings.forced_by_rule_set is not None
             ),
             'pp_rule_set_name': tournament.rule_set.name if tournament.rule_set else '',
             'pp_auto_groups': [
@@ -2926,7 +2932,7 @@ class PairingsAdminController(BaseEventAdminController):
                     'count': len(member_ids),
                 }
                 for key, member_ids in (
-                    tournament.dimension_prohibited_pairing_buckets()
+                    tournament.prohibited_pairings.dimension_buckets()
                 )
             ],
             'pp_manual_groups': manual_groups,
@@ -2942,7 +2948,7 @@ class PairingsAdminController(BaseEventAdminController):
                     'members': [member_name(mid) for mid in group.member_ids],
                     'count': len(group.member_ids),
                 }
-                for group in tournament.round_rule_prohibited_pairing_groups(round_)
+                for group in tournament.prohibited_pairings.round_rule_groups(round_)
             ],
             'pp_member_options': member_options,
             'pp_snapshot_groups': snapshot_groups,
@@ -2961,7 +2967,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> list[tuple[bool, list[int]]]:
         return [
             (group.is_hard, list(group.member_ids))
-            for group in tournament.manual_prohibited_pairing_groups()
+            for group in tournament.prohibited_pairings.manual_groups()
         ]
 
     @get(
@@ -2997,12 +3003,12 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         if (
             not tournament.round_has_pairings(round)
-            and tournament.prohibited_pairing_forced_by_rule_set is None
+            and tournament.prohibited_pairings.forced_by_rule_set is None
         ):
             dimension = WebContext.form_data_to_str(data, 'dimension') or None
             is_hard = WebContext.form_data_to_bool(data, 'dimension_is_hard') or False
             with EventDatabase(tournament.event.uniq_id, True) as database:
-                tournament.set_prohibited_pairing_config(dimension, is_hard, database)
+                tournament.prohibited_pairings.set_config(dimension, is_hard, database)
         return self._render_prohibited_pairings_modal(web_context)
 
     @get(
@@ -3023,7 +3029,7 @@ class PairingsAdminController(BaseEventAdminController):
         data: dict[str, str] = {}
         manual_index: int | None = None
         if index >= 0:
-            groups = tournament.manual_prohibited_pairing_groups()
+            groups = tournament.prohibited_pairings.manual_groups()
             if index < len(groups):
                 manual_index = index
                 group = groups[index]
@@ -3080,7 +3086,7 @@ class PairingsAdminController(BaseEventAdminController):
         else:
             groups.append((is_hard, member_ids))
         with EventDatabase(tournament.event.uniq_id, True) as database:
-            tournament.set_manual_prohibited_pairing_groups(groups, database)
+            tournament.prohibited_pairings.set_manual_groups(groups, database)
         return self._render_prohibited_pairings_modal(web_context)
 
     @delete(
@@ -3104,7 +3110,7 @@ class PairingsAdminController(BaseEventAdminController):
             if 0 <= index < len(groups):
                 del groups[index]
                 with EventDatabase(tournament.event.uniq_id, True) as database:
-                    tournament.set_manual_prohibited_pairing_groups(groups, database)
+                    tournament.prohibited_pairings.set_manual_groups(groups, database)
         return self._render_prohibited_pairings_modal(web_context)
 
     @put(
@@ -3454,8 +3460,8 @@ class PairingsAdminController(BaseEventAdminController):
         else:
             # Standings as they stand entering this round (the modal shows
             # the accumulated MP/GP "at the start of round").
-            for row in tournament.team_standings(after_round=round - 1):
-                team = row['team']
+            for standing in tournament.team_standings(after_round=round - 1):
+                team = standing.team
                 rows.append(
                     {
                         'team': team,
@@ -3463,8 +3469,8 @@ class PairingsAdminController(BaseEventAdminController):
                         'mp': tournament.team_primary_score_before_round(
                             team.id, round
                         ),
-                        'gp': row['gp'],
-                        'rank': row['rank'],
+                        'gp': standing.gp,
+                        'rank': standing.rank,
                         'opponents': opponents_by_team.get(team.id, []),
                         'colors': colors_by_team.get(team.id, []),
                         'preference': None,
@@ -3576,7 +3582,7 @@ class PairingsAdminController(BaseEventAdminController):
         web_context = PairingsAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
         with EventDatabase(event_uniq_id, True) as database:
-            tournament.delete_manual_tie_break_values(database)
+            tournament.tie_break_configuration.delete_manual_values(database)
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, reload_event=True
         )

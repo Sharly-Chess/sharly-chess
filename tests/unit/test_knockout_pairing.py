@@ -2175,7 +2175,7 @@ class TestTeamDoubleElimination:
         assert by_name['Team2'] == 'Out — round 3'  # losers' final
         assert by_name['Team3'] == 'Out — round 2'  # losers' round 1
         # Standings sort follows the same order.
-        order = [row['team'].name for row in tournament.team_standings()]
+        order = [row.team.name for row in tournament.team_standings()]
         assert order == ['Team0', 'Team1', 'Team2', 'Team3']
 
     def test_reset_round_count(self, tournament_name):

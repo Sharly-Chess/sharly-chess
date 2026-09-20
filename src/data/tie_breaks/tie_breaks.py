@@ -2300,37 +2300,41 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
             first_estimation, ratings, tournament.point_values
         )
         if isclose(first_expected_score, actual_score, abs_tol=0.01):
-            return Utils.round_ranking(first_estimation)
-        if not first_expected_score:
-            return 0
-        second_estimation = Utils.round_ranking(
-            first_estimation * actual_score / first_expected_score
-        )
-        second_expected_score = self._expected_score(
-            second_estimation, ratings, tournament.point_values
-        )
-
-        if first_expected_score >= second_expected_score:
-            low, high = second_estimation, first_estimation
+            mid = Utils.round_ranking(first_estimation)
         else:
-            low, high = first_estimation, second_estimation
-        while not isclose(
-            actual_score,
-            mid_score := self._expected_score(
-                (mid := Utils.round_ranking((low + high) / 2)),
-                ratings,
-                tournament.point_values,
-            ),
-            abs_tol=0.01,
-        ):
-            if mid_score >= actual_score:
-                if high == mid:
-                    break
-                high = mid
+            if not first_expected_score:
+                return 0
+            second_estimation = Utils.round_ranking(
+                first_estimation * actual_score / first_expected_score
+            )
+            second_expected_score = self._expected_score(
+                second_estimation, ratings, tournament.point_values
+            )
+
+            if first_expected_score >= second_expected_score:
+                low, high = second_estimation, first_estimation
             else:
-                if low == mid:
-                    break
-                low = mid
+                low, high = first_estimation, second_estimation
+            while not isclose(
+                actual_score,
+                mid_score := self._expected_score(
+                    (mid := Utils.round_ranking((low + high) / 2)),
+                    ratings,
+                    tournament.point_values,
+                ),
+                abs_tol=0.01,
+            ):
+                if mid_score >= actual_score:
+                    if high == mid:
+                        break
+                    high = mid
+                else:
+                    if low == mid:
+                        break
+                    low = mid
+        # Wherever the search landed, the answer is the lowest rating whose
+        # expected score reaches the actual one: step down while it does,
+        # then back up to the first that does.
         while (
             self._expected_score(mid, ratings, tournament.point_values) >= actual_score
         ):
@@ -2365,10 +2369,12 @@ class PerfectTournamentPerformanceTieBreak(OpponentRatingTieBreak):
         player_rating: int, opponent_rating: int
     ) -> tuple[Decimal, Decimal]:
         difference = abs(player_rating - opponent_rating)
+        # FIDE Rating Regulations 8.1b: the first rating difference each
+        # expected score covers, from 0.50 up.
         lower_bounds: list[int] = [
+            0,
             4,
             11,
-            17,
             18,
             26,
             33,

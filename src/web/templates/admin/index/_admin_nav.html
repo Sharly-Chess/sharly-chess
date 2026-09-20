@@ -2,7 +2,7 @@
     <div class="d-flex w-100 justify-content-between align-items-center">
          <span class="d-flex sidebar-tooltip" {{ macros.tooltip_attributes('info', nav_tab.title, 'right') }}>
             <button
-                class="nav-link d-flex text-start justify-content-between {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                class="nav-link d-flex text-start justify-content-between {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {% if active %}active{% endif %}"
                 id="nav-{{ nav_id }}-tab"
                 hx-get="{{ url_for('admin-tab', admin_tab=nav_id) }}"
                 hx-target="body"

@@ -303,7 +303,7 @@ class TeamSwissVariation(PairingVariation, ABC):
     def trf_encoded_type(self) -> str:
         # Placeholder TRF26 team-Swiss code. The real value depends on
         # the tournament's primary / secondary score choice and is
-        # filled in by ``Tournament._team_trf_encoded_type`` when the
+        # filled in by the TRF export when the
         # TRF is emitted; variations don't see the tournament.
         return 'FIDE_TEAM_TYPEA_MP_GP'
 

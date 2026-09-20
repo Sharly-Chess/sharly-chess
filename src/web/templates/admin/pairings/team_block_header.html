@@ -52,7 +52,7 @@
                         data-bs-target="#modal-wrapper"
                         onclick="event.stopPropagation()"
                     >{{ team_board.team_a.name }}</a>
-                    {% set _a_mp, _a_gp = admin_tournament.effective_point_adjustment(
+                    {% set _a_mp, _a_gp = admin_tournament.point_adjustments.effective(
                         team_board.team_a.id, team_board.round
                     ) %}
                     {% if _a_mp or _a_gp %}
@@ -214,7 +214,7 @@
                             data-bs-target="#modal-wrapper"
                             onclick="event.stopPropagation()"
                         >{{ team_board.team_b.name }}</a>
-                        {% set _b_mp, _b_gp = admin_tournament.effective_point_adjustment(
+                        {% set _b_mp, _b_gp = admin_tournament.point_adjustments.effective(
                             team_board.team_b.id, team_board.round
                         ) %}
                         {% if _b_mp or _b_gp %}

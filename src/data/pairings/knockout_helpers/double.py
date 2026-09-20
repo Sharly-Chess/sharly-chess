@@ -12,7 +12,8 @@ from data.pairings.settings import PairingSetting
 
 if TYPE_CHECKING:
     from data.pairings.knockout_helpers.layout import MatchDescriptor
-    from data.tournament import Tournament, TournamentPlayer
+    from data.tournament import Tournament
+    from data.player import TournamentPlayer
 
 
 class _DoubleEliminationGroupingHost(Protocol):

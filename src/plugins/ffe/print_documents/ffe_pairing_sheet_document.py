@@ -285,9 +285,7 @@ class FfePairingSheetDocument(PrintDocument):
         ]
         records_by_id = {record.team_id: record for record in tournament.team_records()}
         team_boards_by_round = tournament.team_boards_by_round
-        rank_by_team_id = {
-            row['team'].id: row['rank'] for row in tournament.team_standings()
-        }
+        rank_by_team_id = {row.team.id: row.rank for row in tournament.team_standings()}
         return {
             'sharly_chess_config': SharlyChessConfig(),
             'document': self,

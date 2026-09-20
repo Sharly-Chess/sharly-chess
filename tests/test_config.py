@@ -14,7 +14,7 @@ from urllib import parse
 from playwright.sync_api import Page, Locator, expect
 
 from common import BASE_DIR, TMP_DIR
-from data.board import PlayerRatingType
+from utils.enum import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation

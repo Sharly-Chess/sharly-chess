@@ -27,7 +27,7 @@ from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
-from data.board import PlayerRatingType
+from utils.enum import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.event_metadata import EventMetadata

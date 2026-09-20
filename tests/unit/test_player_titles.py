@@ -6,8 +6,8 @@ title outranks it on the combined FIDE ladder."""
 
 import pytest
 
-from common import SharlyChessException
-from data.board import PlayerRatingType
+from common.exception import SharlyChessException
+from utils.enum import PlayerRatingType
 from data.columns.player_datasheet import TitleColumn, WomenTitleColumn
 from data.event import Event
 from database.sqlite.event.event_store import StoredEvent, StoredPlayer

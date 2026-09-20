@@ -13,15 +13,15 @@
             <div class="row gy-2 gx-3 w-100 pe-4">
                 <div class="col-12 col-sm-6">
                     <h2 class="modal-title">
-                        {{ _("Profile")}}<span style="font-size: 70%">{{ macros.doc_icon('profile', 'ms-2') }}</span>
+                        {{ _("Profile") }}<span style="font-size: 70%">{{ macros.doc_icon('profile', 'ms-2') }}</span>
                     </h2>
                 </div>
                 <div class="profile-locale-picker dropdown col-12 col-sm-6 d-flex align-items-center justify-content-end gap-1">
                     <i class="bi-translate pe-1"></i>
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <img
-                            src="{{locale_infos[locale].flag_url}}"
-                            alt="{{locale_infos[locale].name}}"
+                            src="{{ locale_infos[locale].flag_url }}"
+                            alt="{{ locale_infos[locale].name }}"
                             class="locale-flag"
                         />
                         {{ locale_infos[locale].name }}
@@ -39,8 +39,8 @@
                                     tabindex="0"
                                 >
                                     <img
-                                        src="{{l_info.flag_url}}"
-                                        alt="{{l_info.name}}"
+                                        src="{{ l_info.flag_url }}"
+                                        alt="{{ l_info.name }}"
                                         class="locale-flag"
                                     />
                                     {{ l_info.name }}

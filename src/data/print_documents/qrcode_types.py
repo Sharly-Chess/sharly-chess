@@ -7,9 +7,10 @@ import PIL
 import qrcode
 from qrcode.image.pil import PilImage
 
-from common import BASE_DIR, Path
+from common import BASE_DIR
+from pathlib import Path
 from common.i18n import _
-from data.event import SharlyChessConfig
+from common.sharly_chess_config import SharlyChessConfig
 from utils.entity import IdentifiableEntity
 
 if TYPE_CHECKING:

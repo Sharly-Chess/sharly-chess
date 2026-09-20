@@ -22,7 +22,8 @@ if TYPE_CHECKING:
     from data.pairings.knockout_helpers.advancement import KnockoutAdvancement
     from data.pairings.knockout_helpers.layout import MatchDescriptor
     from data.teams.team_board import TeamBoard
-    from data.tournament import Tournament, TournamentPlayer
+    from data.tournament import Tournament
+    from data.player import TournamentPlayer
 
 
 class _TwoGameMatchHost(Protocol):

@@ -68,7 +68,7 @@
                         and not admin_event.is_team_event else ''
                 ) %}
                 <span
-                    {%if add_player_error_message %}
+                    {% if add_player_error_message %}
                         {{ macros.tooltip_attributes('warning', add_player_error_message, 'top') }}
                     {% else %}
                         {{ macros.tooltip_attributes('info', _('Import players from a CSV file.'), 'top') }}
@@ -210,7 +210,6 @@
             </div>
         </div>
     </div>
-
 
     <section class="pb-1">
         {% include '/admin/players/table/table.html' %}

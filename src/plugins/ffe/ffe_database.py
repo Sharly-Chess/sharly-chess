@@ -11,7 +11,7 @@ from text_unidecode import unidecode
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
-from data.player import PlayerRating
+from utils.types import PlayerRating
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase

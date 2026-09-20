@@ -26,7 +26,7 @@ from data.pairings.settings import BergerNumbersSetting
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
 from utils import Utils
-from utils.enum import BoardColor, Result, TeamByeType, ScoreType
+from utils.enum import BoardColor, Result, TeamByeType
 
 if TYPE_CHECKING:
     from data.teams.team import Team
@@ -171,10 +171,10 @@ class PairingEngine(ABC):
                 Board(tournament, round_, stored_board)
                 for stored_board in stored_boards
             ]
-            available_indexes = tournament.get_available_board_indexes(round_)
+            available_indexes = tournament.board_operations.available_indexes(round_)
             for board in sorted(boards, reverse=True):
                 board.index = available_indexes.pop(0)
-        tournament.create_boards(stored_boards, round_, self.pab_result)
+        tournament.board_operations.create(stored_boards, round_, self.pab_result)
         return ''
 
     def _prohibited_pairing_feasible(
@@ -200,11 +200,11 @@ class PairingEngine(ABC):
         from data.prohibited_pairings import resolve_soft_protect_rank
 
         hard_groups, soft_groups, rank_by_member = (
-            tournament.prohibited_pairing_relaxation_inputs(after_round=round_ - 1)
+            tournament.prohibited_pairings.relaxation_inputs(after_round=round_ - 1)
         )
         if not hard_groups and not soft_groups:
             with EventDatabase(tournament.event.uniq_id, True) as database:
-                tournament.write_prohibited_pairing_snapshot(round_, None, database)
+                tournament.prohibited_pairings.write_snapshot(round_, None, database)
             return '', None
 
         protect_rank: int | None = None
@@ -219,7 +219,7 @@ class PairingEngine(ABC):
             )
 
             def feasible(cutoff: int) -> bool:
-                lines = tournament.prohibited_pairing_applied_lines(
+                lines = tournament.prohibited_pairings.applied_lines(
                     hard_groups, soft_groups, cutoff, rank_by_member, round_
                 )
                 return self._prohibited_pairing_feasible(tournament, round_, lines)
@@ -229,15 +229,19 @@ class PairingEngine(ABC):
             )
             if hard_infeasible:
                 with EventDatabase(tournament.event.uniq_id, True) as database:
-                    tournament.write_prohibited_pairing_snapshot(round_, None, database)
+                    tournament.prohibited_pairings.write_snapshot(
+                        round_, None, database
+                    )
                 return (
                     _('The prohibited pairings cannot be satisfied for this round.'),
                     None,
                 )
 
         with EventDatabase(tournament.event.uniq_id, True) as database:
-            tournament.write_prohibited_pairing_snapshot(round_, protect_rank, database)
-        return '', tournament.prohibited_pairing_applied_lines(
+            tournament.prohibited_pairings.write_snapshot(
+                round_, protect_rank, database
+            )
+        return '', tournament.prohibited_pairings.applied_lines(
             hard_groups,
             soft_groups,
             protect_rank if protect_rank is not None else 0,
@@ -690,7 +694,7 @@ class DoubleBergerPairingEngine(BergerPairingEngine):
 def _team_ui_sort_key(team: 'Team') -> tuple[float, str]:
     """Sort key matching the team-admin UI:
     ``(pairing_number or ∞, name.lower())``. Shared by the pairing
-    engines and ``Tournament._populate_team_trf`` so the TPN order
+    engines and the TRF export so the TPN order
     bbpPairings sees on TRF26 records matches what the user reorders
     on screen."""
     return (
@@ -787,7 +791,7 @@ class TeamPairingEngine(PairingEngine, ABC):
                 tournament.stored_tournament.stored_team_boards_by_round[round_] = kept
         if partial_pairings:
             tournament.clear_team_cache()
-            tournament.create_boards(stored_boards, round_, self.pab_result)
+            tournament.board_operations.create(stored_boards, round_, self.pab_result)
             return
         with EventDatabase(tournament.event.uniq_id, True) as database:
             existing = tournament.stored_tournament.stored_team_boards_by_round.get(
@@ -816,9 +820,7 @@ class TeamPairingEngine(PairingEngine, ABC):
             # Order matches by standings entering the round (exclude any
             # results already entered for the round being paired).
             standings_by_team_id = {
-                row['team'].id: row[
-                    'mp' if tournament.primary_score == ScoreType.MATCH_POINTS else 'gp'
-                ]
+                row.team.id: row.score(tournament.primary_score)
                 for row in tournament.team_standings(after_round=round_ - 1)
             }
 
@@ -934,7 +936,7 @@ class TeamPairingEngine(PairingEngine, ABC):
                 manual_bye_team_ids.add(team.id)
             tournament.stored_tournament.stored_team_boards_by_round[round_] = kept
         tournament.clear_team_cache()
-        tournament.create_boards(stored_boards, round_, self.pab_result)
+        tournament.board_operations.create(stored_boards, round_, self.pab_result)
 
     def _team_match_stored_boards(
         self,

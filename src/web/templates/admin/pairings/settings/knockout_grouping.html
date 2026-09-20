@@ -1,7 +1,7 @@
 {# Options are the tournament's pairing dimensions (individual/team + enabled
    plugins); an empty value means the plain seed order. #}
 {% set grouping_options = {'': _('No grouping')} %}
-{% for dimension in admin_tournament.prohibited_pairing_dimensions() %}
+{% for dimension in admin_tournament.pairing_dimensions() %}
     {% set _ = grouping_options.update({dimension.id: dimension.label}) %}
 {% endfor %}
 <div class="row gy-2 gx-3" id="ko-grouping-{{ setting.id }}">
@@ -25,7 +25,7 @@
     {# A live preview of the groups and the bracket cost for the selected
        dimension — one hidden block each, revealed by the script below. #}
     <div class="col-12 ko-grouping-previews">
-        {% for dimension in admin_tournament.prohibited_pairing_dimensions() %}
+        {% for dimension in admin_tournament.pairing_dimensions() %}
             {% set preview = admin_tournament.knockout.grouping_preview(dimension.id) %}
             {% if preview %}
                 <div class="ko-grouping-preview small" data-dim="{{ dimension.id }}" style="display: none;">

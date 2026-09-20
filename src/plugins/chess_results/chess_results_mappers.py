@@ -12,7 +12,8 @@ from data.tie_breaks import TieBreak, tie_breaks as tb
 from data.tie_breaks import team_tie_breaks as ttb
 from data.tie_breaks.team_tie_breaks import ESBVariant
 from data.tie_breaks.cutters import TieBreakCutter
-from data.tournament import Tournament, TournamentRating
+from data.tournament import Tournament
+from utils.enum import TournamentRating
 from plugins.ffe import ffe_tie_breaks as ffe_tb
 from plugins.ffe.ffe_tie_breaks import PapiBuchholzType
 from utils import CoreMapper

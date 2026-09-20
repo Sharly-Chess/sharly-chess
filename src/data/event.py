@@ -15,7 +15,7 @@ from common.i18n.utils import by, normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
-from data.board import PlayerRatingType
+from utils.enum import PlayerRatingType
 from data.screens.display_controller import DisplayController
 from data.screens.family import Family
 from data.player import Player, TournamentPlayer

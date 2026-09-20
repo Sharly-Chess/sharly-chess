@@ -7,7 +7,7 @@ from datetime import date
 
 import pytest
 
-from data.board import PlayerRatingType
+from utils.enum import PlayerRatingType
 from data.criteria.managers import SearchFilterManager
 from data.event import Event
 from data.player_categories import NoCategory

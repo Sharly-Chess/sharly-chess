@@ -1777,6 +1777,48 @@ class EDEKnockoutVariantTestCase(TestCase):
         values = self._ranks(EDEKnockoutVariant.EDEBT.value)
         self.assertGreater(values[11], values[14])
 
+    def test_board_count_is_asked_before_the_top_boards(self):
+        """An encounter where the two disagree: #11 scored on the middle
+        boards (board count 5, top board 0), #14 on the top and bottom
+        ones (board count 5.5, top board 0.5). Board count ranks #11
+        first, the top boards #14; EDEBT asks board count first."""
+        encounter = {11: (0.0, 1.0, 1.0, 0.0), 14: (0.5, 0.5, 0.0, 1.0)}
+        records = {
+            team_id: TeamRecord(
+                team_id=team_id,
+                name=str(team_id),
+                total_mp=1.0,
+                total_gp=2.0,
+                matches=[
+                    TeamMatchRecord(
+                        round_=1,
+                        opponent_id=14 if team_id == 11 else 11,
+                        own_mp=1.0,
+                        own_gp=2.0,
+                        match_type=TeamMatchType.PLAYED,
+                        board_scores=scores,
+                    )
+                ],
+            )
+            for team_id, scores in encounter.items()
+        }
+        group = [records[11], records[14]]
+        context = _board_context(rounds=1)
+        by_variant = {
+            variant: ExtendedDirectEncounterTieBreak(
+                [EDEKnockoutTieBreakOption(variant.value)]
+            ).compute_all_team_values([group], records, context, after_round=1)
+            for variant in (EDEKnockoutVariant.EDEBT, EDEKnockoutVariant.EDET)
+        }
+        self.assertGreater(
+            by_variant[EDEKnockoutVariant.EDEBT][11],
+            by_variant[EDEKnockoutVariant.EDEBT][14],
+        )
+        self.assertGreater(
+            by_variant[EDEKnockoutVariant.EDET][14],
+            by_variant[EDEKnockoutVariant.EDET][11],
+        )
+
     def test_the_acronym_follows_the_variant(self):
         self.assertEqual(ExtendedDirectEncounterTieBreak([]).base_acronym, 'EDE')
         for variant in EDEKnockoutVariant:

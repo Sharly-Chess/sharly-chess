@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from types import SimpleNamespace
+from typing import cast
 
 import pytest
 
@@ -1059,7 +1060,7 @@ class TestRule_1_4_6:
         )
         # The lowest (2000) is raised to 2200; the 2100 stays at 2100.
         # Sum = 7*2400 + 2100 + 2200 = 16800 + 4300 = 21100. Avg = 21100/9 = 2344.44 → 2344.
-        assert adjusted_player is opponents[8]  # id=9, rating=2000
+        assert cast(object, adjusted_player) is opponents[8]  # id=9, rating=2000
         assert adjusted_rating == 2200  # GM floor
         # Confirm the other below-floor opponent kept its raw rating.
         assert avg == 2344, (
@@ -1088,7 +1089,7 @@ class TestRule_1_4_6:
             searcher.evaluator.opponent_rating_floor_and_average(inputs, TitleNorm.GM)
         )
         # Unrated → 1400 → floored to 2200. Sum = 8*2400 + 2200 = 21400. Avg 2378.
-        assert adjusted_player is opponents[8]
+        assert cast(object, adjusted_player) is opponents[8]
         assert adjusted_rating == 2200
         assert avg == 2378
 

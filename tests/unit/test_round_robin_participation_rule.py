@@ -427,26 +427,26 @@ class TeamRoundRobinParticipationRuleTestCase(TestCase):
         self.assertFalse(any(v for k, v in excluded.items() if k != leaver_id))
 
         standings = tournament.team_standings()
-        self.assertEqual(standings[-1]['team'].id, leaver_id)
+        self.assertEqual(standings[-1].team.id, leaver_id)
         competitor_ranks = sorted(
-            row['rank'] for row in standings if row['team'].id != leaver_id
+            row.rank for row in standings if row.team.id != leaver_id
         )
         self.assertEqual(competitor_ranks, [1, 2, 3])
 
         # The leaver's own matches are annulled: no standing score.
-        leaver_row = next(r for r in standings if r['team'].id == leaver_id)
-        self.assertEqual(leaver_row['played'], 0)
-        self.assertEqual(leaver_row['mp'], 0.0)
-        self.assertEqual(leaver_row['gp'], 0.0)
+        leaver_row = next(r for r in standings if r.team.id == leaver_id)
+        self.assertEqual(leaver_row.played, 0)
+        self.assertEqual(leaver_row.mp, 0.0)
+        self.assertEqual(leaver_row.gp, 0.0)
 
         # Opponents keep no points from a match against the leaver: turning
         # the rule off restores the forfeit-win match points they'd otherwise
         # have banked, so at least one opponent's MP goes up.
-        on_mp = {row['team'].id: row['mp'] for row in standings}
+        on_mp = {row.team.id: row.mp for row in standings}
         tournament.stored_tournament.round_robin_participation_rule = False
         for team in tournament.teams:
             team.__dict__.pop('is_excluded_from_standings', None)
-        off_mp = {row['team'].id: row['mp'] for row in tournament.team_standings()}
+        off_mp = {row.team.id: row.mp for row in tournament.team_standings()}
         self.assertTrue(
             any(off_mp[tid] > on_mp[tid] for tid in on_mp if tid != leaver_id)
         )

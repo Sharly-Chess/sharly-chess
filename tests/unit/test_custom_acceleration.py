@@ -202,6 +202,35 @@ class TestCustomAccelerationSetting:
     def test_check_value_rejects_broken_rules(self, rule: AccelerationRule):
         assert not CustomAccelerationSetting.check_value(stub_tournament(), [rule])
 
+    @pytest.mark.parametrize(
+        'rule',
+        [
+            # A single number, a single round, and nothing added at all.
+            AccelerationRule(1.0, 1, 2, number_range=(7, 7)),
+            AccelerationRule(1.0, 3, 3, number_range=(1, 2)),
+            AccelerationRule(0.0, 1, 2, number_range=(1, 2)),
+            AccelerationRule(99.9, 1, 9, number_range=(1, 80)),
+        ],
+    )
+    def test_check_value_accepts_the_edges(self, rule: AccelerationRule):
+        assert CustomAccelerationSetting.check_value(stub_tournament(), [rule])
+
+    @pytest.mark.parametrize('vpoints', ['0', '99.9', '0.5'])
+    def test_accepted_vpoints(self, vpoints: str):
+        data = form_data(**{SETTING.field(0, 'vpoints'): vpoints})
+        assert SETTING.get_data_errors(stub_tournament(), data) == {}
+
+    def test_a_rule_on_one_number_and_one_round_has_no_errors(self):
+        data = form_data(
+            **{
+                SETTING.field(0, 'first_round'): '2',
+                SETTING.field(0, 'last_round'): '2',
+                SETTING.field(0, 'first_number'): '40',
+                SETTING.field(0, 'last_number'): '40',
+            }
+        )
+        assert SETTING.get_data_errors(stub_tournament(), data) == {}
+
     def test_get_value_falls_back_when_stored_rules_do_not_fit(self):
         # A tournament shrunk below the stored ranges must not silently
         # accelerate the wrong players.

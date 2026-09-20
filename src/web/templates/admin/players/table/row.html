@@ -1,7 +1,7 @@
 <tr
     id="player-{{ player.id }}"
     {% if swap_oob %}
-        hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id}}"
+        hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id }}"
     {% endif %}
     {% if deleted_player_id %}
         data-delete="true"

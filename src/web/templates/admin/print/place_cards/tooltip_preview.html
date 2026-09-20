@@ -20,6 +20,7 @@
 </html>
 {% endset %}
 <iframe
+    title="{{ _('Preview') }}"
     src="data:text/html;charset=UTF-8,{{ pc|urlencode }}"
-    style="width: {{card_width}}; height: {{card_height}};"
+    style="width: {{ card_width }}; height: {{ card_height }};"
 ></iframe>

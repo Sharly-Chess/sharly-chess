@@ -29,7 +29,7 @@ from data.criteria.player_filters import (
     AgePlayerFilter,
     GenderPlayerFilter,
 )
-from data.loader import Event
+from data.event import Event
 from data.player_categories import NoCategory, PlayerCategory
 from data.print_documents.documents import (
     PrizeAssignmentPrintDocument,

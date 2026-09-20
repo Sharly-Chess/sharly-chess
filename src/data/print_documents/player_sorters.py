@@ -104,7 +104,7 @@ class RankTeamGridSorter(TeamGridSorter):
         return _('Rank')
 
     def sorted_teams(self, tournament: Tournament) -> list['Team']:
-        return [row['team'] for row in tournament.team_standings()]
+        return [row.team for row in tournament.team_standings()]
 
 
 class PairingNumberTeamGridSorter(TeamGridSorter):
