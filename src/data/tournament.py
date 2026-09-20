@@ -19,6 +19,7 @@ from data.criteria.managers import TournamentCriterionManager
 from data.screens.family import Family
 from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
+from data.point_system import PointSystem
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
@@ -572,58 +573,35 @@ class Tournament:
         return bool(rule_set.tie_breaks_for_pairing(system_id))
 
     @cached_property
-    def match_points(self) -> dict[Result, float]:
-        """Points awarded for a team match outcome, indexed by `Result`.
-        Empty dict for individual tournaments. The stored ``match_points`` dict
-        only carries overrides; Olympiad defaults (2/1/0) fill in the rest.
-
-        PAB default depends on the pairing system: Team Swiss defaults
-        to DRAW points (avoids over-rewarding an odd team out and
-        matches Olympiad practice for unopposed teams); other team
-        systems (round-robin, Molter) keep WIN as the PAB default,
-        though they rarely produce PABs in practice.
-
-        ``ZERO_POINT_BYE`` is the absent team's score, whether it was
-        left unpaired as absent or forfeited a paired match outright. It
-        defaults to LOSS, the score such a team took before the value
-        could be set."""
+    def point_system(self) -> PointSystem:
+        """What the results are worth, once the defaults are filled in."""
         from data.pairings.systems import TeamSwissPairingSystem
 
-        if not self.is_team_tournament:
-            return {}
-        raw = self.stored_tournament.match_points or {}
-        win = float(raw.get(Result.WIN.value, 2.0))
-        draw = float(raw.get(Result.DRAW.value, 1.0))
-        loss = float(raw.get(Result.LOSS.value, 0.0))
-        pab_default = draw if self.pairing_system == TeamSwissPairingSystem() else win
-        return {
-            Result.WIN: win,
-            Result.DRAW: draw,
-            Result.LOSS: loss,
-            Result.ZERO_POINT_BYE: float(raw.get(Result.ZERO_POINT_BYE.value, loss)),
-            Result.PAIRING_ALLOCATED_BYE: float(
-                raw.get(Result.PAIRING_ALLOCATED_BYE.value, pab_default)
-            ),
-        }
+        return PointSystem(
+            game_point_overrides=self.stored_tournament.game_points or {},
+            match_point_overrides=self.stored_tournament.match_points or {},
+            is_team=self.is_team_tournament,
+            boards=self.team_player_count or 0,
+            pab_is_draw=self.pairing_system == TeamSwissPairingSystem(),
+            bye_is_rest=self.pairing_variation.engine.pab_result == Result.REST_GAME,
+            primary_score=ScoreType(self.stored_tournament.primary_score)
+            if self.stored_tournament.primary_score
+            else ScoreType.MATCH_POINTS,
+        )
+
+    @property
+    def match_points(self) -> dict[Result, float]:
+        return self.point_system.match_points
 
     @property
     def primary_score(self) -> 'ScoreType':
         """Score basis used as primary (FIDE 1.2.1). Default: match points
         for team tournaments; not used for individual tournaments."""
-        raw = self.stored_tournament.primary_score
-        if raw:
-            return ScoreType(raw)
-        return ScoreType.MATCH_POINTS
+        return self.point_system.primary_score
 
     @property
     def secondary_score(self) -> 'ScoreType':
-        """The score basis that isn't the primary — derived, not chosen:
-        "The rules of the competition shall state which, between 'match
-        points' and 'game points', is called 'primary score'" (FIDE Swiss
-        Team Pairing System §1.2.1), the other one being the secondary."""
-        if self.primary_score == ScoreType.MATCH_POINTS:
-            return ScoreType.GAME_POINTS
-        return ScoreType.MATCH_POINTS
+        return self.point_system.secondary_score
 
     @property
     def round_robin_participation_rule(self) -> bool:
@@ -2687,137 +2665,49 @@ class Tournament:
             round_ = self.current_round
         return self.pairing_variation.print_real_points(self, round_)
 
-    @cached_property
+    @property
     def point_values(self) -> dict[Result, float]:
-        """Game points awarded per result type for an individual board
-        game. Team tournaments always use the standard 1 / 0.5 / 0
-        FIDE defaults — team-level PAB / match scoring lives in
-        :attr:`match_points`. The ``game_points`` override only applies
-        to individual tournaments. Individual default: WIN=1, DRAW=0.5,
-        LOSS=0, ZPB=LOSS, PAB=WIN."""
-        if self.is_team_tournament:
-            return {
-                r: r.point_value
-                for r in (
-                    Result.WIN,
-                    Result.DRAW,
-                    Result.LOSS,
-                    Result.ZERO_POINT_BYE,
-                    Result.PAIRING_ALLOCATED_BYE,
-                )
-            }
-        raw = self.stored_tournament.game_points or {}
-        win = float(raw.get(Result.WIN.value, 1.0))
-        draw = float(raw.get(Result.DRAW.value, 0.5))
-        loss = float(raw.get(Result.LOSS.value, 0.0))
-        zpb = float(raw.get(Result.ZERO_POINT_BYE.value, loss))
-        pab = float(raw.get(Result.PAIRING_ALLOCATED_BYE.value, win))
-        return {
-            Result.WIN: win,
-            Result.DRAW: draw,
-            Result.LOSS: loss,
-            Result.ZERO_POINT_BYE: zpb,
-            Result.PAIRING_ALLOCATED_BYE: pab,
-        }
+        return self.point_system.game_points
 
-    @cached_property
+    @property
     def team_game_points(self) -> dict[Result, float]:
-        """Per-board game points awarded to a team for an individual
-        result, in the team-tournament context. The same
-        ``stored_tournament.game_points`` field carries the override
-        (3/2/1 etc. via the tournament modal); team scoring respects
-        it, while :attr:`point_values` (used for individual rankings
-        within the team and for individual mode) stays at the FIDE
-        defaults. Defaults: WIN=1, DRAW=0.5, LOSS=0, ABS / FORFAIT
-        fall back to LOSS unless the form sets ``gp_zpb`` explicitly
-        (e.g. a federation rule scoring forfeits as -1)."""
-        raw = self.stored_tournament.game_points or {}
-        loss = float(raw.get(Result.LOSS.value, 0.0))
-        absent = float(raw.get(Result.ZERO_POINT_BYE.value, loss))
-        return {
-            Result.WIN: float(raw.get(Result.WIN.value, 1.0)),
-            Result.DRAW: float(raw.get(Result.DRAW.value, 0.5)),
-            Result.LOSS: loss,
-            Result.ZERO_POINT_BYE: absent,
-            # ``Result.points()`` only falls back to LOSS for these;
-            # surface the absent override explicitly so a forfeit-loss
-            # or double-forfeit also gets the configured value.
-            Result.FORFEIT_LOSS: absent,
-            Result.DOUBLE_FORFEIT: absent,
-        }
+        return self.point_system.team_game_points
 
     @property
     def is_standard_point_system_used(self) -> bool:
-        """True if the point system matches the FIDE default 1/0.5/0 with PAB=1."""
-        return (
-            self.win_points == 1.0
-            and self.draw_points == 0.5
-            and self.loss_points == 0.0
-            and self.pab_points == 1.0
-        )
+        return self.point_system.is_standard
 
     @property
     def pab_equivalent_result(self) -> Result:
-        """Which game result (WIN/DRAW/LOSS) the Pairing Allocated Bye is worth.
-        Used for legacy interop where PAB is expressed as one of those three."""
-        if self.pab_points == self.win_points:
-            return Result.WIN
-        if self.pab_points == self.draw_points:
-            return Result.DRAW
-        if self.pab_points == self.loss_points:
-            return Result.LOSS
-        return Result.WIN
+        return self.point_system.pab_equivalent_result
 
-    @cached_property
+    @property
     def win_points(self) -> float:
-        return Result.WIN.points(self.point_values)
+        return self.point_system.win
 
-    @cached_property
+    @property
     def draw_points(self) -> float:
-        return Result.DRAW.points(self.point_values)
+        return self.point_system.draw
 
-    @cached_property
+    @property
     def loss_points(self) -> float:
-        return Result.LOSS.points(self.point_values)
+        return self.point_system.loss
 
-    @cached_property
+    @property
     def pab_points(self) -> float:
-        return Result.PAIRING_ALLOCATED_BYE.points(self.point_values)
+        return self.point_system.pab
 
-    @cached_property
-    def team_bye_is_rest(self) -> bool:
-        """Whether an engine-allocated team bye is a *rest game* (round
-        robin and two-game-match systems: not played, no points) rather
-        than a points-scoring PAB (Swiss). Manual byes (ZPB / HPB / FPB)
-        are unaffected."""
-        return self.pairing_variation.engine.pab_result == Result.REST_GAME
-
-    @cached_property
-    def team_pab_game_points(self) -> float:
-        """Game points awarded to a team for a PAIRING_ALLOCATED_BYE
-        match (team-level). An explicit ``gp_pab`` field in the tournament
-        settings modal (stored in ``game_points[PAIRING_ALLOCATED_BYE]``)
-        overrides it.
-
-        Default depends on the pairing system, scaled by the board count
-        (a PAB stands in for a whole match, not a single board): Team Swiss
-        treats PAB as a drawn match (FIDE C.04.6 §1.4), so
-        ``boards × DRAW`` game points. Other team systems (round-robin /
-        Berger, Molter…) treat PAB as a won match, so ``boards × WIN``."""
-        from data.pairings.systems import TeamSwissPairingSystem
-
-        raw = self.stored_tournament.game_points or {}
-        boards = float(self.team_player_count or 0)
-        if self.pairing_system == TeamSwissPairingSystem():
-            per_board = float(raw.get(Result.DRAW.value, Result.DRAW.point_value))
-        else:
-            per_board = float(raw.get(Result.WIN.value, Result.WIN.point_value))
-        default = boards * per_board
-        return float(raw.get(Result.PAIRING_ALLOCATED_BYE.value, default))
-
-    @cached_property
+    @property
     def zpb_points(self) -> float:
-        return Result.ZERO_POINT_BYE.points(self.point_values)
+        return self.point_system.zpb
+
+    @property
+    def team_bye_is_rest(self) -> bool:
+        return self.point_system.bye_is_rest
+
+    @property
+    def team_pab_game_points(self) -> float:
+        return self.point_system.team_pab_game_points
 
     @cached_property
     def current_round(self) -> int:
