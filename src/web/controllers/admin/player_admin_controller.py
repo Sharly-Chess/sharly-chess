@@ -2008,6 +2008,28 @@ class PlayerAdminController(BaseEventAdminController):
                 optional.append(column.id)
         return required, optional, informative
 
+    @staticmethod
+    def _overwrite_blocking_tournaments(
+        event: Event, tournament: Tournament | None
+    ) -> list[Tournament]:
+        """The started tournaments an overwrite would clear: the selected
+        one, or every tournament of a team event (whose import clears the
+        whole event)."""
+        cleared = (
+            [tournament]
+            if tournament is not None
+            else list(event.tournaments_by_id.values())
+        )
+        return [candidate for candidate in cleared if candidate.started]
+
+    @staticmethod
+    def _overwrite_forbidden_message(event: Event) -> str:
+        return (
+            _("Players can't be overwritten once a tournament has started.")
+            if event.is_team_event
+            else _("Players can't be overwritten once the tournament has started.")
+        )
+
     @classmethod
     def _render_players_import_modal(
         cls,
@@ -2037,6 +2059,11 @@ class PlayerAdminController(BaseEventAdminController):
             'started_tournament_ids': [
                 str(tournament.id) for tournament in tournaments if tournament.started
             ],
+            'overwrite_forbidden': (
+                event.is_team_event
+                and bool(cls._overwrite_blocking_tournaments(event, None))
+            ),
+            'overwrite_forbidden_message': cls._overwrite_forbidden_message(event),
             'is_team_event': event.is_team_event,
             'tournament_options': tournament_options,
             'data_source_options': {
@@ -2429,6 +2456,10 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                     break
         overwrite_players = WebContext.form_data_to_bool(data, 'overwrite_players')
+        if overwrite_players and self._overwrite_blocking_tournaments(
+            event, event.tournaments_by_id.get(tournament_id or 0)
+        ):
+            errors['overwrite_players'] = self._overwrite_forbidden_message(event)
         if errors:
             return self._render_players_import_modal(
                 web_context, normalized_data, errors
@@ -2584,14 +2615,11 @@ class PlayerAdminController(BaseEventAdminController):
         assert file_path is not None
         row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
         overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
-        if overwrite_players:
-            started = (
-                [tournament]
-                if tournament is not None
-                else list(event.tournaments_by_id.values())
-            )
-            if any(candidate.started for candidate in started):
-                raise ClientException('Overwrite is forbidden on started tournaments.')
+        if overwrite_players and self._overwrite_blocking_tournaments(
+            event, tournament
+        ):
+            Message.error(request, self._overwrite_forbidden_message(event))
+            return self._render_players_tab(web_context)
         columns = PlayerDatasheetColumnHandler(event, data_source).columns
         content_by_column_id = self._read_csv_file(file_path)
         used_columns = [
