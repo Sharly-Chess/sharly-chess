@@ -19,10 +19,6 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
-msgid "%(a)s vs %(b)s"
-msgstr "%(a)s contre %(b)s"
-
-#, python-format
 msgid "%(bye)s at round %(round)d"
 msgstr "%(bye)s à la ronde %(round)d"
 
@@ -5700,9 +5696,6 @@ msgstr "Aucun·e adversaire apparié·e à cette ronde."
 
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
-
-msgid "No paired boards in this round."
-msgstr "Aucun échiquier apparié pour cette ronde."
 
 msgid "No paired team matches for this round."
 msgstr "Aucun match d'équipe pour cette ronde."

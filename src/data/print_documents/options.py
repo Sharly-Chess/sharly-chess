@@ -250,46 +250,28 @@ class MatchSheetSelectionPrintOption(PrintOption[list[int]]):
         self,
     ) -> 'dict[int, dict[int, list[tuple[int, str]]]]':
         """``{tournament_id: {round: [(id, label), ...]}}`` — every
-        paired team match in every team tournament of the event (one
-        row per board for flat fixed-table systems). Used by the print
-        modal to show only the rows matching the currently-selected
-        tournament + round."""
+        paired team match in every team tournament of the event. Used by
+        the print modal to show only the rows matching the
+        currently-selected tournament + round."""
         result: dict[int, dict[int, list[tuple[int, str]]]] = {}
         if self.event is None or not self.event.is_team_event:
             return result
         for tournament in self.event.tournaments_by_id.values():
             if not tournament.is_team_tournament:
                 continue
-            flat = not tournament.pairing_system.paired_by_team
             by_round: dict[int, list[tuple[int, str]]] = {}
             for round_ in range(1, tournament.rounds + 1):
                 rows: list[tuple[int, str]] = []
-                if flat:
-                    for board in sorted(
-                        tournament.get_round_boards(round_), key=lambda b: b.index
-                    ):
-                        wtp = board.optional_white_tournament_player
-                        btp = board.black_tournament_player
-                        rows.append(
-                            (
-                                board.identifier,
-                                f'{board.number}. '
-                                f'{wtp.full_name if wtp else ""} - '
-                                f'{btp.full_name if btp else ""}',
-                            )
+                for tb in tournament.get_round_team_boards(round_):
+                    stb = tb.stored_team_board
+                    if stb.team_b_id is None or tb.team_b is None:
+                        continue
+                    rows.append(
+                        (
+                            tb.id,
+                            f'{tb.display_number}. {tb.team_a.name} - {tb.team_b.name}',
                         )
-                else:
-                    for tb in tournament.get_round_team_boards(round_):
-                        stb = tb.stored_team_board
-                        if stb.team_b_id is None or tb.team_b is None:
-                            continue
-                        rows.append(
-                            (
-                                tb.id,
-                                f'{tb.display_number}. '
-                                f'{tb.team_a.name} - {tb.team_b.name}',
-                            )
-                        )
+                    )
                 if rows:
                     by_round[round_] = rows
             if by_round:
@@ -548,12 +530,6 @@ class FixedBoardOrderPrintOption(PrintOption[str]):
             self.BY_BOARD_NUMBER: _('Board number'),
             self.NATURAL: _('Natural (pairing order)'),
         }
-
-    @property
-    def pairing_document_id(self) -> str:
-        from data.print_documents.documents import PairingPrintDocument
-
-        return PairingPrintDocument.static_id()
 
     @property
     def boards_pairing_style_id(self) -> str:

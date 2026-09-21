@@ -1,10 +1,19 @@
 {# Reusable document selector + dynamic option panels.
    Requires in context: document_options, print_options, current_document_option_ids,
-   containers_by_document, document_ids_by_option_id, players_per_tournament_id,
-   teams_per_tournament_id, data, errors. #}
+   containers_by_document, containers_by_document_and_tournament,
+   document_ids_by_option_id, players_per_tournament_id, teams_per_tournament_id,
+   data, errors. #}
 <script>
     var playersPerTournamentId = {{ players_per_tournament_id | tojson }};
     var teamsPerTournamentId = {{ teams_per_tournament_id | tojson }};
+    // Containers of the options applying to the selected document, narrowed
+    // to the selected tournament when the document's options depend on it.
+    function printOptionContainers() {
+        const document_id = $('#document').val();
+        const tournament_id = String($('#tournament').val() || '');
+        const by_tournament = {{ containers_by_document_and_tournament | tojson }}[document_id] || {};
+        return by_tournament[tournament_id] || {{ containers_by_document | tojson }}[document_id] || [];
+    }
 </script>
 <div class="row gy-2 gx-3">
     <div class="col-12">
@@ -28,15 +37,19 @@
     </div>
 {% endfor %}
 <script>
-    $('#document').change(function() {
-        const document_containers = {{ containers_by_document|tojson }}[$(this).val()];
+    function refreshPrintOptionContainers() {
+        const document_containers = printOptionContainers();
         let container_id = '';
-        default_print_document_id = $(this).val();
         {% for option in print_options %}
             container_id = '{{ option.container_id }}';
             $('#' + container_id).css(
                 'display', document_containers.includes(container_id) ? 'block' : 'none'
             );
         {% endfor %}
+    }
+    $('#document').change(function() {
+        default_print_document_id = $(this).val();
+        refreshPrintOptionContainers();
     });
+    $('#tournament').change(refreshPrintOptionContainers);
 </script>

@@ -8,6 +8,7 @@ import pytest
 from data.access_levels.client import Client
 from data.event import Event
 from data.loader import EventLoader
+from data.pairings.molter import StandardMolterVariation
 from data.pairings.variations import BergerTeamRoundRobinVariation
 from data.print_documents import documents
 from data.print_documents.documents import PrintDocument
@@ -15,6 +16,7 @@ from data.print_documents.managers import (
     PrintDocumentManager,
     PrintPairingStyleManager,
 )
+from data.print_documents import options
 from data.print_documents.options import PrintOption
 from data.print_documents.place_cards.editor import PlaceCardTemplateEditor
 from data.tournament import Tournament
@@ -31,6 +33,7 @@ from web.controllers.base_controller import WebContext
 
 EVENT_ID = 'test-print-documents'
 TEAM_EVENT_ID = 'test-print-documents-teams'
+MOLTER_EVENT_ID = 'test-print-documents-molter'
 TOURNAMENT_NAME = 'test-print-documents-tournament'
 TEAM_COUNT = 4
 TEAM_SIZE = 2
@@ -53,23 +56,24 @@ def event() -> Iterator[Event]:
     TestUtils.delete_event(EVENT_ID)
 
 
-@pytest.fixture(scope='module')
-def team_event() -> Iterator[Event]:
-    """A team event, which the other half of the documents is printed for.
-    No example event has teams, so the rosters are seeded here."""
-    TestUtils.create_event(TEAM_EVENT_ID, overrides={'event_type': EventType.TEAM})
+def _seed_team_event(event_id: str, pairing: str, rounds: int) -> Iterator[Event]:
+    """A team event with its first round paired and played, so the
+    documents that only print a finished round have one to print. No
+    example event has teams, so the rosters are seeded here."""
+    TestUtils.create_event(event_id, overrides={'event_type': EventType.TEAM})
     stored_tournament = TestUtils.create_tournament(
-        TEAM_EVENT_ID,
+        event_id,
         TOURNAMENT_NAME,
         overrides={
-            'pairing': BergerTeamRoundRobinVariation.static_id(),
+            'pairing': pairing,
             'team_player_count': TEAM_SIZE,
-            'rounds': TEAM_COUNT - 1,
+            'rounds': rounds,
+            'current_round': 1,
         },
     )
     tournament_id = stored_tournament.id
     assert tournament_id is not None
-    with EventDatabase(TEAM_EVENT_ID, write=True) as database:
+    with EventDatabase(event_id, write=True) as database:
         for team_index in range(TEAM_COUNT):
             team_id = database.add_stored_team(
                 StoredTeam(
@@ -96,35 +100,45 @@ def team_event() -> Iterator[Event]:
                         pairing_number=team_index * TEAM_SIZE + board_index + 1,
                     )
                 )
-    loaded = EventLoader().load_event(TEAM_EVENT_ID)
-    _play_first_round(loaded.tournaments_by_name[TOURNAMENT_NAME])
-    with EventDatabase(TEAM_EVENT_ID, write=True) as database:
-        # Round one is over, so the documents that rank on a finished
-        # round have one to rank on.
+    event = EventLoader().load_event(event_id)
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    assert tournament.generate_round_pairings(1) == ''
+    _play_first_round(event_id, tournament)
+    with EventDatabase(event_id, write=True) as database:
         database.set_tournament_current_round(tournament_id, 2)
-    EventLoader.unload_event(TEAM_EVENT_ID)
-    yield EventLoader().load_event(TEAM_EVENT_ID)
-    EventLoader.unload_event(TEAM_EVENT_ID)
-    TestUtils.delete_event(TEAM_EVENT_ID)
+    EventLoader.unload_event(event_id)
+    yield EventLoader().load_event(event_id)
+    EventLoader.unload_event(event_id)
+    TestUtils.delete_event(event_id)
 
 
-def _play_first_round(tournament: Tournament) -> None:
-    """The first team of each match wins every board, so the documents
-    that only print a finished round have one to print."""
-    with EventDatabase(TEAM_EVENT_ID, write=True) as database:
-        for team_board in tournament.get_round_team_boards(1):
-            team_a_id = team_board.stored_team_board.team_a_id
-            if team_board.stored_team_board.team_b_id is None:
+@pytest.fixture(scope='module')
+def team_event() -> Iterator[Event]:
+    """A team event, which the other half of the documents is printed for."""
+    yield from _seed_team_event(
+        TEAM_EVENT_ID, BergerTeamRoundRobinVariation.static_id(), TEAM_COUNT - 1
+    )
+
+
+@pytest.fixture(scope='module')
+def molter_event() -> Iterator[Event]:
+    """A team event whose system seats flat boards from a fixed table,
+    with no team matches to sheet."""
+    yield from _seed_team_event(MOLTER_EVENT_ID, StandardMolterVariation.static_id(), 3)
+
+
+def _play_first_round(event_id: str, tournament: Tournament) -> None:
+    """White wins every board, so the documents that only print a
+    finished round have one to print."""
+    with EventDatabase(event_id, write=True) as database:
+        for board in tournament.get_round_boards(1):
+            if (
+                board.optional_white_tournament_player is None
+                or board.black_tournament_player is None
+            ):
                 continue
-            for board in team_board.boards:
-                for pairing in (
-                    board.optional_white_pairing,
-                    board.optional_black_pairing,
-                ):
-                    if pairing is None:
-                        continue
-                    won = pairing.tournament_player.team_id == team_a_id
-                    pairing.update_result(database, Result.WIN if won else Result.LOSS)
+            board.white_pairing.update_result(database, Result.WIN)
+            board.black_pairing.update_result(database, Result.LOSS)
 
 
 def _case(event: Event) -> tuple[Event, dict[str, str]]:
@@ -135,6 +149,7 @@ def _case(event: Event) -> tuple[Event, dict[str, str]]:
     return event, {
         'tournament': str(tournament.id),
         'tournaments': str(tournament.id),
+        'round': '1',
         'mandatory-player': str(player.id),
         'place-card-template': PlaceCardTemplateEditor.create('Cards', 'player'),
     }
@@ -148,6 +163,11 @@ def individual_case(event: Event) -> tuple[Event, dict[str, str]]:
 @pytest.fixture(scope='module')
 def team_case(team_event: Event) -> tuple[Event, dict[str, str]]:
     return _case(team_event)
+
+
+@pytest.fixture(scope='module')
+def molter_case(molter_event: Event) -> tuple[Event, dict[str, str]]:
+    return _case(molter_event)
 
 
 def _build(
@@ -179,7 +199,7 @@ def test_every_document_can_be_reached(event: Event):
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize('case_name', ['individual_case', 'team_case'])
+@pytest.mark.parametrize('case_name', ['individual_case', 'team_case', 'molter_case'])
 def test_every_offered_document_builds_its_context(
     request: pytest.FixtureRequest, case_name: str
 ):
@@ -217,3 +237,46 @@ def test_options_are_read_from_the_view_url(event: Event):
         f'tournament={tournament.id}',
     )
     assert document.tournament.id == tournament.id
+
+
+@pytest.mark.unit
+def test_match_sheets_sheet_the_matches_of_a_team_paired_system(
+    team_case: tuple[Event, dict[str, str]],
+):
+    """Teams paired against each other get one sheet per match, chosen
+    from the match selection and signed by the arbiter."""
+    event, option_values = team_case
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    document = _build(event, documents.MatchSheetsPrintDocument, option_values)
+    assert documents.MatchSheetsPrintDocument.option_types_for_tournament(
+        tournament
+    ) == [
+        options.TournamentPrintOption,
+        options.RoundPrintOption,
+        options.MatchSheetSelectionPrintOption,
+        options.MatchSheetArbiterPrintOption,
+    ]
+    assert document.template_name == '/admin/print/match_sheets.html'
+    assert document.template_context['team_boards']
+
+
+@pytest.mark.unit
+def test_match_sheets_print_the_pairings_of_a_flat_team_system(
+    molter_case: tuple[Event, dict[str, str]],
+):
+    """Flat boards seated from a fixed table have no match to sheet: the
+    document is the pairings one, with the pairings options (style, board
+    order, federation) in place of the match selection."""
+    event, option_values = molter_case
+    tournament = event.tournaments_by_name[TOURNAMENT_NAME]
+    document = _build(event, documents.MatchSheetsPrintDocument, option_values)
+    assert (
+        documents.MatchSheetsPrintDocument.option_types_for_tournament(tournament)
+        == documents.PairingPrintDocument.available_options()
+    )
+    pairings = _build(event, documents.PairingPrintDocument, option_values)
+    assert document.template_name == pairings.template_name
+    assert document.title == pairings.title
+    assert [board.id for board in document.template_context['boards']] == [
+        board.id for board in pairings.template_context['boards']
+    ]

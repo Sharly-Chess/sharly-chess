@@ -123,6 +123,10 @@
 .board-color-chip.black {
     background-color: #000;
 }
+.board-seat-code {
+    font-size: 0.8em;
+    color: #777;
+}
 .input-screen .board-row.editable {
     cursor: pointer;
 }

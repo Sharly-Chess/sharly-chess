@@ -19,10 +19,6 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
-msgid "%(a)s vs %(b)s"
-msgstr ""
-
-#, python-format
 msgid "%(bye)s at round %(round)d"
 msgstr ""
 
@@ -5699,9 +5695,6 @@ msgid "No opponent paired this round."
 msgstr ""
 
 msgid "No organiser"
-msgstr ""
-
-msgid "No paired boards in this round."
 msgstr ""
 
 msgid "No paired team matches for this round."

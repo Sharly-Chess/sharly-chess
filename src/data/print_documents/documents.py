@@ -147,6 +147,21 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             and any(not t.event.is_team_event for t in allowed_tournaments)
         )
 
+    @classmethod
+    def picker_name(cls, allowed_tournaments: list[Tournament]) -> str:
+        """The name the picker lists the document under, for an event of
+        the given tournaments."""
+        return cls.static_name()
+
+    @classmethod
+    def option_types_for_tournament(
+        cls, tournament: Tournament
+    ) -> list[type[PrintOption]]:
+        """The options that apply when the document is printed for
+        ``tournament``; the picker shows only these. Defaults to every
+        available option."""
+        return cls.available_options()
+
     @override
     def default_options(self) -> list[PrintOption]:
         return [option_type(self.event) for option_type in self.available_options()]
@@ -860,12 +875,15 @@ class ResultPrintDocument(BoardPrintDocument):
         return True
 
 
-class MatchSheetsPrintDocument(PrintDocument):
-    """One signature-ready table per team match in the round. Used by
+class MatchSheetsPrintDocument(PairingPrintDocument):
+    """The pairings document of team events. Systems that pair whole teams
+    print one signature-ready table per team match in the round, used by
     arbiters to capture each match's individual results + captains'
-    signatures. Selection option lets the arbiter print only a subset
-    of matches; the page-break option prints one match per page."""
+    signatures; the selection option lets the arbiter print only a subset
+    of matches. Systems that pair flat boards (fixed tables) have no
+    matches to sheet: they print the plain pairings, with its options."""
 
+    hide_for_team_events = False
     hide_for_individual_events = True
 
     @staticmethod
@@ -876,8 +894,28 @@ class MatchSheetsPrintDocument(PrintDocument):
     def static_name() -> str:
         return _('Match sheets')
 
+    @classmethod
+    @override
+    def picker_name(cls, allowed_tournaments: list[Tournament]) -> str:
+        if any(t.pairing_system.paired_by_team for t in allowed_tournaments):
+            return cls.static_name()
+        return PairingPrintDocument.static_name()
+
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
+        return [
+            *PairingPrintDocument.available_options(),
+            MatchSheetSelectionPrintOption,
+            MatchSheetArbiterPrintOption,
+        ]
+
+    @classmethod
+    @override
+    def option_types_for_tournament(
+        cls, tournament: Tournament
+    ) -> list[type[PrintOption]]:
+        if not tournament.pairing_system.paired_by_team:
+            return PairingPrintDocument.available_options()
         return [
             TournamentPrintOption,
             RoundPrintOption,
@@ -886,7 +924,13 @@ class MatchSheetsPrintDocument(PrintDocument):
         ]
 
     @property
+    def sheets_mode(self) -> bool:
+        return self.tournament.pairing_system.paired_by_team
+
+    @property
     def template_name(self) -> str:
+        if not self.sheets_mode:
+            return super().template_name
         return '/admin/print/match_sheets.html'
 
     @property
@@ -895,7 +939,15 @@ class MatchSheetsPrintDocument(PrintDocument):
 
     @property
     def title(self) -> str:
+        if not self.sheets_mode:
+            return super().title
         return _('Match sheets for round #{round}').format(round=self.at_round)
+
+    @property
+    def tab_title(self) -> str:
+        if not self.sheets_mode:
+            return f'{PairingPrintDocument.static_name()} - {self.tournament.name}'
+        return super().tab_title
 
     @property
     def page_break(self) -> bool:
@@ -903,16 +955,7 @@ class MatchSheetsPrintDocument(PrintDocument):
         return True
 
     @property
-    def flat_mode(self) -> bool:
-        """Fixed-table team systems pair flat boards with no match
-        envelopes — the sheet becomes a single round sheet listing the
-        boards, and the selection option selects boards."""
-        return not self.tournament.pairing_system.paired_by_team
-
-    @property
     def team_boards(self) -> list[TeamBoard]:
-        if self.flat_mode:
-            return []
         self.tournament.set_for_round(self.at_round)
         all_boards = [
             tb
@@ -923,80 +966,6 @@ class MatchSheetsPrintDocument(PrintDocument):
         if not selected_ids:
             return all_boards
         return [tb for tb in all_boards if tb.id in selected_ids]
-
-    @property
-    def flat_boards(self) -> list[Board]:
-        if not self.flat_mode:
-            return []
-        self.tournament.set_for_round(self.at_round)
-        boards = sorted(
-            self.tournament.get_round_boards(self.at_round),
-            key=lambda b: b.index,
-        )
-        selected_ids = set(self._get_option(MatchSheetSelectionPrintOption).value or [])
-        if not selected_ids:
-            return boards
-        return [b for b in boards if b.identifier in selected_ids]
-
-    @property
-    def flat_board_refs(self) -> dict[int, tuple[str, str]]:
-        """``board.index`` → table cell codes ``(white_ref, black_ref)`` for
-        fixed-table (Molter) systems; empty otherwise. Used only as the
-        fallback code for an empty seat (a hole), to show which player is
-        missing on a forfeit board — a seated player's code comes from their
-        own lineup slot."""
-        from data.pairings.fixed_table import FixedTablePairingEngine
-
-        engine = self.tournament.pairing_variation.engine
-        if not isinstance(engine, FixedTablePairingEngine):
-            return {}
-        return dict(enumerate(engine.board_references(self.tournament, self.at_round)))
-
-    @property
-    def team_letter_by_id(self) -> dict[int, str]:
-        """Team id → table letter for round-robin team systems, whose
-        FFE sheets reference players as ``A1``/``B2`` (team letter +
-        board). Empty for other systems."""
-        if not isinstance(self.tournament.pairing_system, TeamRoundRobinPairingSystem):
-            return {}
-        teams = sorted(
-            self.tournament.teams,
-            key=lambda t: (
-                t.pairing_number if t.pairing_number is not None else float('inf'),
-                t.name.lower(),
-            ),
-        )
-        return {team.id: chr(ord('A') + i) for i, team in enumerate(teams)}
-
-    @property
-    def match_sheet_options(self) -> list[tuple[int, str]]:
-        """``(id, label)`` rows feeding the selection checkboxes: one per
-        paired team match, or one per board for flat systems."""
-        self.tournament.set_for_round(self.at_round)
-        rows: list[tuple[int, str]] = []
-        if self.flat_mode:
-            for board in sorted(
-                self.tournament.get_round_boards(self.at_round),
-                key=lambda b: b.index,
-            ):
-                wtp = board.optional_white_tournament_player
-                btp = board.black_tournament_player
-                label = _('%(a)s vs %(b)s').format(
-                    a=wtp.full_name if wtp else '',
-                    b=btp.full_name if btp else '',
-                )
-                rows.append((board.identifier, f'{board.number}. {label}'))
-            return rows
-        for tb in self.tournament.get_round_team_boards(self.at_round):
-            stb = tb.stored_team_board
-            if stb.team_b_id is None:
-                continue
-            label = _('%(a)s vs %(b)s').format(
-                a=tb.team_a.name,
-                b=tb.team_b.name if tb.team_b else '',
-            )
-            rows.append((tb.id, label))
-        return rows
 
     @override
     def validate_options(self) -> None:
@@ -1043,16 +1012,13 @@ class MatchSheetsPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        if not self.sheets_mode:
+            return super().template_context
         return {
             'tournament': self.tournament,
             'subtitle': self.tournament.name,
             'team_boards': self.team_boards,
-            'flat_mode': self.flat_mode,
-            'flat_boards': self.flat_boards,
-            'flat_board_refs': self.flat_board_refs,
-            'team_letter_by_id': self.team_letter_by_id,
             'page_break': self.page_break,
-            'at_round': self.at_round,
             'arbiter_name': self.arbiter_name,
             'player_national_id': self.player_national_id,
         }
